@@ -1,9 +1,0 @@
-{
-  "sealed03": "/private/tmp/letbuyy-apparel-provenance-prep-20261025-03",
-  "durable03": "docs/implementation/threadline-2026-10-22/completion-2026-10-24/runtime07/private-apparel-provenance03",
-  "handoffSha256": "db438bacfa02f47620e96340d34bc99b7cc69de3e26eeb173e3faf254ca29a57",
-  "retainedMetadataCasesPass": 13,
-  "sixteenFocusedFortyFiveRegressionOneFrozenOverlapNotRerun": true,
-  "thirteenMetadataFixturesNotRerun": true,
-  "priorArtifactsIncludingFailedAttemptsUnchanged": true
-}

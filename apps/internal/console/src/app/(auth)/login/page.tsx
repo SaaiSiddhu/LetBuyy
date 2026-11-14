@@ -42,28 +42,28 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
     const devMagicLink = firstParam(params.devMagicLink);
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-zinc-950">
-            <div className="w-full max-w-md space-y-8 rounded-lg border border-zinc-800 bg-zinc-900 p-8">
+        <div className="console-auth flex min-h-screen items-center justify-center bg-page">
+            <div className="console-auth-card w-full max-w-md space-y-8 rounded-lg border border-line bg-surface p-8">
                 <div className="text-center">
                     <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--lb-color-primary-subtle)] text-[var(--lb-color-primary)]">
                         <ShieldCheck size={24} />
                     </div>
-                    <h1 className="text-2xl font-bold text-zinc-50">Console Access</h1>
-                    <p className="mt-2 text-sm text-zinc-400">
-                        Authorized personnel only.
+                    <h1 className="text-2xl font-bold text-default">Welcome to the console</h1>
+                    <p className="mt-2 text-sm text-subdued">
+                        Sign in to your LetBuyy operations workspace.
                     </p>
                 </div>
 
                 {error && (
-                    <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                    <div className="rounded-lg border border-critical/30 bg-critical/10 px-4 py-3 text-sm text-critical">
                         {error}
                     </div>
                 )}
 
-                {authenticatorReset && <p role="status" className="rounded-lg border border-zinc-700 p-4 text-zinc-200">Your operator authenticator was reset and you were signed out. Sign in after your configuration custodian provides a replacement factor.</p>}
+                {authenticatorReset && <p role="status" className="rounded-lg border border-line p-4 text-default">Your operator authenticator was reset and you were signed out. Sign in after your configuration custodian provides a replacement factor.</p>}
 
                 {sent && (
-                    <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+                    <div className="rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
                         {devMagicLink && process.env.NODE_ENV !== 'production'
                             ? 'Local development magic link generated. No email was sent.'
                             : 'Magic link sent to the allowlisted email.'}
@@ -71,7 +71,7 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
                 )}
 
                 {loggedOut && (
-                    <div className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-zinc-200">
+                    <div className="rounded-lg border border-line bg-surface-subdued px-4 py-3 text-sm text-default">
                         Signed out.
                     </div>
                 )}
@@ -79,7 +79,7 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
                 {devMagicLink && process.env.NODE_ENV !== 'production' && (
                     <a
                         href={devMagicLink}
-                        className="block rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-200 transition-colors hover:bg-amber-500/20"
+                        className="block rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm font-medium text-warning transition-colors hover:bg-warning/20"
                     >
                         Open local development magic link
                     </a>
@@ -87,7 +87,7 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
 
                 <form action="/api/console-auth/login" method="post" className="space-y-4">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-zinc-300">
+                        <label htmlFor="email" className="block text-sm font-medium text-default">
                             Email
                         </label>
                         <Input
@@ -98,21 +98,21 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
                             autoComplete="email"
                             required
                             placeholder="admin@letbuyy.com"
-                            className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm text-zinc-100 outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-primary-subtle)]"
+                            className="mt-1 w-full rounded-lg border border-line bg-surface-subdued px-4 py-2.5 text-sm text-default outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-primary-subtle)]"
                         />
                     </div>
                     <Button
                         unstyled
                         type="submit"
-                        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[var(--lb-color-primary)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--lb-color-primary-hover)] active:bg-[var(--lb-color-primary-active)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
+                        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[var(--lb-color-primary-cta)] px-4 py-2.5 text-sm font-medium text-[var(--lb-color-primary-cta-text)] transition-colors hover:bg-[var(--lb-color-primary-hover)] active:bg-[var(--lb-color-primary-active)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
                     >
                         <Mail size={16} />
                         Send magic link
                     </Button>
                 </form>
 
-                <p className="text-center text-xs text-zinc-600">
-                    Access is logged and monitored. Unauthorized access will be reported.
+                <p className="text-center text-xs text-subdued">
+                    For authorized LetBuyy team members. Access and actions are recorded.
                 </p>
             </div>
         </div>

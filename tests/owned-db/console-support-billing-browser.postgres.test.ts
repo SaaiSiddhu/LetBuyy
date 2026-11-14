@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {mkdir} from 'node:fs/promises';
+import {join} from 'node:path';
+import {expect} from '@playwright/test';
+import {withConsoleBrowser} from '../../services/api-gateway/src/__tests__/owned-db/console-browser-fixture';
+import {requireOwnedDatabase} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import {newSyntheticTenant,seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
+const owned=requireOwnedDatabase();
+test('real Console login assigns and recovers ownership, shows recorded deadlines, investigates billing and dependency evidence', {timeout:600000},async()=>{
+ const site=newSyntheticTenant('console-ops-browser');seedSyntheticTenant(owned.psql,site);const ticket=crypto.randomUUID(),invoice=crypto.randomUUID(),history=crypto.randomUUID();
+ owned.psql(`INSERT INTO support_tickets(id,ticket_ref,site_id,subject,status)VALUES('${ticket}','SYN-${ticket}','${site.siteId}','Synthetic operations ownership','pending_customer');INSERT INTO ticket_sla_clocks(ticket_id,clock_type,due_at,paused)VALUES('${ticket}','first_response',now()-interval '1 hour',false),('${ticket}','resolution',now()+interval '1 day',true);`);
+ await withConsoleBrowser(owned,async f=>{
+  const anonymous=await f.browser.newContext(),entry=await anonymous.newPage();
+  for(const path of ['/support','/merchants/'+site.siteId+'/billing']){await entry.goto(f.origin+path);await expect(entry).toHaveURL(f.origin+'/login');}
+  await anonymous.close();
+  const {page,context}=await f.login(f.actors[1]),employee=owned.psql(`SELECT id FROM employees WHERE user_id='${f.actors[0].id}' AND store_id IS NULL;`);
+  owned.psql(`INSERT INTO billing_history(id,user_id,store_id,site_id,invoice_number,description,amount,total_amount,payment_status)VALUES('${history}','${f.actors[1].id}','${site.siteId}','${site.siteId}','SYN-OP-INVOICE','Synthetic operator billing evidence',19900,19900,'pending');INSERT INTO merchant_billing_invoices(id,site_id,billing_history_id,invoice_number,status,total_minor)VALUES('${invoice}','${site.siteId}','${history}','SYN-OP-INVOICE','issued',19900);`);
+  const dir=process.env.LETBUYY_CONSOLE_UI_ARTIFACT_DIR;
+  const capture=async(name:string)=>{if(dir){await mkdir(dir,{recursive:true});await page.screenshot({path:join(dir,name+'.png'),animations:'disabled'});}};
+  await page.setViewportSize({width:1440,height:1100});await page.goto(f.origin+'/support?site_id='+site.siteId+'&ticket='+ticket);
+  await expect(page.getByRole('heading',{name:'Synthetic operations ownership',exact:true})).toBeVisible();
+  const deadlines=page.getByRole('region',{name:'Response and resolution deadlines'});await expect(deadlines.getByText('Overdue',{exact:true})).toBeVisible();await expect(deadlines.getByText('Paused',{exact:true})).toBeVisible();
+  const form=page.getByRole('form',{name:'Ticket ownership and priority'});await form.getByLabel('Assigned teammate',{exact:true}).selectOption(employee);await form.getByLabel('New priority',{exact:true}).selectOption('urgent');await form.getByLabel('Ownership reason',{exact:true}).fill('Assign the responsible synthetic platform colleague');
+  const path='/api/v1/support/tickets/'+ticket+'/assign';const hostile=await context.request.patch(f.origin+path,{headers:{Origin:'https://hostile.example.invalid','X-Idempotency-Key':crypto.randomUUID()},data:{}});assert.equal(hostile.status(),403);
+  await page.route('**'+path,async route=>{await route.fetch();await route.abort('failed');},{times:1});
+  await form.getByRole('button',{name:'Save owner and priority',exact:true}).click();await expect(page.getByText('Outcome not confirmed. Check the original request before retrying.',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Check saved action',exact:true}).click();await expect(page.getByText('Original request recovered.',{exact:true})).toBeVisible();
+  await expect(page.getByLabel('New priority',{exact:true})).toHaveValue('urgent');assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE action='support.ticket.assign' AND resource_id='${ticket}';`),'1');
+  assert.equal(owned.psql(`SELECT status FROM support_tickets WHERE id='${ticket}';`),'pending_customer');await capture('support-deadlines-ownership-light');await form.scrollIntoViewIfNeeded();await capture('support-ownership-controls-light');
+  await page.getByLabel('Escalation reason',{exact:true}).fill('Route this synthetic request to the responsible engineering team');await page.getByRole('button',{name:'Escalate ticket',exact:true}).click();await expect(page.getByText('Saved to the ticket. Notification delivery is separate.',{exact:true})).toBeVisible();assert.equal(owned.psql(`SELECT escalated_to FROM support_tickets WHERE id='${ticket}';`),'engineering');
+  await page.goto(f.origin+'/merchants/'+site.siteId+'/billing');await expect(page.getByText('SYN-OP-INVOICE',{exact:true})).toBeVisible();const row=page.getByRole('row').filter({hasText:'SYN-OP-INVOICE'});await expect(row.getByText('issued',{exact:true})).toBeVisible();await expect(row.getByText('pending',{exact:true})).toBeVisible();await expect(row.getByText('₹199.00',{exact:true})).toBeVisible();
+  const csv=await context.request.get(f.origin+'/api/v1/billing/'+site.siteId+'/'+invoice);assert.equal(csv.status(),200);assert.match(csv.headers()['content-disposition'],/attachment/);assert.match(await csv.text(),/SYN-OP-INVOICE,issued,pending,INR,19900/);
+  const hidden=await context.request.get(f.origin+'/api/v1/billing/'+site.siteId+'/'+crypto.randomUUID());assert.equal(hidden.status(),404);
+  await page.getByRole('button',{name:'Apply filters',exact:true}).click();await expect(page.getByText('SYN-OP-INVOICE',{exact:true})).toBeVisible();await row.scrollIntoViewIfNeeded();await capture('billing-evidence-light');
+  await page.getByRole('button',{name:'Change console theme',exact:true}).click();await expect(page.locator('.console-design-root')).toHaveAttribute('data-letbuyy-theme','dark');await capture('billing-evidence-dark');await page.setViewportSize({width:390,height:844});assert.equal(await page.evaluate('document.documentElement.scrollWidth>innerWidth'),false);await row.scrollIntoViewIfNeeded();await capture('billing-evidence-dark-390px');
+  await page.goto(f.origin+'/settings');await expect(page.getByRole('heading',{name:'Live database connection',exact:true})).toBeVisible();await expect(page.getByText('reachable',{exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Runtime evidence and protected job recovery',exact:true})).toHaveAttribute('href','/operations');await capture('dependency-evidence-dark-390px');
+  await context.close();
+ });
+});

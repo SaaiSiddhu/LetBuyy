@@ -2,8 +2,6 @@
 
 import { useCopy } from '@/components/i18n/useCopy'
 
-import Copy from '@/components/i18n/Copy'
-
 import Image from 'next/image'
 import { useState, useRef, type KeyboardEvent } from 'react'
 import { Button, Check, ChevronLeft, ChevronRight } from '@letbuyy/ui'
@@ -50,7 +48,7 @@ const STAGES = [
         image: '/illustrations/journey/brand-illustration-v2.webp',
         tasks: [
             { title: 'Understand your customers', text: 'Find customer profiles, purchase history and useful segments.' },
-            { title: 'Share the next collection', text: 'Prepare email campaigns for customers who have subscribed.' },
+            { title: 'Share the next collection', text: 'Check the supported communication tools and customer consent before planning a campaign.' },
             { title: 'Learn from your sales', text: 'Review product performance and revenue before planning your next move.' },
         ],
     },
@@ -60,7 +58,7 @@ const STAGES = [
         description: 'As the business becomes more complex, bring wholesale work, AI assistance and reporting into the same operating picture.',
         image: '/illustrations/journey/enterprise-illustration-v2.webp',
         tasks: [
-            { title: 'Organise wholesale work', text: 'Manage business buyers and bulk-order workflows alongside your retail operations.' },
+            { title: 'Organise wholesale work', text: 'Discuss business-buyer and bulk-order requirements with support before relying on their availability.' },
             { title: 'Work with AI assistance', text: 'Prepare supported content drafts and review suggestions before acting.' },
             { title: 'Keep the wider view', text: 'Use your commerce reports to understand the business across its activities.' },
         ],
@@ -88,9 +86,9 @@ export default function MerchantJourney() {
         <section id="merchant-journey" className="mgj mgj-explorer" aria-labelledby="mgj-heading">
             <div className="container">
                 <header className="mgj-explorer-header">
-                    <p className="section-label"><Copy text={"Merchant Growth Journey"} /></p>
-                    <h2 id="mgj-heading"><Copy text={"From opening day to your next big move."} /></h2>
-                    <p><Copy text={"Explore five moments in a growing business—and the LetBuyy tools you can use at each one."} /></p>
+                    <p className="section-label">{t("Merchant Growth Journey")}</p>
+                    <h2 id="mgj-heading">{t("From opening day to your next big move.")}</h2>
+                    <p>{t("Explore five moments in a growing business—and the LetBuyy tools you can use at each one.")}</p>
                 </header>
 
                 <div className="mgj-explorer-workspace">
@@ -104,15 +102,14 @@ export default function MerchantJourney() {
                                 id={`journey-tab-${stage.id}`}
                                 aria-controls={`journey-panel-${stage.id}`}
                                 aria-selected={active === index}
-                                aria-label={`${stage.number}. ${t(stage.title)}`}
                                 tabIndex={active === index ? 0 : -1}
                                 className="mgj-stage-tab"
                                 onClick={() => selectStage(index)}
                                 onKeyDown={event => navigateTabs(event, index)}
                             >
-                                <span className="mgj-stage-number" aria-hidden="true">{stage.number}</span>
-                                <span className="mgj-stage-name"><Copy text={stage.title} /></span>
-                                <span className="mgj-stage-short" aria-hidden="true"><Copy text={stage.short} /></span>
+                                <span className="mgj-stage-number">{stage.number}</span>{' '}
+                                <span className="mgj-stage-name">{t((stage.title) ?? '')}</span>
+                                <span className="mgj-stage-short">{t((stage.short) ?? '')}</span>
                             </Button>
                         ))}
                     </div>
@@ -131,19 +128,19 @@ export default function MerchantJourney() {
                             >
                                 <div className="mgj-chapter-intro">
                                     <div className="mgj-chapter-copy">
-                                        <p className="mgj-chapter-tools"><Copy text={stage.modules} /></p>
-                                        <h3><Copy text={stage.headline} /></h3>
-                                        <p className="mgj-chapter-description"><Copy text={stage.description} /></p>
+                                        <p className="mgj-chapter-tools">{t((stage.modules) ?? '')}</p>
+                                        <h3>{t((stage.headline) ?? '')}</h3>
+                                        <p className="mgj-chapter-description">{t((stage.description) ?? '')}</p>
                                     </div>
                                     <figure className="mgj-chapter-art" aria-hidden="true">
-                                        <Image src={stage.image} alt="" width={640} height={640} sizes="(max-width: 640px) 128px, 300px" loading="lazy" unoptimized />
+                                        <Image src={stage.image} alt="" width={640} height={640} sizes="(max-width: 767px) 72px, 300px" loading="lazy" unoptimized />
                                     </figure>
                                 </div>
                                 <ol className="mgj-chapter-tasks" aria-label={t("What you can do: {label}", { label: t(stage.title) })}>
                                     {stage.tasks.map(task => (
                                         <li key={task.title}>
                                             <Check width={18} height={18} strokeWidth={1.7} aria-hidden="true" />
-                                            <div><h4><Copy text={task.title} /></h4><p><Copy text={task.text} /></p></div>
+                                            <div><h4>{t((task.title) ?? '')}</h4><p>{t((task.text) ?? '')}</p></div>
                                         </li>
                                     ))}
                                 </ol>
@@ -153,15 +150,15 @@ export default function MerchantJourney() {
 
                     <nav className="mgj-chapter-nav" aria-label={t("Move through the business stages")}>
                         <Button unstyled type="button" className="mgj-chapter-nav-button" disabled={active === 0} onClick={() => selectStage(active - 1, true)}>
-                            <ChevronLeft width={18} height={18} aria-hidden="true" /><span><Copy text={"Previous"} /></span>
+                            <ChevronLeft width={18} height={18} aria-hidden="true" /><span>{t("Previous")}</span>
                         </Button>
                         <span className="mgj-chapter-position" aria-live="polite" aria-atomic="true">{STAGES[active].number} / 05</span>
                         <Button unstyled type="button" className="mgj-chapter-nav-button" disabled={active === STAGES.length - 1} onClick={() => selectStage(active + 1, true)}>
-                            <span><Copy text={"Next stage"} /></span><ChevronRight width={18} height={18} aria-hidden="true" />
+                            <span>{t("Next stage")}</span><ChevronRight width={18} height={18} aria-hidden="true" />
                         </Button>
                     </nav>
                 </div>
-                <p className="mgj-explorer-note"><Copy text={"Tools depend on your plan and setup. Payments, shipping and live email delivery require the relevant provider connections."} /></p>
+                <p className="mgj-explorer-note">{t("Tools depend on your plan and setup. Payments, shipping and live email delivery require the relevant provider connections.")}</p>
             </div>
         </section>
     )

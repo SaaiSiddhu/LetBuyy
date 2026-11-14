@@ -1,0 +1,1392 @@
+
+> @letbuyy/marketing-site@0.1.0 test /private/tmp/letbuyy-marketing-nov13.VCJg4w/usable/apps/marketing/web
+> cd ../../.. && node --test tests/federation/marketing-site-auth-boundary.test.mjs && node --import tsx --test tests/marketing/*.test.ts
+
+TAP version 13
+# Subtest: marketing site has no local auth API or credential handling surface
+ok 1 - marketing site has no local auth API or credential handling surface
+  ---
+  duration_ms: 18.187
+  type: 'test'
+  ...
+# Subtest: marketing signup route is a redirect shim to the identity platform
+ok 2 - marketing signup route is a redirect shim to the identity platform
+  ---
+  duration_ms: 0.486667
+  type: 'test'
+  ...
+# Subtest: marketing site exposes crawlable platform app navigation and sitemaps
+ok 3 - marketing site exposes crawlable platform app navigation and sitemaps
+  ---
+  duration_ms: 0.932375
+  type: 'test'
+  ...
+# Subtest: marketplace robots and sitemaps derive canonical URLs from the request host
+ok 4 - marketplace robots and sitemaps derive canonical URLs from the request host
+  ---
+  duration_ms: 1.1345
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 74.789125
+TAP version 13
+# Subtest: hi/how-to-start-an-online-store-india: translated blocks preserve anchors, shape and source authority
+ok 1 - hi/how-to-start-an-online-store-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 1.889
+  type: 'test'
+  ...
+# Subtest: ta/how-to-start-an-online-store-india: translated blocks preserve anchors, shape and source authority
+ok 2 - ta/how-to-start-an-online-store-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.360125
+  type: 'test'
+  ...
+# Subtest: hi/product-page-optimization: translated blocks preserve anchors, shape and source authority
+ok 3 - hi/product-page-optimization: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.16925
+  type: 'test'
+  ...
+# Subtest: ta/product-page-optimization: translated blocks preserve anchors, shape and source authority
+ok 4 - ta/product-page-optimization: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.128708
+  type: 'test'
+  ...
+# Subtest: hi/reducing-cart-abandonment: translated blocks preserve anchors, shape and source authority
+ok 5 - hi/reducing-cart-abandonment: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.151
+  type: 'test'
+  ...
+# Subtest: ta/reducing-cart-abandonment: translated blocks preserve anchors, shape and source authority
+ok 6 - ta/reducing-cart-abandonment: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.13725
+  type: 'test'
+  ...
+# Subtest: hi/store-seo-checklist: translated blocks preserve anchors, shape and source authority
+ok 7 - hi/store-seo-checklist: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.180792
+  type: 'test'
+  ...
+# Subtest: ta/store-seo-checklist: translated blocks preserve anchors, shape and source authority
+ok 8 - ta/store-seo-checklist: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.110167
+  type: 'test'
+  ...
+# Subtest: hi/how-product-reviews-increase-conversion: translated blocks preserve anchors, shape and source authority
+ok 9 - hi/how-product-reviews-increase-conversion: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.3205
+  type: 'test'
+  ...
+# Subtest: ta/how-product-reviews-increase-conversion: translated blocks preserve anchors, shape and source authority
+ok 10 - ta/how-product-reviews-increase-conversion: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.407167
+  type: 'test'
+  ...
+# Subtest: hi/first-100-orders-guide: translated blocks preserve anchors, shape and source authority
+ok 11 - hi/first-100-orders-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.170125
+  type: 'test'
+  ...
+# Subtest: ta/first-100-orders-guide: translated blocks preserve anchors, shape and source authority
+ok 12 - ta/first-100-orders-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.113
+  type: 'test'
+  ...
+# Subtest: hi/d2c-brand-launch-guide: translated blocks preserve anchors, shape and source authority
+ok 13 - hi/d2c-brand-launch-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.379167
+  type: 'test'
+  ...
+# Subtest: ta/d2c-brand-launch-guide: translated blocks preserve anchors, shape and source authority
+ok 14 - ta/d2c-brand-launch-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.115959
+  type: 'test'
+  ...
+# Subtest: hi/email-marketing-ecommerce: translated blocks preserve anchors, shape and source authority
+ok 15 - hi/email-marketing-ecommerce: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.107708
+  type: 'test'
+  ...
+# Subtest: ta/email-marketing-ecommerce: translated blocks preserve anchors, shape and source authority
+ok 16 - ta/email-marketing-ecommerce: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.144084
+  type: 'test'
+  ...
+# Subtest: hi/social-commerce-india: translated blocks preserve anchors, shape and source authority
+ok 17 - hi/social-commerce-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 11.540125
+  type: 'test'
+  ...
+# Subtest: ta/social-commerce-india: translated blocks preserve anchors, shape and source authority
+ok 18 - ta/social-commerce-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.186625
+  type: 'test'
+  ...
+# Subtest: hi/retention-strategies-india: translated blocks preserve anchors, shape and source authority
+ok 19 - hi/retention-strategies-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.106208
+  type: 'test'
+  ...
+# Subtest: ta/retention-strategies-india: translated blocks preserve anchors, shape and source authority
+ok 20 - ta/retention-strategies-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.082458
+  type: 'test'
+  ...
+# Subtest: hi/upi-vs-cod-india: translated blocks preserve anchors, shape and source authority
+ok 21 - hi/upi-vs-cod-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.114583
+  type: 'test'
+  ...
+# Subtest: ta/upi-vs-cod-india: translated blocks preserve anchors, shape and source authority
+ok 22 - ta/upi-vs-cod-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.182542
+  type: 'test'
+  ...
+# Subtest: hi/gst-for-ecommerce-india: translated blocks preserve anchors, shape and source authority
+ok 23 - hi/gst-for-ecommerce-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.103208
+  type: 'test'
+  ...
+# Subtest: ta/gst-for-ecommerce-india: translated blocks preserve anchors, shape and source authority
+ok 24 - ta/gst-for-ecommerce-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.091125
+  type: 'test'
+  ...
+# Subtest: hi/invoicing-india-merchants: translated blocks preserve anchors, shape and source authority
+ok 25 - hi/invoicing-india-merchants: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.093208
+  type: 'test'
+  ...
+# Subtest: ta/invoicing-india-merchants: translated blocks preserve anchors, shape and source authority
+ok 26 - ta/invoicing-india-merchants: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.070167
+  type: 'test'
+  ...
+# Subtest: hi/refunds-returns-policy-india: translated blocks preserve anchors, shape and source authority
+ok 27 - hi/refunds-returns-policy-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.067709
+  type: 'test'
+  ...
+# Subtest: ta/refunds-returns-policy-india: translated blocks preserve anchors, shape and source authority
+ok 28 - ta/refunds-returns-policy-india: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.064916
+  type: 'test'
+  ...
+# Subtest: hi/razorpay-integration-guide: translated blocks preserve anchors, shape and source authority
+ok 29 - hi/razorpay-integration-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.071166
+  type: 'test'
+  ...
+# Subtest: ta/razorpay-integration-guide: translated blocks preserve anchors, shape and source authority
+ok 30 - ta/razorpay-integration-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.066417
+  type: 'test'
+  ...
+# Subtest: hi/inventory-management-guide: translated blocks preserve anchors, shape and source authority
+ok 31 - hi/inventory-management-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.08675
+  type: 'test'
+  ...
+# Subtest: ta/inventory-management-guide: translated blocks preserve anchors, shape and source authority
+ok 32 - ta/inventory-management-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.080875
+  type: 'test'
+  ...
+# Subtest: hi/order-fulfillment-guide: translated blocks preserve anchors, shape and source authority
+ok 33 - hi/order-fulfillment-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.074458
+  type: 'test'
+  ...
+# Subtest: ta/order-fulfillment-guide: translated blocks preserve anchors, shape and source authority
+ok 34 - ta/order-fulfillment-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.068291
+  type: 'test'
+  ...
+# Subtest: hi/shipping-india-guide: translated blocks preserve anchors, shape and source authority
+ok 35 - hi/shipping-india-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.070625
+  type: 'test'
+  ...
+# Subtest: ta/shipping-india-guide: translated blocks preserve anchors, shape and source authority
+ok 36 - ta/shipping-india-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.067833
+  type: 'test'
+  ...
+# Subtest: hi/multi-warehouse-inventory: translated blocks preserve anchors, shape and source authority
+ok 37 - hi/multi-warehouse-inventory: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.071792
+  type: 'test'
+  ...
+# Subtest: ta/multi-warehouse-inventory: translated blocks preserve anchors, shape and source authority
+ok 38 - ta/multi-warehouse-inventory: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.074375
+  type: 'test'
+  ...
+# Subtest: hi/understanding-fulfillment: translated blocks preserve anchors, shape and source authority
+ok 39 - hi/understanding-fulfillment: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.08775
+  type: 'test'
+  ...
+# Subtest: ta/understanding-fulfillment: translated blocks preserve anchors, shape and source authority
+ok 40 - ta/understanding-fulfillment: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.088583
+  type: 'test'
+  ...
+# Subtest: hi/ai-commerce-explained: translated blocks preserve anchors, shape and source authority
+ok 41 - hi/ai-commerce-explained: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.065292
+  type: 'test'
+  ...
+# Subtest: ta/ai-commerce-explained: translated blocks preserve anchors, shape and source authority
+ok 42 - ta/ai-commerce-explained: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.075583
+  type: 'test'
+  ...
+# Subtest: hi/automating-operations-ai: translated blocks preserve anchors, shape and source authority
+ok 43 - hi/automating-operations-ai: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.062917
+  type: 'test'
+  ...
+# Subtest: ta/automating-operations-ai: translated blocks preserve anchors, shape and source authority
+ok 44 - ta/automating-operations-ai: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.061
+  type: 'test'
+  ...
+# Subtest: hi/commerce-copilot-guide: translated blocks preserve anchors, shape and source authority
+ok 45 - hi/commerce-copilot-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.081084
+  type: 'test'
+  ...
+# Subtest: ta/commerce-copilot-guide: translated blocks preserve anchors, shape and source authority
+ok 46 - ta/commerce-copilot-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.061709
+  type: 'test'
+  ...
+# Subtest: hi/ai-product-recommendations: translated blocks preserve anchors, shape and source authority
+ok 47 - hi/ai-product-recommendations: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.056708
+  type: 'test'
+  ...
+# Subtest: ta/ai-product-recommendations: translated blocks preserve anchors, shape and source authority
+ok 48 - ta/ai-product-recommendations: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.05575
+  type: 'test'
+  ...
+# Subtest: hi/workflow-automation-merchants: translated blocks preserve anchors, shape and source authority
+ok 49 - hi/workflow-automation-merchants: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.054417
+  type: 'test'
+  ...
+# Subtest: ta/workflow-automation-merchants: translated blocks preserve anchors, shape and source authority
+ok 50 - ta/workflow-automation-merchants: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.052
+  type: 'test'
+  ...
+# Subtest: hi/letbuyy-api-getting-started: translated blocks preserve anchors, shape and source authority
+ok 51 - hi/letbuyy-api-getting-started: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.063542
+  type: 'test'
+  ...
+# Subtest: ta/letbuyy-api-getting-started: translated blocks preserve anchors, shape and source authority
+ok 52 - ta/letbuyy-api-getting-started: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.057541
+  type: 'test'
+  ...
+# Subtest: hi/webhooks-complete-guide: translated blocks preserve anchors, shape and source authority
+ok 53 - hi/webhooks-complete-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.059917
+  type: 'test'
+  ...
+# Subtest: ta/webhooks-complete-guide: translated blocks preserve anchors, shape and source authority
+ok 54 - ta/webhooks-complete-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.0575
+  type: 'test'
+  ...
+# Subtest: hi/building-first-letbuyy-app: translated blocks preserve anchors, shape and source authority
+ok 55 - hi/building-first-letbuyy-app: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.051959
+  type: 'test'
+  ...
+# Subtest: ta/building-first-letbuyy-app: translated blocks preserve anchors, shape and source authority
+ok 56 - ta/building-first-letbuyy-app: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.054042
+  type: 'test'
+  ...
+# Subtest: hi/liquid-theming-guide: translated blocks preserve anchors, shape and source authority
+ok 57 - hi/liquid-theming-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.109167
+  type: 'test'
+  ...
+# Subtest: ta/liquid-theming-guide: translated blocks preserve anchors, shape and source authority
+ok 58 - ta/liquid-theming-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.079708
+  type: 'test'
+  ...
+# Subtest: hi/custom-integrations-guide: translated blocks preserve anchors, shape and source authority
+ok 59 - hi/custom-integrations-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.060541
+  type: 'test'
+  ...
+# Subtest: ta/custom-integrations-guide: translated blocks preserve anchors, shape and source authority
+ok 60 - ta/custom-integrations-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.059416
+  type: 'test'
+  ...
+# Subtest: hi/building-first-letbuyy-store: translated blocks preserve anchors, shape and source authority
+ok 61 - hi/building-first-letbuyy-store: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.088875
+  type: 'test'
+  ...
+# Subtest: ta/building-first-letbuyy-store: translated blocks preserve anchors, shape and source authority
+ok 62 - ta/building-first-letbuyy-store: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.069625
+  type: 'test'
+  ...
+# Subtest: hi/introduction-to-apps: translated blocks preserve anchors, shape and source authority
+ok 63 - hi/introduction-to-apps: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.053458
+  type: 'test'
+  ...
+# Subtest: ta/introduction-to-apps: translated blocks preserve anchors, shape and source authority
+ok 64 - ta/introduction-to-apps: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.0505
+  type: 'test'
+  ...
+# Subtest: hi/how-themes-work: translated blocks preserve anchors, shape and source authority
+ok 65 - hi/how-themes-work: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.064792
+  type: 'test'
+  ...
+# Subtest: ta/how-themes-work: translated blocks preserve anchors, shape and source authority
+ok 66 - ta/how-themes-work: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.066334
+  type: 'test'
+  ...
+# Subtest: hi/letbuyy-platform-overview: translated blocks preserve anchors, shape and source authority
+ok 67 - hi/letbuyy-platform-overview: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.063
+  type: 'test'
+  ...
+# Subtest: ta/letbuyy-platform-overview: translated blocks preserve anchors, shape and source authority
+ok 68 - ta/letbuyy-platform-overview: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.0595
+  type: 'test'
+  ...
+# Subtest: hi/merchant-web-guide: translated blocks preserve anchors, shape and source authority
+ok 69 - hi/merchant-web-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.0655
+  type: 'test'
+  ...
+# Subtest: ta/merchant-web-guide: translated blocks preserve anchors, shape and source authority
+ok 70 - ta/merchant-web-guide: translated blocks preserve anchors, shape and source authority
+  ---
+  duration_ms: 0.066542
+  type: 'test'
+  ...
+# Subtest: a revised source paragraph cannot silently receive an outdated article translation
+ok 71 - a revised source paragraph cannot silently receive an outdated article translation
+  ---
+  duration_ms: 0.440125
+  type: 'test'
+  ...
+# Subtest: decorative capability icons remain eager without competing image preloads
+ok 72 - decorative capability icons remain eager without competing image preloads
+  ---
+  duration_ms: 15.23625
+  type: 'test'
+  ...
+# Subtest: all mock proportions stay inside the same phone frame without cropping
+ok 73 - all mock proportions stay inside the same phone frame without cropping
+  ---
+  duration_ms: 0.652667
+  type: 'test'
+  ...
+# Subtest: wide and tall previews use whichever frame dimension constrains them
+ok 74 - wide and tall previews use whichever frame dimension constrains them
+  ---
+  duration_ms: 0.112541
+  type: 'test'
+  ...
+# Subtest: invalid or not-yet-measured geometry never produces an overflowing transform
+ok 75 - invalid or not-yet-measured geometry never produces an overflowing transform
+  ---
+  duration_ms: 0.088208
+  type: 'test'
+  ...
+# Subtest: the preview uses more of the same frame while retaining a small safe inset
+ok 76 - the preview uses more of the same frame while retaining a small safe inset
+  ---
+  duration_ms: 0.115917
+  type: 'test'
+  ...
+# Subtest: the automatic tour demonstrates storefront, orders, payments and analytics in sequence
+ok 77 - the automatic tour demonstrates storefront, orders, payments and analytics in sequence
+  ---
+  duration_ms: 0.834375
+  type: 'test'
+  ...
+# Subtest: a full tour visits every existing module once and returns to storefronts
+ok 78 - a full tour visits every existing module once and returns to storefronts
+  ---
+  duration_ms: 0.119083
+  type: 'test'
+  ...
+# Subtest: resuming after a manual selection continues from that module
+ok 79 - resuming after a manual selection continues from that module
+  ---
+  duration_ms: 0.058708
+  type: 'test'
+  ...
+# Subtest: right swipes go backwards and wrap from storefront to B2B
+ok 80 - right swipes go backwards and wrap from storefront to B2B
+  ---
+  duration_ms: 0.077041
+  type: 'test'
+  ...
+# Subtest: a deliberate left or right swipe selects the corresponding direction
+ok 81 - a deliberate left or right swipe selects the corresponding direction
+  ---
+  duration_ms: 0.076833
+  type: 'test'
+  ...
+# Subtest: taps, short drags and vertical or diagonal scrolling do not change cards
+ok 82 - taps, short drags and vertical or diagonal scrolling do not change cards
+  ---
+  duration_ms: 0.129583
+  type: 'test'
+  ...
+# Subtest: touch holds and the reading interval block fast rotation until the pause expires
+ok 83 - touch holds and the reading interval block fast rotation until the pause expires
+  ---
+  duration_ms: 0.068875
+  type: 'test'
+  ...
+# Subtest: the journey starts in Tamil Nadu, reaches the requested Indian locations, then China
+ok 84 - the journey starts in Tamil Nadu, reaches the requested Indian locations, then China
+  ---
+  duration_ms: 2.026334
+  type: 'test'
+  ...
+# Subtest: projection places the selected geography at the front and hides its antipode
+ok 85 - projection places the selected geography at the front and hides its antipode
+  ---
+  duration_ms: 0.39375
+  type: 'test'
+  ...
+# Subtest: route arcs meet both cities exactly and travel above the sphere
+ok 86 - route arcs meet both cities exactly and travel above the sphere
+  ---
+  duration_ms: 0.410542
+  type: 'test'
+  ...
+# Subtest: date-line camera moves take the short path and degenerate arcs remain finite
+ok 87 - date-line camera moves take the short path and degenerate arcs remain finite
+  ---
+  duration_ms: 0.128333
+  type: 'test'
+  ...
+# Subtest: resize, theme and resumed paints cannot reverse or jump the globe clock
+ok 88 - resize, theme and resumed paints cannot reverse or jump the globe clock
+  ---
+  duration_ms: 0.119875
+  type: 'test'
+  ...
+# Subtest: the complete camera journey lasts under ten seconds and loops without a camera jump
+ok 89 - the complete camera journey lasts under ten seconds and loops without a camera jump
+  ---
+  duration_ms: 1.046375
+  type: 'test'
+  ...
+# Subtest: stores spread from Tamil Nadu across India, Asia and other continents within one loop
+ok 90 - stores spread from Tamil Nadu across India, Asia and other continents within one loop
+  ---
+  duration_ms: 0.151333
+  type: 'test'
+  ...
+# Subtest: store reveals enter progressively and fade before the sequence returns to its origin
+ok 91 - store reveals enter progressively and fade before the sequence returns to its origin
+  ---
+  duration_ms: 0.077708
+  type: 'test'
+  ...
+# Subtest: Tamil Nadu expands to India before the world fades in, then loops back to the state
+ok 92 - Tamil Nadu expands to India before the world fades in, then loops back to the state
+  ---
+  duration_ms: 0.299042
+  type: 'test'
+  ...
+# Subtest: regional geometry includes a detailed, finite Tamil Nadu outline and all 36 India regions
+ok 93 - regional geometry includes a detailed, finite Tamil Nadu outline and all 36 India regions
+  ---
+  duration_ms: 4.85325
+  type: 'test'
+  ...
+# Subtest: the presentation preserves each existing frame until the worldwide view and never restarts
+ok 94 - the presentation preserves each existing frame until the worldwide view and never restarts
+  ---
+  duration_ms: 0.326833
+  type: 'test'
+  ...
+# Subtest: a paused or restarted animation clock cannot advance past its closing worldwide frame
+ok 95 - a paused or restarted animation clock cannot advance past its closing worldwide frame
+  ---
+  duration_ms: 0.183833
+  type: 'test'
+  ...
+# Subtest: the selected client catalogue preserves every translation and variable substitution
+ok 96 - the selected client catalogue preserves every translation and variable substitution
+  ---
+  duration_ms: 26.240958
+  type: 'test'
+  ...
+# Subtest: unknown copy and literal prototype names fall back safely without altering unresolved placeholders
+ok 97 - unknown copy and literal prototype names fall back safely without altering unresolved placeholders
+  ---
+  duration_ms: 2.619875
+  type: 'test'
+  ...
+# Subtest: the lightweight public brand export remains the canonical brand contract
+ok 98 - the lightweight public brand export remains the canonical brand contract
+  ---
+  duration_ms: 0.104708
+  type: 'test'
+  ...
+# Subtest: XML advertises indexable landing pages and every guide, excluding the HTML utility directory
+ok 99 - XML advertises indexable landing pages and every guide, excluding the HTML utility directory
+  ---
+  duration_ms: 5.638625
+  type: 'test'
+  ...
+# Subtest: en: first-store steps follow reading order without breaking existing section links
+ok 100 - en: first-store steps follow reading order without breaking existing section links
+  ---
+  duration_ms: 1.095584
+  type: 'test'
+  ...
+# Subtest: hi: first-store steps follow reading order without breaking existing section links
+ok 101 - hi: first-store steps follow reading order without breaking existing section links
+  ---
+  duration_ms: 0.516917
+  type: 'test'
+  ...
+# Subtest: ta: first-store steps follow reading order without breaking existing section links
+ok 102 - ta: first-store steps follow reading order without breaking existing section links
+  ---
+  duration_ms: 0.1905
+  type: 'test'
+  ...
+# Subtest: LetBuyy reveals from left to right and the subtitle waits for the complete brand
+ok 103 - LetBuyy reveals from left to right and the subtitle waits for the complete brand
+  ---
+  duration_ms: 2.388417
+  type: 'test'
+  ...
+# Subtest: the finale leaves every geographic frame intact and only starts after the worldwide view
+ok 104 - the finale leaves every geographic frame intact and only starts after the worldwide view
+  ---
+  duration_ms: 1.931958
+  type: 'test'
+  ...
+# Subtest: particles and title hand off to a completely vanished globe and a stable closing wordmark
+ok 105 - particles and title hand off to a completely vanished globe and a stable closing wordmark
+  ---
+  duration_ms: 0.15225
+  type: 'test'
+  ...
+# Subtest: the brief lettering flicker remains bounded and never becomes a repeating flash
+ok 106 - the brief lettering flicker remains bounded and never becomes a repeating flash
+  ---
+  duration_ms: 0.662917
+  type: 'test'
+  ...
+# Subtest: the burst starts at the real land points and remains deterministic across resize and resume
+ok 107 - the burst starts at the real land points and remains deterministic across resize and resume
+  ---
+  duration_ms: 6.605209
+  type: 'test'
+  ...
+# Subtest: pausing the shared clock freezes the burst and a resume does not jump to wall-clock time
+ok 108 - pausing the shared clock freezes the burst and a resume does not jump to wall-clock time
+  ---
+  duration_ms: 0.156125
+  type: 'test'
+  ...
+# Subtest: the closing Lottie contains custom vector lettering without images, external fonts or expressions
+ok 109 - the closing Lottie contains custom vector lettering without images, external fonts or expressions
+  ---
+  duration_ms: 1.194042
+  type: 'test'
+  ...
+# Subtest: the Lottie reveals all seven brand letters before Sell worldwide, then loops only the ambient segment
+ok 110 - the Lottie reveals all seven brand letters before Sell worldwide, then loops only the ambient segment
+  ---
+  duration_ms: 0.255166
+  type: 'test'
+  ...
+# Subtest: worker and fallback geography retain the actual geographic points and regions
+ok 111 - worker and fallback geography retain the actual geographic points and regions
+  ---
+  duration_ms: 16.832
+  type: 'test'
+  ...
+# Subtest: both canvas paths reject malformed, nonfinite and unbounded geographic input
+ok 112 - both canvas paths reject malformed, nonfinite and unbounded geographic input
+  ---
+  duration_ms: 2.132916
+  type: 'test'
+  ...
+# Subtest: the journey tab arrows move in both directions and wrap at either end
+ok 113 - the journey tab arrows move in both directions and wrap at either end
+  ---
+  duration_ms: 0.629667
+  type: 'test'
+  ...
+# Subtest: Home and End reach the first and final stages without changing tab count
+ok 114 - Home and End reach the first and final stages without changing tab count
+  ---
+  duration_ms: 0.120875
+  type: 'test'
+  ...
+# Subtest: ordinary reading and vertical scroll keys stay with the browser
+ok 115 - ordinary reading and vertical scroll keys stay with the browser
+  ---
+  duration_ms: 0.1525
+  type: 'test'
+  ...
+# Subtest: in: language switching retains ticket context and clause anchor
+ok 116 - in: language switching retains ticket context and clause anchor
+  ---
+  duration_ms: 1.337917
+  type: 'test'
+  ...
+# Subtest: in: explicit locale query parameters follow the selected language
+ok 117 - in: explicit locale query parameters follow the selected language
+  ---
+  duration_ms: 0.12925
+  type: 'test'
+  ...
+# Subtest: in: shared footer destinations have nonempty translated labels
+ok 118 - in: shared footer destinations have nonempty translated labels
+  ---
+  duration_ms: 0.143375
+  type: 'test'
+  ...
+# Subtest: in-hi: language switching retains ticket context and clause anchor
+ok 119 - in-hi: language switching retains ticket context and clause anchor
+  ---
+  duration_ms: 0.156542
+  type: 'test'
+  ...
+# Subtest: in-hi: explicit locale query parameters follow the selected language
+ok 120 - in-hi: explicit locale query parameters follow the selected language
+  ---
+  duration_ms: 0.076917
+  type: 'test'
+  ...
+# Subtest: in-hi: shared footer destinations have nonempty translated labels
+ok 121 - in-hi: shared footer destinations have nonempty translated labels
+  ---
+  duration_ms: 0.063042
+  type: 'test'
+  ...
+# Subtest: in-ta: language switching retains ticket context and clause anchor
+ok 122 - in-ta: language switching retains ticket context and clause anchor
+  ---
+  duration_ms: 0.129042
+  type: 'test'
+  ...
+# Subtest: in-ta: explicit locale query parameters follow the selected language
+ok 123 - in-ta: explicit locale query parameters follow the selected language
+  ---
+  duration_ms: 0.154875
+  type: 'test'
+  ...
+# Subtest: in-ta: shared footer destinations have nonempty translated labels
+ok 124 - in-ta: shared footer destinations have nonempty translated labels
+  ---
+  duration_ms: 0.241334
+  type: 'test'
+  ...
+# Subtest: every published reading plan resolves all guides in its intended sequence
+ok 125 - every published reading plan resolves all guides in its intended sequence
+  ---
+  duration_ms: 1.385125
+  type: 'test'
+  ...
+# Subtest: First 100 Orders starts with acquisition before conversion work
+ok 126 - First 100 Orders starts with acquisition before conversion work
+  ---
+  duration_ms: 0.148166
+  type: 'test'
+  ...
+# Subtest: hi/terms: preserves every clause, list and stable anchor without mutating English
+ok 127 - hi/terms: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 1.903125
+  type: 'test'
+  ...
+# Subtest: ta/terms: preserves every clause, list and stable anchor without mutating English
+ok 128 - ta/terms: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.427708
+  type: 'test'
+  ...
+# Subtest: hi/acceptable-use: preserves every clause, list and stable anchor without mutating English
+ok 129 - hi/acceptable-use: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.189083
+  type: 'test'
+  ...
+# Subtest: ta/acceptable-use: preserves every clause, list and stable anchor without mutating English
+ok 130 - ta/acceptable-use: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.138084
+  type: 'test'
+  ...
+# Subtest: hi/api-terms: preserves every clause, list and stable anchor without mutating English
+ok 131 - hi/api-terms: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.242875
+  type: 'test'
+  ...
+# Subtest: ta/api-terms: preserves every clause, list and stable anchor without mutating English
+ok 132 - ta/api-terms: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.140292
+  type: 'test'
+  ...
+# Subtest: hi/marketplace: preserves every clause, list and stable anchor without mutating English
+ok 133 - hi/marketplace: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.1175
+  type: 'test'
+  ...
+# Subtest: ta/marketplace: preserves every clause, list and stable anchor without mutating English
+ok 134 - ta/marketplace: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.116792
+  type: 'test'
+  ...
+# Subtest: hi/billing: preserves every clause, list and stable anchor without mutating English
+ok 135 - hi/billing: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.538625
+  type: 'test'
+  ...
+# Subtest: ta/billing: preserves every clause, list and stable anchor without mutating English
+ok 136 - ta/billing: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.528875
+  type: 'test'
+  ...
+# Subtest: hi/payouts: preserves every clause, list and stable anchor without mutating English
+ok 137 - hi/payouts: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.858417
+  type: 'test'
+  ...
+# Subtest: ta/payouts: preserves every clause, list and stable anchor without mutating English
+ok 138 - ta/payouts: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.124416
+  type: 'test'
+  ...
+# Subtest: hi/refunds: preserves every clause, list and stable anchor without mutating English
+ok 139 - hi/refunds: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.130375
+  type: 'test'
+  ...
+# Subtest: ta/refunds: preserves every clause, list and stable anchor without mutating English
+ok 140 - ta/refunds: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.12125
+  type: 'test'
+  ...
+# Subtest: hi/shipping: preserves every clause, list and stable anchor without mutating English
+ok 141 - hi/shipping: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.106459
+  type: 'test'
+  ...
+# Subtest: ta/shipping: preserves every clause, list and stable anchor without mutating English
+ok 142 - ta/shipping: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.166875
+  type: 'test'
+  ...
+# Subtest: hi/privacy: preserves every clause, list and stable anchor without mutating English
+ok 143 - hi/privacy: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.146958
+  type: 'test'
+  ...
+# Subtest: ta/privacy: preserves every clause, list and stable anchor without mutating English
+ok 144 - ta/privacy: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.571458
+  type: 'test'
+  ...
+# Subtest: hi/cookies: preserves every clause, list and stable anchor without mutating English
+ok 145 - hi/cookies: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.092792
+  type: 'test'
+  ...
+# Subtest: ta/cookies: preserves every clause, list and stable anchor without mutating English
+ok 146 - ta/cookies: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.079584
+  type: 'test'
+  ...
+# Subtest: hi/data-processing: preserves every clause, list and stable anchor without mutating English
+ok 147 - hi/data-processing: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.127
+  type: 'test'
+  ...
+# Subtest: ta/data-processing: preserves every clause, list and stable anchor without mutating English
+ok 148 - ta/data-processing: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.123541
+  type: 'test'
+  ...
+# Subtest: hi/subprocessors: preserves every clause, list and stable anchor without mutating English
+ok 149 - hi/subprocessors: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.09975
+  type: 'test'
+  ...
+# Subtest: ta/subprocessors: preserves every clause, list and stable anchor without mutating English
+ok 150 - ta/subprocessors: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.09375
+  type: 'test'
+  ...
+# Subtest: hi/security: preserves every clause, list and stable anchor without mutating English
+ok 151 - hi/security: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.118791
+  type: 'test'
+  ...
+# Subtest: ta/security: preserves every clause, list and stable anchor without mutating English
+ok 152 - ta/security: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.116458
+  type: 'test'
+  ...
+# Subtest: hi/grievance: preserves every clause, list and stable anchor without mutating English
+ok 153 - hi/grievance: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.100875
+  type: 'test'
+  ...
+# Subtest: ta/grievance: preserves every clause, list and stable anchor without mutating English
+ok 154 - ta/grievance: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.1005
+  type: 'test'
+  ...
+# Subtest: hi/intellectual-property: preserves every clause, list and stable anchor without mutating English
+ok 155 - hi/intellectual-property: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.09225
+  type: 'test'
+  ...
+# Subtest: ta/intellectual-property: preserves every clause, list and stable anchor without mutating English
+ok 156 - ta/intellectual-property: preserves every clause, list and stable anchor without mutating English
+  ---
+  duration_ms: 0.090667
+  type: 'test'
+  ...
+# Subtest: a changed English clause rejects an outdated translation instead of shifting content
+ok 157 - a changed English clause rejects an outdated translation instead of shifting content
+  ---
+  duration_ms: 0.396917
+  type: 'test'
+  ...
+# Subtest: English remains the original policy object
+ok 158 - English remains the original policy object
+  ---
+  duration_ms: 0.057417
+  type: 'test'
+  ...
+# Subtest: explicit locale query wins while preserving path, query and intentional cookie policy
+ok 159 - explicit locale query wins while preserving path, query and intentional cookie policy
+  ---
+  duration_ms: 6.017833
+  type: 'test'
+  ...
+# Subtest: saved locale wins over language detection, without guessing a new preference cookie
+ok 160 - saved locale wins over language detection, without guessing a new preference cookie
+  ---
+  duration_ms: 1.036292
+  type: 'test'
+  ...
+# Subtest: language detection and default fallback retain locale-free route semantics
+ok 161 - language detection and default fallback retain locale-free route semantics
+  ---
+  duration_ms: 1.701792
+  type: 'test'
+  ...
+# Subtest: localized paths remain authoritative over cookies and replace a forged language header
+ok 162 - localized paths remain authoritative over cookies and replace a forged language header
+  ---
+  duration_ms: 0.464584
+  type: 'test'
+  ...
+# Subtest: explicit language changes on localized routes preserve the rest of the URL
+ok 163 - explicit language changes on localized routes preserve the rest of the URL
+  ---
+  duration_ms: 0.299625
+  type: 'test'
+  ...
+# Subtest: API, discovery and asset paths pass through without locale redirects or cookies
+ok 164 - API, discovery and asset paths pass through without locale redirects or cookies
+  ---
+  duration_ms: 1.491833
+  type: 'test'
+  ...
+# Subtest: every presentation message has two nonempty translations and preserves interpolation variables
+ok 165 - every presentation message has two nonempty translations and preserves interpolation variables
+  ---
+  duration_ms: 7.141333
+  type: 'test'
+  ...
+# Subtest: all listing summaries agree with the full source-locked article translations
+ok 166 - all listing summaries agree with the full source-locked article translations
+  ---
+  duration_ms: 9.133042
+  type: 'test'
+  ...
+# Subtest: category, author and release copy have complete presentation translations
+ok 167 - category, author and release copy have complete presentation translations
+  ---
+  duration_ms: 0.278583
+  type: 'test'
+  ...
+# Subtest: conditional contact options have translations without changing canonical submission values
+ok 168 - conditional contact options have translations without changing canonical submission values
+  ---
+  duration_ms: 0.711583
+  type: 'test'
+  ...
+# Subtest: interpolation preserves runtime values and English remains the source language
+ok 169 - interpolation preserves runtime values and English remains the source language
+  ---
+  duration_ms: 0.156583
+  type: 'test'
+  ...
+# Subtest: in: preserves reader language, query and fragment in page links
+ok 170 - in: preserves reader language, query and fragment in page links
+  ---
+  duration_ms: 1.021208
+  type: 'test'
+  ...
+# Subtest: in: root metadata/assets remain unprefixed and resource feeds stay localized
+ok 171 - in: root metadata/assets remain unprefixed and resource feeds stay localized
+  ---
+  duration_ms: 0.228875
+  type: 'test'
+  ...
+# Subtest: in-hi: preserves reader language, query and fragment in page links
+ok 172 - in-hi: preserves reader language, query and fragment in page links
+  ---
+  duration_ms: 0.088958
+  type: 'test'
+  ...
+# Subtest: in-hi: root metadata/assets remain unprefixed and resource feeds stay localized
+ok 173 - in-hi: root metadata/assets remain unprefixed and resource feeds stay localized
+  ---
+  duration_ms: 0.06675
+  type: 'test'
+  ...
+# Subtest: in-ta: preserves reader language, query and fragment in page links
+ok 174 - in-ta: preserves reader language, query and fragment in page links
+  ---
+  duration_ms: 0.152917
+  type: 'test'
+  ...
+# Subtest: in-ta: root metadata/assets remain unprefixed and resource feeds stay localized
+ok 175 - in-ta: root metadata/assets remain unprefixed and resource feeds stay localized
+  ---
+  duration_ms: 0.061208
+  type: 'test'
+  ...
+# Subtest: en: online-store planning steps include registration and retain the existing deep link
+ok 176 - en: online-store planning steps include registration and retain the existing deep link
+  ---
+  duration_ms: 1.37725
+  type: 'test'
+  ...
+# Subtest: hi: online-store planning steps include registration and retain the existing deep link
+ok 177 - hi: online-store planning steps include registration and retain the existing deep link
+  ---
+  duration_ms: 0.894375
+  type: 'test'
+  ...
+# Subtest: ta: online-store planning steps include registration and retain the existing deep link
+ok 178 - ta: online-store planning steps include registration and retain the existing deep link
+  ---
+  duration_ms: 0.502542
+  type: 'test'
+  ...
+# Subtest: guides do not restore the unsupported category, discount-conversion or fulfilment rankings
+ok 179 - guides do not restore the unsupported category, discount-conversion or fulfilment rankings
+  ---
+  duration_ms: 0.813042
+  type: 'test'
+  ...
+# Subtest: passing applied measurements never hide a failed original simulation lane
+ok 180 - passing applied measurements never hide a failed original simulation lane
+  ---
+  duration_ms: 1.1515
+  type: 'test'
+  ...
+# Subtest: one passing run or duplicated sample IDs cannot establish repeatability
+ok 181 - one passing run or duplicated sample IDs cannot establish repeatability
+  ---
+  duration_ms: 0.336667
+  type: 'test'
+  ...
+# Subtest: a diagnostic that changes delivery cannot satisfy site acceptance
+ok 182 - a diagnostic that changes delivery cannot satisfy site acceptance
+  ---
+  duration_ms: 0.125125
+  type: 'test'
+  ...
+# Subtest: outliers, absent measurements and tool errors remain failures
+ok 183 - outliers, absent measurements and tool errors remain failures
+  ---
+  duration_ms: 0.462667
+  type: 'test'
+  ...
+# Subtest: SSR and browser retry use one fresh canonical pricing/availability response
+ok 184 - SSR and browser retry use one fresh canonical pricing/availability response
+  ---
+  duration_ms: 14.288792
+  type: 'test'
+  ...
+# Subtest: missing program data never fabricates a slot count or a second request
+ok 185 - missing program data never fabricates a slot count or a second request
+  ---
+  duration_ms: 0.822958
+  type: 'test'
+  ...
+# Subtest: invalid plan amounts and unavailable upstreams keep the existing error path
+ok 186 - invalid plan amounts and unavailable upstreams keep the existing error path
+  ---
+  duration_ms: 1.023208
+  type: 'test'
+  ...
+# Subtest: Flight can share repeated comparison data without changing plans or distinct matrices
+ok 187 - Flight can share repeated comparison data without changing plans or distinct matrices
+  ---
+  duration_ms: 0.7965
+  type: 'test'
+  ...
+# Subtest: published attribution resolves to the publisher, without unsupported person credentials
+ok 188 - published attribution resolves to the publisher, without unsupported person credentials
+  ---
+  duration_ms: 1.061834
+  type: 'test'
+  ...
+# Subtest: contextual links resolve to real articles and preserve each language
+ok 189 - contextual links resolve to real articles and preserve each language
+  ---
+  duration_ms: 9.251958
+  type: 'test'
+  ...
+# Subtest: changing a link label invalidates its source-locked translation instead of mixing languages
+ok 190 - changing a link label invalidates its source-locked translation instead of mixing languages
+  ---
+  duration_ms: 0.607875
+  type: 'test'
+  ...
+# Subtest: removed expert and unsupported marketplace/AI promises stay out of article copy
+ok 191 - removed expert and unsupported marketplace/AI promises stay out of article copy
+  ---
+  duration_ms: 1.230583
+  type: 'test'
+  ...
+# Subtest: missing canonical configuration cannot inherit a preview or browser request host
+ok 192 - missing canonical configuration cannot inherit a preview or browser request host
+  ---
+  duration_ms: 0.347333
+  type: 'test'
+  ...
+# Subtest: explicit canonical origins normalize consistently and malformed or credentialed values fail closed
+ok 193 - explicit canonical origins normalize consistently and malformed or credentialed values fail closed
+  ---
+  duration_ms: 0.303417
+  type: 'test'
+  ...
+# Subtest: development account fallback points to the identity runtime before and after hydration
+ok 194 - development account fallback points to the identity runtime before and after hydration
+  ---
+  duration_ms: 0.278709
+  type: 'test'
+  ...
+# Subtest: every published reading page has a real local illustration with an alternative
+ok 195 - every published reading page has a real local illustration with an alternative
+  ---
+  duration_ms: 1.717834
+  type: 'test'
+  ...
+# Subtest: each reading plan has an illustration and every standard article has two valid section scenes
+ok 196 - each reading plan has an illustration and every standard article has two valid section scenes
+  ---
+  duration_ms: 2.247291
+  type: 'test'
+  ...
+# Subtest: visual topics resolve to unique existing article sections and source excerpts
+ok 197 - visual topics resolve to unique existing article sections and source excerpts
+  ---
+  duration_ms: 0.592209
+  type: 'test'
+  ...
+# Subtest: payment comparison keeps UPI, COD and the combined strategy distinct
+ok 198 - payment comparison keeps UPI, COD and the combined strategy distinct
+  ---
+  duration_ms: 0.558667
+  type: 'test'
+  ...
+# Subtest: AI guides have distinct high-resolution editorial art instead of a repeated scene
+ok 199 - AI guides have distinct high-resolution editorial art instead of a repeated scene
+  ---
+  duration_ms: 0.130375
+  type: 'test'
+  ...
+# Subtest: developer guide cards use distinct subject artwork, including API, webhooks and integrations
+ok 200 - developer guide cards use distinct subject artwork, including API, webhooks and integrations
+  ---
+  duration_ms: 0.092709
+  type: 'test'
+  ...
+# Subtest: release illustrations and filter labels cover the entire published history
+ok 201 - release illustrations and filter labels cover the entire published history
+  ---
+  duration_ms: 0.175042
+  type: 'test'
+  ...
+# Subtest: multiword queries match terms across guide fields and ignore extra whitespace/case
+ok 202 - multiword queries match terms across guide fields and ignore extra whitespace/case
+  ---
+  duration_ms: 3.222208
+  type: 'test'
+  ...
+# Subtest: every displayed search suggestion returns an actual guide
+ok 203 - every displayed search suggestion returns an actual guide
+  ---
+  duration_ms: 0.885416
+  type: 'test'
+  ...
+# Subtest: category-only browsing returns guides without requiring a query
+ok 204 - category-only browsing returns guides without requiring a query
+  ---
+  duration_ms: 0.581417
+  type: 'test'
+  ...
+# Subtest: blank and whitespace-only searches browse the catalogue consistently
+ok 205 - blank and whitespace-only searches browse the catalogue consistently
+  ---
+  duration_ms: 0.184291
+  type: 'test'
+  ...
+# Subtest: reading-time filters form disjoint ranges at five and ten minutes
+ok 206 - reading-time filters form disjoint ranges at five and ten minutes
+  ---
+  duration_ms: 0.268458
+  type: 'test'
+  ...
+# Subtest: deep-linked criteria parse and invalid filter/page values safely fall back
+ok 207 - deep-linked criteria parse and invalid filter/page values safely fall back
+  ---
+  duration_ms: 0.240333
+  type: 'test'
+  ...
+# Subtest: pagination exposes each matching guide exactly once and clamps stale pages
+ok 208 - pagination exposes each matching guide exactly once and clamps stale pages
+  ---
+  duration_ms: 0.185125
+  type: 'test'
+  ...
+# Subtest: empty results produce a valid empty page without fabricated guides
+ok 209 - empty results produce a valid empty page without fabricated guides
+  ---
+  duration_ms: 0.32625
+  type: 'test'
+  ...
+# Subtest: marketing permits its canonical browser API fallback when no URL env is configured
+ok 210 - marketing permits its canonical browser API fallback when no URL env is configured
+  ---
+  duration_ms: 1.273542
+  type: 'test'
+  ...
+# Subtest: marketing allows the configured local API origin across versioned request paths
+ok 211 - marketing allows the configured local API origin across versioned request paths
+  ---
+  duration_ms: 0.695375
+  type: 'test'
+  ...
+# Subtest: additional API access cannot introduce wildcard, credentialed or non-HTTP sources
+ok 212 - additional API access cannot introduce wildcard, credentialed or non-HTTP sources
+  ---
+  duration_ms: 0.397
+  type: 'test'
+  ...
+# Subtest: in: independent page identities survive metadata inheritance
+ok 213 - in: independent page identities survive metadata inheritance
+  ---
+  duration_ms: 1.745791
+  type: 'test'
+  ...
+# Subtest: in-hi: independent page identities survive metadata inheritance
+ok 214 - in-hi: independent page identities survive metadata inheritance
+  ---
+  duration_ms: 0.187958
+  type: 'test'
+  ...
+# Subtest: in-ta: independent page identities survive metadata inheritance
+ok 215 - in-ta: independent page identities survive metadata inheritance
+  ---
+  duration_ms: 0.191875
+  type: 'test'
+  ...
+# Subtest: robots feed declarations belong to this active marketing property
+ok 216 - robots feed declarations belong to this active marketing property
+  ---
+  duration_ms: 0.288333
+  type: 'test'
+  ...
+# Subtest: the review article no longer promises an unverified conversion uplift in any locale
+ok 217 - the review article no longer promises an unverified conversion uplift in any locale
+  ---
+  duration_ms: 0.828584
+  type: 'test'
+  ...
+# Subtest: the tax guide removes blanket thresholds and rate tables and includes traceable sources
+ok 218 - the tax guide removes blanket thresholds and rate tables and includes traceable sources
+  ---
+  duration_ms: 0.322084
+  type: 'test'
+  ...
+# Subtest: an already visible contents item never changes the rail position
+ok 219 - an already visible contents item never changes the rail position
+  ---
+  duration_ms: 0.815375
+  type: 'test'
+  ...
+# Subtest: items above and below the rail move only as far as needed
+ok 220 - items above and below the rail move only as far as needed
+  ---
+  duration_ms: 0.115333
+  type: 'test'
+  ...
+# Subtest: hidden mobile contents and non-overflowing rails do not invent scrolling
+ok 221 - hidden mobile contents and non-overflowing rails do not invent scrolling
+  ---
+  duration_ms: 0.087792
+  type: 'test'
+  ...
+# Subtest: computed rail scrolling is clamped to its own content bounds
+ok 222 - computed rail scrolling is clamped to its own content bounds
+  ---
+  duration_ms: 0.183542
+  type: 'test'
+  ...
+# Subtest: scrolling down and back up selects the current section from its actual position
+ok 223 - scrolling down and back up selects the current section from its actual position
+  ---
+  duration_ms: 0.24125
+  type: 'test'
+  ...
+# Subtest: a fast jump across several headings does not require intermediate intersection events
+ok 224 - a fast jump across several headings does not require intermediate intersection events
+  ---
+  duration_ms: 0.069208
+  type: 'test'
+  ...
+1..224
+# tests 224
+# suites 0
+# pass 224
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1439.896541

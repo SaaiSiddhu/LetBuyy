@@ -6,11 +6,10 @@ import { readFileSync } from 'node:fs';
 import { createServer, type IncomingMessage } from 'node:http';
 import { once } from 'node:events';
 import { join } from 'node:path';
-import test, { after, afterEach, before } from 'node:test';
-import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
+import test, { afterEach, before } from 'node:test';
 import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { Gateway, gatewayEnv, mintSession, newIdentityKeys, seedBuyerAccount, type IdentityKeys } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime } from './owned-db-support';
+import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import worker from '../../index';
 
@@ -25,7 +24,6 @@ const shippingRateId = crypto.randomUUID();
 const marketplaceCategoryMigration = readFileSync(new URL('../../../../../database/supabase/migrations/296_marketplace_order_category_snapshot.sql', import.meta.url), 'utf8');
 const marketplaceCategoryRollback = readFileSync(new URL('../../../../../database/supabase/rollback/296_marketplace_order_category_snapshot.rollback.sql', import.meta.url), 'utf8');
 let gateway: Gateway;
-let sqlProxy:OwnedPooledSqlProxy;
 let keys: IdentityKeys;
 let approved: { listingId: string; productId: string };
 let pending: { listingId: string; productId: string };
@@ -34,13 +32,11 @@ let otherSellerApproved: { listingId: string; productId: string };
 
 before(async () => {
     keys = await newIdentityKeys();
-    sqlProxy=await startOwnedPooledSqlProxy(owned);
     seedSyntheticTenant(psql, seller);
     seedSyntheticTenant(psql, otherSeller);
     psql(`INSERT INTO marketplace_categories (id, slug, name, is_active)
       VALUES ('${categoryId}', 'marketplace-cart-fixture', 'Marketplace cart fixture', true);`);
     gateway = new Gateway(gatewayEnv(owned, keys, {
-        ...sqlProxy.env(),
         CHECKOUT_SIGNING_SECRET: 'synthetic-marketplace-cart-handoff-secret',
         RAZORPAY_KEY_ID: 'rzp_test_synthetic',
         RAZORPAY_KEY_SECRET: 'synthetic-marketplace-razorpay-secret',
@@ -61,7 +57,6 @@ before(async () => {
       VALUES ('${shippingRateId}','${shippingZoneId}','${seller.siteId}','Standard delivery','flat',60,true,true);`);
 });
 afterEach(async () => { await gateway.settle(); });
-after(async()=>{await closePooledSqlClients();await sqlProxy?.stop();});
 
 test('migration 296 safely rolls back before category evidence exists and reapplies cleanly', () => {
     assert.equal(psql(`SELECT count(*) FROM order_items WHERE marketplace_category_id IS NOT NULL;`), '0');
@@ -124,30 +119,7 @@ async function deliveryRate(cartId: string, handoffQuery: string, pincode = '560
     return rates[0]?.id || '';
 }
 
-// Mirror the normal buyer's review request before attempting a delivery mutation.
-// Invalid-address controls still reach delivery with no invented fingerprint.
-function checkoutStep(cartId: string, query: string) {
-    return async (name: string, payload: Record<string, unknown>) => {
-        if (name === 'delivery') {
-            const shipping = payload.shipping_quote as { shipping_rate_id?: string };
-            const address = payload.shipping_address as Record<string, unknown>;
-            const reviewed = await gateway.request(`/v1/checkout/${cartId}/quote?${query}`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ shipping_address: { country: address.country, state: address.state,
-                    state_code: address.state_code, zip: address.zip }, shipping_rate_id: shipping.shipping_rate_id }),
-            });
-            if (reviewed.status === 200) payload = { ...payload, expected_quote_fingerprint: reviewed.json?.data?.quote?.fingerprint };
-        }
-        return gateway.request(`/v1/checkout/${cartId}/${name}?${query}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
-        });
-    };
-}
-
 test('marketplace cart stores server-validated listing identity and distinct sales origin', async () => {
-    const env=owned.restEnv();
-    const listingRead=await fetch(env.SUPABASE_URL+'/rest/v1/rpc/marketplace_listing_detail',{method:'POST',headers:{'Content-Type':'application/json',apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY},body:JSON.stringify({p_listing_id:approved.listingId})});
-    assert.equal(listingRead.status,200,await listingRead.text());
     const input = cartBody(approved.listingId, approved.productId);
     input.channel = 'whatsapp';
     const response = await gateway.request(`/v1/storefront/${seller.subdomain}/marketplace-cart`, {
@@ -294,7 +266,9 @@ test('marketplace COD checkout creates a seller order with immutable approved-li
     assert.equal(checkoutUrl.status, 200, checkoutUrl.text);
     const signedUrl = new URL(checkoutUrl.json?.data?.checkout_url as string);
     const query = signedUrl.searchParams.toString();
-    const step = checkoutStep(cart.id, query);
+    const step = (name: string, payload: Record<string, unknown>) => gateway.request(`/v1/checkout/${cart.id}/${name}?${query}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
 
     const contact = await step('contact', { idempotency_key: `market-contact-${cart.id}`, email: 'market-cart@example.invalid', name: 'Marketplace Buyer' });
     assert.equal(contact.status, 200, contact.text);
@@ -353,7 +327,9 @@ test('marketplace delivery fails closed outside the configured zone and ignores 
     const handoff = await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${cart.cart_token}/checkout-url`, { method: 'POST' });
     assert.equal(handoff.status, 200, handoff.text);
     const query = new URL(handoff.json?.data?.checkout_url as string).searchParams.toString();
-    const step = checkoutStep(cart.id, query);
+    const step = (name: string, payload: Record<string, unknown>) => gateway.request(`/v1/checkout/${cart.id}/${name}?${query}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
     assert.equal((await step('contact', { idempotency_key: `market-shipping-contact-${cart.id}`, email: 'market-cart@example.invalid', name: 'Marketplace Buyer' })).status, 200);
 
     const outsideZone = await gateway.request(`/v1/checkout/${cart.id}/delivery-options?${query}&country=IN&state=Karnataka&pincode=560002`);
@@ -380,7 +356,9 @@ test('marketplace COD confirmation refuses a rate changed after buyer review', a
     const handoff = await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${cart.cart_token}/checkout-url`, { method: 'POST' });
     assert.equal(handoff.status, 200, handoff.text);
     const query = new URL(handoff.json?.data?.checkout_url as string).searchParams.toString();
-    const step = checkoutStep(cart.id, query);
+    const step = (name: string, payload: Record<string, unknown>) => gateway.request(`/v1/checkout/${cart.id}/${name}?${query}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
     assert.equal((await step('contact', { idempotency_key: `market-rate-change-contact-${cart.id}`, email: 'market-cart@example.invalid', name: 'Marketplace Buyer' })).status, 200);
     const rateId = await deliveryRate(cart.id, query);
     assert.equal((await step('delivery', {
@@ -410,7 +388,9 @@ test('marketplace online payment is rejected before creating a pending order or 
     const checkoutUrl = await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${cart.cart_token}/checkout-url`, { method: 'POST' });
     assert.equal(checkoutUrl.status, 200, checkoutUrl.text);
     const query = new URL(checkoutUrl.json?.data?.checkout_url as string).searchParams.toString();
-    const step = checkoutStep(cart.id, query);
+    const step = (name: string, payload: Record<string, unknown>) => gateway.request(`/v1/checkout/${cart.id}/${name}?${query}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
     assert.equal((await step('contact', { idempotency_key: `market-online-contact-${cart.id}`, email: 'market-cart@example.invalid', name: 'Marketplace Buyer' })).status, 200);
     const rateId = await deliveryRate(cart.id, query);
     assert.equal((await step('delivery', {
@@ -439,7 +419,9 @@ test('marketplace order confirmation refuses a product revoked after the signed 
     const checkoutUrl = await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${cart.cart_token}/checkout-url`, { method: 'POST' });
     assert.equal(checkoutUrl.status, 200, checkoutUrl.text);
     const query = new URL(checkoutUrl.json?.data?.checkout_url as string).searchParams.toString();
-    const step = checkoutStep(cart.id, query);
+    const step = (name: string, payload: Record<string, unknown>) => gateway.request(`/v1/checkout/${cart.id}/${name}?${query}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
     assert.equal((await step('contact', { idempotency_key: `market-revoke-contact-${cart.id}`, email: 'market-cart@example.invalid', name: 'Marketplace Buyer' })).status, 200);
     const rateId = await deliveryRate(cart.id, query);
     assert.equal((await step('delivery', {
@@ -468,7 +450,9 @@ test('marketplace order confirmation refuses a material product revision after r
     const handoff = await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${cart.cart_token}/checkout-url`, { method: 'POST' });
     assert.equal(handoff.status, 200, handoff.text);
     const query = new URL(handoff.json?.data?.checkout_url as string).searchParams.toString();
-    const step = checkoutStep(cart.id, query);
+    const step = (name: string, payload: Record<string, unknown>) => gateway.request(`/v1/checkout/${cart.id}/${name}?${query}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
     assert.equal((await step('contact', { idempotency_key: `market-revision-contact-${cart.id}`, email: 'market-cart@example.invalid', name: 'Marketplace Buyer' })).status, 200);
     const rateId = await deliveryRate(cart.id, query);
     assert.equal((await step('delivery', {
@@ -509,7 +493,9 @@ test('marketplace order uses the existing buyer ownership transaction for a sign
     });
     assert.equal(handoff.status, 200, handoff.text);
     const query = new URL(handoff.json?.data?.checkout_url as string).searchParams.toString();
-    const step = checkoutStep(cart.id, query);
+    const step = (name: string, payload: Record<string, unknown>) => gateway.request(`/v1/checkout/${cart.id}/${name}?${query}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
     assert.equal((await step('contact', { idempotency_key: `market-buyer-contact-${cart.id}`, email: 'market-owner@example.invalid', name: 'Marketplace Buyer' })).status, 200);
     const rateId = await deliveryRate(cart.id, query);
     assert.equal((await step('delivery', {
@@ -546,7 +532,9 @@ test('storefront-only product completes ordinary storefront COD checkout without
     const checkoutUrl = await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${cart.cart_token}/checkout-url`, { method: 'POST' });
     assert.equal(checkoutUrl.status, 200, checkoutUrl.text);
     const query = new URL(checkoutUrl.json?.data?.checkout_url as string).searchParams.toString();
-    const step = checkoutStep(cart.id, query);
+    const step = (name: string, payload: Record<string, unknown>) => gateway.request(`/v1/checkout/${cart.id}/${name}?${query}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
 
     const contact = await step('contact', { idempotency_key: `storefront-contact-${cart.id}`, email: 'storefront-buyer@example.invalid', name: 'Storefront Buyer' });
     assert.equal(contact.status, 200, contact.text);
@@ -590,7 +578,6 @@ if (process.env.LETBUYY_ENABLE_MARKETPLACE_MOBILE_OWNED_E2E === '1') {
 
         const keys = await newIdentityKeys('market-mobile-e2e');
         const env = gatewayEnv(owned, keys, {
-        ...sqlProxy.env(),
             CHECKOUT_SIGNING_SECRET: 'synthetic-marketplace-mobile-checkout-secret',
             CHECKOUT_ORIGIN: 'https://checkout.letbuyy.test',
         });
@@ -739,21 +726,3 @@ function readRequestBody(req: IncomingMessage): Promise<Buffer> {
         req.on('error', reject);
     });
 }
-
-test('approved marketplace carts retain independent authority while storefront password, preview and offline modes change',async()=>{
- const unapproved=createListing('Synthetic restricted-mode pending listing');submit(unapproved.listingId);
- try{
-  for(const mode of ['password','preview_only','offline']){
-   psql(`UPDATE sites SET access_mode='${mode}' WHERE id='${seller.siteId}';`);
-   const created=await gateway.request(`/v1/storefront/${seller.subdomain}/marketplace-cart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cartBody(approved.listingId,approved.productId))});assert.equal(created.status,201,created.text);
-   const token=created.json!.data.cart_token;assert.equal((await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${token}`)).status,200);
-   assert.equal((await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${token}/checkout-url`)).status,200);
-   const refused=await gateway.request(`/v1/storefront/${seller.subdomain}/marketplace-cart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cartBody(unapproved.listingId,unapproved.productId))});assert.equal(refused.status,409,refused.text);
-  }
- }finally{psql(`UPDATE sites SET access_mode='public' WHERE id='${seller.siteId}';`);}
-});
-
-test('marketplace cart clearing keeps independent origin while storefront navigation is offline',async()=>{
- const created=await gateway.request(`/v1/storefront/${seller.subdomain}/marketplace-cart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cartBody(approved.listingId,approved.productId))});assert.equal(created.status,201);const cart=created.json!.data;
- try{psql(`UPDATE sites SET access_mode='offline' WHERE id='${seller.siteId}';`);const cleared=await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${cart.cart_token}`,{method:'DELETE'});assert.equal(cleared.status,200,cleared.text);assert.equal(cleared.json!.data.sales_origin,'marketplace');assert.deepEqual(cleared.json!.data.lines,[]);assert.equal(cleared.json!.data.status,'active');}finally{psql(`UPDATE sites SET access_mode='public' WHERE id='${seller.siteId}';`);}
-});

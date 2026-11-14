@@ -1,0 +1,163 @@
+{
+  "runId": "8bceea57e087",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-50472-mviym28t-20b1f5"
+  ],
+  "reaped": [],
+  "suites": 3,
+  "gatewayDbSuites": 3,
+  "failedSuites": 2,
+  "tests": 62,
+  "assertionsPassed": 58,
+  "assertionsFailed": 4,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 121.2,
+  "suiteSeconds": 119.6,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "console-support-billing.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/console-support-billing.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-50472-mviym28t-20b1f5",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 5,
+      "pass": 4,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 23.3,
+      "firstFailure": "not ok 4 - live dependency check distinguishes connection evidence from configuration and attrib",
+      "failures": [
+        "not ok 4 - live dependency check distinguishes connection evidence from configuration and attributes its audit"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_console_support_billing_postgres",
+      "templateSeconds": 16.3,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-8bceea57e087-rest-1",
+        "upstreamPort": 55995,
+        "proxyPort": 55996
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 390,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "operator-queue-correctness.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/operator-queue-correctness.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-50472-mviym28t-20b1f5",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 22,
+      "pass": 19,
+      "fail": 3,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 16.2,
+      "firstFailure": "not ok 3 - A3. action matrix (O1): the reviewer takes no action; the operator replies, notes, cr",
+      "failures": [
+        "not ok 3 - A3. action matrix (O1): the reviewer takes no action; the operator replies, notes, creates, escalates, resolves and records satisfaction but cannot assign or create macros; the lead and the super admin do all of it -- and a refused action writes nothing",
+        "not ok 6 - B2. a malformed filter, id or body is a sanitized 400 (never an internal error) and writes nothing",
+        "not ok 13 - E2b. a ticket removed while the reply is in flight (held at its write, then let go) is a 404, and nothing is written to it"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_operator_queue_correctness_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.8,
+      "rest": {
+        "container": "letbuyy-exec-8bceea57e087-rest-2",
+        "upstreamPort": 56013,
+        "proxyPort": 56014
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 2961,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "platform-job-recovery.postgres",
+      "path": "tests/owned-db/platform-job-recovery.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-50472-mviym28t-20b1f5",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 35,
+      "pass": 35,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 80.1,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_platform_job_recovery_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.8,
+      "rest": {
+        "container": "letbuyy-exec-8bceea57e087-rest-3",
+        "upstreamPort": 56121,
+        "proxyPort": 56122
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 876,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

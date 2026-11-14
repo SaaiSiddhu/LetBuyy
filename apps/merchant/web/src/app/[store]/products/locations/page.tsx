@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -9,6 +7,7 @@ import {
     Banner,
     Button,
     Card,
+    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -22,7 +21,6 @@ import {
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type { InventoryLocation } from '@letbuyy/api-client'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -227,16 +225,13 @@ export default function LocationsPage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [showCreate, setShowCreate] = useState(false)
 
-    const beginLoadLocations = useReadRequest(store)
     const loadLocations = useCallback(async () => {
-        const request = beginLoadLocations()
         if (!store) return
         setLoading(true)
         setLoadError(null)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory-locations`, { cache: 'no-store', signal: request.signal })
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory-locations`)
             const body = await res.json() as { data?: InventoryLocation[]; error?: unknown }
-            if (!request.isCurrent()) return
             if (!res.ok) {
                 const msg = typeof body.error === 'string' ? body.error : 'Failed to load locations'
                 setLoadError(msg)
@@ -244,19 +239,17 @@ export default function LocationsPage() {
             }
             setLocations(body.data ?? [])
         } catch {
-            if (!request.isCurrent()) return
             setLoadError('Unable to load locations — check your connection.')
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginLoadLocations, store])
+    }, [store])
 
     useEffect(() => { void loadLocations() }, [loadLocations])
 
     return (
         <Page>
-            <PageHeader identity="products"
-                recipe="index"
+            <PageHeader
                 title="Locations"
                 description="Manage warehouses, stores, and fulfilment centres where inventory is held."
                 breadcrumbs={[{ label: 'Inventory' }, { label: 'Locations' }]}
@@ -292,7 +285,7 @@ export default function LocationsPage() {
                             ))}
                         </div>
                     ) : locations.length === 0 ? (
-                        <EmptyState scene="locations"
+                        <EmptyState
                             title="No locations yet"
                             body="Add a warehouse or store to track inventory levels and receive purchase orders."
                             primaryAction={

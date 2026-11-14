@@ -6,8 +6,6 @@ import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { timingSafeEqualText } from '../lib/crypto';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
-import { CreateProductSchema } from '@letbuyy/commerce-core';
-import { ProductCsvImportSchema } from '@letbuyy/shared-types';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -123,7 +121,6 @@ const PRODUCT_IMPORT_MAX_ROWS = 500;
 
 function createProductExecutionAdapter(c: ExportContext): ProductExecutionAdapter {
     return new ProductExecutionAdapter(getSupabaseAdmin(c), {
-        mutationEnv: c.env,
         variantDiffEnabled: isProductVariantDiffEnabled(c.env),
     });
 }
@@ -183,96 +180,33 @@ function toCsvRow(values: (string | number | boolean | null | undefined)[]): str
         .map(v => {
             if (v == null) return '';
             const s = String(v);
-            return s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')
+            return s.includes(',') || s.includes('"') || s.includes('\n')
                 ? `"${s.replace(/"/g, '""')}"`
                 : s;
         })
         .join(',');
 }
 
-class CsvInputError extends Error {
-    constructor(readonly publicMessage: string, readonly code = 'INVALID_CSV', readonly status: 400 | 413 = 400) {
-        super(publicMessage);
-        this.name = 'CsvInputError';
-    }
-}
-
-/** One bounded pass: record separators inside quoted fields are data. */
 function parseCsv(text: string): string[][] {
-    const rows: string[][] = [];
-    let row: string[] = [], pieces: string[] = [];
-    let start = text.charCodeAt(0) === 0xfeff ? 1 : 0;
-    let quoted = false, closed = false, wasQuoted = false;
-    const field = (end: number) => {
-        pieces.push(text.slice(start, end));
-        const value = pieces.join('');
-        row.push(wasQuoted ? value : value.trim());
-        pieces = []; wasQuoted = false; closed = false;
-    };
-    const record = () => {
-        if (row.some(value => value.trim() !== '')) {
-            rows.push(row);
-            if (rows.length > PRODUCT_IMPORT_MAX_ROWS + 1) throw new CsvInputError(`Product CSV imports are capped at ${PRODUCT_IMPORT_MAX_ROWS} rows per job`, 'IMPORT_TOO_LARGE', 413);
-        }
-        row = [];
-    };
-    for (let index = start; index < text.length; index++) {
-        const ch = text[index];
-        if (quoted) {
-            if (ch !== '"') continue;
-            pieces.push(text.slice(start, index));
-            if (text[index + 1] === '"') { pieces.push('"'); index++; start = index + 1; }
-            else { quoted = false; closed = true; start = index + 1; }
-            continue;
-        }
-        if (ch === ',' || ch === '\r' || ch === '\n') {
-            field(closed ? start : index);
-            if (ch !== ',') {
-                record();
-                if (ch === '\r' && text[index + 1] === '\n') index++;
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    return lines.map(line => {
+        const result: string[] = [];
+        let currentField = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (inQuotes) {
+                if (ch === '"' && line[i + 1] === '"') { currentField += '"'; i++; }
+                else if (ch === '"') { inQuotes = false; }
+                else { currentField += ch; }
+            } else {
+                if (ch === '"') { inQuotes = true; }
+                else if (ch === ',') { result.push(currentField.trim()); currentField = ''; }
+                else { currentField += ch; }
             }
-            start = index + 1;
-        } else if (ch === '"') {
-            if (closed || text.slice(start, index).trim() !== '') throw new CsvInputError('CSV contains an unexpected quote.');
-            quoted = true; wasQuoted = true; start = index + 1;
-        } else if (closed && ch !== ' ' && ch !== '\t') {
-            throw new CsvInputError('CSV contains text after a closing quote.');
         }
-    }
-    if (quoted) throw new CsvInputError('CSV contains an unclosed quoted field.');
-    if (start < text.length || pieces.length || wasQuoted || row.length) {
-        field(closed ? start : text.length);
-        record();
-    }
-    return rows;
-}
-
-function productCsvInputs(csv: string, storeId: string) {
-    const rows = parseCsv(csv);
-    if (rows.length < 2) throw new CsvInputError('CSV must have headers and at least one product row.');
-    const headers = rows[0].map(value => value.trim().toLowerCase());
-    if (!headers.includes('name')) throw new CsvInputError('CSV must have a "name" column.');
-    if (new Set(headers).size !== headers.length) throw new CsvInputError('CSV column names must be unique.');
-    const index = (name: string) => headers.indexOf(name);
-    const name = index('name'), price = index('price'), description = index('description'), category = index('category');
-    const stock = index('stock'), tags = index('tags'), images = index('images');
-    return rows.slice(1).map((row, position) => {
-        if (row.length > headers.length) throw new CsvInputError(`CSV row ${position + 2} has more fields than the header.`);
-        const parsed = CreateProductSchema.safeParse({
-            store_id: storeId, name: row[name] || 'Unnamed Product',
-            description: description >= 0 ? row[description] || '' : '',
-            price: price >= 0 && row[price]?.trim() ? Number(row[price]) : 0,
-            category: category >= 0 ? row[category] || undefined : undefined,
-            stock: stock >= 0 && row[stock]?.trim() ? Number(row[stock]) : 0,
-            tags: tags >= 0 && row[tags] ? row[tags].split(';').map(value => value.trim()).filter(Boolean) : [],
-            images: images >= 0 && row[images] ? row[images].split(';').map(value => value.trim()).filter(Boolean) : [],
-            is_active: true,
-        });
-        if (!parsed.success) {
-            const key = parsed.error.issues[0]?.path.join('.') || 'fields';
-            throw new CsvInputError(`CSV row ${position + 2} has an invalid ${key}.`);
-        }
-        return parsed.data;
+        result.push(currentField.trim());
+        return result;
     });
 }
 
@@ -382,20 +316,6 @@ async function readAccessibleJob(c: ExportContext, jobId: string): Promise<Expor
     if ('error' in actor) return null;
     const job = await readJob(c, jobId);
     if (!job || job.actorId !== actor.actorId) return null;
-    if (!(Date.parse(job.expiresAt) > Date.now())) return null;
-    const requestedStore = c.req.query('store_id');
-    if (requestedStore && (job.storeIds.length !== 1 || job.storeIds[0] !== requestedStore)) return null;
-
-    // A signature and the original actor do not preserve access after ownership
-    // or the current session's store scope changes. Recheck at poll/download.
-    const db = getSupabaseAdmin(c);
-    const sessionStoreId = c.get('auth').user.storeId;
-    if (job.storeIds.length === 1) {
-        if (!(await verifySiteOwnership(db, job.storeIds[0], actor.actorId, sessionStoreId))) return null;
-    } else if (job.storeIds.length > 1) {
-        const current = new Set(await listOwnedStoreIds(db, actor.actorId, sessionStoreId));
-        if (job.storeIds.some(id => !current.has(id))) return null;
-    }
     return job;
 }
 
@@ -407,9 +327,7 @@ async function serializeJob(c: ExportContext, job: ExportJobRecord) {
         row_count: job.rowCount,
         filename: job.filename,
         error_code: job.errorCode || null,
-        error_message: job.status === 'failed'
-            ? job.type === 'product_import' ? 'Import failed. Retry the import.' : 'Export failed. Retry the export.'
-            : null,
+        error_message: job.errorMessage || null,
         created_at: job.createdAt,
         updated_at: job.updatedAt,
         started_at: job.startedAt || null,
@@ -459,53 +377,38 @@ async function createJob(
     return writeJob(c, job);
 }
 
-export async function streamCsvToR2(
+async function streamCsvToR2(
     bucket: R2Bucket,
     key: string,
     filename: string,
     writeRows: (writeLine: (line: string) => Promise<void>) => Promise<number>,
 ): Promise<number> {
-    // R2 rejects a generated TransformStream whose total length is unknown.
-    // Keep one 5 MiB part in memory; upload parts serially with known lengths.
-    const partSize = 5 * 1024 * 1024;
     const encoder = new TextEncoder();
-    let buffer = new Uint8Array(partSize);
-    let used = 0;
-    let upload: R2MultipartUpload | null = null;
-    const parts: R2UploadedPart[] = [];
-    const httpMetadata = { contentType: 'text/csv; charset=utf-8', contentDisposition: `attachment; filename="${filename}"` };
-    const flush = async () => {
-        upload ||= await bucket.createMultipartUpload(key, { httpMetadata });
-        if (parts.length >= 10_000) throw new Error('Export exceeds the storage part limit');
-        parts.push(await upload.uploadPart(parts.length + 1, buffer.subarray(0, used)));
-        used = 0;
-    };
-    try {
-        const rowCount = await writeRows(async line => {
-            const bytes = encoder.encode(`${line}\n`);
-            let offset = 0;
-            while (offset < bytes.length) {
-                const length = Math.min(partSize - used, bytes.length - offset);
-                buffer.set(bytes.subarray(offset, offset + length), used);
-                used += length;
-                offset += length;
-                if (used === partSize) await flush();
-            }
-        });
-        if (upload) {
-            if (used > 0) await flush();
-            await (upload as R2MultipartUpload).complete(parts);
-        } else {
-            const object = await bucket.put(key, buffer.subarray(0, used), { httpMetadata });
-            if (!object) throw new Error('Export result was not stored');
+    const stream = new TransformStream<Uint8Array, Uint8Array>();
+    const writer = stream.writable.getWriter();
+
+    const writePromise = (async () => {
+        try {
+            const rowCount = await writeRows(async (line) => {
+                await writer.write(encoder.encode(`${line}\n`));
+            });
+            await writer.close();
+            return rowCount;
+        } catch (error) {
+            await writer.abort(error);
+            throw error;
         }
-        return rowCount;
-    } catch (error) {
-        if (upload) await (upload as R2MultipartUpload).abort().catch(() => undefined);
-        throw error;
-    } finally {
-        buffer = new Uint8Array(0);
-    }
+    })();
+
+    const putPromise = bucket.put(key, stream.readable, {
+        httpMetadata: {
+            contentType: 'text/csv; charset=utf-8',
+            contentDisposition: `attachment; filename="${filename}"`,
+        },
+    });
+
+    const [rowCount] = await Promise.all([writePromise, putPromise]);
+    return rowCount;
 }
 
 async function processProductsExport(c: ExportContext, jobId: string): Promise<void> {
@@ -527,9 +430,7 @@ async function processProductsExport(c: ExportContext, jobId: string): Promise<v
                     .from('products')
                     .select(PRODUCT_EXPORT_SELECT)
                     .in('store_id', job.storeIds)
-                    .is('deleted_at', null)
                     .order('created_at', { ascending: false })
-                    .order('id', { ascending: true })
                     .range(from, from + EXPORT_BATCH_SIZE - 1);
 
                 if (error) throw new Error(error.message);
@@ -558,11 +459,11 @@ async function processProductsExport(c: ExportContext, jobId: string): Promise<v
 
         job = await updateJob(c, job, { status: 'completed', rowCount, completedAt: nowIso() });
         await writeJob(c, job);
-    } catch {
+    } catch (error) {
         await updateJob(c, job, {
             status: 'failed',
             errorCode: 'EXPORT_FAILED',
-            errorMessage: 'Export failed. Retry the export.',
+            errorMessage: error instanceof Error ? error.message : 'Export failed',
             completedAt: nowIso(),
         });
     }
@@ -588,9 +489,7 @@ async function processOrdersExport(c: ExportContext, jobId: string): Promise<voi
                     .from('orders')
                     .select(ORDER_EXPORT_SELECT)
                     .in('store_id', job.storeIds)
-                    .is('deleted_at', null)
                     .order('created_at', { ascending: false })
-                    .order('id', { ascending: true })
                     .range(from, from + EXPORT_BATCH_SIZE - 1);
 
                 if (status) query = query.eq('status', status);
@@ -624,11 +523,11 @@ async function processOrdersExport(c: ExportContext, jobId: string): Promise<voi
 
         job = await updateJob(c, job, { status: 'completed', rowCount, completedAt: nowIso() });
         await writeJob(c, job);
-    } catch {
+    } catch (error) {
         await updateJob(c, job, {
             status: 'failed',
             errorCode: 'EXPORT_FAILED',
-            errorMessage: 'Export failed. Retry the export.',
+            errorMessage: error instanceof Error ? error.message : 'Export failed',
             completedAt: nowIso(),
         });
     }
@@ -653,9 +552,7 @@ async function processCustomersExport(c: ExportContext, jobId: string): Promise<
                     .from('store_customers')
                     .select(CUSTOMER_EXPORT_SELECT)
                     .in('store_id', job.storeIds)
-                    .is('deleted_at', null)
                     .order('created_at', { ascending: false })
-                    .order('id', { ascending: true })
                     .range(from, from + EXPORT_BATCH_SIZE - 1);
 
                 if (error) throw new Error(error.message);
@@ -685,11 +582,11 @@ async function processCustomersExport(c: ExportContext, jobId: string): Promise<
 
         job = await updateJob(c, job, { status: 'completed', rowCount, completedAt: nowIso() });
         await writeJob(c, job);
-    } catch {
+    } catch (error) {
         await updateJob(c, job, {
             status: 'failed',
             errorCode: 'EXPORT_FAILED',
-            errorMessage: 'Export failed. Retry the export.',
+            errorMessage: error instanceof Error ? error.message : 'Export failed',
             completedAt: nowIso(),
         });
     }
@@ -705,21 +602,43 @@ async function processProductImport(c: ExportContext, jobId: string): Promise<vo
         const source = await assertExportStorage(c).get(sourceKey);
         if (!source) throw new Error('Import source object not found');
 
-        const inputs = productCsvInputs(await source.text(), job.storeIds[0]);
+        const rows = parseCsv(await source.text());
+        const headers = rows[0]?.map(h => h.toLowerCase().trim()) || [];
+        const nameIdx = headers.indexOf('name');
+        const priceIdx = headers.indexOf('price');
+        const descIdx = headers.indexOf('description');
+        const categoryIdx = headers.indexOf('category');
+        const stockIdx = headers.indexOf('stock');
+        const tagsIdx = headers.indexOf('tags');
+        const imagesIdx = headers.indexOf('images');
+
+        if (nameIdx === -1) throw new Error('CSV must have a "name" column');
+
         const service = createProductExecutionAdapter(c);
         let imported = 0;
-        for (const input of inputs) {
-            await service.createProduct(input, job.actorId, job.storeIds[0]);
+
+        for (const row of rows.slice(1)) {
+            await service.createProduct({
+                store_id: job.storeIds[0],
+                name: row[nameIdx] || 'Unnamed Product',
+                description: descIdx >= 0 ? row[descIdx] || '' : '',
+                price: priceIdx >= 0 ? parseFloat(row[priceIdx]) || 0 : 0,
+                category: categoryIdx >= 0 ? row[categoryIdx] || undefined : undefined,
+                stock: stockIdx >= 0 ? parseInt(row[stockIdx]) || 0 : 0,
+                tags: tagsIdx >= 0 && row[tagsIdx] ? row[tagsIdx].split(';').map(t => t.trim()).filter(Boolean) : [],
+                images: imagesIdx >= 0 && row[imagesIdx] ? row[imagesIdx].split(';').map(u => u.trim()).filter(Boolean) : [],
+                is_active: true,
+            }, job.actorId, job.storeIds[0]);
             imported += 1;
         }
 
         job = await updateJob(c, job, { status: 'completed', rowCount: imported, completedAt: nowIso() });
         await writeJob(c, job);
-    } catch {
+    } catch (error) {
         await updateJob(c, job, {
             status: 'failed',
             errorCode: 'IMPORT_FAILED',
-            errorMessage: 'Import failed. Retry the import.',
+            errorMessage: error instanceof Error ? error.message : 'Import failed',
             completedAt: nowIso(),
         });
     }
@@ -730,7 +649,7 @@ router.get('/jobs/:id', async (c) => {
     if (!job) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Export job not found' } }, 404);
     }
-    return c.json(success({ job: await serializeJob(c, job) }), 200, { 'Cache-Control': 'private, no-store' });
+    return c.json(success({ job: await serializeJob(c, job) }));
 });
 
 router.get('/jobs/:id/download', async (c) => {
@@ -759,8 +678,6 @@ router.get('/jobs/:id/download', async (c) => {
             'Content-Type': 'text/csv; charset=utf-8',
             'Content-Disposition': `attachment; filename="${job.filename}"`,
             'X-LetBuyy-Export-Job-ID': job.id,
-            'Cache-Control': 'private, no-store',
-            'X-Content-Type-Options': 'nosniff',
         },
     });
 });
@@ -836,18 +753,38 @@ router.post('/import-products', async (c) => {
             return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
         }
 
-        const parsed = ProductCsvImportSchema.safeParse(await c.req.json().catch(() => null));
-        if (!parsed.success) {
+        const body = recordValue(await c.req.json());
+        const storeId = stringValue(body?.store_id);
+        const csv = stringValue(body?.csv);
+
+        if (!storeId || !csv) {
             return c.json({ error: { code: 'VALIDATION', message: 'store_id and csv string required' } }, 400);
         }
-        const { store_id: storeId, csv } = parsed.data;
 
         const ownsStore = await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId);
         if (!ownsStore) {
             return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
         }
 
-        const inputs = productCsvInputs(csv, storeId);
+        const rows = parseCsv(csv);
+        if (rows.length < 2) {
+            return c.json({ error: { code: 'VALIDATION', message: 'CSV must have headers + at least one row' } }, 400);
+        }
+
+        const importRows = rows.slice(1);
+        if (importRows.length > PRODUCT_IMPORT_MAX_ROWS) {
+            return c.json({
+                error: {
+                    code: 'IMPORT_TOO_LARGE',
+                    message: `Product CSV imports are capped at ${PRODUCT_IMPORT_MAX_ROWS} rows per job`,
+                },
+            }, 413);
+        }
+
+        const headers = rows[0].map(h => h.toLowerCase().trim());
+        if (!headers.includes('name')) {
+            return c.json({ error: { code: 'VALIDATION', message: 'CSV must have a "name" column' } }, 400);
+        }
 
         const sourceJobId = crypto.randomUUID();
         const sourceKey = exportSourceKey(sourceJobId);
@@ -862,7 +799,7 @@ router.post('/import-products', async (c) => {
             filename: `product-import-${dateStamp()}.csv`,
             sourceKey,
             metadata: {
-                requestedRows: inputs.length,
+                requestedRows: importRows.length,
                 processor: 'api-gateway.waitUntil',
                 sourceStorage: 'Cloudflare R2',
             },
@@ -871,8 +808,7 @@ router.post('/import-products', async (c) => {
         c.executionCtx.waitUntil(processProductImport(c, job.id));
         return c.json(success({ job: await serializeJob(c, job) }), 202);
     } catch (error) {
-        if (error instanceof CsvInputError) return c.json({ error: { code: error.code, message: error.publicMessage } }, error.status);
-        return c.json({ error: { code: 'IMPORT_UNAVAILABLE', message: 'Import unavailable' } }, 503);
+        return c.json({ error: { code: 'IMPORT_UNAVAILABLE', message: error instanceof Error ? error.message : 'Import unavailable' } }, 503);
     }
 });
 

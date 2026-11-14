@@ -1,0 +1,9 @@
+{
+  "reviewed_at": "2026-10-29T21:49:11.311Z",
+  "exact_pixel_comparison_passed": false,
+  "original_geometry_and_asset_bytes_preserved_except_root_id": true,
+  "dimensions_unchanged": true,
+  "mean_absolute_channel_difference": 1.3457432153189144,
+  "visual_review": "Both native browser element captures inspected. Same mark, dimensions, colours and geometry; minor rasterization/shadow differences between IMG and SVG use. Exact-pixel receipt retained as a nonpassing diagnostic, not rewritten.",
+  "presentation_accepted": true
+}

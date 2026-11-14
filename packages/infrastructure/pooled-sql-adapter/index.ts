@@ -15,8 +15,6 @@ export interface PooledSqlEnv {
 }
 
 export interface PooledSqlOptions {
-  /** Required tenant transactions do not follow the optional storefront-read rollback switch. */
-  purpose?: 'storefront-read' | 'tenant-transaction';
   maxConnections?: number;
   idleTimeoutSeconds?: number;
   connectTimeoutSeconds?: number;
@@ -85,55 +83,13 @@ export function isPooledSqlEnabled(env: PooledSqlEnv): boolean {
   return normalizedFlag(env.STOREFRONT_POOLED_SQL) !== 'off' && Boolean(pooledSqlConnectionString(env));
 }
 
-// Postgres.js unsafe() overrides the constructor with prepare:false. Configure
-// only the instances owned by this adapter, including its transaction/reservation
-// children. Preserve driver callbacks/options and lazy Query return values.
-function preparedHyperdriveClient<T extends object>(client: T): T {
-  interface DriverScope {
-    unsafe: (text: string, parameters: unknown[], options: Record<string, unknown>) => unknown;
-    begin?: (...args: unknown[]) => unknown;
-    savepoint?: (...args: unknown[]) => unknown;
-    reserve?: (...args: unknown[]) => Promise<object>;
-  }
-  const configured = new WeakSet<object>();
-  function configure<S extends object>(scope: S): S {
-    if (configured.has(scope)) return scope;
-    configured.add(scope);
-    const driver = scope as unknown as DriverScope;
-    const unsafe = driver.unsafe.bind(scope);
-    driver.unsafe = (text: string, parametersOrOptions: unknown[] | Record<string, unknown> = [], options: Record<string, unknown> = {}) => {
-      const parameters = Array.isArray(parametersOrOptions) ? parametersOrOptions : [];
-      const queryOptions = Array.isArray(parametersOrOptions) ? options : parametersOrOptions;
-      return unsafe(text, parameters, { ...queryOptions, prepare: true, simple: false });
-    };
-    for (const method of ['begin', 'savepoint'] as const) {
-      const original = driver[method]?.bind(scope);
-      if (!original) continue;
-      driver[method] = (...args: unknown[]) => {
-        const last = args.length - 1;
-        if (typeof args[last] === 'function') {
-          const callback = args[last] as (child: object) => unknown;
-          args[last] = (child: object) => callback(configure(child));
-        }
-        return original(...args);
-      };
-    }
-    const reserve = driver.reserve?.bind(scope);
-    if (reserve) driver.reserve = async (...args: unknown[]) => configure(await reserve(...args));
-    return scope;
-  }
-  return configure(client);
-}
-
 export function getPooledSql(env: PooledSqlEnv, options: PooledSqlOptions = {}): PooledSqlClient | null {
-  if (options.purpose !== 'tenant-transaction' && !isPooledSqlEnabled(env)) return null;
+  if (!isPooledSqlEnabled(env)) return null;
   const connectionString = pooledSqlConnectionString(env);
   if (!connectionString) return null;
-  const hyperdrive = Boolean(env.HYPERDRIVE?.connectionString);
 
   const cacheKey = [
     connectionString,
-    hyperdrive ? 'prepared-hyperdrive' : 'direct',
     options.maxConnections ?? 5,
     options.idleTimeoutSeconds ?? 20,
     options.connectTimeoutSeconds ?? 5,
@@ -149,12 +105,11 @@ export function getPooledSql(env: PooledSqlEnv, options: PooledSqlOptions = {}):
     max: options.maxConnections ?? 5,
     idle_timeout: options.idleTimeoutSeconds ?? 20,
     connect_timeout: options.connectTimeoutSeconds ?? 5,
-    prepare: hyperdrive,
+    prepare: false,
     onnotice: () => undefined,
   });
-  const client = hyperdrive ? preparedHyperdriveClient(sql) : sql;
-  clients.set(cacheKey, client);
-  return client;
+  clients.set(cacheKey, sql);
+  return sql;
 }
 
 export async function closePooledSqlClients(): Promise<void> {

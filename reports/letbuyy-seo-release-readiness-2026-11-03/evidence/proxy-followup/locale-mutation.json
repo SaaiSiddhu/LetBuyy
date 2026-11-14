@@ -1,0 +1,9 @@
+{
+  "capturedAt": "2026-11-03T08:39:05.105284+00:00",
+  "isolatedSourceOnly": true,
+  "mutation": "Remove incoming language-header replacement",
+  "expectedBehavioralFailureObserved": true,
+  "exitCode": 1,
+  "sourceRestoredExactly": true,
+  "notACompileFailure": true
+}

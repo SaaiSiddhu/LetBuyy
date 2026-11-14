@@ -118,16 +118,11 @@ class MediaService extends ChangeNotifier {
     MediaAssetContract asset, {
     bool deleteObject = false,
   }) async {
-    final key = asset.storageKey;
-    if (deleteObject) {
-      if (key == null) throw StateError('The original upload could not be identified.');
-      try {
-        await deleteUpload(key, storeId: asset.storeId);
-      } on ApiException catch (error) {
-        if (error.statusCode != 404) rethrow;
-      }
-    }
     await _api.media.remove(asset.id);
+    final key = asset.storageKey;
+    if (deleteObject && key != null) {
+      await deleteUpload(key, storeId: asset.storeId);
+    }
     _assets = _assets.where((item) => item.id != asset.id).toList();
     notifyListeners();
   }

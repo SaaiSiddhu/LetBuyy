@@ -1,0 +1,5 @@
+{
+  "fault": "Aborted public read",
+  "incorrectly_claims_available": true,
+  "public_request_mutations": false
+}

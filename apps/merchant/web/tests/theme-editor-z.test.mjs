@@ -675,12 +675,12 @@ test('phase-z: translations/page.tsx renders TranslationEditorClient', () => {
     );
 });
 
-test('phase-z: translations server wrapper uses the authenticated SDK and resolved store', () => {
-    const src = read(TRANSLATIONS_PAGE);
-    assert.match(src, /getSessionUser\(/);
-    assert.match(src, /getStoreForUser\(store, user\.id\)/);
-    assert.match(src, /stores\.localization\.get\(owned\.id\)/);
-    assert.doesNotMatch(src, /NEXT_PUBLIC_SITE_URL|await cookies\(|await headers\(|await fetch\(/);
+test('phase-z: translations/page.tsx fetches from /api/stores (same-origin proxy, not gateway direct)', () => {
+    assert.match(
+        read(TRANSLATIONS_PAGE),
+        /\/api\/stores\//,
+        'translations/page.tsx must fetch from the same-origin /api/stores/ proxy',
+    );
 });
 
 test('phase-z: translations/page.tsx does not touch money ledger (canonical ledger untouched)', () => {

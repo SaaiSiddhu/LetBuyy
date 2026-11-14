@@ -1,0 +1,31 @@
+{
+  "before_rules": 3136,
+  "after_rules": 3137,
+  "all_existing_rules_declarations_conditions_preserved": true,
+  "added_rule": [
+    [],
+    ".cmap-viewport .cmap-carousel .cmap-panel-body,\n.cmap-viewport .cmap-carousel .cmap-panel-visual",
+    [
+      "touch-action: pan-y pinch-zoom"
+    ]
+  ],
+  "files": [
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "sha256": "0e4351d9b2bdc2657ef9d33331986b9f270b7096c92d12300f4319d4e3fda2fe",
+      "bytes": 356415
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "sha256": "77923e1c6b5cb17abb707eb143ba69cae3d44b26ab892eff3c396345fab0bfd4",
+      "bytes": 98532
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "sha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+      "bytes": 88430
+    }
+  ],
+  "animation_keyframes_changed": false,
+  "passed": true
+}

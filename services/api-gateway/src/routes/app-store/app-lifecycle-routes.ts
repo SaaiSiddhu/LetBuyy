@@ -1,6 +1,6 @@
 import type { Context, Hono } from 'hono';
 import type { Env } from '../../index';
-import { resolveCustomUser, resolveOwnedSiteId, verifySiteOwnership } from '../../lib/auth-user';
+import { resolveCustomUser, verifySiteOwnership } from '../../lib/auth-user';
 import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { isInternalApiSecretRequest } from '../../lib/internal-secret';
 import {
@@ -222,7 +222,6 @@ export function registerAppStoreAppLifecycleRoutes(router: Hono<{ Bindings: Env 
             .from('app_installations')
             .select('id, app_id, store_id, installed_by, status, scopes_granted, config, marketplace_apps(id, name, slug, icon_url, tagline, pricing_model, app_url)')
             .eq('id', installationId)
-            .eq('store_id', await resolveOwnedSiteId(db, customUser.id, stringOrNull(body.store_id || body.storeId), auth.user.storeId))
             .neq('status', 'uninstalled')
             .maybeSingle();
 
@@ -268,7 +267,6 @@ export function registerAppStoreAppLifecycleRoutes(router: Hono<{ Bindings: Env 
                 },
             })
             .eq('id', installation.id)
-            .eq('store_id', installation.store_id)
             .select('id, app_id, store_id, status, scopes_granted, config, installed_at, uninstalled_at, marketplace_apps(id, name, slug, icon_url, tagline, pricing_model, app_url)')
             .single();
 

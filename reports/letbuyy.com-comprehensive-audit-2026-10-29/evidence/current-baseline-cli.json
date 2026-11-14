@@ -1,0 +1,20 @@
+{
+  "status": "ok",
+  "baseline_id": 1,
+  "url": "https://www.letbuyy.com/in",
+  "timestamp": "2026-10-29T18:02:38.053409+00:00",
+  "summary": {
+    "title": "LetBuyy \u2014 India-first commerce operating system | LetBuyy",
+    "meta_description": "Launch an online store in India with UPI, cash on delivery, GST invoices and shi...",
+    "canonical": "https://www.letbuyy.com/in",
+    "robots": "index, follow",
+    "h1": "More than a store.Your Commerce OS.",
+    "h2_count": 8,
+    "h3_count": 26,
+    "schema_count": 12,
+    "og_tag_count": 3,
+    "cwv_captured": false,
+    "status_code": 200,
+    "html_hash": "09cfe724155d..."
+  }
+}

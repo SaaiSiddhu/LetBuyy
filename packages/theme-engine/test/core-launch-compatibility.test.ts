@@ -4,46 +4,9 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { getDefaultStorefrontThemeTemplate } from '../src/theme-registry';
 import { parseLiquidThemePackageBundle } from '../src/theme-bundle';
-import { compilePortableToLiquidBundle, isUnchangedCoreDemoCategoryBlocks } from '../src/portable-to-liquid';
-import { createFirstPartyCatalogBundle, firstPartyThemeListings } from '../src/first-party-theme-catalog';
+import { compilePortableToLiquidBundle } from '../src/portable-to-liquid';
 
 const base = parseLiquidThemePackageBundle(JSON.parse(readFileSync(new URL('../../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json', import.meta.url), 'utf8')));
-test('Threadline v2 projects its own saved composition and schema without Core starter migration', () => {
- const bundle = createFirstPartyCatalogBundle('letbuyy-sense');
- const templates = structuredClone(bundle.templates);
- templates.index.sections['sense-heroBanner-index'].settings.heading = 'Saved apparel campaign';
- const input = { templates, themeSettings: bundle.config.settings_data.current };
- const before = structuredClone(input);
- const result = compilePortableToLiquidBundle(input, { baseBundle: bundle });
- assert.deepEqual(input, before);
- assert.equal(result.bundle.templates.index.sections['sense-heroBanner-index'].settings.heading, 'Saved apparel campaign');
- assert.deepEqual(result.bundle.templates.index.order, bundle.templates.index.order);
- assert.equal(result.bundle.sections['hero-banner'].source, bundle.sections['hero-banner'].source);
- assert.deepEqual(result.warnings, []);
-});
-test('a captured Sense v1 package retains the conservative Core compatibility upgrade', () => {
- const captured = structuredClone(base);
- captured.package.slug = 'letbuyy-sense'; captured.package.version = '1.0.0';
- const input = getDefaultStorefrontThemeTemplate('letbuyy-core', {});
- const result = compilePortableToLiquidBundle(input, { baseBundle: captured });
- assert.equal(Object.keys(result.bundle.templates.index.sections['category-grid-default'].blocks).length, 0);
- assert.equal(result.bundle.package.version, '1.0.0');
- assert.doesNotMatch(result.bundle.sections['product-detail'].source, /Garment measurements/);
-});
-for (const listing of firstPartyThemeListings().filter(theme => theme.presetId !== 'sense')) {
- test(`${listing.name} preserves preset defaults and upgrades only unchanged legacy starter blocks`, () => {
-  const bundle = createFirstPartyCatalogBundle(listing.slug);
-  const input = getDefaultStorefrontThemeTemplate('letbuyy-core', {});
-  input.themeSettings = { ...input.themeSettings, ...listing.settings };
-  const before = structuredClone(input);
-  const result = compilePortableToLiquidBundle(input, { baseBundle: bundle });
-  assert.deepEqual(input, before);
-  for (const [key, value] of Object.entries(listing.settings)) assert.deepEqual(result.bundle.config.settings_data.current[key], value);
-  assert.equal(Object.keys(result.bundle.templates.index.sections['category-grid-default'].blocks).length, 0);
-  input.sections.template.find(section => section.id === 'category-grid-default')!.blocks![0].settings.name = 'Merchant collection';
-  assert.throws(() => compilePortableToLiquidBundle(input, { baseBundle: bundle }), /Block.*category.*not allowed/);
- });
-}
 test('persisted Core bundle compiles unchanged legacy default category placeholders without discarding merchant edits', () => {
     const input = getDefaultStorefrontThemeTemplate('letbuyy-core', {});
     const before = structuredClone(input);
@@ -122,18 +85,4 @@ test('PostgreSQL jsonb key order does not hide unchanged Core demo defaults; mer
  assert.deepEqual(config,before,'saved database document is not rewritten');
  captured.blocks['category-apparel'].settings.name='Merchant authored category';
  assert.throws(()=>compilePortableToLiquidBundle(config,{baseBundle:base}),/Block.*category.*not allowed/);
-});
-
-test('normal editor metadata cannot resurrect obsolete Core category cards; real child content stays protected',()=>{
- const input=getDefaultStorefrontThemeTemplate('letbuyy-core',{});
- const category=input.sections.template.find(s=>s.id==='category-grid-default')!;
- const normalized=category.blocks!.map((block,i)=>({...block,order:i*10,children:[]}));
- assert.equal(isUnchangedCoreDemoCategoryBlocks(normalized),true);
- const portable=Object.fromEntries(normalized.map(b=>[b.id,{type:b.type,visible:b.visible,settings:b.settings,blocks:{},block_order:[]}]));
- assert.equal(isUnchangedCoreDemoCategoryBlocks(portable,normalized.map(b=>b.id)),true);
- const result=compilePortableToLiquidBundle({templates:{index:{sections:{'category-grid-default':{type:category.type,settings:category.settings,blocks:portable,block_order:normalized.map(b=>b.id)}},order:['category-grid-default']}}},{baseBundle:base});
- assert.deepEqual(result.bundle.templates.index.sections['category-grid-default'].blocks,{});
- assert.equal(isUnchangedCoreDemoCategoryBlocks(normalized.map((b,i)=>i?b:{...b,children:[{id:'merchant-child'}]})),false);
- assert.equal(isUnchangedCoreDemoCategoryBlocks({...portable,'category-apparel':{...portable['category-apparel'],blocks:{child:{type:'text'}}}},normalized.map(b=>b.id)),false);
- assert.equal(isUnchangedCoreDemoCategoryBlocks(normalized.map((b,i)=>i?b:{...b,order:900})),false);
 });

@@ -1,18 +1,11 @@
-import { buildGoogleFontsHref } from '@letbuyy/theme-engine';
-import type { CheckoutStorePresentation } from '@letbuyy/tenant-core';
+import { normalizeStoreRootDomain, buildTenantStorefrontUrl } from '@letbuyy/tenant-core';
 import type { Metadata } from 'next';
-import { LETBUYY_CHECKOUT_ORIGIN_HEADER, type StoreBrandingInput } from '@letbuyy/checkout-core';
-import { headers } from 'next/headers';
-import { checkoutRequestBinding } from '@/lib/checkout-host';
+import type { StoreBrandingInput } from '@letbuyy/checkout-core';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { StoreService } from '@/lib/store-service';
-import { resolveCheckoutStorefrontReturn } from '@/lib/checkout-storefront-return';
-import { resolveStorefrontAccessContext } from '@/lib/storefront-access';
 import CheckoutClient, { type CheckoutOriginCartLine } from '../../store/[subdomain]/checkout/checkout-client';
-import { sanitizeBranding, brandingCssVariables, checkoutPaymentAppearance } from '../branding';
+import { sanitizeBranding, brandingCssVariables } from '../branding';
 import CheckoutLogo from '../checkout-logo';
-import { checkoutThemeStyle } from '../checkout-theme';
-import '../checkout-themes.css';
 
 export const metadata: Metadata = {
     title: 'Secure Checkout',
@@ -29,9 +22,6 @@ interface CheckoutSearchParams {
     expires_at?: string;
     cart_digest?: string;
     signature?: string;
-    buyer_binding?: string;
-    checkout_origin?: string;
-    storefront_return_origin?: string;
 }
 
 interface VerifiedHandoffLine {
@@ -42,6 +32,18 @@ interface VerifiedHandoffLine {
     quantity?: number;
     unit_price?: number;
     properties?: Record<string, string>;
+}
+
+// T6/W2 — resolves the merchant's real storefront origin for the "back to store" links
+// CheckoutClient already renders. checkout.<root> shares no host with the storefront, so these
+// must be absolute URLs; the local-dev root domain has no real DNS for a live subdomain, so it
+// falls back to the same /store/<subdomain> path every other local verification in this
+// environment already uses. This resolver never chooses a tenant — the subdomain it receives
+// already came from a store row looked up by the handoff's own verified site_id.
+function resolveStorefrontOriginUrl(subdomain: string): string {
+    const rootDomain = normalizeStoreRootDomain(process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
+    if (rootDomain === 'localhost' && !process.env.NEXT_PUBLIC_STOREFRONT_URL) return `/store/${subdomain}`;
+    return buildTenantStorefrontUrl(subdomain, { rootDomain, baseUrl: process.env.NEXT_PUBLIC_STOREFRONT_URL });
 }
 
 // T8/W1 — this page renders BEFORE a store or its branding is ever resolved (an invalid/expired
@@ -66,13 +68,11 @@ function InvalidHandoffPage({ reason }: { reason: string }) {
 }
 
 async function verifyHandoff(params: CheckoutSearchParams): Promise<
-    | { ok: true; siteId: string; cartId: string; subdomain: string; presentation?: CheckoutStorePresentation; savedDiscount?: { code: string; amount: number }; lines: VerifiedHandoffLine[]; handoff: Record<string, string> }
+    | { ok: true; siteId: string; cartId: string; subdomain: string; lines: VerifiedHandoffLine[]; handoff: Record<string, string> }
     | { ok: false; status: number; reason: string }
 > {
     const cartId = typeof params.cart_id === 'string' ? params.cart_id.trim() : '';
     if (!cartId) return { ok: false, status: 400, reason: 'Missing checkout reference.' };
-    const actualOrigin = checkoutRequestBinding(await headers(), params.checkout_origin);
-    if (!actualOrigin) return { ok: false, status: 401, reason: 'This checkout link belongs to a different address. Start again from the store.' };
 
     const query = new URLSearchParams();
     for (const key of HANDOFF_QUERY_KEYS) {
@@ -80,12 +80,9 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         if (typeof value === 'string' && value.length > 0) query.set(key, value);
     }
 
-    if (params.buyer_binding !== undefined) query.set('buyer_binding', params.buyer_binding);
-    if (params.checkout_origin !== undefined) query.set('checkout_origin', params.checkout_origin);
-
     let response: Response;
     try {
-        response = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/verify-handoff?${query.toString()}`, { headers: { [LETBUYY_CHECKOUT_ORIGIN_HEADER]: actualOrigin } });
+        response = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/verify-handoff?${query.toString()}`);
     } catch {
         return { ok: false, status: 503, reason: 'Checkout verification is temporarily unavailable.' };
     }
@@ -99,7 +96,7 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         };
     }
 
-    const body = await response.json().catch(() => null) as { data?: { site_id?: string; cart_id?: string; subdomain?: string | null; presentation?: CheckoutStorePresentation; saved_discount?: { code?: unknown; amount?: unknown }; lines?: VerifiedHandoffLine[] } } | null;
+    const body = await response.json().catch(() => null) as { data?: { site_id?: string; cart_id?: string; subdomain?: string | null; lines?: VerifiedHandoffLine[] } } | null;
     const siteId = body?.data?.site_id;
     const subdomain = body?.data?.subdomain;
     const verifiedCartId = body?.data?.cart_id;
@@ -110,8 +107,6 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         siteId,
         cartId,
         subdomain,
-        presentation: body?.data?.presentation?.id === siteId && body.data.presentation.subdomain === subdomain ? body.data.presentation : undefined,
-        savedDiscount: typeof body?.data?.saved_discount?.code === 'string' && typeof body.data.saved_discount.amount === 'number' && Number.isFinite(body.data.saved_discount.amount) && body.data.saved_discount.amount >= 0 ? { code: body.data.saved_discount.code, amount: body.data.saved_discount.amount } : undefined,
         lines: Array.isArray(body?.data?.lines) ? body.data.lines : [],
         handoff: Object.fromEntries(query.entries()),
     };
@@ -152,20 +147,8 @@ export default async function CheckoutOriginPage({
     const verified = await verifyHandoff(params);
     if (!verified.ok) return <InvalidHandoffPage reason={verified.reason} />;
 
-    // New Gateways return only verified checkout display data. Legacy public
-    // Gateways keep the prior read path; private stores fail closed there.
-    const legacyStore = verified.presentation ? null : await StoreService.getStoreBySubdomain(verified.subdomain);
-    const store = verified.presentation || legacyStore;
+    const store = await StoreService.getStoreBySubdomain(verified.subdomain);
     if (!store) return <InvalidHandoffPage reason="This store is no longer available." />;
-
-    const storefrontBaseUrl = await resolveCheckoutStorefrontReturn({
-        siteId: verified.siteId,
-        subdomain: store.subdomain,
-        originHint: params.storefront_return_origin,
-        rootDomain: process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
-        baseUrl: process.env.NEXT_PUBLIC_STOREFRONT_URL,
-        resolveHost: resolveStorefrontAccessContext,
-    });
 
     const brandingInput = await loadBranding(verified.siteId);
     // T8/W2 — resolved from the store's own already-computed templateConfig.themeSettings (the
@@ -173,17 +156,15 @@ export default async function CheckoutOriginPage({
     // real storefront's CSS variables from — see mapSupabaseToStore in lib/store-service.ts), so
     // checkout inherits the merchant's real theme without a second configuration step. The
     // store_branding row (brandingInput) layers a checkout-specific override on top where set.
-    const branding = sanitizeBranding(brandingInput, verified.presentation?.themeSettings || legacyStore?.templateConfig.themeSettings);
-    const themeStyle = checkoutThemeStyle(verified.presentation?.themeId || legacyStore?.templateConfig.themeId);
+    const branding = sanitizeBranding(brandingInput, store.templateConfig.themeSettings);
     const cartLines = verified.lines.map(toCartLine).filter((line): line is CheckoutOriginCartLine => line !== null);
 
     return (
-        <div className="checkout-theme-frame" data-store-theme={themeStyle.slug} data-checkout-style={themeStyle.style} style={brandingCssVariables(branding)} data-checkout-theme={branding.checkoutTheme} data-is-dark={branding.isDark}>
-            {buildGoogleFontsHref([branding.bodyFontFamily, branding.headingFontFamily]) ? <link rel="stylesheet" href={buildGoogleFontsHref([branding.bodyFontFamily, branding.headingFontFamily])!} /> : null}
+        <div style={brandingCssVariables(branding)} data-checkout-theme={branding.checkoutTheme} data-is-dark={branding.isDark}>
             <header className="border-b border-line px-4 py-3">
                 <div className="mx-auto flex max-w-5xl items-center justify-between">
                     <a
-                        href={storefrontBaseUrl}
+                        href={resolveStorefrontOriginUrl(store.subdomain)}
                         className="flex items-center gap-2 text-sm font-semibold text-theme"
                     >
                         <CheckoutLogo logoUrl={branding.logoUrl} storeName={store.name} />
@@ -197,7 +178,6 @@ export default async function CheckoutOriginPage({
                     </span>
                 </div>
             </header>
-            {verified.presentation?.paymentMode === 'sandbox' ? <p role="status" className="mx-auto max-w-5xl px-4 py-3 text-sm text-theme-secondary">Razorpay test mode — payments are simulated. No real money will be charged.</p> : null}
             <CheckoutClient
                 storeId={store.id}
                 sellerId={store.sellerId}
@@ -205,13 +185,11 @@ export default async function CheckoutOriginPage({
                 storeName={store.name}
                 codEnabled={store.codEnabled !== false}
                 onlinePaymentEnabled={store.onlinePaymentEnabled !== false}
-                paymentAppearance={checkoutPaymentAppearance(branding, storefrontBaseUrl)}
                 checkoutOrigin={{
-                    storefrontBaseUrl,
+                    storefrontBaseUrl: resolveStorefrontOriginUrl(store.subdomain),
                     cartLines,
                     cartId: verified.cartId,
                     handoff: verified.handoff,
-                    savedDiscount: verified.savedDiscount,
                 }}
             />
         </div>

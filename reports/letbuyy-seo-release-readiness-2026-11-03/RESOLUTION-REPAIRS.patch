@@ -1,0 +1,336 @@
+diff --git a/apps/marketing/web/src/lib/resources/articles.ts b/apps/marketing/web/src/lib/resources/articles.ts
+--- a/apps/marketing/web/src/lib/resources/articles.ts
++++ b/apps/marketing/web/src/lib/resources/articles.ts
+@@ -11,7 +11,7 @@
+     description: "A complete step-by-step guide to starting an online store in India in 2026, covering GST, payments, logistics, and marketing.",
+     author: "letbuyy-team",
+     publishedAt: '2026-05-01',
+-    updatedAt: "2026-10-30",
++    updatedAt: "2026-11-03",
+     tags: ['store-setup', 'india', 'beginners', 'gst'],
+     readingTime: 12,
+     featured: true,
+@@ -59,7 +59,7 @@
+   },
+   {
+     "type": "p",
+-    "text": "Before touching a single platform, clarify your product-market fit. The best-performing Indian D2C stores in 2026 fall into three buckets: high-margin branded goods (fashion, beauty, supplements), regionally-authentic products (handlooms, artisan crafts, regional foods), and business supplies (stationery, packaging, tools)."
++    "text": "Before choosing a platform, compare products using customer demand, sourcing, achievable margins and the requirements that apply. Examples to research include clothing, handmade goods and business supplies. Validate demand and costs for the products you can actually offer."
+   },
+   {
+     "type": "insight",
+@@ -74,7 +74,8 @@
+   },
+   {
+     "type": "h2",
+-    "text": "Validate demand in the locations you can serve. Interview potential customers and compare alternatives; neither a city tier nor a category label establishes demand or a predictable growth window."
++    "text": "Step 2: Check Registration and Tax Requirements",
++    "id": "validate-demand-in-the-locations-you-can-serve-interview-potential-customers-and-compare-alternatives-neither-a-city-tier-nor-a-category-label-establishes-demand-or-a-predictable-growth-window"
+   },
+   {
+     "type": "p",
+@@ -257,7 +258,7 @@
+     description: "Learn how to optimize your product pages for Indian buyers — better images, descriptions, reviews, and trust signals that convert.",
+     author: "letbuyy-team",
+     publishedAt: '2026-05-10',
+-    updatedAt: "2026-10-30",
++    updatedAt: "2026-11-03",
+     tags: ['conversion', 'product-pages', 'ux', 'copywriting'],
+     readingTime: 9,
+     body: [
+@@ -344,7 +345,7 @@
+   },
+   {
+     "type": "p",
+-    "text": "Show your MRP alongside your selling price when you can. Indian buyers are trained to look for discounts — a ₹999 product shown as \"₹1,499 MRP, ₹999 today\" converts significantly better than the same product shown as just ₹999, even if the economics are identical."
++    "text": "Display the actual selling price and applicable charges clearly. If you show an MRP or discount, use accurate, supportable amounts and verify the requirements that apply to the product. Test how customers understand the presentation using your own data."
+   }
+ ],
+     relatedSlugs: ['reducing-cart-abandonment', 'how-product-reviews-increase-conversion', 'store-seo-checklist'],
+@@ -1768,7 +1769,7 @@
+     description: "Overview of ecommerce fulfillment models for Indian brands — self-fulfillment, third-party logistics (3PL), and FBA/FBF comparison.",
+     author: "letbuyy-team",
+     publishedAt: '2026-03-10',
+-    updatedAt: "2026-10-30",
++    updatedAt: "2026-11-03",
+     tags: ['fulfillment', '3pl', 'logistics', 'operations'],
+     readingTime: 9,
+     body: [
+@@ -1824,7 +1825,7 @@
+     "type": "callout",
+     "variant": "tip",
+     "title": "Hybrid Model",
+-    "text": "The best-performing Indian brands use a hybrid: self-fulfill in your home region (where you have most control) and 3PL in remote zones (where you have poor logistics). This minimizes cost while maximizing reach."
++    "text": "Compare self-fulfilment, third-party fulfilment and a hybrid for the locations you can serve. Use your own order mix, operating costs, serviceability and provider commitments to choose a model. Review delivery and return outcomes before expanding it."
+   }
+ ],
+     relatedSlugs: ['order-fulfillment-guide', 'shipping-india-guide', 'inventory-management-guide'],
+diff --git a/apps/marketing/web/src/app/sitemap.ts b/apps/marketing/web/src/app/sitemap.ts
+--- a/apps/marketing/web/src/app/sitemap.ts
++++ b/apps/marketing/web/src/app/sitemap.ts
+@@ -1,13 +1,13 @@
+ import type { MetadataRoute } from 'next'
+ import type { Article } from '@/lib/resources/types'
+-import { getMarketingSiteUrl } from '@/lib/public-urls'
+-import { getAllArticlesForSitemap } from '@/lib/resources/utils'
+-import { localizeArticleContent } from '@/lib/i18n/article-content'
+-import { CHANGELOG } from '@/lib/resources/changelog'
+-import { CATEGORIES } from '@/lib/resources/categories'
+-import { LEGAL_DOCUMENTS } from '@/lib/legal/documents'
+-import { DEFAULT_LOCALE, LOCALES } from '@/lib/i18n/locales'
+-import { localePath } from '@/lib/i18n/routing'
++import { getMarketingSiteUrl } from '../lib/public-urls'
++import { getAllArticlesForSitemap } from '../lib/resources/utils'
++import { localizeArticleContent } from '../lib/i18n/article-content'
++import { CHANGELOG } from '../lib/resources/changelog'
++import { CATEGORIES } from '../lib/resources/categories'
++import { LEGAL_DOCUMENTS } from '../lib/legal/documents'
++import { DEFAULT_LOCALE, LOCALES } from '../lib/i18n/locales'
++import { localePath } from '../lib/i18n/routing'
+ 
+ const baseUrl = getMarketingSiteUrl()
+ 
+@@ -36,7 +36,8 @@
+         priority: 0.5,
+         changeFrequency: 'monthly' as const,
+     })),
+-    { path: '/sitemap', priority: 0.6, changeFrequency: 'weekly' },
++    // The visitor-facing HTML directory is noindex; it stays linked in the
++    // footer, but the XML inventory advertises indexable landing pages only.
+ ]
+ 
+ /** Canonical public pages and actual translated articles; no build-time dates. */
+diff --git a/apps/marketing/web/src/app/[locale]/sitemap/page.tsx b/apps/marketing/web/src/app/[locale]/sitemap/page.tsx
+--- a/apps/marketing/web/src/app/[locale]/sitemap/page.tsx
++++ b/apps/marketing/web/src/app/[locale]/sitemap/page.tsx
+@@ -19,6 +19,9 @@
+ const sourceMetadata: Metadata = {
+     title: 'LetBuyy Sitemap',
+     description: 'Public sitemap for LetBuyy, including guides, themes, apps, developer docs, pricing, and account entry points.',
++    // A visitor directory remains available, while search landings use the
++    // actual product, support and resource pages. Do not block it in robots.txt.
++    robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
+     alternates: {
+         canonical: '/sitemap',
+     },
+diff --git a/apps/marketing/web/src/lib/i18n/content/hi/articles/how-to-start-an-online-store-india.json b/apps/marketing/web/src/lib/i18n/content/hi/articles/how-to-start-an-online-store-india.json
+--- a/apps/marketing/web/src/lib/i18n/content/hi/articles/how-to-start-an-online-store-india.json
++++ b/apps/marketing/web/src/lib/i18n/content/hi/articles/how-to-start-an-online-store-india.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceHash": "03356a3e33434e2492776e93d739f5278831eca5bb70d082532da1235a5d5c87",
++  "sourceHash": "bbf2a056356b84d2255a2f184bedca14de8c01a93cb7a311a14c94f74b227b84",
+   "values": [
+     "भारत में ऑनलाइन स्टोर कैसे शुरू करें (2026 मार्गदर्शिका)",
+     "लॉन्च करने, बेचने और बढ़ने के लिए सब कुछ — GST पंजीकरण से आपके पहले ऑर्डर तक।",
+@@ -17,12 +17,12 @@
+     "पहुँच",
+     "सेवा क्षेत्र जाँचें",
+     "चरण 1: तय करें कि क्या बेचना है",
+-    "किसी प्लेटफ़ॉर्म का उपयोग करने से पहले अपने उत्पाद और बाज़ार का मेल स्पष्ट करें। 2026 में अच्छा प्रदर्शन करने वाले भारतीय D2C स्टोर तीन श्रेणियों में आते हैं: अधिक मार्जिन वाले ब्रांडेड उत्पाद (फ़ैशन, सौंदर्य, सप्लीमेंट), क्षेत्रीय प्रामाणिक उत्पाद (हथकरघा, हस्तशिल्प, स्थानीय खाद्य पदार्थ) और व्यावसायिक सामग्री (स्टेशनरी, पैकेजिंग, औज़ार)।",
++    "किसी प्लेटफ़ॉर्म को चुनने से पहले, ग्राहक माँग, सोर्सिंग, संभावित मार्जिन और लागू आवश्यकताओं के आधार पर उत्पादों की तुलना करें। शोध के उदाहरणों में कपड़े, हस्तनिर्मित वस्तुएँ और व्यावसायिक सामान शामिल हैं। आप जिन उत्पादों को वास्तव में दे सकते हैं, उनकी माँग और लागत जाँचें।",
+     "टियर 2 भारत में कम प्रतिस्पर्धा वाली श्रेणियाँ आगे बढ़ती हैं",
+     "उत्पाद चुनते समय माँग, वास्तविक मार्जिन, स्रोत और श्रेणी के नियम देखें। कोई श्रेणी या शहर वृद्धि की गारंटी नहीं देता।",
+     "भारत का लाभ",
+     "जिन क्षेत्रों में सेवा दे सकते हैं वहाँ माँग जाँचें। संभावित ग्राहकों से बात करें और विकल्प तुलना करें; शहर का स्तर या श्रेणी माँग अथवा निश्चित वृद्धि अवधि सिद्ध नहीं करती।",
+-    "जिन क्षेत्रों में सेवा दे सकते हैं वहाँ माँग जाँचें। संभावित ग्राहकों से बात करें और विकल्प तुलना करें; शहर का स्तर या श्रेणी माँग अथवा निश्चित वृद्धि अवधि सिद्ध नहीं करती।",
++    "चरण 2: पंजीकरण और कर संबंधी आवश्यकताएँ जाँचें",
+     "GST पंजीकरण आपूर्ति, कारोबार, राज्य और बिक्री माध्यम पर निर्भर करता है। ऑर्डर लेने से पहले योग्य कर सलाहकार से मौजूदा नियम और सशर्त छूट जाँचें।",
+     "GST पंजीकरण की जाँच सूची",
+     "व्यवसाय के मालिक या संस्था का PAN कार्ड",
+diff --git a/apps/marketing/web/src/lib/i18n/content/hi/articles/product-page-optimization.json b/apps/marketing/web/src/lib/i18n/content/hi/articles/product-page-optimization.json
+--- a/apps/marketing/web/src/lib/i18n/content/hi/articles/product-page-optimization.json
++++ b/apps/marketing/web/src/lib/i18n/content/hi/articles/product-page-optimization.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceHash": "1a0ac756fa23f4b463845ed155069153ba9e760a30c164055bdd5ea3ed218dab",
++  "sourceHash": "b9d8a5aaabc5264b96c7262ad3ca94bdd399fc6755c32a7ba77ad5b5d707756e",
+   "values": [
+     "उत्पाद पेज का अनुकूलन: पूरी मार्गदर्शिका",
+     "ऐसे उत्पाद पेज बनाएँ जो भरोसा जगाएँ, सवालों के जवाब दें और दर्शकों को खरीदार बनाएँ।",
+@@ -30,6 +30,6 @@
+     "स्टॉक की वास्तविक संख्या (बिना झूठे दबाव के तात्कालिकता)",
+     "PIN कोड के अनुसार डिलीवरी का अनुमान",
+     "कीमत की तुलना का प्रभाव",
+-    "संभव हो तो विक्रय मूल्य के साथ MRP दिखाएँ। भारतीय खरीदार छूट देखते हैं — ₹999 के उत्पाद पर \"MRP ₹1,499, आज ₹999\" दिखाना केवल ₹999 दिखाने से अधिक रूपांतरण देता है, भले लागत और लाभ समान हों।"
++    "वास्तविक विक्रय मूल्य और लागू शुल्क स्पष्ट दिखाएँ। यदि आप MRP या छूट दिखाते हैं, तो सही और प्रमाणित की जा सकने वाली राशियों का उपयोग करें तथा उत्पाद पर लागू आवश्यकताएँ जाँचें। अपने डेटा से जाँचें कि ग्राहक मूल्य की प्रस्तुति को कैसे समझते हैं।"
+   ]
+ }
+diff --git a/apps/marketing/web/src/lib/i18n/content/hi/articles/understanding-fulfillment.json b/apps/marketing/web/src/lib/i18n/content/hi/articles/understanding-fulfillment.json
+--- a/apps/marketing/web/src/lib/i18n/content/hi/articles/understanding-fulfillment.json
++++ b/apps/marketing/web/src/lib/i18n/content/hi/articles/understanding-fulfillment.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceHash": "de9e0894b2fe632819aff274ba6765ff4cfeccc274bae09f551de225ddcf8685",
++  "sourceHash": "4f3e64582ff7924cb4e16745d28be3dc07c8457c66cf9751079ef75dc007534d",
+   "values": [
+     "भारत में ईकॉमर्स ऑर्डर पूर्ति समझना",
+     "खुद पूर्ति, 3PL या मार्केटप्लेस पूर्ति—आपके ब्रांड के लिए क्या सही है?",
+@@ -19,6 +19,6 @@
+     "वापसी संभालने की क्षमता और लागत",
+     "स्थान—क्या आपके लक्षित क्षेत्रों में गोदाम हैं?",
+     "मिश्रित मॉडल",
+-    "सफल भारतीय ब्रांड अपना क्षेत्र खुद संभालते हैं—जहाँ नियंत्रण अधिक है—और दूर के कमजोर लॉजिस्टिक्स क्षेत्रों में 3PL लेते हैं। इससे लागत कम और पहुँच अधिक होती है।"
++    "जिन स्थानों पर आप सेवा दे सकते हैं, उनके लिए स्वयं ऑर्डर पूरा करने, तृतीय-पक्ष सेवा और दोनों के मिश्रण की तुलना करें। मॉडल चुनने के लिए अपने ऑर्डर के प्रकार, संचालन लागत, सेवा उपलब्धता और प्रदाता की प्रतिबद्धताओं का उपयोग करें। विस्तार से पहले डिलीवरी और रिटर्न के परिणाम जाँचें।"
+   ]
+ }
+diff --git a/apps/marketing/web/src/lib/i18n/content/ta/articles/how-to-start-an-online-store-india.json b/apps/marketing/web/src/lib/i18n/content/ta/articles/how-to-start-an-online-store-india.json
+--- a/apps/marketing/web/src/lib/i18n/content/ta/articles/how-to-start-an-online-store-india.json
++++ b/apps/marketing/web/src/lib/i18n/content/ta/articles/how-to-start-an-online-store-india.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceHash": "03356a3e33434e2492776e93d739f5278831eca5bb70d082532da1235a5d5c87",
++  "sourceHash": "bbf2a056356b84d2255a2f184bedca14de8c01a93cb7a311a14c94f74b227b84",
+   "values": [
+     "இந்தியாவில் இணையக் கடையைத் தொடங்குவது எப்படி (2026 வழிகாட்டி)",
+     "தொடங்கி, விற்று, வளரத் தேவையான அனைத்தும் — GST பதிவிலிருந்து முதல் ஆர்டர் வரை.",
+@@ -17,12 +17,12 @@
+     "சென்றடைதல்",
+     "சேவை கிடைப்பதைச் சரிபாருங்கள்",
+     "படி 1: என்ன விற்கப் போகிறீர்கள் என்பதைத் தீர்மானிக்கவும்",
+-    "எந்தத் தளத்தையும் பயன்படுத்தும் முன் தயாரிப்புக்கும் சந்தைக்கும் உள்ள பொருத்தத்தைத் தெளிவுபடுத்துங்கள். 2026இல் சிறப்பாகச் செயல்படும் இந்திய D2C கடைகள் மூன்று வகைகளில் உள்ளன: அதிக இலாபமுள்ள பிராண்டு பொருட்கள் (ஆடை, அழகு, ஊட்டச்சத்து), உள்ளூர் தனித்துவப் பொருட்கள் (கைத்தறி, கைவினை, பிராந்திய உணவுகள்), வணிகப் பொருட்கள் (எழுதுபொருள், பொதியிடும் பொருட்கள், கருவிகள்).",
++    "ஒரு தளத்தைத் தேர்ந்தெடுப்பதற்கு முன், வாடிக்கையாளர் தேவை, பொருள் கொள்முதல், கிடைக்கக்கூடிய லாப விகிதம் மற்றும் பொருந்தும் தேவைகளை வைத்து தயாரிப்புகளை ஒப்பிடுங்கள். ஆடைகள், கைவினைப் பொருட்கள், வணிகப் பொருட்கள் போன்றவற்றை ஆய்வு செய்யலாம். நீங்கள் வழங்கக்கூடிய தயாரிப்புகளுக்கான தேவையையும் செலவுகளையும் சரிபாருங்கள்.",
+     "டயர் 2 இந்தியாவில் குறைந்த போட்டியுள்ள பிரிவுகள் வெல்லும்",
+     "தேவை, நடைமுறை இலாபம், கொள்முதல், விதிகளின் அடிப்படையில் பொருட்களைத் தேர்ந்தெடுக்கவும். எந்த வகையும் நகரமும் வளர்ச்சியை உறுதிப்படுத்தாது.",
+     "இந்தியாவின் வாய்ப்பு",
+     "சேவை செய்யக்கூடிய இடங்களில் தேவையைச் சரிபார்க்கவும். வாடிக்கையாளர்களிடம் பேசி மாற்றுகளை ஒப்பிடவும்; நகர வகையோ பொருள் வகையோ தேவை அல்லது வளர்ச்சிக் காலத்தை உறுதிப்படுத்தாது.",
+-    "சேவை செய்யக்கூடிய இடங்களில் தேவையைச் சரிபார்க்கவும். வாடிக்கையாளர்களிடம் பேசி மாற்றுகளை ஒப்பிடவும்; நகர வகையோ பொருள் வகையோ தேவை அல்லது வளர்ச்சிக் காலத்தை உறுதிப்படுத்தாது.",
++    "படி 2: பதிவு மற்றும் வரித் தேவைகளைச் சரிபாருங்கள்",
+     "GST பதிவு வழங்கல், விற்றுமுதல், மாநிலம், விற்பனை வழியைப் பொறுத்தது. ஆர்டர்களை ஏற்குமுன் தகுதியான வரி ஆலோசகரிடம் தற்போதைய விதிகளையும் நிபந்தனை விலக்குகளையும் சரிபாருங்கள்.",
+     "GST பதிவுச் சரிபார்ப்புப் பட்டியல்",
+     "வணிக உரிமையாளர் அல்லது நிறுவனத்தின் PAN அட்டை",
+diff --git a/apps/marketing/web/src/lib/i18n/content/ta/articles/product-page-optimization.json b/apps/marketing/web/src/lib/i18n/content/ta/articles/product-page-optimization.json
+--- a/apps/marketing/web/src/lib/i18n/content/ta/articles/product-page-optimization.json
++++ b/apps/marketing/web/src/lib/i18n/content/ta/articles/product-page-optimization.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceHash": "1a0ac756fa23f4b463845ed155069153ba9e760a30c164055bdd5ea3ed218dab",
++  "sourceHash": "b9d8a5aaabc5264b96c7262ad3ca94bdd399fc6755c32a7ba77ad5b5d707756e",
+   "values": [
+     "தயாரிப்புப் பக்க மேம்பாடு: முழு வழிகாட்டி",
+     "நம்பிக்கையை உருவாக்கி, சந்தேகங்களுக்குப் பதிலளித்து, பார்வையாளர்களை வாங்குபவர்களாக்கும் தயாரிப்புப் பக்கங்கள்.",
+@@ -30,6 +30,6 @@
+     "உண்மையான இருப்பு எண்ணிக்கை (போலி அழுத்தமின்றி அவசரம் உணர்த்தும்)",
+     "PIN குறியீட்டின் அடிப்படையில் விநியோக மதிப்பீடு",
+     "விலை ஒப்பீட்டின் தாக்கம்",
+-    "முடிந்தால் விற்பனை விலையுடன் MRPயையும் காட்டவும். இந்திய வாங்குபவர்கள் தள்ளுபடியைப் பார்க்கிறார்கள் — ₹999 பொருளை வெறும் ₹999 எனக் காட்டுவதைவிட \"MRP ₹1,499, இன்று ₹999\" எனக் காட்டுவது, பொருளாதாரம் ஒரே மாதிரியாக இருந்தாலும், விற்பனையை அதிகரிக்கிறது."
++    "உண்மையான விற்பனை விலையையும் பொருந்தும் கட்டணங்களையும் தெளிவாகக் காட்டுங்கள். MRP அல்லது தள்ளுபடியைக் காட்டினால், துல்லியமான, ஆதாரமுள்ள தொகைகளைப் பயன்படுத்தி, தயாரிப்புக்குப் பொருந்தும் தேவைகளைச் சரிபாருங்கள். விலை காட்டப்படும் விதத்தை வாடிக்கையாளர்கள் எவ்வாறு புரிந்துகொள்கிறார்கள் என்பதை உங்கள் சொந்தத் தரவைக் கொண்டு சோதியுங்கள்."
+   ]
+ }
+diff --git a/apps/marketing/web/src/lib/i18n/content/ta/articles/understanding-fulfillment.json b/apps/marketing/web/src/lib/i18n/content/ta/articles/understanding-fulfillment.json
+--- a/apps/marketing/web/src/lib/i18n/content/ta/articles/understanding-fulfillment.json
++++ b/apps/marketing/web/src/lib/i18n/content/ta/articles/understanding-fulfillment.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceHash": "de9e0894b2fe632819aff274ba6765ff4cfeccc274bae09f551de225ddcf8685",
++  "sourceHash": "4f3e64582ff7924cb4e16745d28be3dc07c8457c66cf9751079ef75dc007534d",
+   "values": [
+     "இந்திய இணைய வணிக நிறைவேற்றத்தைப் புரிந்துகொள்ளுதல்",
+     "சுய நிறைவேற்றம், 3PL அல்லது சந்தை நிறைவேற்றம்—உங்கள் பிராண்டுக்கு எது ஏற்றது?",
+@@ -19,6 +19,6 @@
+     "பொருள் திரும்பப்பெறும் திறனும் செலவும்",
+     "இடங்கள்—உங்கள் இலக்குப் பகுதிகளில் கிடங்குகள் உள்ளனவா?",
+     "கலப்பு மாதிரி",
+-    "சிறப்பாகச் செயல்படும் இந்திய பிராண்டுகள் சொந்தப் பகுதியில் அதிகக் கட்டுப்பாட்டுடன் தாங்களே நிறைவேற்றி, தொலைதூரப் பகுதிகளில் 3PL பயன்படுத்துகின்றன. இதனால் செலவு குறைந்து சென்றடையும் பரப்பு அதிகரிக்கும்."
++    "நீங்கள் சேவை வழங்கக்கூடிய இடங்களுக்கு சுயமாக ஆர்டர் நிறைவேற்றுதல், மூன்றாம் தரப்பு சேவை மற்றும் இரண்டும் சேர்ந்த முறையை ஒப்பிடுங்கள். ஒரு முறையைத் தேர்ந்தெடுக்க உங்கள் ஆர்டர் வகைகள், இயக்கச் செலவுகள், சேவை கிடைக்கும் நிலை மற்றும் வழங்குநரின் உறுதிமொழிகளைப் பயன்படுத்துங்கள். விரிவுபடுத்துவதற்கு முன் டெலிவரி மற்றும் திருப்பி அனுப்புதல் முடிவுகளை மதிப்பிடுங்கள்."
+   ]
+ }
+diff --git a/tests/federation/marketing-site-auth-boundary.test.mjs b/tests/federation/marketing-site-auth-boundary.test.mjs
+--- a/tests/federation/marketing-site-auth-boundary.test.mjs
++++ b/tests/federation/marketing-site-auth-boundary.test.mjs
+@@ -77,7 +77,9 @@
+   assert.match(platformLinks, /getMarketingSiteUrl\('\/sitemap\.xml'\)/);
+   assert.doesNotMatch(platformLinks, /get(?:ThemeMarketplace|AppMarketplace|DeveloperPortal)Url\('\/sitemap\.xml'\)/);
+   assert.match(robots, /getPlatformSitemapUrls/);
+-  assert.match(sitemap, /\/sitemap/);
++  assert.match(sitemap, /getAllArticlesForSitemap/);
++  assert.doesNotMatch(sitemap, /path:\s*['"]\/sitemap['"]/);
++  assert.match(sitemapPage, /robots:\s*\{\s*index:\s*false,\s*follow:\s*true/);
+   assert.match(layout, /SiteNavigationElement/);
+   assert.match(header, /label(?:Key)?:\s*['"](?:themes|Themes)['"]/);
+   assert.match(header, /label(?:Key)?:\s*['"](?:apps|Apps)['"]/);
+diff --git a/apps/marketing/web/src/components/CapabilityArtwork.tsx b/apps/marketing/web/src/components/CapabilityArtwork.tsx
+--- a/apps/marketing/web/src/components/CapabilityArtwork.tsx
++++ b/apps/marketing/web/src/components/CapabilityArtwork.tsx
+@@ -1,4 +1,5 @@
+ import Image from 'next/image'
++import React from 'react'
+ import type { CapabilityId } from '@/lib/capability-tour'
+ 
+ const ARTWORK = {
+@@ -14,5 +15,5 @@
+ 
+ /** Decorative shortcut artwork; the parent node or button owns its label and state. */
+ export default function CapabilityArtwork({ module }: { module: CapabilityId }) {
+-    return <Image className="cmap-shortcut-artwork" src={`/illustrations/capabilities/icons/${ARTWORK[module]}-v2.webp`} alt="" width={256} height={256} sizes="60px" loading="eager" unoptimized aria-hidden="true" draggable={false} />
++    return <Image className="cmap-shortcut-artwork" src={`/illustrations/capabilities/icons/${ARTWORK[module]}-v2.webp`} alt="" width={256} height={256} sizes="60px" loading="eager" fetchPriority="low" unoptimized aria-hidden="true" draggable={false} />
+ }
+diff --git a/tests/marketing/online-store-sequence.test.ts b/tests/marketing/online-store-sequence.test.ts
+--- /dev/null
++++ b/tests/marketing/online-store-sequence.test.ts
+@@ -0,0 +1,23 @@
++import assert from 'node:assert/strict'
++import test from 'node:test'
++import { ARTICLES } from '../../apps/marketing/web/src/lib/resources/articles'
++import { articleSourceText, localizeArticleContent } from '../../apps/marketing/web/src/lib/i18n/article-content'
++import { resourceHeadingId } from '../../apps/marketing/web/src/lib/resources/headings'
++
++const source = ARTICLES.find(article => article.slug === 'how-to-start-an-online-store-india')!
++const existingStepTwoAnchor = 'validate-demand-in-the-locations-you-can-serve-interview-potential-customers-and-compare-alternatives-neither-a-city-tier-nor-a-category-label-establishes-demand-or-a-predictable-growth-window'
++
++for (const language of ['en', 'hi', 'ta']) {
++    test(`${language}: online-store planning steps include registration and retain the existing deep link`, () => {
++        const article = language === 'en' ? source : localizeArticleContent(source, language).article
++        const headings = article.body.filter(block => block.type === 'h2')
++        assert.deepEqual(headings.map(block => Number(block.text.match(/\d+/u)?.[0])), [1, 2, 3, 4, 5, 6, 7])
++        assert.equal(headings[1].id ?? resourceHeadingId(headings[1].text), existingStepTwoAnchor)
++    })
++}
++
++test('guides do not restore the unsupported category, discount-conversion or fulfilment rankings', () => {
++    for (const article of ARTICLES) {
++        assert.doesNotMatch(articleSourceText(article).join('\n'), /best-performing Indian (?:D2C stores|brands)|converts significantly better/u, article.slug)
++    }
++})
+diff --git a/tests/marketing/directory-indexing.test.ts b/tests/marketing/directory-indexing.test.ts
+--- /dev/null
++++ b/tests/marketing/directory-indexing.test.ts
+@@ -0,0 +1,13 @@
++import assert from 'node:assert/strict'
++import test from 'node:test'
++import sitemap from '../../apps/marketing/web/src/app/sitemap'
++import { ARTICLES } from '../../apps/marketing/web/src/lib/resources/articles'
++
++test('XML advertises indexable landing pages and every guide, excluding the HTML utility directory', () => {
++    const paths = new Set(sitemap().map(entry => new URL(entry.url).pathname))
++    for (const locale of ['in', 'in-hi', 'in-ta']) {
++        assert.equal(paths.has(`/${locale}/sitemap`), false)
++        for (const suffix of ['', '/pricing', '/resources']) assert.ok(paths.has(`/${locale}${suffix}`))
++        for (const article of ARTICLES) assert.ok(paths.has(`/${locale}/resources/${article.category}/${article.slug}`), article.slug)
++    }
++})
+diff --git a/tests/marketing/capability-artwork-priority.test.ts b/tests/marketing/capability-artwork-priority.test.ts
+--- /dev/null
++++ b/tests/marketing/capability-artwork-priority.test.ts
+@@ -0,0 +1,21 @@
++import assert from 'node:assert/strict'
++import { createRequire } from 'node:module'
++import test from 'node:test'
++import CapabilityArtwork from '../../apps/marketing/web/src/components/CapabilityArtwork'
++
++const appRequire = createRequire(new URL('../../apps/marketing/web/package.json', import.meta.url))
++const { createElement } = appRequire('react')
++const { renderToStaticMarkup } = appRequire('react-dom/server')
++
++test('decorative capability icons remain eager without competing image preloads', () => {
++    for (const module of ['storefronts', 'orders', 'inventory', 'payments', 'customers', 'analytics', 'ai', 'b2b']) {
++        const html = renderToStaticMarkup(createElement(CapabilityArtwork, { module }))
++        assert.doesNotMatch(html, /<link\b[^>]*as="image"/iu, module)
++        assert.match(html, /fetchPriority="low"/iu, module)
++        assert.match(html, /loading="eager"/u)
++        assert.match(html, /width="256" height="256"/u)
++        assert.match(html, /alt=""/u)
++        assert.match(html, /aria-hidden="true"/u)
++        assert.ok(html.includes(`/illustrations/capabilities/icons/${module}-v2.webp`))
++    }
++})

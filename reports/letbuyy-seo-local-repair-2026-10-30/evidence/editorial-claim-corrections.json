@@ -1,0 +1,672 @@
+{
+  "changed_articles": [
+    "how-to-start-an-online-store-india",
+    "product-page-optimization",
+    "reducing-cart-abandonment",
+    "store-seo-checklist",
+    "how-product-reviews-increase-conversion",
+    "first-100-orders-guide",
+    "d2c-brand-launch-guide",
+    "email-marketing-ecommerce",
+    "social-commerce-india",
+    "retention-strategies-india",
+    "upi-vs-cod-india",
+    "gst-for-ecommerce-india",
+    "invoicing-india-merchants",
+    "refunds-returns-policy-india",
+    "inventory-management-guide",
+    "order-fulfillment-guide",
+    "shipping-india-guide",
+    "multi-warehouse-inventory",
+    "ai-commerce-explained",
+    "ai-product-recommendations"
+  ],
+  "replacements": [
+    [
+      "India's ecommerce market crossed ₹5 lakh crore in 2025 and is projected to triple by 2030. Yet most guides about starting an online store are written for Shopify merchants in the US — they skip GST, ignore COD, and assume everyone uses Stripe. This guide doesn't.",
+      "Starting an online store requires decisions about products, customers, payments, fulfilment and applicable tax obligations. Use this guide as a planning checklist, then confirm requirements for your own business.",
+      "ऑनलाइन स्टोर शुरू करने के लिए उत्पाद, ग्राहक, भुगतान, डिलीवरी और लागू कर दायित्व तय करने होते हैं। इस गाइड को योजना की चेकलिस्ट मानें और अपने व्यवसाय की आवश्यकताएँ जाँचें।",
+      "இணையக் கடையைத் தொடங்க தயாரிப்புகள், வாடிக்கையாளர்கள், பணம் செலுத்துதல், விநியோகம், பொருந்தும் வரிக் கடமைகள் பற்றி முடிவு செய்ய வேண்டும். இதைத் திட்டமிடும் பட்டியலாகப் பயன்படுத்தி உங்கள் வணிகத் தேவைகளைச் சரிபாருங்கள்."
+    ],
+    [
+      "India Ecommerce Market",
+      "Demand research",
+      "माँग का अध्ययन",
+      "தேவை ஆய்வு"
+    ],
+    [
+      "₹5L Cr+",
+      "Customers",
+      "ग्राहक",
+      "வாடிக்கையாளர்கள்"
+    ],
+    [
+      "↑ 28% YoY",
+      "Validate demand",
+      "माँग जाँचें",
+      "தேவையைச் சரிபாருங்கள்"
+    ],
+    [
+      "UPI Share of Payments",
+      "Payment choices",
+      "भुगतान विकल्प",
+      "பணம் செலுத்தும் தேர்வுகள்"
+    ],
+    [
+      "65%",
+      "Measure",
+      "मापें",
+      "அளவிடுங்கள்"
+    ],
+    [
+      "↑ from 48% in 2023",
+      "Use your own data",
+      "अपने आँकड़े देखें",
+      "உங்கள் தரவைப் பயன்படுத்துங்கள்"
+    ],
+    [
+      "Tier 2/3 City Buyers",
+      "Delivery coverage",
+      "डिलीवरी कवरेज",
+      "விநியோகப் பகுதிகள்"
+    ],
+    [
+      "71%",
+      "Reach",
+      "पहुँच",
+      "சென்றடைதல்"
+    ],
+    [
+      "of new D2C customers",
+      "Check serviceability",
+      "सेवा क्षेत्र जाँचें",
+      "சேவை கிடைப்பதைச் சரிபாருங்கள்"
+    ],
+    [
+      "You need a GSTIN before you can sell on most platforms or accept online payments at scale. Registration takes 7–10 working days through the GST portal. You'll need your PAN, Aadhaar, bank account details, and a business address.",
+      "GST registration depends on the supplies, turnover, state and sales channel involved. Check the current rules and any conditional exemptions with a qualified tax adviser before accepting orders.",
+      "GST पंजीकरण आपूर्ति, कारोबार, राज्य और बिक्री माध्यम पर निर्भर करता है। ऑर्डर लेने से पहले योग्य कर सलाहकार से मौजूदा नियम और सशर्त छूट जाँचें।",
+      "GST பதிவு வழங்கல், விற்றுமுதல், மாநிலம், விற்பனை வழியைப் பொறுத்தது. ஆர்டர்களை ஏற்குமுன் தகுதியான வரி ஆலோசகரிடம் தற்போதைய விதிகளையும் நிபந்தனை விலக்குகளையும் சரிபாருங்கள்."
+    ],
+    [
+      "If your annual turnover exceeds ₹20 lakh (₹10 lakh in special category states), GST registration is mandatory. Even below that, voluntary registration unlocks input tax credit — a significant cost advantage.",
+      "Do not apply a single turnover threshold to every seller. Registration and input tax credit eligibility depend on the applicable law and your business circumstances.",
+      "हर विक्रेता पर एक ही कारोबार सीमा लागू न करें। पंजीकरण और इनपुट टैक्स क्रेडिट की पात्रता लागू कानून तथा व्यवसाय की स्थिति पर निर्भर करती है।",
+      "எல்லா விற்பனையாளர்களுக்கும் ஒரே விற்றுமுதல் வரம்பைப் பயன்படுத்த வேண்டாம். பதிவு மற்றும் உள்ளீட்டு வரிச் சலுகைத் தகுதி பொருந்தும் சட்டத்தையும் வணிகச் சூழலையும் பொறுத்தது."
+    ],
+    [
+      "A Jaipur-based kurta brand switched from Shopify to LetBuyy in April 2026. Their checkout had 3 steps instead of 7, UPI worked without a redirect, and GST invoices generated automatically.",
+      "Illustrative planning example, not a verified customer case study: a clothing seller reviews checkout steps, payment options and invoice requirements before changing platforms.",
+      "यह योजना का काल्पनिक उदाहरण है, सत्यापित ग्राहक अध्ययन नहीं: कपड़ों का विक्रेता प्लेटफ़ॉर्म बदलने से पहले चेकआउट, भुगतान विकल्प और बिल की आवश्यकताएँ जाँचता है।",
+      "இது திட்டமிடலுக்கான கற்பனை எடுத்துக்காட்டு; சரிபார்க்கப்பட்ட வாடிக்கையாளர் ஆய்வு அல்ல: ஆடை விற்பனையாளர் தளத்தை மாற்றுமுன் வாங்குதல் படிகள், பணம் செலுத்தும் முறைகள், விலைப்பட்டியல் தேவைகளை ஆய்வு செய்கிறார்."
+    ],
+    [
+      "Cart completion rate went from 34% to 61% in 60 days. COD orders from Tier 2 cities doubled.",
+      "Record a baseline and compare completed orders under comparable conditions. No conversion or revenue increase is promised by this example.",
+      "आधार आँकड़े दर्ज करें और समान परिस्थितियों में पूरे हुए ऑर्डर की तुलना करें। यह उदाहरण रूपांतरण या आय बढ़ने का वादा नहीं करता।",
+      "அடிப்படைத் தரவைப் பதிவு செய்து ஒத்த சூழலில் நிறைவடைந்த ஆர்டர்களை ஒப்பிடுங்கள். இந்த எடுத்துக்காட்டு மாற்றம் அல்லது வருவாய் உயர்வை உறுதியளிக்காது."
+    ],
+    [
+      "+79% checkout conversion",
+      "Illustrative workflow",
+      "काल्पनिक कार्यप्रवाह",
+      "விளக்கப் பணிப்பாய்வு"
+    ],
+    [
+      "Indian buyers have strong payment preferences that differ significantly from Western markets. In 2026, UPI accounts for 65% of online transactions, COD remains at 30% for Tier 2+ cities, and cards cover the remainder.",
+      "Offer payment methods that suit your customers and provider eligibility. Measure successful payments and fulfilment outcomes in your own store; national payment volumes are not your store's payment mix.",
+      "ग्राहकों और प्रदाता की पात्रता के अनुसार भुगतान विकल्प दें। अपने स्टोर में सफल भुगतान और डिलीवरी परिणाम मापें; राष्ट्रीय भुगतान आँकड़े आपके स्टोर का मिश्रण नहीं हैं।",
+      "வாடிக்கையாளர்களுக்கும் வழங்குநரின் தகுதிக்கும் ஏற்ற பணம் செலுத்தும் முறைகளை வழங்குங்கள். உங்கள் கடையின் வெற்றிகரமான பணப் பரிமாற்றங்களையும் விநியோக முடிவுகளையும் அளவிடுங்கள்; தேசிய அளவு உங்கள் கடையின் விகிதம் அல்ல."
+    ],
+    [
+      "30%",
+      "Track",
+      "दर्ज करें",
+      "கண்காணியுங்கள்"
+    ],
+    [
+      "5%",
+      "Compare",
+      "तुलना करें",
+      "ஒப்பிடுங்கள்"
+    ],
+    [
+      "Don't view COD as a burden — view it as your Tier 2 and Tier 3 city unlock. Brands that disable COD lose up to 40% of addressable revenue in India. Offer it, but set a ₹2,000 order minimum to manage return risk.",
+      "Decide COD eligibility using your delivery coverage, order history and costs. Explain any restrictions before checkout and monitor return-to-origin separately from customer returns.",
+      "COD की पात्रता डिलीवरी क्षेत्र, ऑर्डर इतिहास और लागत के आधार पर तय करें। सीमाएँ चेकआउट से पहले बताएँ और RTO को ग्राहक रिटर्न से अलग मापें।",
+      "விநியோகப் பகுதி, ஆர்டர் வரலாறு, செலவுகளின் அடிப்படையில் COD தகுதியைத் தீர்மானியுங்கள். கட்டுப்பாடுகளை முன்பே விளக்கி RTO-வை வாடிக்கையாளர் திருப்புதலிலிருந்து தனியே அளவிடுங்கள்."
+    ],
+    [
+      "Shipping is where most new Indian stores fail silently. Choose a courier partner with strong Tier 2 and Tier 3 coverage — not just metro cities. Look for NDR (non-delivery report) automation, real-time tracking, and RTO (return to origin) rates under 15%.",
+      "Compare courier coverage for your customers' PIN codes, tracking support, failed-delivery handling and total costs. Use your own shipment outcomes rather than an unsupported national benchmark.",
+      "ग्राहकों के PIN कोड, ट्रैकिंग, असफल डिलीवरी प्रक्रिया और कुल लागत के अनुसार कूरियर की तुलना करें। अप्रमाणित राष्ट्रीय मानक के बजाय अपने शिपमेंट परिणाम देखें।",
+      "வாடிக்கையாளர் PIN குறியீடுகள், கண்காணிப்பு, தோல்வியடைந்த விநியோகக் கையாளுதல், மொத்த செலவுகளை ஒப்பிடுங்கள். ஆதாரமற்ற தேசிய அளவுகோலுக்குப் பதில் உங்கள் அனுப்புகை முடிவுகளைப் பயன்படுத்துங்கள்."
+    ],
+    [
+      "RTO above 20%: This is a marketing problem, not a logistics problem. Tighten your targeting before scaling.",
+      "Investigate RTO by customer cohort, address quality, delivery attempt and courier before changing your marketing or logistics.",
+      "मार्केटिंग या लॉजिस्टिक्स बदलने से पहले ग्राहक समूह, पता, डिलीवरी प्रयास और कूरियर के अनुसार RTO जाँचें।",
+      "சந்தைப்படுத்தல் அல்லது விநியோகத்தை மாற்றுமுன் வாடிக்கையாளர் குழு, முகவரி, விநியோக முயற்சி, கூரியர் வாரியாக RTO-வை ஆய்வு செய்யுங்கள்."
+    ],
+    [
+      "The average Indian ecommerce product page converts at 1.5–2.5%. The top 10% of stores convert at 5–8%. The difference isn't traffic or advertising budget — it's the product page itself.",
+      "A useful product page answers questions about fit, price, delivery, returns and product quality. Compare conversion within your own traffic and product mix rather than relying on an uncited national benchmark.",
+      "उपयोगी उत्पाद पेज आकार, कीमत, डिलीवरी, रिटर्न और गुणवत्ता के सवालों का जवाब देता है। अप्रमाणित राष्ट्रीय मानक के बजाय अपने ट्रैफ़िक और उत्पादों में रूपांतरण की तुलना करें।",
+      "பயனுள்ள தயாரிப்புப் பக்கம் பொருத்தம், விலை, விநியோகம், திருப்புதல், தரம் பற்றிய கேள்விகளுக்குப் பதிலளிக்கும். ஆதாரமற்ற தேசிய அளவுகோலுக்குப் பதில் உங்கள் வருகையாளர்களிடையே மாற்றத்தை ஒப்பிடுங்கள்."
+    ],
+    [
+      "Over 78% of Indian ecommerce happens on mobile. Shoot your products in portrait orientation and test every image on a 360px wide screen. What looks great on desktop can look tiny on Redmi.",
+      "Test product images and text on small mobile screens as well as desktop. Keep details readable and supply useful angles without making the page unnecessarily heavy.",
+      "उत्पाद चित्र और पाठ छोटे मोबाइल तथा डेस्कटॉप पर जाँचें। विवरण स्पष्ट रखें और पेज को भारी किए बिना उपयोगी कोण दिखाएँ।",
+      "தயாரிப்புப் படங்களையும் உரையையும் சிறிய கைப்பேசி மற்றும் கணினித் திரைகளில் சோதியுங்கள். பக்கத்தை அதிகமாகச் சுமையாக்காமல் தெளிவான விவரங்களையும் கோணங்களையும் வழங்குங்கள்."
+    ],
+    [
+      "Indian buyers are among the most review-reliant in the world. Products with 10+ reviews convert at 3x the rate of products with zero reviews. Your post-purchase flow should make leaving a review feel natural, not like a chore.",
+      "Genuine reviews can answer questions that product copy misses. Make review requests optional and easy, and measure their effect without promising a fixed conversion lift.",
+      "असली समीक्षाएँ उत्पाद विवरण से छूटे सवालों का जवाब दे सकती हैं। समीक्षा देना वैकल्पिक और आसान रखें तथा निश्चित रूपांतरण लाभ का वादा न करें।",
+      "உண்மையான மதிப்புரைகள் தயாரிப்பு விளக்கத்தில் விடுபட்ட கேள்விகளுக்குப் பதிலளிக்கலாம். மதிப்புரைகளை விருப்பமாகவும் எளிதாகவும் வைத்துப் பலனை அளவிடுங்கள்; நிலையான உயர்வை உறுதியளிக்க வேண்டாம்."
+    ],
+    [
+      "70% of Indian shoppers abandon their cart. Here's how to get them back.",
+      "Find friction in your checkout and help interested shoppers complete their order.",
+      "चेकआउट की बाधाएँ खोजें और इच्छुक ग्राहकों को ऑर्डर पूरा करने में मदद करें।",
+      "வாங்குதல் செயலின் தடைகளை அறிந்து ஆர்வமுள்ளவர்கள் ஆர்டரை முடிக்க உதவுங்கள்."
+    ],
+    [
+      "India has one of the highest cart abandonment rates in the world — around 70–75% globally, but crossing 80% for some Indian categories. COD hesitation, slow loading on 4G, and trust gaps at checkout are the three biggest drivers.",
+      "Cart abandonment has several possible causes: unexpected costs, payment problems, delivery uncertainty or a shopper who is not ready to buy. Diagnose your own checkout before choosing a recovery tactic.",
+      "कार्ट छोड़ने के कई कारण हो सकते हैं: अतिरिक्त लागत, भुगतान समस्या, डिलीवरी की अनिश्चितता या अभी खरीदने की इच्छा न होना। उपाय चुनने से पहले अपना चेकआउट जाँचें।",
+      "எதிர்பாராத செலவு, பணம் செலுத்தும் சிக்கல், விநியோக உறுதியின்மை அல்லது வாங்கத் தயாராக இல்லாமை காரணமாகக் கூடை கைவிடப்படலாம். மீட்பு முறையைத் தேர்வுசெய்யுமுன் உங்கள் செயல்முறையை ஆய்வு செய்யுங்கள்."
+    ],
+    [
+      "India's WhatsApp open rate is 98%. A personalized WhatsApp message — \"Hey Rohan, you left something behind\" with a product image — sent 2 hours after abandonment recovers 8–12% of abandoned carts.",
+      "Where permitted and supported by your provider, test an opt-in reminder with a clear way to stop messages. Measure recovery against a comparable group; no open-rate or recovery guarantee applies.",
+      "अनुमति और प्रदाता के समर्थन के अनुसार सहमति वाले रिमाइंडर जाँचें, जिनमें संदेश रोकने का स्पष्ट तरीका हो। तुलनीय समूह से परिणाम मापें; खोलने या रिकवरी की गारंटी नहीं है।",
+      "அனுமதியும் வழங்குநரின் ஆதரவும் இருந்தால், விலகும் வசதியுடன் ஒப்புதல் பெற்ற நினைவூட்டலைச் சோதியுங்கள். ஒத்த குழுவுடன் மீட்பை அளவிடுங்கள்; திறப்பு அல்லது மீட்பு விகிதத்திற்கு உத்தரவாதம் இல்லை."
+    ],
+    [
+      "Every additional form field drops conversion by ~10%. Collect only what you need: name, phone (not email — they'll share phone), delivery address, and payment. Don't ask for date of birth, gender, or alternate email at checkout.",
+      "Collect only the fields required for the order and its fulfilment. Explain why information is needed, support accessible input and test completion rather than assuming every field has the same effect.",
+      "ऑर्डर और डिलीवरी के लिए आवश्यक जानकारी ही माँगें। कारण बताएँ, सुलभ इनपुट दें और हर फ़ील्ड का समान असर मानने के बजाय पूर्णता जाँचें।",
+      "ஆர்டர் மற்றும் விநியோகத்திற்குத் தேவையான தகவல்களை மட்டும் கேளுங்கள். காரணத்தை விளக்கி அணுகக்கூடிய உள்ளீடுகளை வழங்கி, ஒவ்வொரு புலமும் ஒரே தாக்கம் தரும் எனக் கருதாமல் சோதியுங்கள்."
+    ],
+    [
+      "Paid ads are expensive and the moment you stop paying, traffic stops. SEO is slow and boring — and it's the only channel where traffic compounds over time. For Indian ecommerce, organic search is responsible for 35–45% of revenue for established brands.",
+      "Search can help shoppers discover useful product and category pages. Its contribution varies by store, audience and measurement; use your own organic landing-page and order data rather than an uncited revenue-share promise.",
+      "खोज उपयोगी उत्पाद और श्रेणी पेज खोजने में मदद कर सकती है। योगदान स्टोर, ग्राहक और मापन पर निर्भर है; अप्रमाणित आय हिस्सेदारी के बजाय अपने ऑर्गेनिक पेज और ऑर्डर आँकड़े देखें।",
+      "தேடல் பயனுள்ள தயாரிப்பு மற்றும் வகைப் பக்கங்களைக் கண்டறிய உதவும். அதன் பங்கு கடை, பார்வையாளர்கள், அளவீட்டைச் சாரும்; ஆதாரமற்ற வருவாய் வாக்குறுதிக்குப் பதில் உங்கள் தரவைப் பயன்படுத்துங்கள்."
+    ],
+    [
+      "Mobile-first: 78% of India's search happens on mobile",
+      "Mobile usability: check navigation, reading and checkout on real small screens",
+      "मोबाइल उपयोग: छोटे स्क्रीन पर नेविगेशन, पढ़ना और चेकआउट जाँचें",
+      "கைப்பேசி பயன்பாடு: சிறிய திரைகளில் வழிசெலுத்தல், வாசிப்பு, வாங்குதலைச் சோதியுங்கள்"
+    ],
+    [
+      "India's average mobile connection speed is 25 Mbps, but 40% of rural users are on 3G/4G. Your store must load usably in under 3 seconds on a Redmi device over a 3G connection. Test with Chrome's Network Throttling.",
+      "Test on slower connections and lower-powered devices as well as your own laptop. Keep field data separate from simulated lab results and investigate the actual largest visible content and interaction delays.",
+      "धीमे नेटवर्क और कम क्षमता वाले उपकरणों पर भी जाँचें। वास्तविक उपयोग डेटा को लैब परिणामों से अलग रखें तथा दिखने वाले मुख्य कंटेंट और इंटरैक्शन की देरी जाँचें।",
+      "மெதுவான இணைப்புகள் மற்றும் குறைந்த திறன் சாதனங்களிலும் சோதியுங்கள். உண்மைப் பயன்பாட்டுத் தரவை ஆய்வக முடிவுகளிலிருந்து பிரித்து, முக்கியக் காட்சி மற்றும் செயல்பாட்டுத் தாமதத்தை ஆய்வு செய்யுங்கள்."
+    ],
+    [
+      "How Product Reviews Increase Conversion by 270%",
+      "How Product Reviews Help Shoppers Decide",
+      "उत्पाद समीक्षाएँ ग्राहकों को निर्णय लेने में कैसे मदद करती हैं",
+      "தயாரிப்பு மதிப்புரைகள் வாங்குபவர்கள் முடிவெடுக்க உதவுவது எப்படி"
+    ],
+    [
+      "Data-backed guide on how product reviews impact conversion rates for Indian ecommerce, with a step-by-step collection playbook.",
+      "A practical guide to collecting genuine reviews, answering shopper questions and measuring outcomes without promising a fixed conversion lift.",
+      "असली समीक्षाएँ एकत्र करने, ग्राहकों के सवालों का जवाब देने और निश्चित लाभ का वादा किए बिना परिणाम मापने की गाइड।",
+      "உண்மையான மதிப்புரைகளைப் பெறவும் வாங்குபவர்களின் கேள்விகளுக்குப் பதிலளிக்கவும் நிலையான உயர்வை உறுதியளிக்காமல் முடிவுகளை அளவிடவும் நடைமுறை வழிகாட்டி."
+    ],
+    [
+      "A product with 50 reviews converts at 4.6% on average. A product with zero reviews converts at 1.7%. That's a 270% lift — from nothing but social proof. And the gap widens as Indian buyers become more sophisticated and review-dependent.",
+      "Genuine reviews can help shoppers judge fit, quality and delivery experience. Their effect depends on the product, audience and review quality. This guide does not claim a universal conversion increase or report a verified customer experiment.",
+      "असली समीक्षाएँ उत्पाद की उपयुक्तता, गुणवत्ता और डिलीवरी समझने में मदद कर सकती हैं। असर उत्पाद, ग्राहक और समीक्षा की गुणवत्ता पर निर्भर है। यह गाइड सार्वभौमिक लाभ या सत्यापित ग्राहक प्रयोग का दावा नहीं करती।",
+      "உண்மையான மதிப்புரைகள் பொருத்தம், தரம், விநியோக அனுபவத்தை மதிப்பிட உதவும். பலன் தயாரிப்பு, பார்வையாளர், மதிப்புரையின் தரத்தைச் சாரும். பொதுவான உயர்வையோ சரிபார்க்கப்பட்ட வாடிக்கையாளர் சோதனையையோ இவ்வழிகாட்டி கூறவில்லை."
+    ],
+    [
+      "Send a WhatsApp message 5 days after delivery: \"How is your [product]? Reply with your rating (1–5)\" — WhatsApp reviews get 3x the response rate of email",
+      "After delivery, ask consenting customers for an honest review through a supported channel; compare response rates using your own data",
+      "डिलीवरी के बाद सहमत ग्राहकों से समर्थित माध्यम से ईमानदार समीक्षा माँगें; अपने आँकड़ों से प्रतिक्रिया की तुलना करें",
+      "விநியோகத்திற்குப் பிறகு ஒப்புதல் பெற்ற வாடிக்கையாளர்களிடம் ஆதரிக்கப்படும் வழியில் நேர்மையான மதிப்புரையைக் கேளுங்கள்; உங்கள் தரவுடன் பதில் விகிதங்களை ஒப்பிடுங்கள்"
+    ],
+    [
+      "Don't post promotional messages directly. Instead, join relevant groups, contribute for 2–3 weeks, then share your product as \"something I've been working on.\" The warm intro approach gets 10x the engagement of cold promotion.",
+      "Respect group rules and contribute useful information before sharing a relevant product. Ask for permission where required and measure whether the audience finds the contribution useful.",
+      "समूह के नियम मानें और उत्पाद साझा करने से पहले उपयोगी जानकारी दें। आवश्यक अनुमति लें और देखें कि लोगों को योगदान उपयोगी लगा या नहीं।",
+      "குழு விதிகளை மதித்து, தொடர்புடைய தயாரிப்பைப் பகிருமுன் பயனுள்ள தகவலை வழங்குங்கள். தேவையான அனுமதியைப் பெற்று அதன் பயனை அளவிடுங்கள்."
+    ],
+    [
+      "India's middle class is 400 million people. A 0.1% niche is 400,000 potential buyers — enough to build a ₹10+ crore brand with no external funding.",
+      "Validate a reachable customer group through interviews, demand signals and realistic costs. A large population estimate does not establish demand or guarantee revenue for your brand.",
+      "बातचीत, माँग संकेत और वास्तविक लागत से पहुँच योग्य ग्राहक समूह जाँचें। बड़ी आबादी का अनुमान माँग या आय की गारंटी नहीं है।",
+      "நேர்காணல்கள், தேவைச் சுட்டிகள், உண்மையான செலவுகள் மூலம் சென்றடையக்கூடிய வாடிக்கையாளர் குழுவைச் சரிபாருங்கள். பெரிய மக்கள்தொகை மதிப்பீடு தேவையையோ வருவாயையோ உறுதிப்படுத்தாது."
+    ],
+    [
+      "Three emails: first reminds of the abandoned item, second shows reviews and addresses objections, third offers a time-limited discount. Combined recovery rate: 12–18%.",
+      "Test a short, consent-based reminder sequence that answers questions and explains any genuine offer. Compare recovered orders and unsubscribe rates; no fixed recovery result is promised.",
+      "सहमति वाले छोटे रिमाइंडर क्रम जाँचें, जो सवालों का जवाब दें और वास्तविक ऑफ़र बताएँ। लौटे ऑर्डर और अनसब्सक्राइब दर मापें; निश्चित परिणाम का वादा नहीं है।",
+      "கேள்விகளுக்குப் பதிலளிக்கும், உண்மையான சலுகையை விளக்கும் ஒப்புதல் அடிப்படையிலான குறுகிய நினைவூட்டல் தொடரைச் சோதியுங்கள். மீண்ட ஆர்டர்களையும் விலகல்களையும் அளவிடுங்கள்; நிலையான பலன் உறுதியில்லை."
+    ],
+    [
+      "WhatsApp Business accounts get 98% message open rates. Set up a catalog in WhatsApp Business, enable payments (where available), and use it as your post-purchase support and upsell channel.",
+      "Check current WhatsApp Business and provider capabilities before planning a messaging journey. Obtain the required consent, provide an opt-out and measure outcomes rather than assuming a universal open rate.",
+      "संदेश योजना से पहले WhatsApp Business और प्रदाता की मौजूदा क्षमता जाँचें। आवश्यक सहमति तथा बाहर निकलने का विकल्प दें और सार्वभौमिक दर मानने के बजाय परिणाम मापें।",
+      "செய்திப் பயணத்தைத் திட்டமிடுமுன் WhatsApp Business மற்றும் வழங்குநரின் தற்போதைய திறன்களைச் சரிபாருங்கள். தேவையான ஒப்புதலும் விலகும் வழியும் வழங்கி முடிவுகளை அளவிடுங்கள்."
+    ],
+    [
+      "LetBuyy's WhatsApp integration lets buyers check order status, request returns, and get product recommendations — all within WhatsApp. Zero additional setup for merchants.",
+      "LetBuyy messaging availability depends on the supported workflow, account setup and provider approval. Confirm those prerequisites before promising an in-WhatsApp task to customers.",
+      "LetBuyy संदेश सुविधा समर्थित कार्यप्रवाह, खाता सेटअप और प्रदाता स्वीकृति पर निर्भर करती है। ग्राहकों से वादा करने से पहले ये शर्तें जाँचें।",
+      "LetBuyy செய்தி வசதி ஆதரிக்கப்படும் பணிப்பாய்வு, கணக்கு அமைப்பு, வழங்குநர் அனுமதியைச் சாரும். வாடிக்கையாளர்களுக்கு வாக்குறுதி அளிக்குமுன் இவற்றைச் சரிபாருங்கள்."
+    ],
+    [
+      "Acquiring a new customer costs 5x more than retaining one. Here's how to keep them.",
+      "Build useful post-purchase journeys and measure repeat buying in your own store.",
+      "उपयोगी खरीद-पश्चात अनुभव बनाएँ और अपने स्टोर में दोबारा खरीद मापें।",
+      "பயனுள்ள வாங்குதலுக்குப் பிந்தைய பயணங்களை உருவாக்கி உங்கள் கடையில் மீண்டும் வாங்குதலை அளவிடுங்கள்."
+    ],
+    [
+      "The top 20% of customers account for 80% of revenue for most Indian ecommerce brands. Yet most brands spend 90% of their marketing budget trying to acquire the other 80%. Flipping this ratio is the single highest-leverage growth move available.",
+      "Review how repeat purchases, acquisition costs and margins differ across your customer groups. Allocate retention effort using your own evidence rather than a universal spending ratio.",
+      "अपने ग्राहक समूहों में दोबारा खरीद, ग्राहक लागत और मार्जिन जाँचें। सार्वभौमिक अनुपात के बजाय अपने प्रमाण से रिटेंशन प्रयास तय करें।",
+      "வாடிக்கையாளர் குழுக்களில் மீண்டும் வாங்குதல், ஈட்டும் செலவு, லாபத்தை ஆய்வு செய்யுங்கள். பொதுவான விகிதத்திற்குப் பதில் உங்கள் ஆதாரத்தின்படி தக்கவைப்பில் முயற்சி செய்யுங்கள்."
+    ],
+    [
+      "Research across Indian D2C brands shows that customers who don't buy again within 90 days of their first purchase have a 75% churn probability. Your re-engagement window is tight — act early.",
+      "Repeat-purchase timing varies by product and customer. Use cohort data to choose a respectful re-engagement window rather than treating an uncited churn probability as a rule.",
+      "दोबारा खरीद का समय उत्पाद और ग्राहक पर निर्भर है। अप्रमाणित संभावना को नियम मानने के बजाय समूह डेटा से उचित संपर्क समय चुनें।",
+      "மீண்டும் வாங்கும் நேரம் தயாரிப்பையும் வாடிக்கையாளரையும் பொறுத்தது. ஆதாரமற்ற விலகல் விகிதத்தை விதியாகக் கொள்ளாமல் குழுத் தரவால் மரியாதையான தொடர்பு நேரத்தைத் தேர்வுசெய்யுங்கள்."
+    ],
+    [
+      "India's referral conversion rate is 30% higher than Western markets because of strong word-of-mouth culture. A simple \"give ₹100, get ₹100\" referral program, promoted at the right moment (post-delivery, when satisfaction is highest), can generate 20–30% of new revenue for mature brands.",
+      "If you test referrals, define eligibility, costs and abuse controls clearly. Compare incremental orders and margins with a suitable baseline; referral results are not guaranteed.",
+      "रेफ़रल जाँचते समय पात्रता, लागत और दुरुपयोग नियंत्रण स्पष्ट करें। आधार आँकड़ों से अतिरिक्त ऑर्डर और मार्जिन की तुलना करें; परिणाम की गारंटी नहीं है।",
+      "பரிந்துரைத் திட்டத்தைச் சோதித்தால் தகுதி, செலவு, தவறான பயன்பாட்டுக் கட்டுப்பாடுகளை விளக்குங்கள். அடிப்படைத் தரவுடன் கூடுதல் ஆர்டர்களையும் லாபத்தையும் ஒப்பிடுங்கள்; பலன் உறுதியில்லை."
+    ],
+    [
+      "29%",
+      "Track",
+      "दर्ज करें",
+      "கண்காணியுங்கள்"
+    ],
+    [
+      "22%",
+      "Measure",
+      "मापें",
+      "அளவிடுங்கள்"
+    ],
+    [
+      "8%",
+      "Measure",
+      "मापें",
+      "அளவிடுங்கள்"
+    ],
+    [
+      "4%",
+      "Measure",
+      "मापें",
+      "அளவிடுங்கள்"
+    ],
+    [
+      "1%",
+      "Track",
+      "दर्ज करें",
+      "கண்காணியுங்கள்"
+    ],
+    [
+      "3%",
+      "Measure",
+      "मापें",
+      "அளவிடுங்கள்"
+    ],
+    [
+      "UPI crossed 1 billion daily transactions in 2025. For ecommerce, it's the ideal payment method: instant settlement, zero failure rates vs. cards, and zero fee for amounts under ₹2,000. The challenge is UPI app switching on mobile browsers — which creates a 3–5% drop-off that deep links partially solve.",
+      "UPI is a payment method, not a guarantee of successful checkout or immediate merchant settlement. Payments can fail or remain pending; confirm final status through the provider and check the applicable charges and settlement terms for your account.",
+      "UPI भुगतान माध्यम है, सफल चेकआउट या तत्काल व्यापारी निपटान की गारंटी नहीं। भुगतान असफल या लंबित हो सकता है; प्रदाता से अंतिम स्थिति और अपने खाते की फीस तथा निपटान शर्तें जाँचें।",
+      "UPI ஒரு பணம் செலுத்தும் முறை; வெற்றிகரமான வாங்குதலையோ உடனடி வணிகர் தீர்வையையோ உறுதிப்படுத்தாது. பணம் செலுத்துதல் தோல்வியடையலாம் அல்லது நிலுவையில் இருக்கலாம்; வழங்குநரிடம் இறுதி நிலை, கட்டணங்கள், தீர்வு விதிகளைச் சரிபாருங்கள்."
+    ],
+    [
+      "LetBuyy's checkout uses UPI intent links that open the buyer's preferred UPI app directly (PhonePe, GPay, Paytm, BHIM) without manual entry. This reduces UPI drop-off by 2–4%.",
+      "Where supported, UPI intent can open a payment app from checkout. Test your supported devices, return flow and provider confirmation; this guide does not claim a measured reduction in drop-off.",
+      "जहाँ समर्थित हो, UPI intent चेकआउट से भुगतान ऐप खोल सकता है। उपकरण, वापसी प्रवाह और प्रदाता पुष्टि जाँचें; यह गाइड मापा गया ड्रॉप-ऑफ़ लाभ नहीं बताती।",
+      "ஆதரிக்கப்படும் இடங்களில் UPI intent வாங்குதல் பக்கத்திலிருந்து பணச் செயலியைத் திறக்கலாம். சாதனங்கள், திரும்பும் நடைமுறை, வழங்குநர் உறுதிப்படுத்தலைச் சோதியுங்கள்; அளவிடப்பட்ட குறைவை இவ்வழிகாட்டி கூறவில்லை."
+    ],
+    [
+      "Block COD for PIN codes with >30% RTO history",
+      "Review COD eligibility using sufficient delivery history and clear published restrictions",
+      "पर्याप्त डिलीवरी इतिहास और स्पष्ट नियम से COD पात्रता जाँचें",
+      "போதிய விநியோக வரலாறும் தெளிவான விதிகளும் கொண்டு COD தகுதியை ஆய்வு செய்யுங்கள்"
+    ],
+    [
+      "Send a pre-delivery WhatsApp confirmation (reduces RTO by 15%)",
+      "Where supported and consented, request a pre-delivery confirmation and measure its actual effect",
+      "समर्थन और सहमति होने पर डिलीवरी से पहले पुष्टि लें और वास्तविक असर मापें",
+      "ஆதரவும் ஒப்புதலும் இருந்தால் விநியோகத்துக்கு முன் உறுதிப்படுத்தலைப் பெற்று உண்மையான தாக்கத்தை அளவிடுங்கள்"
+    ],
+    [
+      "Don't choose between UPI and COD. Offer both, but design your funnel to guide buyers toward prepaid: \"Pay now and get free shipping\" is the most effective nudge. UPI prepaid orders cost less to fulfill, settle instantly, and return at one-third the rate of COD.",
+      "Choose payment options using customer needs, provider eligibility and measured costs. Explain genuine incentives clearly, and compare payment confirmation, settlement, RTO and customer returns as separate outcomes.",
+      "ग्राहकों, प्रदाता पात्रता और मापी गई लागत के आधार पर भुगतान विकल्प चुनें। वास्तविक प्रोत्साहन स्पष्ट करें और भुगतान पुष्टि, निपटान, RTO तथा रिटर्न अलग मापें।",
+      "வாடிக்கையாளர் தேவைகள், வழங்குநர் தகுதி, அளவிடப்பட்ட செலவுகளின்படி முறைகளைத் தேர்வுசெய்யுங்கள். உண்மையான சலுகைகளை விளக்கி பண உறுதி, தீர்வு, RTO, திருப்புதலைத் தனித்தனியாக அளவிடுங்கள்."
+    ],
+    [
+      "Indian buyers check the returns policy before buying. Brands with clear, fair return policies convert at 20% higher rates than those with restrictive or unclear policies. But a policy that's too liberal can destroy margins.",
+      "A clear returns policy helps buyers understand the conditions before purchase. Explain eligibility, process and timing accurately; measure its effect on your own store without promising a conversion increase.",
+      "स्पष्ट रिटर्न नीति खरीद से पहले शर्तें समझने में मदद करती है। पात्रता, प्रक्रिया और समय सही बताएँ; निश्चित लाभ का वादा किए बिना असर मापें।",
+      "தெளிவான திருப்புதல் கொள்கை வாங்குமுன் நிபந்தனைகளை அறிய உதவும். தகுதி, நடைமுறை, நேரத்தைத் துல்லியமாக விளக்கி நிலையான உயர்வை உறுதியளிக்காமல் தாக்கத்தை அளவிடுங்கள்."
+    ],
+    [
+      "Most fashion returns happen because the product looks different in person than in the photos. Accurate color representation and scale shots reduce fashion return rates by 15–20%.",
+      "Accurate photos, size guidance and product descriptions can reduce uncertainty. Classify your actual return reasons before deciding which content to improve.",
+      "सटीक फ़ोटो, आकार की जानकारी और विवरण अनिश्चितता कम कर सकते हैं। सुधार चुनने से पहले वास्तविक रिटर्न कारण जाँचें।",
+      "துல்லியமான படங்கள், அளவு வழிகாட்டல், விளக்கங்கள் உறுதியின்மையைக் குறைக்கலாம். மேம்படுத்த வேண்டியதைத் தேர்வுசெய்யுமுன் உண்மையான திருப்புதல் காரணங்களை வகைப்படுத்துங்கள்."
+    ],
+    [
+      "Not all SKUs are equal. ABC analysis segments your inventory by revenue contribution: A-items (top 20% SKUs, 80% of revenue), B-items (30% SKUs, 15% revenue), C-items (50% SKUs, 5% revenue). Manage A-items obsessively, B-items systematically, and C-items lightly.",
+      "ABC analysis groups products by their contribution to your business. Choose cutoffs using your own sales, margin and stockout data; the groups do not need to follow a fixed percentage split.",
+      "ABC विश्लेषण उत्पादों को व्यवसाय में योगदान के अनुसार बाँटता है। अपनी बिक्री, मार्जिन और स्टॉक डेटा से सीमाएँ चुनें; निश्चित प्रतिशत ज़रूरी नहीं।",
+      "ABC பகுப்பாய்வு தயாரிப்புகளை வணிகப் பங்களிப்பின்படி பிரிக்கிறது. உங்கள் விற்பனை, லாபம், இருப்புத் தீர்வு தரவின்படி வரம்புகளைத் தேர்வுசெய்யுங்கள்; நிலையான சதவீதம் தேவையில்லை."
+    ],
+    [
+      "Don't fulfill orders one by one. Batch print all labels for the morning courier pickup. Pick all items for the batch together. Pack together. This reduces per-order time by 40%.",
+      "Consider batching labels, picking and packing around courier pickups. Measure time per order and error rates before adopting a batch size; the gain depends on your operation.",
+      "कूरियर समय के अनुसार लेबल, पिकिंग और पैकिंग के बैच पर विचार करें। बैच चुनने से पहले प्रति ऑर्डर समय और त्रुटियाँ मापें; लाभ संचालन पर निर्भर है।",
+      "கூரியர் நேரத்திற்கேற்ப லேபிள், பொருள் எடுத்தல், பொதியிடலைத் தொகுக்கலாம். தொகுதி அளவைத் தேர்வுசெய்யுமுன் ஆர்டர் நேரத்தையும் பிழைகளையும் அளவிடுங்கள்; பலன் உங்கள் செயல்பாட்டைச் சாரும்."
+    ],
+    [
+      "India has 19,101 PIN codes. Your ability to serve them determines your total addressable market. Most Indian brands start with 3,000–5,000 PIN codes through a single courier, leaving 60–70% of the country unserved.",
+      "Check courier serviceability for the PIN codes your customers use. Coverage changes by carrier, service and shipment type; a national PIN-code count does not establish your reachable market.",
+      "ग्राहकों के PIN कोड के लिए कूरियर सेवा जाँचें। कवरेज प्रदाता, सेवा और शिपमेंट पर निर्भर है; राष्ट्रीय संख्या आपकी पहुँच तय नहीं करती।",
+      "உங்கள் வாடிக்கையாளர்களின் PIN குறியீடுகளுக்குச் சேவை உள்ளதா பாருங்கள். கூரியர், சேவை, அனுப்புகை வகைக்கேற்ப பரப்பு மாறும்; தேசிய எண்ணிக்கை உங்கள் சந்தையை நிர்ணயிக்காது."
+    ],
+    [
+      "Shipping rates are negotiable — don't accept list prices. At 100 shipments/month, you can negotiate 5–10% off. At 1,000/month, 15–25%. At 5,000/month, 30–40%. Get quotes from 3 couriers simultaneously and use competing offers as leverage.",
+      "Request comparable courier quotes for your shipment mix. Compare weight rules, remote-area charges, COD fees and return costs; a negotiated discount is not guaranteed at any shipment volume.",
+      "अपने शिपमेंट के लिए तुलनीय कूरियर कोटेशन लें। वजन, दूरस्थ क्षेत्र शुल्क, COD और रिटर्न लागत की तुलना करें; मात्रा पर छूट की गारंटी नहीं।",
+      "உங்கள் அனுப்புகைகளுக்கேற்ற ஒப்பிடக்கூடிய விலைகளைப் பெறுங்கள். எடை, தொலைதூரக் கட்டணம், COD, திருப்புதல் செலவுகளை ஒப்பிடுங்கள்; எந்த அளவிலும் தள்ளுபடி உறுதியில்லை."
+    ],
+    [
+      "Distribute stock closer to your buyers and cut delivery times by 60%.",
+      "Evaluate warehouse locations using delivery demand, costs and operational complexity.",
+      "डिलीवरी माँग, लागत और संचालन जटिलता से गोदाम स्थान जाँचें।",
+      "விநியோகத் தேவை, செலவு, செயல்பாட்டுச் சிக்கலின்படி கிடங்கு இடங்களை மதிப்பிடுங்கள்."
+    ],
+    [
+      "Selling from a single warehouse in Delhi means a buyer in Chennai waits 5–7 days. Storing 20% of your inventory in Bengaluru cuts that to 2 days. Multi-warehouse is the highest-impact operations upgrade for brands above ₹50 lakh annual revenue.",
+      "A nearby warehouse may shorten some routes, but transit times depend on serviceability, stock and courier commitments. Model costs and demand before adding another location; no delivery-time reduction is guaranteed.",
+      "नज़दीकी गोदाम कुछ मार्ग छोटे कर सकता है, पर समय सेवा, स्टॉक और कूरियर पर निर्भर है। नया स्थान जोड़ने से पहले लागत और माँग जाँचें; समय घटने की गारंटी नहीं।",
+      "அருகிலுள்ள கிடங்கு சில வழிகளைக் குறைக்கலாம்; நேரம் சேவை, இருப்பு, கூரியர் உறுதியைச் சாரும். இடத்தைச் சேர்க்குமுன் செலவும் தேவையும் ஆய்வு செய்யுங்கள்; நேரக் குறைவு உறுதியில்லை."
+    ],
+    [
+      "Shipping costs above 8% of revenue",
+      "Shipping costs that materially reduce your own order margin",
+      "आपके ऑर्डर मार्जिन को काफी घटाने वाली शिपिंग लागत",
+      "உங்கள் ஆர்டர் லாபத்தை குறிப்பிடத்தக்க அளவு குறைக்கும் விநியோகச் செலவு"
+    ],
+    [
+      "\"Where is my order?\" accounts for 65% of ecommerce support tickets. AI auto-responds with real-time tracking information — without a human in the loop.",
+      "Classify your own support questions before choosing automation. Order-status answers must use authorized current data and provide a human escalation path when information is missing or uncertain.",
+      "ऑटोमेशन चुनने से पहले अपने सहायता सवाल वर्गीकृत करें। ऑर्डर जवाब अधिकृत मौजूदा डेटा पर आधारित हों और अधूरी जानकारी पर मानव सहायता दें।",
+      "தானியக்கத்தைத் தேர்வுசெய்யுமுன் உங்கள் ஆதரவுக் கேள்விகளை வகைப்படுத்துங்கள். ஆர்டர் பதில்கள் அங்கீகரிக்கப்பட்ட தற்போதைய தரவைப் பயன்படுத்தி தகவல் இல்லையெனில் மனித உதவியை வழங்க வேண்டும்."
+    ],
+    [
+      "Product recommendations drive 35% of Amazon's revenue. The same intelligence is now available to independent Indian stores through LetBuyy's recommendation engine — no ML team required.",
+      "Recommendations can help shoppers discover relevant products. Availability depends on the supported product and plan; evaluate suggestions and incremental outcomes with your own data rather than a claim about another company's revenue.",
+      "सुझाव संबंधित उत्पाद खोजने में मदद कर सकते हैं। उपलब्धता उत्पाद और योजना पर निर्भर है; दूसरे व्यवसाय की आय के दावे के बजाय अपने आँकड़ों से सुझाव और परिणाम जाँचें।",
+      "பரிந்துரைகள் தொடர்புடைய பொருட்களைக் கண்டறிய உதவலாம். கிடைப்பது தயாரிப்பையும் திட்டத்தையும் சாரும்; மற்றொரு நிறுவன வருவாயைக் கூறாமல் உங்கள் தரவில் பரிந்துரைகளையும் கூடுதல் பலனையும் ஆய்வு செய்யுங்கள்."
+    ],
+    [
+      "of online transactions",
+      "Your store's payment mix",
+      "अपने स्टोर का भुगतान मिश्रण",
+      "உங்கள் கடையின் பண முறைகளின் பங்கு"
+    ],
+    [
+      "Tier 2/3 dominant",
+      "Your delivery outcomes",
+      "आपके डिलीवरी परिणाम",
+      "உங்கள் விநியோக முடிவுகள்"
+    ],
+    [
+      "Metro-heavy",
+      "Your customer needs",
+      "आपके ग्राहकों की ज़रूरत",
+      "உங்கள் வாடிக்கையாளர் தேவைகள்"
+    ],
+    [
+      "Market Share",
+      "Your Payment Mix",
+      "आपका भुगतान मिश्रण",
+      "உங்கள் பண முறைகளின் பங்கு"
+    ],
+    [
+      "Avg Order Value",
+      "Your Order Value",
+      "आपका ऑर्डर मूल्य",
+      "உங்கள் ஆர்டர் மதிப்பு"
+    ],
+    [
+      "Return Rate",
+      "Your RTO / Returns",
+      "आपके RTO / रिटर्न",
+      "உங்கள் RTO / திருப்புதல்கள்"
+    ],
+    [
+      "₹1,200",
+      "Measure in your store",
+      "अपने स्टोर में मापें",
+      "உங்கள் கடையில் அளவிடுங்கள்"
+    ],
+    [
+      "₹780",
+      "Measure in your store",
+      "अपने स्टोर में मापें",
+      "உங்கள் கடையில் அளவிடுங்கள்"
+    ],
+    [
+      "₹2,400",
+      "Measure in your store",
+      "अपने स्टोर में मापें",
+      "உங்கள் கடையில் அளவிடுங்கள்"
+    ],
+    [
+      "₹650",
+      "Measure in your store",
+      "अपने स्टोर में मापें",
+      "உங்கள் கடையில் அளவிடுங்கள்"
+    ],
+    [
+      "Metro, repeat buyers, digital natives",
+      "Confirm provider eligibility",
+      "प्रदाता की पात्रता जाँचें",
+      "வழங்குநர் தகுதியை உறுதிப்படுத்துங்கள்"
+    ],
+    [
+      "Tier 2/3, first-time buyers, fashion",
+      "Check delivery coverage",
+      "डिलीवरी क्षेत्र जाँचें",
+      "விநியோகப் பகுதியைச் சரிபாருங்கள்"
+    ],
+    [
+      "High-value, B2B, subscriptions",
+      "Confirm supported cards",
+      "समर्थित कार्ड जाँचें",
+      "ஆதரிக்கப்படும் அட்டைகளைச் சரிபாருங்கள்"
+    ],
+    [
+      "Low-value, impulse purchases",
+      "Confirm supported wallets",
+      "समर्थित वॉलेट जाँचें",
+      "ஆதரிக்கப்படும் பணப்பைகளைச் சரிபாருங்கள்"
+    ],
+    [
+      "India has 467 million Instagram users and 535 million WhatsApp users. Social commerce isn't a trend here — it's the primary way Tier 2 and Tier 3 buyers discover and purchase products. Ignoring it means ignoring the largest addressable market.",
+      "Find the channels your actual customers use. Test discovery, consent-based follow-up and support journeys separately; a platform's audience size is not evidence of demand for your product.",
+      "अपने ग्राहकों के वास्तविक माध्यम खोजें। खोज, सहमति वाले संपर्क और सहायता को अलग जाँचें; प्लेटफ़ॉर्म की आबादी आपके उत्पाद की माँग का प्रमाण नहीं।",
+      "உங்கள் வாடிக்கையாளர்கள் பயன்படுத்தும் வழிகளை அறியுங்கள். கண்டறிதல், ஒப்புதல் பெற்ற தொடர்பு, ஆதரவைத் தனியே சோதியுங்கள்; தளப் பார்வையாளர் அளவு உங்கள் பொருளின் தேவைக்குச் சான்றல்ல."
+    ],
+    [
+      "18,000+",
+      "Check current coverage",
+      "वर्तमान कवरेज जाँचें",
+      "தற்போதைய சேவைப் பகுதியைச் சரிபாருங்கள்"
+    ],
+    [
+      "35,000+",
+      "Check current coverage",
+      "वर्तमान कवरेज जाँचें",
+      "தற்போதைய சேவைப் பகுதியைச் சரிபாருங்கள்"
+    ],
+    [
+      "26,000+ (aggregator)",
+      "Check current coverage",
+      "वर्तमान कवरेज जाँचें",
+      "தற்போதைய சேவைப் பகுதியைச் சரிபாருங்கள்"
+    ],
+    [
+      "10,000+",
+      "Check current coverage",
+      "वर्तमान कवरेज जाँचें",
+      "தற்போதைய சேவைப் பகுதியைச் சரிபாருங்கள்"
+    ],
+    [
+      "15,000+",
+      "Check current coverage",
+      "वर्तमान कवरेज जाँचें",
+      "தற்போதைய சேவைப் பகுதியைச் சரிபாருங்கள்"
+    ],
+    [
+      "3–5 days",
+      "Confirm quoted service",
+      "सेवा की शर्तें जाँचें",
+      "சேவை விதிகளை உறுதிப்படுத்துங்கள்"
+    ],
+    [
+      "2–3 days",
+      "Confirm quoted service",
+      "सेवा की शर्तें जाँचें",
+      "சேவை விதிகளை உறுதிப்படுத்துங்கள்"
+    ],
+    [
+      "3–6 days",
+      "Confirm quoted service",
+      "सेवा की शर्तें जाँचें",
+      "சேவை விதிகளை உறுதிப்படுத்துங்கள்"
+    ],
+    [
+      "4–7 days",
+      "Confirm quoted service",
+      "सेवा की शर्तें जाँचें",
+      "சேவை விதிகளை உறுதிப்படுத்துங்கள்"
+    ],
+    [
+      "If your annual turnover exceeds ₹5 crore, you must generate invoices through the GST e-invoice portal (IRP) and attach an IRN (Invoice Reference Number) and QR code. LetBuyy integrates with the IRP for merchants above this threshold.",
+      "E-invoicing applicability depends on the current rules, transaction type and exemptions. Verify your obligations with the official portal and a qualified adviser. Do not assume that a LetBuyy-generated invoice has been registered with an IRP.",
+      "ई-इनवॉइस लागू होना मौजूदा नियम, लेनदेन और छूट पर निर्भर है। आधिकारिक पोर्टल और योग्य सलाहकार से जाँचें। LetBuyy का बिल IRP में दर्ज हुआ है, ऐसा न मानें।",
+      "மின் விலைப்பட்டியல் தற்போதைய விதிகள், பரிமாற்ற வகை, விலக்குகளைச் சாரும். அதிகாரப்பூர்வ தளத்திலும் தகுதியான ஆலோசகரிடமும் சரிபாருங்கள். LetBuyy உருவாக்கிய விலைப்பட்டியல் IRP-இல் பதிவு செய்யப்பட்டதாகக் கருத வேண்டாம்."
+    ],
+    [
+      "LetBuyy generates fully GST-compliant invoices automatically for every order — with your GSTIN, HSN codes, correct CGST/SGST/IGST split, and sequential invoice numbers. Download, email, or WhatsApp to buyers in one click.",
+      "Configure your business and product tax details accurately, then check generated invoices against the requirements that apply to your transactions. Software output alone is not a compliance guarantee; confirm which delivery and export features are enabled for your account.",
+      "व्यवसाय और उत्पाद कर जानकारी सही भरें और अपने लेनदेन के नियम से बिल जाँचें। सॉफ़्टवेयर आउटपुट अनुपालन की गारंटी नहीं; खाते में उपलब्ध सुविधाएँ जाँचें।",
+      "வணிக மற்றும் தயாரிப்பு வரித் தகவல்களைத் துல்லியமாக அமைத்து, பரிமாற்ற விதிகளுடன் விலைப்பட்டியலைச் சரிபாருங்கள். மென்பொருள் வெளியீடு இணக்க உத்தரவாதம் அல்ல; கணக்கில் செயல்படும் அம்சங்களை உறுதிப்படுத்துங்கள்."
+    ]
+  ],
+  "counts": {
+    "India's ecommerce market crossed ₹5 lakh crore in 2025 and is projected to triple by 2030. Yet most guides about starting an online store are written for Shopify merchants in the US — they skip GST, ignore COD, and assume everyone uses Stripe. This guide doesn't.": 1,
+    "India Ecommerce Market": 1,
+    "₹5L Cr+": 1,
+    "↑ 28% YoY": 1,
+    "UPI Share of Payments": 1,
+    "65%": 3,
+    "↑ from 48% in 2023": 1,
+    "Tier 2/3 City Buyers": 1,
+    "71%": 1,
+    "of new D2C customers": 1,
+    "You need a GSTIN before you can sell on most platforms or accept online payments at scale. Registration takes 7–10 working days through the GST portal. You'll need your PAN, Aadhaar, bank account details, and a business address.": 1,
+    "If your annual turnover exceeds ₹20 lakh (₹10 lakh in special category states), GST registration is mandatory. Even below that, voluntary registration unlocks input tax credit — a significant cost advantage.": 1,
+    "A Jaipur-based kurta brand switched from Shopify to LetBuyy in April 2026. Their checkout had 3 steps instead of 7, UPI worked without a redirect, and GST invoices generated automatically.": 1,
+    "Cart completion rate went from 34% to 61% in 60 days. COD orders from Tier 2 cities doubled.": 1,
+    "+79% checkout conversion": 1,
+    "Indian buyers have strong payment preferences that differ significantly from Western markets. In 2026, UPI accounts for 65% of online transactions, COD remains at 30% for Tier 2+ cities, and cards cover the remainder.": 1,
+    "30%": 1,
+    "5%": 5,
+    "Don't view COD as a burden — view it as your Tier 2 and Tier 3 city unlock. Brands that disable COD lose up to 40% of addressable revenue in India. Offer it, but set a ₹2,000 order minimum to manage return risk.": 1,
+    "Shipping is where most new Indian stores fail silently. Choose a courier partner with strong Tier 2 and Tier 3 coverage — not just metro cities. Look for NDR (non-delivery report) automation, real-time tracking, and RTO (return to origin) rates under 15%.": 1,
+    "RTO above 20%: This is a marketing problem, not a logistics problem. Tighten your targeting before scaling.": 1,
+    "The average Indian ecommerce product page converts at 1.5–2.5%. The top 10% of stores convert at 5–8%. The difference isn't traffic or advertising budget — it's the product page itself.": 1,
+    "Over 78% of Indian ecommerce happens on mobile. Shoot your products in portrait orientation and test every image on a 360px wide screen. What looks great on desktop can look tiny on Redmi.": 1,
+    "Indian buyers are among the most review-reliant in the world. Products with 10+ reviews convert at 3x the rate of products with zero reviews. Your post-purchase flow should make leaving a review feel natural, not like a chore.": 1,
+    "70% of Indian shoppers abandon their cart. Here's how to get them back.": 1,
+    "India has one of the highest cart abandonment rates in the world — around 70–75% globally, but crossing 80% for some Indian categories. COD hesitation, slow loading on 4G, and trust gaps at checkout are the three biggest drivers.": 1,
+    "India's WhatsApp open rate is 98%. A personalized WhatsApp message — \"Hey Rohan, you left something behind\" with a product image — sent 2 hours after abandonment recovers 8–12% of abandoned carts.": 1,
+    "Every additional form field drops conversion by ~10%. Collect only what you need: name, phone (not email — they'll share phone), delivery address, and payment. Don't ask for date of birth, gender, or alternate email at checkout.": 1,
+    "Paid ads are expensive and the moment you stop paying, traffic stops. SEO is slow and boring — and it's the only channel where traffic compounds over time. For Indian ecommerce, organic search is responsible for 35–45% of revenue for established brands.": 1,
+    "Mobile-first: 78% of India's search happens on mobile": 1,
+    "India's average mobile connection speed is 25 Mbps, but 40% of rural users are on 3G/4G. Your store must load usably in under 3 seconds on a Redmi device over a 3G connection. Test with Chrome's Network Throttling.": 1,
+    "How Product Reviews Increase Conversion by 270%": 1,
+    "Data-backed guide on how product reviews impact conversion rates for Indian ecommerce, with a step-by-step collection playbook.": 1,
+    "A product with 50 reviews converts at 4.6% on average. A product with zero reviews converts at 1.7%. That's a 270% lift — from nothing but social proof. And the gap widens as Indian buyers become more sophisticated and review-dependent.": 1,
+    "Send a WhatsApp message 5 days after delivery: \"How is your [product]? Reply with your rating (1–5)\" — WhatsApp reviews get 3x the response rate of email": 1,
+    "Don't post promotional messages directly. Instead, join relevant groups, contribute for 2–3 weeks, then share your product as \"something I've been working on.\" The warm intro approach gets 10x the engagement of cold promotion.": 1,
+    "India's middle class is 400 million people. A 0.1% niche is 400,000 potential buyers — enough to build a ₹10+ crore brand with no external funding.": 1,
+    "Three emails: first reminds of the abandoned item, second shows reviews and addresses objections, third offers a time-limited discount. Combined recovery rate: 12–18%.": 1,
+    "WhatsApp Business accounts get 98% message open rates. Set up a catalog in WhatsApp Business, enable payments (where available), and use it as your post-purchase support and upsell channel.": 1,
+    "LetBuyy's WhatsApp integration lets buyers check order status, request returns, and get product recommendations — all within WhatsApp. Zero additional setup for merchants.": 1,
+    "Acquiring a new customer costs 5x more than retaining one. Here's how to keep them.": 1,
+    "The top 20% of customers account for 80% of revenue for most Indian ecommerce brands. Yet most brands spend 90% of their marketing budget trying to acquire the other 80%. Flipping this ratio is the single highest-leverage growth move available.": 1,
+    "Research across Indian D2C brands shows that customers who don't buy again within 90 days of their first purchase have a 75% churn probability. Your re-engagement window is tight — act early.": 1,
+    "India's referral conversion rate is 30% higher than Western markets because of strong word-of-mouth culture. A simple \"give ₹100, get ₹100\" referral program, promoted at the right moment (post-delivery, when satisfaction is highest), can generate 20–30% of new revenue for mature brands.": 1,
+    "29%": 1,
+    "22%": 1,
+    "8%": 1,
+    "4%": 1,
+    "1%": 1,
+    "3%": 1,
+    "UPI crossed 1 billion daily transactions in 2025. For ecommerce, it's the ideal payment method: instant settlement, zero failure rates vs. cards, and zero fee for amounts under ₹2,000. The challenge is UPI app switching on mobile browsers — which creates a 3–5% drop-off that deep links partially solve.": 1,
+    "LetBuyy's checkout uses UPI intent links that open the buyer's preferred UPI app directly (PhonePe, GPay, Paytm, BHIM) without manual entry. This reduces UPI drop-off by 2–4%.": 1,
+    "Block COD for PIN codes with >30% RTO history": 1,
+    "Send a pre-delivery WhatsApp confirmation (reduces RTO by 15%)": 1,
+    "Don't choose between UPI and COD. Offer both, but design your funnel to guide buyers toward prepaid: \"Pay now and get free shipping\" is the most effective nudge. UPI prepaid orders cost less to fulfill, settle instantly, and return at one-third the rate of COD.": 1,
+    "Indian buyers check the returns policy before buying. Brands with clear, fair return policies convert at 20% higher rates than those with restrictive or unclear policies. But a policy that's too liberal can destroy margins.": 1,
+    "Most fashion returns happen because the product looks different in person than in the photos. Accurate color representation and scale shots reduce fashion return rates by 15–20%.": 1,
+    "Not all SKUs are equal. ABC analysis segments your inventory by revenue contribution: A-items (top 20% SKUs, 80% of revenue), B-items (30% SKUs, 15% revenue), C-items (50% SKUs, 5% revenue). Manage A-items obsessively, B-items systematically, and C-items lightly.": 1,
+    "Don't fulfill orders one by one. Batch print all labels for the morning courier pickup. Pick all items for the batch together. Pack together. This reduces per-order time by 40%.": 1,
+    "India has 19,101 PIN codes. Your ability to serve them determines your total addressable market. Most Indian brands start with 3,000–5,000 PIN codes through a single courier, leaving 60–70% of the country unserved.": 1,
+    "Shipping rates are negotiable — don't accept list prices. At 100 shipments/month, you can negotiate 5–10% off. At 1,000/month, 15–25%. At 5,000/month, 30–40%. Get quotes from 3 couriers simultaneously and use competing offers as leverage.": 1,
+    "Distribute stock closer to your buyers and cut delivery times by 60%.": 1,
+    "Selling from a single warehouse in Delhi means a buyer in Chennai waits 5–7 days. Storing 20% of your inventory in Bengaluru cuts that to 2 days. Multi-warehouse is the highest-impact operations upgrade for brands above ₹50 lakh annual revenue.": 1,
+    "Shipping costs above 8% of revenue": 1,
+    "\"Where is my order?\" accounts for 65% of ecommerce support tickets. AI auto-responds with real-time tracking information — without a human in the loop.": 1,
+    "Product recommendations drive 35% of Amazon's revenue. The same intelligence is now available to independent Indian stores through LetBuyy's recommendation engine — no ML team required.": 1,
+    "of online transactions": 1,
+    "Tier 2/3 dominant": 1,
+    "Metro-heavy": 1,
+    "Market Share": 1,
+    "Avg Order Value": 1,
+    "Return Rate": 1,
+    "₹1,200": 1,
+    "₹780": 1,
+    "₹2,400": 1,
+    "₹650": 1,
+    "Metro, repeat buyers, digital natives": 1,
+    "Tier 2/3, first-time buyers, fashion": 1,
+    "High-value, B2B, subscriptions": 1,
+    "Low-value, impulse purchases": 1,
+    "India has 467 million Instagram users and 535 million WhatsApp users. Social commerce isn't a trend here — it's the primary way Tier 2 and Tier 3 buyers discover and purchase products. Ignoring it means ignoring the largest addressable market.": 1,
+    "18,000+": 1,
+    "35,000+": 1,
+    "26,000+ (aggregator)": 1,
+    "10,000+": 1,
+    "15,000+": 1,
+    "3–5 days": 2,
+    "2–3 days": 1,
+    "3–6 days": 1,
+    "4–7 days": 1,
+    "If your annual turnover exceeds ₹5 crore, you must generate invoices through the GST e-invoice portal (IRP) and attach an IRN (Invoice Reference Number) and QR code. LetBuyy integrates with the IRP for merchants above this threshold.": 1,
+    "LetBuyy generates fully GST-compliant invoices automatically for every order — with your GSTIN, HSN codes, correct CGST/SGST/IGST split, and sequential invoice numbers. Download, email, or WhatsApp to buyers in one click.": 1
+  }
+}

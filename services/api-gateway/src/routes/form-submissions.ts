@@ -1,4 +1,3 @@
-import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -96,14 +95,13 @@ router.patch('/:id', validate('json', UpdateFormSubmissionSchema), async (c) => 
     const submissionId = c.req.param('id');
     const body = c.get('validatedBody') as UpdateFormSubmissionInput;
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const selectExistingSubmission = (includeDeletedAtFilter: boolean) => {
         let request = db
             .from('form_submissions')
             .select('id, store_id')
-            .eq('id', submissionId).in('store_id', storeIds);
+            .eq('id', submissionId);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.single();
@@ -127,7 +125,7 @@ router.patch('/:id', validate('json', UpdateFormSubmissionSchema), async (c) => 
     const { data, error } = await db
         .from('form_submissions')
         .update(updates)
-        .eq('id', submissionId).in('store_id', storeIds)
+        .eq('id', submissionId)
         .select()
         .single();
 
@@ -142,14 +140,13 @@ router.delete('/:id', async (c) => {
     const auth = c.get('auth');
     const submissionId = c.req.param('id');
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const selectExistingSubmission = (includeDeletedAtFilter: boolean) => {
         let request = db
             .from('form_submissions')
             .select('id, store_id')
-            .eq('id', submissionId).in('store_id', storeIds);
+            .eq('id', submissionId);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.single();
@@ -169,7 +166,7 @@ router.delete('/:id', async (c) => {
     const { error } = await db
         .from('form_submissions')
         .update({ deleted_at: new Date().toISOString() })
-        .eq('id', submissionId).in('store_id', storeIds);
+        .eq('id', submissionId);
 
     if (error) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);

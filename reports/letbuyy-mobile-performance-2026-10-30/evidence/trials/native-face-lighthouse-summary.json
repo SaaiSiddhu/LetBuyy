@@ -1,0 +1,19 @@
+{
+  "diagnostic_only": true,
+  "fonts_enabled": true,
+  "native_faces": [
+    {
+      "source": "TamilSangamMN",
+      "status": "loaded",
+      "time": 1492.800000000745
+    },
+    {
+      "source": "TamilSangamMN-Bold",
+      "status": "loaded",
+      "time": 1492.800000000745
+    }
+  ],
+  "lcp_ms": 3040.949,
+  "tbt_ms": 264.34000000000015,
+  "cls": 0
+}

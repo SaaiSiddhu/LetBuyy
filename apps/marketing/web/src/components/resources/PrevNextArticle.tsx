@@ -25,7 +25,7 @@ export default function PrevNextArticle({ prev, next }: Props) {
                 <path d="M15 18l-6-6 6-6" />
               </svg>
               <Copy text={"Previous"} /></div>
-            <p className="arc-pn-cat" style={{ color: prevCat.color }}><Copy text={prevCat.label} /></p>
+            <p className="arc-pn-cat" style={{ color: `color-mix(in srgb, ${prevCat.color} 35%, var(--lb-color-text))` }}><Copy text={prevCat.label} /></p>
             <p className="arc-pn-title">{prev.title}</p>
             <p className="arc-pn-meta">{prev.readingTime} <Copy text={"min read"} /></p>
           </Link>
@@ -40,7 +40,7 @@ export default function PrevNextArticle({ prev, next }: Props) {
                 <path d="M9 18l6-6-6-6" />
               </svg>
             </div>
-            <p className="arc-pn-cat" style={{ color: nextCat.color }}><Copy text={nextCat.label} /></p>
+            <p className="arc-pn-cat" style={{ color: `color-mix(in srgb, ${nextCat.color} 35%, var(--lb-color-text))` }}><Copy text={nextCat.label} /></p>
             <p className="arc-pn-title">{next.title}</p>
             <p className="arc-pn-meta">{next.readingTime} <Copy text={"min read"} /></p>
           </Link>

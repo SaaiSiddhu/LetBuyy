@@ -1,0 +1,68 @@
+[
+  {
+    "requested_url": "https://letbuy-y.web.app/",
+    "captured_at": "2026-10-29T18:47:00.401340+00:00",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "status": 200,
+    "final_url": "https://letbuy-y.web.app/",
+    "title": "Create Next App",
+    "h1": [
+      "Stop Renting.",
+      "Start Owning."
+    ],
+    "visible_body_sha256": "f961f258bb5209c556fc78efd2bd46e94f4de23537fcd8245291c28875c065ee",
+    "rendered_html_sha256": "fa4f84f4a0a4f80d9c4c8f36aac732a9325622d55c8a1f3991d0a13a1bc58dc4",
+    "visible_characters": 3289,
+    "visible_excerpt": "LetBuyy\nFeatures\nPricing\nTestimonials\nLog in\nGet Started\nStop Renting.\nStart Owning.\n\nYour Store. Your Customers. Your Data.\n\nBreak free from marketplace fees and restrictions. Build a store that's truly yours.\n\nyourstore.letbuyy.store\nRevenue\n₹2.4L\nOrders\n142\nVisitors\n1.2K\nConversion\n3.2%\nNew Order!\n₹2,450.00\nStore is Live\n✓\nFree to start\n₹\nNo commission\n📱\nMobile-first\nCreate Your Store\nHow It Works\n500+\nIndian Sellers\n₹2Cr+\nProcessed\nPowered by\nRazorpay\n•\nShiprocket\n\nTrusted by 500+ sellers across India\n\nFashionHub\nTechKart\nOrganicLife\nUrbanTrends\nLuxeLiving\nDailyNeeds\nStyleStore\nHomeDecor\nBeautyBox\nFoodMart\nFashionHub\nTechKart\nOrganicLife\nUrbanTrends\nLuxeLiving\nDailyNeeds\nStyleStore\nHomeDecor\nBeautyBox\nFoodMart\nFashionHub\nTechKart\nOrganicLife\nUrbanTrends\nLuxeLiving\nDailyNeeds\nStyleStore\nHomeDecor\nBeautyBox\nFoodMart\nFeatures\nEverything You Need\n\nPowerful tools to grow your business\n\n🎬\nPopular\n3x More Sales\nShoppable Stories\n\nTurn reels into revenue\n\nProduct tagging\nOne-tap checkout\nEngagement analytics\n📊\nNew\nSmart Data\nLive Analytics\n\nReal-time insights dashboard\n\nRevenue tracking\nCustomer insights\nSales reports\n💳\nZero Hold\nInstant Payments\n\nGet paid in 24 hours\n\nUPI & Cards\nCOD support\nAuto-settlement\n🚚\n5+ Couriers\nSmart Shipping\n\nMulti-courier integration\n\nAuto labels\nLive tracking\nBest rates\n📦\nReal-time\nStock Sync\n\nNever oversell again\n\nMulti-channel\nLow alerts\nBulk upload\n📣\nBuilt-in SEO\nMarketing Suite\n\nGrow your audience\n\nDiscount codes\nSocial share\nEmail tools\n👆 Swipe to explore\nYour Journey\nLaunch in 10 Minutes\nFrom zero to selling in\n4 steps\n📲\nSTEP 01\nDownload App\n\nGet started in seconds\n\n⏱️\n2 min\nOne-tap signup\nFree subdomain\nNo docs needed\n📸\nSTEP 02\nAdd Products\n\nUpload or shoot reels\n\n⏱️\n5 min\nBulk upload\nVideo editor\nAuto-optimize\n🚀\nSTEP 03\nGo Live\n\nShare & start selling\n\n⏱️\n1 min\nInstant publish\nWhatsApp ready\nSocial share\n📈\nSTEP 04\nScale & Grow\n\nTrack & optimize\n\n⏱️\n∞\nOrder alerts\nAnalytics\nAuto shipping\nReady to launch?\n\nJoin 500+ sellers already growing\n\nGet Started\nPricing\nSimple, Transparent Pricing\n\nStart free, upgrade when you need\n\nMonthly\nYearly\n20% OFF\nFree\n\nPerfect for testing ideas\n\n₹0\n/month\n10 Products\n1 Store\nBasic Themes\nLetBuyy Branding\nStart Free\nMost Popular\nPro\n\nFor serious sellers\n\n₹499\n/month\nUnlimited Products\n3 Stores\nCustom Domain\nNo Branding\nAnalytics\nGet Started\nMax\n\nFor scaling brands\n\n₹1999\n/month\nEverything in Pro\nUnlimited Stores\nPriority Support\nWhite-label\nAPI Access\nGet Started\nTestimonials\nLoved by Sellers\n\nJoin 500+ successful store owners\n\n\"LetBuyy transformed my small business into a brand. The video feature is a game changer!\"\n\nPriya Sharma\nFashion Store Owner\n\n\"The best platform specific for Indian market. UPI payments work flawlessly.\"\n\nRahul Verma\nElectronics Seller\n\n\"Support is amazing. I set up my store in 10 minutes and got my first order the same day.\"\n\nAnita Desai\nHome Decor\nReady to Build Your Empire?\n\nJoin 500+ sellers who chose independence. Your store, your rules.\n\nStart Free Today",
+    "heading_text": [
+      "Stop Renting.",
+      "Start Owning.",
+      "Everything You Need",
+      "Launch in 10 Minutes",
+      "Simple, Transparent Pricing",
+      "Loved by Sellers",
+      "Ready to Build Your Empire?"
+    ],
+    "evidence_html": "evidence/pages/legacy-home-rendered.html",
+    "screenshot": "evidence/legacy-home.png",
+    "page_errors": [],
+    "privacy_policy_label_present": true,
+    "privacy_label_interpretation": "A footer/link label alone is not a privacy notice. No privacy-policy heading appears; both URLs have identical visible-body hashes and marketing content."
+  },
+  {
+    "requested_url": "https://letbuy-y.web.app/privacy-policy",
+    "captured_at": "2026-10-29T18:47:05.191177+00:00",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "status": 200,
+    "final_url": "https://letbuy-y.web.app/privacy-policy",
+    "title": "Create Next App",
+    "h1": [
+      "Stop Renting.",
+      "Start Owning."
+    ],
+    "visible_body_sha256": "f961f258bb5209c556fc78efd2bd46e94f4de23537fcd8245291c28875c065ee",
+    "rendered_html_sha256": "3cae89c15f42d55278b91b5fd611e82b5bb25cfa08dc39f43b596680d767e603",
+    "visible_characters": 3289,
+    "visible_excerpt": "LetBuyy\nFeatures\nPricing\nTestimonials\nLog in\nGet Started\nStop Renting.\nStart Owning.\n\nYour Store. Your Customers. Your Data.\n\nBreak free from marketplace fees and restrictions. Build a store that's truly yours.\n\nyourstore.letbuyy.store\nRevenue\n₹2.4L\nOrders\n142\nVisitors\n1.2K\nConversion\n3.2%\nNew Order!\n₹2,450.00\nStore is Live\n✓\nFree to start\n₹\nNo commission\n📱\nMobile-first\nCreate Your Store\nHow It Works\n500+\nIndian Sellers\n₹2Cr+\nProcessed\nPowered by\nRazorpay\n•\nShiprocket\n\nTrusted by 500+ sellers across India\n\nFashionHub\nTechKart\nOrganicLife\nUrbanTrends\nLuxeLiving\nDailyNeeds\nStyleStore\nHomeDecor\nBeautyBox\nFoodMart\nFashionHub\nTechKart\nOrganicLife\nUrbanTrends\nLuxeLiving\nDailyNeeds\nStyleStore\nHomeDecor\nBeautyBox\nFoodMart\nFashionHub\nTechKart\nOrganicLife\nUrbanTrends\nLuxeLiving\nDailyNeeds\nStyleStore\nHomeDecor\nBeautyBox\nFoodMart\nFeatures\nEverything You Need\n\nPowerful tools to grow your business\n\n🎬\nPopular\n3x More Sales\nShoppable Stories\n\nTurn reels into revenue\n\nProduct tagging\nOne-tap checkout\nEngagement analytics\n📊\nNew\nSmart Data\nLive Analytics\n\nReal-time insights dashboard\n\nRevenue tracking\nCustomer insights\nSales reports\n💳\nZero Hold\nInstant Payments\n\nGet paid in 24 hours\n\nUPI & Cards\nCOD support\nAuto-settlement\n🚚\n5+ Couriers\nSmart Shipping\n\nMulti-courier integration\n\nAuto labels\nLive tracking\nBest rates\n📦\nReal-time\nStock Sync\n\nNever oversell again\n\nMulti-channel\nLow alerts\nBulk upload\n📣\nBuilt-in SEO\nMarketing Suite\n\nGrow your audience\n\nDiscount codes\nSocial share\nEmail tools\n👆 Swipe to explore\nYour Journey\nLaunch in 10 Minutes\nFrom zero to selling in\n4 steps\n📲\nSTEP 01\nDownload App\n\nGet started in seconds\n\n⏱️\n2 min\nOne-tap signup\nFree subdomain\nNo docs needed\n📸\nSTEP 02\nAdd Products\n\nUpload or shoot reels\n\n⏱️\n5 min\nBulk upload\nVideo editor\nAuto-optimize\n🚀\nSTEP 03\nGo Live\n\nShare & start selling\n\n⏱️\n1 min\nInstant publish\nWhatsApp ready\nSocial share\n📈\nSTEP 04\nScale & Grow\n\nTrack & optimize\n\n⏱️\n∞\nOrder alerts\nAnalytics\nAuto shipping\nReady to launch?\n\nJoin 500+ sellers already growing\n\nGet Started\nPricing\nSimple, Transparent Pricing\n\nStart free, upgrade when you need\n\nMonthly\nYearly\n20% OFF\nFree\n\nPerfect for testing ideas\n\n₹0\n/month\n10 Products\n1 Store\nBasic Themes\nLetBuyy Branding\nStart Free\nMost Popular\nPro\n\nFor serious sellers\n\n₹499\n/month\nUnlimited Products\n3 Stores\nCustom Domain\nNo Branding\nAnalytics\nGet Started\nMax\n\nFor scaling brands\n\n₹1999\n/month\nEverything in Pro\nUnlimited Stores\nPriority Support\nWhite-label\nAPI Access\nGet Started\nTestimonials\nLoved by Sellers\n\nJoin 500+ successful store owners\n\n\"LetBuyy transformed my small business into a brand. The video feature is a game changer!\"\n\nPriya Sharma\nFashion Store Owner\n\n\"The best platform specific for Indian market. UPI payments work flawlessly.\"\n\nRahul Verma\nElectronics Seller\n\n\"Support is amazing. I set up my store in 10 minutes and got my first order the same day.\"\n\nAnita Desai\nHome Decor\nReady to Build Your Empire?\n\nJoin 500+ sellers who chose independence. Your store, your rules.\n\nStart Free Today",
+    "heading_text": [
+      "Stop Renting.",
+      "Start Owning.",
+      "Everything You Need",
+      "Launch in 10 Minutes",
+      "Simple, Transparent Pricing",
+      "Loved by Sellers",
+      "Ready to Build Your Empire?"
+    ],
+    "evidence_html": "evidence/pages/legacy-privacy-rendered.html",
+    "screenshot": "evidence/legacy-privacy.png",
+    "page_errors": [],
+    "privacy_policy_label_present": true,
+    "privacy_label_interpretation": "A footer/link label alone is not a privacy notice. No privacy-policy heading appears; both URLs have identical visible-body hashes and marketing content."
+  }
+]

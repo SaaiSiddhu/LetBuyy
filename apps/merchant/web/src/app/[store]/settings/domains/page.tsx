@@ -1,14 +1,9 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState'
-
 import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
-    Section,
-    Card,
     Badge,
     Banner,
     Button,
@@ -30,9 +25,10 @@ import { normalizeSsl, normalizeStatus, scoreFromRecord, statusLabel } from '@/l
 import { DomainStatusBadge, HealthMeter, SslBadge } from '@/components/domains/parts'
 import { ConnectDomainWizard } from '@/components/domains/ConnectDomainWizard'
 import { DomainDetailView } from '@/components/domains/DomainDetailView'
-import { CheckoutDomainCard } from '@/components/domains/CheckoutDomainCard'
 
-type View = { kind: 'overview' } | { kind: 'connect'; domain?: string } | { kind: 'detail'; domain: string; role: 'primary' | 'redirect'; redirectTo: string | null; provider: string | null }
+const defaultCnameTarget = process.env.NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET || 'connect.letbuyy.com'
+
+type View = { kind: 'overview' } | { kind: 'connect' } | { kind: 'detail'; domain: string; role: 'primary' | 'redirect'; redirectTo: string | null; provider: string | null }
 
 interface StoreInfo {
     id: string
@@ -71,18 +67,12 @@ export default function DomainCenterPage() {
     const [searching, setSearching] = useState(false)
     const [quote, setQuote] = useState<DomainAvailabilityQuote | null>(null)
 
-    const beginRead = useReadRequest(store)
     const loadData = useCallback(async (opts?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!opts?.quiet) setLoading(true)
         setLoadError(null)
         try {
-            const [settingsRes, list] = await Promise.all([
-                fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal: request.signal }),
-                domainsClient.list(store, request.signal),
-            ])
+            const settingsRes = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store' })
             const settingsPayload = (await settingsRes.json().catch(() => null)) as ApiPayload | null
-            if (!request.isCurrent()) return
             if (!settingsRes.ok) throw new Error(payloadError(settingsPayload, 'Unable to load store'))
             const data = isRecord(settingsPayload?.data) ? settingsPayload.data : {}
             const info: StoreInfo = {
@@ -92,16 +82,16 @@ export default function DomainCenterPage() {
             }
             setStoreInfo(info)
 
+            const list = await domainsClient.list(store).catch(() => null)
             setDomains(list?.domains ?? [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load domains'
             setLoadError(message)
             notify({ title: 'Domains could not load', description: message, variant: 'critical' })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => { void loadData() }, [loadData])
 
@@ -125,10 +115,9 @@ export default function DomainCenterPage() {
     // ── Connect view ──
     if (view.kind === 'connect') {
         return (
-            <SettingsPane navigationKey="domains" title="Connect a domain" description="Connect your storefront and secure checkout in one setup." store={store}>
+            <SettingsPane title="Connect a domain" description="Use your own brand address for your storefront." store={store}>
                 <ConnectDomainWizard
                     store={store}
-                    initialDomain={view.domain}
                     onClose={() => { setView({ kind: 'overview' }); void loadData({ quiet: true }) }}
                     onConnected={() => void loadData({ quiet: true })}
                 />
@@ -158,13 +147,13 @@ export default function DomainCenterPage() {
     // ── Overview ──
     if (loading) {
         return (
-            <SettingsPane navigationKey="domains" title="Domains" description="Connect and manage the addresses shoppers use to reach your store." store={store}>
+            <SettingsPane title="Domains" description="Connect and manage the addresses shoppers use to reach your store." store={store}>
                 <div className="settings-general-stack">
                     {[1, 2].map((i) => (
-                        <Card key={i}>
-                            <Section><Skeleton variant="text" lines={1} /></Section>
+                        <div key={i} className="settings-home-card">
+                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
                             <div className="settings-form-body"><Skeleton variant="text" lines={3} /></div>
-                        </Card>
+                        </div>
                     ))}
                 </div>
             </SettingsPane>
@@ -173,7 +162,6 @@ export default function DomainCenterPage() {
 
     return (
         <SettingsPane
-                navigationKey="domains"
             title="Domains"
             description="Connect and manage the addresses shoppers use to reach your store."
             store={store}
@@ -190,21 +178,20 @@ export default function DomainCenterPage() {
             )}
 
             <Banner variant="info" title="Use your own domain">
-                Connect a custom domain to give your store a professional, branded address with automatic HTTPS. Your LetBuyy address remains assigned when you connect a custom domain.
+                Connect a custom domain to give your store a professional, branded address with automatic HTTPS. Your LetBuyy address always stays live as a fallback.
             </Banner>
 
-            <CheckoutDomainCard key={store} store={store} onResume={domain => setView({ kind: 'connect', domain })} />
-
             {/* Your domains */}
-            <Section variant="grouped" title="Your domains" >
-
+            <div className="settings-home-card">
+                <div className="settings-home-section-label">Your domains</div>
+                <div className="settings-form-body">
                     {/* LetBuyy default address — always live */}
                     <div className="domains-row">
                         <div className="domains-row-top">
                             <span className="domains-row-icon"><Globe className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="domains-row-meta">
                                 <span className="domains-row-domain">{letbuyyHost}</span>
-                                <span className="domains-row-sub">{storeInfo?.published ? 'LetBuyy address' : 'LetBuyy address · store not published'}</span>
+                                <span className="domains-row-sub">LetBuyy address · always available</span>
                             </div>
                             <Badge label={storeInfo?.published ? 'Live' : 'Default'} variant={storeInfo?.published ? 'success' : 'info'} />
                         </div>
@@ -222,7 +209,7 @@ export default function DomainCenterPage() {
 
                     {domains.length === 0 && (
                         <div className="domains-empty">
-                            <MerchantEmptyArtwork scene="domains" compact />
+                            <span className="domains-empty-icon"><Globe className="letbuyy-icon" aria-hidden="true" /></span>
                             <div className="domains-empty-copy">
                                 <span className="domains-empty-title">No custom domain yet</span>
                                 <span className="domains-empty-desc">Connect a domain you own to brand your storefront with automatic HTTPS.</span>
@@ -234,13 +221,13 @@ export default function DomainCenterPage() {
                     <div className="domains-row-add">
                         <Button variant="secondary" onClick={() => setView({ kind: 'connect' })}><Plus className="letbuyy-icon" aria-hidden="true" /> Connect existing domain</Button>
                     </div>
-
-            </Section>
+                </div>
+            </div>
 
             {/* Buy a domain */}
-            <Card >
+            <div className="settings-home-card">
                 <Button unstyled type="button" className="domains-buy-toggle" onClick={() => setShowBuy((v) => !v)} aria-expanded={showBuy}>
-                    <span className="domains-buy-label">Buy a new domain</span>
+                    <span className="settings-home-section-label domains-buy-label">Buy a new domain</span>
                     <ChevronRight className={`letbuyy-icon domains-buy-chevron${showBuy ? ' is-open' : ''}`} aria-hidden="true" />
                 </Button>
                 {showBuy && (
@@ -267,7 +254,7 @@ export default function DomainCenterPage() {
                         </div>
                     </div>
                 )}
-            </Card>
+            </div>
         </SettingsPane>
     )
 }

@@ -1,0 +1,58 @@
+{
+  "captured_at": "2026-11-01T03:25:25.241044+00:00",
+  "normal_before": {
+    "9002": [
+      7344
+    ],
+    "9006": [
+      2671
+    ],
+    "9010": [
+      3797
+    ]
+  },
+  "normal_after": {
+    "9002": [
+      7344
+    ],
+    "9006": [
+      2671
+    ],
+    "9010": [
+      3797
+    ]
+  },
+  "normal_services_preserved": true,
+  "stopped_verified_review_listeners": [
+    {
+      "port": 9038,
+      "pid": 3932,
+      "ownership_verified": true
+    },
+    {
+      "port": 9039,
+      "pid": 5787,
+      "ownership_verified": true
+    },
+    {
+      "port": 9042,
+      "pid": 6597,
+      "ownership_verified": true
+    },
+    {
+      "port": 9045,
+      "pid": 7072,
+      "ownership_verified": true
+    }
+  ],
+  "temporary_ports_after": {
+    "9038": [],
+    "9039": [],
+    "9042": [],
+    "9043": [],
+    "9044": [],
+    "9045": []
+  },
+  "database_engine_left_running_for_real_local_data": true,
+  "unrelated_processes_stopped": false
+}

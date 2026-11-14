@@ -9,12 +9,13 @@ const reporter = createReporter("Provider mode badge validator");
 
 for (const required of [
   "services/api-gateway/src/routes/payouts.ts",
+  "services/api-gateway/src/routes/payments.ts",
   "services/api-gateway/src/routes/kyc.ts",
   "services/api-gateway/src/routes/whatsapp.ts",
   "services/api-gateway/src/routes/shipping-labels.ts",
-  "services/api-gateway/src/lib/store-payment-config.ts",
+  "services/api-gateway/src/routes/stores.ts",
   "services/mobile-bff/src/index.ts",
-  "apps/merchant/web/src/app/[store]/settings/payments/payment-setup-overview.tsx",
+  "apps/merchant/web/src/app/[store]/settings/payments/page.tsx",
   "apps/merchant/web/src/app/[store]/settings/billing/page.tsx",
   "apps/merchant/web/src/app/[store]/settings/shipping/page.tsx",
   "apps/merchant/web/src/app/[store]/orders/page.tsx",
@@ -22,19 +23,7 @@ for (const required of [
   "apps/merchant/mobile/lib/screens/orders/order_detail_screen.dart",
   "apps/merchant/mobile/lib/screens/dashboard/home_screen.dart",
 ]) {
-  const source = readFile(required);
-  reporter.assert(source.includes("provider_mode") || (required.endsWith("payment-setup-overview.tsx") && source.includes("setup.environment")), `${required} must expose confirmed provider mode honesty evidence`);
-}
-// Capture now returns its canonical payment row from the atomic SQL owner.
-// Check the real response/provenance path; a route-local metadata literal is no
-// longer evidence of its mode, and must not force a second capture emitter.
-const paymentModeRoute = readFile("services/api-gateway/src/routes/payments.ts");
-const paymentCaptureWriter = readFile("database/supabase/migrations/408_atomic_canonical_payment_capture.sql");
-for (const fragment of ["mode: plan.mode", "const proof=await verifyCanonicalRazorpayCapture", "commitCanonicalPaymentCapture(db,"]) {
-  reporter.assert(paymentModeRoute.includes(fragment), `Payments must retain provider mode on the canonical session/capture path: ${fragment}`);
-}
-for (const fragment of ["pay.mode IS DISTINCT FROM 'sandbox'", "'provider_mode',pay.mode", "'payment',to_jsonb(pay)"]) {
-  reporter.assert(paymentCaptureWriter.includes(fragment), `Atomic capture must preserve confirmed provider mode provenance: ${fragment}`);
+  reporter.assert(readFile(required).includes("provider_mode"), `${required} must expose provider_mode honesty evidence`);
 }
 const mobileBilling = readFile("apps/merchant/mobile/lib/screens/settings/billing_screen.dart");
 for (const evidence of ["ProviderMode.parse(_subscription?.providerMode)", "ProviderModeBadge(mode: providerMode", "Provider status unavailable"]) {
@@ -56,7 +45,7 @@ reporter.assert(
   "packages/typescript/ui/src/index.ts must export ProviderModeBadge from the canonical package",
 );
 for (const consumer of [
-  "apps/merchant/web/src/app/[store]/settings/payments/payment-setup-overview.tsx",
+  "apps/merchant/web/src/app/[store]/settings/payments/page.tsx",
   "apps/merchant/web/src/app/[store]/settings/shipping/page.tsx",
   "apps/merchant/web/src/app/[store]/orders/page.tsx",
   "apps/merchant/web/src/components/billing/BillingPaymentMethods.tsx",
@@ -157,13 +146,9 @@ reporter.assert(themesRoute.includes("isProductionLikeRuntime"), "theme marketpl
 reporter.assert(themesRoute.includes("THEME_MARKETPLACE_GSTIN_REQUIRED"), "theme marketplace receipts must fail closed without production GSTIN");
 reporter.assert(!themesRoute.includes("dev_placeholder"), "theme marketplace receipts must not label dev GSTIN as a placeholder provider fact");
 reporter.assert(!storePaymentConfig.includes("provider_mode: 'mock'"), "store payment config fallback must not expose mock provider_mode");
-reporter.assert(storePaymentConfig.includes("provider_mode: null"), "unconfigured store payments must expose unknown provider mode");
-reporter.assert(!/provider_mode:\s*['"]sandbox['"]/.test(storePaymentConfig), "missing configuration cannot manufacture a sandbox environment");
+reporter.assert(storePaymentConfig.includes("provider_mode: 'sandbox'"), "store payment config fallback must expose sandbox provider_mode");
 reporter.assert(!merchantPaymentsPage.includes("|| 'mock'"), "merchant payments page must not fall back to mock provider mode");
-reporter.assert(!merchantPaymentsPage.includes("|| 'sandbox'"), "merchant payments must not infer sandbox from missing configuration");
-reporter.assert(merchantPaymentsPage.includes("<PaymentSetupOverview config={current}"), "payment settings must render the confirmed canonical setup overview");
-const paymentSetupOverview = readFile("apps/merchant/web/src/app/[store]/settings/payments/payment-setup-overview.tsx");
-reporter.assert(paymentSetupOverview.includes('setup.environment ? <ProviderModeBadge mode={setup.environment} /> : <Badge label="Not configured"'), "payment overview must distinguish confirmed environment from unavailable configuration");
+reporter.assert(merchantPaymentsPage.includes("|| 'sandbox'"), "merchant payments page must fall back to sandbox provider mode");
 for (const fragment of [
   "mock_resend",
   "mock_ses",
@@ -257,8 +242,7 @@ reporter.assert(!mobileRazorpayConnectScreen.includes("'Test Mode'"), "mobile Ra
 reporter.assert(!mobileRazorpayConnectScreen.includes("Test Mode Active"), "mobile Razorpay connect screen must use sandbox active-state copy");
 reporter.assert(!mobileRazorpayConnectScreen.includes("Use test credentials for development"), "mobile Razorpay connect screen must not use test-credentials copy");
 reporter.assert(mobileRazorpayConnectScreen.includes("'Sandbox Mode'"), "mobile Razorpay connect screen must expose sandbox mode copy");
-reporter.assert(!mobileRazorpayConnectScreen.includes("Live Mode Active"), "mobile credentials alone cannot imply active live payments");
-reporter.assert(mobileRazorpayConnectScreen.includes("_paymentConfig?.statusText ?? 'Payment readiness not confirmed'"), "mobile connection must render server-derived readiness or an honest unknown state");
+reporter.assert(mobileRazorpayConnectScreen.includes("Sandbox Mode Active"), "mobile Razorpay connect screen must expose sandbox active-state copy");
 for (const fragment of [
   "PaymentProviderMode = 'mock'",
   "buildMockPaymentSessionPlan",
@@ -312,7 +296,7 @@ for (const fragment of [
 reporter.assert(registrarSource.includes("SandboxRegistrarProvider"), "registrar seam must expose SandboxRegistrarProvider");
 reporter.assert(registrarSource.includes("REGISTRAR_SANDBOX_ENABLED"), "registrar sandbox provider must be explicitly gated");
 reporter.assert(sharedTypes.includes("DomainRegistrarProviderSchema = z.enum(['resellerclub', 'opensrs', 'sandbox'])"), "shared domain registrar schema must use sandbox, not mock");
-reporter.assert(sharedTypes.includes("provider_mode: z.enum(['sandbox', 'live']).nullable().default(null)"), "store payment config schema must use sandbox/live provider modes");
+reporter.assert(sharedTypes.includes("provider_mode: z.enum(['sandbox', 'live']).default('sandbox')"), "store payment config schema must use sandbox/live provider modes");
 reporter.assert(!bff.includes("type ProviderMode = 'mock'"), "mobile BFF provider mode union must not accept mock");
 reporter.assert(!bff.includes("value !== 'mock'"), "mobile BFF provider mode parser must not accept mock");
 reporter.assert(bff.includes("type ProviderMode = 'sandbox' | 'live'"), "mobile BFF provider mode union must be sandbox/live only");
@@ -350,12 +334,7 @@ reporter.assert(storefrontCartRoutes.includes("letbuyy-local-sandbox-checkout-ha
 reporter.assert(!mediaRoute.includes("letbuyy-local-sandbox-media-upload-secret"), "media route must not reintroduce the deleted local upload secret");
 reporter.assert(!shippingRoute.includes("mock-standard"), "shipping route local fallback rate must be sandbox-labelled");
 reporter.assert(!shippingRoute.includes("sandbox-standard"), "shipping must not fabricate a fallback rate when stored rates are unavailable");
-const shippingQuoteAuthority = readFile("services/api-gateway/src/lib/storefront-shipping.ts");
-reporter.assert(shippingRoute.includes("SHIPPING_CONFIGURATION_UNAVAILABLE")
-  && shippingRoute.includes("listStorefrontShippingRates(")
-  && shippingQuoteAuthority.includes(".rpc('list_storefront_shipping_options'")
-  && shippingQuoteAuthority.includes("SHIPPING_CONFIGURATION_UNAVAILABLE"),
-  "shipping must use the canonical stored-rate authority and report unavailable configuration");
+reporter.assert(shippingRoute.includes("SHIPPING_CONFIGURATION_UNAVAILABLE") && shippingRoute.includes(".from('shipping_rates')"), "shipping must read configured rates and report unavailable configuration");
 reporter.assert(logisticsAdapter.includes("LOGISTICS_LIVE_PROVIDER_UNAVAILABLE"), "logistics adapter live mode must fail closed while real carrier clients are absent");
 reporter.assert(logisticsAdapter.includes("assertSandboxMode"), "logistics adapter must restrict non-live labels to sandbox mode");
 for (const [label, source] of [

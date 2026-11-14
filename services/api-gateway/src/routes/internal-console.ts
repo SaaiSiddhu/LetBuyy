@@ -1,3 +1,5 @@
+import merchantMessagesRouter from './internal-console/merchant-messages';
+import merchantBillingRouter from './internal-console/merchant-billing';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
@@ -9,12 +11,15 @@ import {
     InternalPermissionScopeSchema,
 } from '@letbuyy/shared-types';
 import type { Env } from '../index';
-import { sha256Hex, timingSafeEqualText } from '../lib/crypto';
-import { ValidationError } from '../lib/errors';
+import { sha256Hex } from '../lib/crypto';
+import { consoleBridge } from '../identity-foundation/console-bridge';
+import { AppError, ValidationError } from '../lib/errors';
 import { isInternalApiSecretRequest } from '../lib/internal-secret';
 import { getSupabaseAdmin, getSupabaseAdminForOperatorRead, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../lib/supabase';
-import { validateSensitiveReason } from '../middleware/rbac';
+import { logSensitiveRead, validateSensitiveReason } from '../middleware/rbac';
 import { consoleApprovalRpc, consolePermission, credentialArguments, requireConsolePermission } from '../identity-foundation/console-approval-repository';
+import operatorWorkspacesRouter from './internal-console/operator-workspaces';
+import merchantOperationsRouter from './internal-console/merchant-operations';
 import internalConsoleComplianceRouter from './internal-console/compliance';
 import { readConsoleOverview } from '../execution/console-overview-execution.adapter';
 import internalConsoleDevelopersRouter from './internal-console/developers';
@@ -52,7 +57,10 @@ const ListQuerySchema = z.object({
     q: z.string().trim().max(120).optional(),
     status: z.string().trim().max(40).optional(),
     actor_type: z.enum(['user', 'employee', 'super_admin', 'system']).optional(),
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(value => {
+        const parsed = new Date(value + 'T00:00:00.000Z');
+        return Number.isFinite(parsed.valueOf()) && parsed.toISOString().slice(0, 10) === value;
+    }).optional(),
 });
 const AuditLogWriteSchema = z.object({
     actor_id: z.string().uuid().nullable().optional(),
@@ -102,36 +110,17 @@ function readBearerToken(value: string | undefined): string | null {
     if (!value?.startsWith('Bearer ')) return null;
     return value.slice('Bearer '.length).trim() || null;
 }
-router.use('*', async (c, next) => {
-    const expectedToken = c.env.PLATFORM_CONSOLE_API_TOKEN;
-    const token = readBearerToken(c.req.header('Authorization')) || c.req.header('X-Platform-Console-Token');
-
-    if (!expectedToken) {
-        return c.json({
-            error: {
-                code: 'CONSOLE_TOKEN_NOT_CONFIGURED',
-                message: 'Platform console API token is not configured.',
-            },
-        }, 503);
-    }
-
-    if (!token || !timingSafeEqualText(token, expectedToken)) {
-        return c.json({
-            error: {
-                code: 'UNAUTHORIZED',
-                message: 'Invalid platform console token.',
-            },
-        }, 401);
-    }
-
-    await next();
-});
+router.use('*', consoleBridge);
 router.use('/trust-safety',bindConsoleOperatorIdentity);
 router.use('/trust-safety/*',bindConsoleOperatorIdentity);
 router.route('/trust-safety',trustSafetyRouter);
 router.route('/developers', internalConsoleDevelopersRouter);
 router.route('/compliance', internalConsoleComplianceRouter);
+router.route('/operator', operatorWorkspacesRouter);
+router.route('/merchants', merchantOperationsRouter);
 router.route('/money', internalConsoleMoneyRouter);
+router.route('/merchants', merchantBillingRouter);
+router.route('/merchant-messages', merchantMessagesRouter);
 router.route('/platform-jobs', platformJobsRouter);
 router.route('/operations', consoleOperationsOncallRouter);
 router.route('/operations', consoleRuntimeCommandHistoryRouter);
@@ -270,10 +259,12 @@ async function writeConsoleAudit(c: AppContext, input: {
     metadata?: DbRecord;
 }) {
     const db = getSupabaseAdmin(c);
-    await db.from('audit_logs').insert({
-        actor_id: input.actorId || null,
-        actor_type: 'super_admin',
-        actor_email: input.actorEmail || null,
+    const actor = c.get('consolePermissionState');
+    if (!actor) throw new AppError('A current permitted Console session is required.', 401, 'CONSOLE_SESSION_REQUIRED');
+    const { error } = await db.from('audit_logs').insert({
+        actor_id: actor.actor_id,
+        actor_type: actor.is_super_admin ? 'super_admin' : 'employee',
+        actor_email: actor.email,
         action: input.action,
         resource_type: input.resourceType,
         resource_id: input.resourceId || null,
@@ -285,6 +276,7 @@ async function writeConsoleAudit(c: AppContext, input: {
         ip_address: c.req.header('CF-Connecting-IP') || null,
         user_agent: c.req.header('User-Agent') || null,
     });
+    if (error) throw new AppError('The read audit could not be recorded.', 503, 'CONSOLE_AUDIT_UNAVAILABLE');
 }
 function compactRecords<T extends { id?: unknown }>(rows: T[]): T[] {
     const seen = new Set<string>();
@@ -344,7 +336,7 @@ router.post('/magic-link/consume', c => c.json({error:{code:'IDENTITY_EXCHANGE_R
 
 router.get('/summary', async (c) => c.json(success(await readConsoleOverview(c, 'summary'))));
 router.get('/analytics', async (c) => c.json(success(await readConsoleOverview(c, 'analytics'))));
-router.get('/analytics/mrr', async (c) => {
+router.get('/analytics/mrr', consolePermission('exec:view'), async (c) => {
     const parsed = ExecutiveAnalyticsQuerySchema.safeParse({
         limit: c.req.query('limit'),
         actor_id: cleanOptional(c.req.query('actor_id')),
@@ -392,7 +384,7 @@ router.get('/analytics/mrr', async (c) => {
         trend: [...rows].reverse(),
     }));
 });
-router.get('/analytics/funnels', async (c) => {
+router.get('/analytics/funnels', consolePermission('exec:view'), async (c) => {
     const parsed = ExecutiveAnalyticsQuerySchema.safeParse({
         days: c.req.query('days'),
         actor_id: cleanOptional(c.req.query('actor_id')),
@@ -446,7 +438,7 @@ router.get('/analytics/funnels', async (c) => {
         history: [...history].reverse(),
     }));
 });
-router.get('/analytics/cohorts', async (c) => {
+router.get('/analytics/cohorts', consolePermission('exec:view'), async (c) => {
     const parsed = ExecutiveAnalyticsQuerySchema.safeParse({
         limit: c.req.query('limit'),
         actor_id: cleanOptional(c.req.query('actor_id')),
@@ -490,7 +482,7 @@ router.get('/analytics/cohorts', async (c) => {
         snapshots,
     }));
 });
-router.get('/analytics/company-health', async (c) => {
+router.get('/analytics/company-health', consolePermission('exec:view'), async (c) => {
     const parsed = ExecutiveAnalyticsQuerySchema.safeParse({
         actor_id: cleanOptional(c.req.query('actor_id')),
         actor_email: cleanOptional(c.req.query('actor_email')),
@@ -542,7 +534,7 @@ router.get('/analytics/company-health', async (c) => {
         metrics,
     }));
 });
-router.get('/analytics/cohorts/:cohortMonth/merchants', async (c) => {
+router.get('/analytics/cohorts/:cohortMonth/merchants', consolePermission('exec:pii'), async (c) => {
     const hasInternalConsoleGuard = isInternalApiSecretRequest(c.env, c.req)
         || Boolean(readBearerToken(c.req.header('Authorization')) || c.req.header('X-Platform-Console-Token'));
     if (!hasInternalConsoleGuard) {
@@ -610,8 +602,22 @@ router.get('/analytics/cohorts/:cohortMonth/merchants', async (c) => {
         merchants: data || [],
     }));
 });
-router.get('/settings', async (c) => {
+router.get('/settings', bindConsoleOperatorIdentity, consolePermission('rbac:view'), async (c) => {
+    const started = Date.now();
+    let databaseReachable = false;
+    try {
+        const result = await getSupabaseAdmin(c).from('sites').select('id').eq('id','00000000-0000-0000-0000-000000000000').eq('custom_user_id','00000000-0000-0000-0000-000000000000').limit(1).abortSignal(AbortSignal.timeout(3000));
+        databaseReachable = !result.error;
+    } catch { /* A missing dependency is reported without exposing provider errors. */ }
+    const health = {
+        observed_at: new Date().toISOString(),
+        database: { status: databaseReachable ? 'reachable' : 'unavailable', latency_ms: Date.now()-started,
+            action: databaseReachable ? 'No database connection action required.' : 'Investigate the database connection before retrying merchant operations.' },
+    };
+    await logSensitiveRead(c, { action:'console.dependencies.read',resourceType:'platform_configuration',
+        reason:'Operator inspected current dependency evidence.',metadata:{database_status:health.database.status} });
     return c.json(success({
+        health,
         environment: c.env.ENVIRONMENT || c.env.APP_ENV || c.env.NODE_ENV || 'unknown',
         runtime_name: c.env.RUNTIME_NAME || 'api-gateway',
         primary_region: c.env.PRIMARY_REGION || 'unset',
@@ -636,7 +642,7 @@ router.get('/settings', async (c) => {
         },
     }));
 });
-router.get('/users', async (c) => {
+router.get('/users', consolePermission('exec:pii'), async (c) => {
     const query = parseListQuery(c);
     const { from, to } = rangeFor(query);
     const db = getSupabaseAdmin(c);
@@ -661,15 +667,16 @@ router.get('/users', async (c) => {
 
     return c.json(paginated(data || [], count || 0, query.page, query.limit));
 });
-router.get('/stores', async (c) => {
+router.get('/stores', consolePermission('merchant:view'), async (c) => {
     const query = parseListQuery(c);
     const { from, to } = rangeFor(query);
-    const db = getSupabaseAdmin(c);
+    const db = getSupabaseAdminForOperatorRead(c);
 
     let request = db
         .from('sites')
         .select('id, user_id, name, store_name, site_type, subdomain, custom_domain, status, published_at, views_count, created_at, updated_at', { count: 'exact' })
         .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .range(from, to);
 
     if (query.status) request = request.eq('status', query.status);
@@ -688,7 +695,7 @@ router.get('/stores', async (c) => {
 
     return c.json(paginated(data || [], count || 0, query.page, query.limit));
 });
-router.get('/merchants/search', async (c) => {
+router.get('/merchants/search', consolePermission('merchant:pii'), async (c) => {
     const hasInternalConsoleGuard = isInternalApiSecretRequest(c.env, c.req)
         || Boolean(readBearerToken(c.req.header('Authorization')) || c.req.header('X-Platform-Console-Token'));
     if (!hasInternalConsoleGuard) {
@@ -707,10 +714,11 @@ router.get('/merchants/search', async (c) => {
 
     const query = parsed.data;
     const db = getSupabaseAdmin(c);
+    const directoryDb = getSupabaseAdminForOperatorRead(c);
     const search = searchExpression(['name', 'store_name', 'subdomain', 'custom_domain'], query.q);
     const siteRows: MerchantSiteRow[] = [];
 
-    let siteRequest = db
+    let siteRequest = directoryDb
         .from('sites')
         .select('id, user_id, custom_user_id, name, store_name, site_type, subdomain, custom_domain, status, views_count, created_at, updated_at')
         .is('deleted_at', null)
@@ -812,9 +820,6 @@ router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) 
     }
 
     const ownerIds = [site.user_id, site.custom_user_id].filter((id): id is string => Boolean(id));
-    const subscriptionQuery = site.user_id
-        ? `store_id.eq.${site.id},user_id.eq.${site.user_id}`
-        : `store_id.eq.${site.id}`;
     const orderQuery = `store_id.eq.${site.id},site_id.eq.${site.id}`;
     const actorId = operator.actor_id, actorEmail = operator.email;
 
@@ -824,9 +829,11 @@ router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) 
         ordersResult,
         appsResult,
         themeResult,
+        releaseResult,
         riskResult,
         casesResult,
         supportResult,
+        supportCountResult,
         auditResult,
         impersonationResult,
     ] = await Promise.all([
@@ -836,8 +843,10 @@ router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) 
         db
             .from('subscriptions')
             .select('id, user_id, store_id, plan, status, billing_period, amount_paid, currency, current_period_start, current_period_end, created_at, updated_at')
-            .or(subscriptionQuery)
+            .eq('store_id', site.id)
+            .is('deleted_at', null)
             .order('created_at', { ascending: false })
+            .order('id', { ascending: false })
             .limit(5),
         db
             .from('orders')
@@ -859,6 +868,10 @@ router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) 
             .is('deleted_at', null)
             .order('activated_at', { ascending: false, nullsFirst: false })
             .limit(5),
+        db.from('theme_releases')
+            .select('id, theme_id, theme_instance_id, release_version, release_status, engine_version, published_at')
+            .eq('store_id', site.id).eq('is_current', true).eq('release_status', 'published')
+            .is('deleted_at', null).order('release_version', { ascending: false }).limit(1),
         riskDb
             .from('risk_scores')
             .select('id, entity_type, entity_id, score, band, status, breakdown, scored_at, updated_at')
@@ -882,6 +895,7 @@ router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) 
             .is('deleted_at', null)
             .order('updated_at', { ascending: false })
             .limit(10),
+        db.from('support_tickets').select('id',{count:'exact',head:true}).eq('site_id',site.id).is('deleted_at',null).not('status','in','(resolved,closed)'),
         db
             .from('audit_logs')
             .select('id, actor_id, actor_type, actor_email, action, resource_type, resource_id, created_at')
@@ -898,7 +912,7 @@ router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) 
             .limit(5),
     ]);
 
-    for (const result of [ownersResult, subscriptionsResult, ordersResult, appsResult, themeResult, riskResult, casesResult, supportResult, auditResult, impersonationResult]) {
+    for (const result of [ownersResult, subscriptionsResult, ordersResult, appsResult, themeResult, releaseResult, riskResult, casesResult, supportResult, supportCountResult, auditResult, impersonationResult]) {
         if (result.error) return c.json(dbError(result.error.message), 500);
     }
 
@@ -925,6 +939,7 @@ router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) 
         subscription: ((subscriptionsResult.data || []) as DbRecord[])[0] || null,
         subscriptions: subscriptionsResult.data || [],
         commerce: {
+            sample_limit: 500,
             order_count: orders.length,
             paid_order_count: paidOrders.length,
             revenue_paise: Math.round(revenueMajor * 100),
@@ -932,7 +947,9 @@ router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) 
         },
         ecosystem: {
             installed_apps: appsResult.data || [],
-            active_theme: ((themeResult.data || []) as DbRecord[]).find((theme) => String(theme.instance_status || '') === 'active') || ((themeResult.data || []) as DbRecord[])[0] || null,
+            active_theme: ((themeResult.data || []) as DbRecord[]).find((theme) => theme.id === ((releaseResult.data || []) as DbRecord[])[0]?.theme_instance_id) || null,
+            published_release: ((releaseResult.data || []) as DbRecord[])[0] || null,
+            publication_consistent: site.current_theme_release_id === (((releaseResult.data || []) as DbRecord[])[0]?.id || null),
             theme_instances: themeResult.data || [],
         },
         trust: {
@@ -941,14 +958,15 @@ router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) 
         },
         support: {
             configured: true,
-            open_ticket_count: ((supportResult.data || []) as DbRecord[]).filter((ticket) => !['resolved', 'closed'].includes(String(ticket.status || ''))).length,
+            open_ticket_count: supportCountResult.count ?? 0,
             tickets: supportResult.data || [],
         },
         impersonation_sessions: impersonationResult.data || [],
         recent_audit_events: auditResult.data || [],
     }));
 });
-router.post('/merchants/:id/impersonation', async (c) => {
+router.post('/merchants/:id/impersonation', consolePermission('merchant:impersonate'), async (c) => {
+    const { state: operator } = await requireConsolePermission(c, 'merchant:impersonate');
     const body = await c.req.json().catch(() => null);
     const parsed = MerchantImpersonationStartSchema.safeParse(body);
     if (!parsed.success) throw new ValidationError('Invalid merchant impersonation payload', parsed.error.flatten());
@@ -959,7 +977,7 @@ router.post('/merchants/:id/impersonation', async (c) => {
     const site = await readMerchantSite(c, c.req.param('id'));
     if (!site) return c.json({ error: { code: 'NOT_FOUND', message: 'Merchant not found.' } }, 404);
 
-    const operatorId = parsed.data.operator_id || parsed.data.actor_id;
+    const operatorId = operator.actor_id;
     const expiresAt = new Date(Date.now() + parsed.data.ttl_minutes * 60_000).toISOString();
     const sessionId = crypto.randomUUID();
     const signed = await generateImpersonationToken();
@@ -971,12 +989,12 @@ router.post('/merchants/:id/impersonation', async (c) => {
             id: sessionId,
             site_id: site.id,
             operator_id: operatorId,
-            operator_email: parsed.data.operator_email || parsed.data.actor_email || null,
+            operator_email: operator.email,
             reason,
             token_hash: signed.token_hash,
             read_only: true,
             expires_at: expiresAt,
-            created_by: parsed.data.actor_id,
+            created_by: operator.actor_id,
             metadata: {
                 ttl_minutes: parsed.data.ttl_minutes,
                 policy_status: 'pending_human_signoff',
@@ -1006,7 +1024,8 @@ router.post('/merchants/:id/impersonation', async (c) => {
         token: signed.token,
     }), 201);
 });
-router.post('/merchants/:id/impersonation/:sessionId/end', async (c) => {
+router.post('/merchants/:id/impersonation/:sessionId/end', consolePermission('merchant:impersonate'), async (c) => {
+    const { state: operator } = await requireConsolePermission(c, 'merchant:impersonate');
     const body = await c.req.json().catch(() => null);
     const parsed = MerchantActorSchema.safeParse(body);
     if (!parsed.success) throw new ValidationError('Invalid merchant impersonation end payload', parsed.error.flatten());
@@ -1021,7 +1040,7 @@ router.post('/merchants/:id/impersonation/:sessionId/end', async (c) => {
         .update({
             ended_at: endedAt,
             end_reason: parsed.data.reason,
-            updated_by: parsed.data.actor_id,
+            updated_by: operator.actor_id,
         })
         .eq('id', c.req.param('sessionId'))
         .eq('site_id', site.id)
@@ -1062,15 +1081,16 @@ router.post('/merchants/:id/moderation', async (c) => {
     });
     return c.json(success(result.result));
 });
-router.get('/subscriptions', async (c) => {
+router.get('/subscriptions', consolePermission('exec:view'), async (c) => {
     const query = parseListQuery(c);
     const { from, to } = rangeFor(query);
-    const db = getSupabaseAdmin(c);
+    const db = getSupabaseAdminForOperatorRead(c);
 
     let request = db
         .from('subscriptions')
-        .select('id, user_id, store_id, plan, status, billing_period, payment_gateway, amount_paid, currency, current_period_start, current_period_end, created_at, updated_at', { count: 'exact' })
+        .select('id, site_id, user_id, store_id, plan, status, billing_period, payment_gateway, amount_paid, currency, current_period_start, current_period_end, created_at, updated_at', { count: 'exact' })
         .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .range(from, to);
 
     if (query.status) request = request.eq('status', query.status);
@@ -1089,7 +1109,7 @@ router.get('/subscriptions', async (c) => {
 
     return c.json(paginated(data || [], count || 0, query.page, query.limit));
 });
-router.get('/employees', async (c) => {
+router.get('/employees', consolePermission('rbac:view'), async (c) => {
     const query = parseListQuery(c);
     const { from, to } = rangeFor(query);
     const db = getSupabaseAdmin(c);
@@ -1121,7 +1141,8 @@ router.get('/employees', async (c) => {
 
     return c.json(paginated(data || [], count || 0, query.page, query.limit));
 });
-router.patch('/employees/:id/permissions', async (c) => {
+router.patch('/employees/:id/permissions', consolePermission('rbac:manage'), async (c) => {
+    const { state: operator } = await requireConsolePermission(c, 'rbac:manage');
     const body = await c.req.json().catch(() => null);
     const parsed = EmployeePermissionPatchSchema.safeParse(body);
 
@@ -1150,9 +1171,9 @@ router.patch('/employees/:id/permissions', async (c) => {
     }
 
     await db.from('audit_logs').insert({
-        actor_id: parsed.data.actor_id || null,
-        actor_type: 'super_admin',
-        actor_email: parsed.data.actor_email || null,
+        actor_id: operator.actor_id,
+        actor_type: operator.is_super_admin ? 'super_admin' : 'employee',
+        actor_email: operator.email,
         action: 'rbac.permission.update',
         resource_type: 'employee',
         resource_id: employeeId,
@@ -1167,7 +1188,7 @@ router.patch('/employees/:id/permissions', async (c) => {
 
     return c.json(success({ employee: data }));
 });
-router.get('/audit-logs', async (c) => {
+router.get('/audit-logs', consolePermission('audit:read'), async (c) => {
     const query = parseListQuery(c);
     const { from, to } = rangeFor(query);
     const db = getSupabaseAdmin(c);
@@ -1198,7 +1219,8 @@ router.get('/audit-logs', async (c) => {
 
     return c.json(paginated(data || [], count || 0, query.page, query.limit));
 });
-router.post('/audit-logs', async (c) => {
+router.post('/audit-logs', consolePermission('audit:read'), async (c) => {
+    const actor = c.get('consolePermissionState')!;
     const body = await c.req.json().catch(() => null);
     const parsed = AuditLogWriteSchema.safeParse(body);
 
@@ -1210,9 +1232,9 @@ router.post('/audit-logs', async (c) => {
     const { data, error } = await db
         .from('audit_logs')
         .insert({
-            actor_id: parsed.data.actor_id || null,
-            actor_type: parsed.data.actor_type,
-            actor_email: parsed.data.actor_email || null,
+            actor_id: actor.actor_id,
+            actor_type: actor.is_super_admin ? 'super_admin' : 'employee',
+            actor_email: actor.email,
             action: parsed.data.action,
             resource_type: parsed.data.resource_type,
             resource_id: parsed.data.resource_id || null,

@@ -44,7 +44,14 @@ test('marketing homepage keeps importing only the live component family', () => 
     const pagePath = existsSync(join(repoRoot, 'apps/marketing/web/src/app/[locale]/page.tsx'))
         ? 'apps/marketing/web/src/app/[locale]/page.tsx'
         : 'apps/marketing/web/src/app/page.tsx';
-    const source = read(pagePath);
+    const page = read(pagePath);
+    const composition = read('apps/marketing/web/src/components/MarketingHome.tsx');
+    const source = page + '\n' + composition;
+    // Public prices are server-loaded, then supplied to the live client shell.
+    assert.match(page, /@\/components\/MarketingHome/);
+    assert.match(page, /await loadPublicPricing\(\)/);
+    assert.match(page, /<MarketingHome pricing=\{<Pricing initialData=\{initialData\}/);
+    assert.match(composition, /\{pricing\}/);
 
     for (const liveComponent of [
         'Header',

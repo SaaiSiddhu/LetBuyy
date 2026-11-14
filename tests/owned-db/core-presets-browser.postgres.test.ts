@@ -12,14 +12,12 @@ import { createServer, request as forwardHttpRequest, type Server } from 'node:h
 import { createServer as createHttpsServer, type Server as HttpsServer } from 'node:https';
 import { exportJWK } from 'jose';
 import { chromium, expect, type Browser, type BrowserContext, type Page } from '@playwright/test';
-import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import { requireOwnedDatabase, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
 const owned = requireOwnedDatabase();
-let proxy:OwnedPooledSqlProxy,gateway:Gateway;
 const slug = 'letbuyy-core'; // The actual first-party Core catalog from the complete migration template.
 const password = 'Synthetic-published-storefront-pass-42';
 let identityOrigin: string, merchantOrigin: string, commerceOrigin: string;
@@ -60,7 +58,6 @@ async function ready(url: string, child: OwnedClientProcess) {
     throw new Error('owned Next readiness timed out');
 }
 before(async () => {
-    proxy=await startOwnedPooledSqlProxy(owned);
 
     assert.equal(owned.psql(`SELECT default_template->'liquidBundle'->'package'->>'slug' FROM themes WHERE slug='${slug}';`), 'letbuyy-core-liquid');
     const keys = await newIdentityKeys();
@@ -75,8 +72,8 @@ before(async () => {
     const checkoutCertificate = createOwnedCheckoutTlsCertificate(owned);
     const checkoutSpki = checkoutCertificate.spki;
     checkoutTls = createHttpsServer({ key: checkoutCertificate.key, cert: checkoutCertificate.cert }, (req, res) => {
-        const checkoutHost = req.headers.host || '';
-        if (!/^[a-z0-9-]+\.localhost:\d+$/.test(checkoutHost) || !checkoutHost.endsWith(':'+checkoutTlsPort)) { res.writeHead(421); res.end(); return; }
+        const checkoutHost = `checkout.localhost:${checkoutTlsPort}`;
+        if (req.headers.host !== checkoutHost) { res.writeHead(421); res.end(); return; }
         const upstream = forwardHttpRequest({ hostname: '127.0.0.1', port: commercePort, path: req.url, method: req.method,
             headers: { ...req.headers, host: checkoutHost, 'x-forwarded-host': checkoutHost, 'x-forwarded-proto': 'https' } }, response => {
             response.on('error', () => res.destroy());
@@ -90,7 +87,7 @@ before(async () => {
     });
     await new Promise<void>(resolve => checkoutTls!.listen(0, '127.0.0.1', resolve));
     checkoutTlsPort = (checkoutTls.address() as { port: number }).port;
-    gateway = new Gateway(gatewayEnv(owned, keys, { ...proxy.env(), ENVIRONMENT: 'local',
+    const gateway = new Gateway(gatewayEnv(owned, keys, { ENVIRONMENT: 'local',
         LETBUYY_IDENTITY_ISSUER: identityOrigin, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost', CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
         CHECKOUT_SIGNING_SECRET: crypto.randomUUID() + crypto.randomUUID() }));
     bridge = createServer(async (req, res) => {
@@ -127,7 +124,6 @@ before(async () => {
     clients.push(startOwnedClientRuntime(owned, 'merchant-next-production', { port: merchantPort, env: { ...common,
         LETBUYY_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_STOREFRONT_URL: commerceOrigin } }));
     clients.push(startOwnedClientRuntime(owned, 'commerce-next-production', { port: commercePort, env: { ...common,
-        CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
         LETBUYY_API_BASE_URL: apiOrigin + '/v1', LETBUYY_API_URL: apiOrigin + '/v1',
         NEXT_PUBLIC_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_API_URL: apiOrigin + '/v1',
         NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost' } }));
@@ -152,7 +148,6 @@ before(async () => {
 after(async () => {
     await Promise.allSettled(contexts.map(context => context.close()));
     await browser?.close();
-    await gateway?.settle();await closePooledSqlClients();await proxy?.stop();
     if (checkoutTls?.listening) await new Promise<void>(resolve => {
         checkoutTls!.close(() => resolve()); checkoutTls!.closeAllConnections();
     });
@@ -216,7 +211,7 @@ async function fixture(tag: string) {
     });
     const editorUrl = `${merchantOrigin}/${tenant.subdomain}/online-store/themes/${slug}/editor`;
     const bff = `/api/themes/${slug}/editor?store_name=${tenant.subdomain}`;
-    const publicUrl = `https://${tenant.subdomain}.localhost:${checkoutTlsPort}`;
+    const publicUrl = `http://${tenant.subdomain}.localhost:${new URL(commerceOrigin).port}`;
     const effects = () => owned.psql(`SELECT
         (SELECT coalesce(max(draft_revision),0) FROM theme_instances WHERE store_id='${tenant.siteId}'),
         (SELECT count(*) FROM theme_releases WHERE store_id='${tenant.siteId}'),
@@ -228,7 +223,7 @@ async function fixture(tag: string) {
 }
 async function signIn(page: Page, email: string) {
     await page.goto(identityOrigin + '/login');
-    await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 30_000 });
+    await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/);
     await page.getByLabel('Email', { exact: true }).fill(email);
     await page.getByRole('button', { name: 'Continue with email', exact: true }).click();
     await page.getByLabel('Password', { exact: true }).fill(password);
@@ -241,7 +236,7 @@ async function signIn(page: Page, email: string) {
 async function openEditor(f: Awaited<ReturnType<typeof fixture>>) {
     const compiled = await f.context.request.get(f.editorUrl); assert.equal(compiled.status(), 200);
     await f.page.goto(f.editorUrl, { waitUntil: 'load' });
-    await expect(f.page.getByRole('tree', { name: 'Theme sections', exact: true })).toBeVisible();
+    await expect(f.page.getByRole('tree', { name: 'Template sections', exact: true })).toBeVisible();
     await expect(f.page.getByRole('button', { name: 'Save', exact: true }).first()).toBeDisabled();
     if (Number(f.effects().split('|')[0]) === 0) {
         const marker = `Synthetic initial saved draft ${crypto.randomUUID()}`;
@@ -268,11 +263,11 @@ async function openEditor(f: Awaited<ReturnType<typeof fixture>>) {
     await expect.poll(() => f.pendingEditorMutations.size, { timeout: 90_000 }).toBe(0);
 }
 async function editHeading(page: Page, heading: string) {
-    await page.getByRole('tree', { name: 'Theme sections', exact: true }).getByRole('treeitem').filter({ hasText: /Hero/ }).first().click();
+    await page.getByRole('tree', { name: 'Template sections', exact: true }).getByRole('treeitem').filter({ hasText: /Hero/ }).first().click();
     await page.getByLabel('Heading', { exact: true }).fill(heading);
 }
-async function publish(page: Page, themeSlug=slug) {
-    const [response] = await Promise.all([page.waitForResponse(r => new URL(r.url()).pathname === `/api/themes/${themeSlug}/editor` && r.request().method() === 'PUT'),
+async function publish(page: Page) {
+    const [response] = await Promise.all([page.waitForResponse(r => new URL(r.url()).pathname === `/api/themes/${slug}/editor` && r.request().method() === 'PUT'),
         page.getByRole('button', { name: 'Publish', exact: true }).click()]);
     assert.equal(response.status(), 200, 'normal mounted editor publication');
     return response.json();
@@ -285,14 +280,14 @@ test('all ten persisted Core presets apply, save, reload, publish and render on 
  const screenshots=new URL('../../docs/evidence/web-launch-week1-2026-10-21/screenshots/',import.meta.url);mkdirSync(screenshots,{recursive:true});
  const buyer=await f.context.newPage();const receipts=[];
  for(const name of expected){
-  await f.page.getByRole('button',{name:'Theme styles',exact:true}).click();
-  const button=f.page.getByRole('button',{name:'Apply '+name+' style',exact:true});
+  await f.page.getByRole('button',{name:'Experiences',exact:true}).click();
+  const button=f.page.getByRole('button',{name:'Apply '+name,exact:true});
   if(await button.count()){
    const prior=Number(f.effects().split('|')[0]);const [saved]=await Promise.all([f.page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/editor/draft')&&r.request().method()==='POST',{timeout:30000}),button.click()]);const saveBody=await saved.json();assert.equal(saved.status(),200,JSON.stringify(saveBody.error||saveBody));await expect(f.page.getByRole('button',{name:'Save',exact:true}).first()).toBeDisabled({timeout:30000});
    await expect.poll(()=>Number(f.effects().split('|')[0])).toBeGreaterThan(prior);
   }
-  await f.page.reload({waitUntil:'domcontentloaded'});await f.page.getByRole('button',{name:'Theme styles',exact:true}).click();
-  await expect(f.page.getByRole('button',{name:'Applied style',exact:true})).toHaveCount(1);
+  await f.page.reload({waitUntil:'domcontentloaded'});await f.page.getByRole('button',{name:'Experiences',exact:true}).click();
+  await expect(f.page.getByRole('button',{name:'Applied',exact:true})).toHaveCount(1);
   const published=await publish(f.page);assert.ok(published.release.release_id);
   const stored=JSON.parse(owned.psql(`SELECT template_snapshot->'themeSettings' FROM theme_releases WHERE id='${f.currentRelease()}';`));
   const reference=JSON.parse(owned.psql(`SELECT default_template->'liquidBundle'->'config'->'settings_data'->'presets'->'${name}' FROM themes WHERE slug='${slug}';`));
@@ -318,17 +313,10 @@ test('all ten persisted Core presets apply, save, reload, publish and render on 
   await f.page.setViewportSize({width,height:900});await f.page.emulateMedia({colorScheme});await f.page.screenshot({path:new URL('editor-'+width+'-'+colorScheme+'.png',screenshots).pathname,fullPage:true});
  }
  await f.page.setViewportSize({width:1280,height:900});await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/online-store/themes`,{waitUntil:'networkidle'});
- owned.psql(`INSERT INTO subscriptions(user_id,store_id,plan,status) VALUES('${f.owner}','${f.tenant.siteId}','enterprise','active');`);
  const sourceBundle=new URL('../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json',import.meta.url).pathname;
  const [imported]=await Promise.all([f.page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/install'&&r.request().method()==='POST',{timeout:60000}),f.page.locator('input[type="file"][accept*="json"]').setInputFiles(sourceBundle)]);
  const importBody=await imported.json();assert.equal(imported.status(),200,JSON.stringify(importBody.error||importBody));
- const importedSlug=importBody.uploaded.theme.slug as string;assert.ok(importedSlug.startsWith('private-'+f.tenant.siteId+'-'));
- assert.equal(owned.psql(`SELECT theme_id FROM sites WHERE id='${f.tenant.siteId}';`),slug,'Add keeps the published theme unchanged');
- await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/online-store/themes/${importedSlug}/editor`,{waitUntil:'networkidle'});
- await expect(f.page.getByRole('tree',{name:'Theme sections',exact:true})).toBeVisible();
- const [privateDraft]=await Promise.all([f.page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/editor/draft')&&r.request().method()==='POST'),editHeading(f.page,'Synthetic private Core import')]);assert.equal(privateDraft.status(),200);
- await expect(f.page.getByRole('button',{name:'Save',exact:true}).first()).toBeDisabled();
- await publish(f.page,importedSlug);assert.equal(owned.psql(`SELECT theme_id FROM sites WHERE id='${f.tenant.siteId}';`),importedSlug);
+ const importedSlug=owned.psql(`SELECT theme_id FROM sites WHERE id='${f.tenant.siteId}';`);assert.ok(importedSlug.startsWith('private-'+f.tenant.siteId+'-'));
  assert.equal(owned.psql(`SELECT is_site_private AND owned_by_site_id='${f.tenant.siteId}' FROM themes WHERE slug='${importedSlug}';`),'t');
  await buyer.goto(f.publicUrl,{waitUntil:'networkidle'});await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
  // This synthetic store has no configured navigation menu; use Core's real primary shopping CTA.

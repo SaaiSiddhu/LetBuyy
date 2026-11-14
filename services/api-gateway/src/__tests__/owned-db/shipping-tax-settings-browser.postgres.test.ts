@@ -81,27 +81,6 @@ test('merchant shipping and tax forms persist through scoped web proxies and rel
         const [login] = await Promise.all([page.waitForResponse(r => new URL(r.url()).pathname === '/api/auth/login' && r.request().method() === 'POST'), page.getByRole('button', { name: 'Log in', exact: true }).click()]);
         assert.equal(login.status(), 200);
         await page.waitForURL(url => url.origin === merchantOrigin && url.pathname === `/${site.subdomain}/dashboard`);
-        // A real authenticated cookie must not let a foreign page write settings.
-        // Exercise every mounted verb before any fixture row can be changed.
-        stage = 'settings-origin-refusal';
-        const originChecks = [
-            ['shipping/profiles', 'POST'], ['shipping/profiles/' + randomUUID(), 'PATCH'],
-            ['shipping/zones', 'POST'], ['shipping/zones/' + randomUUID(), 'PATCH'],
-            ['shipping/zones/' + randomUUID(), 'DELETE'], ['shipping/rates', 'POST'],
-            ['shipping/rates/' + randomUUID(), 'PATCH'], ['shipping/rates/' + randomUUID(), 'DELETE'],
-            ['taxes', 'POST'], ['taxes', 'PATCH'], ['taxes/' + randomUUID(), 'PATCH'],
-            ['taxes/' + randomUUID(), 'DELETE'],
-        ] as const;
-        for (const [path, method] of originChecks) {
-            for (const headers of [{ origin: 'https://foreign.example.invalid' }, {}] as Record<string, string>[]) {
-                const denied = await context.request.fetch(`${merchantOrigin}/api/stores/${site.subdomain}/${path}`, {
-                    method, headers, data: {},
-                });
-                assert.equal(denied.status(), 403, `${method} ${path} must reject a foreign or missing Origin`);
-                assert.equal((await denied.json()).error.code, 'FORBIDDEN_ORIGIN');
-            }
-        }
-        assert.equal(owned.psql(`SELECT (SELECT count(*) FROM shipping_profiles WHERE site_id='${site.siteId}')+(SELECT count(*) FROM shipping_zones WHERE site_id='${site.siteId}')+(SELECT count(*) FROM tax_rates WHERE store_id='${site.siteId}');`), '0');
         const save = async (path: RegExp, method: string, action: () => Promise<unknown>) => {
             const [response] = await Promise.all([page.waitForResponse(r => path.test(new URL(r.url()).pathname) && r.request().method() === method), action()]);
             assert.ok(response.ok(), `settings mutation ${method} failed: ${response.status()}`);
@@ -112,54 +91,23 @@ test('merchant shipping and tax forms persist through scoped web proxies and rel
         await page.getByLabel('Tax name', { exact: true }).fill('Synthetic browser tax'); await page.getByLabel('Rate (%)', { exact: true }).fill('18');
         const created = await save(/\/taxes$/, 'POST', () => page.getByRole('button', { name: 'Add rate', exact: true }).first().click());
         const taxId = created.data.id;
-        assert.equal(created.data.rate, 18, 'Merchant transport uses percentage points');
-        assert.equal(Number(owned.psql(`SELECT rate FROM tax_rates WHERE id='${taxId}';`)), 0.18,
-            '18% entered in the actual browser must persist once as a 0.18 fraction');
         assert.equal(owned.psql(`SELECT coalesce(state,'NULL') FROM tax_rates WHERE id='${taxId}';`), 'NULL');
         await expect(page.getByRole('heading', { name: 'Synthetic browser tax', exact: true })).toBeVisible();
-        const product = randomUUID();
-        owned.psql(`INSERT INTO products(id,store_id,name,sku,price,is_active) VALUES('${product}','${site.siteId}','Synthetic UI tax product','SYN-${product}',100,true);`);
-        const effective = JSON.parse(owned.psql(`SELECT quote_storefront_checkout_totals('${site.siteId}',
-            '[{"product_id":"${product}","quantity":1}]','{"country":"IN","state":"Karnataka","state_code":"29","zip":"560001"}',NULL,NULL,NULL);`));
-        assert.equal(effective.tax_minor,1800,'actual browser entry results in 18% on a ₹100 database quote');
-        assert.equal(effective.total_minor,11800);
-        stage = 'state-tax-edit'; await page.getByRole('button', { name: 'Edit', exact: true }).click(); await page.getByLabel('Destination state', { exact: true }).selectOption('29');
+        stage = 'state-tax-edit'; await page.getByRole('button', { name: 'Edit', exact: true }).click(); await page.getByLabel('State', { exact: true }).fill('29');
         await save(/\/taxes\/[^/]+$/, 'PATCH', () => page.getByRole('button', { name: 'Update rate', exact: true }).first().click());
         await page.reload(); await expect(page.getByText('IN / 29', { exact: true })).toBeVisible();
-        assert.equal(Number(owned.psql(`SELECT rate FROM tax_rates WHERE id='${taxId}';`)), 0.18,
-            'editing a different field must preserve the effective rate');
-        stage = 'state-tax-clear'; await page.getByRole('button', { name: 'Edit', exact: true }).click(); await page.getByLabel('Destination state', { exact: true }).selectOption('');
+        stage = 'state-tax-clear'; await page.getByRole('button', { name: 'Edit', exact: true }).click(); await page.getByLabel('State', { exact: true }).fill('');
         await save(/\/taxes\/[^/]+$/, 'PATCH', () => page.getByRole('button', { name: 'Update rate', exact: true }).first().click());
         await page.reload(); await expect(page.getByRole('heading', { name: 'Synthetic browser tax', exact: true })).toBeVisible();
         assert.equal(owned.psql(`SELECT coalesce(state,'NULL') FROM tax_rates WHERE id='${taxId}';`), 'NULL');
         await page.screenshot({ path: join(artifacts, 'tax-cleared-reload.png'), fullPage: true });
         stage = 'shipping-zone-create'; await page.goto(`${merchantOrigin}/${site.subdomain}/settings/shipping`);
-        stage = 'shipping-profile-create';
-        await page.getByRole('button',{name:'Add profile',exact:true}).click();
-        await page.getByLabel('Profile name',{exact:true}).fill('Synthetic browser profile');
-        await page.getByLabel('Handling charge (₹)',{exact:true}).fill('5');
-        const profile=await save(/\/shipping\/profiles$/,'POST',()=>page.getByRole('button',{name:'Save profile',exact:true}).click());
-        await expect(page.getByRole('heading',{name:'Synthetic browser profile',exact:true})).toBeVisible();
-        assert.equal(profile.data.is_default,true);assert.equal(profile.data.handling_fee_minor,500);
-        stage = 'shipping-zone-create';
-        await page.getByRole('button', { name: 'Add zone', exact: true }).first().click(); await page.getByLabel('Zone name', { exact: true }).fill('Synthetic browser zone');
-        await page.getByLabel('Shipping profile',{exact:true}).selectOption(profile.data.id);
+        await page.getByRole('button', { name: 'Add zone', exact: true }).first().click(); await page.getByLabel('Zone name', { exact: true }).fill('Synthetic browser zone'); await page.getByLabel('Countries', { exact: true }).fill('IN');
         const zone = await save(/\/shipping\/zones$/, 'POST', () => page.getByRole('button', { name: 'Add zone', exact: true }).last().click());
-        const zoneId = zone.data.id; assert.equal(zone.data.profile_id,profile.data.id); await expect(page.getByRole('heading', { name: 'Synthetic browser zone', exact: true })).toBeVisible();
+        const zoneId = zone.data.id; await expect(page.getByRole('heading', { name: 'Synthetic browser zone', exact: true })).toBeVisible();
         stage = 'shipping-rate-create'; await page.getByRole('button', { name: 'Add rate', exact: true }).click(); await page.getByLabel('Rate name', { exact: true }).fill('Synthetic browser delivery'); await page.getByLabel('Price (₹, 0 for free)', { exact: true }).fill('20');
         const rate = await save(/\/shipping\/rates$/, 'POST', () => page.getByRole('button', { name: 'Add rate', exact: true }).last().click());
-        const rateId = rate.data.id;
-        assert.equal(owned.psql(`SELECT name FROM shipping_rates WHERE id='${rateId}' AND site_id='${site.siteId}';`), 'Synthetic browser delivery');
-        await page.reload(); await expect(page.getByText('Synthetic browser delivery', { exact: true })).toBeVisible();
-        stage = 'shipping-rate-edit';
-        await page.getByRole('button', { name: 'Edit rate', exact: true }).click();
-        await page.getByLabel('Minimum order (₹)', { exact: true }).fill('100');
-        await page.getByLabel('Maximum order (₹)', { exact: true }).fill('500');
-        await page.getByLabel('Earliest delivery (days)', { exact: true }).fill('0');
-        await page.getByLabel('Latest delivery (days)', { exact: true }).fill('1');
-        await save(/\/shipping\/rates\/[^/]+$/, 'PATCH', () => page.getByRole('button', { name: 'Save rate', exact: true }).click());
-        await page.reload();
-        assert.equal(owned.psql(`SELECT min_order_amount::text||':'||estimated_days_min::text||':'||estimated_days_max::text FROM shipping_rates WHERE id='${rateId}' AND site_id='${site.siteId}';`), '100.00:0:1');
+        const rateId = rate.data.id; await page.reload(); await expect(page.getByText('Synthetic browser delivery', { exact: true })).toBeVisible();
         stage = 'shipping-zone-edit'; await page.getByRole('button', { name: 'Edit', exact: true }).click(); await page.getByLabel('Zone name', { exact: true }).fill('Synthetic browser zone edited');
         await save(/\/shipping\/zones\/[^/]+$/, 'PATCH', () => page.getByRole('button', { name: 'Update zone', exact: true }).first().click());
         await page.reload(); await expect(page.getByRole('heading', { name: 'Synthetic browser zone edited', exact: true })).toBeVisible();
@@ -180,10 +128,6 @@ test('merchant shipping and tax forms persist through scoped web proxies and rel
         writeFileSync(join(artifacts, 'receipt.json'), JSON.stringify(receipt, null, 2));
         console.log('W2_SETTINGS_BROWSER_PASS', JSON.stringify(receipt));
     } catch (error) {
-        if (browser) {
-            const page = browser.contexts()[0]?.pages()[0];
-            if (page) { await page.screenshot({ path: join(artifacts, 'failure.png'), fullPage: true }); writeFileSync(join(artifacts, 'failure-body.txt'), await page.locator('body').innerText()); }
-        }
         console.error('W2_SETTINGS_BROWSER_FAILURE', JSON.stringify({ stage, message: String(error).replace(/https?:\/\/\S+/g, '[url]'), receipts, artifacts })); throw error;
     } finally {
         await browser?.close(); if (merchant) await stopOwnedClientRuntime(merchant); if (identity) await stopOwnedClientRuntime(identity);

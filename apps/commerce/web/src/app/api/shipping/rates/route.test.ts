@@ -19,23 +19,19 @@ async function withGateway(respond: (request: RecordedGatewayRequest) => Respons
     try { await run(fake.requests); } finally { fake.restore(); }
 }
 
-const input = { subdomain: 'snaz', shipping_address: { country: 'IN', zip: '560001', state: 'Karnataka', state_code: '29' },
-    items: [{ product_id: '97e27542-391a-4333-ae03-e234f330eb25', quantity: 1 }] };
-test('storefront delivery proxy forwards product references instead of trusting a client subtotal', async () => {
+test('storefront quote proxy resolves the public store by subdomain and forwards the validated address and subtotal', async () => {
     await withGateway((upstream) => {
-        assert.equal(upstream.method, 'POST');
+        assert.equal(upstream.method, 'GET');
         assert.equal(upstream.url.pathname, '/v1/storefront/snaz/shipping-rates');
-        const body = JSON.parse(upstream.body || '{}');
-        assert.deepEqual(body.shipping_address,input.shipping_address);
-        assert.deepEqual(body.items,input.items);
-        assert.equal(body.subtotal_minor,undefined);
-        return jsonResponse({ data: { rates: [] } });
+        assert.equal(upstream.url.searchParams.get('pincode'), '560001');
+        assert.equal(upstream.url.searchParams.get('state'), 'Karnataka');
+        assert.equal(upstream.url.searchParams.get('state_code'), '29');
+        assert.equal(upstream.url.searchParams.get('subtotal_minor'), '19900');
+        return jsonResponse({ data: { serviceability: { serviceable: true }, rates: [] } });
     }, async (calls) => {
-        const response = await POST(request(input));
+        const response = await POST(request({ subdomain: 'snaz', pincode: '560001', state: 'Karnataka', state_code: '29', subtotal_minor: 19900 }));
         assert.equal(response.status, 200);
-        const result = await response.json();
-        assert.equal(result.data.serviceability.serviceable,false);
-        assert.equal(result.data.serviceability.carrier_confirmed,false);
+        assert.deepEqual(await response.json(), { data: { serviceability: { serviceable: true }, rates: [] } });
         assert.equal(calls.length, 1);
     });
 });

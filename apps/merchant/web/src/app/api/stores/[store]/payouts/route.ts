@@ -17,8 +17,6 @@ export async function GET(
         const query = new URLSearchParams({ store_id: resolved.storeId })
         if (searchParams.get('status')) query.set('status', searchParams.get('status')!)
         if (searchParams.get('limit')) query.set('limit', searchParams.get('limit')!)
-        if (searchParams.get('mode')) query.set('mode', searchParams.get('mode')!)
-        if (searchParams.get('cursor')) query.set('cursor', searchParams.get('cursor')!)
 
         const response = await merchantApiFetch(`/payouts?${query.toString()}`, { requireSession: true })
         const payload = await response.json().catch(() => null)

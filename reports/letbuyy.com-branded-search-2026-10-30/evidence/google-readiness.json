@@ -1,0 +1,46 @@
+{
+  "tier": {
+    "tier": -1,
+    "description": "No credentials configured",
+    "capabilities": [],
+    "missing": "Create config at /Users/saai_mithra/.config/claude-seo/google-api.json with at minimum an 'api_key' field. Run with --setup for full instructions."
+  },
+  "services": {
+    "psi": {
+      "available": false,
+      "method": "api_key",
+      "service": "PageSpeed Insights v5",
+      "error": "No API key found. Set GOOGLE_API_KEY environment variable or add 'api_key' to /Users/saai_mithra/.config/claude-seo/google-api.json"
+    },
+    "crux": {
+      "available": false,
+      "method": "api_key",
+      "service": "Chrome UX Report (CrUX) API",
+      "error": "No API key found. Set GOOGLE_API_KEY environment variable or add 'api_key' to /Users/saai_mithra/.config/claude-seo/google-api.json"
+    },
+    "crux_history": {
+      "available": false,
+      "method": "api_key",
+      "service": "CrUX History API",
+      "error": "No API key found. Set GOOGLE_API_KEY environment variable or add 'api_key' to /Users/saai_mithra/.config/claude-seo/google-api.json"
+    },
+    "gsc": {
+      "available": false,
+      "method": "oauth_or_sa",
+      "service": "Google Search Console API",
+      "error": "No OAuth token or service account found. Either:\n         1. Run: python scripts/google_auth.py --auth --creds /path/to/client_secret.json\n         2. Or add 'service_account_path' to /Users/saai_mithra/.config/claude-seo/google-api.json"
+    },
+    "indexing": {
+      "available": false,
+      "method": "oauth_or_sa",
+      "service": "Google Indexing API v3",
+      "error": "No OAuth token or service account found. Either:\n         1. Run: python scripts/google_auth.py --auth --creds /path/to/client_secret.json\n         2. Or add 'service_account_path' to /Users/saai_mithra/.config/claude-seo/google-api.json"
+    },
+    "ga4": {
+      "available": false,
+      "method": "oauth_or_sa",
+      "service": "GA4 Data API v1beta",
+      "error": "No OAuth token or service account found. Either:\n         1. Run: python scripts/google_auth.py --auth --creds /path/to/client_secret.json\n         2. Or add 'service_account_path' to /Users/saai_mithra/.config/claude-seo/google-api.json"
+    }
+  }
+}

@@ -32,11 +32,8 @@ test('product creation validates input, verifies store ownership, and returns 20
     assert.match(routeSource, /service\.createProduct\(body,\s*customUser\.id,\s*auth\.user\.storeId,\s*true\)/);
     assert.match(routeSource, /c\.json\(success\(data\),\s*201\)/);
     assert.match(adapterSource, /await this\.assertStoreOwnership\(input\.store_id,\s*userId,\s*sessionStoreId/);
-    assert.match(adapterSource, /executeProductCreate\(this\.options\.mutationEnv, input, userId\)/);
-    const mutationSource = source('execution/product-mutation.adapter.ts');
-    assert.match(mutationSource, /withTenantTx\(env, \{ siteId: input\.store_id, requestId \}/);
-    assert.match(mutationSource, /sql\.unsafe\(INSERT_PRODUCT_SQL/);
-    assert.match(mutationSource, /sql\.unsafe\(APPLY_PRODUCT_EDIT_SQL/);
+    assert.match(adapterSource, /\.from\('products'\)\s*[\s\S]*\.insert\(/);
+    assert.match(adapterSource, /\.select\(\)\s*[\s\S]*\.single\(\)/);
 });
 
 test('product reads are scoped to owned sites and cross-site access is hidden', () => {

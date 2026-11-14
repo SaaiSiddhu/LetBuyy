@@ -1,6 +1,0 @@
-{
-  "runId": "63c55b066db3",
-  "cartId": "66f31149-cddb-4dd6-a8fc-ea2805f1f89f",
-  "classification": "Separate canonical API-prepared guest cart for provider UI and callback qualification; not theme-specific cart-UI E2E proof",
-  "priorConfiguredCartPreserved": true
-}

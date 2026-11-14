@@ -1,9 +1,0 @@
-{
-  "services/api-gateway/src/__tests__/owned-db/authenticated-checkout.postgres.test.ts": "4d1b12587f701b3a5c44c592978af7a902fca9fbc7d5cd7e26ee582eac8651dd",
-  "services/api-gateway/src/__tests__/owned-db/marketplace-cart-origin.postgres.test.ts": "ed9fdb718ffb7f533225bd1d50cca1602525965e7c750ae19e59524be3d29db6",
-  "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts": "f4141272fd6fc23b63d0ca0ecc95e0e21023a02827eb73c6257435cfa6ea4280",
-  "services/api-gateway/src/lib/storefront-visitor-access.ts": "f0f650e4bb3f488a8614f41e281dbc57f24c50b420cdb2467bc6643ff1fbae8b",
-  "services/api-gateway/src/routes/storefront/cart-routes.ts": "57f8aa76188ebe20ce7dc3ad9668312b2075f996018b18d975d9b894198de6c0",
-  "services/api-gateway/src/routes/storefront/checkout-payment-routes.ts": "106ca4e6fd660cdbe2b7f95cbbc33172b59b10373ecf12fd51e4382d40775352",
-  "tests/owned-db/storefront-access-worker.postgres.test.ts": "e438222d5221e66f3a1a75ff8aa9b6bfffad8853d4bb23f10ae4bc39190fb4ce"
-}

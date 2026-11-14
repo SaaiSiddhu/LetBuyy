@@ -1,0 +1,20 @@
+{
+  "source_sha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+  "output_sha256": "4333e5b1fdb186a15ab1fce785e288ee3253393ae9b7e18c4bb5e3e23326881d",
+  "source_bytes": 58308,
+  "output_bytes": 44600,
+  "removed_zero_contribution_tuples": 655,
+  "cmap_codepoints": 210,
+  "glyph_samples": 11550,
+  "outlines_and_advances_exact": true,
+  "name_table_exact": true,
+  "weight_range": [
+    400,
+    900
+  ],
+  "optical_size_range": [
+    14,
+    32
+  ],
+  "fonttools": "4.60.1"
+}

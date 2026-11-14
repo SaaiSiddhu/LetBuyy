@@ -1,0 +1,277 @@
+{
+  "status": "IMPLEMENTED_LOCAL_INSTALLED_VERIFIED_NOT_DEPLOYED",
+  "date": "2026-10-22",
+  "branch": "develop",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "scope": [
+    "Console super-admin message drafting, reviewed audience and audited publication",
+    "Canonical account-level merchant inbox across web and mobile",
+    "Ads campaigns, offers, regulations and platform updates; safe links, expiry and persistent read state"
+  ],
+  "verification": {
+    "ownedDelivered": {
+      "runId": "a90926de22bf",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "limits": {
+        "postgres": {
+          "memory": "1g",
+          "cpus": "2",
+          "pids": "512"
+        },
+        "rest": {
+          "memory": "256m",
+          "cpus": "1",
+          "pids": "256"
+        }
+      },
+      "jobs": 1,
+      "containers": [
+        "letbuyy-exec-80754-mvjnvjpr-127e58"
+      ],
+      "reaped": [],
+      "suites": 2,
+      "gatewayDbSuites": 2,
+      "failedSuites": 0,
+      "tests": 8,
+      "assertionsPassed": 8,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "wallSeconds": 148.3,
+      "suiteSeconds": 146.4,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "results": [
+        {
+          "name": "merchant-account-messages.postgres",
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-account-messages.postgres.test.ts",
+          "kind": "gateway-db",
+          "cluster": "letbuyy-exec-80754-mvjnvjpr-127e58",
+          "code": 0,
+          "timedOut": false,
+          "hasSummary": true,
+          "tests": 7,
+          "pass": 7,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0,
+          "seconds": 37.1,
+          "firstFailure": "",
+          "failures": [],
+          "skips": [],
+          "strayProcessesStopped": false,
+          "database": "letbuyy_exec_merchant_account_messages_postgres",
+          "templateSeconds": 30.1,
+          "provisionSeconds": 1.1,
+          "rest": {
+            "container": "letbuyy-exec-a90926de22bf-rest-1",
+            "upstreamPort": 50807,
+            "proxyPort": 50808
+          },
+          "ownership": "verified before start",
+          "cleanup": {
+            "rest": true,
+            "database": true
+          },
+          "proxyRequests": {
+            "forwarded": 258,
+            "refused": 0,
+            "upstreamErrors": 1
+          }
+        },
+        {
+          "name": "merchant-account-messages-browser.postgres",
+          "path": "tests/owned-db/merchant-account-messages-browser.postgres.test.ts",
+          "kind": "gateway-db",
+          "cluster": "letbuyy-exec-80754-mvjnvjpr-127e58",
+          "code": 0,
+          "timedOut": false,
+          "hasSummary": true,
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0,
+          "seconds": 109.3,
+          "firstFailure": "",
+          "failures": [],
+          "skips": [],
+          "strayProcessesStopped": false,
+          "database": "letbuyy_exec_merchant_account_messages_browser_postgres",
+          "templateSeconds": 0,
+          "provisionSeconds": 1,
+          "rest": {
+            "container": "letbuyy-exec-a90926de22bf-rest-2",
+            "upstreamPort": 50834,
+            "proxyPort": 50835
+          },
+          "ownership": "verified before start",
+          "cleanup": {
+            "rest": true,
+            "database": true
+          },
+          "proxyRequests": {
+            "forwarded": 495,
+            "refused": 0,
+            "upstreamErrors": 1
+          }
+        }
+      ]
+    },
+    "consoleTests": {
+      "passed": 50,
+      "failed": 0,
+      "skipped": 0
+    },
+    "notificationAndIdempotencyContracts": {
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    "tenantCore": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    "mobileTests": {
+      "passed": 365,
+      "failed": 0,
+      "skipped": 0,
+      "receipt": "native-all-tests-final.log",
+      "mode": "Flutter host tests; no physical device acceptance"
+    },
+    "mobileAnalysis": "strict, no issues",
+    "productionBuilds": {
+      "console": "pass",
+      "merchantWeb": "pass",
+      "mode": "separate isolated source copy"
+    },
+    "types": "Console, Merchant web, Gateway and shared-types pass",
+    "lint": "Scoped Console/Merchant ESLint exits0; one unchanged AllStoresClient theme-effect warning; CSS stylelint and whitespace pass",
+    "governance": "domain boundary227; tenant isolation317; design-system ratchet and migration safety pass",
+    "migrationSequence": "red: untracked370,371,372; no staging/commit authorized",
+    "sourceMismatches": {
+      "candidate": [],
+      "build-candidate": []
+    }
+  },
+  "localUpgrade": {
+    "state": "APPLIED_VERIFIED",
+    "resource": "supabase_db_letbuyy-web-local-20261021",
+    "from": 371,
+    "to": 372,
+    "prepared": true,
+    "executed": true,
+    "messagesPublished": 0,
+    "reason": "Existing local DDL guard requires temporary migration-owner elevation inside the reviewed transaction; prior approval only covered370-371.",
+    "approvedByOwner": true,
+    "approvalScope": "Explicit owner reply: Approve local inbox installation; migration372 prepared maintenance transaction only.",
+    "atomic": true,
+    "migrationOwnerOriginalProfileRestored": true,
+    "allGuardsEnabled": true,
+    "businessRowDML": false,
+    "postflight": {
+      "head": "372",
+      "announcements": 0,
+      "command_receipts": 0,
+      "platform_messages": 0,
+      "postgres_superuser": false,
+      "service_rpc_execute": true,
+      "ledger_source_sha256": "c7b6d0f51304b4f7c96981d11a906f625a6e64d830e54e4151ef03c743c1f44d",
+      "tax_ddl_guard_enabled": true,
+      "tax_row_guards_enabled": true,
+      "message_tables_rls_force": true,
+      "all_event_triggers_enabled": true,
+      "untrusted_rpc_execute_denied": true,
+      "message_content_guard_enabled": true,
+      "private_helper_execute_denied": true,
+      "application_roles_non_superuser": true,
+      "direct_message_table_access_denied": true
+    }
+  },
+  "preservation": {
+    "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+    "baselineDirtyFiles": 232,
+    "unchangedPreexistingFilesBeforeContinuity": 221,
+    "intentionallyChangedPreexistingPathsBeforeContinuity": [
+      "apps/internal/console/src/app/globals.css",
+      "apps/internal/console/src/components/ConsoleShell.tsx",
+      "apps/internal/console/src/proxy.ts",
+      "apps/merchant/mobile/test/mobile_services_test.dart",
+      "apps/merchant/web/src/components/merchantNavigation.ts",
+      "config/eslint/boundary-baseline.json",
+      "docs/governance/app-api-route-ownership.md",
+      "packages/shared-types/src/index.ts",
+      "scripts/governance/test-suite-catalog.mjs",
+      "scripts/validators/app-api-route-inventory.mjs",
+      "services/api-gateway/src/routes/internal-console.ts"
+    ],
+    "deletedPreexistingFiles": [],
+    "sourceMismatches": {
+      "candidate": [],
+      "build-candidate": []
+    },
+    "runtimeAndTestSha256": {
+      "apps/internal/console/src/app/(dashboard)/merchant-messages/page.tsx": "f092f5b86fca562b311469412f323758f12d6f7a15ec92b8d13084dc9d41c430",
+      "apps/internal/console/src/app/(dashboard)/merchant-messages/workspace.tsx": "db8ba976afbd30c3ffc754a615fcbe09023c3d068ea014525b8e695202418617",
+      "apps/internal/console/src/app/api/v1/merchant-messages/[[...segments]]/route.ts": "28bf2218d2712bf802e64666ca8b2586cfbb9a1f79ce2260b088338638b390d4",
+      "apps/internal/console/src/app/globals.css": "649cd527e7db04e565156b1571f764c82595e21c794ee5b8c7383bb97462e049",
+      "apps/internal/console/src/components/ConsoleShell.tsx": "dcf5c6f28ff6cadcbdf902b004c199d2ef840c8499aed4e54802df988628d176",
+      "apps/internal/console/src/proxy.ts": "e432df8fe7cafb59c049fe18d2890554087f447a5a53ce25949f0cee028b8b4b",
+      "apps/merchant/mobile/lib/screens/settings/notifications_screen.dart": "6d6647904531b2804d4587cc46448540e9bd6fe768223fb8621e64980c8cd109",
+      "apps/merchant/mobile/lib/services/notification_settings_service.dart": "0623919cbde2173d64df8da10c211f061d3b65a85d8c379b019ce5fd974c2462",
+      "apps/merchant/mobile/lib/widgets/platform_message_body.dart": "953be47657abccc106f9893b2f819fba9bbfeb39c32e94e44929931bac833fba",
+      "apps/merchant/mobile/test/mobile_services_test.dart": "12920d4afcb39e7dbef3f47f576b329af592a1fd483f20670897fc7e9682c6af",
+      "apps/merchant/mobile/test/widgets/platform_message_body_test.dart": "f634b5838e73b848943d93a025a2e51b7fbefe047e79ebc5057e37e85eb54694",
+      "apps/merchant/web/src/app/[store]/inbox/page.tsx": "e8db98f8c2aa02d1fc3c35dba574d2d69056db56ae7ac84a40476976c56008ac",
+      "apps/merchant/web/src/app/api/v1/inbox/[[...segments]]/route.ts": "3b4f66674e6706721be0ee86423836494e5b39beac4688c088245b4988dc8e4d",
+      "apps/merchant/web/src/app/globals.css": "3ef857696756f3b8a03dc56d8a131f09110d065b532e967b0b24133899601b85",
+      "apps/merchant/web/src/app/inbox/page.tsx": "186127f16d4a2718391e3a5188e713290b564b8c4eed49aee33d721b3a589075",
+      "apps/merchant/web/src/app/stores/AllStoresClient.tsx": "2988bbf103f31c1d36e283f280eeed7645a2ce0803b70e2a40c666f2104333d9",
+      "apps/merchant/web/src/components/MerchantAccountInbox.tsx": "bc2008bc56ceddb4690f32df5d519e6c2a329851148461bac4f0481b082ed62c",
+      "apps/merchant/web/src/components/NotificationsPanel.tsx": "c97c334f63cb51c4601ef6a21118c7f7d9e772cb5cda34632580e668c2e57a5a",
+      "apps/merchant/web/src/components/merchantNavigation.ts": "b17fce7fae0c1ff9aa9fe774034f3a1f321699cd860e65f14a1b9d2acb0fa027",
+      "config/eslint/boundary-baseline.json": "9cf7ca711cced23417db1f086a4caf65b9945fc37b034a0ee51e3c49b46a91c7",
+      "database/supabase/migrations/372_merchant_account_messages.sql": "c7b6d0f51304b4f7c96981d11a906f625a6e64d830e54e4151ef03c743c1f44d",
+      "database/supabase/rollback/372_merchant_account_messages.rollback.sql": "d85f1b0d3d4294d9c8760b7f4893ccf637943364dbf6d9a98998a1bf5f9c9910",
+      "packages/shared-types/src/index.ts": "26b369e25406badc84b09acc6c393e6b6012def95d45b0cd9591a091db119a6a",
+      "packages/shared-types/src/merchant-messages.ts": "452e7b1feff387a91938071b2e7c1193cc1322fe408f7f23382f8bf69d3ee7ea",
+      "packages/tenant-core/src/index.ts": "9161f5634df16cd907968442688fb8baf6e52d8f6c763726d1660d48f1392f31",
+      "packages/tenant-core/test/index.test.ts": "07bf9da3e05553dc8791fa632425fe8ab7464bc3dc0442c794b74bb04090c463",
+      "scripts/governance/test-suite-catalog.mjs": "88f8560435d2a520b8cd689dd0c502d45e3fef072873f44f631cf3d828987bdf",
+      "scripts/validators/app-api-route-inventory.mjs": "eff37f6841c9a1dd180c58041dfaa494e98ec3b6f7bbdf09d78d0fe6a1e99d1a",
+      "services/api-gateway/src/__tests__/owned-db/merchant-account-messages.postgres.test.ts": "856c7864c38f2297d510f6f8cc7bf2387dc0de801da0f0de6e0672a739f089db",
+      "services/api-gateway/src/middleware/idempotency.ts": "87a9fc7b164288d86c5c5a489812c1771cb2684b2885e473a33933f01b2294a3",
+      "services/api-gateway/src/routes/internal-console.ts": "068748cceb51c6f349f7aca5cd38ba0793df3bde0befa51ce2a8794ec8cad2e5",
+      "services/api-gateway/src/routes/internal-console/merchant-messages.ts": "3dbe8c54c2c7099498b03e8f80aa8dfab12aa2cd837adcf5c3f8fde7717bed16",
+      "services/api-gateway/src/routes/notifications.ts": "e43701953e021fd590ba3ad123157f4b6b92a66a9e97712d5767a9d9f00cc84f",
+      "tests/owned-db/merchant-account-messages-browser.postgres.test.ts": "e3e3e5d3018b1436bdf482d527f8f467165f83f88d90a9f7241ef8c717b35718"
+    }
+  },
+  "limits": [
+    "Uncommitted local source; no merge, push or hosted deployment",
+    "No actual merchant publication or external send",
+    "Synthetic real-database/normal-login browser acceptance; local developer database372 installation and existing-session read-only Console check verified",
+    "Native365 host tests and strict analysis are not phone/APK/device acceptance",
+    "Full-site accessibility audit and parent-programme/hosted/provider acceptance unchanged"
+  ],
+  "nextAction": "Owner can author and review a real message in Console Merchant messages. Do not publish actual merchant content without its audience/content authorization. Hosted/device and parent-programme gates remain separate.",
+  "localBrowser": {
+    "url": "http://localhost:9007/merchant-messages",
+    "mode": "existing normal signed-in operator session; no account/factor/role changes",
+    "directory": "loaded; honest empty state",
+    "authoring": "new draft fields visible; no save or publish",
+    "screenshot": "private local-console-merchant-messages.png",
+    "tabRecovery": "stale prior tab reached a browser error wrapper; a fresh tab loaded the approved localhost page normally without environment or protection changes"
+  }
+}

@@ -1,9 +1,9 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import { Badge, Button, Info, Modal, normalizeProviderMode, Plus, ProviderModeBadge, Select, ShieldCheck, Smartphone, useToast } from '@letbuyy/ui'
+import Link from 'next/link'
+import { Badge, Button, CheckCircle2, CreditCard, Info, Input, Modal, normalizeProviderMode, Plus, ProviderModeBadge, Select, ShieldCheck, Smartphone, useToast } from '@letbuyy/ui'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
-import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState'
 
 export interface BillingMandateView {
     id: string
@@ -42,7 +42,7 @@ function statusMeta(status: string) {
 
 function formatPlanPeriod(planSlug: string, period: string) {
     const plan = planSlug ? planSlug.charAt(0).toUpperCase() + planSlug.slice(1) : 'Plan'
-    const cadence = period === 'yearly' ? 'yearly' : period === 'monthly' ? 'monthly' : 'cycle unavailable'
+    const cadence = period === 'yearly' ? 'yearly' : 'monthly'
     return `${plan} · ${cadence}`
 }
 
@@ -61,39 +61,33 @@ export function BillingPaymentMethods({
     const modalOpen = addOpen ?? internalOpen
     const setModalOpen = onAddOpenChange ?? setInternalOpen
     const [submitting, setSubmitting] = useState(false)
-    const pendingIntent = useRef<{ scope: string; id: string } | null>(null)
     const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>(
         currentBillingPeriod === 'yearly' ? 'yearly' : 'monthly',
     )
-    const planSlug = currentPlanSlug && ['launch', 'growth', 'scale', 'commerce_os'].includes(currentPlanSlug)
-        ? currentPlanSlug : null
+    const [upiVpa, setUpiVpa] = useState('')
+    const requestIntent = useRef<{ scope: string; key: string } | null>(null)
+    const planSlug = currentPlanSlug?.trim() || null
 
     const handleAdd = useCallback(async () => {
-        if (submitting || !planSlug) return
-        const scope = `${store}:${planSlug}:${billingPeriod}`
-        const storageKey = `letbuyy:billing-mandate-intent:${scope}`
-        if (pendingIntent.current?.scope !== scope) {
-            let savedId: string | null = null
-            try { savedId = sessionStorage.getItem(storageKey) } catch { /* Private browsing may deny storage. */ }
-            const id = savedId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(savedId)
-                ? savedId : crypto.randomUUID()
-            pendingIntent.current = { scope, id }
-            try { sessionStorage.setItem(storageKey, id) } catch { /* In-page retries still reuse the ref. */ }
-        }
-        const intentId = pendingIntent.current.id
+        if (submitting) return
         setSubmitting(true)
         try {
+            if (!planSlug) throw new Error('Choose a plan before adding a payment method.')
+            const scope = JSON.stringify([store, planSlug, billingPeriod, upiVpa.trim()])
+            if (requestIntent.current?.scope !== scope) {
+                requestIntent.current = { scope, key: `mandate:${crypto.randomUUID()}` }
+            }
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/billing`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': requestIntent.current.key },
                 body: JSON.stringify({
                     plan_slug: planSlug,
                     billing_period: billingPeriod,
-                    intent_id: intentId,
+                    upi_vpa: upiVpa.trim() || undefined,
                 }),
             })
             const payload = (await response.json().catch(() => null)) as {
-                data?: { mandate?: { id?: string; plan_slug?: string; billing_period?: string } }
+                data?: { mandate?: { provider_mode?: string; status?: string } }
                 error?: string | { message?: string }
             } | null
             if (!response.ok) {
@@ -102,49 +96,61 @@ export function BillingPaymentMethods({
                     : payload?.error?.message || 'Unable to add payment method'
                 throw new Error(message)
             }
-            if (!payload?.data?.mandate?.id || payload.data.mandate.plan_slug !== planSlug || payload.data.mandate.billing_period !== billingPeriod) {
-                throw new Error('The mandate response was incomplete. Refresh billing to check whether it was saved before trying again.')
+            const mandate = payload?.data?.mandate
+            if (!mandate || !['sandbox', 'live'].includes(mandate.provider_mode || '')
+                || !['active', 'pending_provider'].includes(mandate.status || '')) {
+                throw new Error('Payment method status could not be confirmed. Retry to recover the same request.')
             }
-            pendingIntent.current = null
-            try { sessionStorage.removeItem(storageKey) } catch { /* The server already confirmed the intent. */ }
+            requestIntent.current = null
             setModalOpen(false)
+            setUpiVpa('')
             notify({
-                title: 'Sandbox mandate created',
-                description: 'Review its persisted status before relying on it for billing. Live AutoPay is not enabled here.',
-                variant: 'success',
+                title: mandate.provider_mode === 'sandbox' ? 'Sandbox payment method created' : 'Payment method request saved',
+                description: mandate.provider_mode === 'sandbox'
+                    ? 'Local simulation only. No bank or UPI mandate was authorised.'
+                    : mandate.status === 'active'
+                        ? 'The provider reports this payment method as active.'
+                        : 'Awaiting provider authorisation. Automatic renewal is not active yet.',
+                variant: mandate.provider_mode === 'sandbox' || mandate.status !== 'active' ? 'info' : 'success',
             })
             onChanged()
         } catch (error) {
             notify({
-                title: 'Mandate status needs checking',
-                description: `${error instanceof Error ? error.message : 'The request could not be confirmed.'} Refresh billing before retrying. This request will reuse the same operation key.`,
+                title: 'Could not add payment method',
+                description: error instanceof Error ? error.message : 'Unable to add payment method',
                 variant: 'critical',
             })
         } finally {
             setSubmitting(false)
         }
-    }, [billingPeriod, notify, onChanged, planSlug, setModalOpen, store, submitting])
+    }, [billingPeriod, notify, onChanged, planSlug, setModalOpen, store, submitting, upiVpa])
 
     return (
         <>
             {mandates.length === 0 ? (
                 <div className="billing-method-empty">
-                    <MerchantEmptyArtwork scene="payment-methods" compact />
+                    <span className="billing-method-empty-icon">
+                        <CreditCard className="letbuyy-icon" aria-hidden="true" />
+                    </span>
                     <div className="billing-method-empty-copy">
-                        <span className="billing-method-empty-title">No billing mandates yet</span>
+                        <span className="billing-method-empty-title">No payment method yet</span>
                         <span className="billing-method-empty-desc">
-                            {planSlug ? 'Create a sandbox mandate for this plan. Live AutoPay needs separate provider activation.' : 'Select a subscription plan before creating a billing mandate.'}
+                            {planSlug
+                                ? 'Request a payment method for your selected subscription plan.'
+                                : 'Choose a subscription plan before adding a payment method.'}
                         </span>
                     </div>
                     <Button onClick={() => setModalOpen(true)} disabled={!planSlug}>
                         <Plus className="letbuyy-icon" aria-hidden="true" />
-                        Create test mandate
+                        Add payment method
                     </Button>
+                    {!planSlug && <Link href={`/${encodeURIComponent(store)}/access_account/checkout/select-plan`}>Choose a plan</Link>}
                 </div>
             ) : (
                 <div className="billing-method-list">
-                    {mandates.map((mandate) => {
+                    {mandates.map((mandate, index) => {
                         const meta = statusMeta(mandate.status)
+                        const isDefault = index === 0 && mandate.status === 'active'
                         return (
                             <div key={mandate.id} className="billing-method-item">
                                 <span className="billing-method-icon">
@@ -152,7 +158,8 @@ export function BillingPaymentMethods({
                                 </span>
                                 <div className="billing-method-meta">
                                     <div className="billing-method-title-row">
-                                        <span className="billing-method-title">{mandate.provider === 'upi_autopay' ? 'UPI AutoPay mandate' : 'Billing mandate'}</span>
+                                        <span className="billing-method-title">Razorpay UPI AutoPay</span>
+                                        {isDefault && <Badge label="Default" variant="success" />}
                                     </div>
                                     <span className="billing-method-sub">
                                         {formatPlanPeriod(mandate.plan_slug, mandate.billing_period)}
@@ -172,7 +179,7 @@ export function BillingPaymentMethods({
                         <div className="billing-method-add-row">
                             <Button variant="secondary" onClick={() => setModalOpen(true)} disabled={!planSlug}>
                                 <Plus className="letbuyy-icon" aria-hidden="true" />
-                                Create test mandate
+                                Add payment method
                             </Button>
                         </div>
                     )}
@@ -181,8 +188,8 @@ export function BillingPaymentMethods({
 
             <Modal
                 open={modalOpen}
-                title="Create test mandate"
-                description="Create a sandbox mandate for this subscription plan. It does not activate live recurring debits."
+                title="Add payment method"
+                description="Request a payment method for your subscription. Sandbox methods simulate setup and do not authorise bank debits."
                 onClose={() => { if (!submitting) setModalOpen(false) }}
                 footer={(
                     <div className="billing-modal-footer">
@@ -191,7 +198,7 @@ export function BillingPaymentMethods({
                         </Button>
                         <Button onClick={() => void handleAdd()} loading={submitting} disabled={!planSlug}>
                             <ShieldCheck className="letbuyy-icon" aria-hidden="true" />
-                            Create sandbox mandate
+                            Set up with Razorpay
                         </Button>
                     </div>
                 )}
@@ -202,12 +209,12 @@ export function BillingPaymentMethods({
                             <Smartphone className="letbuyy-icon" aria-hidden="true" />
                         </span>
                         <div className="billing-modal-provider-copy">
-                            <span className="billing-modal-provider-title">UPI AutoPay sandbox</span>
+                            <span className="billing-modal-provider-title">Razorpay UPI AutoPay</span>
                             <span className="billing-modal-provider-desc">
-                                Test-only mandate record. No live UPI debit is initiated.
+                                Recurring subscription debits via UPI mandate (NPCI).
                             </span>
                         </div>
-                        <ProviderModeBadge mode="sandbox" />
+                        <Badge label="Recommended" variant="success" />
                     </div>
 
                     <Select
@@ -220,12 +227,27 @@ export function BillingPaymentMethods({
                         onChange={(e) => setBillingPeriod(e.target.value === 'yearly' ? 'yearly' : 'monthly')}
                     />
 
+                    <Input
+                        label="UPI ID (optional)"
+                        value={upiVpa}
+                        onChange={(e) => setUpiVpa(e.target.value)}
+                        placeholder="yourname@upi"
+                        helperText="Leave blank to choose your UPI app during Razorpay authorisation."
+                        autoComplete="off"
+                    />
+
                     <div className="billing-modal-note">
                         <Info className="letbuyy-icon" aria-hidden="true" />
                         <span>
-                            This environment creates test mandate records only. Live AutoPay requires provider activation
-                            and a separate verified checkout flow.
+                            LetBuyy is not an RBI-licensed payment aggregator, so we never store your card or UPI
+                            credentials. Razorpay (an RBI-authorised PA) securely holds the mandate; we keep only a
+                            reference to it.
                         </span>
+                    </div>
+
+                    <div className="billing-modal-note billing-modal-note--ok">
+                        <CheckCircle2 className="letbuyy-icon" aria-hidden="true" />
+                        <span>You can cancel the mandate anytime from your bank or UPI app.</span>
                     </div>
                 </div>
             </Modal>

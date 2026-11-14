@@ -165,21 +165,6 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         await expectAxeClean(container);
     });
 
-    it('keeps banner actions separate from the message and keyboard accessible', async () => {
-        const retry = vi.fn();
-        const { container } = renderInSystem(
-            <Banner title="Themes could not load" variant="critical" action={<Button variant="secondary" onClick={retry}>Retry</Button>}>
-                The request timed out.
-            </Banner>,
-        );
-        const banner = screen.getByRole('alert');
-        expect(within(banner).getByText('The request timed out.')).toBeTruthy();
-        fireEvent.click(within(banner).getByRole('button', { name: 'Retry' }));
-        expect(retry).toHaveBeenCalledOnce();
-        expect(banner.className).toContain('--lb-component-banner-danger-text');
-        await expectAxeClean(container);
-    });
-
     it('renders Input helper and error states', async () => {
         const { container, rerender } = renderInSystem(
             <Input label="Store name" helperText="Shown to shoppers" />,
@@ -674,55 +659,6 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         await expectAxeClean(container);
     });
 
-    it('keeps table search, view, columns, selection, and pagination in one workspace', async () => {
-        window.localStorage.removeItem('test.table.products');
-        const onSearch = vi.fn();
-        const onView = vi.fn();
-        const onPage = vi.fn();
-        const rows = [
-            { id: 'one', name: 'Kurta', status: 'Active', inventory: 4 },
-            { id: 'two', name: 'Notebook', status: 'Draft', inventory: 8 },
-        ];
-        const columns = [
-            { key: 'name', header: 'Product' },
-            { key: 'status', header: 'Status' },
-            { key: 'inventory', header: 'Inventory' },
-        ];
-        const { container } = renderInSystem(
-            <Table rows={rows} columns={columns} search={{ label: 'Search products', value: '', onChange: onSearch }}
-                filterContent={<span>Category filter</span>}
-                savedViews={[{ label: 'All', value: 'all' }, { label: 'Draft', value: 'draft' }]}
-                activeView="all" onViewChange={onView} preferencesKey="test.table.products"
-                bulkActions={[{ label: 'Archive', onAction: vi.fn() }]}
-                pagination={{ page: 1, pageSize: 25, total: 27, onPageChange: onPage, itemLabel: 'products' }} />,
-        );
-
-        fireEvent.focus(screen.getByRole('searchbox', { name: 'Search products' }));
-        expect(screen.getByRole('dialog', { name: 'Search filters' })).toBeTruthy();
-        expect(screen.queryByRole('button', { name: 'Filters' })).toBeNull();
-        fireEvent.change(screen.getByRole('searchbox', { name: 'Search products' }), { target: { value: 'Kurta' } });
-        expect(onSearch).toHaveBeenCalledWith('Kurta');
-        fireEvent.change(screen.getByRole('combobox', { name: 'Table view' }), { target: { value: 'draft' } });
-        expect(onView).toHaveBeenCalledWith('draft');
-        fireEvent.click(screen.getAllByLabelText('Select row 1')[0]);
-        expect(screen.getByText('1 selected')).toBeTruthy();
-        fireEvent.click(screen.getByRole('checkbox', { name: 'Show selected only' }));
-        expect(within(container.querySelector('table')!).queryByText('Notebook')).toBeNull();
-        fireEvent.click(screen.getByRole('button', { name: 'Sort and columns' }));
-        fireEvent.click(screen.getByRole('button', { name: 'Hide Status column' }));
-        expect(within(container.querySelector('table')!).queryByRole('columnheader', { name: 'Status' })).toBeNull();
-        expect(window.localStorage.getItem('test.table.products')).toContain('status');
-        const drag = screen.getByRole('button', { name: /Drag Inventory column/ });
-        fireEvent.dragStart(drag, { dataTransfer: { effectAllowed: 'move', setData: vi.fn() } });
-        fireEvent.dragOver(screen.getByText('Status', { selector: 'span' }));
-        fireEvent.drop(screen.getByText('Status', { selector: 'span' }));
-        expect(JSON.parse(window.localStorage.getItem('test.table.products') || '{}').order).toEqual(['name', 'inventory', 'status']);
-        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-        expect(onPage).toHaveBeenCalledWith(2);
-        await expectAxeClean(container);
-        window.localStorage.removeItem('test.table.products');
-    });
-
     it('renders canonical 1.0 replacements without deprecated warnings', () => {
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
@@ -929,6 +865,39 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         for (const [textToken, bgToken] of statusPairs) {
             expect(contrastRatio(light[textToken], light[bgToken])).toBeGreaterThanOrEqual(4.5);
         }
+    });
+
+    it('keeps operations text, actions, wine navigation and focus readable across themes', () => {
+        for (const theme of ['light', 'dark'] as const) {
+            const tokens = letbuyySurfaceTokens.operations[theme];
+            for (const background of ['--lb-color-bg', '--lb-color-surface', '--lb-color-surface-raised'] as const) {
+                expect(contrastRatio(tokens['--lb-color-text'], tokens[background])).toBeGreaterThanOrEqual(4.5);
+                expect(contrastRatio(tokens['--lb-color-text-subdued'], tokens[background])).toBeGreaterThanOrEqual(4.5);
+                expect(contrastRatio(tokens['--lb-color-primary-text'], tokens[background])).toBeGreaterThanOrEqual(4.5);
+                expect(contrastRatio(tokens['--lb-color-focus-ring'], tokens[background])).toBeGreaterThanOrEqual(3);
+            }
+            for (const state of ['bg', 'hover', 'active'] as const) {
+                expect(contrastRatio(tokens['--lb-component-button-primary-text'], tokens[`--lb-component-button-primary-${state}`])).toBeGreaterThanOrEqual(4.5);
+            }
+            for (const role of ['badge-solid', 'banner-solid', 'toast'] as const) {
+                for (const state of ['info', 'success', 'warning', 'danger'] as const) {
+                    expect(contrastRatio(tokens[`--lb-component-${role}-text`], tokens[`--lb-component-${role}-${state}-bg`])).toBeGreaterThanOrEqual(4.5);
+                }
+            }
+            expect(contrastRatio(tokens['--lb-component-badge-solid-text'], tokens['--lb-component-badge-solid-default-bg'])).toBeGreaterThanOrEqual(4.5);
+            for (const background of ['--lb-component-sidebar-bg', '--lb-component-sidebar-active-bg', '--lb-component-sidebar-hover-bg'] as const) {
+                for (const foreground of ['--lb-component-sidebar-text', '--lb-component-sidebar-text-subdued', '--lb-component-sidebar-section-text', '--lb-component-sidebar-active-text'] as const) {
+                    expect(contrastRatio(tokens[foreground], tokens[background])).toBeGreaterThanOrEqual(4.5);
+                }
+                expect(contrastRatio(tokens['--lb-color-focus-ring'], tokens[background])).toBeGreaterThanOrEqual(3);
+            }
+            expect(tokens['--lb-component-table-bg']).toBe(tokens['--lb-color-surface']);
+            expect(tokens['--lb-component-table-border']).toBe(tokens['--lb-color-border']);
+            expect(contrastRatio(tokens['--lb-component-table-text-secondary'], tokens['--lb-component-table-bg'])).toBeGreaterThanOrEqual(4.5);
+        }
+        const dark = letbuyySurfaceTokens.operations.dark;
+        expect(relativeLuminance(dark['--lb-color-surface'])).toBeGreaterThan(relativeLuminance(dark['--lb-color-bg']));
+        expect(relativeLuminance(dark['--lb-color-surface-raised'])).toBeGreaterThan(relativeLuminance(dark['--lb-color-surface']));
     });
 
     it('uses the AA-safe purple ramp for primary CTA buttons in light and dark themes', () => {

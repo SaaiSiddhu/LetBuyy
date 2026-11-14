@@ -537,8 +537,7 @@
         "value": "44px",
         "variables": [
           "--lb-density-table-header-height",
-          "--lb-density-table-row-height",
-          "--lb-size-touch-target"
+          "--lb-density-table-row-height"
         ]
       },
       {
@@ -1179,8 +1178,7 @@
         "value": "44px",
         "variables": [
           "--lb-density-table-header-height",
-          "--lb-density-table-row-height",
-          "--lb-size-touch-target"
+          "--lb-density-table-row-height"
         ]
       },
       {

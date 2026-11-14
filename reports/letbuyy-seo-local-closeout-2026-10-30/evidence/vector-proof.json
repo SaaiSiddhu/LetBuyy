@@ -1,0 +1,46 @@
+{
+  "captured_at": "2026-10-29T21:47:22.577Z",
+  "rows": [
+    {
+      "name": "before",
+      "tag": "IMG",
+      "size": {
+        "x": 895.765625,
+        "y": 317.765625,
+        "width": 117.828125,
+        "height": 120.5
+      },
+      "console_errors": [],
+      "csp": [
+        {
+          "directive": "script-src",
+          "blocked": "eval",
+          "source": "http://127.0.0.1:9037/_next/static/chunks/8001-ac905bae8212fefb.js"
+        }
+      ]
+    },
+    {
+      "name": "after",
+      "tag": "svg",
+      "size": {
+        "x": 895.765625,
+        "y": 317.765625,
+        "width": 117.828125,
+        "height": 120.5
+      },
+      "console_errors": [],
+      "csp": [
+        {
+          "directive": "script-src",
+          "blocked": "eval",
+          "source": "http://127.0.0.1:9038/_next/static/chunks/8001-ac905bae8212fefb.js"
+        }
+      ]
+    }
+  ],
+  "width": 119,
+  "height": 122,
+  "pixels_differing_over_3": 1577,
+  "total_pixels": 14518,
+  "passed": false
+}

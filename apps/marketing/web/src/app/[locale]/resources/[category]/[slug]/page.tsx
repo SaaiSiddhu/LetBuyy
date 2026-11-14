@@ -1,11 +1,13 @@
+import { localizeMetadata } from '@/lib/i18n/metadata'
+import { localePath } from '@/lib/i18n/routing'
+import { BRAND_ASSETS, BRAND_SOCIAL_IMAGE } from '@/lib/brand-assets'
 import { createCopy } from '@/lib/i18n/copy'
 import { localizeCategory, localizeAuthor } from '@/lib/i18n/resource-metadata'
 
 import Copy from '@/components/i18n/Copy'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { LOCALES, getLocale } from '@/lib/i18n/locales'
-import { buildAlternates } from '@/lib/i18n/routing'
+import { getLocale } from '@/lib/i18n/locales'
 import { getDictionary } from '@/lib/i18n'
 import { getMarketingSiteUrl } from '@/lib/public-urls'
 import UntranslatedNotice from '@/components/i18n/UntranslatedNotice'
@@ -60,15 +62,12 @@ export async function generateMetadata({
   if (!sourceArticle) return {}
   const { article } = localizeArticleContent(sourceArticle, getLocale(localeSegment).language.code)
   const author = getAuthor(article.author)
-  return {
+  return localizeMetadata({
     title: article.title,
     description: article.description,
     authors: [{ name: author.name }],
-    alternates: (() => {
-      const alt = buildAlternates(getMarketingSiteUrl(), `/resources/${category}/${slug}`, LOCALES)
-      return { canonical: alt.canonicalOf(getLocale(localeSegment)), languages: alt.languages }
-    })(),
     openGraph: {
+            images: [BRAND_SOCIAL_IMAGE],
       type: 'article',
       title: article.title,
       description: article.description,
@@ -76,7 +75,7 @@ export async function generateMetadata({
       modifiedTime: article.updatedAt,
       authors: [author.name],
     },
-  }
+  }, localeSegment, `/resources/${category}/${slug}`)
 }
 
 function extractHeadings(body: ContentBlock[]) {
@@ -106,7 +105,6 @@ export default async function ArticlePage({
   const isLiquidGuide = category === 'developers' && slug === 'liquid-theming-guide'
   const artwork = getArticleArtwork(slug)
   const readingTopics = getReadingTopics(article)
-  const ArticleContainer = isThemeGuide || isLiquidGuide ? 'article' : 'main'
 
   // Related + recommended
   const related = getRelatedArticles(article.relatedSlugs ?? [], article.slug).map(a => localizeArticleContent(a, locale.language.code).article)
@@ -132,30 +130,37 @@ export default async function ArticlePage({
   const authorArticleCount = authorArticles.length
   const authorTopics = Array.from(new Set(authorArticles.map(a => t(getCategory(a.category)?.label ?? '')).filter(Boolean) as string[])).slice(0, 4)
 
+  const pageUrl = getMarketingSiteUrl(localePath(locale, `/resources/${category}/${slug}`))
+  const authorUrl = getMarketingSiteUrl(localePath(locale, `/resources/authors/${author.slug}`))
   // Structured data
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Article',
+    '@id': `${pageUrl}#article`,
+    url: pageUrl,
+    inLanguage: translated ? locale.hreflang : 'en-IN',
+    image: getMarketingSiteUrl(BRAND_SOCIAL_IMAGE.url),
     headline: article.title,
     description: article.description,
     datePublished: article.publishedAt,
     dateModified: article.updatedAt,
-    author: { '@type': 'Person', name: author.name, jobTitle: author.role },
+    author: { '@type': author.slug === 'letbuyy-team' ? 'Organization' : 'Person', '@id': author.slug === 'letbuyy-team' ? `${getMarketingSiteUrl()}/#organization` : `${authorUrl}#author`, name: author.name, url: authorUrl },
     publisher: {
       '@type': 'Organization',
+      '@id': `${getMarketingSiteUrl()}/#organization`,
       name: 'LetBuyy',
-      logo: { '@type': 'ImageObject', url: '/icons/letbuyy-logo-512.png' },
+      logo: { '@type': 'ImageObject', url: getMarketingSiteUrl(BRAND_ASSETS.raster) },
     },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `/resources/${category}/${slug}` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
   }
 
   const breadcrumbData = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Resources', item: '/resources' },
-      { '@type': 'ListItem', position: 2, name: cat.label, item: `/resources/${category}` },
-      { '@type': 'ListItem', position: 3, name: article.title },
+      { '@type': 'ListItem', position: 1, name: t('Resources'), item: getMarketingSiteUrl(localePath(locale, '/resources')) },
+      { '@type': 'ListItem', position: 2, name: cat.label, item: getMarketingSiteUrl(localePath(locale, `/resources/${category}`)) },
+      { '@type': 'ListItem', position: 3, name: article.title, item: pageUrl },
     ],
   }
 
@@ -194,7 +199,7 @@ export default async function ArticlePage({
           </div>
 
           {/* ── Center: article ── */}
-          <ArticleContainer className="arc-center" lang={translated ? locale.language.bcp47 : 'en'}>
+          <article className="arc-center" lang={translated ? locale.language.bcp47 : 'en'}>
 
             {/* Article header */}
             <header className="arc-header">
@@ -203,7 +208,7 @@ export default async function ArticlePage({
                 <nav className="arc-breadcrumb" aria-label="Breadcrumb">
                   <Link href="/resources"><Copy text={"Resources"} /></Link>
                   <span className="arc-breadcrumb-sep" aria-hidden="true">›</span>
-                  <Link href={`/resources/${category}`} style={{ color: cat.color }}>{cat.label}</Link>
+                  <Link href={`/resources/${category}`} style={{ color: `color-mix(in srgb, ${cat.color} 35%, var(--lb-color-text))` }}>{cat.label}</Link>
                 </nav>
                 {/* No category chip here — the breadcrumb above already names it */}
                 {article.featured && <span className="arc-flag"><Copy text={"Featured"} /></span>}
@@ -271,7 +276,7 @@ export default async function ArticlePage({
             {/* Completion banner */}
             <ArticleCompletionBanner next={next} />
 
-          </ArticleContainer>
+          </article>
 
           {/* ── Right: sticky sidebar (desktop) ── */}
           <div className="arc-right">

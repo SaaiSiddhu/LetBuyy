@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Banner, Button, Card, Input, MaterialIcon, Section } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
+import { Banner, Button, Card, EmptyState, Input, MaterialIcon, Section } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import { useMerchantTotp } from '@/components/security/useMerchantTotp'
@@ -18,11 +17,11 @@ function AccountSecurity({ store }: { store: string }) {
     const security = useMerchantTotp(store)
     const [showDisable, setShowDisable] = useState(false), [recovery, setRecovery] = useState(false), [code, setCode] = useState('')
     const setup = !security.factor || !!security.enrollment || security.recoverActivation || !!security.recoveryCodes.length
-    return <SettingsPane navigationKey="security" store={store} title="Security" description="Set up two-factor authentication so you can approve refunds and release payouts.">
+    return <SettingsPane store={store} title="Security" description="Set up two-factor authentication so you can approve refunds and release payouts.">
         {security.contextChanged ? <Banner title="Account or store access changed" variant="critical">Reload this page before continuing.</Banner> : <Card><Section title="Two-factor authentication" description="Sensitive actions require an active authenticator.">
             {security.error && <Banner title="Security needs attention" variant="critical">{security.error}</Banner>}
             {security.loading ? <p role="status">Checking account security…</p> : security.error && !security.factor && !security.enrollment ? <Button onClick={security.load}>Retry loading security</Button> : setup ? <div className="grid gap-4">
-                {!security.enrollment && !security.recoverActivation && !security.recoveryCodes.length && <EmptyState scene="security" icon={<MaterialIcon name="lock" />} title="2FA not configured" body="Add an authenticator app to protect sensitive actions." />}
+                {!security.enrollment && !security.recoverActivation && !security.recoveryCodes.length && <EmptyState icon={<MaterialIcon name="lock" />} title="2FA not configured" body="Add an authenticator app to protect sensitive actions." />}
                 <TotpSetup security={security} />
             </div> : <div className="grid gap-4">
                 <p>Authenticator app active</p>

@@ -2,10 +2,8 @@
 
 import { useCopy } from '@/components/i18n/useCopy'
 
-import Copy from '@/components/i18n/Copy'
-
 import Link from '@/components/i18n/LocaleLink'
-import { motion } from 'framer-motion'
+import * as motion from 'framer-motion/m'
 import { ArrowRight, Zap } from '@letbuyy/ui'
 import { getAccountsUrl } from '@/lib/public-urls'
 import CommerceGlobe from './CommerceGlobe'
@@ -27,23 +25,23 @@ export default function Hero() {
                 >
                     <div className="hero-eyebrow">
                         <Zap width={14} height={14} aria-hidden="true" />
-                        <Copy text={"Commerce Operating System"} /></div>
+                        {t("Commerce Operating System")}</div>
 
                     <h1 className="hero-title">
-                        <span className="hero-title-line"><Copy text={"More than a store."} /></span>{' '}
-                        <span className="hero-title-os"><Copy text={"Your Commerce OS."} /></span>
+                        <span className="hero-title-line">{t("More than a store.")}</span>{' '}
+                        <span className="hero-title-os">{t("Your Commerce OS.")}</span>
                     </h1>
 
                     <p className="hero-subtitle">
-                        <Copy text={"Run storefronts, inventory, orders, payments, analytics, AI, B2B, and operations from one unified platform built for modern commerce."} /></p>
+                        {t("Build an online store for your Indian business and manage products and orders in one merchant workspace.")}</p>
 
                     <div className="hero-cta" aria-label={t("Get started")}>
                         <Link href={getAccountsUrl('/signup')} className="btn btn-primary btn-hero">
-                            <Copy text={"Start Free"} /><ArrowRight width={17} height={17} aria-hidden="true" />
+                            {t("Get started")}<ArrowRight width={17} height={17} aria-hidden="true" />
                         </Link>
                         <Link href="#capabilities" className="btn btn-outline btn-hero">
                             <span className="hero-cta-play" aria-hidden="true" />
-                            <Copy text={"Explore capabilities"} /></Link>
+                            {t("Explore capabilities")}</Link>
                     </div>
 
                     <TrustPills />

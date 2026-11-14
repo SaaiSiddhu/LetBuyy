@@ -1,0 +1,33 @@
+{
+  "capturedAt": "2026-11-03T10:46:16.039575+00:00",
+  "patchReverseChecks": [
+    {
+      "patch": "SOURCE-CHANGES.patch",
+      "exitCode": 0,
+      "applied": false
+    },
+    {
+      "patch": "PROXY-MIGRATION.patch",
+      "exitCode": 0,
+      "applied": false
+    },
+    {
+      "patch": "GATEWAY-CORS-REPAIR.patch",
+      "exitCode": 0,
+      "applied": false
+    },
+    {
+      "patch": "RESOLUTION-REPAIRS.patch",
+      "exitCode": 0,
+      "applied": false
+    }
+  ],
+  "archiveCredentialShapedPaths": [],
+  "valuesPrinted": false,
+  "temporaryPort9048Stopped": true,
+  "normalServicesPreserved": [
+    9006,
+    9010,
+    9002
+  ]
+}

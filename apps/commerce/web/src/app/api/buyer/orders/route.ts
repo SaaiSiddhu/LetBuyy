@@ -1,16 +1,14 @@
-import { CheckoutTotalsQuoteSchema } from '@letbuyy/shared-types';
 // Canonical order history at this storefront, scoped by signed site and explicit
 // buyer_order_links. The browser cannot select another store or buyer principal.
 import { NextRequest, NextResponse } from 'next/server';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { resolveBuyerDataSession } from '@/lib/buyer-auth/data-session';
-import { readOrderItemFactSnapshot } from '@/lib/order-fact-readback';
 import { safeReturnTo } from '@/lib/buyer-auth/flow';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 const ORDER_FIELDS = [
     'id', 'site_id', 'order_number', 'status', 'total', 'tax', 'gst_invoice_number', 'created_at',
-    'subtotal', 'discount', 'coupon_code', 'coupon_discount', 'shipping_cost', 'payment_method', 'payment_status', 'tracking_number',
+    'subtotal', 'discount', 'shipping_cost', 'payment_method', 'payment_status', 'tracking_number',
     'carrier', 'shipping_address', 'currency', 'items',
 ] as const;
 const ITEM_FIELDS = ['id', 'product_id', 'variant_id', 'name', 'title', 'sku', 'quantity', 'price', 'unit_price', 'total', 'variant_title', 'image', 'image_url', 'variant'] as const;
@@ -37,15 +35,11 @@ export async function GET(request: NextRequest) {
         }
         const upstreamOrder = payload.data.order as Record<string, unknown>;
         const order = Object.fromEntries(ORDER_FIELDS.filter((field) => Object.hasOwn(upstreamOrder, field)).map((field) => [field, upstreamOrder[field]]));
-        const quote = CheckoutTotalsQuoteSchema.safeParse(upstreamOrder.totals_quote);
-        if (quote.success) order.totals_quote = quote.data;
         if (Array.isArray(order.items)) {
             order.items = order.items.map((value) => {
                 if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
                 const item = value as Record<string, unknown>;
-                const approved = Object.fromEntries(ITEM_FIELDS.filter((field) => Object.hasOwn(item, field)).map((field) => [field, item[field]]));
-                const nicheSnapshot = readOrderItemFactSnapshot(item);
-                return nicheSnapshot ? { ...approved, niche_snapshot: nicheSnapshot } : approved;
+                return Object.fromEntries(ITEM_FIELDS.filter((field) => Object.hasOwn(item, field)).map((field) => [field, item[field]]));
             });
         }
         return NextResponse.json({ order }, { headers: NO_STORE });

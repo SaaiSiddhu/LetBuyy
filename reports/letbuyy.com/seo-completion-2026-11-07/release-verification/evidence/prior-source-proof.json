@@ -1,0 +1,27 @@
+{
+  "capturedAt": "2026-11-07T03:51:12.587573+00:00",
+  "ownerBranch": "codex/local-work-preserved-20261025",
+  "ownerHead": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "baseMain": "e6c4b448a2a91712b11887b0228f8129bd1aaa3e",
+  "mainOnlyOwnerOnlyCommits": [
+    "190",
+    "0"
+  ],
+  "sourceFileCount": 1289,
+  "sourceMismatchCount": 0,
+  "manifestSha256": "c3ecbda70cbfb619fd99c416426469509155ca8a59a0973a7d3da6a780fe4340",
+  "archiveSha256": "9a0145e2fbf5396660526e9fe1d64004fc598fd1e0df6403cd6fd13ce2d02dbe",
+  "exactLocalBuildId": "Nr2bD-AZ_XyFXsUJdc2FD",
+  "sourceDeltaCounts": {
+    "shared-or-workspace-input-review": 83,
+    "marketing-source": 164,
+    "verification": 18
+  },
+  "marketingPatchScopeCount": 163,
+  "marketingPatchSha256": "f20806e01ab2b1a4686dcf02aae83e449e55c4bae08eb2c376e6cac68c74bf56",
+  "marketingPatchRoundTripVerified": true,
+  "generatedInputExcludedFromPatch": [
+    "apps/marketing/web/next-env.d.ts"
+  ],
+  "newTaskSourceEditsRetained": 0
+}

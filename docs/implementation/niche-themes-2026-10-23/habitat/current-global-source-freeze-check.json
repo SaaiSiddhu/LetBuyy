@@ -1,8 +1,0 @@
-{
-  "checkedAt": "2026-10-23T13:15:22.753928+00:00",
-  "checkpoint": "v2-editor-source-release-checkpoint-03.json",
-  "inputs": 88,
-  "changed": [],
-  "passed": true,
-  "classification": "READ_ONLY_CURRENT_SOURCE_FREEZE_CHECK_NOT_RUNTIME_ACCEPTANCE"
-}

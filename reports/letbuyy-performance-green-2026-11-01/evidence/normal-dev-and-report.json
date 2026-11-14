@@ -1,0 +1,201 @@
+{
+  "captured_at": "2026-11-01T05:41:57.239Z",
+  "normal_dev_base": "http://127.0.0.1:9006",
+  "rows": [
+    {
+      "width": 375,
+      "path": "/in",
+      "status": 200,
+      "h1": "More than a store.\nYour Commerce OS.",
+      "scrollWidth": 375,
+      "prices": [
+        "Launch",
+        "Growth",
+        "Scale",
+        "Commerce OS"
+      ],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 375,
+      "path": "/in/pricing",
+      "status": 200,
+      "h1": "Simple, transparent pricing",
+      "scrollWidth": 375,
+      "prices": [
+        "Launch",
+        "Growth",
+        "Scale",
+        "Commerce OS"
+      ],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 375,
+      "path": "/in/resources",
+      "status": 200,
+      "h1": "A little know-how.\nA better business.",
+      "scrollWidth": 375,
+      "prices": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 375,
+      "path": "/in/resources/platform/how-themes-work",
+      "status": 200,
+      "h1": "How Themes Work on LetBuyy",
+      "scrollWidth": 375,
+      "prices": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 375,
+      "path": "/in/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "h1": "How Liquid Themes Work on LetBuyy",
+      "scrollWidth": 375,
+      "prices": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 375,
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "h1": "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "scrollWidth": 375,
+      "prices": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "path": "/in",
+      "status": 200,
+      "h1": "More than a store.\nYour Commerce OS.",
+      "scrollWidth": 1366,
+      "prices": [
+        "Launch",
+        "Growth",
+        "Scale",
+        "Commerce OS"
+      ],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "path": "/in/pricing",
+      "status": 200,
+      "h1": "Simple, transparent pricing",
+      "scrollWidth": 1366,
+      "prices": [
+        "Launch",
+        "Growth",
+        "Scale",
+        "Commerce OS"
+      ],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "path": "/in/resources",
+      "status": 200,
+      "h1": "A little know-how.\nA better business.",
+      "scrollWidth": 1366,
+      "prices": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "path": "/in/resources/platform/how-themes-work",
+      "status": 200,
+      "h1": "How Themes Work on LetBuyy",
+      "scrollWidth": 1366,
+      "prices": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "path": "/in/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "h1": "How Liquid Themes Work on LetBuyy",
+      "scrollWidth": 1366,
+      "prices": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "h1": "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "scrollWidth": 1366,
+      "prices": [],
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "plans": [
+    {
+      "slug": "launch",
+      "name": "Launch",
+      "founding_inr": 199,
+      "status": "available",
+      "purchasable": true
+    },
+    {
+      "slug": "growth",
+      "name": "Growth",
+      "founding_inr": 699,
+      "status": "available",
+      "purchasable": true
+    },
+    {
+      "slug": "scale",
+      "name": "Scale",
+      "founding_inr": 2499,
+      "status": "coming_soon",
+      "purchasable": false
+    },
+    {
+      "slug": "commerce_os",
+      "name": "Commerce OS",
+      "founding_inr": 5999,
+      "status": "coming_soon",
+      "purchasable": false
+    }
+  ],
+  "remaining": {
+    "total_slots": 100,
+    "used_slots": 0,
+    "remaining_slots": 100,
+    "active": true,
+    "paused": false
+  },
+  "report_render_checks": [
+    {
+      "width": 375,
+      "cards": 4,
+      "rows": 6,
+      "horizontal_overflow": false,
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "cards": 4,
+      "rows": 6,
+      "horizontal_overflow": false,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "shared_data_mutations": false
+}

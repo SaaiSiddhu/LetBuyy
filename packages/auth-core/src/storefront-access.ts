@@ -23,8 +23,6 @@ export interface StorefrontGateTokenPayload {
   sid: string;
   host: string;
   exp: number;
-  /** Opaque current password revision; the Gateway enforces revocation. */
-  revision?: string;
 }
 
 export type StorefrontSignedTokenStatus =
@@ -34,7 +32,6 @@ export type StorefrontSignedTokenStatus =
   | 'expired'
   | 'host_mismatch'
   | 'invalid_signature'
-  | 'wrong_purpose'
   | 'misconfigured';
 
 export interface StorefrontSignedTokenResult<TPayload> {
@@ -129,17 +126,12 @@ export async function verifyStorefrontSignedToken<TPayload extends { exp: number
     return { valid: false, status: 'malformed' };
   }
 
-  if (!payload || typeof payload !== 'object' || Array.isArray(payload)
-    || (payload.host != null && typeof payload.host !== 'string')) {
-    return { valid: false, status: 'malformed' };
-  }
-
   const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
   if (!Number.isFinite(payload.exp) || payload.exp <= nowSeconds) {
     return { valid: false, status: 'expired', payload };
   }
 
-  if (options.expectedHost && (!payload.host || normalizeHost(payload.host) !== normalizeHost(options.expectedHost))) {
+  if (options.expectedHost && payload.host && normalizeHost(payload.host) !== normalizeHost(options.expectedHost)) {
     return { valid: false, status: 'host_mismatch', payload };
   }
 
@@ -150,49 +142,28 @@ export function createStorefrontPreviewToken(
   payload: StorefrontPreviewTokenPayload,
   secret: string,
 ): Promise<string> {
-  return createStorefrontSignedToken({ ...payload, kind: 'storefront-preview' }, secret);
+  return createStorefrontSignedToken(payload, secret);
 }
 
-export async function verifyStorefrontPreviewToken(
+export function verifyStorefrontPreviewToken(
   token: string | null | undefined,
   secret: string | null | undefined,
   options: { expectedHost?: string | null; nowSeconds?: number } = {},
 ): Promise<StorefrontSignedTokenResult<StorefrontPreviewTokenPayload>> {
-  const result = await verifyStorefrontSignedToken<StorefrontPreviewTokenPayload & { kind?: string }>(token, secret, options);
-  if (!result.valid || !result.payload) return result;
-  if (result.payload.kind !== 'storefront-preview') return { valid: false, status: 'wrong_purpose' };
-  if (!validStorefrontScope(result.payload)
-    || !['merchant-preview', 'share-link'].includes(result.payload.scope)
-    || typeof result.payload.jti !== 'string' || result.payload.jti.length < 16 || result.payload.jti.length > 128) {
-    return { valid: false, status: 'malformed' };
-  }
-  return result;
+  return verifyStorefrontSignedToken<StorefrontPreviewTokenPayload>(token, secret, options);
 }
 
 export function createStorefrontGateToken(
   payload: StorefrontGateTokenPayload,
   secret: string,
 ): Promise<string> {
-  return createStorefrontSignedToken({ ...payload, kind: 'storefront-gate' }, secret);
+  return createStorefrontSignedToken(payload, secret);
 }
 
-export async function verifyStorefrontGateToken(
+export function verifyStorefrontGateToken(
   token: string | null | undefined,
   secret: string | null | undefined,
   options: { expectedHost?: string | null; nowSeconds?: number } = {},
 ): Promise<StorefrontSignedTokenResult<StorefrontGateTokenPayload>> {
-  const result = await verifyStorefrontSignedToken<StorefrontGateTokenPayload & { kind?: string }>(token, secret, options);
-  if (!result.valid || !result.payload) return result;
-  if (result.payload.kind !== 'storefront-gate') return { valid: false, status: 'wrong_purpose' };
-  if (!validStorefrontScope(result.payload)
-    || (result.payload.revision != null && !/^[a-f0-9]{64}$/.test(result.payload.revision))) {
-    return { valid: false, status: 'malformed' };
-  }
-  return result;
-}
-
-function validStorefrontScope(payload: { sid: string; host: string }): boolean {
-  return typeof payload.sid === 'string' && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(payload.sid)
-    && typeof payload.host === 'string' && payload.host.length > 0 && payload.host.length <= 300
-    && !/[\s,@/\\]/.test(payload.host);
+  return verifyStorefrontSignedToken<StorefrontGateTokenPayload>(token, secret, options);
 }

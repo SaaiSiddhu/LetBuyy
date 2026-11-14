@@ -52,12 +52,3 @@ await gateway.request('/v1/employees/tickets', { headers: await signedIdentityHe
 ## Reset semantics
 
 Suites do not share a database. The cluster's template is pristine and sealed (`ALLOW_CONNECTIONS false`); each suite's database is a fresh clone, dropped when the suite ends, so "reset" is disposal and there is no truncate order to get wrong. Postgres roles are cluster-global, so suites in one cluster run one at a time; parallelism (`--jobs`) means more clusters.
-
-
-Historical migration cohorts are explicit in HISTORICAL_GATEWAY_MIGRATION_CEILINGS
-in scripts/governance/test-suite-catalog.mjs. Those six suites test a named
-predecessor, including its refusal and reverse/reapply paths, against a separate
-sealed template at that exact ceiling. Their result records the applied source
-hashes and ceiling. They execute fully and cannot silently use the current
-schema. The remaining current-stack suites continue through every migration;
-an explicit --through-migration still selects a requested qualification cohort.

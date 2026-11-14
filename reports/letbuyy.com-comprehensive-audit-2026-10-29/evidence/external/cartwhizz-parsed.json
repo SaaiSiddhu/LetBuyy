@@ -1,0 +1,513 @@
+{
+  "title": "Online Store Builder for India | CartWhizz",
+  "meta_description": "Build your online store in India without code: GST invoices, UPI, cash on delivery, Razorpay or PayU and Shiprocket shipping. 7-day free trial.",
+  "meta_robots": "index, follow",
+  "canonical": "https://cartwhizz.com/online-store-builder-india",
+  "h1": [
+    "Online store builder for Indian businesses"
+  ],
+  "h2": [
+    "How it works",
+    "Built for how India sells",
+    "Everything in one place",
+    "From Instagram and WhatsApp to your own store",
+    "Plans",
+    "Who it is for",
+    "Frequently asked questions"
+  ],
+  "h3": [],
+  "images": [
+    {
+      "src": "https://cartwhizz.com/uploads/platform-email/e9e56d7c-57a3-4a53-b0f5-1494de200823.png",
+      "alt": "CartWhizz",
+      "width": "180",
+      "height": "40",
+      "loading": "eager",
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cartwhizz.com/uploads/platform-email/af3ca4eb-a207-4aed-82c3-b39d1f90bc32.png",
+      "alt": "CartWhizz",
+      "width": "180",
+      "height": "40",
+      "loading": "eager",
+      "lazy_method": "none"
+    }
+  ],
+  "links": {
+    "internal": [
+      {
+        "href": "https://cartwhizz.com/",
+        "text": "",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/themes",
+        "text": "Themes",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/demo",
+        "text": "Demo",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/pricing",
+        "text": "Pricing",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/services",
+        "text": "Services",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/ai",
+        "text": "CartWhizz AI",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/blogs",
+        "text": "Blog",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/find-store",
+        "text": "Log in",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/start",
+        "text": "Start building",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/platform",
+        "text": "Explore CartWhizz",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/platform",
+        "text": "Online storeBuild your brand. Run your business.",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/marketplace",
+        "text": "Multi-vendor marketplaceBring independent sellers together.",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/apps",
+        "text": "Connected apps & POSKeep your people and channels in sync.",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/ai",
+        "text": "CartWhizz AIGet from a question to your next move.",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/switch",
+        "text": "Switch to CartWhizzAlready selling? We'll move your store over.",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/platform",
+        "text": "Online store",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/marketplace",
+        "text": "Multi-vendor marketplace",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/apps",
+        "text": "Connected apps & POS",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/ai",
+        "text": "CartWhizz AI",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/switch",
+        "text": "Switch to CartWhizz",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/themes",
+        "text": "Themes",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/demo",
+        "text": "Demo",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/pricing",
+        "text": "Pricing",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/services",
+        "text": "Services",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/find-store",
+        "text": "Log in",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/start",
+        "text": "Sign up",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/docs/guide/modules/store-settings/domain",
+        "text": "connect your own domain",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/docs/guide/modules/products/import-export",
+        "text": "import a spreadsheet",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/help/launch-checklist",
+        "text": "launch checklist",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/docs/guide/modules/india-gst-tax",
+        "text": "India GST guide",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/blogs/gst-for-online-sellers-india",
+        "text": "GST basics for online sellers",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/docs/guide/modules/payments-setup/razorpay",
+        "text": "Razorpay setup",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/docs/guide/modules/payu-payments",
+        "text": "PayU setup",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/blogs/cash-on-delivery-without-losing-money",
+        "text": "read how",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/docs/guide/modules/shiprocket",
+        "text": "Shiprocket",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/help/features",
+        "text": "full feature list",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/blogs/how-cartwhizz-works",
+        "text": "how CartWhizz works",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/pricing",
+        "text": "pricing page",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/themes",
+        "text": "themes",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/help",
+        "text": "store guide",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/contact-sales",
+        "text": "contact page",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/start",
+        "text": "Start your 7-day free trial",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/pricing",
+        "text": "See plans and pricing",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/",
+        "text": "",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/cdn-cgi/l/email-protection#0a797f7a7a65787e4a696b787e7d6263707024696567",
+        "text": "[email\u00a0protected]",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/platform",
+        "text": "Online store",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/marketplace",
+        "text": "Marketplace",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/apps",
+        "text": "Retail & POS",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/ai",
+        "text": "CartWhizz AI",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/themes",
+        "text": "Storefront themes",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/demo",
+        "text": "Live demos",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/platform#editor",
+        "text": "Visual editor",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/apps",
+        "text": "Commerce apps",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/start",
+        "text": "Start your store",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/online-store-builder-india",
+        "text": "Online store builder",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/ecommerce-website-builder-india",
+        "text": "Ecommerce website builder",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/create-online-store",
+        "text": "Create an online store",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/pricing",
+        "text": "Plans & pricing",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/services",
+        "text": "Marketing & SEO services",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/shopify-alternative-india",
+        "text": "Shopify alternative",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/switch",
+        "text": "Switch to CartWhizz",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/blogs",
+        "text": "Blog",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/help",
+        "text": "Store guide",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/help/features",
+        "text": "Features",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/#how-it-works",
+        "text": "How it works",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/#questions",
+        "text": "Common questions",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/find-store",
+        "text": "Find your store",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/contact-sales",
+        "text": "Contact our team",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/",
+        "text": "Visit CartWhizz",
+        "rel": [
+          "noreferrer"
+        ]
+      },
+      {
+        "href": "https://cartwhizz.com/about",
+        "text": "About",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/contact",
+        "text": "Contact",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/faq",
+        "text": "FAQ",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/terms",
+        "text": "Terms of Service",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/privacy",
+        "text": "Privacy Policy",
+        "rel": []
+      },
+      {
+        "href": "https://cartwhizz.com/refund-policy",
+        "text": "Refund & Cancellation",
+        "rel": []
+      }
+    ],
+    "external": [
+      {
+        "href": "tel:+918826092598",
+        "text": "+91 88260 92598",
+        "rel": []
+      },
+      {
+        "href": "tel:+918130464545",
+        "text": "+91 81304 64545",
+        "rel": []
+      },
+      {
+        "href": "https://wa.me/918826092598?text=Hi%20CartWhizz%2C%20I%20have%20a%20question",
+        "text": "WhatsApp us",
+        "rel": [
+          "noopener",
+          "noreferrer"
+        ]
+      },
+      {
+        "href": "https://wa.me/918826092598?text=Hi%20CartWhizz%2C%20I%20have%20a%20question",
+        "text": "WhatsApp us",
+        "rel": [
+          "noopener",
+          "noreferrer"
+        ]
+      }
+    ]
+  },
+  "schema": [
+    {
+      "@type": "WebPage",
+      "@id": "https://cartwhizz.com/online-store-builder-india#webpage",
+      "url": "https://cartwhizz.com/online-store-builder-india",
+      "name": "Online Store Builder for India | CartWhizz",
+      "description": "Build your online store in India without code: GST invoices, UPI, cash on delivery, Razorpay or PayU and Shiprocket shipping. 7-day free trial.",
+      "inLanguage": "en-IN",
+      "dateModified": "2026-10-22",
+      "isPartOf": {
+        "@id": "https://cartwhizz.com/#website"
+      },
+      "about": {
+        "@id": "https://cartwhizz.com/#organization"
+      },
+      "publisher": {
+        "@id": "https://cartwhizz.com/#organization"
+      },
+      "breadcrumb": {
+        "@id": "https://cartwhizz.com/online-store-builder-india#breadcrumb"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://cartwhizz.com/online-store-builder-india#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "CartWhizz",
+          "item": "https://cartwhizz.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Online store builder for India",
+          "item": "https://cartwhizz.com/online-store-builder-india"
+        }
+      ]
+    }
+  ],
+  "open_graph": {
+    "og:title": "Online Store Builder for India | CartWhizz",
+    "og:description": "Build your online store in India without code: GST invoices, UPI, cash on delivery, Razorpay or PayU and Shiprocket shipping. 7-day free trial.",
+    "og:url": "https://cartwhizz.com/online-store-builder-india",
+    "og:site_name": "CartWhizz",
+    "og:image": "https://cartwhizz.com/cartwhizz/share/share-promo.jpg?v=4",
+    "og:image:secure_url": "https://cartwhizz.com/cartwhizz/share/share-promo.jpg?v=4",
+    "og:image:type": "image/jpeg",
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:image:alt": "Online Store Builder for India | CartWhizz",
+    "og:type": "article"
+  },
+  "twitter_card": {
+    "twitter:card": "summary_large_image",
+    "twitter:title": "Online Store Builder for India | CartWhizz",
+    "twitter:description": "Build your online store in India without code: GST invoices, UPI, cash on delivery, Razorpay or PayU and Shiprocket shipping. 7-day free trial.",
+    "twitter:image": "https://cartwhizz.com/cartwhizz/share/share-promo.jpg?v=4",
+    "twitter:image:alt": "Online Store Builder for India | CartWhizz",
+    "twitter:image:secure_url": "https://cartwhizz.com/cartwhizz/share/share-promo.jpg?v=4",
+    "twitter:image:type": "image/jpeg",
+    "twitter:image:width": "1200",
+    "twitter:image:height": "630"
+  },
+  "word_count": 655,
+  "hreflang": []
+}

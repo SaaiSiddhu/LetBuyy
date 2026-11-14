@@ -59,8 +59,7 @@ test('B: applying an experience merges the preset\'s own values into themeSettin
   const editor = read(EDITOR);
   const fn = editor.slice(editor.indexOf('const applyExperience = useCallback'), editor.indexOf('const loadReleases'));
   assert.match(fn, /presetItems\.find\(\(item\) => item\.id === presetId\)/);
-  assert.match(fn, /themeSettings: \{ \.\.\.current\.themeSettings, \.\.\.preset\.values \}/);
-  assert.match(fn, /experienceId: preset\.id/);
+  assert.match(fn, /themeSettings: \{ \.\.\.current\.themeSettings, \.\.\.preset\.values, experienceId: preset\.id \}/);
   // The values are read from the bundle preset, never recomputed from the registry (ExperiencePresetItem.values).
   assert.doesNotMatch(fn, /buildExperienceSettingsOverlay|getExperience\(/);
 });
@@ -84,8 +83,7 @@ test('C: onboarding captures an industry and sends it as survey.industry', () =>
 
 test('C: the gateway store-creation handler auto-applies the recommended experience', () => {
   const stores = read(STORES);
-  const bindings = stores.match(/import\s*\{([^}]+)\}\s*from '@letbuyy\/theme-engine'/)?.[1].split(',').map(name => name.trim()) || [];
-  for (const name of ['resolveExperienceForIndustry', 'applyExperienceToTemplateConfig', 'LETBUYY_CORE_THEME_SLUG']) assert.ok(bindings.includes(name), `Missing canonical experience binding: ${name}`);
+  assert.match(stores, /import \{ resolveExperienceForIndustry, applyExperienceToTemplateConfig \} from '@letbuyy\/theme-engine'/);
   assert.match(stores, /resolveExperienceForIndustry\(industryHint \|\| null, experienceOverride\)/);
   assert.match(stores, /applyExperienceToTemplateConfig\(templateConfig, experience\)/);
   // additive: only applies when an industry/override is present (no behaviour change otherwise)

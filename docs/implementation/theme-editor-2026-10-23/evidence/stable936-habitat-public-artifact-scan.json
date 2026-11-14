@@ -1,6 +1,0 @@
-{
-  "recordedAt": "2026-10-24T06:04:18.278423+00:00",
-  "filesScanned": 451,
-  "privatePatternMatches": [],
-  "scope": "Token/capability/querycredentials/plainemailpatterns. Tokenregexrequireswordboundary to avoid mistaking product_edit_receipts tableidentifier for ct_ capability."
-}

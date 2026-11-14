@@ -1,11 +1,7 @@
 'use client';
 
-import type { CheckoutPaymentAppearance } from '@/app/checkout-origin/branding';
-import { prepareHostedStepRequest } from '@/lib/checkout/step-idempotency';
-
 import { CartContext } from '@/context/cart-context';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { CheckoutTotalsQuoteSchema, type CheckoutTotalsQuote } from '@letbuyy/shared-types';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Image, { type ImageLoaderProps } from 'next/image';
 import { Button, Input,
     AlertCircle, ArrowLeft, CheckCircle, CreditCard, Loader2, Lock,
@@ -43,7 +39,7 @@ interface RazorpayOptions {
     currency: string;
     name: string;
     description: string;
-    image?: string;
+    image: string;
     order_id: string;
     handler: (response: RazorpaySuccessResponse) => void | Promise<void>;
     prefill: {
@@ -93,7 +89,6 @@ interface CheckoutClientProps {
     storeName: string;
     codEnabled: boolean;
     onlinePaymentEnabled: boolean;
-    paymentAppearance: CheckoutPaymentAppearance;
     // When set, this render is on the checkout-origin tree: cart lines come from this prop
     // (server-verified handoff data) instead of useCart(), and basePath points at the real
     // storefront origin (an absolute URL) instead of a same-origin /store/<subdomain> path,
@@ -103,7 +98,6 @@ interface CheckoutClientProps {
         cartLines: CheckoutOriginCartLine[];
         cartId: string;
         handoff: Record<string, string>;
-        savedDiscount?: { code: string; amount: number };
     };
 }
 
@@ -127,6 +121,7 @@ type DeliveryOption = 'standard' | 'express';
 // V1 ships Razorpay+COD; Stripe and PayPal deferred (LB-2)
 type PaymentMethod = 'online' | 'cod';
 type ProviderOrderMethod = 'razorpay' | 'cod';
+const productImageFallback = '/images/banners/new-arrivals-1.png';
 const passthroughImageLoader = ({ src }: ImageLoaderProps) => src;
 
 interface StoreShippingRate {
@@ -177,7 +172,7 @@ function scrollToCheckoutTop() {
     });
 }
 
-export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled, paymentAppearance, checkoutOrigin }: CheckoutClientProps) {
+export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled, checkoutOrigin }: CheckoutClientProps) {
     // useContext (not useCart()) never throws when there is no CartProvider ancestor — true on
     // the checkout-origin tree, which mounts no CartProvider at all (it belongs to
     // app/store/[subdomain]/layout.tsx only). checkoutOrigin's own cart lines take priority when
@@ -186,7 +181,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const cartContext = useContext(CartContext);
     // Normalized to one consistent shape (CheckoutOriginCartLine) regardless of source, so every
     // existing `.map`/`.reduce` below needs no branching of its own.
-    const items: CheckoutOriginCartLine[] = useMemo(() => checkoutOrigin
+    const items: CheckoutOriginCartLine[] = checkoutOrigin
         ? checkoutOrigin.cartLines
         : (cartContext?.items ?? []).map((item) => ({
             id: item.id,
@@ -196,7 +191,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             price: item.price,
             quantity: item.quantity,
             selectedVariant: item.selectedVariant,
-        })), [checkoutOrigin, cartContext?.items]);
+        }));
     const cartTotal = checkoutOrigin
         ? items.reduce((sum, line) => sum + line.price * line.quantity, 0)
         : cartContext?.cartTotal ?? 0;
@@ -221,9 +216,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('standard');
     const [razorpayLoaded, setRazorpayLoaded] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(initialPaymentMethod);
-    const [couponInput, setCouponInput] = useState(checkoutOrigin?.savedDiscount?.code || '');
-    const [couponSelectionChanged, setCouponSelectionChanged] = useState(false);
-    const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => checkoutOrigin?.savedDiscount ? { code: checkoutOrigin.savedDiscount.code, type: 'fixed', value: checkoutOrigin.savedDiscount.amount, discount: checkoutOrigin.savedDiscount.amount } : null);
+    const [couponInput, setCouponInput] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
     const [couponError, setCouponError] = useState('');
     const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
     const [checkoutError, setCheckoutError] = useState('');
@@ -235,10 +229,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const [shippingRatesLoading, setShippingRatesLoading] = useState(false);
     const [shippingRatesError, setShippingRatesError] = useState<string | null>(null);
     const [shippingQuoteRevision, setShippingQuoteRevision] = useState(0);
-    const [totalsQuote, setTotalsQuote] = useState<CheckoutTotalsQuote | null>(null);
-    const [totalsLoading, setTotalsLoading] = useState(false);
-    const [totalsError, setTotalsError] = useState<string | null>(null);
-    const [totalsRevision, setTotalsRevision] = useState(0);
     const idempotencyKeysRef = useRef<Record<string, string>>({});
     const hostedStepPayloadsRef = useRef<Record<string, string>>({});
 
@@ -291,8 +281,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         }
     }, [isSuccess]);
 
-    const quoteItems = useMemo(() => items.map(item => ({ product_id: item.id,
-        variant_id: (item as typeof item & { variantId?: string | null }).variantId ?? null, quantity: item.quantity })), [items]);
     // Only ask for quotes after the buyer has entered a valid destination. The Gateway resolves
     // the published store by subdomain and prices only saved seller-zone rates.
     useEffect(() => {
@@ -328,8 +316,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     subdomain,
-                    shipping_address: { country: 'IN', zip: pincode, state, state_code: stateCode },
-                    items: quoteItems,
+                    pincode,
+                    state,
+                    state_code: stateCode,
+                    subtotal_minor: subtotalMinor,
                 }),
                 signal: controller.signal,
             });
@@ -356,47 +346,16 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             isMounted = false;
             controller.abort();
         };
-    }, [subdomain, cartTotal, formData.pincode, formData.state, formData.stateCode, shippingQuoteRevision, quoteItems, checkoutOrigin]);
+    }, [subdomain, cartTotal, formData.pincode, formData.state, formData.stateCode, shippingQuoteRevision]);
 
     // Delivery costs
     const selectedRate = storeRates?.find(r => r.id === selectedRateId) ?? null;
-    useEffect(() => {
-        const controller = new AbortController(); let current = true;
-        setTotalsQuote(null); setTotalsError(null);
-        if (!selectedRateId || !formData.stateCode || !/^[1-9][0-9]{5}$/.test(formData.pincode)) {
-            setTotalsLoading(false); return () => { current = false; controller.abort(); };
-        }
-        setTotalsLoading(true);
-        const timer = window.setTimeout(async () => {
-            const input = {
-                shipping_address: { country: 'IN', state: formData.state, state_code: formData.stateCode, zip: formData.pincode },
-                shipping_rate_id: selectedRateId, coupon_code: appliedCoupon?.code || null,
-                ...(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? { customer_email: formData.email.trim().toLowerCase() } : {}),
-            };
-            try {
-                const url = checkoutOrigin
-                    ? `/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/quote?${new URLSearchParams(checkoutOrigin.handoff)}`
-                    : '/api/checkout-quote';
-                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(checkoutOrigin ? input : { ...input, subdomain, items: quoteItems }), signal: controller.signal });
-                const payload = await response.json().catch(() => null);
-                const quote = CheckoutTotalsQuoteSchema.safeParse(payload?.data?.quote);
-                if (!response.ok || !quote.success) throw new Error(payload?.error?.message || 'The order total could not be verified. Please retry.');
-                if (current) setTotalsQuote(quote.data);
-            } catch (error) {
-                if (current && !(error instanceof Error && error.name === 'AbortError'))
-                    setTotalsError(error instanceof Error ? error.message : 'The order total could not be verified. Please retry.');
-            } finally { if (current) setTotalsLoading(false); }
-        }, 250);
-        return () => { current = false; controller.abort(); window.clearTimeout(timer); };
-    }, [selectedRateId, formData.state, formData.stateCode, formData.pincode, formData.email, appliedCoupon?.code, quoteItems, checkoutOrigin, subdomain, totalsRevision]);
-    // A free base rate can still include the profile's handling charge. The quoted
-    // amount, rather than the rate label, is the authority for the delivery cost.
-    const deliveryCharges = selectedRate ? selectedRate.amount_minor / 100 : 0;
-    const discountAmount = totalsQuote ? (totalsQuote.discount_minor + totalsQuote.shipping_discount_minor) / 100 : 0;
-    const effectiveDeliveryCharges = totalsQuote
-        ? (totalsQuote.shipping_minor - totalsQuote.shipping_discount_minor) / 100 : deliveryCharges;
-    const totalAmount = totalsQuote ? totalsQuote.total_minor / 100 : 0;
+    const deliveryCharges = selectedRate
+        ? (selectedRate.type === 'free' ? 0 : selectedRate.amount_minor / 100)
+        : 0;
+    const discountAmount = appliedCoupon?.discount || 0;
+    const effectiveDeliveryCharges = appliedCoupon?.freeShipping ? 0 : deliveryCharges;
+    const totalAmount = Math.max(0, cartTotal + effectiveDeliveryCharges - discountAmount);
     const itemCount = items.reduce((count, item) => count + item.quantity, 0);
     const getIdempotencyKey = (scope: string) => {
         if (!idempotencyKeysRef.current[scope]) {
@@ -490,10 +449,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     : 'Choose an available delivery option before continuing.');
                 return;
             }
-            if (!totalsQuote || totalsLoading) {
-                showCheckoutError(totalsError || 'Wait for the verified order total before continuing.');
-                return;
-            }
             setCheckoutError('');
             setStep(2);
             scrollToCheckoutTop();
@@ -531,7 +486,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         // The Gateway compares this reviewed quote token, then the database locks and rechecks the configured rate.
         shippingRateId: selectedRate?.id ?? null,
         shippingAmountMinor: selectedRate?.amount_minor ?? null,
-        expectedQuoteFingerprint: totalsQuote?.fingerprint,
     });
 
     const applyCoupon = async () => {
@@ -567,7 +521,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 freeShipping: Boolean(payload.coupon.freeShipping),
             });
             setCouponInput(payload.coupon.code);
-            setCouponSelectionChanged(true);
         } catch {
             setAppliedCoupon(null);
             setCouponError('Unable to validate coupon');
@@ -577,7 +530,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     };
 
     const removeCoupon = () => {
-        setCouponSelectionChanged(true);
         setAppliedCoupon(null);
         setCouponError('');
         setCouponInput('');
@@ -601,7 +553,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             `/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/${step}?${new URLSearchParams(checkoutOrigin.handoff).toString()}`;
         const send = async (step: 'contact' | 'delivery' | 'payment-intent' | 'confirm', body: Record<string, unknown>) => {
             const payloadFingerprint = JSON.stringify(body);
-            const keyScope = prepareHostedStepRequest(checkoutOrigin, step, payloadFingerprint, hostedStepPayloadsRef.current);
+            const keyScope = `hosted-${step}`;
+            if (hostedStepPayloadsRef.current[keyScope] !== payloadFingerprint) {
+                delete idempotencyKeysRef.current[keyScope];
+                hostedStepPayloadsRef.current[keyScope] = payloadFingerprint;
+            }
             const requestBody = { ...body, idempotency_key: getIdempotencyKey(keyScope) };
             const response = await fetch(endpoint(step), {
                 method: 'POST',
@@ -625,11 +581,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             phone: formData.phone.trim() || null,
         });
         await send('delivery', {
-            expected_quote_fingerprint: totalsQuote?.fingerprint,
-            ...((couponSelectionChanged || appliedCoupon) ? {
-                discount_codes: appliedCoupon ? [appliedCoupon.code] : [],
-                expected_discount_amount_minor: totalsQuote?.discount_minor,
-            } : {}),
             shipping_method: deliveryOption,
             shipping_address: {
                 line1: formData.address.trim(),
@@ -676,7 +627,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             `/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/${step}?${new URLSearchParams(checkoutOrigin.handoff).toString()}`;
         const send = async (step: 'contact' | 'delivery' | 'payment-intent' | 'confirm', body: Record<string, unknown>) => {
             const payloadFingerprint = JSON.stringify(body);
-            const keyScope = prepareHostedStepRequest(checkoutOrigin, step, payloadFingerprint, hostedStepPayloadsRef.current);
+            const keyScope = `hosted-${step}`;
+            if (hostedStepPayloadsRef.current[keyScope] !== payloadFingerprint) {
+                delete idempotencyKeysRef.current[keyScope];
+                hostedStepPayloadsRef.current[keyScope] = payloadFingerprint;
+            }
             const response = await fetch(endpoint(step), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -710,11 +665,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             phone: formData.phone.trim() || null,
         });
         await send('delivery', {
-            expected_quote_fingerprint: totalsQuote?.fingerprint,
-            ...((couponSelectionChanged || appliedCoupon) ? {
-                discount_codes: appliedCoupon ? [appliedCoupon.code] : [],
-                expected_discount_amount_minor: totalsQuote?.discount_minor,
-            } : {}),
             shipping_method: deliveryOption,
             shipping_address: {
                 line1: formData.address.trim(),
@@ -756,7 +706,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             razorpay_signature: response.razorpay_signature,
         };
         const fingerprint = JSON.stringify(body);
-        const keyScope = prepareHostedStepRequest(checkoutOrigin, 'confirm', fingerprint, hostedStepPayloadsRef.current);
+        const keyScope = `hosted-confirm-${response.razorpay_payment_id}`;
+        if (hostedStepPayloadsRef.current[keyScope] !== fingerprint) {
+            delete idempotencyKeysRef.current[keyScope];
+            hostedStepPayloadsRef.current[keyScope] = fingerprint;
+        }
         const result = await fetch(`/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/confirm?${query.toString()}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -781,7 +735,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
     // Handle COD order
     const handleCODOrder = async () => {
-        if (!totalsQuote || totalsLoading) { showCheckoutError(totalsError || 'Review the verified order total first.'); return; }
         if (!selectedRate?.cod_available) {
             showCheckoutError('Cash on delivery is not available for the selected delivery option. Choose online payment or another delivery option.');
             return;
@@ -811,7 +764,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
     // Initialize Razorpay payment
     const handlePayment = async () => {
-        if (!totalsQuote || totalsLoading) { showCheckoutError(totalsError || 'Review the verified order total first.'); return; }
         if (!paymentAvailability.online) {
             showCheckoutError('Online payment is not available on this checkout yet.');
             return;
@@ -838,7 +790,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     currency: intent.currency,
                     name: storeName,
                     description: 'Secure LetBuyy checkout',
-                    ...(paymentAppearance.image ? { image: paymentAppearance.image } : {}),
+                    image: '/logo.png',
                     order_id: intent.provider_order_id,
                     handler: async (response) => {
                         try {
@@ -859,7 +811,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                         contact: formData.phone,
                     },
                     notes: { checkout_id: checkoutOrigin.cartId, store_id: storeId, subdomain },
-                    theme: { color: paymentAppearance.color },
+                    theme: { color: 'rgb(99 102 241)' },
                     modal: { ondismiss: () => setIsProcessing(false) },
                 };
                 const rzp = new window.Razorpay(options);
@@ -904,7 +856,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 currency: paymentData.currency || 'INR',
                 name: storeName,
                 description: `Order ${orderResult.order.orderNumber}`,
-                ...(paymentAppearance.image ? { image: paymentAppearance.image } : {}),
+                image: '/logo.png',
                 order_id: razorpayOrderId,
                 handler: async (response) => {
                     try {
@@ -945,7 +897,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     subdomain,
                 },
                 theme: {
-                    color: paymentAppearance.color,
+                    color: 'rgb(99 102 241)',
                 },
                 modal: {
                     ondismiss: function () {
@@ -1292,7 +1244,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 <div className="grid grid-cols-1 gap-3">
                                                     {storeRates.map(rate => {
                                                         const isSelected = selectedRateId === rate.id;
-                                                        const rateAmount = rate.amount_minor / 100;
+                                                        const rateAmount = rate.type === 'free' ? 0 : rate.amount_minor / 100;
                                                         const daysLabel = rate.estimated_days_min != null && rate.estimated_days_max != null
                                                             ? `${rate.estimated_days_min}–${rate.estimated_days_max} days`
                                                             : null;
@@ -1335,8 +1287,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
                                         <Button unstyled
                                             onClick={proceedToPayment}
-                                            disabled={!selectedRateId || !totalsQuote || totalsLoading || shippingRatesLoading}
-                                            aria-busy={totalsLoading || shippingRatesLoading}
                                             className="mt-6 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white"
                                             style={{ backgroundColor: primaryColor }}
                                         >
@@ -1385,21 +1335,15 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             <div className="space-y-2 max-h-40 overflow-y-auto">
                                                 {items.map(item => (
                                                     <div key={item.id} className="flex items-center gap-3 p-2 card-theme-secondary rounded-lg">
-                                                        {item.images[0] ? (
-                                                            <Image
-                                                                loader={passthroughImageLoader}
-                                                                unoptimized
-                                                                src={item.images[0]}
-                                                                alt={item.name}
-                                                                width={48}
-                                                                height={48}
-                                                                className="w-12 h-12 rounded-lg object-cover"
-                                                            />
-                                                        ) : (
-                                                            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface" aria-label="No product image">
-                                                                <Package aria-hidden="true" size={24} />
-                                                            </span>
-                                                        )}
+                                                        <Image
+                                                            loader={passthroughImageLoader}
+                                                            unoptimized
+                                                            src={item.images[0] || productImageFallback}
+                                                            alt={item.name}
+                                                            width={48}
+                                                            height={48}
+                                                            className="w-12 h-12 rounded-lg object-cover"
+                                                        />
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-medium truncate">{item.name}</p>
                                                             <p className="text-xs text-theme-secondary">Qty: {item.quantity}</p>
@@ -1473,7 +1417,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         {/* Payment Button */}
                                         <Button unstyled
                                             onClick={paymentMethod === 'online' ? handlePayment : handleCODOrder}
-                                            disabled={!totalsQuote || totalsLoading || !hasPaymentMethods || isProcessing || isCheckingCoupon || (paymentMethod === 'online' && !razorpayLoaded) || (paymentMethod === 'cod' && !selectedRate?.cod_available)}
+                                            disabled={!hasPaymentMethods || isProcessing || (paymentMethod === 'online' && !razorpayLoaded) || (paymentMethod === 'cod' && !selectedRate?.cod_available)}
                                             className="flex min-h-11 w-full items-center justify-center gap-3 rounded-xl py-4 text-lg font-bold text-white shadow-lg disabled:opacity-60"
                                             style={{ backgroundColor: paymentMethod === 'cod' ? 'rgb(22 163 74)' : 'rgb(26 26 46)' }}
                                         >
@@ -1487,7 +1431,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 </>
                                             ) : (
                                                 <>
-                                                    <CreditCard size={22} /> {totalsQuote ? `Pay ₹${totalAmount.toLocaleString('en-IN')}` : 'Checking total…'}
+                                                    <CreditCard size={22} /> Pay ₹{totalAmount.toLocaleString('en-IN')}
                                                 </>
                                             )}
                                         </Button>
@@ -1508,35 +1452,29 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                 <div className="space-y-2 text-sm">
                                     <div className="flex justify-between text-theme-secondary">
                                         <span>Subtotal ({items.reduce((a, i) => a + i.quantity, 0)} items)</span>
-                                        <span>₹{(totalsQuote ? totalsQuote.subtotal_minor / 100 : cartTotal).toLocaleString('en-IN')}</span>
+                                        <span>₹{cartTotal.toLocaleString('en-IN')}</span>
                                     </div>
                                     <div className="flex justify-between text-theme-secondary">
                                         <span>Delivery</span>
                                         <span className={effectiveDeliveryCharges === 0 ? 'text-green-600 font-medium' : ''}>
-                                            {!selectedRate ? 'Choose a delivery option' : totalsQuote ? (totalsQuote.shipping_minor === 0 ? 'Free' : `₹${(totalsQuote.shipping_minor / 100).toLocaleString('en-IN')}`) : 'Calculating…'}
+                                            {!selectedRate
+                                                ? 'Choose a delivery option'
+                                                : effectiveDeliveryCharges === 0 ? 'Free' : `₹${effectiveDeliveryCharges}`}
                                         </span>
                                     </div>
                                     {appliedCoupon && (
                                         <div className="flex justify-between text-green-600">
                                             <span>Coupon ({appliedCoupon.code})</span>
                                             <span>
-                                                {totalsQuote ? `−₹${discountAmount.toLocaleString('en-IN')}` : 'Calculating…'}
+                                                {appliedCoupon.freeShipping && discountAmount === 0
+                                                    ? 'Free delivery'
+                                                    : `-₹${discountAmount.toLocaleString('en-IN')}`}
                                             </span>
                                         </div>
                                     )}
-                                    {totalsQuote && <>
-                                        {totalsQuote.included_tax_minor > 0 && <div className="flex justify-between text-theme-secondary"><span>GST included in prices</span><span>₹{(totalsQuote.included_tax_minor / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>}
-                                        <div className="flex justify-between text-theme-secondary"><span>Tax added</span><span>₹{(totalsQuote.added_tax_minor / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
-                                        {totalsQuote.components.map((component, index) => <div key={`${component.title}-${component.rate_percent}-${index}`} className="flex justify-between text-xs text-theme-secondary"><span>{component.title} {component.rate_percent}%</span><span>₹{(component.amount_minor / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>)}
-                                        {totalsQuote.collection_status === 'not_collecting' && <p className="text-xs text-theme-secondary">This store is not collecting GST.</p>}
-                                    </>}
-                                    {totalsError && <div role="alert" className="space-y-2 border border-card rounded-lg p-3">
-                                        <p>{totalsError}</p>
-                                        <Button type="button" variant="outline" size="sm" onClick={() => setTotalsRevision(value => value + 1)}>Retry total</Button>
-                                    </div>}
                                     <div className="border-t border-card pt-2 flex justify-between font-bold text-lg">
                                         <span>Total</span>
-                                        <span style={{ color: primaryColor }}>{totalsQuote ? `₹${totalAmount.toLocaleString('en-IN')}` : totalsLoading ? 'Calculating…' : 'Choose delivery'}</span>
+                                        <span style={{ color: primaryColor }}>₹{totalAmount.toLocaleString('en-IN')}</span>
                                     </div>
                                 </div>
 
@@ -1554,8 +1492,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             <Button unstyled
                                                 type="button"
                                                 onClick={removeCoupon}
-                                                aria-label="Remove coupon"
-                                                disabled={isProcessing}
                                                 className="text-xs font-semibold text-green-700 hover:text-green-900"
                                             >
                                                 Remove
@@ -1577,7 +1513,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 <Button unstyled
                                                     type="button"
                                                     onClick={applyCoupon}
-                                                    disabled={isCheckingCoupon || isProcessing}
+                                                    disabled={isCheckingCoupon}
                                                     className="min-h-11 px-3 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-60"
                                                     style={{ backgroundColor: primaryColor }}
                                                 >

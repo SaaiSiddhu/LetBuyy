@@ -10,6 +10,9 @@ export type BillingCycle = 'monthly' | 'annual';
 export type SubscriptionBillingPeriod = 'monthly' | 'yearly';
 export type InvoiceStatus = 'draft' | 'open' | 'paid' | 'void' | 'uncollectible';
 
+export { isBillingPaymentPaid } from '@letbuyy/shared-types';
+
+
 export const BillingPlanSchema = z.object({
   plan_id: z.string().min(1).max(120),
   tier: z.enum(['free', 'starter', 'business', 'enterprise', 'launch', 'growth', 'scale', 'commerce_os']),
@@ -124,12 +127,13 @@ export const SettlementProviderModeSchema = z.enum(['sandbox', 'live']);
 export const BillingProviderModeSchema = z.enum(['sandbox', 'live']);
 export const BillingMandateSchema = z.object({
   store_id: z.string().uuid(),
-  plan_slug: z.enum(['launch', 'growth', 'scale', 'commerce_os']),
+  plan_slug: z.string().trim().min(1).max(120),
   billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
   provider_mode: BillingProviderModeSchema.default('sandbox'),
+  upi_vpa: z.string().trim().min(3).max(120).optional(),
   idempotency_key: z.string().trim().min(8).max(200),
   metadata: z.record(z.string(), z.unknown()).default({}),
-}).strict();
+});
 export const BillingSubscribeSchema = z.object({
   store_id: z.string().uuid(),
   plan_slug: z.enum(['free', 'starter', 'business', 'enterprise', 'launch', 'growth', 'scale', 'commerce_os']),

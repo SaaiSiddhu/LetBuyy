@@ -1,0 +1,29 @@
+{
+  "capturedAt": "2026-11-03T08:28:58.332667+00:00",
+  "name": "inline-css",
+  "method": "Default mobile Lighthouse simulation; diagnostics cannot close acceptance",
+  "rows": [
+    {
+      "page": "pricing",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "lcpMs": 3155.8320000000003,
+      "tbtMs": 12.5,
+      "cls": 0,
+      "scriptBytes": 224154,
+      "scriptRequests": 10,
+      "lighthouseVersion": "13.6.0"
+    },
+    {
+      "page": "guide",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "lcpMs": 3507.2700000000004,
+      "tbtMs": 1.5000000000002274,
+      "cls": 0,
+      "scriptBytes": 230427,
+      "scriptRequests": 10,
+      "lighthouseVersion": "13.6.0"
+    }
+  ]
+}

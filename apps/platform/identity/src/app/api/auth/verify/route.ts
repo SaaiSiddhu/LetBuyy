@@ -50,6 +50,11 @@ export async function GET(request: NextRequest) {
                 const intent = await createPasswordSetIntent(result.user_id, result.email)
                 await setPasswordSetIntentCookie(intent.id)
 
+                const fingerprint = generateDeviceFingerprint(request.headers, ip)
+                const userAgent = request.headers.get('user-agent') || ''
+                const { deviceId } = await getOrCreateDevice(result.user_id, fingerprint, userAgent)
+                const sessionToken = await createSession(result.user_id, deviceId)
+                await setSessionCookie(sessionToken)
             }
 
             return NextResponse.redirect(new URL('/set-password', request.url))
@@ -68,7 +73,6 @@ export async function GET(request: NextRequest) {
                     full_name: string | null
                     avatar_url: string | null
                     email_verified: boolean
-                    has_password: boolean
                 } | null
             } | null
             const user = userPayload?.data || null
@@ -83,14 +87,6 @@ export async function GET(request: NextRequest) {
                     method: 'POST',
                     body: JSON.stringify({ user_id: user.id }),
                 })
-            }
-
-            // A freshly verified passwordless account needs the same single-use
-            // password-setting intent as signup, before requiring a full session.
-            if (!user.has_password) {
-                const intent = await createPasswordSetIntent(user.id, user.email)
-                await setPasswordSetIntentCookie(intent.id)
-                return NextResponse.redirect(new URL('/set-password', request.url))
             }
 
             // Create session

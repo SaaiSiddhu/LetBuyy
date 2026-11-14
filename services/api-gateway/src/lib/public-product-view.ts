@@ -1,4 +1,3 @@
-import { readApparelFacts, readProductNicheFacts, readVariantNicheFacts } from '@letbuyy/commerce-core';
 // SEC-1 — what an anonymous caller may learn about a product.
 //
 // The storefront public router is mounted BEFORE authMiddleware, so the column list below is served
@@ -19,7 +18,7 @@ import { readApparelFacts, readProductNicheFacts, readVariantNicheFacts } from '
 
 // Everything a storefront needs to render a product page. Nothing here is commercially sensitive.
 export const PUBLIC_PRODUCT_SELECT: string =
-    'id,store_id,name,slug,description,price,compare_price,category,product_type,tags,images,thumbnail_url,stock,track_inventory,is_active,is_featured,weight,country_of_origin,importer_details,seo_title,seo_description,created_at,updated_at,variants,metadata';
+    'id,store_id,name,slug,description,price,compare_price,category,product_type,tags,images,thumbnail_url,stock,track_inventory,is_active,is_featured,weight,country_of_origin,importer_details,seo_title,seo_description,created_at,updated_at,variants';
 
 // Same list without `variants`, for the path that hydrates variants from product_variants instead of
 // reading the products row's own column.
@@ -60,7 +59,6 @@ export const PUBLIC_VARIANT_FIELDS: ReadonlySet<string> = new Set([
     'option3',
     'image_url',
     'position',
-    'metadata',
 ]);
 
 export type PublicPriceObservation = {
@@ -109,10 +107,8 @@ export function withPublicPriceObservation<T extends Record<string, unknown>>(
 export function toPublicVariant(variant: Record<string, unknown>): Record<string, unknown> {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(variant)) {
-        if (key !== 'metadata' && PUBLIC_VARIANT_FIELDS.has(key)) result[key] = value;
+        if (PUBLIC_VARIANT_FIELDS.has(key)) result[key] = value;
     }
-    const facts = readVariantNicheFacts(variant.metadata);
-    if (Object.keys(facts).length) result.metadata = facts;
     return result;
 }
 
@@ -130,11 +126,6 @@ export function toPublicProduct<T extends Record<string, unknown>>(product: T): 
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(product)) {
         if (!PUBLIC_PRODUCT_FIELDS.has(key)) continue;
-        if (key === 'metadata') {
-            const apparel = readApparelFacts(value);
-            result.metadata = { ...readProductNicheFacts(value), ...(apparel ? { apparel } : {}) };
-            continue;
-        }
         if (key === 'product_options') {
             result[key] = Array.isArray(value) ? value.filter(option => option && typeof option === 'object' && typeof (option as Record<string, unknown>).name === 'string').map(option => {
                 const row = option as Record<string, unknown>;

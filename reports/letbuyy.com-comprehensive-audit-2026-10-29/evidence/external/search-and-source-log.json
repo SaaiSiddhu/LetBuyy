@@ -1,0 +1,80 @@
+{
+  "captured_on": "2026-10-29",
+  "language": "English query text",
+  "country_control": "not supplied by web tool; India appears in query text",
+  "device_control": "not supplied",
+  "rank_interpretation": "Result order is not a verified Google ranking",
+  "query_batches": [
+    {
+      "queries": [
+        "online store builder India UPI COD GST zero commission",
+        "Shopify alternative India UPI COD GST online store",
+        "LetBuyy commerce online store India",
+        "GST ecommerce India marketplace TCS registration guide"
+      ],
+      "observed_sources": [
+        "https://www.letbuyy.com/in",
+        "https://cartwhizz.com/online-store-builder-india",
+        "https://storzu.com/",
+        "https://www.manva.ai/shopify-alternatives-india",
+        "https://quicshop.in/blog/best-shopify-alternatives-india/",
+        "https://www.shopsynq.com/guides/shopify-alternatives-india",
+        "https://shipauk.com/blog/shopify-alternatives-in-india"
+      ]
+    },
+    {
+      "queries": [
+        "online store builder India UPI GST pricing site.zoho.com commerce",
+        "online store builder India pricing site:mydukaan.io",
+        "Shopify India online store pricing UPI COD site:shopify.com/in",
+        "Instamojo online store pricing India site:instamojo.com"
+      ],
+      "observed_sources": [
+        "https://www.shopify.com/in/pricing",
+        "https://www.zoho.com/commerce/ecommerce-website-builder.html",
+        "https://www.instamojo.com/pricing"
+      ],
+      "notes": "The first query used the literal string site.zoho.com rather than a valid site: filter; results were inspected as ordinary web search, not a domain-constrained dataset."
+    },
+    {
+      "queries": [
+        "\"letbuyy.com\" -site:letbuyy.com",
+        "\"LetBuyy\" -site:letbuyy.com -site:letbuyy.store",
+        "site:letbuyy.com/in \"Shopify\" \"alternative\"",
+        "site:letbuyy.com/in/resources \"UPI\" \"COD\""
+      ],
+      "observed_sources": [
+        "https://www.pixlnova.com/",
+        "https://play.google.com/store/apps/details?hl=he&id=com.letbuyy.letbuyy",
+        "https://www.letbuyy.com/in/resources/payments/razorpay-integration-guide",
+        "https://www.letbuyy.com/in/resources/payments/upi-vs-cod-india"
+      ],
+      "notes": "Result batches are pooled by the web tool; per-query exact ranking, location and comprehensive counts were unavailable. Google Play exact English listing direct fetch failed; its app/site affiliation remains unverified."
+    }
+  ],
+  "primary_policy_sources": [
+    {
+      "url": "https://developers.google.com/search/docs/appearance/ai-features",
+      "observed": "Ordinary SEO, index/snippet eligibility and visible/schema agreement; no special AI files or schema required."
+    },
+    {
+      "url": "https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers",
+      "observed": "Googlebot affects Search; Google-Extended is a separate training/grounding control and not a Search ranking signal."
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/bots",
+      "observed": "OAI-SearchBot, GPTBot and ChatGPT-User have different purposes."
+    },
+    {
+      "url": "https://support.google.com/business/answer/13763036",
+      "observed": "Qualifying in-person contact required; online-only businesses listed as ineligible."
+    }
+  ],
+  "limitations": [
+    "Not a geolocated Google top-10 study",
+    "No paid provider or AI-answer query runner used",
+    "No volumes, difficulty, traffic or actual AI citations measured",
+    "Competitor product behavior not tested",
+    "Query results may reference cached content; current website defects use shared live HTTP crawl"
+  ]
+}

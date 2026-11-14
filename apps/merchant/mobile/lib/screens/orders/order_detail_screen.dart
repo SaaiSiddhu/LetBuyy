@@ -245,27 +245,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     ], subject: 'Shipping label ${label['tracking_number'] ?? ''}');
   }
 
-  Future<void> _editLineItems(OrderContract order) async {
-    final request = await _showLineItemsDialog(order);
-    if (request == null || request.lines.isEmpty) return;
-
-    setState(() => _isMutating = true);
-    try {
-      final updated = await context.read<OrderService>().updateLineItems(
-        order.id,
-        lines: request.lines,
-      );
-      if (mounted) {
-        setState(() => _order = updated);
-        _showSnackBar('Order line items updated');
-      }
-    } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
-    } finally {
-      if (mounted) setState(() => _isMutating = false);
-    }
-  }
-
   Future<void> _cancelOrder() async {
     final order = _order;
     if (order == null) return;
@@ -614,13 +593,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final items = order.lineItems;
     return _section(
       title: 'Line items',
-      action: items.isEmpty
-          ? null
-          : TextButton.icon(
-              onPressed: _isMutating ? null : () => _editLineItems(order),
-              icon: const Icon(Icons.edit_outlined, size: 16),
-              label: const Text('Edit'),
-            ),
+      action: const Tooltip(message: 'Placed order items retain their original snapshot. Use returns and refunds for corrections.', child: Text('Order snapshot')),
       child: items.isEmpty
           ? Text(
               'No line items returned for this order.',
@@ -1465,93 +1438,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Future<_LineItemsRequest?> _showLineItemsDialog(OrderContract order) async {
-    final controllers = <LineItemContract, TextEditingController>{
-      for (final item in order.lineItems)
-        if (item.id.isNotEmpty)
-          item: TextEditingController(text: item.quantity.toString()),
-    };
-
-    return showDialog<_LineItemsRequest>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Edit line items',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final entry in controllers.entries) ...[
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        entry.key.name.isEmpty ? 'Item' : entry.key.name,
-                        style: TextStyle(color: colors.textPrimary),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    SizedBox(
-                      width: 84,
-                      child: TextField(
-                        controller: entry.value,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(color: colors.textPrimary),
-                        decoration: InputDecoration(
-                          labelText: 'Qty',
-                          labelStyle: TextStyle(color: colors.textSecondary),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-              ],
-              Text(
-                'Set quantity to 0 to remove a line. Totals are recalculated on the server.',
-                style: TextStyle(color: colors.textSecondary, fontSize: 12),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              final lines = controllers.entries
-                  .map((entry) {
-                    return {
-                      'order_item_id': entry.key.id,
-                      'quantity':
-                          int.tryParse(entry.value.text.trim()) ??
-                          entry.key.quantity,
-                    };
-                  })
-                  .toList(growable: false);
-              Navigator.pop(context, _LineItemsRequest(lines: lines));
-            },
-            child: Text(
-              'Save',
-              style: TextStyle(
-                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -1791,10 +1677,4 @@ class _TrackingRequest {
   final double? packageLengthCm;
   final double? packageWidthCm;
   final double? packageHeightCm;
-}
-
-class _LineItemsRequest {
-  const _LineItemsRequest({required this.lines});
-
-  final List<Map<String, dynamic>> lines;
 }

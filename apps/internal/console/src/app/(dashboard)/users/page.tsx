@@ -33,8 +33,8 @@ const columns: Array<ConsoleDataColumn<ConsoleUser>> = [
         header: 'Email',
         cell: (row) => (
             <div>
-                <p className="font-medium text-zinc-100">{row.email || '-'}</p>
-                <p className="mt-1 text-xs text-zinc-500">{row.id}</p>
+                <p className="font-medium text-default">{row.email || '-'}</p>
+                <p className="mt-1 text-xs text-subdued">{row.id}</p>
             </div>
         ),
     },
@@ -79,8 +79,8 @@ export default async function UsersPage({ searchParams }: PageProps) {
         <div className="space-y-6 p-8">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-zinc-50">Users</h1>
-                    <p className="mt-1 text-sm text-zinc-400">All platform identity records.</p>
+                    <h1 className="text-2xl font-bold text-default">Users</h1>
+                    <p className="mt-1 text-sm text-subdued">All platform identity records.</p>
                 </div>
                 <ConsoleSearchForm placeholder="Search users..." defaultValue={q} />
             </div>

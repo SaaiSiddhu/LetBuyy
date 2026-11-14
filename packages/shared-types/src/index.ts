@@ -1,5 +1,5 @@
+import { SupportTicketTopicSchema, type SupportTicketStatus, type SupportTicketTopic } from './console-support';
 import { z } from 'zod';
-import { StorePaymentSetupSchema } from './payment-setup';
 
 export * from './brand';
 export * from './console-overview';
@@ -26,15 +26,7 @@ export {
   GenerateImageSchema,
 } from './app-platform';
 
-import { UuidSchema } from './uuid';
-export { UuidSchema } from './uuid';
-
-export const ProductCsvImportSchema = z.object({
-  store_id: UuidSchema,
-  // Keep quoted field whitespace and line breaks intact.
-  csv: z.string().min(1).max(1_048_576).refine(value => value.trim().length > 0, 'A product CSV is required'),
-});
-export type ProductCsvImportInput = z.infer<typeof ProductCsvImportSchema>;
+export const UuidSchema = z.string().uuid('Must be a valid UUID');
 
 export const QueryBooleanSchema = z.preprocess((value) => {
   if (value === undefined || value === null || value === '') return false;
@@ -653,28 +645,30 @@ export const COMPLIANCE_RETENTION_POLICY = [
   },
 ] as const;
 
-export const SupportTicketStatusSchema = z.enum(['open', 'pending_customer', 'pending_internal', 'escalated', 'resolved', 'closed']);
-export const SupportTicketPrioritySchema = z.enum(['low', 'normal', 'high', 'urgent']);
-export const SupportTicketChannelSchema = z.enum(['email', 'in_app', 'chat', 'phone', 'api']);
-export const SupportTicketTopicSchema = z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general']);
-// What a ticket in the platform queue can carry, so what the queue can be filtered by: every topic above plus 'privacy'
-// (migration 261). Only the buyer's privacy intake writes a privacy ticket. An operator creates tickets and macros with
-// SupportTicketTopicSchema, which leaves 'privacy' out on purpose: filter with this schema, create with that one.
-export const SupportTicketQueueTopicSchema = z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general', 'privacy']);
-export const SupportTicketMessageAuthorSchema = z.enum(['requester', 'agent', 'system']);
-export const SupportTicketMessageVisibilitySchema = z.enum(['public', 'internal']);
-export const SupportTicketEscalationTargetSchema = z.enum(['risk', 'trust_safety', 'incident', 'finance', 'engineering']);
-export const SupportTicketSlaClockTypeSchema = z.enum(['first_response', 'resolution']);
-
-export type SupportTicketStatus = z.infer<typeof SupportTicketStatusSchema>;
-export type SupportTicketPriority = z.infer<typeof SupportTicketPrioritySchema>;
-export type SupportTicketChannel = z.infer<typeof SupportTicketChannelSchema>;
-export type SupportTicketTopic = z.infer<typeof SupportTicketTopicSchema>;
-export type SupportTicketQueueTopic = z.infer<typeof SupportTicketQueueTopicSchema>;
-export type SupportTicketMessageAuthor = z.infer<typeof SupportTicketMessageAuthorSchema>;
-export type SupportTicketMessageVisibility = z.infer<typeof SupportTicketMessageVisibilitySchema>;
-export type SupportTicketEscalationTarget = z.infer<typeof SupportTicketEscalationTargetSchema>;
-export type SupportTicketSlaClockType = z.infer<typeof SupportTicketSlaClockTypeSchema>;
+// Merchant projection over the canonical support authority. Owner-only until
+// an explicit merchant-staff support permission is approved.
+export const MerchantSupportScopeSchema = z.object({
+  site_id: z.string().uuid(), page: z.coerce.number().int().min(1).max(10000).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(25),
+});
+export const MerchantSupportCreateSchema = z.object({
+  site_id: z.string().uuid(), subject: z.string().trim().min(3).max(240),
+  body: z.string().trim().min(1).max(4000), topic: SupportTicketTopicSchema.default('general'),
+}).strict();
+export const MerchantSupportReplySchema = z.object({
+  site_id: z.string().uuid(), body: z.string().trim().min(1).max(4000),
+}).strict();
+export const MerchantSupportRecoverySchema = z.object({
+  site_id: z.string().uuid(), operation: z.enum(['create', 'reply']),
+  target_id: z.string().uuid().nullable(), key: z.string().trim().min(8).max(200),
+}).strict();
+export interface MerchantSupportTicket {
+  id: string; site_id: string; ticket_ref: string; subject: string;
+  status: SupportTicketStatus; topic: SupportTicketTopic; created_at: string; updated_at: string;
+}
+export interface MerchantSupportMessage {
+  id: string; author_type: 'requester' | 'agent' | 'system'; body: string; created_at: string;
+}
 
 export const SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS = 8;
 export const SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS = 3;
@@ -812,65 +806,6 @@ export const ResumeContentSectionSchema = z.enum([
   'testimonials',
   'projects',
 ]);
-/** Default for newly created stores; saved merchant selections are never inferred from this. */
-export const DEFAULT_STOREFRONT_THEME_SLUG = 'letbuyy-forge';
-
-/** Setup/readiness, never a DNS/provider credential or an arbitrary checkout target. */
-export const CheckoutDomainSetupSchema = z.object({
-  site_id: UuidSchema,
-  hostname: z.string().min(3).max(253).nullable(),
-  parent_hostname: z.string().min(3).max(253).nullable(),
-  source: z.enum(['platform','custom']).nullable(),
-  status: z.enum(['pending','verifying','active','error','unavailable']),
-  ssl_status: z.enum(['unknown','pending','active','error','unavailable']),
-  checkout_origin: z.string().url(),
-  fallback_origin: z.string().url(),
-  reason: z.string().max(100).nullable(),
-  dns_records: z.array(z.object({type:z.enum(['CNAME','TXT']),name:z.string().max(300),value:z.string().max(1000)}).strict()).max(4),
-}).strict();
-export type CheckoutDomainSetup = z.infer<typeof CheckoutDomainSetupSchema>;
-
-/** Anonymous discovery contains public launch metadata, never account/contact data. */
-export const StorefrontDirectoryEntrySchema = z.object({
-  store_name: z.string().min(1),
-  subdomain: z.string().min(1),
-  name: z.string().min(1),
-  logo_url: z.string().nullable(),
-  theme_id: z.string().nullable(),
-  theme_name: z.string().nullable(),
-  status: z.literal('published'),
-  site_type: z.literal('store'),
-  created_at: z.string().datetime({ offset: true }),
-  published_at: z.string().datetime({ offset: true }),
-}).strict();
-export const StorefrontDirectoryQuerySchema = z.object({
-  limit: z.coerce.number().int().min(1).max(24).default(12),
-  cursor: z.string().min(1).max(512).optional(),
-}).strict();
-export const StorefrontDirectoryCursorSchema = z.object({
-  id: z.string().uuid(),
-  value: z.string().datetime({ offset: true }),
-}).strict();
-const PublicDirectoryCountSchema = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
-export const StorefrontDirectoryPayloadSchema = z.object({
-  stores: z.array(StorefrontDirectoryEntrySchema).max(24),
-  stats: z.object({
-    scope: z.literal('public_stores'),
-    totalStores: PublicDirectoryCountSchema,
-    totalThemes: PublicDirectoryCountSchema,
-    totalProducts: PublicDirectoryCountSchema,
-    totalOrders: PublicDirectoryCountSchema,
-  }).strict(),
-  pagination: z.object({
-    limit: z.number().int().min(1).max(24),
-    has_more: z.boolean(),
-    next_cursor: z.string().nullable(),
-  }).strict(),
-}).strict();
-export type StorefrontDirectoryEntry = z.infer<typeof StorefrontDirectoryEntrySchema>;
-export type StorefrontDirectoryPayload = z.infer<typeof StorefrontDirectoryPayloadSchema>;
-export type StorefrontDirectoryQuery = z.infer<typeof StorefrontDirectoryQuerySchema>;
-
 export const ThemeCategorySchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing', 'saas']);
 export const ThemePricingTypeSchema = z.enum(['free', 'one_time', 'subscription']);
 export const ShippingRateTypeSchema = z.enum(['flat', 'weight_based', 'price_based', 'free']);
@@ -1015,27 +950,16 @@ export const CodReconciliationEntrySchema = AuditedEntitySchema.extend({
   metadata: MetadataSchema.default({}),
 }).passthrough();
 
-export const MerchantPayoutSummarySchema = z.object({
+export const MerchantPayoutListSchema = z.object({
+  payouts: z.array(MerchantPayoutStatementSchema).default([]),
+  summary: z.object({
     site_id: UuidSchema,
     currency: CurrencySchema,
-    provider_mode: MerchantPayoutModeSchema,
-    scope: z.literal('all_statements_in_environment'),
-    statement_count: z.number().int().safe().nonnegative(),
-    pending_minor: z.number().int().safe().nonnegative(),
-    processing_minor: z.number().int().safe().nonnegative(),
-    released_minor: z.number().int().safe().nonnegative(),
-    failed_minor: z.number().int().safe().nonnegative(),
-    bank_settlement: z.literal('not_observed'),
+    pending_minor: z.number().int().nonnegative(),
+    processing_minor: z.number().int().nonnegative(),
+    released_minor: z.number().int().nonnegative(),
+    failed_minor: z.number().int().nonnegative(),
     next_payout: MerchantPayoutStatementSchema.optional().nullable(),
-});
-export const MerchantPayoutListSchema = z.object({
-  payouts: z.array(MerchantPayoutStatementSchema),
-  summary: MerchantPayoutSummarySchema,
-  pagination: z.object({
-    limit: z.number().int().min(1).max(50),
-    matching_count: z.number().int().safe().nonnegative(),
-    has_more: z.boolean(),
-    next_cursor: z.string().max(1024).nullable(),
   }),
 });
 
@@ -1204,14 +1128,6 @@ export const StoreSummarySchema = StoreSchema.pick({
   theme_settings: MetadataSchema.optional().nullable(),
 }).passthrough();
 
-/** Hosting readiness is separate from publication and visitor access. */
-export const StorefrontDomainProvisioningSchema = z.object({
-  hostname: z.string().min(3).max(253).nullable(),
-  status: z.enum(['ready', 'pending', 'local']),
-  reason: z.enum(['provider_not_configured', 'provider_pending', 'provider_unavailable', 'invalid_host', 'local_runtime']).optional(),
-});
-export type StorefrontDomainProvisioning = z.infer<typeof StorefrontDomainProvisioningSchema>;
-
 export const DomainHealthRecordSchema = z.object({
   type: z.string().min(1).max(16),
   host: z.string().min(1).max(255),
@@ -1221,11 +1137,6 @@ export const DomainHealthRecordSchema = z.object({
   message: z.string().max(500).optional().nullable(),
 });
 
-export const DomainCustomerVerificationSchema = z.object({
-  status: z.enum(['ready', 'pending', 'unavailable', 'capacity_reached', 'configuration_required']),
-});
-export type DomainCustomerVerification = z.infer<typeof DomainCustomerVerificationSchema>;
-
 export const CustomDomainHealthSchema = z.object({
   site_id: UuidSchema,
   domain: z.string().min(3).max(255),
@@ -1233,7 +1144,6 @@ export const CustomDomainHealthSchema = z.object({
   txt_verified: z.boolean(),
   cname_verified: z.boolean(),
   ssl_active: z.boolean(),
-  customer_verification: DomainCustomerVerificationSchema.optional(),
   // DNS host detected live from the apex nameservers (e.g. "Cloudflare", "GoDaddy").
   // Re-detected on every health check so a registrar/NS change is reflected, not stale.
   provider: z.string().max(120).nullable().optional(),
@@ -1293,6 +1203,23 @@ export const StoreHealthSchema = z.object({
   store_id: UuidSchema,
   score: z.number().int().min(0).max(100),
   generated_at: z.string().datetime(),
+  readiness: z.object({
+    status: StoreHealthPillarStatusSchema,
+    complete: z.number().int().nonnegative(),
+    total: z.number().int().positive(),
+    unknown: z.number().int().nonnegative(),
+    checks: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      status: StoreHealthPillarStatusSchema,
+      summary: z.string(),
+      action_label: z.string(),
+      web_path: z.string().regex(/^[a-z][a-z0-9/-]*$/),
+      route: z.string().regex(/^\/[a-z][a-z0-9/-]*$/),
+      checked_at: z.string().datetime().nullable(),
+      required: z.boolean(),
+    })).min(1).max(10),
+  }),
   pillars: z.array(StoreHealthPillarSchema).min(1).max(12),
   metadata: MetadataSchema.default({}),
 });
@@ -1524,37 +1451,6 @@ export const CollectionSchema = AuditedEntitySchema.extend({
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
 });
-
-// Merchant read projection: assignment counts are confirmed by the server, never defaulted.
-export const CollectionListPaginationSchema = z.object({
-  page: z.coerce.number().int().min(1).max(10000).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
-}).strict();
-export const CollectionListQuerySchema = CollectionListPaginationSchema.extend({ store_id: UuidSchema }).strict();
-export const CollectionSummarySchema = z.object({
-  id: UuidSchema, store_id: UuidSchema, title: CollectionSchema.shape.title,
-  description: z.string().max(1000).nullable(), image_url: CollectionSchema.shape.image_url,
-  created_at: z.string().datetime({ offset: true }), is_active: z.boolean(),
-  membership_version: z.number().int().positive(),
-  product_count: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
-}).strict();
-export const CollectionListPageSchema = z.object({
-  success: z.literal(true), data: z.array(CollectionSummarySchema).max(100),
-  meta: z.object({page:z.number().int().positive().max(10000),per_page:z.number().int().min(1).max(100),
-    total:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),total_pages:z.number().int().nonnegative(),
-    has_next:z.boolean(),has_prev:z.boolean()}).strict(),
-}).strict().superRefine((value,ctx)=>{
-  const m=value.meta;
-  if(value.data.length>m.per_page||new Set(value.data.map(row=>row.id)).size!==value.data.length||
-    m.total_pages!==Math.ceil(m.total/m.per_page)||m.has_next!==(m.page<m.total_pages)||m.has_prev!==(m.page>1)||
-    value.data.length!==Math.min(m.per_page,Math.max(0,m.total-(m.page-1)*m.per_page)))
-    ctx.addIssue({code:'custom',message:'Collection pagination could not be confirmed.'});
-});
-export type CollectionSummary = z.infer<typeof CollectionSummarySchema>;
-export type CollectionListPage = z.infer<typeof CollectionListPageSchema>;
-export type CollectionListQuery = z.infer<typeof CollectionListQuerySchema>;
-export type CollectionListQueryInput = z.input<typeof CollectionListQuerySchema>;
-export type CollectionListPagination = z.infer<typeof CollectionListPaginationSchema>;
 
 // Complete manual membership and an explicit ordered replacement intent. These
 // contracts do not change the metadata Collection shape or public projections.
@@ -2165,31 +2061,26 @@ export const SubscriptionVerificationResultSchema = z.object({
   message: z.string().max(500).optional(),
 }).passthrough();
 
-export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema,
-  type StorePaymentSetup, type SaveStorePaymentConfigInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
-
 export const StorePaymentSettingsSchema = z.object({
-  mode: z.enum(['unconfigured', 'shared', 'ownAccount']).default('unconfigured'),
-  gateways: z.array(z.string().min(1).max(80)).default([]),
+  mode: z.enum(['shared', 'ownAccount']).default('shared'),
+  gateways: z.array(z.string().min(1).max(80)).default(['razorpay']),
   razorpay: z.object({
     key_id: z.string().max(120).optional().nullable(),
     test_mode: z.boolean().default(true),
     verified: z.boolean().default(false),
-    connected_at: z.string().datetime({ offset: true }).optional().nullable(),
-    updated_at: z.string().datetime({ offset: true }).optional().nullable(),
+    connected_at: z.string().datetime().optional().nullable(),
+    updated_at: z.string().datetime().optional().nullable(),
     secret_configured: z.boolean().default(false),
   }).nullable().default(null),
 }).passthrough();
 
 export const StorePaymentConfigSchema = z.object({
   store_id: UuidSchema,
-  online_payment_enabled: z.boolean().default(false),
-  cod_enabled: z.boolean().default(false),
-  provider_mode: z.enum(['sandbox', 'live']).nullable().default(null),
+  online_payment_enabled: z.boolean().default(true),
+  cod_enabled: z.boolean().default(true),
+  provider_mode: z.enum(['sandbox', 'live']).default('sandbox'),
   payment_settings: StorePaymentSettingsSchema,
   schema_ready: z.boolean().optional(),
-  setup: StorePaymentSetupSchema.optional(),
-  revision: z.string().nullable().optional(),
 }).passthrough();
 
 export const EmployeeStatusSchema = z.enum(['invited', 'active', 'inactive', 'removed', 'suspended']);
@@ -2535,8 +2426,6 @@ export const CouponSchema = AuditedEntitySchema.extend({
 });
 
 export const ShippingZoneSchema = z.object({
-  profile_id: UuidSchema.optional().nullable(),
-  cod_enabled: z.boolean().default(true),
   id: UuidSchema,
   store_id: UuidSchema,
   name: z.string().min(1).max(100),
@@ -2549,7 +2438,6 @@ export const ShippingZoneSchema = z.object({
 }).passthrough();
 
 export const ShippingRateSchema = z.object({
-  cod_enabled: z.boolean().default(true),
   id: UuidSchema,
   zone_id: UuidSchema,
   name: z.string().min(1).max(100),
@@ -5154,11 +5042,18 @@ export function featureFlagExposureTelemetry(
 }
 
 export * from './reel-upload';
+export * from './merchant-operations';
 export { BuyerAssistantRequestSchema, BuyerAssistantResponseSchema } from './buyer-assistant';
 export type { BuyerAssistantRequest, BuyerAssistantResponse } from './buyer-assistant';
 
 export { calculateGstAmounts } from './gst-amounts';
 
-export * from './personalization-contracts';
-export * from './storefront-discovery-contracts';
-export * from './checkout-totals-quote';
+/** An issued invoice or active subscription is not a successful payment. */
+export function isBillingPaymentPaid(status: unknown): boolean {
+  return typeof status === 'string' && ['paid', 'succeeded'].includes(status.trim().toLowerCase());
+}
+
+export * from './console-support';
+export * from './console-billing';
+
+export * from './merchant-messages';

@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -11,6 +9,7 @@ import { Button, Input,
     Calendar,
     Card,
     ConfirmDialog,
+    EmptyState,
     MapPin,
     Page,
     PageHeader,
@@ -24,7 +23,6 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface Experience {
     id: string
@@ -125,18 +123,15 @@ export default function ExperiencePage() {
     const [experienceToDelete, setExperienceToDelete] = useState<Experience | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadExperience = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/work_experience`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load work experience'))
@@ -144,7 +139,6 @@ export default function ExperiencePage() {
 
             setItems(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load work experience'
             setItems([])
             setLoadError(message)
@@ -154,9 +148,9 @@ export default function ExperiencePage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadExperience()
@@ -283,7 +277,6 @@ export default function ExperiencePage() {
         return (
             <Page>
                 <PageHeader
-                    recipe="index"
                     title="Experience"
                     description="Build a clean work-history timeline for your resume or portfolio."
                     breadcrumbs={[{ label: 'Resume' }, { label: 'Experience' }]}
@@ -300,7 +293,6 @@ export default function ExperiencePage() {
     return (
         <Page>
             <PageHeader
-                recipe="index"
                 title="Experience"
                 description="Build a clean work-history timeline for your resume or portfolio."
                 breadcrumbs={[{ label: 'Resume' }, { label: 'Experience' }]}
@@ -412,7 +404,7 @@ export default function ExperiencePage() {
             {items.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Work history">
-                        <EmptyState scene="experience"
+                        <EmptyState
                             icon={<Briefcase className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No experience yet"
                             body="Add roles, companies, dates, and achievements to create a trustworthy professional timeline."

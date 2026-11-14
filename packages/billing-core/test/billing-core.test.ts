@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  BillingMandateSchema,
   CreateAppBillingChargeSchema,
   CreateAppUsageEventSchema,
   VerifySubscriptionSchema,
@@ -272,4 +273,16 @@ test('billing dunning plans charged and failed states deterministically', () => 
   assert.equal(failed.dunning_attempts, 2);
   assert.equal(failed.next_dunning_at, '2026-06-12T00:00:00.000Z');
   assert.equal(failed.event_type, 'billing.failed');
+});
+
+
+test('mandate requests keep the real catalog slug and reject missing or blank plan intent', () => {
+  for (const plan_slug of ['launch', 'growth']) {
+    const result = BillingMandateSchema.safeParse({store_id:'11111111-1111-4111-8111-111111111111',plan_slug,idempotency_key:'synthetic-mandate-intent'});
+    assert.equal(result.success, true, plan_slug);
+    if (result.success) assert.equal(result.data.plan_slug, plan_slug);
+  }
+  for (const plan_slug of [undefined, '', '   ']) {
+    assert.equal(BillingMandateSchema.safeParse({store_id:'11111111-1111-4111-8111-111111111111',plan_slug,idempotency_key:'synthetic-mandate-intent'}).success, false);
+  }
 });

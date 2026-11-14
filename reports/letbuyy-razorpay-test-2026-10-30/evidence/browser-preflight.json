@@ -1,0 +1,8 @@
+{
+  "captured_at": "2026-10-29T21:05:43.612Z",
+  "sdk_url": "https://checkout.razorpay.com/v1/checkout.js",
+  "payment_attempted": false,
+  "provider_responses_simulated": false,
+  "marketing_status": 200,
+  "razorpay_constructor_available": true
+}

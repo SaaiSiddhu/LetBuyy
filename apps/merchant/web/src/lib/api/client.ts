@@ -16,8 +16,6 @@ import {
 
 interface MerchantApiFetchInit extends RequestInit {
     requireSession?: boolean
-    /** Stored export delivery has a larger finite streaming budget. */
-    readTimeoutMs?: 10_000 | 60_000
 }
 
 export class MerchantApiRequestError extends Error {
@@ -40,11 +38,6 @@ function merchantApiBaseUrl() {
     ], {
         fallback: LETBUYY_PRODUCTION_API_BASE_URL,
     })
-}
-
-/** GET/HEAD and explicitly read-only POST previews share the same finite budget. */
-export function merchantApiReadSignal(signal?: AbortSignal | null, timeoutMs = 10_000): AbortSignal {
-    return signal ? AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs)
 }
 
 export async function merchantApiFetch(path: string, init: MerchantApiFetchInit = {}) {
@@ -86,12 +79,8 @@ export async function merchantApiFetch(path: string, init: MerchantApiFetchInit 
         Object.entries(headerPlan.headers).forEach(([key, value]) => headers.set(key, value))
     }
 
-    const isRead = !init.method || init.method === 'GET' || init.method === 'HEAD'
-    const signal = isRead ? merchantApiReadSignal(init.signal, init.readTimeoutMs) : init.signal
-
     return fetch(`${merchantApiBaseUrl()}${cleanPath}`, {
         ...init,
-        signal,
         headers,
         cache: 'no-store',
     })

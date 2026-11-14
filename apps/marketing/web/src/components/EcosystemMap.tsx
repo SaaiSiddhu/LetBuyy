@@ -4,7 +4,8 @@ import Copy from '@/components/i18n/Copy'
 
 import Link from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
-import { motion, useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from 'framer-motion'
+import * as motion from 'framer-motion/m'
 import { ArrowRight, Store } from '@letbuyy/ui'
 import styles from './platform-surfaces.module.css'
 import {
@@ -14,9 +15,9 @@ import {
 // ── Static data ─────────────────────────────────────────────────────────────
 
 const METRICS = [
-    { value: '12+',  label: 'Platform Surfaces' },
+    { value: 'One', label: 'Merchant workspace' },
     { value: '1',    label: 'Unified Identity'  },
-    { value: '100%', label: 'Commerce Engine'   },
+    { value: 'Store', label: 'Products and orders' },
     { value: 'AI',   label: 'Native Foundation' },
 ]
 
@@ -85,7 +86,7 @@ function MerchantOSMock() {
                         </div>
                         <div className="ecos-os-feed-row">
                             <span className="ecos-os-feed-dot ecos-os-feed-dot--ai" />
-                            <span>AI: Restock Everyday Hoodie — 7 units left</span>
+                            <span>Draft: Everyday Hoodie description ready for review</span>
                         </div>
                         <div className="ecos-os-feed-row">
                             <span className="ecos-os-feed-dot ecos-os-feed-dot--pay" />
@@ -137,7 +138,7 @@ function EcosRailItem({
             >
                 {/* Icon box */}
                 <span className={styles.artwork} aria-hidden="true">
-                    <Image src={card.artwork} alt="" width={512} height={512} sizes="64px" loading="eager" unoptimized />
+                    <Image src={card.artwork} alt="" width={512} height={512} sizes="64px" loading="lazy" unoptimized />
                 </span>
 
                 {/* Label + tagline */}
@@ -286,6 +287,7 @@ export default function EcosystemMap() {
                             </div>
 
                             <MerchantOSMock />
+                            <p><Copy text="Illustrative previews with example data. Features depend on plan, permissions and provider setup." /></p>
 
                             <Link href={getAccountsUrl('/signup')} className="ecosystem-flagship-cta">
                                 <Copy text={"Open Control Plane"} /><ArrowRight width={14} height={14} aria-hidden="true" />

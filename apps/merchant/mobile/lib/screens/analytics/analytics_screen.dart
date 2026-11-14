@@ -3,7 +3,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../app/store_context.dart';
-import '../../theme/app_theme_colors.dart';
 import '../../services/analytics_service.dart';
 
 import '../../models/store_model.dart';
@@ -22,8 +21,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   StoreAnalytics? _analytics;
   StoreLiveView? _liveView;
   bool _isLoading = true;
-  bool _loadFailed = false;
-  AppThemeColors get _colors => AppThemeColors.of(context);
   String _selectedPeriod = '7d';
 
   @override
@@ -33,10 +30,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   Future<void> _loadStore() async {
-    setState(() {
-      _isLoading = true;
-      _loadFailed = false;
-    });
+    setState(() => _isLoading = true);
     try {
       final store = await context.read<StoreContext>().ensureSelectedStore();
       StoreAnalytics? analytics;
@@ -53,16 +47,15 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           debugPrint('Error loading live view: $error');
         }
       }
-      if (!mounted) return;
       setState(() {
         _store = store;
         _analytics = analytics;
         _liveView = liveView;
       });
     } catch (e) {
-      if (mounted) setState(() => _loadFailed = true);
+      debugPrint('Error loading store: $e');
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
     }
   }
 
@@ -73,11 +66,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: _colors.bgStart,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Analytics'),
-        backgroundColor: _colors.bgStart,
-        surfaceTintColor: _colors.bgStart,
+        backgroundColor: AppColors.background,
+        surfaceTintColor: AppColors.background,
         actions: [
           PopupMenuButton<String>(
             initialValue: _selectedPeriod,
@@ -120,87 +113,76 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           const SizedBox(width: 16),
         ],
       ),
-      body: _loadFailed
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Analytics could not load. Please retry.'),
-                  TextButton(
-                    onPressed: _loadStore,
-                    child: const Text('Retry analytics'),
-                  ),
-                ],
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                // Stats overview
-                StatsRow(
-                  views: _analytics?.totalViews ?? _store?.totalVisitors ?? 0,
-                  sales: _analytics?.totalOrders ?? _store?.totalOrders ?? 0,
-                  revenue: (_analytics?.totalRevenue ?? 0).round(),
-                  products:
-                      _analytics?.totalProducts ?? 0,
-                ),
-                const SizedBox(height: 24),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          // Stats overview
+          StatsRow(
+            views: _analytics?.totalViews ?? _store?.totalVisitors ?? 0,
+            sales: _analytics?.totalOrders ?? _store?.totalOrders ?? 0,
+            revenue: (_analytics?.totalRevenue ?? 0).round(),
+            products:
+                _analytics?.totalProducts ??
+                _store?.selectedProductIds.length ??
+                0,
+          ),
+          const SizedBox(height: 24),
 
-                _buildComparisonStrip(),
-                const SizedBox(height: 24),
+          _buildComparisonStrip(),
+          const SizedBox(height: 24),
 
-                _buildLiveViewCard(),
-                const SizedBox(height: 24),
+          _buildLiveViewCard(),
+          const SizedBox(height: 24),
 
-                // Real order and revenue charts from analytics daily buckets.
-                _buildChartCard(
-                  title: 'Revenue',
-                  icon: Icons.trending_up_rounded,
-                  color: Colors.blue,
-                  series: _analytics?.dailyStats ?? const <DailyStats>[],
-                  previousSeries:
-                      _analytics?.comparison.previousDailyStats ??
-                      const <DailyStats>[],
-                  previousLabel:
-                      _analytics?.comparison.previousLabel ?? 'Previous period',
-                  valueFor: (day) => day.revenue,
-                  valueLabel: (value) => '₹${value.toStringAsFixed(0)}',
-                ),
-                const SizedBox(height: 16),
+          // Real order and revenue charts from analytics daily buckets.
+          _buildChartCard(
+            title: 'Revenue',
+            icon: Icons.trending_up_rounded,
+            color: Colors.blue,
+            series: _analytics?.dailyStats ?? const <DailyStats>[],
+            previousSeries:
+                _analytics?.comparison.previousDailyStats ??
+                const <DailyStats>[],
+            previousLabel:
+                _analytics?.comparison.previousLabel ?? 'Previous period',
+            valueFor: (day) => day.revenue,
+            valueLabel: (value) => '₹${value.toStringAsFixed(0)}',
+          ),
+          const SizedBox(height: 16),
 
-                _buildChartCard(
-                  title: 'Orders',
-                  icon: Icons.shopping_bag_rounded,
-                  color: Colors.green,
-                  series: _analytics?.dailyStats ?? const <DailyStats>[],
-                  previousSeries:
-                      _analytics?.comparison.previousDailyStats ??
-                      const <DailyStats>[],
-                  previousLabel:
-                      _analytics?.comparison.previousLabel ?? 'Previous period',
-                  valueFor: (day) => day.orders.toDouble(),
-                  valueLabel: (value) => value.toStringAsFixed(0),
-                ),
-                const SizedBox(height: 24),
+          _buildChartCard(
+            title: 'Orders',
+            icon: Icons.shopping_bag_rounded,
+            color: Colors.green,
+            series: _analytics?.dailyStats ?? const <DailyStats>[],
+            previousSeries:
+                _analytics?.comparison.previousDailyStats ??
+                const <DailyStats>[],
+            previousLabel:
+                _analytics?.comparison.previousLabel ?? 'Previous period',
+            valueFor: (day) => day.orders.toDouble(),
+            valueLabel: (value) => value.toStringAsFixed(0),
+          ),
+          const SizedBox(height: 24),
 
-                // Top products
-                const Text(
-                  'Top Products',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                ),
-                const SizedBox(height: 12),
-                _buildTopProductsList(),
-                const SizedBox(height: 24),
+          // Top products
+          const Text(
+            'Top Products',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          _buildTopProductsList(),
+          const SizedBox(height: 24),
 
-                // Traffic sources
-                const Text(
-                  'Traffic Sources',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                ),
-                const SizedBox(height: 12),
-                _buildTrafficSourcesList(),
-              ],
-            ),
+          // Traffic sources
+          const Text(
+            'Traffic Sources',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          _buildTrafficSourcesList(),
+        ],
+      ),
     );
   }
 
@@ -211,7 +193,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _colors.card,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -249,7 +231,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               if (snapshot != null)
                 Text(
                   'Updated ${_formatSeen(snapshot.lastSeenAt)}',
-                  style: TextStyle(color: _colors.textSecondary, fontSize: 12),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
             ],
           ),
@@ -318,10 +300,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(color: _colors.textSecondary, fontSize: 12),
-        ),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
       ],
     );
   }
@@ -404,7 +383,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: _colors.card,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -448,7 +427,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           Text(
                             comparison!.previousLabel,
                             style: TextStyle(
-                              color: _colors.textSecondary,
+                              color: Colors.grey[600],
                               fontSize: 12,
                             ),
                           ),
@@ -507,7 +486,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: _colors.surfaceVariant,
+          color: Colors.grey[50],
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.withValues(alpha: 0.14)),
         ),
@@ -516,7 +495,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           children: [
             Text(
               label,
-              style: TextStyle(color: _colors.textSecondary, fontSize: 12),
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
             const SizedBox(height: 6),
             Text(
@@ -575,7 +554,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       height: 236,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _colors.card,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -642,7 +621,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               getTitlesWidget: (value, _) => Text(
                                 valueLabel(value),
                                 style: TextStyle(
-                                  color: _colors.textSecondary,
+                                  color: Colors.grey[600],
                                   fontSize: 10,
                                 ),
                               ),
@@ -665,7 +644,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                   child: Text(
                                     '${date.day}/${date.month}',
                                     style: TextStyle(
-                                      color: _colors.textSecondary,
+                                      color: Colors.grey[600],
                                       fontSize: 10,
                                     ),
                                   ),
@@ -743,7 +722,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           label,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: _colors.textSecondary, fontSize: 11),
+          style: TextStyle(color: Colors.grey[600], fontSize: 11),
         ),
       ],
     );
@@ -754,7 +733,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: _colors.card,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -840,7 +819,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _colors.card,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -879,7 +858,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               Text(
                                 '${source.sessions} sessions',
                                 style: TextStyle(
-                                  color: _colors.textSecondary,
+                                  color: Colors.grey[700],
                                   fontSize: 12,
                                 ),
                               ),
@@ -903,7 +882,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             child: Text(
                               '${source.percentage.toStringAsFixed(1)}%',
                               style: TextStyle(
-                                color: _colors.textSecondary,
+                                color: Colors.grey[600],
                                 fontSize: 11,
                               ),
                             ),
@@ -937,7 +916,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           Text(
             body,
             textAlign: TextAlign.center,
-            style: TextStyle(color: _colors.textSecondary, fontSize: 13),
+            style: TextStyle(color: Colors.grey[600], fontSize: 13),
           ),
         ],
       ),

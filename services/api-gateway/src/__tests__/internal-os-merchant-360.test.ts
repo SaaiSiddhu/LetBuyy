@@ -87,12 +87,14 @@ test('merchant 360 console surfaces replace placeholders with real links and act
     const searchPageSource = repositorySource('apps/internal/console/src/app/(dashboard)/merchants/page.tsx');
     const detailPageSource = repositorySource('apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx');
     const storesPageSource = repositorySource('apps/internal/console/src/app/(dashboard)/stores/page.tsx');
-    const layoutSource = repositorySource('apps/internal/console/src/app/(dashboard)/layout.tsx');
+    const layoutSource = repositorySource('apps/internal/console/src/components/ConsoleShell.tsx');
 
     assert.match(searchPageSource, /\/internal\/console\/merchants\/search/);
     assert.match(searchPageSource, /href=\{`\/merchants\/\$\{row\.id\}`\}/);
     assert.match(detailPageSource, /\/internal\/console\/merchants\/\$\{id\}\/overview/);
-    assert.match(detailPageSource, /startMerchantImpersonation/);
+    assert.doesNotMatch(detailPageSource, /startMerchantImpersonation/);
+    assert.match(detailPageSource, /Open read-only merchant workspace/);
+    assert.match(detailPageSource, /Read-only merchant assistance/);
     assert.match(detailPageSource, /endMerchantImpersonation/);
     assert.match(detailPageSource, /ConsoleApprovalForm action="\/api\/approvals\/request"/);
     assert.match(detailPageSource, /request_key/);
@@ -101,5 +103,5 @@ test('merchant 360 console surfaces replace placeholders with real links and act
     assert.doesNotMatch(detailPageSource, /SkipBackendPanel/);
     assert.match(storesPageSource, /href=\{`\/merchants\/\$\{row\.id\}`\}/);
     assert.doesNotMatch(storesPageSource, /SkipBackendPanel/);
-    assert.match(layoutSource, /href="\/merchants"\s+label="Merchant 360"|label:\s*'Merchant 360'[\s\S]*href:\s*'\/merchants'/);
+    assert.match(layoutSource, /href="\/merchants"\s+label="Merchant 360"|label:\s*'Merchant profiles'[\s\S]*href:\s*'\/merchants'/);
 });

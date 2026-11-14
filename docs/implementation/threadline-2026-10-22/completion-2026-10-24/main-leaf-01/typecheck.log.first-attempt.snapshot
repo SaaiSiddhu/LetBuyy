@@ -1,3 +1,0 @@
-{"path":null,"line":null,"code":2688,"message":"Cannot find type definition file for 'node'.\n  The file is in the program because:\n    Entry point of type library 'node' specified in compilerOptions"}
-{"path":"/Volumes/Projects/LetBuyy/packages/theme-engine/test/threadline-successor.test.ts","line":23,"code":2322,"message":"Type '{ [x: string]: unknown; }' is not assignable to type 'Record<string, ThemeBundleJson>'.\n  'string' index signatures are incompatible.\n    Type 'unknown' is not assignable to type 'ThemeBundleJson'."}
-Scoped strict typecheck: 2 diagnostics; no emit.

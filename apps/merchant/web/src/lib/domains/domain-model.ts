@@ -156,13 +156,14 @@ export function scoreFromRecord(record: SiteDomainRecord): number {
 
 // ── Connect-wizard step model ────────────────────────────────────────────────
 
-export type WizardStep = 'enter' | 'instructions' | 'verify' | 'activate'
+export type WizardStep = 'enter' | 'detect' | 'instructions' | 'verify' | 'activate'
 
 export const WIZARD_STEPS: ReadonlyArray<{ key: WizardStep; label: string }> = [
     { key: 'enter', label: 'Add domain' },
+    { key: 'detect', label: 'Provider' },
     { key: 'instructions', label: 'DNS records' },
-    { key: 'verify', label: 'DNS & HTTPS' },
-    { key: 'activate', label: 'Ready' },
+    { key: 'verify', label: 'Verify' },
+    { key: 'activate', label: 'Activate' },
 ]
 
 /** Lifecycle step a connected domain has reached (for the detail checklist). */
@@ -170,21 +171,11 @@ export function lifecycleSteps(health: CustomDomainHealth): Array<{ label: strin
     const ownership = health.txt_verified
     const dns = health.cname_verified
     const ssl = health.ssl_active
-    const verification = health.customer_verification?.status
-    const live = health.status === 'active' && (!verification || verification === 'ready')
+    const live = health.status === 'active'
     return [
         { label: 'Ownership verified', done: ownership, active: !ownership },
         { label: 'DNS routed', done: dns, active: ownership && !dns },
         { label: 'SSL issued', done: ssl, active: dns && !ssl },
-        ...(verification ? [{ label: 'Customer verification', done: verification === 'ready', active: ssl && verification !== 'ready' }] : []),
         { label: 'Live & secure', done: live, active: ssl && !live },
     ]
-}
-
-export function customerVerificationSummary(status: NonNullable<CustomDomainHealth['customer_verification']>['status']) {
-    if (status === 'ready') return { tone: 'success' as const, title: 'Customer verification ready', description: 'Protected customer forms are ready on this domain and its secure checkout address.' }
-    if (status === 'capacity_reached') return { tone: 'warning' as const, title: 'Customer verification needs attention', description: 'Your domain is secure, but verification capacity is full. Contact LetBuyy support to finish protected customer forms. No DNS changes are needed.' }
-    if (status === 'configuration_required') return { tone: 'warning' as const, title: 'Customer verification setup required', description: 'LetBuyy needs to finish its verification configuration. Contact support; do not change your domain records.' }
-    if (status === 'unavailable') return { tone: 'warning' as const, title: 'Customer verification could not be confirmed', description: 'Your saved domain settings are preserved. Check setup again; contact LetBuyy support if this continues.' }
-    return { tone: 'info' as const, title: 'Preparing customer verification', description: 'After ownership, routing and HTTPS are verified, LetBuyy prepares protected customer forms automatically.' }
 }

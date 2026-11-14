@@ -1,0 +1,15 @@
+{
+  "capturedAt": "2026-11-03T03:10:24.727791+00:00",
+  "browser": "Actual current Chrome profile via native UI",
+  "url": "http://127.0.0.1:9049/in/create",
+  "observations": [
+    "Create Your Site heading and two site-type actions visible",
+    "E-commerce choice reveals Site Details with labelled Site Name/Subdomain",
+    "Empty Create Site button disabled",
+    "Back restores site-type chooser",
+    "Sign in link targets localhost:9002/lookup"
+  ],
+  "formSubmission": false,
+  "accountCreated": false,
+  "otherBrowsersCertified": false
+}

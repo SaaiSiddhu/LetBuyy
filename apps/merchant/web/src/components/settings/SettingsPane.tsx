@@ -8,7 +8,6 @@ import {
     type LucideIcon,
     type MaterialIconName,
     type PageHeaderAction,
-    type PageHeaderProps,
     type SaveBarProps,
 } from '@letbuyy/ui'
 import { SETTINGS_NAV_ITEMS } from './settings-navigation'
@@ -21,7 +20,6 @@ interface SettingsPaneProps {
     breadcrumbs?: Array<{ label: string; href?: string }>
     eyebrow?: string
     iconName?: MaterialIconName
-    navigationKey?: string
     guidance?: {
         title: string
         body: React.ReactNode
@@ -29,8 +27,7 @@ interface SettingsPaneProps {
     }
     primaryAction?: PageHeaderAction
     secondaryActions?: PageHeaderAction[]
-    saveBar?: SaveBarProps
-    header?: Pick<PageHeaderProps, 'identity' | 'titleAdornment' | 'showDescription' | 'showBreadcrumbs' | 'renderAction' | 'overflowAction'>
+    saveBar?: Pick<SaveBarProps, 'state' | 'onSave' | 'onDiscard' | 'saveLabel' | 'discardLabel'>
 }
 
 /**
@@ -42,8 +39,8 @@ interface SettingsPaneProps {
  * like General/Business details/Security while others coincidentally hit a
  * different generic guess — neither matched the row you clicked to get here.
  */
-function findSidebarIcon(title: string, navigationKey?: string): LucideIcon | undefined {
-    return SETTINGS_NAV_ITEMS.find((item) => navigationKey ? item.href === navigationKey : item.label === title)?.Icon
+function findSidebarIcon(title: string): LucideIcon | undefined {
+    return SETTINGS_NAV_ITEMS.find((item) => item.label === title)?.Icon
 }
 
 /**
@@ -64,20 +61,16 @@ export function SettingsPane({
     breadcrumbs,
     eyebrow,
     iconName,
-    navigationKey,
     guidance,
     primaryAction,
     secondaryActions,
     saveBar,
-    header,
 }: SettingsPaneProps) {
-    const SidebarIcon = findSidebarIcon(title, navigationKey)
+    const SidebarIcon = findSidebarIcon(title)
 
     return (
         <Page>
             <PageHeader
-                recipe="settings"
-                {...header}
                 title={title}
                 description={description}
                 eyebrow={eyebrow}
@@ -96,7 +89,15 @@ export function SettingsPane({
 
             {children}
 
-            {saveBar && <SaveBar {...saveBar} />}
+            {saveBar && (
+                <SaveBar
+                    state={saveBar.state}
+                    onSave={saveBar.onSave}
+                    onDiscard={saveBar.onDiscard}
+                    saveLabel={saveBar.saveLabel}
+                    discardLabel={saveBar.discardLabel}
+                />
+            )}
         </Page>
     )
 }

@@ -4,7 +4,7 @@
 // gateway's own rate limiting. What the route itself owns -- and what has to be proven -- is only: it validates its
 // input before calling anything, it takes the tenant from the route segment and from nowhere else, it projects the
 // result down to public suggestion fields, it forwards nothing of the browser's identity, and a gateway failure
-// returns an honest unavailable status without leaking backend details.
+// degrades to "no suggestions" without leaking why.
 //
 // The real route, ProductService, the api-client and its response unwrapping all run; only the global fetch is faked.
 //
@@ -142,7 +142,7 @@ test('nothing of the browser\'s identity is forwarded: cookies and Authorization
     });
 });
 
-test('a gateway failure is unavailable rather than an empty catalog and leaks no backend detail', async () => {
+test('a gateway failure of any kind degrades to "no suggestions" and says nothing about why', async () => {
     const failures: Array<[string, GatewayResponder]> = [
         ['a network error', () => { throw new Error('connect ECONNREFUSED 10.0.0.5:8787 (gateway-prod-eu)'); }],
         ['a 500 with an internal message', () => jsonResponse({ success: false, error: { message: 'relation "products" does not exist' } }, { status: 500 })],
@@ -152,9 +152,9 @@ test('a gateway failure is unavailable rather than an empty catalog and leaks no
     for (const [label, respond] of failures) {
         await withGateway(respond, async () => {
             const response = await search('snaz', 'shoe');
-            assert.equal(response.status, 503, label);
+            assert.equal(response.status, 200, label);
             const text = await response.text();
-            assert.deepEqual(JSON.parse(text), { error: { code: 'INTERNAL_ERROR', message: 'Search suggestions are unavailable.' } }, label);
+            assert.deepEqual(JSON.parse(text), { results: [] }, label);
             for (const secret of ['ECONNREFUSED', 'gateway-prod-eu', 'relation', 'tenant 9c04']) {
                 assert.equal(text.includes(secret), false, `${label}: ${secret} must not reach the browser`);
             }

@@ -26,29 +26,6 @@ const frameAncestors = [
   ...parseFrameAncestors(process.env.STOREFRONT_FRAME_ANCESTORS),
 ].filter((origin): origin is string => Boolean(origin));
 
-function exactFrameOrigin(value: string | undefined): string[] {
-  if (!value) return [];
-  try {
-    const url = new URL(value);
-    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hostname.includes('*')) return [];
-    return [url.origin];
-  } catch {
-    return [];
-  }
-}
-
-// Public sample-store pages are embedded by the configured marketplace. Keep
-// that permission separate from buyer pages, checkout and authenticated APIs.
-const catalogDemoFrameAncestors = Array.from(new Set([
-  "'self'",
-  ...exactFrameOrigin(process.env.NEXT_PUBLIC_ADMIN_URL),
-  ...exactFrameOrigin(process.env.ADMIN_ORIGIN),
-  ...exactFrameOrigin(process.env.NEXT_PUBLIC_THEME_MARKETPLACE_URL),
-]));
-
-const hostedCheckoutHostname = new URL(process.env.CHECKOUT_ORIGIN || `https://checkout.${resolvePlatformDomain()}`).hostname;
-const hostedCheckoutHostPattern = hostedCheckoutHostname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?::[0-9]+)?';
-
 function storefrontGatewayBaseUrl(): string {
   const configured =
     process.env.LETBUYY_API_BASE_URL ||
@@ -62,10 +39,6 @@ function storefrontGatewayBaseUrl(): string {
 
 const nextConfig: NextConfig = {
   ...(sessionRuntimeDistDir ? { distDir: sessionRuntimeDistDir } : {}),
-  // Resolve the shared UI's named exports at build time. The root storefront
-  // uses only its theme provider; its barrel also exports admin tables and other
-  // client boundaries that otherwise join the storefront's initial chunk group.
-  experimental: { optimizePackageImports: ['@letbuyy/ui'] },
   compress: true, // Enable gzip compression for cost savings
 
   // theme-engine's Liquid sanitizer dynamically imports jsdom for server-side
@@ -176,43 +149,22 @@ const nextConfig: NextConfig = {
         // Mutable store HTML and customer pages cannot share a generic browser/CDN TTL.
         // The Gateway owns public data caching; hashed static assets keep their
         // independent immutable policy above. Never retain preview/customer HTML.
-        source: '/((?!api/|_next/|theme-preview(?:/|$)).*)',
+        source: '/((?!api/|_next/).*)',
         headers: [
           { key: 'Cache-Control', value: 'private, no-store' },
           ...createSecurityHeaders({ frameAncestors }),
         ],
       },
-      {
-        source: '/theme-preview/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'private, no-store' },
-          // SAMEORIGIN cannot express this exact cross-origin allowlist. CSP
-          // governs only these public demos; other routes retain their headers.
-          ...createSecurityHeaders({ frameAncestors: catalogDemoFrameAncestors })
-            .filter((header) => header.key !== 'X-Frame-Options'),
-        ],
-      },
-      {
-        // Razorpay redirects can POST from the SDK's about:blank document,
-        // which inherits this page's policy. Permit only its API destination
-        // on the hosted checkout entry point; ordinary store forms stay local.
-        source: '/checkout',
-        has: [{ type: 'host', value: hostedCheckoutHostPattern }],
-        headers: createSecurityHeaders({ frameAncestors, razorpayCheckoutForms: true })
-          .filter((header) => header.key === 'Content-Security-Policy'),
-      },
     ];
   },
 
   async rewrites() {
-    // Local cart handlers must bind the HttpOnly buyer session before the
-    // remaining public storefront paths fall through to the Gateway.
-    return { fallback: [
+    return [
       {
         source: '/api/storefront/:subdomain/:path*',
         destination: `${storefrontGatewayBaseUrl()}/storefront/:subdomain/:path*`,
       },
-    ] };
+    ];
   },
 };
 

@@ -1,0 +1,59 @@
+{
+  "root_reverse_check_exit": 0,
+  "isolated_apply_exit": 0,
+  "rows": [
+    {
+      "path": "apps/marketing/web/next.config.ts",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/layout.tsx",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/layout.tsx",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/CopyProvider.tsx",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/Header.tsx",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/Footer.tsx",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/FinalCTA.tsx",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleSidebar.tsx",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/pricing.ts",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/README.md",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "packages/typescript/ui/src/icons.tsx",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "tests/marketing/pricing-delivery.test.ts",
+      "restored_original_bytes_or_removed_new_file": true
+    },
+    {
+      "path": "scripts/marketing/prepare-inter-weight-subset.py",
+      "restored_original_bytes_or_removed_new_file": true
+    }
+  ],
+  "binary_note": "The new font is not embedded in the text patch. Its owned path/hash is recorded separately; reverting the layout restores the retained original font."
+}

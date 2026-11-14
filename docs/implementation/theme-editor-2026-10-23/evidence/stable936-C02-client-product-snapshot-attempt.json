@@ -1,8 +1,0 @@
-{
-  "runId": "936e5f577646",
-  "controlCartId": "c0f9b1fd-07b9-4ecf-9f4e-740aa656c0c2",
-  "method": "POST",
-  "path": "/v1/storefront/syn-threadline-ui-6815276b/cart",
-  "commandSha256": "a122d7a8411ad062f722cb274dbe89dd8cc9febb172900078c7710f3e028c9ae",
-  "maximumPosts": 1
-}

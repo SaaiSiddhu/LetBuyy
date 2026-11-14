@@ -133,9 +133,9 @@ export async function POST(request: NextRequest) {
                 name: storeName.trim(),
                 subdomain: normalizedSubdomain,
                 site_type: siteType,
-                ...(templateId ? { theme_id: templateId } : {}),
+                theme_id: templateId || 'letbuyy-core',
                 template_config: {
-                    ...(templateId ? { templateId } : {}),
+                    templateId: templateId || 'letbuyy-core',
                     survey: survey || null,
                 },
             }),

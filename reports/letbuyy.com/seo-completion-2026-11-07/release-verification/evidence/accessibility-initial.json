@@ -1,0 +1,209 @@
+{
+  "capturedAt": "2026-11-07T03:47:23.166Z",
+  "reviews": [
+    {
+      "path": "/in/pricing",
+      "width": 375,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "selectors": [
+            [
+              ".select-plan-switch-text"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "selectors": [
+            [
+              ".arc-breadcrumb > a[href$=\"platform\"]"
+            ],
+            [
+              ".arc-completion-sub"
+            ],
+            [
+              ".arc-rel-item:nth-child(2) > .arc-rel-cat"
+            ],
+            [
+              ".arc-rel-item:nth-child(3) > .arc-rel-cat"
+            ],
+            [
+              ".arc-rel-item:nth-child(4) > .arc-rel-cat"
+            ],
+            [
+              ".arc-pn-cat"
+            ],
+            [
+              ".arc-rec-card:nth-child(1) > .arc-rec-top > .arc-rec-cat"
+            ],
+            [
+              ".arc-rec-card:nth-child(2) > .arc-rec-top > .arc-rec-cat"
+            ],
+            [
+              ".arc-rec-card:nth-child(3) > .arc-rec-top > .arc-rec-cat"
+            ],
+            [
+              ".arc-post-nl-section > .nlx-availability > p"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "selectors": [
+            [
+              ".arc-breadcrumb > a[href$=\"platform\"]"
+            ],
+            [
+              ".arc-completion-sub"
+            ],
+            [
+              ".arc-rel-item:nth-child(2) > .arc-rel-cat"
+            ],
+            [
+              ".arc-rel-item:nth-child(3) > .arc-rel-cat"
+            ],
+            [
+              ".arc-rel-item:nth-child(4) > .arc-rel-cat"
+            ],
+            [
+              ".arc-pn-cat"
+            ],
+            [
+              ".arc-rec-card:nth-child(1) > .arc-rec-top > .arc-rec-cat"
+            ],
+            [
+              ".arc-rec-card:nth-child(2) > .arc-rec-top > .arc-rec-cat"
+            ],
+            [
+              ".arc-rec-card:nth-child(3) > .arc-rec-top > .arc-rec-cat"
+            ],
+            [
+              ".arc-post-nl-section > .nlx-availability > p"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-ta/pricing",
+      "width": 375,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "selectors": [
+            [
+              ".select-plan-switch-text"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/legal/privacy",
+      "width": 375,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "selectors": [
+            [
+              ".lgl-toc-trigger-count"
+            ],
+            [
+              ".lgl-doc-contact > p"
+            ],
+            [
+              ".is-prev > .lgl-pager-dir"
+            ],
+            [
+              ".is-next > .lgl-pager-dir"
+            ]
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "help": "Links must be distinguishable without relying on color",
+          "selectors": [
+            [
+              "a[href=\"mailto:support@letbuyy.com\"]"
+            ],
+            [
+              "p > a[href$=\"grievance\"]"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/contact",
+      "width": 375,
+      "status": 200,
+      "violations": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "help": "Links must be distinguishable without relying on color",
+          "selectors": [
+            [
+              ".ctc-foot-note > a[href$=\"privacy\"]"
+            ]
+          ]
+        }
+      ],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    }
+  ],
+  "motion": [],
+  "remoteTracking": []
+}

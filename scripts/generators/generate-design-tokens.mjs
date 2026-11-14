@@ -35,25 +35,6 @@ const dtcg = JSON.parse(readFileSync(TOKENS_JSON, 'utf8'));
 const tsSource = readFileSync(TOKENS_TS, 'utf8');
 const errors = [];
 
-// Generated admin interchange subset. Literal primitive references are projected
-// from the existing authoring source; CSS color-mix/inverse composites remain web roles.
-const brandBlock = tsSource.match(/brandInk: \{([\s\S]*?)\n        \}/)?.[1];
-const adminBlock = tsSource.match(/const adminSurfaceIdentity:[\s\S]*?light: \{([\s\S]*?)\n    \},\n    dark:/)?.[1];
-if (!brandBlock || !adminBlock) throw new Error('Canonical admin token source could not be read');
-const brandInk = Object.fromEntries([...brandBlock.matchAll(/(\d+): '(#[a-fA-F0-9]{6})'/g)].map(([, step, value]) => [step, { $value: value }]));
-const adminRoles = Object.fromEntries([...adminBlock.matchAll(/'(--lb-[a-z0-9-]+)': primitive.color.(brandInk|gray|blue|green|amber|red)\[(\d+)\]/g)].map(([, role, family, step]) => [role, { $value: `{color.primitive.${family}.${step}}` }]));
-for (const [, role] of adminBlock.matchAll(/'(--lb-[a-z0-9-]+)': primitive.color.white/g)) adminRoles[role] = { $value: '{color.primitive.white}' };
-const adminProjection = { $description: 'Generated from tokens.ts admin light identity. Does not change generic or storefront/mobile semantic roles.', light: adminRoles };
-if (process.argv.includes('--sync')) {
-    dtcg.color.primitive.brandInk = brandInk;
-    dtcg.color.surface = { ...(dtcg.color.surface ?? {}), admin: adminProjection };
-    writeFileSync(TOKENS_JSON, `${JSON.stringify(dtcg, null, 2)}\n`);
-} else if (CHECK) {
-    if (JSON.stringify(dtcg.color.primitive.brandInk) !== JSON.stringify(brandInk)) errors.push('DTCG brandInk differs from tokens.ts; run --sync');
-    if (JSON.stringify(dtcg.color.surface?.admin) !== JSON.stringify(adminProjection)) errors.push('DTCG admin roles differ from tokens.ts; run --sync');
-}
-
-
 // ── 1. Resolve every DTCG {alias} reference ──────────────────────────────────
 function getByPath(obj, path) {
     return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);

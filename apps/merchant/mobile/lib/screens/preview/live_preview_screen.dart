@@ -19,17 +19,7 @@ class LivePreviewScreen extends StatefulWidget {
 }
 
 class _LivePreviewScreenState extends State<LivePreviewScreen> {
-  WebViewController? _controller;
-
-  Uri? get _previewUri {
-    final uri = Uri.tryParse(widget.storeUrl);
-    return uri != null &&
-            (uri.scheme == 'https' || uri.scheme == 'http') &&
-            uri.host.isNotEmpty
-        ? uri
-        : null;
-  }
-
+  late WebViewController _controller;
   bool _isLoading = true;
   String _currentDevice = 'mobile';
 
@@ -46,27 +36,22 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
   }
 
   void _initController() {
-    final uri = _previewUri;
-    if (uri == null) {
-      _isLoading = false;
-      return;
-    }
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (url) {
-            if (mounted) setState(() => _isLoading = true);
+            setState(() => _isLoading = true);
           },
           onPageFinished: (url) {
-            if (mounted) setState(() => _isLoading = false);
+            setState(() => _isLoading = false);
           },
           onWebResourceError: (error) {
-            if (mounted) setState(() => _isLoading = false);
+            setState(() => _isLoading = false);
           },
         ),
       )
-      ..loadRequest(uri);
+      ..loadRequest(Uri.parse(widget.storeUrl));
   }
 
   @override
@@ -106,13 +91,13 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
           // Refresh
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
-            onPressed: _controller == null ? null : () => _controller!.reload(),
+            onPressed: () => _controller.reload(),
             tooltip: 'Refresh',
           ),
           // Open in browser
           IconButton(
             icon: const Icon(Icons.open_in_browser_rounded),
-            onPressed: _previewUri == null ? null : () => _openInBrowser(),
+            onPressed: () => _openInBrowser(),
             tooltip: 'Open in browser',
           ),
         ],
@@ -135,8 +120,8 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
                 ],
               ),
               clipBehavior: Clip.antiAlias,
-              child: _controller != null
-                  ? WebViewWidget(controller: _controller!)
+              child: widget.storeUrl.isNotEmpty
+                  ? WebViewWidget(controller: _controller)
                   : const Center(child: Text('Store URL not available')),
             ),
           ),
@@ -197,8 +182,8 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
   }
 
   Future<void> _openInBrowser() async {
-    final uri = _previewUri;
-    if (uri != null && await canLaunchUrl(uri)) {
+    final uri = Uri.parse(widget.storeUrl);
+    if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }

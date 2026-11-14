@@ -1,9 +1,0 @@
-{
-  "expectedOutcome": "fixed",
-  "scenario": "Install returns only slug/name; no instance/readback can confirm Add",
-  "transport": "mocked fetch, JSDOM; no actual mutation",
-  "calls": [
-    "/api/themes?store_name=marketplace-qa",
-    "/api/themes/install"
-  ]
-}

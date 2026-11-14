@@ -15,11 +15,10 @@
  * RISK-DUAL-N01: receives value + onChange; never mutates the schema object.
  */
 
-import { CircleAlert, ShieldCheck } from 'lucide-react'
 import { useId } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue } from '@/lib/theme-schemas'
-
+import { MaterialIcon } from '@letbuyy/ui'
 import styles from './controls.module.css'
 
 interface HtmlControlProps {
@@ -67,14 +66,14 @@ export function HtmlControl({ field, value, onChange }: HtmlControlProps) {
 
             {/* Sanitize disclaimer — always visible for HTML fields */}
             <span id={`${id}-sanitize-note`} className={styles.disclaimerNote}>
-                <ShieldCheck size={11} aria-hidden />
+                <MaterialIcon name="shield" size={11} aria-hidden />
                 {' '}
                 Output is sanitised at render time. Scripts and unsafe attributes are removed.
             </span>
 
             {error ? (
                 <p id={`${id}-error`} className={styles.fieldError} role="alert">
-                    <CircleAlert size={12} aria-hidden />
+                    <MaterialIcon name="error" size={12} aria-hidden />
                     {' '}{error}
                 </p>
             ) : null}

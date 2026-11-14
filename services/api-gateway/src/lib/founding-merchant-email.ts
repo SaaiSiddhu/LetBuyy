@@ -1,4 +1,3 @@
-import { DEFAULT_EMAIL_BRAND, renderEmailShell, heading, paragraph, smallPrint, verificationCode, escapeHtml, safeSubject, formatEmailSender } from '@letbuyy/notification-core/email';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import type { Env } from '../index';
 
@@ -42,11 +41,15 @@ export function buildFoundingWelcomeEmail(input: FoundingWelcomeEmailInput) {
         '',
         'Thank you for backing LetBuyy early.',
     ].join('\n');
-    const html = renderEmailShell(DEFAULT_EMAIL_BRAND,heading(`Welcome, Founding Merchant #${input.foundingNumber}`) +
-        paragraph(`Your ${escapeHtml(input.planName)} plan price of ${escapeHtml(price)}/month is locked for life. Future price changes will not affect this price.`) +
-        paragraph('Your founding benefits include your numbered badge, lifetime price lock, priority support, early access to new features and feature previews.') +
-        paragraph('Thank you for backing LetBuyy early.'),
-        {preheader:'Your founding allocation and plan price are confirmed.',reason:'You received a founding merchant allocation on LetBuyy.',category:'onboarding'});
+    const html = [
+        `<h2>You're Founding Merchant #${input.foundingNumber} 🏆</h2>`,
+        `<p>Your <strong>${input.planName}</strong> plan price of <strong>${price}/month</strong> is now <strong>locked for life</strong>. Future price changes will never affect you.</p>`,
+        '<p><strong>Your founding benefits:</strong></p>',
+        '<ul><li>Lifetime price lock</li>' +
+        `<li>Founding Merchant #${input.foundingNumber} badge</li>` +
+        '<li>Priority support</li><li>Early access to new features</li><li>Feature previews</li></ul>',
+        '<p>Thank you for backing LetBuyy early.</p>',
+    ].join('');
     return { to, subject, text, html };
 }
 
@@ -54,7 +57,7 @@ export function buildFoundingProgramFullEmail(totalSlots: number) {
     return {
         subject: `Founding Merchant Program is now FULL (${totalSlots}/${totalSlots})`,
         text: `All ${totalSlots} founding merchant slots have been allocated. The program is now full.`,
-        html: renderEmailShell(DEFAULT_EMAIL_BRAND,heading('Founding allocations are complete') + paragraph(`All ${totalSlots} founding merchant slots have been allocated. The program is now full.`), {preheader:'An update about founding merchant availability.',reason:'This message concerns the LetBuyy founding merchant program.',category:'transactional'}),
+        html: `<p>All <strong>${totalSlots}</strong> founding merchant slots have been allocated. The program is now full.</p>`,
     };
 }
 
@@ -67,7 +70,7 @@ export async function sendFoundingMerchantWelcomeEmail(env: EmailEnv, input: Fou
     }
     await sendResendEmail({
         apiKey: env.RESEND_API_KEY,
-        from: formatEmailSender(env.RESEND_FROM_EMAIL),
+        from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
         to: email.to,
         subject: email.subject,
         text: email.text,
@@ -81,7 +84,7 @@ export async function sendFoundingProgramFullEmail(env: EmailEnv, input: { to: s
     const email = buildFoundingProgramFullEmail(input.totalSlots);
     await sendResendEmail({
         apiKey: env.RESEND_API_KEY,
-        from: formatEmailSender(env.RESEND_FROM_EMAIL),
+        from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
         to,
         subject: email.subject,
         text: email.text,

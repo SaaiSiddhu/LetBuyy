@@ -1,0 +1,142 @@
+{
+  "capturedAt": "2026-11-03T02:55:59.727583+00:00",
+  "source": "Authenticated Firebase Console, project letbuy-y, Hosting inventory and site detail views",
+  "project": "letbuy-y",
+  "billingPlanObserved": "Spark",
+  "databaseOrAuthRecordsRead": false,
+  "mutationsMade": false,
+  "sites": [
+    {
+      "site": "admin-letbuy-y",
+      "inventoryLatestReleaseDisplayed": "27/12/2025,13:32",
+      "displayHash": "80c22c",
+      "currentReleaseDisplayed": "27/12/2025,13:32",
+      "previousDisplayHashes": [
+        "faea6a",
+        "6e0087",
+        "5046b2"
+      ],
+      "domains": [
+        {
+          "host": "admin-letbuy-y.web.app",
+          "type": "Default"
+        },
+        {
+          "host": "admin-letbuy-y.firebaseapp.com",
+          "type": "Default"
+        }
+      ]
+    },
+    {
+      "site": "letbuy-y",
+      "currentReleaseDisplayed": "08/01/2026,20:10",
+      "displayHash": "0e45aa",
+      "previousDisplayHashes": [
+        "aac3c0",
+        "24beae",
+        "2c4ebf"
+      ],
+      "domains": [
+        {
+          "host": "letbuy-y.web.app",
+          "type": "Default"
+        },
+        {
+          "host": "letbuy-y.firebaseapp.com",
+          "type": "Default"
+        },
+        {
+          "host": "letbuyy.com",
+          "type": "Custom",
+          "status": "Needs setup"
+        }
+      ]
+    },
+    {
+      "site": "seller-letbuy-y",
+      "currentReleaseDisplayed": "25/12/2025,23:43",
+      "displayHash": "9279d9",
+      "previousDisplayHashes": [
+        "6a4911",
+        "75d362",
+        "b85119"
+      ],
+      "domains": [
+        {
+          "host": "seller-letbuy-y.web.app",
+          "type": "Default"
+        },
+        {
+          "host": "seller-letbuy-y.firebaseapp.com",
+          "type": "Default"
+        },
+        {
+          "host": "seller.letbuyy.com",
+          "type": "Custom",
+          "status": "Needs setup"
+        }
+      ]
+    },
+    {
+      "site": "store-letbuy-y",
+      "inventoryLatestReleaseDisplayed": "08/01/2026,20:15",
+      "displayHash": "6480a7",
+      "currentReleaseDisplayed": "08/01/2026,20:15",
+      "previousDisplayHashes": [
+        "aa29a0",
+        "1b661e",
+        "50cfb7"
+      ],
+      "domains": [
+        {
+          "host": "store-letbuy-y.web.app",
+          "type": "Default"
+        },
+        {
+          "host": "store-letbuy-y.firebaseapp.com",
+          "type": "Default"
+        },
+        {
+          "host": "letbuyy.store",
+          "type": "Custom",
+          "status": "Needs setup"
+        }
+      ]
+    },
+    {
+      "site": "storefront-letbuy-y",
+      "inventoryLatestReleaseDisplayed": "20/12/2025,13:53",
+      "displayHash": "414a0c",
+      "currentReleaseDisplayed": "20/12/2025,13:53",
+      "previousDisplayHashes": [
+        "58e709",
+        "ffe4eb"
+      ],
+      "domains": [
+        {
+          "host": "storefront-letbuy-y.web.app",
+          "type": "Default"
+        },
+        {
+          "host": "storefront-letbuy-y.firebaseapp.com",
+          "type": "Default"
+        },
+        {
+          "host": "check.letbuyy.store",
+          "type": "Custom",
+          "status": "Needs setup"
+        },
+        {
+          "host": "kathirstore.letbuyy.store",
+          "type": "Custom",
+          "status": "Needs setup"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Only displayed short hashes retained; no full release/version identifier, deployed-file archive or source-to-release match obtained.",
+    "Do not reconnect the stale apex mapping; active marketing is a separate Vercel project.",
+    "Buyer app remains active; its data-practice/privacy content is deferred by owner."
+  ]
+}

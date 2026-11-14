@@ -1,0 +1,6 @@
+{
+  "status": "created",
+  "renderer": "isolated Chromium print-to-PDF; all remote requests blocked",
+  "output": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/reports/letbuyy.com-comprehensive-audit-2026-10-29/LetBuyy-Live-SEO-Audit-2026-10-29.pdf",
+  "native_weasyprint": "not available: required platform libraries failed to import; no dependency constraints changed"
+}

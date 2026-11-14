@@ -1,0 +1,49 @@
+▲ Next.js 16.1.6 (webpack)
+- Experiments (use with caution):
+  ⨯ cssChunking
+  · optimizePackageImports
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 4.7s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/485) ...
+  Generating static pages using 11 workers (121/485) 
+  Generating static pages using 11 workers (242/485) 
+  Generating static pages using 11 workers (363/485) 
+✓ Generating static pages using 11 workers (485/485) in 638.3ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/contact
+├ ƒ /[locale]/create
+├ ƒ /[locale]/demo
+├ ƒ /[locale]/legal
+├ ƒ /[locale]/legal/[slug]
+├ ƒ /[locale]/pricing
+├ ƒ /[locale]/resources
+├ ƒ /[locale]/resources/[category]
+├ ƒ /[locale]/resources/[category]/[slug]
+├ ƒ /[locale]/resources/authors/[slug]
+├ ƒ /[locale]/resources/changelog
+├ ƒ /[locale]/resources/releases
+├ ○ /[locale]/resources/rss.xml
+├ ƒ /[locale]/resources/search
+├ ○ /[locale]/resources/sitemap.xml
+├ ƒ /[locale]/resources/tag/[tag]
+├ ƒ /[locale]/signup
+├ ƒ /[locale]/sitemap
+├ ƒ /[locale]/support
+├ ƒ /api/founding-pricing
+├ ○ /robots.txt
+└ ○ /sitemap.xml
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

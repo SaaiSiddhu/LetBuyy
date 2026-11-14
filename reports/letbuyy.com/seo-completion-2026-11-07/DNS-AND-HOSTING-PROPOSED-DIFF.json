@@ -1,0 +1,95 @@
+{
+  "captured_at": "2026-11-07T03:05:05.891948+00:00",
+  "state": "Draft only; no hosted changes and no approval requested while acceptance is open",
+  "zone": "letbuyy.com",
+  "records": [
+    {
+      "hostname": "seller.letbuyy.com",
+      "before": {
+        "dns_record": "absent per Cloudflare search and public NXDOMAIN",
+        "marketing_project_binding": "absent per authenticated Vercel project alias list"
+      },
+      "proposal": {
+        "type": "CNAME",
+        "current_provider_rank1_recommendation": "cname.vercel-dns.com.",
+        "reconfirm_value_after_binding": true,
+        "verification_phase_proxy": "DNS only if required by Vercel",
+        "single_redirect_phase_proxy": "Proxied; must verify managed TLS first",
+        "redirect_target": "https://accounts.letbuyy.com/lookup",
+        "redirect_methods": [
+          "GET",
+          "HEAD"
+        ],
+        "redirect_path": "/",
+        "redirect_code": 301,
+        "preserve_query": false
+      }
+    },
+    {
+      "hostname": "developer.letbuyy.com",
+      "before": {
+        "dns_record": "absent per Cloudflare search and public NXDOMAIN",
+        "marketing_project_binding": "absent per authenticated Vercel project alias list"
+      },
+      "proposal": {
+        "type": "CNAME",
+        "current_provider_rank1_recommendation": "56c6f6b7962b9b74.vercel-dns-017.com.",
+        "reconfirm_value_after_binding": true,
+        "verification_phase_proxy": "DNS only if required by Vercel",
+        "single_redirect_phase_proxy": "Proxied; must verify managed TLS first",
+        "redirect_target": "https://www.letbuyy.com/in/resources/developers",
+        "redirect_methods": [
+          "GET",
+          "HEAD"
+        ],
+        "redirect_path": "/",
+        "redirect_code": 301,
+        "preserve_query": false
+      }
+    },
+    {
+      "hostname": "developers.letbuyy.com",
+      "before": {
+        "dns_record": "absent per Cloudflare search and public NXDOMAIN",
+        "marketing_project_binding": "absent per authenticated Vercel project alias list"
+      },
+      "proposal": {
+        "type": "CNAME",
+        "current_provider_rank1_recommendation": "cname.vercel-dns.com.",
+        "reconfirm_value_after_binding": true,
+        "verification_phase_proxy": "DNS only if required by Vercel",
+        "single_redirect_phase_proxy": "Proxied; must verify managed TLS first",
+        "redirect_target": "https://www.letbuyy.com/in/resources/developers",
+        "redirect_methods": [
+          "GET",
+          "HEAD"
+        ],
+        "redirect_path": "/",
+        "redirect_code": 301,
+        "preserve_query": false
+      }
+    }
+  ],
+  "before_redirect_rules": {
+    "used": 0,
+    "available": 10
+  },
+  "proposed_rule_body": "PROPOSED-REDIRECT-RULES.json",
+  "unchanged": [
+    "letbuyy.com",
+    "www.letbuyy.com",
+    "accounts.letbuyy.com",
+    "all email/verification records",
+    "existing .store assignments",
+    "Firebase and Play"
+  ],
+  "required_before_apply": [
+    "Reconfirm each exact CNAME and verification requirements after approved domain binding",
+    "Verify TLS and exact rules at the authorized edge",
+    "Validate unmatched paths do not forward auth/credentials or produce unrelated soft 404s",
+    "Resolve developer /api and /sdk historical intent separately",
+    "Capture newly created record/alias/rule IDs and tested rollback",
+    "Explicit scoped authorization; current marketing acceptance remains failed"
+  ],
+  "rollback": "Disable/remove only the new rules and aliases/records captured during a later approved change. Do not change apex/www or unrelated records."
+}

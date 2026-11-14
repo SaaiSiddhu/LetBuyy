@@ -1,9 +1,0 @@
-{
-  "recordedAt": "2026-10-24T03:17:54.345Z",
-  "runId": "936e5f577646",
-  "index": 0,
-  "mode": "same-key-conflict",
-  "maximumPosts": 1,
-  "source": "Existing source-admitted observer; Root concrete allocation; fixedpayment_intent_id only, no custom order body",
-  "noRetry": true
-}

@@ -1,0 +1,50 @@
+{
+  "capturedAt": "2026-11-03T10:07:08.277153+00:00",
+  "readOnly": true,
+  "actualBrowserTest": false,
+  "protectionSettingsChanged": false,
+  "rows": [
+    {
+      "case": "identified-no-origin",
+      "status": 200,
+      "origin": null,
+      "headers": {
+        "Access-Control-Allow-Origin": "https://letbuyy.com",
+        "Access-Control-Allow-Credentials": "true",
+        "Vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+        "Server": "cloudflare",
+        "Content-Type": "application/json",
+        "CF-Ray": "a54a91cc2dadff8b-SIN"
+      },
+      "bytes": 76636
+    },
+    {
+      "case": "identified-www",
+      "status": 200,
+      "origin": "https://www.letbuyy.com",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://letbuyy.com",
+        "Access-Control-Allow-Credentials": "true",
+        "Vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+        "Server": "cloudflare",
+        "Content-Type": "application/json",
+        "CF-Ray": "a54a91df5e7efcee-SIN"
+      },
+      "bytes": 76636
+    },
+    {
+      "case": "browser-signature-www",
+      "status": 200,
+      "origin": "https://www.letbuyy.com",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://letbuyy.com",
+        "Access-Control-Allow-Credentials": "true",
+        "Vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+        "Server": "cloudflare",
+        "Content-Type": "application/json",
+        "CF-Ray": "a54a91ed3a29d661-SIN"
+      },
+      "bytes": 76636
+    }
+  ]
+}

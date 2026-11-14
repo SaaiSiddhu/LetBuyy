@@ -1,0 +1,72 @@
+{
+  "captured_at": "2026-10-29T20:06:33.366Z",
+  "method": "Read-only existing local PostgreSQL catalogue -> canonical billing-core price conversion -> running canonical gateway -> actual marketing API. No fixtures or seeded/mutated data.",
+  "plans": [
+    {
+      "slug": "launch",
+      "name": "Launch",
+      "raw_monthly_paise": 29900,
+      "raw_founding_paise": 19900,
+      "regular_rupees": 299,
+      "founding_rupees": 199,
+      "status": "available",
+      "purchasable": true,
+      "feature_count": 10,
+      "comparison_groups": 20,
+      "passed": true
+    },
+    {
+      "slug": "growth",
+      "name": "Growth",
+      "raw_monthly_paise": 99900,
+      "raw_founding_paise": 69900,
+      "regular_rupees": 999,
+      "founding_rupees": 699,
+      "status": "available",
+      "purchasable": true,
+      "feature_count": 11,
+      "comparison_groups": 20,
+      "passed": true
+    },
+    {
+      "slug": "scale",
+      "name": "Scale",
+      "raw_monthly_paise": 249900,
+      "raw_founding_paise": 0,
+      "regular_rupees": 2499,
+      "founding_rupees": 2499,
+      "status": "coming_soon",
+      "purchasable": false,
+      "feature_count": 10,
+      "comparison_groups": 20,
+      "passed": true
+    },
+    {
+      "slug": "commerce_os",
+      "name": "Commerce OS",
+      "raw_monthly_paise": 599900,
+      "raw_founding_paise": 0,
+      "regular_rupees": 5999,
+      "founding_rupees": 5999,
+      "status": "coming_soon",
+      "purchasable": false,
+      "feature_count": 10,
+      "comparison_groups": 20,
+      "passed": true
+    }
+  ],
+  "program": {
+    "active": true,
+    "paused": false,
+    "available": true,
+    "used_slots": 0,
+    "total_slots": 100,
+    "growth_price": 69900,
+    "launch_price": 19900,
+    "remaining_slots": 100,
+    "public_remaining": 70,
+    "invited_remaining": 20,
+    "partner_remaining": 10
+  },
+  "passed": true
+}

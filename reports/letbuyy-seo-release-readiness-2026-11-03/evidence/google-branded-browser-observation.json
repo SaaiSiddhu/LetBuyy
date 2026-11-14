@@ -1,0 +1,48 @@
+{
+  "capturedAt": "2026-11-03T02:39:58.253476+00:00",
+  "source": "Native Chrome direct Google result",
+  "query": "letbuyy",
+  "queryUrl": "https://www.google.com/search?q=letbuyy&hl=en&gl=in&pws=0",
+  "accountLoggedIn": true,
+  "requestedCountry": "India",
+  "requestedLanguage": "English",
+  "personalizationLimit": "pws=0 and non-personalized footer observed, but account/history modules were present; not a neutral ranking census. Exact physical location not retained.",
+  "observedFirstPartyTitle": "LetBuyy \u2014 India-first commerce operating system | LetBuyy",
+  "sitelinks": [
+    {
+      "label": "Hindi support",
+      "url": "https://www.letbuyy.com/in-hi/support"
+    },
+    {
+      "label": "Support centre",
+      "url": "https://www.letbuyy.com/in/support"
+    },
+    {
+      "label": "Sitemap",
+      "url": "https://www.letbuyy.com/in/sitemap"
+    },
+    {
+      "label": "Retired named author",
+      "url": "https://www.letbuyy.com/in/resources/authors/ravi-operations"
+    },
+    {
+      "label": "Merchant guide",
+      "url": "https://www.letbuyy.com/in/resources/platform/merchant-web-guide"
+    }
+  ],
+  "aiOverview": {
+    "observed": true,
+    "firstPartyCitationUrls": [
+      "https://www.letbuyy.com/in"
+    ],
+    "otherCitationDomains": [
+      "in.linkedin.com"
+    ],
+    "interpretation": "Single visible Google AI Overview, not provider-wide citation share. It includes demand forecasting/dynamic pricing language not certified by repository/provider acceptance."
+  },
+  "unrelatedFundingResult": {
+    "url": "https://btwclub.in/startups/funding/funding-letbuyy-r2",
+    "ownerStatement": "That is not ours; do not associate the funding claim with the user company.",
+    "outreachSent": false
+  }
+}

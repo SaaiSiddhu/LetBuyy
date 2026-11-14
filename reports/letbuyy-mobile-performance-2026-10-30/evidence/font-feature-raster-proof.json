@@ -1,0 +1,29 @@
+{
+  "method": "Actual four full-page screenshots with font variant applied; compare every channel. Geometry compared separately.",
+  "rows": [
+    {
+      "path": "/in",
+      "max_channel_difference": 3,
+      "channels_over3": 0,
+      "mean_channel_difference": 0.0000451503066769281
+    },
+    {
+      "path": "/in/pricing",
+      "max_channel_difference": 2,
+      "channels_over3": 0,
+      "mean_channel_difference": 0.000028695564312417906
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "max_channel_difference": 5,
+      "channels_over3": 6,
+      "mean_channel_difference": 0.000041778975741239893
+    },
+    {
+      "path": "/in-ta",
+      "max_channel_difference": 2,
+      "channels_over3": 0,
+      "mean_channel_difference": 0.000008845186781609196
+    }
+  ]
+}

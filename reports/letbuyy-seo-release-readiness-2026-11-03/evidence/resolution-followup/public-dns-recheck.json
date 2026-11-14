@@ -1,0 +1,42 @@
+{
+  "capturedAt": "2026-11-03T10:25:50.385134+00:00",
+  "readOnly": true,
+  "rows": [
+    {
+      "name": "seller.letbuyy.com",
+      "source": "https://dns.google/resolve?name=seller.letbuyy.com&type=A",
+      "dnsStatus": 3,
+      "answers": []
+    },
+    {
+      "name": "seller.letbuyy.com",
+      "source": "https://cloudflare-dns.com/dns-query?name=seller.letbuyy.com&type=A",
+      "dnsStatus": 3,
+      "answers": []
+    },
+    {
+      "name": "developer.letbuyy.com",
+      "source": "https://dns.google/resolve?name=developer.letbuyy.com&type=A",
+      "dnsStatus": 3,
+      "answers": []
+    },
+    {
+      "name": "developer.letbuyy.com",
+      "source": "https://cloudflare-dns.com/dns-query?name=developer.letbuyy.com&type=A",
+      "dnsStatus": 3,
+      "answers": []
+    },
+    {
+      "name": "developers.letbuyy.com",
+      "source": "https://dns.google/resolve?name=developers.letbuyy.com&type=A",
+      "dnsStatus": 3,
+      "answers": []
+    },
+    {
+      "name": "developers.letbuyy.com",
+      "source": "https://cloudflare-dns.com/dns-query?name=developers.letbuyy.com&type=A",
+      "dnsStatus": 3,
+      "answers": []
+    }
+  ]
+}

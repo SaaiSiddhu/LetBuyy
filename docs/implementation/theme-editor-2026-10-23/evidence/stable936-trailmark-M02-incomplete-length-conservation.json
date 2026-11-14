@@ -1,9 +1,0 @@
-{
-  "runId": "936e5f577646",
-  "actualNormalAttempt": "unit Select a unit while value67.5, normal Save refused, corrected cm then Discard/full reopen",
-  "checks": {
-    "sameProduct": true,
-    "all22Exact": true
-  },
-  "unsupportedFt": "not offered by actual normal unit control; schema-only preflight not live UI proof"
-}

@@ -1,8 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Badge, Settings } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
+import { Badge, EmptyState, Settings } from '@letbuyy/ui'
 import type { SettingsNavGroup, SettingsNavItem } from './settings-navigation'
 
 interface SettingsIndexProps {
@@ -25,7 +24,7 @@ export function SettingsIndex({ store, groups, activePathname, onNavigate }: Set
 
     if (!hasResults) {
         return (
-            <EmptyState scene="settings-search"
+            <EmptyState
                 icon={<Settings className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 title="No settings found"
                 body="Try a different search term or clear the search to see every setting."
@@ -35,7 +34,7 @@ export function SettingsIndex({ store, groups, activePathname, onNavigate }: Set
 
     return (
         <nav className="flex flex-col gap-[var(--lb-space-5)]" aria-label="Settings">
-            <Link prefetch={false}
+            <Link
                 href={settingsHomeHref}
                 onClick={onNavigate}
                 aria-current={homeActive ? 'page' : undefined}
@@ -71,7 +70,7 @@ export function SettingsIndex({ store, groups, activePathname, onNavigate }: Set
                                 const label = statusLabel(item)
 
                                 return (
-                                    <Link prefetch={false}
+                                    <Link
                                         key={item.href}
                                         href={href}
                                         onClick={onNavigate}

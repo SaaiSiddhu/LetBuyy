@@ -1,0 +1,24 @@
+{
+  "captured_at": "2026-10-29T20:54:08.454Z",
+  "rows": [
+    {
+      "run_id": "294337267bc0",
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "run_id": "c74ea8e3bc64",
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "run_id": "8605d74bef2c",
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-11-01T04:04:14.248438+00:00",
+  "rows": [
+    {
+      "name": "pricing",
+      "path": "/in/pricing",
+      "method": "simulate",
+      "code": 0,
+      "score": 0.91,
+      "lcp": 3391.560249999999,
+      "tbt": 133.49999999999977,
+      "cls": 0,
+      "fcp": 1020.7315,
+      "error": null
+    },
+    {
+      "name": "guide",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "method": "simulate",
+      "code": 0,
+      "score": 0.81,
+      "lcp": 4804.024,
+      "tbt": 24.000000000000455,
+      "cls": 0,
+      "fcp": 1805.512,
+      "error": null
+    },
+    {
+      "name": "tamil-home",
+      "path": "/in-ta",
+      "method": "devtools",
+      "code": 0,
+      "score": 0.91,
+      "lcp": 1903.76,
+      "tbt": 279.69199999999955,
+      "cls": 0,
+      "fcp": 1903.76,
+      "error": null
+    },
+    {
+      "name": "tamil-pricing",
+      "path": "/in-ta/pricing",
+      "method": "devtools",
+      "code": 0,
+      "score": 0.85,
+      "lcp": 2524.948,
+      "tbt": 448.37000000000035,
+      "cls": 0,
+      "fcp": 1983.281,
+      "error": null
+    }
+  ]
+}

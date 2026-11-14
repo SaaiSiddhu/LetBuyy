@@ -68,9 +68,9 @@ test('phase-s: PreviewInspectorOverlay.tsx exists in theme-editor components', (
 
 // ── @letbuyy/ui import in PreviewInspectorOverlay ─────────────────────────────
 
-test('phase-s: PreviewInspectorOverlay uses canonical Lucide icons (CODE-R7)', () => {
-    assert.match(read(INSPECTOR_OVERLAY), /from 'lucide-react'/,
-        'PreviewInspectorOverlay must use canonical Lucide icons');
+test('phase-s: PreviewInspectorOverlay imports from @letbuyy/ui (design token compliance)', () => {
+    assert.match(read(INSPECTOR_OVERLAY), /from '@letbuyy\/ui'/,
+        'PreviewInspectorOverlay must import from @letbuyy/ui');
 });
 
 // ── No raw rounded-[Npx] or inline hex in PreviewInspectorOverlay ─────────────

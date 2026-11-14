@@ -1,0 +1,326 @@
+{
+  "capturedAt": "2026-11-03T08:35:56.455514+00:00",
+  "readOnly": true,
+  "rows": [
+    {
+      "path": "/",
+      "requestHeaders": {},
+      "results": [
+        {
+          "port": 9006,
+          "status": 307,
+          "locationPathAndQuery": "/in",
+          "lang": null,
+          "setCookie": null,
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        },
+        {
+          "port": 9048,
+          "status": 307,
+          "locationPathAndQuery": "/in",
+          "lang": null,
+          "setCookie": null,
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/pricing",
+      "requestHeaders": {
+        "Accept-Language": "ta-IN"
+      },
+      "results": [
+        {
+          "port": 9006,
+          "status": 307,
+          "locationPathAndQuery": "/in-ta/pricing",
+          "lang": null,
+          "setCookie": null,
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        },
+        {
+          "port": 9048,
+          "status": 307,
+          "locationPathAndQuery": "/in-ta/pricing",
+          "lang": null,
+          "setCookie": null,
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/pricing",
+      "requestHeaders": {
+        "Cookie": "letbuyy_locale=in-hi",
+        "Accept-Language": "ta-IN"
+      },
+      "results": [
+        {
+          "port": 9006,
+          "status": 307,
+          "locationPathAndQuery": "/in-hi/pricing",
+          "lang": null,
+          "setCookie": null,
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        },
+        {
+          "port": 9048,
+          "status": 307,
+          "locationPathAndQuery": "/in-hi/pricing",
+          "lang": null,
+          "setCookie": null,
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/pricing?country=in&lang=ta&ref=local-test",
+      "requestHeaders": {
+        "Cookie": "letbuyy_locale=in",
+        "Accept-Language": "hi-IN"
+      },
+      "results": [
+        {
+          "port": 9006,
+          "status": 307,
+          "locationPathAndQuery": "/in-ta/pricing?country=in&lang=ta&ref=local-test",
+          "lang": null,
+          "setCookie": "letbuyy_locale=in-ta; Path=/; Expires=Wed, 03 Nov 2027 08:35:56 GMT; Max-Age=31536000; SameSite=lax",
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        },
+        {
+          "port": 9048,
+          "status": 307,
+          "locationPathAndQuery": "/in-ta/pricing?country=in&lang=ta&ref=local-test",
+          "lang": null,
+          "setCookie": "letbuyy_locale=in-ta; Path=/; Expires=Wed, 03 Nov 2027 08:35:56 GMT; Max-Age=31536000; SameSite=lax",
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/in/pricing?country=in&lang=hi&ref=local-test",
+      "requestHeaders": {},
+      "results": [
+        {
+          "port": 9006,
+          "status": 307,
+          "locationPathAndQuery": "/in-hi/pricing?country=in&lang=hi&ref=local-test",
+          "lang": null,
+          "setCookie": "letbuyy_locale=in-hi; Path=/; Expires=Wed, 03 Nov 2027 08:35:56 GMT; Max-Age=31536000; SameSite=lax",
+          "vary": null,
+          "cacheControl": "private, no-store"
+        },
+        {
+          "port": 9048,
+          "status": 307,
+          "locationPathAndQuery": "/in-hi/pricing?country=in&lang=hi&ref=local-test",
+          "lang": null,
+          "setCookie": "letbuyy_locale=in-hi; Path=/; Expires=Wed, 03 Nov 2027 08:35:56 GMT; Max-Age=31536000; SameSite=lax",
+          "vary": null,
+          "cacheControl": "private, no-store"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/in-hi/resources",
+      "requestHeaders": {
+        "x-letbuyy-locale": "in-ta",
+        "Cookie": "letbuyy_locale=in-ta"
+      },
+      "results": [
+        {
+          "port": 9006,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": "hi",
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+          "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+        },
+        {
+          "port": 9048,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": "hi",
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+          "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/in-ta/resources",
+      "requestHeaders": {
+        "x-letbuyy-locale": "in-hi"
+      },
+      "results": [
+        {
+          "port": 9006,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": "ta",
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+          "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+        },
+        {
+          "port": 9048,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": "ta",
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+          "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/api/founding-pricing",
+      "requestHeaders": {
+        "Accept-Language": "ta-IN"
+      },
+      "results": [
+        {
+          "port": 9006,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": null,
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+          "cacheControl": null
+        },
+        {
+          "port": 9048,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": null,
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+          "cacheControl": null
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/robots.txt",
+      "requestHeaders": {
+        "Accept-Language": "ta-IN"
+      },
+      "results": [
+        {
+          "port": 9006,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": null,
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+          "cacheControl": "public, max-age=0, must-revalidate"
+        },
+        {
+          "port": 9048,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": null,
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+          "cacheControl": "public, max-age=0, must-revalidate"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/sitemap.xml",
+      "requestHeaders": {
+        "Accept-Language": "ta-IN"
+      },
+      "results": [
+        {
+          "port": 9006,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": null,
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+          "cacheControl": "public, max-age=0, must-revalidate"
+        },
+        {
+          "port": 9048,
+          "status": 200,
+          "locationPathAndQuery": null,
+          "lang": null,
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+          "cacheControl": "public, max-age=0, must-revalidate"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/in/resources/unknown-page/unknown-guide",
+      "requestHeaders": {},
+      "results": [
+        {
+          "port": 9006,
+          "status": 404,
+          "locationPathAndQuery": null,
+          "lang": null,
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+          "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+        },
+        {
+          "port": 9048,
+          "status": 404,
+          "locationPathAndQuery": null,
+          "lang": null,
+          "setCookie": null,
+          "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+          "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "path": "/in-xx/resources",
+      "requestHeaders": {},
+      "results": [
+        {
+          "port": 9006,
+          "status": 307,
+          "locationPathAndQuery": "/in/in-xx/resources",
+          "lang": null,
+          "setCookie": null,
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        },
+        {
+          "port": 9048,
+          "status": 307,
+          "locationPathAndQuery": "/in/in-xx/resources",
+          "lang": null,
+          "setCookie": null,
+          "vary": "Accept-Language, Cookie",
+          "cacheControl": "private, no-store"
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "passed": true
+}

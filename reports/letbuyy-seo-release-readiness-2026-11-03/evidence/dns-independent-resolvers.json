@@ -1,0 +1,147 @@
+[
+  {
+    "host": "letbuyy.com",
+    "capturedAt": "2026-11-03T02:37:50.050371+00:00",
+    "systemAddresses": [
+      "216.198.79.1",
+      "64.29.17.1"
+    ],
+    "google": {
+      "httpStatus": 200,
+      "dnsStatus": 0,
+      "answer": [
+        {
+          "name": "letbuyy.com.",
+          "type": 1,
+          "TTL": 300,
+          "data": "64.29.17.1"
+        },
+        {
+          "name": "letbuyy.com.",
+          "type": 1,
+          "TTL": 300,
+          "data": "216.198.79.1"
+        }
+      ]
+    },
+    "cloudflare": {
+      "httpStatus": 200,
+      "dnsStatus": 0,
+      "answer": [
+        {
+          "name": "letbuyy.com",
+          "type": 1,
+          "TTL": 300,
+          "data": "216.198.79.1"
+        },
+        {
+          "name": "letbuyy.com",
+          "type": 1,
+          "TTL": 300,
+          "data": "64.29.17.1"
+        }
+      ]
+    }
+  },
+  {
+    "host": "www.letbuyy.com",
+    "capturedAt": "2026-11-03T02:37:50.807957+00:00",
+    "systemAddresses": [
+      "216.198.79.1",
+      "64.29.17.1"
+    ],
+    "google": {
+      "httpStatus": 200,
+      "dnsStatus": 0,
+      "answer": [
+        {
+          "name": "www.letbuyy.com.",
+          "type": 5,
+          "TTL": 600,
+          "data": "c69d9eec88d448f3.vercel-dns-017.com."
+        },
+        {
+          "name": "c69d9eec88d448f3.vercel-dns-017.com.",
+          "type": 1,
+          "TTL": 300,
+          "data": "216.198.79.65"
+        },
+        {
+          "name": "c69d9eec88d448f3.vercel-dns-017.com.",
+          "type": 1,
+          "TTL": 300,
+          "data": "64.29.17.65"
+        }
+      ]
+    },
+    "cloudflare": {
+      "httpStatus": 200,
+      "dnsStatus": 0,
+      "answer": [
+        {
+          "name": "www.letbuyy.com",
+          "type": 5,
+          "TTL": 600,
+          "data": "c69d9eec88d448f3.vercel-dns-017.com."
+        },
+        {
+          "name": "c69d9eec88d448f3.vercel-dns-017.com",
+          "type": 1,
+          "TTL": 300,
+          "data": "216.198.79.65"
+        },
+        {
+          "name": "c69d9eec88d448f3.vercel-dns-017.com",
+          "type": 1,
+          "TTL": 300,
+          "data": "64.29.17.65"
+        }
+      ]
+    }
+  },
+  {
+    "host": "seller.letbuyy.com",
+    "capturedAt": "2026-11-03T02:37:51.812596+00:00",
+    "systemErrorCode": 8,
+    "google": {
+      "httpStatus": 200,
+      "dnsStatus": 3,
+      "answer": []
+    },
+    "cloudflare": {
+      "httpStatus": 200,
+      "dnsStatus": 3,
+      "answer": []
+    }
+  },
+  {
+    "host": "developer.letbuyy.com",
+    "capturedAt": "2026-11-03T02:37:52.298800+00:00",
+    "systemErrorCode": 8,
+    "google": {
+      "httpStatus": 200,
+      "dnsStatus": 3,
+      "answer": []
+    },
+    "cloudflare": {
+      "httpStatus": 200,
+      "dnsStatus": 3,
+      "answer": []
+    }
+  },
+  {
+    "host": "developers.letbuyy.com",
+    "capturedAt": "2026-11-03T02:37:52.754246+00:00",
+    "systemErrorCode": 8,
+    "google": {
+      "httpStatus": 200,
+      "dnsStatus": 3,
+      "answer": []
+    },
+    "cloudflare": {
+      "httpStatus": 200,
+      "dnsStatus": 3,
+      "answer": []
+    }
+  }
+]

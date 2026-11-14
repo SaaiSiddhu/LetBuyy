@@ -1,0 +1,306 @@
+{
+  "captured_at": "2026-10-30T00:33:46.557551+00:00",
+  "basis": "Task-start bytes, including previously uncommitted user work; not HEAD. Text patch excludes the binary font, whose prior asset is retained for rollback.",
+  "changes": [
+    {
+      "path": "apps/marketing/web/next.config.ts",
+      "before_sha256": "3d77ee0b3b9573042ddbf66ce329b5c0ea29b097afffb95925d925088014937b",
+      "after_sha256": "82a74a54687391727314fc5010a1154a342fa71be45f863d256d69dbfc6f6c67",
+      "before_bytes": 2743,
+      "after_bytes": 3046
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-Variable-Marketing.woff2",
+      "before_sha256": "a024e17a42bae46101bdec05b1e7bd45167a5cc9d6ad5a948b1dd87b1aad217d",
+      "after_sha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+      "before_bytes": 201620,
+      "after_bytes": 58308,
+      "before_asset": "evidence/font-rollback/before-Inter-Variable-Marketing.woff2",
+      "after_asset": "evidence/font-rollback/after-Inter-Variable-Marketing.woff2"
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/README.md",
+      "before_sha256": "6a1d0c707f235f8d1b9924649acd346e89a4d44959baab903f6416ad4f9f1794",
+      "after_sha256": "b30ba6732957afb159c638783bdf4840a7fe52f392616bc6a06de7a89a3914fb",
+      "before_bytes": 1413,
+      "after_bytes": 2194
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/layout.tsx",
+      "before_sha256": "abdadb5caf24dd81a53504a1f408e87de982f041da9411549738ea996a408c23",
+      "after_sha256": "b1ca5b82c3e2ac99a37eac72f59a895bf53472e3571d3d8d3126a5d04f2388e1",
+      "before_bytes": 2407,
+      "after_bytes": 2641
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/page.tsx",
+      "before_sha256": "3cb3f5ef72ef373186ce60621a0a0445d899639ada0926f4fdc4287cbd5f8c1f",
+      "after_sha256": "089427d34a6cb8454f0cad550950aff675eb8d3c8d008261929d24f7fcfab447",
+      "before_bytes": 313,
+      "after_bytes": 334
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/layout.tsx",
+      "before_sha256": "9fec473893c64692522f121afe83f6e914bbc344532bbe1302a97f8e2a852708",
+      "after_sha256": "37b2a8dd1b275165b6fd9fcdf323188740169d19feec73e04297bede13271d3b",
+      "before_bytes": 1225,
+      "after_bytes": 1254
+    },
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "before_sha256": "c8e057adeef449c62100d57cbbbd26e798216ea9325047f751de2f4de87a4082",
+      "after_sha256": "0e4351d9b2bdc2657ef9d33331986b9f270b7096c92d12300f4319d4e3fda2fe",
+      "before_bytes": 540347,
+      "after_bytes": 356415
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "before_sha256": null,
+      "after_sha256": "da66f4b9abdaa1a9c9e82ecc9ff38c3d9d040cddfbcf705e413f28d1c2e881cb",
+      "before_bytes": 0,
+      "after_bytes": 98238
+    },
+    {
+      "path": "apps/marketing/web/src/app/layout.tsx",
+      "before_sha256": "92ccc1a8a27d79127e94404a899a2259679af2c2b1bbef3d0131c96f14db9c2b",
+      "after_sha256": "3db9ef2e4358f965876e671412e411f5ba99cf466694551377ce943bc3d01449",
+      "before_bytes": 6784,
+      "after_bytes": 7284
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "before_sha256": null,
+      "after_sha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+      "before_bytes": 0,
+      "after_bytes": 88430
+    },
+    {
+      "path": "apps/marketing/web/src/components/CapabilityMap.tsx",
+      "before_sha256": "7ee59e4ed89ac3dffb8208e1db6a89dbf3e77e57cc9df88aa5c53bfe1dc3db85",
+      "after_sha256": "fd1e4ee5706f89b5311256fe372aad697051e12f0173e196a71bb57488469569",
+      "before_bytes": 56158,
+      "after_bytes": 51986
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceGlobeCanvas.tsx",
+      "before_sha256": "5d0abfdb92e49ec00b1cebe61fd350b99433563308383fbad4b4ba0447716619",
+      "after_sha256": "e8b374e01ab7583636c219af65e6fb0d1097b2706954363d825702285261c231",
+      "before_bytes": 24732,
+      "after_bytes": 14141
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceNetwork.tsx",
+      "before_sha256": "a537ae41feabf35e56c1b62793558ca81f15888a4f3546658f020e6f2be884d0",
+      "after_sha256": "fcb814b61543ec232c29521a392b5d31fb779187ad38a2fa09c5c65437104016",
+      "before_bytes": 15061,
+      "after_bytes": 15095
+    },
+    {
+      "path": "apps/marketing/web/src/components/EcosystemMap.tsx",
+      "before_sha256": "dae29be03e558b81c5d8d7d30035d9c21c244b5ca691fbad680ccdc596bd10b2",
+      "after_sha256": "a9ed5b9bdb1040b8866d515533b88679890111ba8453886049345ebc3dadc41d",
+      "before_bytes": 14093,
+      "after_bytes": 14127
+    },
+    {
+      "path": "apps/marketing/web/src/components/FAQ.tsx",
+      "before_sha256": "25bbdd4e116568a81d5b9eb3188f906eeea7367fc0c2fa5cdf6a709621382add",
+      "after_sha256": "10ea97dddaaac807c72bf1c89429c1eab6d1d45400b3433d2fa3c92d37516aa1",
+      "before_bytes": 9441,
+      "after_bytes": 9376
+    },
+    {
+      "path": "apps/marketing/web/src/components/Footer.tsx",
+      "before_sha256": "7081fd6c792cebdaca4afcdfd86d1e25d169e5caf22c634f53427eb0458bf76d",
+      "after_sha256": "4c23454c9ec8ff1c5c5bf2529e31a02a3c01900149d3dfe48f5af20567bc0f9d",
+      "before_bytes": 11835,
+      "after_bytes": 11796
+    },
+    {
+      "path": "apps/marketing/web/src/components/Header.tsx",
+      "before_sha256": "09ee97317a557659c2017ccea4b8fcd19fb581e8a7e543bc9fdfaf84d74e6767",
+      "after_sha256": "5ed0e2210eaf470d8b84e76c91d6a925b494bb0e1b94639fa1f62e7f90111685",
+      "before_bytes": 40476,
+      "after_bytes": 40510
+    },
+    {
+      "path": "apps/marketing/web/src/components/Hero.tsx",
+      "before_sha256": "92effbdb83fd7a6b63c01295d40bbaa05cb6a809526f51f4a81040cd57068cf8",
+      "after_sha256": "96f08ff46c50c0b457e6fbdd223edecf524cf29df1c44b3b179c36f2a22423a8",
+      "before_bytes": 2807,
+      "after_bytes": 2701
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingHome.tsx",
+      "before_sha256": "e4465fa3fffca3ca0cb5e567ce184866aadd15286a5e80f44b548bff376d1851",
+      "after_sha256": "107edde837d1f01ff879192facfaed2a03462129f9e98691c5f0cc15900de06f",
+      "before_bytes": 1804,
+      "after_bytes": 2348
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingMotionProvider.tsx",
+      "before_sha256": null,
+      "after_sha256": "234fb0b463b888df9bac62f7934d53d3e9ad712186f7cb5645209b8b4032eb8e",
+      "before_bytes": 0,
+      "after_bytes": 438
+    },
+    {
+      "path": "apps/marketing/web/src/components/MerchantJourney.tsx",
+      "before_sha256": "df3bd1fc0578a7158de8c3978732b412e296f6a04c57de68268550e2147b3c27",
+      "after_sha256": "f78de38de46bace2aa41d9e071893605b5e3b1f0e20fd161536370070e832a01",
+      "before_bytes": 10372,
+      "after_bytes": 10242
+    },
+    {
+      "path": "apps/marketing/web/src/components/Pricing.tsx",
+      "before_sha256": "49ea8680cd442965ad109d1ad3e08d00abbcbf54a987fdbde5ea238c7501d6d8",
+      "after_sha256": "6663c3726d6f82a553b9284c91cd924682041b246b8126ac1600a07e46cebf6c",
+      "before_bytes": 19571,
+      "after_bytes": 19251
+    },
+    {
+      "path": "apps/marketing/web/src/components/SiteTypes.tsx",
+      "before_sha256": "25dafccfbd5917ec6f406255645b75363ee75792e96c0e5c096f96a1daaecd1b",
+      "after_sha256": "9a35720401b25259512daac43fd0f37fd67483ea46b147152d43254846ed509c",
+      "before_bytes": 8975,
+      "after_bytes": 8978
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/Copy.tsx",
+      "before_sha256": "c478eda1c4af005e5000867ffcd33fb0f71e055c8f8a30fc469b6610250b2715",
+      "after_sha256": "cfb4c8dfbc1931cd8ded464cc0cfb2f66a24c3bba8f95c5741e706836c5b0218",
+      "before_bytes": 343,
+      "after_bytes": 350
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/CopyProvider.tsx",
+      "before_sha256": null,
+      "after_sha256": "d6a8b6b5ef5340349261202716a95ad58e8e8868c2a488736d8749bf39e29299",
+      "before_bytes": 0,
+      "after_bytes": 1004
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/useCopy.ts",
+      "before_sha256": "3257bf54c62134b7ab6e3599a585384e4ba32d52db33ce9705781ab304811b09",
+      "after_sha256": "358176db8f8154302ed3330688a2abdc66cb317c3ce64857110f6b640c5b3add",
+      "before_bytes": 388,
+      "after_bytes": 121
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ResourceArticleArtwork.tsx",
+      "before_sha256": "3db3b5be187ee211152fc20af50a945002d2720d51d1aa2f719f3a63e3cd9c05",
+      "after_sha256": "b1f6408db2ca1d8272857f20118850f7e877acb182c54d6fc6ebec61748b4c9b",
+      "before_bytes": 1154,
+      "after_bytes": 1149
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe-renderer.ts",
+      "before_sha256": null,
+      "after_sha256": "a1cf87cc4b3a9859d4ecd8dc1e56411025db09678e71bf286da356b25557d5d4",
+      "before_bytes": 0,
+      "after_bytes": 13211
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe.ts",
+      "before_sha256": "372e1586d679b7dda1cf23b2f0643d05ef908b5df3d143932ee532358e4acb3f",
+      "after_sha256": "8859fcca53d5e0d94f658e19dcc5adbfb0cf0356c7546c4f4dc4d00ae3689e96",
+      "before_bytes": 9212,
+      "after_bytes": 9741
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe.worker.ts",
+      "before_sha256": null,
+      "after_sha256": "63a1a390e398903c969d41430445c7fc101b5958cebe8509198776cf17573c51",
+      "before_bytes": 0,
+      "after_bytes": 1006
+    },
+    {
+      "path": "apps/marketing/web/src/lib/create-globe-worker.ts",
+      "before_sha256": null,
+      "after_sha256": "a34363d675db09d6659cf215e6eba4139df7de9caa72230276c0fbfb2dfb3f0f",
+      "before_bytes": 0,
+      "after_bytes": 2789
+    },
+    {
+      "path": "apps/marketing/web/src/lib/globe-renderer-types.ts",
+      "before_sha256": null,
+      "after_sha256": "010d213ab4b251c62c0fa2f295aa639113c95eecde744246a0810809fb402270",
+      "before_bytes": 0,
+      "after_bytes": 1076
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy-format.ts",
+      "before_sha256": null,
+      "after_sha256": "11a85925509e4a9effeb87b07a1874a27988a12e67f42015507cc42642cf6a78",
+      "before_bytes": 0,
+      "after_bytes": 511
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy.ts",
+      "before_sha256": "3302181bcea9a4cfabf83d1d5ad50df16760a600e0629be3aa75235001fa7195",
+      "after_sha256": "d880434f1b906fd8543d33718e6ca09d6e0b0ac497577797e06ead55f7f65bff",
+      "before_bytes": 712,
+      "after_bytes": 1092
+    },
+    {
+      "path": "apps/marketing/web/src/lib/pricing.ts",
+      "before_sha256": "5375bdd8f4110f3facf0c1bd60177667d45515cc62f80ca19d8370008bb9cc0d",
+      "after_sha256": "5211a4aad8e1cf1048ded89242e211f0ba9cc4eb11ec10ad93e49e9b099bb632",
+      "before_bytes": 1714,
+      "after_bytes": 2388
+    },
+    {
+      "path": "packages/shared-types/package.json",
+      "before_sha256": "6a24394070639f1d5c6537c1451c62d433778952ef71b136a131ada7d68cc6b2",
+      "after_sha256": "e9c39dc0ac6a9e43838b8683b97a4f9e4629f3b0b43ccfe690fb816bd1cf8117",
+      "before_bytes": 441,
+      "after_bytes": 474
+    },
+    {
+      "path": "packages/typescript/ui/src/theme-provider.tsx",
+      "before_sha256": "dbaaa9c2e55c802d79861422e50cdd94b7061031d2b5222f075230194fe77de6",
+      "after_sha256": "179e5899253ed327351aa896805552d8ea34895515c927e99b75b91df8cf8b5c",
+      "before_bytes": 9975,
+      "after_bytes": 10350
+    },
+    {
+      "path": "packages/typescript/ui/tests/components/theme-hydration.test.tsx",
+      "before_sha256": "ecb02c04d27a2080188a8db3871304ec80bb565b87ffde90ed5fdb62a0b78465",
+      "after_sha256": "447d2a6585914c8aef1c6f9efc3d24fe2a3c854f77f13d82cb4069df70af6152",
+      "before_bytes": 2533,
+      "after_bytes": 4467
+    },
+    {
+      "path": "tests/marketing/copy-delivery.test.ts",
+      "before_sha256": null,
+      "after_sha256": "8718420d3e945f936d66a17f185a53fc015eb471d01e15f28b8ee05693e705c3",
+      "before_bytes": 0,
+      "after_bytes": 1682
+    },
+    {
+      "path": "tests/marketing/globe-renderer.test.ts",
+      "before_sha256": null,
+      "after_sha256": "61b58298b74e189635765339105cc5744562e4ea71107c3d19bdccd64d7b5d2f",
+      "before_bytes": 0,
+      "after_bytes": 1400
+    },
+    {
+      "path": "tests/marketing/pricing-delivery.test.ts",
+      "before_sha256": null,
+      "after_sha256": "568be7e7d371f85809ab20cbb5ddede7451a523fb866149dc80a8ba9f573fa2f",
+      "before_bytes": 0,
+      "after_bytes": 2254
+    }
+  ],
+  "binary_assets": [
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-Variable-Marketing.woff2",
+      "before_sha256": "a024e17a42bae46101bdec05b1e7bd45167a5cc9d6ad5a948b1dd87b1aad217d",
+      "after_sha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+      "before_bytes": 201620,
+      "after_bytes": 58308,
+      "before_asset": "evidence/font-rollback/before-Inter-Variable-Marketing.woff2",
+      "after_asset": "evidence/font-rollback/after-Inter-Variable-Marketing.woff2"
+    }
+  ]
+}

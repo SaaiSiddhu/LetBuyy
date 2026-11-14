@@ -39,6 +39,27 @@ interface CallSite {
 // file or a call site is a deliberate security decision: re-read getSupabaseAdminForOperatorRead's
 // four documented conditions in lib/supabase.ts before doing so.
 const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
+    'routes/internal-console/compliance.ts': {
+        why: 'Current compliance:view operators read bounded cross-site privacy queues. Query actor fields cannot grant authority or spoof read attribution; audit uses the separate guarded client.',
+        calls: [
+            { requiredScope: 'compliance:view', routeRegistration: "router.get('/data-requests/:id', consolePermission('compliance:view')",
+                boundedIn: { symbol: 'one privacy request', kind: 'single-row-by-id', note: 'UUID primary-key equality and maybeSingle; audit uses the guarded client.' } },
+            { requiredScope: 'compliance:manage', routeRegistration: "router.patch('/data-requests/:id', consolePermission('compliance:manage')",
+                boundedIn: { symbol: 'privacy mutation owner resolution', kind: 'single-row-by-id', note: 'Read-only primary-key owner lookup. The ordinary guarded client performs the update with resolved site_id and id.' } },
+            { requiredScope: 'compliance:view', routeRegistration: "router.get('/overview', consolePermission('compliance:view')",
+                boundedIn: { symbol: 'compliance overview', kind: 'schema-limit', schemaFile: 'lib/internal-compliance.ts', schemaLimitField: '.limit(10)' } },
+            { requiredScope: 'compliance:view', routeRegistration: "router.get('/data-requests', consolePermission('compliance:view')",
+                boundedIn: { symbol: 'privacy request queue', kind: 'schema-limit', schemaFile: 'routes/internal-console/compliance.ts', schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(25)' } },
+        ],
+    },
+    'routes/internal-founding.ts': {
+        why: 'The allocation directory requires a live MFA merchant:view session and correct Console bridge; the existing platform operator read returns only a validated, bounded page. Writes retain their existing clients.',
+        calls: [{ requiredScope: 'merchant:view', routeRegistration: "router.get('/allocations', consolePermission('merchant:view')",
+            boundedIn: { symbol: 'founding allocations', kind: 'schema-limit', schemaFile: 'routes/internal-founding.ts',
+                schemaLimitField: 'limit: z.coerce.number().int().min(1).max(500).default(100)', queryLimitExpression: '.range((page - 1) * limit, page * limit - 1)' } },
+            {requiredScope:'merchant:view',routeRegistration:"router.get('/export', consolePermission('merchant:view')",
+             boundedIn:{symbol:'founding CSV page',kind:'schema-limit',schemaFile:'routes/internal-founding.ts',schemaLimitField:'limit: z.coerce.number().int().min(1).max(500).default(100)',queryLimitExpression:'.range((page - 1) * limit, page * limit - 1)'}}],
+    },
     'routes/internal-console/money-reconciliation.ts': {
         why: 'The live-session payout:view gate permits the platform money-break queue. The client is used only for this paginated projection read, not mutations or ledger writes; action authority separately requires money:reconcile and independent consent.',
         calls: [{ requiredScope: 'payout:view', routeRegistration: "router.get('/reconciliation', consolePermission('payout:view')",
@@ -46,8 +67,19 @@ const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
                 schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(25)', queryLimitExpression: '.range(from, to)' } }],
     },
     'routes/internal-console.ts': {
-        why: 'Merchant 360 risk records are keyed by platform entity_type/entity_id and may have no site_id. The real Console cookie/durable-session risk:view gate and merchant:pii check precede the single risk-only client; all other merchant queries retain the ordinary tenant guard.',
-        calls: [{
+        why: 'Console directories require live session permissions and bounded, read-only platform queries. Merchant 360 risk records are keyed by platform entity_type/entity_id and may have no site_id. The real Console cookie/durable-session risk:view gate and merchant:pii check precede the single risk-only client; all other merchant queries retain the ordinary tenant guard.',
+        calls: [
+            { requiredScope: 'merchant:pii', routeRegistration: "router.get('/merchants/search', consolePermission('merchant:pii')",
+                boundedIn: { symbol: 'merchant owner/profile search', kind: 'schema-limit', schemaFile: 'routes/internal-console.ts',
+                    schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(25)', queryLimitExpression: '.limit(query.limit)' } },
+            ...(['stores', 'subscriptions'] as const).map(route => ({
+                requiredScope: route === 'stores' ? 'merchant:view' : 'exec:view',
+                routeRegistration: `router.get('/${route}', consolePermission('${route === 'stores' ? 'merchant:view' : 'exec:view'}')`,
+                boundedIn: { symbol: `Console ${route} directory`, kind: 'schema-limit' as const,
+                    schemaFile: 'routes/internal-console.ts',
+                    schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(25)',
+                    queryLimitExpression: '.range(from, to)' },
+            })), {
             requiredScope: 'risk:view',
             routeRegistration: "router.get('/merchants/:id/overview', consolePermission('risk:view')",
             boundedIn: { symbol: 'Merchant 360 risk record', kind: 'fixed-query-bounds', limits: [1],
@@ -80,7 +112,7 @@ const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
             {
                 requiredScope: 'support:view',
                 routeRegistration: "router.get('/tickets', requirePermission('support:view')",
-                boundedIn: { symbol: 'GET /tickets list', kind: 'schema-limit', schemaFile: 'routes/operations/support.ts', schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(25)' },
+                boundedIn: { symbol: 'GET /tickets list', kind: 'schema-limit', schemaFile: 'packages/shared-types/src/console-support.ts', schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(25)' },
             },
             {
                 requiredScope: 'support:view',
@@ -92,6 +124,10 @@ const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
     'routes/operations.ts': {
         why: 'the outbox and dead-letter queues remain super-admin-only through this router’s explicit ops/super-admin middleware; each platform-wide read is bounded by the shared 1..200 list schema',
         calls: [
+            { requiredScope: 'incident:view',
+              routeRegistration: "router.get('/runtime/overview', requirePermission('incident:view')",
+              boundedIn: { symbol: 'runtime queue diagnostics', kind: 'fixed-query-bounds', limits: [30],
+                  note: 'queueReadDb reads only the latest 30 cross-site queue snapshots; other reads use the guarded client' } },
             {
                 requiredScope: null,
                 routeRegistration: "router.get('/outbox', async (c) =>",
@@ -298,4 +334,11 @@ test('the operator-scoped client is genuinely unguarded and distinct from the de
         /createTenantGuardedSupabaseClient\s*\(/,
         'the DEFAULT admin client must still apply the tenant guard',
     );
+});
+
+test('support list admission consumes the canonical bounded queue schema',()=>{
+ const source=readFileSync(join(SRC,'routes/operations/support.ts'),'utf8');
+ assert.match(source,/const ListTicketsQuerySchema = ConsoleSupportQueueQuerySchema;/);
+ assert.ok(source.includes("validate('query', ListTicketsQuerySchema)"));
+ assert.match(source,/ConsoleSupportQueueQuerySchema[\s\S]*from '@letbuyy\/shared-types'/);
 });

@@ -94,7 +94,7 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   await context.route('https://checkout.razorpay.com/v1/checkout.js',route=>route.fulfill({contentType:'application/javascript',body:`window.Razorpay=class{
    constructor(options){window.__syntheticCheckout=options;}open(){window.__syntheticCheckoutOpen=true;}on(){}};`}));
   await signIn(page,identityOrigin,ownerEmail,password,merchantOrigin);
-  const paymentSetup=page.locator(`.activation-card a[href="/${tenant.subdomain}/settings/payments"]`);
+  const paymentSetup=page.locator(`a[href="/${tenant.subdomain}/settings/payments"]`).first();
   await expect(paymentSetup).toBeVisible();await paymentSetup.click();await page.waitForURL(u=>u.pathname===`/${tenant.subdomain}/settings/payments`);
   await page.goto(`${merchantOrigin}/${tenant.subdomain}/dashboard`);
   await expect(page.getByRole('link',{name:'Select a plan',exact:true})).toHaveAttribute('href',`/${tenant.subdomain}/access_account/checkout/select-plan`);

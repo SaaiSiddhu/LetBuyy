@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
-import '../../services/api_client.dart';
 
 import '../../app/store_context.dart';
 
@@ -34,10 +32,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   StoreModel? _store;
   MerchantBillingState? _billing;
-  PaymentConfigModel? _paymentConfig;
-  bool _updatingPaymentMethods = false;
-  String? _paymentMethodIntent;
-  String? _paymentMethodRetryKey;
   bool _isLoading = true;
   int _loadVersion = 0;
   int? _loadedEpoch;
@@ -56,7 +50,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _isLoading = true;
       _billing = null;
-      _paymentConfig = null;
       _store = null;
       _loadedEpoch = null;
       _loadError = null;
@@ -64,16 +57,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       final store = await storeContext.ensureSelectedStore();
       MerchantBillingState? billing;
-      PaymentConfigModel? paymentConfig;
       if (store != null) {
         try {
           billing = await context.read<SubscriptionService>().fetchBillingState(
             store.id,
           );
         } catch (_) {}
-        paymentConfig = await context
-            .read<SubscriptionService>()
-            .getPaymentConfigModel(store.id);
       }
       if (!mounted || version != _loadVersion) return;
       if (epoch != storeContext.requestContextVersion ||
@@ -83,7 +72,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _loadedEpoch = epoch;
         _store = store;
         _billing = billing;
-        _paymentConfig = paymentConfig;
       });
     } catch (e) {
       debugPrint('Error loading store: $e');
@@ -92,64 +80,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } finally {
       if (mounted && version == _loadVersion)
         setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _updatePaymentMethod(String field, bool enabled) async {
-    final store = _store;
-    final storeContext = context.read<StoreContext>();
-    final epoch = storeContext.requestContextVersion;
-    if (store == null ||
-        _paymentConfig == null ||
-        _updatingPaymentMethods ||
-        storeContext.selectedStoreId != store.id ||
-        _loadedEpoch != epoch)
-      return;
-    setState(() => _updatingPaymentMethods = true);
-    final intent =
-        '$epoch:${store.id}:${_paymentConfig!.revision}:$field:$enabled';
-    if (_paymentMethodIntent != intent) {
-      _paymentMethodIntent = intent;
-      _paymentMethodRetryKey = const Uuid().v4();
-    }
-    try {
-      await context.read<StoreService>().updatePaymentSettings(
-        store.id,
-        {field: enabled},
-        expectedRevision: _paymentConfig!.revision,
-        idempotencyKey: _paymentMethodRetryKey,
-      );
-      if (!mounted ||
-          storeContext.requestContextVersion != epoch ||
-          storeContext.selectedStoreId != store.id)
-        return;
-      _paymentMethodIntent = null;
-      _paymentMethodRetryKey = null;
-      await _loadStore();
-      HapticFeedback.lightImpact();
-    } catch (error) {
-      if (mounted &&
-          storeContext.requestContextVersion == epoch &&
-          storeContext.selectedStoreId == store.id) {
-        if (error is ApiException && error.statusCode == 409) {
-          _paymentMethodIntent = null;
-          _paymentMethodRetryKey = null;
-          await _loadStore();
-          if (!mounted ||
-              storeContext.requestContextVersion != epoch ||
-              storeContext.selectedStoreId != store.id)
-            return;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Payment settings could not be confirmed. Reload before trying again.',
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _updatingPaymentMethods = false);
     }
   }
 
@@ -369,35 +299,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ? 'Enabled'
                             : 'Disabled',
                         trailing: Switch(
-                          value: _paymentConfig?.codEnabled ?? false,
+                          value: _store?.codEnabled ?? true,
                           activeColor: AppColors.lavender,
-                          onChanged:
-                              _paymentConfig == null || _updatingPaymentMethods
-                              ? null
-                              : (value) =>
-                                    _updatePaymentMethod('cod_enabled', value),
+                          onChanged: (value) async {
+                            final storeService = context.read<StoreService>();
+                            await storeService.updatePaymentSettings(
+                              _store!.id,
+                              {'cod_enabled': value},
+                            );
+                            await _loadStore();
+                            HapticFeedback.lightImpact();
+                          },
                         ),
                         showArrow: false,
                       ),
                       SettingsTile(
                         icon: Icons.credit_card_outlined,
                         title: 'Online Payment (Razorpay)',
-                        subtitle:
-                            _paymentConfig?.statusText ??
-                            'Payment readiness not confirmed',
+                        subtitle: _store?.onlinePaymentEnabled == true
+                            ? 'Enabled'
+                            : 'Disabled',
                         trailing: Switch(
-                          value: _paymentConfig?.onlineRequested ?? false,
+                          value: _store?.onlinePaymentEnabled ?? true,
                           activeColor: AppColors.lavender,
-                          onChanged:
-                              _paymentConfig == null ||
-                                  _updatingPaymentMethods ||
-                                  !(_paymentConfig!.canEnableOnline ||
-                                      _paymentConfig!.onlineRequested)
-                              ? null
-                              : (value) => _updatePaymentMethod(
-                                  'online_payment_enabled',
-                                  value,
-                                ),
+                          onChanged: (value) async {
+                            final storeService = context.read<StoreService>();
+                            await storeService.updatePaymentSettings(
+                              _store!.id,
+                              {'online_payment_enabled': value},
+                            );
+                            await _loadStore();
+                            HapticFeedback.lightImpact();
+                          },
                         ),
                         showArrow: false,
                       ),

@@ -1,0 +1,16 @@
+{
+  "capturedAt": "2026-11-03T02:56:04.744824+00:00",
+  "exitCode": 0,
+  "requestedAlias": "https://www.letbuyy.com",
+  "deployment": {
+    "id": "dpl_ADZiF5548EQAxvnoHbcbzmdoVmfE",
+    "name": "marketing-site",
+    "url": "marketing-site-7w5hrckul-letbuyy-store-s-projects.vercel.app",
+    "target": "production",
+    "readyState": "READY",
+    "createdAt": 1793522551652,
+    "alias": null,
+    "aliasAssigned": null
+  },
+  "gitSource": {}
+}

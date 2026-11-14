@@ -25,6 +25,7 @@ export class SupportExecutionAdapter {
             p_resolution_business_days: SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS,
         });
         if (error) {
+            if (error.code === 'PT412') throw new ConflictError('This ticket changed or is closed. Reload it before changing ownership or priority.');
             if (error.code === 'PT409') throw new ConflictError('Idempotency key was already used with a different request body');
             if (error.code === '23505' && /support_ticket_privacy_request_conflict|support_tickets_privacy_open_request_uidx/.test(error.message)) {
                 throw new ConflictError('The ticket cannot move to that status: its requester already has an unresolved privacy request of the same type.');

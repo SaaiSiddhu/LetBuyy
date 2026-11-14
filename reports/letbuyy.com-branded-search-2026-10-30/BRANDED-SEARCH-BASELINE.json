@@ -1,0 +1,30 @@
+{
+  "type": "user-supplied screenshot",
+  "user_reported_capture": "2026-10-30 00:01:14 Asia/Kolkata",
+  "visible_query": "letbuyy",
+  "visible_main_title": "LetBuyy — India-first commerce operating system | LetBuyy",
+  "visible_snippet": "LetBuyy is an AI-native Commerce Operating System that helps businesses manage storefronts, products, inventory, orders, payments, customers, analytics, and ...",
+  "visible_sitelinks": [
+    "Sitemap",
+    "Support centre",
+    "The Merchant Control Plane",
+    "सहायता केंद्र",
+    "தள வரைபடம்",
+    "आपका वाणिज्य OS डैशबोर्ड"
+  ],
+  "unknown": [
+    "exact destination URLs hidden behind result links",
+    "Google language/country/personalization settings",
+    "whether same result layout appears to other users",
+    "selected canonical/index details"
+  ],
+  "privacy": "Full screenshot not copied into public deliverable; no browser profile detail retained.",
+  "original_sha256": "f9c7446093a4a491980533d46f97057b81710f32fa8c20d216025c97eb964fcc",
+  "baseline_type": "Current supplied screenshot + dated public evidence; not historical trend",
+  "followup_local_date": "2026-10-30",
+  "exact_sitelink_destinations_verified": false,
+  "public_queries": "evidence/query-log.json",
+  "http_samples": "evidence/live-samples.json",
+  "comparison_available": false,
+  "meaning": "A future controlled observation can compare feature/input changes; this baseline does not measure ranking history or traffic impact."
+}

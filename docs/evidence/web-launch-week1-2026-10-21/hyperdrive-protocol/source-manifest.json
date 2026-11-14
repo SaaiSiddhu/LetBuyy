@@ -1,8 +1,0 @@
-{
-  "packages/infrastructure/pooled-sql-adapter/index.ts": "96af98a1b39b49a9ed3799ef6d6cf0915f2c9c51a76e5af784c6510fee4338fd",
-  "services/api-gateway/src/__tests__/pooled-sql-protocol.test.ts": "9cfcabf1c11a8ea266262db09b3807f603b312228b7cd662683e16a648dc1a94",
-  "services/api-gateway/src/__tests__/owned-db/pooled-tenant-context.postgres.test.ts": "23ed628a409e94a8db443c1607580f68800dc351b609b7b59db5834880a6eb3c",
-  "tests/owned-db/worker-sql-invocation.postgres.test.ts": "ae560e314e68e8a653f02eaeae323b717bdaa45c86fa347a6a4c44c3a686e396",
-  "tests/owned-db/native-core-storefront-browser.postgres.test.ts": "96fc6c93f50dc27ae766c468beec0c07129e6fca4b4a918612364b52ef1be39d",
-  "tests/performance/storefront-pooled-sql.test.mjs": "fd69dc9a4b81eb622f48f9aa6a246e9a342fedd09e7947dd83ea105b28e099c3"
-}

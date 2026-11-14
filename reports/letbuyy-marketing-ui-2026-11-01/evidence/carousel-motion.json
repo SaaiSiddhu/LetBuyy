@@ -1,0 +1,12 @@
+{
+  "captured_at": "2026-11-01T03:19:52.277Z",
+  "initial": "Storefront: Storefronts",
+  "after_autoplay": "Orders: Orders",
+  "after_resume": "Payments: Payments",
+  "normal_motion": true,
+  "autoplay_advances": true,
+  "hover_pauses": true,
+  "leaving_hover_resumes": true,
+  "settled_panel_transform": "none",
+  "passed": true
+}

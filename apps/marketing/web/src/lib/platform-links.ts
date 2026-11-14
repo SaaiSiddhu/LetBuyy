@@ -1,9 +1,6 @@
 import {
     getAccountsUrl,
-    getAppMarketplaceUrl,
-    getDeveloperPortalUrl,
     getMarketingSiteUrl,
-    getThemeMarketplaceUrl,
 } from './public-urls'
 
 export type PlatformNavigationLink = {
@@ -29,19 +26,16 @@ export function getPlatformNavigationLinks(): PlatformNavigationLink[] {
         {
             label: 'Themes',
             href: '/resources/platform/how-themes-work',
-            sitemapHref: getThemeMarketplaceUrl('/sitemap.xml'),
             description: 'Read how LetBuyy storefront themes work.',
         },
         {
             label: 'Apps',
             href: '/resources/platform/introduction-to-apps',
-            sitemapHref: getAppMarketplaceUrl('/sitemap.xml'),
             description: 'Learn about planned app integrations and platform capabilities.',
         },
         {
             label: 'Developers',
             href: '/resources/developers',
-            sitemapHref: getDeveloperPortalUrl('/sitemap.xml'),
             description: 'Public guides for APIs, webhooks and integrations.',
         },
         {

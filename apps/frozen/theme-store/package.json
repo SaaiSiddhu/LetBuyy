@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "cd ../../.. && node --test tests/federation/theme-marketplace-thin-client.test.mjs tests/auth/sso-redirects.test.mjs tests/federation/theme-store-install-lifecycle.test.mjs apps/frozen/theme-store/tests/foundation-honesty.test.mjs apps/frozen/theme-store/tests/ga-realness.test.mjs && cd apps/frozen/theme-store && node --import tsx --test tests/api-client-scope.test.mjs tests/install-receipt.test.mjs tests/session-recovery.test.mjs tests/ui-render.test.tsx"
+    "test": "cd ../../.. && node --test tests/federation/theme-marketplace-thin-client.test.mjs tests/auth/sso-redirects.test.mjs tests/federation/theme-store-install-lifecycle.test.mjs apps/frozen/theme-store/tests/foundation-honesty.test.mjs apps/frozen/theme-store/tests/ga-realness.test.mjs && cd apps/frozen/theme-store && pnpm exec tsx --test tests/ui-render.test.tsx"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",

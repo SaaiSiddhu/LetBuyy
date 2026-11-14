@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -9,6 +7,7 @@ import { Button, Input,
     Banner,
     Card,
     ConfirmDialog,
+    EmptyState,
     Gauge,
     ListChecks,
     Page,
@@ -23,7 +22,6 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type { StatusVariant } from '@letbuyy/ui'
 
 interface Skill {
@@ -102,18 +100,15 @@ export default function SkillsPage() {
     const [skillToDelete, setSkillToDelete] = useState<Skill | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadSkills = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/skills`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load skills'))
@@ -121,7 +116,6 @@ export default function SkillsPage() {
 
             setItems(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load skills'
             setItems([])
             setLoadError(message)
@@ -131,9 +125,9 @@ export default function SkillsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadSkills()
@@ -273,7 +267,6 @@ export default function SkillsPage() {
         return (
             <Page>
                 <PageHeader
-                    recipe="index"
                     title="Skills"
                     description="List professional strengths and proficiency levels for your public resume."
                     breadcrumbs={[{ label: 'Resume' }, { label: 'Skills' }]}
@@ -290,7 +283,6 @@ export default function SkillsPage() {
     return (
         <Page>
             <PageHeader
-                recipe="index"
                 title="Skills"
                 description="List professional strengths and proficiency levels for your public resume."
                 breadcrumbs={[{ label: 'Resume' }, { label: 'Skills' }]}
@@ -383,7 +375,7 @@ export default function SkillsPage() {
             {items.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Skills">
-                        <EmptyState scene="skills"
+                        <EmptyState
                             icon={<ListChecks className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No skills yet"
                             body="Add the skills, tools, and strengths that help visitors understand what you can do."

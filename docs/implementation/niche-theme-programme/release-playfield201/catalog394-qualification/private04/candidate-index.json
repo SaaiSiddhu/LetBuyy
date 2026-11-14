@@ -1,7 +1,0 @@
-{
-  "mainRoot": "/Volumes/Projects/LetBuyy",
-  "overlayRoot": "/Volumes/Projects/LetBuyy/docs/implementation/niche-theme-programme/release-playfield201/catalog394-qualification/private04/empty-overlay",
-  "suitePath": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
-  "suiteSha256": "c40f1a77d45b01d35e90cffc8e5d39fe6421856a3ab580d5ec8ac0d784b900ec",
-  "proposalDirectory": "docs/implementation/niche-theme-programme/release-playfield201/proposals394/f5f54a8009732ff71ba248e1f3356f58441e8b2340225c47b19e5ac386ac790e/"
-}

@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
-import { validatePasswordStrength } from '@/lib/auth/password'
 import { Badge, Banner, Button, Input, ProgressBar } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -18,9 +17,6 @@ const translations: Record<Lang, Record<string, string>> = {
         confirmPassword: 'Confirm password',
         resetPassword: 'Reset password',
         minLength: 'At least 8 characters',
-        maxLength: 'At most 128 characters',
-        hasLowercase: 'One lowercase letter',
-        hasSpecial: 'One symbol',
         hasUppercase: 'One uppercase letter',
         hasNumber: 'One number',
         strength: 'Password strength',
@@ -40,9 +36,6 @@ const translations: Record<Lang, Record<string, string>> = {
         confirmPassword: 'पासवर्ड की पुष्टि करें',
         resetPassword: 'पासवर्ड रीसेट करें',
         minLength: 'कम से कम 8 अक्षर',
-        maxLength: 'अधिकतम 128 अक्षर',
-        hasLowercase: 'एक छोटा अक्षर',
-        hasSpecial: 'एक विशेष चिह्न',
         hasUppercase: 'एक बड़ा अक्षर',
         hasNumber: 'एक संख्या',
         strength: 'पासवर्ड मजबूती',
@@ -62,9 +55,6 @@ const translations: Record<Lang, Record<string, string>> = {
         confirmPassword: 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
         resetPassword: 'கடவுச்சொல்லை மீட்டமைக்கவும்',
         minLength: 'குறைந்தது 8 எழுத்துகள்',
-        maxLength: 'அதிகபட்சம் 128 எழுத்துகள்',
-        hasLowercase: 'ஒரு சிறிய எழுத்து',
-        hasSpecial: 'ஒரு குறியீடு',
         hasUppercase: 'ஒரு பெரிய எழுத்து',
         hasNumber: 'ஒரு எண்',
         strength: 'கடவுச்சொல் வலிமை',
@@ -106,7 +96,13 @@ function ResetPasswordContent() {
         localStorage.setItem('letbuyy_lang', next)
     }
 
-    const { rules, isValid } = useMemo(() => validatePasswordStrength(password), [password])
+    const rules = useMemo(() => ({
+        minLength: password.length >= 8,
+        hasUppercase: /[A-Z]/.test(password),
+        hasNumber: /[0-9]/.test(password),
+    }), [password])
+
+    const isValid = rules.minLength && rules.hasUppercase && rules.hasNumber
     const passwordsMatch = password === confirmPassword && confirmPassword.length > 0
     const ruleCount = Object.values(rules).filter(Boolean).length
     const visibilityButtonClass = 'inline-flex h-[var(--lb-density-icon-button-height)] w-[var(--lb-density-icon-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]'
@@ -121,7 +117,7 @@ function ResetPasswordContent() {
         try {
             const res = await fetch('/api/auth/reset-password', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ token, password }),
             })
 
@@ -212,14 +208,11 @@ function ResetPasswordContent() {
                     />
 
                     <div className="grid gap-[var(--lb-space-2)]">
-                        <ProgressBar value={ruleCount} max={Object.keys(rules).length} label={t.strength} />
+                        <ProgressBar value={ruleCount} max={3} label={t.strength} />
                         <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                             <Badge label={t.minLength} variant={rules.minLength ? 'success' : 'warning'} />
                             <Badge label={t.hasUppercase} variant={rules.hasUppercase ? 'success' : 'warning'} />
                             <Badge label={t.hasNumber} variant={rules.hasNumber ? 'success' : 'warning'} />
-                            <Badge label={t.hasLowercase} variant={rules.hasLowercase ? 'success' : 'warning'} />
-                            <Badge label={t.hasSpecial} variant={rules.hasSpecial ? 'success' : 'warning'} />
-                            <Badge label={t.maxLength} variant={rules.maxLength ? 'success' : 'warning'} />
                         </div>
                     </div>
 

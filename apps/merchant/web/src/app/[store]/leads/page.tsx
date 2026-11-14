@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Table,
@@ -10,6 +8,7 @@ import { Button, Table,
     Banner,
     Card,
     ConfirmDialog,
+    EmptyState,
     Mail,
     MessageSquare,
     Page,
@@ -25,7 +24,6 @@ import { Button, Table,
     Users,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDateWithTime as formatDate } from '@letbuyy/ui/formatting'
 
 type LeadStatus = 'new' | 'read' | 'contacted' | 'converted'
@@ -103,18 +101,15 @@ export default function LeadsPage() {
     const [leadToDelete, setLeadToDelete] = useState<Lead | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadLeads = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions?type=lead&limit=100`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load leads'))
@@ -122,7 +117,6 @@ export default function LeadsPage() {
 
             setItems(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load leads'
             setItems([])
             setLoadError(message)
@@ -132,9 +126,9 @@ export default function LeadsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadLeads()
@@ -235,7 +229,7 @@ export default function LeadsPage() {
     const renderLeads = (leads: Lead[]) => {
         if (items.length === 0) {
             return (
-                <EmptyState scene="leads"
+                <EmptyState
                     icon={<Users className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                     title="No leads yet"
                     body="Lead captures and sign-up forms from your storefront will appear here with follow-up status actions."
@@ -246,7 +240,7 @@ export default function LeadsPage() {
 
         if (leads.length === 0) {
             return (
-                <EmptyState scene="leads"
+                <EmptyState
                     icon={<User className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                     title="No leads in this view"
                     body="Switch views or wait for matching lead captures to arrive."
@@ -327,8 +321,7 @@ export default function LeadsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="customers"
-                    recipe="index"
+                <PageHeader
                     title="Leads"
                     description="Track storefront lead captures and move each prospect through follow-up."
                     breadcrumbs={[{ label: 'Customers' }, { label: 'Leads' }]}
@@ -351,8 +344,7 @@ export default function LeadsPage() {
 
     return (
         <Page>
-            <PageHeader identity="customers"
-                recipe="index"
+            <PageHeader
                 title="Leads"
                 description="Track storefront lead captures and move each prospect through follow-up."
                 breadcrumbs={[{ label: 'Customers' }, { label: 'Leads' }]}

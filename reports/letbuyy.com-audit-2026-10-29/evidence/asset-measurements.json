@@ -1,0 +1,43 @@
+{
+  "measured_date": "2026-10-29",
+  "assets": [
+    {
+      "url": "https://www.letbuyy.com/og/letbuyy-default.png",
+      "status": 200,
+      "bytes": 52770,
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "url": "https://www.letbuyy.com/icons/letbuyy-logo-512.png",
+      "status": 200,
+      "bytes": 225263,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "url": "https://www.letbuyy.com/illustrations/storefront/urban-kicks-hero-v1.webp",
+      "status": 200,
+      "bytes": 107040
+    },
+    {
+      "url": "https://www.letbuyy.com/illustrations/storefront-launch-cta-v1.webp",
+      "status": 200,
+      "bytes": 128004
+    }
+  ],
+  "satellite_sitemap_probes": [
+    {
+      "url": "https://themes.letbuyy.com/sitemap.xml",
+      "result": "curl error 6: could not resolve host; independent resolver confirmation needed"
+    },
+    {
+      "url": "https://apps.letbuyy.com/sitemap.xml",
+      "result": "curl error 6: could not resolve host; independent resolver confirmation needed"
+    },
+    {
+      "url": "https://developer.letbuyy.com/sitemap.xml",
+      "result": "curl error 6: could not resolve host; independent resolver confirmation needed"
+    }
+  ]
+}

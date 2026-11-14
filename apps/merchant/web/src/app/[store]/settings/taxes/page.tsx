@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -10,6 +8,7 @@ import { Button, Input,
     Card,
     ClipboardList,
     ConfirmDialog,
+    EmptyState,
     Globe,
     IndianRupee,
     Plus,
@@ -21,12 +20,20 @@ import { Button, Input,
     Truck,
     useToast,
 } from '@letbuyy/ui'
-import type { TaxRate as CanonicalTaxRate } from '@letbuyy/shared-types'
-import { GST_STATES } from '@letbuyy/checkout-core'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
-type TaxRate = Pick<CanonicalTaxRate, 'id' | 'name' | 'rate' | 'country' | 'state' | 'hsn_code' | 'applies_to' | 'is_compound' | 'is_shipping' | 'priority' | 'is_active' | 'created_at'>
+interface TaxRate {
+    id: string
+    name: string
+    rate: number
+    country: string
+    state: string | null
+    is_compound: boolean
+    is_shipping: boolean
+    priority: number
+    is_active: boolean
+    created_at: string
+}
 
 type TaxesPayload = {
     data?: unknown
@@ -69,8 +76,6 @@ function normalizeTaxRates(value: unknown): TaxRate[] {
             is_compound: rate.is_compound === true,
             is_shipping: rate.is_shipping === true,
             priority: coerceNumber(rate.priority),
-            hsn_code: typeof rate.hsn_code === 'string' ? rate.hsn_code : null,
-            applies_to: rate.applies_to === 'shipping' ? 'shipping' : rate.applies_to === 'products' ? 'products' : 'all',
             is_active: rate.is_active === true,
             created_at: readString(rate.created_at),
         }]
@@ -78,8 +83,7 @@ function normalizeTaxRates(value: unknown): TaxRate[] {
 }
 
 function formatTaxPercent(rate: number) {
-    // The Merchant API returns percentage points; only persistence uses fractions.
-    return `${Math.round(rate * 10000) / 10000}%`
+    return `${Math.round(rate * 10000) / 100}%`
 }
 
 interface TaxMetricProps {
@@ -122,9 +126,7 @@ export default function TaxesSettingsPage() {
     const [formRate, setFormRate] = useState('')
     const [formCountry, setFormCountry] = useState('IN')
     const [formState, setFormState] = useState('')
-    const [formHsn, setFormHsn] = useState('')
-    const [formPriority, setFormPriority] = useState('0')
-    const [registrationConfigured, setRegistrationConfigured] = useState(false)
+    const [formCompound, setFormCompound] = useState(false)
     const [formShipping, setFormShipping] = useState(false)
     const [formActive, setFormActive] = useState(true)
     const [formError, setFormError] = useState<string | null>(null)
@@ -137,18 +139,15 @@ export default function TaxesSettingsPage() {
         ? (formSaveState === 'saving' ? 'saving' : 'unsaved')
         : settingsSaveState
 
-    const beginRead = useReadRequest(store)
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/taxes`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = (await response.json().catch(() => null)) as TaxesPayload | null
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getPayloadError(payload, 'Unable to load tax settings'))
@@ -156,13 +155,11 @@ export default function TaxesSettingsPage() {
 
             const data = isRecord(payload?.data) ? payload.data : {}
             const taxInclusive = data.tax_inclusive === true
-            setRegistrationConfigured(data.registration_configured === true)
             setTaxData({ tax_inclusive: taxInclusive })
             setInitialTaxInclusive(taxInclusive)
             setTaxRates(normalizeTaxRates(data.rates))
             setSettingsSaveState('saved')
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load tax settings'
             setLoadError(message)
             notify({
@@ -171,9 +168,9 @@ export default function TaxesSettingsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadData()
@@ -186,8 +183,7 @@ export default function TaxesSettingsPage() {
         setFormRate('')
         setFormCountry('IN')
         setFormState('')
-        setFormHsn('')
-        setFormPriority('0')
+        setFormCompound(false)
         setFormShipping(false)
         setFormActive(true)
         setFormError(null)
@@ -246,11 +242,10 @@ export default function TaxesSettingsPage() {
         setFormMode('edit')
         setEditingId(rate.id)
         setFormName(rate.name)
-        setFormRate(String(rate.rate))
+        setFormRate(String(Math.round(rate.rate * 10000) / 100))
         setFormCountry(rate.country || 'IN')
         setFormState(rate.state || '')
-        setFormHsn(rate.hsn_code || '')
-        setFormPriority(String(rate.priority))
+        setFormCompound(rate.is_compound)
         setFormShipping(rate.is_shipping)
         setFormActive(rate.is_active)
         setFormError(null)
@@ -274,7 +269,7 @@ export default function TaxesSettingsPage() {
             return
         }
 
-        if (!Number.isFinite(rateValue) || rateValue < 0 || rateValue > 100 || !Number.isInteger(Number(formPriority)) || Number(formPriority) < 0) {
+        if (!Number.isFinite(rateValue)) {
             const message = 'Enter a valid percentage rate.'
             setFormError(message)
             notify({
@@ -301,13 +296,10 @@ export default function TaxesSettingsPage() {
 
         const body = {
             name,
-            rate: rateValue,
+            rate: rateValue / 100,
             country: formCountry || 'IN',
             ...(formState.trim() ? { state: formState.trim() } : formMode === 'edit' ? { state: null } : {}),
-            is_compound: false,
-            ...(!formShipping && formHsn.trim() ? { hsn_code: formHsn.trim() } : formMode === 'edit' ? { hsn_code: null } : {}),
-            priority: Number(formPriority),
-            applies_to: formShipping ? 'shipping' : 'products',
+            is_compound: formCompound,
             is_shipping: formShipping,
             is_active: formActive,
         }
@@ -349,8 +341,7 @@ export default function TaxesSettingsPage() {
     }, [
         editingId,
         formActive,
-        formHsn,
-        formPriority,
+        formCompound,
         formCountry,
         formMode,
         formName,
@@ -401,7 +392,6 @@ export default function TaxesSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
-                navigationKey="taxes"
                 title="Taxes and duties"
                 description="Configure price tax handling and checkout tax rates."
                 store={store}
@@ -418,13 +408,12 @@ export default function TaxesSettingsPage() {
     return (
         <>
             <SettingsPane
-                navigationKey="taxes"
                 title="Taxes and duties"
                 description="Configure price tax handling and checkout tax rates."
                 store={store}
                 guidance={{
                     title: 'Checkout impact',
-                    body: 'Configure India GST for products and delivery separately. Checkout uses the saved rates and price mode; missing required setup stops payment.',
+                    body: 'Compound taxes are calculated on top of other taxes. Shipping taxes apply to delivery costs when checkout has a shipping rate.',
                 }}
                 primaryAction={{
                     label: 'Add tax rate',
@@ -485,7 +474,6 @@ export default function TaxesSettingsPage() {
                     />
                 </div>
 
-                {!registrationConfigured && <Banner variant="warning" title="GST setup needs review">Complete legal name, GSTIN and supplier state in <a className="underline" href={`/${encodeURIComponent(store)}/settings/business`}>Business details</a>, and the invoice address in <a className="underline" href={`/${encodeURIComponent(store)}/settings/general`}>General settings</a>. A registered store with incomplete setup cannot collect payment until its tax facts are complete.</Banner>}
                 <Card>
                     <Section
                         title="Tax region"
@@ -521,7 +509,7 @@ export default function TaxesSettingsPage() {
                     <Card>
                         <Section
                             title={formMode === 'edit' ? 'Edit tax rate' : 'Add tax rate'}
-                            description="Configure India GST as a percentage. These settings do not enable customs duties or tax filing."
+                            description="Create GST or duty rates for checkout calculations. Rates are stored as percentages."
                         >
                             <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                                 <Input
@@ -540,18 +528,38 @@ export default function TaxesSettingsPage() {
                                     placeholder="e.g. 18"
                                     helperText="Enter the percentage shown at checkout."
                                 />
-                                <Input label="Country" value="India (IN)" disabled helperText="India GST is supported. International duties are unavailable." />
-                                <label className="space-y-[var(--lb-space-2)]">
-                                    <span className="block text-sm font-medium">Destination state</span>
-                                    <select aria-label="Destination state" value={formState} onChange={event => setFormState(event.target.value)} className="w-full rounded-lg border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-3">
-                                        <option value="">All Indian states</option>
-                                        {GST_STATES.map(state => <option key={state.code} value={state.code}>{state.name} ({state.code})</option>)}
-                                    </select>
-                                </label>
-                                <Input label="HSN code" value={formHsn} onChange={event => setFormHsn(event.target.value)} disabled={formShipping} helperText="Optional exact product HSN. Leave empty for the general rate." />
-                                <Input label="Priority" type="number" min={0} step={1} value={formPriority} onChange={event => setFormPriority(event.target.value)} helperText="Higher priority wins within the same HSN and state scope." />
+                                <Input
+                                    label="Country"
+                                    value={formCountry}
+                                    onChange={(event) => setFormCountry(event.target.value)}
+                                    placeholder="IN"
+                                    helperText="Use the country code or configured market label."
+                                />
+                                <Input
+                                    label="State"
+                                    value={formState}
+                                    onChange={(event) => setFormState(event.target.value)}
+                                    placeholder="e.g. TN"
+                                    helperText="Optional. Leave blank for country-wide tax."
+                                />
                             </div>
-                            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
+                            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                                <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
+                                    <Input unstyled
+                                        type="checkbox"
+                                        checked={formCompound}
+                                        onChange={(event) => setFormCompound(event.target.checked)}
+                                        className="mt-[var(--lb-space-1)] h-[var(--lb-space-4)] w-[var(--lb-space-4)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                    />
+                                    <span className="space-y-[var(--lb-space-1)]">
+                                        <span className="block text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text)]">
+                                            Compound tax
+                                        </span>
+                                        <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                            Calculate on top of other taxes.
+                                        </span>
+                                    </span>
+                                </label>
                                 <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
                                     <Input unstyled
                                         type="checkbox"
@@ -609,10 +617,10 @@ export default function TaxesSettingsPage() {
                         )}
                     >
                         {taxRates.length === 0 ? (
-                            <EmptyState scene="taxes"
+                            <EmptyState
                                 icon={<Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                 title="No tax rates configured"
-                                body="Add your applicable GST rates after completing the store’s registration details."
+                                body="Add GST, state, or duty rates so checkout can calculate taxes consistently."
                                 primaryAction={!formMode ? <Button type="button" onClick={startAdd} disabled={settingsSaveState !== 'saved'}>Add tax rate</Button> : undefined}
                             />
                         ) : (

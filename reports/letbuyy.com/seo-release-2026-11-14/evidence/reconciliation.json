@@ -1,0 +1,946 @@
+{
+  "base": "e4105581e3346041d71694d3db093eb713773e07",
+  "rows": [
+    {
+      "path": ".stylelintrc.cjs",
+      "decision": "include marketing change",
+      "baseOid": "dc5964c5cebde31daeae7e8b74b377f910fedfd5"
+    },
+    {
+      "path": "apps/marketing/web/next.config.ts",
+      "decision": "include marketing change",
+      "baseOid": "59af9c8799bcfc268e7b12abcb390b892c5d8b00"
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-Marketing-400-900.woff2",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-Variable-Marketing.woff2",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/README.md",
+      "decision": "include marketing change",
+      "baseOid": "b89c8d5f3901fd4605d6fdd588348fa37b2d09ea"
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-apple-touch-v3.png",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-logo-512.png",
+      "decision": "include marketing change",
+      "baseOid": "202e38621d30a7cbed5dd1b51c8a66baffa5128e"
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-store-mark-v3.svg",
+      "decision": "include marketing change",
+      "baseOid": "2fe3c74f912a85e462479fd14e6335da0b641d3f"
+    },
+    {
+      "path": "apps/marketing/web/public/og/letbuyy-default.png",
+      "decision": "include marketing change",
+      "baseOid": "57764d15e8793cf7526e93f8824972a3562db369"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/create/layout.tsx",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/create/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "066d84d80dcd201a568a7becc2726261e3762ca8"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/demo/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "1812e0189c4be9eb4110beaf2e6ecf5db0b60b35"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/layout.tsx",
+      "decision": "include marketing change",
+      "baseOid": "5eafe69617f6191e7c4552798e26833d01d39f14"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/legal/[slug]/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "7f5e6317e4998f5c82ad7082dfb4b578ed504ade"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "096842e07aea4db5eefe88db3270e88ad6c45fee"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/pricing/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "b06c00ad4dd0407aaab2a3504de5738e70717bf3"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/[slug]/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "fa4340da41034ce1e16b397f09ca668bd0278492"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "e056f5737e1bf3512ba9a26d66b05eba39b785dc"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/authors/[slug]/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "96aa5e5fb32db19f0cc2cf4c877e9b14c5bb2d4e"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/changelog/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "c46698632a227a564388a065e5931e5e629c57cf"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/layout.tsx",
+      "decision": "include marketing change",
+      "baseOid": "93d1b16cbf6011f470af0ea574766b14e5c08ef8"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/releases/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "9cc110a5d8e457c09e818fefd4e29fcbbe72310b"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/rss.xml/route.ts",
+      "decision": "include marketing change",
+      "baseOid": "fa980e3ebcb81d2983ca40b186dfb70b52f91691"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/search/layout.tsx",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/sitemap.xml/route.ts",
+      "decision": "include marketing change",
+      "baseOid": "9860eea15ef28054c41c1921d53001234ecd73ce"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/tag/[tag]/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "3977ee24b65eca60b25e66c33330d12b5f03ecb8"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/sitemap/page.tsx",
+      "decision": "include marketing change",
+      "baseOid": "ac13c2a7b1cff09da021ae536fc87a797ced256b"
+    },
+    {
+      "path": "apps/marketing/web/src/app/api/founding-pricing/route.ts",
+      "decision": "include marketing change",
+      "baseOid": "5e48f6f60b15c8c03cd981abcc2372599e884978"
+    },
+    {
+      "path": "apps/marketing/web/src/app/favicon.ico",
+      "decision": "include marketing change",
+      "baseOid": "718d6fea4835ec2d246af9800eddb7ffb276240c"
+    },
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "decision": "three-way merged",
+      "baseOid": "daf659f64a53d617f1b825e0f86e4bcb4239ca3f"
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/app/how-it-works.css",
+      "decision": "include marketing change",
+      "baseOid": "aca8e0376e0cbc1e9a79b8b3be5c0478599d62bf"
+    },
+    {
+      "path": "apps/marketing/web/src/app/layout.tsx",
+      "decision": "include marketing change",
+      "baseOid": "32628107f5affaaf14d2fd913e50c131051d8925"
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/app/sitemap.ts",
+      "decision": "include marketing change",
+      "baseOid": "51a68e04a15485ce316498fe86e3acf7f2cb1166"
+    },
+    {
+      "path": "apps/marketing/web/src/components/BrandLogo.tsx",
+      "decision": "include marketing change",
+      "baseOid": "7d5d92b2c91bf1e2519bd88c747907092e9f15ba"
+    },
+    {
+      "path": "apps/marketing/web/src/components/CapabilityArtwork.tsx",
+      "decision": "include marketing change",
+      "baseOid": "ec463549d662c0f4dc17cad1455950ddb4369d46"
+    },
+    {
+      "path": "apps/marketing/web/src/components/CapabilityMap.tsx",
+      "decision": "include marketing change",
+      "baseOid": "e160d8e8d131bca820761335aa71d4438177b652"
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceGlobeCanvas.tsx",
+      "decision": "include marketing change",
+      "baseOid": "189036432cb8560da472d4243ca9f83d7a694f17"
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceNetwork.tsx",
+      "decision": "include marketing change",
+      "baseOid": "69fe7385b622a3df3ba39e58e588049f293472b7"
+    },
+    {
+      "path": "apps/marketing/web/src/components/EcosystemMap.tsx",
+      "decision": "include marketing change",
+      "baseOid": "8eff1d616c96d4816805d93cc0213fb6f3cd44dd"
+    },
+    {
+      "path": "apps/marketing/web/src/components/FAQ.tsx",
+      "decision": "include marketing change",
+      "baseOid": "5018d61480dec5385d32802d3b05aeab5e0ca80e"
+    },
+    {
+      "path": "apps/marketing/web/src/components/FinalCTA.tsx",
+      "decision": "include marketing change",
+      "baseOid": "208fbb606316785961e04f8362f7eaaaf91f8cc6"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Footer.tsx",
+      "decision": "include marketing change",
+      "baseOid": "64cdec0df4fee4d15ee3e2444d5a1f7d9f75228b"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Header.tsx",
+      "decision": "include marketing change",
+      "baseOid": "acdba5c7944d4a1b4ec4f1397b07d698dba6c035"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Hero.tsx",
+      "decision": "include marketing change",
+      "baseOid": "1a095f739aec19ca84ff528b32c60839427fd717"
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingHome.tsx",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingIllustration.tsx",
+      "decision": "include marketing change",
+      "baseOid": "ffa1ac4ab9877ac6fef12a5d8e9e382890acaa41"
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingMotionProvider.tsx",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/components/MerchantJourney.tsx",
+      "decision": "include marketing change",
+      "baseOid": "b0030fc77ef3efd300df174ac2ee3551daeccd48"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Pricing.tsx",
+      "decision": "include marketing change",
+      "baseOid": "208d8671eb172c76e45d03cce9f21384c4d38b9d"
+    },
+    {
+      "path": "apps/marketing/web/src/components/SiteTypes.tsx",
+      "decision": "include marketing change",
+      "baseOid": "10ad5cb200d8b68e48e95bde0e73f87a82b785c8"
+    },
+    {
+      "path": "apps/marketing/web/src/components/TrustIndicators.tsx",
+      "decision": "include marketing change",
+      "baseOid": "b95e2f4d9bd5fb6ad95c96a9614cd3fed36fb0e4"
+    },
+    {
+      "path": "apps/marketing/web/src/components/contact/ContactForm.tsx",
+      "decision": "preserve integration",
+      "baseOid": "45c1747d98ebbbafcfed8d1c6c04e1dc23bcb991"
+    },
+    {
+      "path": "apps/marketing/web/src/components/contact/TurnstileWidget.tsx",
+      "decision": "preserve integration",
+      "baseOid": "68f26dd286a4407f8e4ad55850a6e8afb3cbe69b"
+    },
+    {
+      "path": "apps/marketing/web/src/components/demo/DemoRequestForm.tsx",
+      "decision": "preserve integration",
+      "baseOid": "cbdbeeecc82e3097ae890c5ab525e6ff9b228b9a"
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/Copy.tsx",
+      "decision": "include marketing change",
+      "baseOid": "812c13b89c01e6acb5ebb0de8c54e60498b56ada"
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/CopyProvider.tsx",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/LanguageSwitcher.tsx",
+      "decision": "include marketing change",
+      "baseOid": "9bc6477a88b8263cb07d873369b7cc06dbf38231"
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/useCopy.ts",
+      "decision": "include marketing change",
+      "baseOid": "2e8f3dace42ba674149403733c29e8aa16f029f5"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleBody.tsx",
+      "decision": "include marketing change",
+      "baseOid": "0aaa169ed2b98f90d4e0a0798971bdb308f558ff"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleDock.tsx",
+      "decision": "include marketing change",
+      "baseOid": "c75f7bc4fa214b8352f296e725ea4ef91b9d9142"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleSectionVisual.tsx",
+      "decision": "include marketing change",
+      "baseOid": "fdd2ac23df778a8f009fea16f1b5f8625ee5a914"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleSidebar.tsx",
+      "decision": "include marketing change",
+      "baseOid": "45095953894c4fafb4932e97fa60377634fb64ea"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleVisualOverview.tsx",
+      "decision": "include marketing change",
+      "baseOid": "61fc0c4074601340404f1899f2ad71dd030bd302"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/BookmarkButton.tsx",
+      "decision": "include marketing change",
+      "baseOid": "3d2531f8717a718fb597dc44200f9e6eedb4da09"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/CopyLinkButton.tsx",
+      "decision": "include marketing change",
+      "baseOid": "9202be2999fdecb97497803958a0638623a9d54f"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/LiquidGuide.tsx",
+      "decision": "include marketing change",
+      "baseOid": "91040d4eb7d4092e331315d3a65f27ee7886519b"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/PrevNextArticle.tsx",
+      "decision": "include marketing change",
+      "baseOid": "69c43f385c3b7638c5ba240db6ef12a2ea1016f9"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/RecommendedArticles.tsx",
+      "decision": "include marketing change",
+      "baseOid": "b256cd368b80c62f9be40840f85cad4e6d695197"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ResourceArticleArtwork.tsx",
+      "decision": "include marketing change",
+      "baseOid": "6a8a0e9174d725af0ad7cf819746d959b9e27644"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ThemeGuide.tsx",
+      "decision": "include marketing change",
+      "baseOid": "a33c4ddbde07abc9aecdbd2a4ea16e11659b8f5f"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/theme-guide.module.css",
+      "decision": "include marketing change",
+      "baseOid": "140ea5ebfdeecb0aef57f0879c3041234e08ac8f"
+    },
+    {
+      "path": "apps/marketing/web/src/components/security/TurnstileWidget.tsx",
+      "decision": "preserve integration",
+      "baseOid": "92116af9a5af4b0954702ca2376824032d51ded7"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/brand-assets.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe-renderer.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe.ts",
+      "decision": "include marketing change",
+      "baseOid": "2bd947d8af7c961bc9e29a88e76a661a173e8fe4"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe.worker.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/lib/create-globe-worker.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/lib/globe-renderer-types.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/article-content.ts",
+      "decision": "include marketing change",
+      "baseOid": "87f3294c016b5d7ed8d5e10ecab0ea09013c4b56"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/article-summaries.json",
+      "decision": "include marketing change",
+      "baseOid": "0ec02a4bb84ac205b33f23a52a2d2e9fc2d4482b"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/ai-commerce-explained.json",
+      "decision": "include marketing change",
+      "baseOid": "2b3ddfde7fbc9e013317cd257fbf423f739cc44f"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/ai-product-recommendations.json",
+      "decision": "include marketing change",
+      "baseOid": "93acdb4b0637a46cca6b89182d694dc61ff163ea"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/automating-operations-ai.json",
+      "decision": "include marketing change",
+      "baseOid": "71541a709a009b9b10a5d99fac21a3212df0fb93"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/building-first-letbuyy-app.json",
+      "decision": "include marketing change",
+      "baseOid": "1c4db379bbc3154d3a14313397b4732071152202"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/building-first-letbuyy-store.json",
+      "decision": "include marketing change",
+      "baseOid": "e71f1ff623c06bb7b94b87e88a36cf229f88a024"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/commerce-copilot-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "8642efe6f483e18daee624e91e6c4e7457383322"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/custom-integrations-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "ba0cd6bcaeda44d07f8aa8998e45db0100356981"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/d2c-brand-launch-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "c150480f06549d39d81e63a9ef4b2edd7b21e57d"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/email-marketing-ecommerce.json",
+      "decision": "include marketing change",
+      "baseOid": "f18ab5922f07ed0c07f8a1b17f57015af365e25b"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/first-100-orders-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "733ef0a0157832b4ad9d0ff9f1ca5aec6f677b24"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/gst-for-ecommerce-india.json",
+      "decision": "include marketing change",
+      "baseOid": "336ee72e58a44cd94d11355f7cfc3aedbeccd21c"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-product-reviews-increase-conversion.json",
+      "decision": "include marketing change",
+      "baseOid": "4a87eb6b08115f31423cabb4373e2e87cc010f85"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-themes-work.json",
+      "decision": "include marketing change",
+      "baseOid": "0862c0ce1e2114bcdad899572fcf489afeae0575"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-to-start-an-online-store-india.json",
+      "decision": "include marketing change",
+      "baseOid": "9e10bcabc6fd976200301468cbb3e1614e279c81"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/introduction-to-apps.json",
+      "decision": "include marketing change",
+      "baseOid": "74b536fcb8708e7385aa4eb2f25a01ea36a1d3e3"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/inventory-management-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "4032ace5371ebfa2209158d6af89dbed43749d0f"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/invoicing-india-merchants.json",
+      "decision": "include marketing change",
+      "baseOid": "1aa2a97f84a301e6db8b9a892ec80d2ed0ad8dc6"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/letbuyy-api-getting-started.json",
+      "decision": "include marketing change",
+      "baseOid": "70d86dd107b1b5f3cb9590054150eacffe7d9fa1"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/letbuyy-platform-overview.json",
+      "decision": "include marketing change",
+      "baseOid": "d28365953c2980f3707f1dea2a0b0b3719d7a4bf"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/liquid-theming-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "2c315bec9b2e33e79b447821bdaf6db581807d44"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/merchant-web-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "9ae45cac5783eaf1103ea7a0e5674c3a1aac45db"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/multi-warehouse-inventory.json",
+      "decision": "include marketing change",
+      "baseOid": "7c7a035955f72553a04255fdb43375807dd61e05"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/order-fulfillment-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "4c810ea7a8e9a46f9e8bba0db9e240c606180c13"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/product-page-optimization.json",
+      "decision": "include marketing change",
+      "baseOid": "ed939bf12f0f2e25a8374bf797c64071f36d1200"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/razorpay-integration-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "954718180f342a92082f38aa47a25b0cf19172c3"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/reducing-cart-abandonment.json",
+      "decision": "include marketing change",
+      "baseOid": "fd0dcb3cac5be289128646eb2e03ca8486aafdd6"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/refunds-returns-policy-india.json",
+      "decision": "include marketing change",
+      "baseOid": "008bd5b4e808d0835740649b8928169dc4134fa9"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/retention-strategies-india.json",
+      "decision": "include marketing change",
+      "baseOid": "bf3571d98ee1c004c78f41bda2be3cbb7a5a909c"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/shipping-india-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "c234445153e8cacbf09c6822c25e0ce7e52a10b4"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/social-commerce-india.json",
+      "decision": "include marketing change",
+      "baseOid": "774455a6dabf1952eecb45ccd79d109e6d68ca33"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/store-seo-checklist.json",
+      "decision": "include marketing change",
+      "baseOid": "65ce3ef779ff9f3aae82f28b316ccc5072f8a4cb"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/understanding-fulfillment.json",
+      "decision": "include marketing change",
+      "baseOid": "5c6f9cfad2a243340a62f16b41a76d5253fecb53"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/upi-vs-cod-india.json",
+      "decision": "include marketing change",
+      "baseOid": "762d42f13d93f6da710bd505a3ff09b0a28fe79a"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/webhooks-complete-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "49bdc151d1cce6d3df468730a9da7c1a620c4a80"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/workflow-automation-merchants.json",
+      "decision": "include marketing change",
+      "baseOid": "e06ca9ee21829239c43970e125e9c413b3e3d79b"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/ai-commerce-explained.json",
+      "decision": "include marketing change",
+      "baseOid": "287195f26ac489985913ad70a18c46fbae7e50ee"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/ai-product-recommendations.json",
+      "decision": "include marketing change",
+      "baseOid": "79eda638a7d1f8c56f79ad13d0e5595db28918ce"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/automating-operations-ai.json",
+      "decision": "include marketing change",
+      "baseOid": "a2e3993cfde3e1b2ac243b318f856ba6b47297ec"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/building-first-letbuyy-app.json",
+      "decision": "include marketing change",
+      "baseOid": "665a8d058a270683721371580e63122c9becef21"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/building-first-letbuyy-store.json",
+      "decision": "include marketing change",
+      "baseOid": "f0fb7c43927dc241fe9703f6412c72136c219664"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/commerce-copilot-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "d1f9702e415c4a5ea6c97d2a1d5ae69068fab8c9"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/custom-integrations-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "dd8fc24e3fdf5185623cc3b2ef9397b4bf12ccf7"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/d2c-brand-launch-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "2a6940a8fb48d2cf61460b3d453b0c7970186aaa"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/email-marketing-ecommerce.json",
+      "decision": "include marketing change",
+      "baseOid": "710dfa1e23cadfd9a2641178e51f7eae6ccd85e9"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/first-100-orders-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "0a5d74b8ecc99e8f6fb8647245f2953d8f4523b7"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/gst-for-ecommerce-india.json",
+      "decision": "include marketing change",
+      "baseOid": "00198021df1a6c680c6e55c91ab4df834ef451e7"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-product-reviews-increase-conversion.json",
+      "decision": "include marketing change",
+      "baseOid": "284d5c20e4c3290694d3216b33e430b97c700e88"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-themes-work.json",
+      "decision": "include marketing change",
+      "baseOid": "e3222ebf883367511f077ab018377d3ea9cd0b24"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-to-start-an-online-store-india.json",
+      "decision": "include marketing change",
+      "baseOid": "d6048b78ae47646f3b82a495b2a25921c5c5f72d"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/introduction-to-apps.json",
+      "decision": "include marketing change",
+      "baseOid": "73857ce2501a4326fdcaea3ae44abe718a1a1613"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/inventory-management-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "8b41a21b87bdbfbefa986eb0c02ee97302be0eed"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/invoicing-india-merchants.json",
+      "decision": "include marketing change",
+      "baseOid": "88e86b8f0fb3abd12a822620df6505b5fe1529da"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/letbuyy-api-getting-started.json",
+      "decision": "include marketing change",
+      "baseOid": "fa182719f28d3516b2fd5f4ec950b9eccd67604d"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/letbuyy-platform-overview.json",
+      "decision": "include marketing change",
+      "baseOid": "c1aadce02b05f154116d09a0b1d8acc0a963b6ce"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/liquid-theming-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "1769972f82e9d16cb5302d5cb8776447ed7af474"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/merchant-web-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "f67b34a3529404111c877afe6d956210d496319d"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/multi-warehouse-inventory.json",
+      "decision": "include marketing change",
+      "baseOid": "e443994e781f12e919aefafe67d4dc0a70a606b4"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/order-fulfillment-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "0da0c9614987bf38506400d122ec725b8b2d3c97"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/product-page-optimization.json",
+      "decision": "include marketing change",
+      "baseOid": "29a45b8e42961976181203db3500ecc230d2d3bf"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/razorpay-integration-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "985788d0bb3db20f1a3e1dd59243245b46533ab3"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/reducing-cart-abandonment.json",
+      "decision": "include marketing change",
+      "baseOid": "b14cdbd688d74beb7e498c8313b8974311544542"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/refunds-returns-policy-india.json",
+      "decision": "include marketing change",
+      "baseOid": "43cef84213ef30196238e9ea826cc767cd56efa8"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/retention-strategies-india.json",
+      "decision": "include marketing change",
+      "baseOid": "81050c7c616077268d63730e4937a805417d63d6"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/shipping-india-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "542fd348e04eab33303ab88045323c8e2cd11f44"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/social-commerce-india.json",
+      "decision": "include marketing change",
+      "baseOid": "eb579ebe474c51dedac0d42d45012fae25d1ade5"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/store-seo-checklist.json",
+      "decision": "include marketing change",
+      "baseOid": "9feae38a8a7dfadcda12df2ddf50e2ebfb9fe537"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/understanding-fulfillment.json",
+      "decision": "include marketing change",
+      "baseOid": "20a94050d725c11558afa59a52e46b91579912d7"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/upi-vs-cod-india.json",
+      "decision": "include marketing change",
+      "baseOid": "a0aa524df22ec0ad7bb078ae5407561bcdd8e1a2"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/webhooks-complete-guide.json",
+      "decision": "include marketing change",
+      "baseOid": "fc7ce03b2c8effc94cf915cbe1012e99b14d35dd"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/workflow-automation-merchants.json",
+      "decision": "include marketing change",
+      "baseOid": "da35cf58a615c3ca5172c41dc0a35635782b7c3d"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy-catalog.ts",
+      "decision": "include marketing change",
+      "baseOid": "e3f3c59f1894a229045a540af7fa4c2c11c70d0c"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy-format.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy.ts",
+      "decision": "include marketing change",
+      "baseOid": "c161407cc5b94ceba2cd024e31eb526f4d708472"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/dictionaries/en.ts",
+      "decision": "include marketing change",
+      "baseOid": "13a4585e3b243c8a79fe5269d3347e423765981d"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/dictionaries/hi.ts",
+      "decision": "include marketing change",
+      "baseOid": "e1369e043ebb46346f9499995e2799deffcc3743"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/dictionaries/ta.ts",
+      "decision": "include marketing change",
+      "baseOid": "2deec6dcca8c29bf8bfa11f77a01ea94ffb288cf"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/metadata.ts",
+      "decision": "include marketing change",
+      "baseOid": "cc8235a7a1ec5f5aa17e8bf4ea65b7f51f0bf6f8"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/platform-links.ts",
+      "decision": "include marketing change",
+      "baseOid": "5c9c06014a14790144e44b55132538dcd7dafea6"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/pricing.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "apps/marketing/web/src/lib/public-urls.ts",
+      "decision": "include marketing change",
+      "baseOid": "d64eb47812f6ad3f5a82f690ce6dddea801a0d03"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/articles.ts",
+      "decision": "include marketing change",
+      "baseOid": "e0a66425d87d4151d02aceef97109ff9a5016e52"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/authors.ts",
+      "decision": "include marketing change",
+      "baseOid": "8500642802860c1553396f01d64da9f62b5206f6"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/changelog.ts",
+      "decision": "include marketing change",
+      "baseOid": "a87f7a0164844f9d29c6373764dc091bc7c86c31"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/learning-paths.ts",
+      "decision": "include marketing change",
+      "baseOid": "ab016a98d517ed65cc2b3f4a52fb4cedefb47bb4"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/reading-visuals.ts",
+      "decision": "include marketing change",
+      "baseOid": "8f43b4329809180f92d46c4e316be7b3d183efa8"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/types.ts",
+      "decision": "include marketing change",
+      "baseOid": "57f71beba476b725783e41d47fba2c448186ca0b"
+    },
+    {
+      "path": "apps/marketing/web/src/proxy.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "config/security/next-security-headers.ts",
+      "decision": "include marketing change",
+      "baseOid": "669d2408d559ca91b3bcef1d525982aebac90966"
+    },
+    {
+      "path": "config/tailwind/letbuyy-tokens.css",
+      "decision": "include marketing change",
+      "baseOid": "5b344a2fb1449763056a65b14e52a51cf10e3f24"
+    },
+    {
+      "path": "scripts/marketing/README.md",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "scripts/marketing/performance-results.mts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "scripts/marketing/prepare-inter-weight-subset.py",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "scripts/marketing/verify-performance.mjs",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/capability-artwork-priority.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/copy-delivery.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/directory-indexing.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/first-store-sequence.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/globe-renderer.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/locale-proxy.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/online-store-sequence.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/performance-measurement.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/pricing-delivery.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/provenance-and-origins.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/reading-visuals.test.ts",
+      "decision": "include marketing change",
+      "baseOid": "c6cbd45d00b9b97c5d5eafd83f9c0fbb8aa5fb98"
+    },
+    {
+      "path": "tests/marketing/security-policy.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    },
+    {
+      "path": "tests/marketing/seo-contracts.test.ts",
+      "decision": "include marketing change",
+      "baseOid": null
+    }
+  ],
+  "unresolved": []
+}

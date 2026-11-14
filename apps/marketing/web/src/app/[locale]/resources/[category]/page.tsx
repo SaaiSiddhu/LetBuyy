@@ -1,3 +1,4 @@
+import { localizeMetadata } from '@/lib/i18n/metadata'
 import { localizeArticleSummary } from '@/lib/i18n/article-summary'
 import { localizeCategory } from '@/lib/i18n/resource-metadata'
 import { getLocale } from '@/lib/i18n/locales'
@@ -27,15 +28,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; category: string }> }): Promise<Metadata> {
   const { category, locale: segment } = await params
   const locale = getLocale(segment)
-  const t = createCopy(locale.language.code)
   const sourceCategory = getCategory(category)
   const cat = sourceCategory && localizeCategory(sourceCategory, locale.language.code)
   if (!cat) return {}
-  return {
-    title: `${cat.label} — LetBuyy ${t('Resources')}`,
+  return localizeMetadata({
+    title: cat.label,
     description: cat.description,
-    alternates: { canonical: `/resources/${cat.slug}` },
-  }
+
+  }, segment, `/resources/${cat.slug}`)
 }
 
 /**

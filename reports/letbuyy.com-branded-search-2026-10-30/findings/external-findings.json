@@ -1,0 +1,65 @@
+[
+  {
+    "issue_id": "BR-EXT-01",
+    "category": "Branded search and legacy URL lifecycle",
+    "title": "Two branded-search destinations point to independently confirmed NXDOMAIN hosts",
+    "severity": "Medium",
+    "confidence": "High for returned search records and NXDOMAIN observed through audit resolver and Google Public DNS; intended retirement policy unresolved",
+    "finding_state": "Confirmed",
+    "affected_url_count": 2,
+    "representative_urls": [
+      "https://seller.letbuyy.com/",
+      "https://developer.letbuyy.com/api"
+    ],
+    "template_or_page": "Two unreachable search-discovered URLs on two subdomains. Two working admin redirects are separate context, not counted as broken endpoints.",
+    "evidence": "evidence/query-log.json returns seller root and developer API records aged 4 months or last month. evidence/external-surface-probes.json records audit-resolver DNS failures. evidence/secondary-dns-check.json records Google Public DNS Status3 (NXDOMAIN) for both host A queries. Admin URLs instead redirect successfully to a noindex,nofollow accounts lookup page.",
+    "business_impact": "A user following either observed search record cannot reach its destination at capture time. This is a confirmed broken discovery path; intended retirement remains unresolved. It does not show a private-console exposure, penalty or ranking loss.",
+    "recommended_fix": "Confirm intended host lifecycle and ownership. Preserve working private-account returns. If the hosts are retired, choose truthful terminal handling or a genuinely relevant migration destination under normal release authorization and inspect owned indexing evidence. Do not reactivate frozen runtimes or blanket-redirect unrelated old paths to the homepage.",
+    "implementation_example": "Maintain a reviewed URL disposition table: old URL, intended audience, current redirect/status, owner, target or terminal state, and verification evidence. No production configuration change is made by this audit.",
+    "owner_role": "Platform/domain owner with SEO and identity owner",
+    "effort": "0.5–1 working day for disposition and owned indexing review if owner evidence is available; implementation and recrawl observation excluded. Second-resolver checks already completed.",
+    "dependencies": [
+      "Current host ownership and intended retirement decision",
+      "Authorized Search Console access if available",
+      "Preservation of legitimate identity/private account journeys"
+    ],
+    "validation_steps": "After an authorized lifecycle change, recheck exact old URLs and intended terminal or redirect behavior using independent resolvers; preserve account returns/noindex behavior; inspect indexed state where available and repeat fixed branded queries after normal recrawl.",
+    "success_indicator": "Both unreachable URL records have a verified lifecycle decision and intended handling. Unhelpful stale records diminish over observed recrawls without restoring deprecated runtimes or disrupting accounts.",
+    "failure_check": "An automatic homepage redirect, recreated deprecated runtime or disrupted return path would be a failed remediation. Empty site: searches do not prove success.",
+    "related_urls": [
+      "https://admin.letbuyy.com/",
+      "https://admin.letbuyy.com/auth/login"
+    ]
+  },
+  {
+    "issue_id": "BR-EXT-02",
+    "category": "Brand identity and external app presence",
+    "title": "Live consumer Google Play listing uses the shared brand and legacy web/privacy destinations",
+    "severity": "Medium",
+    "confidence": "High for direct listing content/links and both legacy destination HTTP captures; intended product relationship and ownership remain unverified",
+    "finding_state": "Needs verification",
+    "affected_url_count": 1,
+    "representative_urls": [
+      "https://play.google.com/store/apps/details?id=com.letbuyy.letbuyy&hl=en"
+    ],
+    "related_urls": [
+      "https://letbuy-y.web.app",
+      "https://letbuy-y.web.app/privacy-policy"
+    ],
+    "template_or_page": "One public app listing with product/relationship ambiguity; two directly inspected legacy destinations. Parent owns a distinct privacy-route content finding to prevent duplicate counting.",
+    "evidence": "evidence/play-listing-sanitized.json: live English listing200; consumer shopping/reels description; website/privacy anchors use letbuy-y.web.app. evidence/legacy-app-destinations.json: both exact URLs return200 title Create Next App, same ETag and matching captured merchant-landing text including old seller/processed-volume claims. Parent browser privacy verification is separate.",
+    "business_impact": "The buyer-shopping app points to an older merchant landing, while its declared privacy URL serves matching captured landing HTML. That can confuse audience, availability and support expectations. Identity/ownership and truth of old outcome claims are not certified; buyer and merchant products may legitimately share a brand.",
+    "recommended_fix": "Verify the listing/product owner, intended buyer-versus-merchant relationship, availability and lifecycle. Reconcile old merchant-result claims against real evidence. Coordinate any separately confirmed privacy-content repair with the privacy owner. Do not add sameAs or edit the app store listing solely from a name/package match.",
+    "implementation_example": "Draft a product relationship table with audience, official app/package, owned website, privacy/controller notice, availability and support route; leave unverified cells explicitly unresolved.",
+    "owner_role": "Product/brand owner with mobile release and privacy owner",
+    "effort": "0.5–1 working day for owner/account facts and draft copy, excluding legal approval, app-store publishing or engineering.",
+    "dependencies": [
+      "Verified app and product ownership/identity facts",
+      "Actual buyer product availability",
+      "Privacy/controller review and correct public destinations"
+    ],
+    "validation_steps": "Owner verifies package/account relationship and intended audience. Check approved store labels and destinations; validate dedicated privacy content in raw and rendered states through the parent privacy finding; repeat quoted-brand searches after separately authorized publication.",
+    "success_indicator": "Clear verified relationship and accurate reachable public destinations for the app; no unsupported sameAs or forced merging of distinct audiences.",
+    "failure_check": "Changing the app listing before ownership is established or replacing consumer support with an unrelated merchant destination would be a failed correction."
+  }
+]

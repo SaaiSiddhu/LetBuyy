@@ -1,0 +1,27 @@
+{
+  "captured_at": "2026-11-01T03:22:34.854Z",
+  "rows": [
+    {
+      "width": 375,
+      "case": "create-sign-in-lands-on-existing-account-screen",
+      "email_field_visible": true
+    },
+    {
+      "width": 375,
+      "case": "marketing-signup-lands-on-account-screen",
+      "email_field_visible": true
+    },
+    {
+      "width": 1366,
+      "case": "create-sign-in-lands-on-existing-account-screen",
+      "email_field_visible": true
+    },
+    {
+      "width": 1366,
+      "case": "marketing-signup-lands-on-account-screen",
+      "email_field_visible": true
+    }
+  ],
+  "passed": true,
+  "no_account_or_email_submissions": true
+}

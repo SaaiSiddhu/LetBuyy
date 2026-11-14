@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
+import { useState, useEffect, useCallback } from 'react'
+import TurnstileWidget from '@/components/TurnstileWidget'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
@@ -55,10 +55,6 @@ export default function ForgotPasswordPage() {
     const [lang, setLang] = useState<Lang>('en')
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
-    const turnstileRef = useRef<TurnstileHandle>(null)
-    const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
-        || process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true'
-
     const t = translations[lang]
 
     useEffect(() => {
@@ -80,7 +76,7 @@ export default function ForgotPasswordPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!email.trim() || loading || (turnstileEnabled && !turnstileToken)) return
+        if (!email.trim()) return
 
         setLoading(true)
         setError(null)
@@ -88,7 +84,7 @@ export default function ForgotPasswordPage() {
         try {
             const res = await fetch('/api/auth/send-reset', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken,
@@ -100,17 +96,11 @@ export default function ForgotPasswordPage() {
                 return
             }
 
-            if (!res.ok) {
-                setError(t.genericError)
-                return
-            }
-
-            // The server returns the same accepted response for unknown accounts.
+            // Always redirect to check-email (don't reveal if email exists)
             window.location.href = `/check-email?email=${encodeURIComponent(email.trim())}&type=password_reset`
         } catch {
             setError(t.genericError)
         } finally {
-            turnstileRef.current?.reset()
             setLoading(false)
         }
     }
@@ -163,7 +153,7 @@ export default function ForgotPasswordPage() {
                         type="submit"
                         fullWidth
                         loading={loading}
-                        disabled={loading || !email.trim() || (turnstileEnabled && !turnstileToken)}
+                        disabled={loading || !email.trim()}
                     >
                         {t.sendResetLink}
                     </Button>
@@ -181,7 +171,7 @@ export default function ForgotPasswordPage() {
                     {t.backToLogin}
                 </Button>
 
-                <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
+                <TurnstileWidget onVerify={handleTurnstileVerify} />
             </div>
         </main>
     )

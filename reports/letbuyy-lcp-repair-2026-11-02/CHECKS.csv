@@ -1,0 +1,7 @@
+name,command,exit_code,seconds
+marketing-tests,pnpm --dir apps/marketing/web test,0,0.66
+marketing-types,pnpm --dir apps/marketing/web typecheck,0,1.02
+marketing-lint,pnpm --dir apps/marketing/web lint,0,4.48
+ui-validation,pnpm --dir packages/typescript/ui validate:ui,0,4.7
+ui-types,pnpm --dir packages/typescript/ui typecheck,0,0.66
+marketing-build,pnpm --dir apps/marketing/web build,0,12.15

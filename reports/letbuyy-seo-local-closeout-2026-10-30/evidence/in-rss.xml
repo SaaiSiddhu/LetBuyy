@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>LetBuyy Resources</title>
+    <link>http://127.0.0.1:9038/in/resources</link>
+    <description>Practical guides for starting, running, and growing an online business in India. Explore store setup, payments, operations, and more.</description>
+    <language>en-IN</language>
+    <atom:link href="http://127.0.0.1:9038/in/resources/rss.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>http://127.0.0.1:9038/icons/letbuyy-logo-512.png?v=3</url>
+      <title>LetBuyy Resources</title>
+      <link>http://127.0.0.1:9038/in/resources</link>
+    </image>
+    <item>
+      <title>The Merchant Control Plane: Your Commerce OS Dashboard</title>
+      <link>http://127.0.0.1:9038/in/resources/platform/merchant-web-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/platform/merchant-web-guide</guid>
+      <description>Complete guide to the LetBuyy Merchant Control Plane — navigation, modules, dashboards, and power features.</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Platform</category>
+      <category>merchant-dashboard</category>
+      <category>platform</category>
+      <category>getting-started</category>
+      <category>product</category>
+    </item>
+    <item>
+      <title>The LetBuyy AI Copilot Guide</title>
+      <link>http://127.0.0.1:9038/in/resources/ai-commerce/commerce-copilot-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ai-commerce/commerce-copilot-guide</guid>
+      <description>Use supported AI content tools with provider setup, credits and review. Understand the limits before relying on an assistant.</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>AI Commerce</category>
+      <category>copilot</category>
+      <category>ai</category>
+      <category>letbuyy</category>
+      <category>product</category>
+    </item>
+    <item>
+      <title>LetBuyy Platform Overview: Everything in One Place</title>
+      <link>http://127.0.0.1:9038/in/resources/platform/letbuyy-platform-overview</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/platform/letbuyy-platform-overview</guid>
+      <description>Complete overview of the LetBuyy platform — merchant control plane, storefront runtime, identity, developer ecosystem, and roadmap.</description>
+      <pubDate>Sat, 30 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Platform</category>
+      <category>platform</category>
+      <category>overview</category>
+      <category>architecture</category>
+      <category>product</category>
+    </item>
+    <item>
+      <title>Building Your First LetBuyy Store: A Complete Walkthrough</title>
+      <link>http://127.0.0.1:9038/in/resources/platform/building-first-letbuyy-store</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/platform/building-first-letbuyy-store</guid>
+      <description>Create an email account and draft store, add products, review themes and complete setup before testing publication.</description>
+      <pubDate>Thu, 28 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Platform</category>
+      <category>getting-started</category>
+      <category>platform</category>
+      <category>store-setup</category>
+      <category>walkthrough</category>
+    </item>
+    <item>
+      <title>AI Commerce Explained: What It Means for Your Store</title>
+      <link>http://127.0.0.1:9038/in/resources/ai-commerce/ai-commerce-explained</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ai-commerce/ai-commerce-explained</guid>
+      <description>A practical introduction to AI commerce for Indian merchants — what AI can do for your store, what it can&apos;t, and where to start.</description>
+      <pubDate>Mon, 25 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>AI Commerce</category>
+      <category>ai</category>
+      <category>automation</category>
+      <category>commerce</category>
+      <category>future</category>
+    </item>
+    <item>
+      <title>Planning a LetBuyy App Integration</title>
+      <link>http://127.0.0.1:9038/in/resources/developers/building-first-letbuyy-app</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/developers/building-first-letbuyy-app</guid>
+      <description>Plan an integration while public app installation and marketplace submissions remain deferred.</description>
+      <pubDate>Fri, 22 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Developers</category>
+      <category>apps</category>
+      <category>oauth</category>
+      <category>developers</category>
+      <category>marketplace</category>
+    </item>
+    <item>
+      <title>Multi-Warehouse Inventory Management</title>
+      <link>http://127.0.0.1:9038/in/resources/operations/multi-warehouse-inventory</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/operations/multi-warehouse-inventory</guid>
+      <description>How to set up multi-warehouse inventory for your Indian ecommerce store — zone allocation, stock transfers, and fulfillment routing.</description>
+      <pubDate>Wed, 20 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Operations</category>
+      <category>inventory</category>
+      <category>warehouse</category>
+      <category>multi-location</category>
+      <category>operations</category>
+    </item>
+    <item>
+      <title>Getting Started with the LetBuyy API</title>
+      <link>http://127.0.0.1:9038/in/resources/developers/letbuyy-api-getting-started</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/developers/letbuyy-api-getting-started</guid>
+      <description>Understand approved API access, store permissions, pagination and safe retries without assuming public developer-key availability.</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Developers</category>
+      <category>api</category>
+      <category>developers</category>
+      <category>integration</category>
+      <category>authentication</category>
+    </item>
+    <item>
+      <title>How to Get Your First 100 Orders</title>
+      <link>http://127.0.0.1:9038/in/resources/growth/first-100-orders-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/growth/first-100-orders-guide</guid>
+      <description>Step-by-step guide to getting your first 100 orders as a new Indian ecommerce brand using organic, WhatsApp, and community channels.</description>
+      <pubDate>Fri, 15 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Growth</category>
+      <category>growth</category>
+      <category>beginners</category>
+      <category>organic</category>
+      <category>whatsapp</category>
+    </item>
+    <item>
+      <title>Automating Store Operations with AI</title>
+      <link>http://127.0.0.1:9038/in/resources/ai-commerce/automating-operations-ai</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ai-commerce/automating-operations-ai</guid>
+      <description>Practical guide to automating ecommerce operations with AI — inventory alerts, customer support, order routing, and more.</description>
+      <pubDate>Tue, 12 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>AI Commerce</category>
+      <category>automation</category>
+      <category>ai</category>
+      <category>operations</category>
+      <category>efficiency</category>
+    </item>
+    <item>
+      <title>Product Page Optimization: The Complete Guide</title>
+      <link>http://127.0.0.1:9038/in/resources/ecommerce/product-page-optimization</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ecommerce/product-page-optimization</guid>
+      <description>Learn how to optimize your product pages for Indian buyers — better images, descriptions, reviews, and trust signals that convert.</description>
+      <pubDate>Sun, 10 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Ecommerce</category>
+      <category>conversion</category>
+      <category>product-pages</category>
+      <category>ux</category>
+      <category>copywriting</category>
+    </item>
+    <item>
+      <title>Workflow Automation for Indian Merchants</title>
+      <link>http://127.0.0.1:9038/in/resources/ai-commerce/workflow-automation-merchants</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ai-commerce/workflow-automation-merchants</guid>
+      <description>Guide to building ecommerce workflow automation for Indian merchants — triggers, actions, and real-world examples.</description>
+      <pubDate>Fri, 08 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>AI Commerce</category>
+      <category>automation</category>
+      <category>workflows</category>
+      <category>operations</category>
+      <category>efficiency</category>
+    </item>
+    <item>
+      <title>Customer Retention Strategies That Work for Indian Brands</title>
+      <link>http://127.0.0.1:9038/in/resources/growth/retention-strategies-india</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/growth/retention-strategies-india</guid>
+      <description>Proven customer retention strategies for Indian ecommerce — loyalty programs, re-engagement, and lifetime value optimization.</description>
+      <pubDate>Tue, 05 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Growth</category>
+      <category>retention</category>
+      <category>loyalty</category>
+      <category>ltv</category>
+      <category>repeat-purchase</category>
+    </item>
+    <item>
+      <title>How To Start an Online Store in India (2026 Guide)</title>
+      <link>http://127.0.0.1:9038/in/resources/ecommerce/how-to-start-an-online-store-india</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ecommerce/how-to-start-an-online-store-india</guid>
+      <description>A complete step-by-step guide to starting an online store in India in 2026, covering GST, payments, logistics, and marketing.</description>
+      <pubDate>Fri, 01 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Ecommerce</category>
+      <category>store-setup</category>
+      <category>india</category>
+      <category>beginners</category>
+      <category>gst</category>
+    </item>
+    <item>
+      <title>AI Product Recommendations That Actually Convert</title>
+      <link>http://127.0.0.1:9038/in/resources/ai-commerce/ai-product-recommendations</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ai-commerce/ai-product-recommendations</guid>
+      <description>How AI product recommendations work on LetBuyy — collaborative filtering, upsells, cross-sells, and recommendation placement strategy.</description>
+      <pubDate>Thu, 30 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>AI Commerce</category>
+      <category>recommendations</category>
+      <category>ai</category>
+      <category>conversion</category>
+      <category>personalization</category>
+    </item>
+    <item>
+      <title>Shipping in India: Pincode Coverage, Rates &amp; Couriers</title>
+      <link>http://127.0.0.1:9038/in/resources/operations/shipping-india-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/operations/shipping-india-guide</guid>
+      <description>Compare shipment quotes, serviceability and return costs for your actual delivery needs.</description>
+      <pubDate>Tue, 28 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Operations</category>
+      <category>shipping</category>
+      <category>logistics</category>
+      <category>courier</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>Accepting Payments on LetBuyy: UPI, Cards, and COD</title>
+      <link>http://127.0.0.1:9038/in/resources/payments/razorpay-integration-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/payments/razorpay-integration-guide</guid>
+      <description>Plan buyer payment setup, provider approvals and test-mode verification. Merchant subscription billing is a separate flow.</description>
+      <pubDate>Sat, 25 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Payments</category>
+      <category>payments</category>
+      <category>razorpay</category>
+      <category>upi</category>
+      <category>setup</category>
+    </item>
+    <item>
+      <title>Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores</title>
+      <link>http://127.0.0.1:9038/in/resources/ecommerce/reducing-cart-abandonment</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ecommerce/reducing-cart-abandonment</guid>
+      <description>Tactical guide to reducing cart abandonment rates for Indian ecommerce stores with COD, UPI, and WhatsApp recovery.</description>
+      <pubDate>Wed, 22 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Ecommerce</category>
+      <category>conversion</category>
+      <category>cart</category>
+      <category>recovery</category>
+      <category>whatsapp</category>
+    </item>
+    <item>
+      <title>How Themes Work on LetBuyy</title>
+      <link>http://127.0.0.1:9038/in/resources/platform/how-themes-work</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/platform/how-themes-work</guid>
+      <description>Inspect available themes, preview the supported editor and review saved changes before publishing.</description>
+      <pubDate>Mon, 20 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Platform</category>
+      <category>themes</category>
+      <category>storefront</category>
+      <category>customization</category>
+      <category>platform</category>
+    </item>
+    <item>
+      <title>Social Commerce in India: Instagram, WhatsApp &amp; Beyond</title>
+      <link>http://127.0.0.1:9038/in/resources/growth/social-commerce-india</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/growth/social-commerce-india</guid>
+      <description>Guide to social commerce in India — Instagram Shopping, WhatsApp Business, and building a social-first ecommerce strategy.</description>
+      <pubDate>Sat, 18 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Growth</category>
+      <category>social-media</category>
+      <category>instagram</category>
+      <category>whatsapp</category>
+      <category>social-commerce</category>
+    </item>
+    <item>
+      <title>Webhooks: Real-Time Commerce Event Streaming</title>
+      <link>http://127.0.0.1:9038/in/resources/developers/webhooks-complete-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/developers/webhooks-complete-guide</guid>
+      <description>Plan signed event handling, duplicate protection and failure recovery. Public self-service integrations remain deferred.</description>
+      <pubDate>Wed, 15 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Developers</category>
+      <category>webhooks</category>
+      <category>api</category>
+      <category>events</category>
+      <category>integration</category>
+    </item>
+    <item>
+      <title>Inventory Management: From Chaos to Control</title>
+      <link>http://127.0.0.1:9038/in/resources/operations/inventory-management-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/operations/inventory-management-guide</guid>
+      <description>Practical inventory management guide for Indian ecommerce — reorder points, safety stock, ABC analysis, and multi-location strategy.</description>
+      <pubDate>Sun, 12 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Operations</category>
+      <category>inventory</category>
+      <category>operations</category>
+      <category>warehouse</category>
+      <category>stock</category>
+    </item>
+    <item>
+      <title>How To Launch a D2C Brand in India (Step by Step)</title>
+      <link>http://127.0.0.1:9038/in/resources/growth/d2c-brand-launch-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/growth/d2c-brand-launch-guide</guid>
+      <description>Complete guide to launching a Direct-to-Consumer brand in India: product, brand, store, and go-to-market strategy.</description>
+      <pubDate>Fri, 10 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Growth</category>
+      <category>d2c</category>
+      <category>brand</category>
+      <category>launch</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>How Liquid Themes Work on LetBuyy</title>
+      <link>http://127.0.0.1:9038/in/resources/developers/liquid-theming-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/developers/liquid-theming-guide</guid>
+      <description>Developer guide to building Liquid themes on LetBuyy — syntax, objects, filters, tags, sections, and the theme architecture.</description>
+      <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Developers</category>
+      <category>themes</category>
+      <category>liquid</category>
+      <category>developers</category>
+      <category>storefront</category>
+    </item>
+    <item>
+      <title>UPI vs COD: Which Payment Method Wins for Indian Stores</title>
+      <link>http://127.0.0.1:9038/in/resources/payments/upi-vs-cod-india</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/payments/upi-vs-cod-india</guid>
+      <description>In-depth comparison of UPI and Cash on Delivery for Indian ecommerce stores — conversion rates, return rates, and revenue impact.</description>
+      <pubDate>Sun, 05 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Payments</category>
+      <category>payments</category>
+      <category>upi</category>
+      <category>cod</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>How Product Reviews Help Shoppers Decide</title>
+      <link>http://127.0.0.1:9038/in/resources/ecommerce/how-product-reviews-increase-conversion</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ecommerce/how-product-reviews-increase-conversion</guid>
+      <description>A practical guide to collecting genuine reviews, answering shopper questions and measuring outcomes without promising a fixed conversion lift.</description>
+      <pubDate>Wed, 01 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Ecommerce</category>
+      <category>reviews</category>
+      <category>social-proof</category>
+      <category>conversion</category>
+      <category>trust</category>
+    </item>
+    <item>
+      <title>Email Marketing for Ecommerce: Building Your List in India</title>
+      <link>http://127.0.0.1:9038/in/resources/growth/email-marketing-ecommerce</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/growth/email-marketing-ecommerce</guid>
+      <description>How to build and monetize an email list for your Indian ecommerce store — from capture to automated flows.</description>
+      <pubDate>Sat, 28 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Growth</category>
+      <category>email</category>
+      <category>marketing</category>
+      <category>automation</category>
+      <category>list-building</category>
+    </item>
+    <item>
+      <title>Order Fulfillment: Processing 100 Orders Per Day Efficiently</title>
+      <link>http://127.0.0.1:9038/in/resources/operations/order-fulfillment-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/operations/order-fulfillment-guide</guid>
+      <description>How to set up efficient order fulfillment operations for your Indian ecommerce store — packing, labeling, courier integration, and tracking.</description>
+      <pubDate>Wed, 25 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Operations</category>
+      <category>fulfillment</category>
+      <category>orders</category>
+      <category>operations</category>
+      <category>scaling</category>
+    </item>
+    <item>
+      <title>Introduction to the LetBuyy App Marketplace</title>
+      <link>http://127.0.0.1:9038/in/resources/platform/introduction-to-apps</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/platform/introduction-to-apps</guid>
+      <description>Public third-party app installation and marketplace submissions are deferred. These guides explain integration planning; they do not offer a currently open app store or developer submission service.</description>
+      <pubDate>Sun, 22 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Platform</category>
+      <category>apps</category>
+      <category>marketplace</category>
+      <category>platform</category>
+      <category>integrations</category>
+    </item>
+    <item>
+      <title>Building a Customer-Friendly Returns Policy for India</title>
+      <link>http://127.0.0.1:9038/in/resources/payments/refunds-returns-policy-india</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/payments/refunds-returns-policy-india</guid>
+      <description>How to write and implement a returns and refunds policy for Indian ecommerce that builds trust and manages costs.</description>
+      <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Payments</category>
+      <category>returns</category>
+      <category>refunds</category>
+      <category>policy</category>
+      <category>customer-service</category>
+    </item>
+    <item>
+      <title>Creating Custom Integrations with LetBuyy</title>
+      <link>http://127.0.0.1:9038/in/resources/developers/custom-integrations-guide</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/developers/custom-integrations-guide</guid>
+      <description>Developer guide to building custom integrations with LetBuyy — sync patterns, queue workers, and common integration recipes.</description>
+      <pubDate>Wed, 18 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Developers</category>
+      <category>integrations</category>
+      <category>api</category>
+      <category>developers</category>
+      <category>erp</category>
+    </item>
+    <item>
+      <title>The Complete Store SEO Checklist for Indian Merchants</title>
+      <link>http://127.0.0.1:9038/in/resources/ecommerce/store-seo-checklist</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/ecommerce/store-seo-checklist</guid>
+      <description>A comprehensive SEO checklist for Indian ecommerce stores — covering technical SEO, on-page optimization, and local signals.</description>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Ecommerce</category>
+      <category>seo</category>
+      <category>technical-seo</category>
+      <category>organic</category>
+      <category>google</category>
+    </item>
+    <item>
+      <title>Understanding Ecommerce Fulfillment in India</title>
+      <link>http://127.0.0.1:9038/in/resources/operations/understanding-fulfillment</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/operations/understanding-fulfillment</guid>
+      <description>Overview of ecommerce fulfillment models for Indian brands — self-fulfillment, third-party logistics (3PL), and FBA/FBF comparison.</description>
+      <pubDate>Tue, 10 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Operations</category>
+      <category>fulfillment</category>
+      <category>3pl</category>
+      <category>logistics</category>
+      <category>operations</category>
+    </item>
+    <item>
+      <title>GST Planning for Ecommerce Sellers in India</title>
+      <link>http://127.0.0.1:9038/in/resources/payments/gst-for-ecommerce-india</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/payments/gst-for-ecommerce-india</guid>
+      <description>Plan the GST questions to verify for your online business using official sources and a qualified adviser, without applying blanket thresholds or old rate tables.</description>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Payments</category>
+      <category>gst</category>
+      <category>tax</category>
+      <category>compliance</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>GST Invoices for Indian Ecommerce: What Must Be Included</title>
+      <link>http://127.0.0.1:9038/in/resources/payments/invoicing-india-merchants</link>
+      <guid isPermaLink="false">http://127.0.0.1:9038/resources/payments/invoicing-india-merchants</guid>
+      <description>Complete guide to GST invoice requirements for Indian ecommerce merchants — mandatory fields, formats, and automation.</description>
+      <pubDate>Fri, 20 Feb 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy</dc:creator>
+      <category>Payments</category>
+      <category>invoicing</category>
+      <category>gst</category>
+      <category>compliance</category>
+      <category>b2b</category>
+    </item>
+  </channel>
+</rss>

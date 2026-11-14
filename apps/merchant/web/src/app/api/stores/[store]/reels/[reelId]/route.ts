@@ -10,7 +10,7 @@ async function scope(request: NextRequest, params: Params['params']) {
     if (!session.authenticated || !session.user) return { error: NextResponse.json({ error: { code: 'UNAUTHORIZED' } }, { status: 401 }) }
     if (request.headers.get('X-LetBuyy-Merchant-Context') !== session.user.id) return { error: NextResponse.json({ error: { code: 'SESSION_CONTEXT_CHANGED' } }, { status: 409 }) }
     const { store, reelId } = await params, owned = await resolveOwnedStoreId(decodeURIComponent(store))
-    if (owned.error) return { error: owned.error }
+    if (owned.error) return owned
     return { client, siteId: owned.storeId!, reelId }
 }
 export async function GET(request: NextRequest, { params }: Params) {

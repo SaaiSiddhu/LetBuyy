@@ -1,7 +1,6 @@
 'use client';
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useFormProtection } from './navigation/form-protection';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import {
     AlertCircle,
     AlertTriangle,
@@ -29,26 +28,38 @@ import { cx } from './utils';
 
 export type StatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critical';
 
-const statusStyles: Record<StatusVariant, { bg: string; text: string }> = {
+/**
+ * Sonner-style "rich colours" for the badge/pill too — the same solid,
+ * saturated fill + white text as Toast and Banner, not a soft pastel tint
+ * with a matching border. A status chip (Live, Primary, SSL not connected,
+ * Needs DNS setup, …) is read at a glance in a dense list; a solid fill
+ * reads as a deliberate status of record, where a low-contrast tint reads
+ * as decoration. `default` is the one non-semantic tone — a neutral/brand
+ * chip (role labels, counts) — so its fill is the LIVE merchant primary
+ * token, not a fixed colour; see badgeSolid.defaultBg in tokens.ts.
+ */
+const BADGE_ICON_CLASS = 'h-[11px] w-[11px] shrink-0';
+
+const statusStyles: Record<StatusVariant, { bg: string; icon: React.ReactNode }> = {
     default: {
-        bg: 'bg-[var(--lb-component-badge-accent-bg)]',
-        text: 'text-[color:var(--lb-component-badge-accent-text)]',
+        bg: 'bg-[var(--lb-component-badge-solid-default-bg)]',
+        icon: <Info className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
     info: {
-        bg: 'bg-[var(--lb-component-badge-info-bg)]',
-        text: 'text-[color:var(--lb-component-badge-info-text)]',
+        bg: 'bg-[var(--lb-component-badge-solid-info-bg)]',
+        icon: <Info className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
     success: {
-        bg: 'bg-[var(--lb-component-badge-success-bg)]',
-        text: 'text-[color:var(--lb-component-badge-success-text)]',
+        bg: 'bg-[var(--lb-component-badge-solid-success-bg)]',
+        icon: <CheckCircle2 className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
     warning: {
-        bg: 'bg-[var(--lb-component-badge-warning-bg)]',
-        text: 'text-[color:var(--lb-component-badge-warning-text)]',
+        bg: 'bg-[var(--lb-component-badge-solid-warning-bg)]',
+        icon: <AlertTriangle className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
     critical: {
-        bg: 'bg-[var(--lb-component-badge-danger-bg)]',
-        text: 'text-[color:var(--lb-component-badge-danger-text)]',
+        bg: 'bg-[var(--lb-component-badge-solid-danger-bg)]',
+        icon: <AlertCircle className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
 };
 
@@ -63,13 +74,13 @@ export function Badge({ label, variant = 'default', className = '', ...props }: 
     return (
         <span
             className={cx(
-                'inline-flex items-center rounded-[6px] px-[var(--lb-space-2)] py-[2px] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]',
+                'inline-flex items-center gap-[3px] rounded-[var(--lb-radius-full)] px-[var(--lb-space-2)] py-[1px] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-component-badge-solid-text)]',
                 style.bg,
-                style.text,
                 className,
             )}
             {...props}
         >
+            {style.icon}
             {label}
         </span>
     );
@@ -183,8 +194,7 @@ export function normalizeProviderMode(value: unknown): ProviderMode {
     return 'mock';
 }
 
-const providerModePresentation: Record<ProviderMode | 'unavailable', { label: string; variant: StatusVariant; description: string }> = {
-    unavailable: { label: 'Not connected', variant: 'warning', description: 'Provider not connected — this service is unavailable' },
+const providerModePresentation: Record<ProviderMode, { label: string; variant: StatusVariant; description: string }> = {
     // A real provider, real money.
     live: { label: 'Live', variant: 'success', description: 'Live provider — real transactions' },
     // A real provider on test credentials.
@@ -208,9 +218,7 @@ export interface ProviderModeBadgeProps extends Omit<BadgeProps, 'label' | 'vari
  * foreground contrast failure the app-local badge shipped (1.93:1 / 2.07:1).
  */
 export function ProviderModeBadge({ mode, ...props }: ProviderModeBadgeProps) {
-    // Explicit setup absence is different from a simulated provider. Unknown
-    // input still follows the existing fail-closed mock presentation.
-    const resolved = mode === 'unavailable' ? 'unavailable' : normalizeProviderMode(mode);
+    const resolved = normalizeProviderMode(mode);
     const presentation = providerModePresentation[resolved];
 
     return (
@@ -232,53 +240,62 @@ export interface BannerProps extends React.HTMLAttributes<HTMLDivElement> {
     action?: React.ReactNode;
 }
 
-const bannerStyles: Record<Exclude<StatusVariant, 'default'>, { bg: string; text: string; actionText: string; border: string; icon: React.ReactNode }> = {
+/**
+ * Sonner/toast-style "rich colours" for the inline banner too — a solid,
+ * saturated fill with white text, not the soft pastel-tint-plus-border
+ * `statusStyles` gives Badge. A page-level alert (payment failed, inventory
+ * couldn't load) is the highest-attention surface on the page; it should
+ * never look like it's blending into a form hint.
+ */
+const bannerSolidStyles: Record<Exclude<StatusVariant, 'default'>, { bg: string; icon: React.ReactNode }> = {
     info: {
-        bg: 'bg-[var(--lb-component-banner-info-bg)]',
-        text: 'text-[color:var(--lb-component-banner-info-text)]',
-        actionText: '[&_button]:text-[color:var(--lb-component-banner-info-text)]',
-        border: 'border-[color:var(--lb-component-banner-info-border)]',
+        bg: 'bg-[var(--lb-component-banner-solid-info-bg)]',
         icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     success: {
-        bg: 'bg-[var(--lb-component-banner-success-bg)]',
-        text: 'text-[color:var(--lb-component-banner-success-text)]',
-        actionText: '[&_button]:text-[color:var(--lb-component-banner-success-text)]',
-        border: 'border-[color:var(--lb-component-banner-success-border)]',
+        bg: 'bg-[var(--lb-component-banner-solid-success-bg)]',
         icon: <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     warning: {
-        bg: 'bg-[var(--lb-component-banner-warning-bg)]',
-        text: 'text-[color:var(--lb-component-banner-warning-text)]',
-        actionText: '[&_button]:text-[color:var(--lb-component-banner-warning-text)]',
-        border: 'border-[color:var(--lb-component-banner-warning-border)]',
+        bg: 'bg-[var(--lb-component-banner-solid-warning-bg)]',
         icon: <AlertTriangle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     critical: {
-        bg: 'bg-[var(--lb-component-banner-danger-bg)]',
-        text: 'text-[color:var(--lb-component-banner-danger-text)]',
-        actionText: '[&_button]:text-[color:var(--lb-component-banner-danger-text)]',
-        border: 'border-[color:var(--lb-component-banner-danger-border)]',
+        bg: 'bg-[var(--lb-component-banner-solid-danger-bg)]',
         icon: <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
 };
 
+/**
+ * Callers pass `action={<Button variant="secondary">Retry</Button>}` — that
+ * button's normal "secondary" styling assumes a neutral/white page
+ * background, which reads as flat/wrong on the solid fill above. Rather than
+ * asking every call site to special-case the button when it's inside a
+ * Banner, shadow the secondary-button tokens for this subtree only: any
+ * `Button variant="secondary"` rendered inside picks up a translucent-white
+ * "ghost on solid colour" treatment automatically.
+ */
+const bannerActionStyle = {
+    '--lb-component-button-secondary-bg': 'var(--lb-component-banner-solid-action-bg)',
+    '--lb-component-button-secondary-border': 'var(--lb-component-banner-solid-action-border)',
+    '--lb-component-button-secondary-text': 'var(--lb-component-banner-solid-action-text)',
+    '--lb-component-button-secondary-hover': 'var(--lb-component-banner-solid-action-hover)',
+} as React.CSSProperties;
+
 export function Banner({ title, children, variant = 'info', action, className = '', ...props }: BannerProps) {
-    const style = bannerStyles[variant];
+    const style = bannerSolidStyles[variant];
 
     return (
         <div
             className={cx(
-                'flex flex-wrap items-start gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border p-[var(--lb-space-3)] text-[color:var(--lb-color-text)] [&_button]:h-auto [&_button]:min-h-0 [&_button]:rounded-none [&_button]:border-0 [&_button]:bg-transparent [&_button]:px-0 [&_button]:py-[var(--lb-space-1)] [&_button]:font-[var(--lb-font-weight-semibold)] [&_button]:shadow-none [&_button]:underline [&_button]:underline-offset-2 [&_button:hover]:bg-transparent [&_button:hover]:opacity-80',
+                'flex items-start gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] p-[var(--lb-space-3)] text-[color:var(--lb-component-banner-solid-text)] shadow-[var(--lb-shadow-sm)]',
                 style.bg,
-                style.border,
-                style.actionText,
                 className,
             )}
             role={variant === 'critical' ? 'alert' : 'status'}
             {...props}
         >
-            <div className={cx('mt-[1px] shrink-0 text-[length:var(--lb-density-action-icon-size)]', style.text)}>
+            <div className="mt-[1px] shrink-0 text-[length:var(--lb-density-action-icon-size)]">
                 {style.icon}
             </div>
             <div className="min-w-0 flex-1 space-y-[2px]">
@@ -287,12 +304,12 @@ export function Banner({ title, children, variant = 'info', action, className = 
                         {title}
                     </h3>
                 )}
-                <div className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]">
+                <div className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-90">
                     {children}
                 </div>
             </div>
             {action && (
-                <div className="ml-auto shrink-0">
+                <div className="shrink-0" style={bannerActionStyle}>
                     {action}
                 </div>
             )}
@@ -422,7 +439,7 @@ export function ToastProvider({ children, duration = 5000, placement = 'top-righ
                                             {toast.title}
                                         </p>
                                         {toast.description && (
-                                            <p className="m-0 mt-[2px] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-[var(--lb-component-feedback-description-opacity,0.9)]">
+                                            <p className="m-0 mt-[2px] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-90">
                                                 {toast.description}
                                             </p>
                                         )}
@@ -715,14 +732,10 @@ export function EmptyState({ icon, illustration, illustrationMotifs, kind = 'gen
 
 export interface SaveBarProps extends React.HTMLAttributes<HTMLDivElement> {
     state: 'saved' | 'unsaved' | 'saving';
-    onSave?: () => void | Promise<void>;
+    onSave?: () => void;
     onDiscard?: () => void;
     saveLabel?: string;
     discardLabel?: string;
-    /** A domain editor may register a richer guard independently of the visual bar. */
-    protectNavigation?: boolean;
-    discardDisabled?: boolean;
-    saveDisabled?: boolean;
 }
 
 export function SaveBar({
@@ -731,65 +744,41 @@ export function SaveBar({
     onDiscard,
     saveLabel = 'Save',
     discardLabel = 'Discard',
-    protectNavigation = true,
-    discardDisabled = false,
-    saveDisabled = false,
     className = '',
-    onFocusCapture,
-    onBlurCapture,
     ...props
 }: SaveBarProps) {
     const isSaved = state === 'saved';
-    const focusReturn = useRef<HTMLElement | null>(null);
-    useFormProtection(protectNavigation ? { dirty: !isSaved, saving: state === 'saving', onSave, onDiscard, canSave: !saveDisabled && Boolean(onSave), canDiscard: !discardDisabled && Boolean(onDiscard) } : null);
-    useEffect(() => {
-        if (!isSaved || !focusReturn.current) return;
-        const target = focusReturn.current;
-        focusReturn.current = null;
-        if (target.isConnected && document.activeElement === document.body) {
-            target.tabIndex = -1;
-            target.focus({ preventScroll: true });
-        }
-    }, [isSaved]);
-    if (isSaved) return null;
 
     return (
         <div
             className={cx(
-                'sticky bottom-[var(--lb-space-0)] z-[var(--lb-z-sticky)] mx-auto flex w-full flex-col items-stretch justify-between gap-[var(--lb-space-3)] rounded-none border border-x-0 border-[var(--lb-component-save-bar-border,var(--lb-color-border))] bg-[var(--lb-component-save-bar-bg,var(--lb-color-surface-raised))] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)] max-sm:pb-[max(var(--lb-space-3),env(safe-area-inset-bottom))] sm:bottom-[var(--lb-space-4)] sm:w-[min(var(--lb-size-save-bar-width),calc(100vw-var(--lb-space-6)))] sm:flex-row sm:items-center sm:gap-[var(--lb-space-4)] sm:rounded-[var(--lb-radius-lg)] sm:border-x',
+                'sticky bottom-[var(--lb-space-0)] z-[var(--lb-z-sticky)] mx-auto flex w-full flex-col items-stretch justify-between gap-[var(--lb-space-3)] rounded-none border border-x-0 border-[var(--lb-color-border)] bg-[var(--lb-color-surface-raised)] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)] sm:bottom-[var(--lb-space-4)] sm:w-[min(var(--lb-size-save-bar-width),calc(100vw-var(--lb-space-6)))] sm:flex-row sm:items-center sm:gap-[var(--lb-space-4)] sm:rounded-[var(--lb-radius-lg)] sm:border-x',
+                isSaved ? 'opacity-0 pointer-events-none' : 'opacity-100',
                 className,
             )}
             aria-live="polite"
-            onFocusCapture={event => {
-                focusReturn.current = event.currentTarget.closest('main')?.querySelector<HTMLElement>('h1') ?? null;
-                onFocusCapture?.(event);
-            }}
-            onBlurCapture={event => {
-                if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) focusReturn.current = null;
-                onBlurCapture?.(event);
-            }}
             {...props}
         >
-            <div className="flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-component-save-bar-text,var(--lb-color-text))]">
+            <div className="flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
                 {state === 'saving' ? <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" /> : <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 {state === 'saving' ? 'Saving changes' : 'Unsaved changes'}
             </div>
-            <div className="flex items-center gap-[var(--lb-space-2)] [&>button]:flex-1 max-sm:[&>button]:min-h-[var(--lb-size-touch-target)] sm:[&>button]:flex-none">
+            <div className="flex items-center gap-[var(--lb-space-2)] [&>button]:flex-1 sm:[&>button]:flex-none">
                 <Button
                     unstyled
                     type="button"
-                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-transparent px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-save-bar-text,var(--lb-color-text))] hover:bg-[var(--lb-component-save-bar-discard-hover,var(--lb-color-surface-subdued))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-component-save-bar-focus,var(--lb-color-focus-ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-component-save-bar-bg,var(--lb-color-surface-raised))] disabled:opacity-50"
+                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onDiscard}
-                    disabled={state === 'saving' || discardDisabled || !onDiscard}
+                    disabled={state === 'saving'}
                 >
                     {discardLabel}
                 </Button>
                 <Button
                     unstyled
                     type="button"
-                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-transparent bg-[var(--lb-component-save-bar-action-bg,var(--lb-component-button-primary-bg))] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-save-bar-action-text,var(--lb-component-button-primary-text))] hover:bg-[var(--lb-component-save-bar-action-hover,var(--lb-component-button-primary-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-component-save-bar-focus,var(--lb-color-focus-ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-component-save-bar-bg,var(--lb-color-surface-raised))] disabled:opacity-50"
+                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-primary-text)] hover:bg-[var(--lb-component-button-primary-hover)] active:bg-[var(--lb-component-button-primary-active)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onSave}
-                    disabled={state === 'saving' || saveDisabled || !onSave}
+                    disabled={state === 'saving'}
                 >
                     {state === 'saving' ? 'Saving' : saveLabel}
                 </Button>

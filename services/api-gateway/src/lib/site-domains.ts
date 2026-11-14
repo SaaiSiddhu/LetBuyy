@@ -47,7 +47,6 @@ export async function listSiteDomains(db: Db, siteId: string): Promise<SiteDomai
     const { data, error } = await db
         .from('site_domains')
         .select(SITE_DOMAINS_COLUMNS)
-        .eq('purpose', 'storefront')
         .eq('site_id', siteId)
         .is('deleted_at', null)
         .order('role', { ascending: true })
@@ -60,7 +59,6 @@ export async function findSiteDomain(db: Db, siteId: string, domain: string): Pr
     const { data, error } = await db
         .from('site_domains')
         .select(SITE_DOMAINS_COLUMNS)
-        .eq('purpose', 'storefront')
         .eq('site_id', siteId)
         .eq('domain', domain.toLowerCase())
         .is('deleted_at', null)
@@ -95,7 +93,7 @@ export async function upsertSiteDomain(
         if (input.verificationToken !== undefined) patch.verification_token = input.verificationToken;
         if (input.provider != null) patch.provider = input.provider;
         if (input.status === 'active' && !existing.connected_at) patch.connected_at = new Date().toISOString();
-        const { data, error } = await db.from('site_domains').update(patch).eq('id', existing.id).eq('site_id', input.siteId).eq('purpose', 'storefront').select(SITE_DOMAINS_COLUMNS).maybeSingle();
+        const { data, error } = await db.from('site_domains').update(patch).eq('id', existing.id).select(SITE_DOMAINS_COLUMNS).maybeSingle();
         if (error) return { ok: false };
         return { ok: true, row: (data as SiteDomainRow) || existing };
     }
@@ -135,7 +133,7 @@ export async function patchSiteDomainStatus(
     if (patch.provider != null) update.provider = patch.provider;
     update.last_checked_at = patch.checkedAt || new Date().toISOString();
     if (patch.status === 'active') update.connected_at = new Date().toISOString();
-    await db.from('site_domains').update(update).eq('purpose', 'storefront').eq('site_id', siteId).eq('domain', domain.toLowerCase()).then(
+    await db.from('site_domains').update(update).eq('site_id', siteId).eq('domain', domain.toLowerCase()).then(
         () => undefined,
         () => undefined,
     );
@@ -145,7 +143,6 @@ export async function softDeleteSiteDomain(db: Db, siteId: string, domain: strin
     await db
         .from('site_domains')
         .update({ deleted_at: new Date().toISOString(), deleted_by: actorId || null })
-        .eq('purpose', 'storefront')
         .eq('site_id', siteId)
         .eq('domain', domain.toLowerCase())
         .then(() => undefined, () => undefined);

@@ -1,0 +1,6 @@
+import os,pathlib,json
+from playwright.sync_api import sync_playwright
+R=pathlib.Path('/Users/saai_mithra/Projects/Start_Up/LetBuyy/reports/letbuyy.com-comprehensive-audit-2026-10-29');os.environ['PLAYWRIGHT_BROWSERS_PATH']=str(pathlib.Path.home()/'Library/Application Support/codex-seo/ms-playwright')
+with sync_playwright() as p:
+ b=p.chromium.launch(headless=True);pg=b.new_page();pg.route('**/*',lambda route:route.abort() if route.request.url.startswith(('http://','https://')) else route.continue_());pg.set_content((R/'Google-SEO-Report-letbuyy.com-full.html').read_text(),wait_until='load');pg.pdf(path=str(R/'LetBuyy-Live-SEO-Audit-2026-10-29.pdf'),format='A4',prefer_css_page_size=True,print_background=True,display_header_footer=True,header_template='<span></span>',footer_template='<div style="font-size:8px;width:100%;padding:0 17mm;color:#667085;display:flex;justify-content:space-between"><span>LetBuyy · Live SEO audit · 29 October 2026</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>');b.close()
+print(json.dumps({'status':'created','renderer':'isolated Chromium print-to-PDF; all remote requests blocked','output':str(R/'LetBuyy-Live-SEO-Audit-2026-10-29.pdf'),'native_weasyprint':'not available: required platform libraries failed to import; no dependency constraints changed'},indent=2))

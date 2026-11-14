@@ -8,11 +8,14 @@ export interface InternalWorkspaceProps {
     title: string;
     description: string;
     children: ReactNode;
+    /** Compose inside an existing app main without nesting landmark elements. */
+    as?: 'main' | 'section' | 'div';
+    className?: string;
 }
 
-export function InternalWorkspace({ eyebrow, title, description, children }: InternalWorkspaceProps) {
+export function InternalWorkspace({ eyebrow, title, description, children, as: Root = 'main', className }: InternalWorkspaceProps) {
     return (
-        <main className="mx-auto flex w-full max-w-7xl flex-col gap-[var(--lb-space-5)] px-[var(--lb-space-4)] py-[var(--lb-space-5)] text-[var(--lb-color-text)] sm:px-[var(--lb-space-5)] lg:px-[var(--lb-space-6)]">
+        <Root className={cx("mx-auto flex w-full max-w-7xl flex-col gap-[var(--lb-space-5)] px-[var(--lb-space-4)] py-[var(--lb-space-5)] text-[var(--lb-color-text)] sm:px-[var(--lb-space-5)] lg:px-[var(--lb-space-6)]", className)}>
             <header className="flex flex-col gap-[var(--lb-space-2)]">
                 <p className="m-0 text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[var(--lb-color-primary)]">
                     {eyebrow}
@@ -25,12 +28,12 @@ export function InternalWorkspace({ eyebrow, title, description, children }: Int
                 </p>
             </header>
             {children}
-        </main>
+        </Root>
     );
 }
 
-export function InternalMetricGrid({ children }: { children: ReactNode }) {
-    return <section className="grid gap-[var(--lb-space-4)] sm:grid-cols-2 xl:grid-cols-4">{children}</section>;
+export function InternalMetricGrid({ children, className }: { children: ReactNode; className?: string }) {
+    return <section className={cx('grid gap-[var(--lb-space-4)] sm:grid-cols-2 xl:grid-cols-4', className)}>{children}</section>;
 }
 
 export interface InternalMetricProps {
@@ -38,9 +41,10 @@ export interface InternalMetricProps {
     value: string;
     detail?: string;
     tone?: Exclude<InternalTone, 'info'>;
+    className?: string;
 }
 
-export function InternalMetric({ label, value, detail, tone = 'neutral' }: InternalMetricProps) {
+export function InternalMetric({ label, value, detail, tone = 'neutral', className }: InternalMetricProps) {
     const toneClass = {
         neutral: 'text-[var(--lb-color-text-subdued)]',
         success: 'text-[var(--lb-color-success)]',
@@ -49,7 +53,7 @@ export function InternalMetric({ label, value, detail, tone = 'neutral' }: Inter
     }[tone];
 
     return (
-        <article className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-5)] shadow-[var(--lb-shadow-sm)]">
+        <article data-tone={tone} className={cx('rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-5)] shadow-[var(--lb-shadow-sm)]', className)}>
             <p className="m-0 text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                 {label}
             </p>
@@ -70,11 +74,12 @@ export interface InternalPanelProps {
     description?: string;
     children: ReactNode;
     action?: ReactNode;
+    className?: string;
 }
 
-export function InternalPanel({ title, description, children, action }: InternalPanelProps) {
+export function InternalPanel({ title, description, children, action, className }: InternalPanelProps) {
     return (
-        <section className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-sm)]">
+        <section className={cx('rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-sm)]', className)}>
             <div className="flex flex-col gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] p-[var(--lb-space-5)] md:flex-row md:items-start md:justify-between">
                 <div className="min-w-0">
                     <h2 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
@@ -147,10 +152,14 @@ export function InternalStatusPill({
     value,
     tone,
     defaultTone = 'info',
+    className,
+    label,
 }: {
     value: string;
-    tone?: Exclude<InternalTone, 'neutral'>;
+    tone?: InternalTone;
     defaultTone?: Exclude<InternalTone, 'neutral'>;
+    className?: string;
+    label?: string;
 }) {
     const normalized = value.toLowerCase();
     const resolvedTone = tone
@@ -162,6 +171,7 @@ export function InternalStatusPill({
                     ? 'warning'
                     : defaultTone);
     const toneClass = {
+        neutral: 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[var(--lb-color-text-subdued)]',
         success: 'border-[var(--lb-color-success)] bg-[var(--lb-color-success-soft)] text-[var(--lb-color-success)]',
         warning: 'border-[var(--lb-color-warning)] bg-[var(--lb-color-warning-soft)] text-[var(--lb-color-warning)]',
         critical: 'border-[var(--lb-color-critical)] bg-[var(--lb-color-critical-soft)] text-[var(--lb-color-critical)]',
@@ -169,8 +179,8 @@ export function InternalStatusPill({
     }[resolvedTone];
 
     return (
-        <span className={cx('inline-flex shrink-0 items-center rounded-[var(--lb-radius-full)] border px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]', toneClass)}>
-            {value.replace(/_/g, ' ')}
+        <span data-tone={resolvedTone} className={cx('inline-flex shrink-0 items-center rounded-[var(--lb-radius-full)] border px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]', toneClass, className)}>
+            {label ?? value.replace(/_/g, ' ')}
         </span>
     );
 }

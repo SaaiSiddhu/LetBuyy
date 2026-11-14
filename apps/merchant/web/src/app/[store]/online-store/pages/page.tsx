@@ -1,13 +1,10 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useParams } from 'next/navigation'
 import { PAGE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { Badge, Banner, Button, Card, ConfirmDialog, FileText, Input, ListChecks, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Tabs, Textarea, Trash2, useToast } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
+import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, FileText, Input, ListChecks, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Tabs, Textarea, Trash2, useToast } from '@letbuyy/ui'
 import { formatUsShortDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
@@ -201,23 +198,20 @@ export default function PagesPage() {
         setSavedPolicySignature(createPolicySignature(EMPTY_POLICY))
     }, [])
 
-    const beginContent = useReadRequest(store)
     const loadContent = useCallback(async () => {
-        const request = beginContent()
         setLoading(true)
         setError(null)
         try {
             const [pagesResponse, policiesResponse, navigationResponse] = await Promise.all([
-                fetch(`/api/stores/${encodeURIComponent(store)}/pages?limit=100`, { cache: 'no-store', signal: request.signal }),
-                fetch(`/api/stores/${encodeURIComponent(store)}/policies`, { cache: 'no-store', signal: request.signal }),
-                fetch(`/api/stores/${encodeURIComponent(store)}/navigation?location=main`, { cache: 'no-store', signal: request.signal }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/pages?limit=100`, { cache: 'no-store' }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/policies`, { cache: 'no-store' }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/navigation?location=main`, { cache: 'no-store' }),
             ])
             const [pagesPayload, policiesPayload, navigationPayload] = await Promise.all([
                 parsePayload<PageItem[]>(pagesResponse),
                 parsePayload<PolicyItem[]>(policiesResponse),
                 parsePayload<{ items?: NavigationItem[] }>(navigationResponse),
             ])
-            if (!request.isCurrent()) return
             const nextPages = Array.isArray(pagesPayload.data) ? pagesPayload.data : []
             const nextPolicies = Array.isArray(policiesPayload.data) ? policiesPayload.data : []
             const nextNavItems = Array.isArray(navigationPayload.data?.items) ? navigationPayload.data.items : []
@@ -227,7 +221,6 @@ export default function PagesPage() {
             setSavedNavItems(nextNavItems)
             setSavedNavigationSignature(createNavigationSignature(nextNavItems))
         } catch (err) {
-            if (!request.isCurrent()) return
             const message = errorMessage(err, 'Unable to load storefront content')
             setError(message)
             notify({
@@ -236,9 +229,9 @@ export default function PagesPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginContent, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadContent()
@@ -598,7 +591,7 @@ export default function PagesPage() {
                 rows={visiblePages}
                 columns={pageColumns}
                 emptyState={(
-                    <EmptyState scene="store-pages"
+                    <EmptyState
                         icon={<FileText className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                         title="No pages yet"
                         body="Create storefront content pages and publish them when shoppers should see them."
@@ -658,7 +651,7 @@ export default function PagesPage() {
                 rows={policies}
                 columns={policyColumns}
                 emptyState={(
-                    <EmptyState scene="store-pages"
+                    <EmptyState
                         icon={<FileText className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                         title="No policies yet"
                         body="Create policies for privacy, refunds, shipping, terms, and support."
@@ -697,7 +690,7 @@ export default function PagesPage() {
                 )}
             >
                 {navItems.length === 0 ? (
-                    <EmptyState scene="store-pages"
+                    <EmptyState
                         icon={<ListChecks className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                         title="No menu links"
                         body="Add links or publish pages with Show in main menu."
@@ -769,8 +762,7 @@ export default function PagesPage() {
 
     return (
         <Page>
-            <PageHeader identity="themes"
-                recipe="index"
+            <PageHeader
                 title="Pages"
                 description="Manage published storefront content, policies, and navigation menus."
                 breadcrumbs={[{ label: 'Online Store' }, { label: 'Pages' }]}

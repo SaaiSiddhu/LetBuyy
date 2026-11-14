@@ -1,9 +1,0 @@
-Browser tab: 173052882, Title: "LetBuyy Admin", URL: "http://admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor".
-1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor
-	2 container Loading theme editor
-		3 text Theme workspace
-		4 heading Loading theme editor, Value: 1, ID: theme-editor-loading-title
-			5 text Loading theme editor
-		6 text Preparing your workspace and saved draft.
-
-The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-49ada80bc494.localhost:64594/syn-threadline-ui-ae3f0477/online-store/themes/letbuyy-sense/editor

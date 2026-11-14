@@ -1,0 +1,84 @@
+{
+  "captured_at": "2026-11-01T03:10:44.184Z",
+  "sequence": [
+    "home",
+    "pricing",
+    "resources",
+    "guide",
+    "home",
+    "pricing"
+  ],
+  "method": "Real Next Link transitions in one preserved document, before/after viewport geometry and computed style comparison after both route stylesheets have loaded",
+  "rows": [
+    {
+      "width": 375,
+      "path": "/in/pricing",
+      "sequence_index": 0,
+      "document_preserved": true,
+      "differences": []
+    },
+    {
+      "width": 375,
+      "path": "/in/resources",
+      "sequence_index": 1,
+      "document_preserved": true,
+      "differences": []
+    },
+    {
+      "width": 375,
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "sequence_index": 2,
+      "document_preserved": true,
+      "differences": []
+    },
+    {
+      "width": 375,
+      "path": "/in",
+      "sequence_index": 3,
+      "document_preserved": true,
+      "differences": []
+    },
+    {
+      "width": 375,
+      "path": "/in/pricing",
+      "sequence_index": 4,
+      "document_preserved": true,
+      "differences": []
+    },
+    {
+      "width": 1366,
+      "path": "/in/pricing",
+      "sequence_index": 0,
+      "document_preserved": true,
+      "differences": []
+    },
+    {
+      "width": 1366,
+      "path": "/in/resources",
+      "sequence_index": 1,
+      "document_preserved": true,
+      "differences": []
+    },
+    {
+      "width": 1366,
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "sequence_index": 2,
+      "document_preserved": true,
+      "differences": []
+    },
+    {
+      "width": 1366,
+      "path": "/in",
+      "sequence_index": 3,
+      "document_preserved": true,
+      "differences": []
+    },
+    {
+      "width": 1366,
+      "path": "/in/pricing",
+      "sequence_index": 4,
+      "document_preserved": true,
+      "differences": []
+    }
+  ]
+}

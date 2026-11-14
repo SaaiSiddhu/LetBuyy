@@ -34,7 +34,6 @@
     "workspacePackages": [
       "@letbuyy/api-client",
       "@letbuyy/auth-core",
-      "@letbuyy/notification-core",
       "@letbuyy/tenant-core",
       "@letbuyy/ui"
     ],

@@ -1,0 +1,116 @@
+{
+  "core": {
+    "summaries": [
+      {
+        "tests": 40,
+        "pass": 40,
+        "fail": 0
+      }
+    ],
+    "failed_cases": [],
+    "raw_log_sha256": "9ba812b96fa8cdde84316c2dc834ffc028d21bcc8954707e2d9b94b739fd43bd"
+  },
+  "merchant": {
+    "summaries": [
+      {
+        "tests": 119,
+        "pass": 119,
+        "fail": 0
+      },
+      {
+        "tests": 806,
+        "pass": 806,
+        "fail": 0
+      }
+    ],
+    "failed_cases": [],
+    "raw_log_sha256": "de6e0101ab9851379b2b035aed765aaa5c128acd298d9134f78acc4352b2f497"
+  },
+  "gateway": {
+    "summaries": [
+      {
+        "tests": 1609,
+        "pass": 1608,
+        "fail": 1
+      }
+    ],
+    "failed_cases": [
+      "merchant order line-item edits recalculate totals server-side"
+    ],
+    "raw_log_sha256": "e40d81be717a8f06f99e7da2908f207a590b2e33402d8bcf21836b39aaf36a46"
+  },
+  "contracts": {
+    "summaries": [
+      {
+        "tests": 338,
+        "pass": 336,
+        "fail": 2
+      }
+    ],
+    "failed_cases": [
+      "custom-domain health exposes DNS, SSL, and renewal state to mobile",
+      "internal console and internal API secrets use timing-safe text comparison"
+    ],
+    "raw_log_sha256": "ba8b1968f92708e4070fcb96ee6415c0e1f9c04d4ea054ff888129f0ea92f70b"
+  },
+  "focused_gateway": {
+    "summaries": [
+      {
+        "tests": 30,
+        "pass": 30,
+        "fail": 0
+      }
+    ],
+    "failed_cases": [],
+    "raw_log_sha256": "a3fb4975a6cec8b1c284c613c254864cbbf15579a1e3174fe254b2253ea9e7b5"
+  },
+  "focused_ui": {
+    "summaries": [
+      {
+        "tests": 7,
+        "pass": 7,
+        "fail": 0
+      }
+    ],
+    "failed_cases": [],
+    "raw_log_sha256": "498f3c99a894df6fc92af0c5362031d083ba13c27310fa31e0d3ab7afe1c89aa"
+  },
+  "marketing_contract": {
+    "summaries": [
+      {
+        "tests": 3,
+        "pass": 3,
+        "fail": 0
+      }
+    ],
+    "failed_cases": [],
+    "raw_log_sha256": "4ab77fe5216ec1ada72fd13a20e3e78118e057aea35866e09a28a88a62add889"
+  },
+  "prior_order": {
+    "summaries": [
+      {
+        "tests": 4,
+        "pass": 3,
+        "fail": 1
+      }
+    ],
+    "failed_cases": [
+      "merchant order line-item edits recalculate totals server-side"
+    ],
+    "raw_log_sha256": "25f6a60c3244810ad4f5ab350f83c00eb124b17fd595504671c2b74de449df0f"
+  },
+  "prior_contracts": {
+    "summaries": [
+      {
+        "tests": 8,
+        "pass": 6,
+        "fail": 2
+      }
+    ],
+    "failed_cases": [
+      "custom-domain health exposes DNS, SSL, and renewal state to mobile",
+      "internal console and internal API secrets use timing-safe text comparison"
+    ],
+    "raw_log_sha256": "37495c19474f23ae0ad0f4518b7e2746104562352d0f733527087a535f56dbb2"
+  }
+}

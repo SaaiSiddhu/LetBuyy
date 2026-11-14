@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import type {
@@ -16,6 +14,7 @@ import {
     Banner,
     Button,
     Card,
+    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -29,7 +28,6 @@ import {
     useToast,
     type TableColumn,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 // ─── Local types ──────────────────────────────────────────────────────────────
 
@@ -223,18 +221,15 @@ export default function MarketingCampaignsPage() {
 
     // ─── Fetch campaigns ───────────────────────────────────────────────────────
 
-    const beginLoadCampaigns = useReadRequest(store)
     const loadCampaigns = useCallback(async () => {
-        const request = beginLoadCampaigns()
         setLoading(true)
         setError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/marketing/campaigns?limit=50`,
-                { cache: 'no-store', signal: request.signal },
+                { cache: 'no-store' },
             )
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
             if (!response.ok) {
                 setError(getErrorMessage(payload, 'Unable to load campaigns'))
                 setCampaigns([])
@@ -243,13 +238,12 @@ export default function MarketingCampaignsPage() {
             const rows = (Array.isArray(payload?.data) ? payload.data : []).map(mapCampaign)
             setCampaigns(rows)
         } catch {
-            if (!request.isCurrent()) return
             setError('Unable to load campaigns')
             setCampaigns([])
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginLoadCampaigns, store])
+    }, [store])
 
     useEffect(() => { loadCampaigns() }, [loadCampaigns])
 
@@ -563,7 +557,7 @@ export default function MarketingCampaignsPage() {
     // ─── Empty state ───────────────────────────────────────────────────────────
 
     const emptyState = (
-        <EmptyState scene="marketing"
+        <EmptyState
             icon={<MaterialIcon name={error ? 'error' : 'campaign'} />}
             title={error ? 'Unable to load campaigns' : 'No campaigns yet'}
             body={error ?? 'Create an email campaign to reach your subscribed customers.'}
@@ -594,8 +588,7 @@ export default function MarketingCampaignsPage() {
 
     return (
         <Page>
-            <PageHeader identity="marketing"
-                recipe="index"
+            <PageHeader
                 eyebrow="Marketing"
                 title="Email Campaigns"
                 description="Send emails to your subscribed customers. Emails are sent in sandbox mode until a live Resend API key is configured."

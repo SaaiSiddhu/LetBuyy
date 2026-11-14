@@ -1,0 +1,76 @@
+{
+  "capturedAt": "2026-11-07T04:06:17.034Z",
+  "buildId": "1iA7dvwq_bIyb4K8i8XV0",
+  "knownUrlCount": 489,
+  "sitemapEntries": 189,
+  "guideEntries": 105,
+  "reciprocalAlternatesChecked": 567,
+  "htmlDirectories": [
+    "/in/sitemap",
+    "/in-hi/sitemap",
+    "/in-ta/sitemap"
+  ],
+  "publisherRedirects": [
+    {
+      "from": "/in-hi/resources/authors/arjun-developer",
+      "to": "/in-hi/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in-hi/resources/authors/neha-payments",
+      "to": "/in-hi/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in-hi/resources/authors/priya-commerce",
+      "to": "/in-hi/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in-hi/resources/authors/ravi-operations",
+      "to": "/in-hi/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in-ta/resources/authors/arjun-developer",
+      "to": "/in-ta/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in-ta/resources/authors/neha-payments",
+      "to": "/in-ta/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in-ta/resources/authors/priya-commerce",
+      "to": "/in-ta/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in-ta/resources/authors/ravi-operations",
+      "to": "/in-ta/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in/resources/authors/arjun-developer",
+      "to": "/in/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in/resources/authors/neha-payments",
+      "to": "/in/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in/resources/authors/priya-commerce",
+      "to": "/in/resources/authors/letbuyy-team",
+      "status": 308
+    },
+    {
+      "from": "/in/resources/authors/ravi-operations",
+      "to": "/in/resources/authors/letbuyy-team",
+      "status": 308
+    }
+  ],
+  "errors": []
+}

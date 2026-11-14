@@ -1,0 +1,7 @@
+{
+  "problem": "The copied release-candidate checker expected production www canonicals for the root local build configured for localhost:9006.",
+  "reportedErrors": 477,
+  "allReportedErrorsOnlyCanonicalExpectation": true,
+  "statusAndTitleLanguageChecksFailed": false,
+  "correction": "Use explicit configured localhost canonical for root verification; production-canonical source closure is verified separately. This is a checker configuration correction, not a source SEO repair."
+}

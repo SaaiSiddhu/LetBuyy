@@ -16,15 +16,15 @@ export function BuyerPrivacy({initialBuyer,expectedBuyer,unavailable}:{initialBu
  const [accountReady,setAccountReady]=useState(true),[accountRevision,setAccountRevision]=useState(0)
  const generation=useRef(0),turnstile=useRef<TurnstileHandle>(null),[human,setHuman]=useState<string|null>(null)
  const onHuman=useCallback((value:string)=>setHuman(value),[]),humanEnabled=Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
- const headers=async()=>({...(await getAuthHeaders()),'X-LetBuyy-Expected-Buyer':buyer?.id||''})
+ const headers=()=>({...getAuthHeaders(),'X-LetBuyy-Expected-Buyer':buyer?.id||''})
  async function failure(response:Response){const body=await response.json().catch(()=>null);return typeof body?.error==='string'?body.error:body?.error?.message||'This action could not be confirmed. Retry when service is restored.'}
  async function loadRequests(){if(!buyer)return;const current=++generation.current;setError('');setRequests([]);setExports([]);setSelected('');
-  try{const r=await fetch('/api/buyer/privacy/requests',{headers:await headers(),cache:'no-store'});if(!r.ok)throw new Error(await failure(r));const body=await r.json();if(!Array.isArray(body.data))throw new Error('Request data is unavailable. Try refreshing.');if(generation.current===current)setRequests(body.data)}catch(e){if(generation.current===current)setError(e instanceof Error?e.message:'Requests unavailable.')}
+  try{const r=await fetch('/api/buyer/privacy/requests',{headers:headers(),cache:'no-store'});if(!r.ok)throw new Error(await failure(r));const body=await r.json();if(!Array.isArray(body.data))throw new Error('Request data is unavailable. Try refreshing.');if(generation.current===current)setRequests(body.data)}catch(e){if(generation.current===current)setError(e instanceof Error?e.message:'Requests unavailable.')}
  }
  useEffect(()=>{if(accountReady)void loadRequests()},[buyer?.id,accountRevision,accountReady])
  useEffect(()=>()=>{generation.current++},[])
  async function recheckAccount(){const current=++generation.current;setAccountReady(false);setRequests([]);setExports([]);setSelected('');setPassword('');setSignInPassword('');setNotice('')
-  try{const r=await fetch('/api/buyer/privacy/account',{headers:{...(await getAuthHeaders()),...(expectedBuyer?{'X-LetBuyy-Expected-Buyer':expectedBuyer}:{})},cache:'no-store'});if(current!==generation.current)return
+  try{const r=await fetch('/api/buyer/privacy/account',{headers:{...getAuthHeaders(),...(expectedBuyer?{'X-LetBuyy-Expected-Buyer':expectedBuyer}:{})},cache:'no-store'});if(current!==generation.current)return
    if(!r.ok){const message=await failure(r);if(current!==generation.current)return;if(r.status===401||r.status===409){setBuyer(null);setAccountReady(true)}throw new Error(message)}
    const body=await r.json();if(current!==generation.current)return;setBuyer(body.buyer);setError('');setBusy(false);setAccountReady(true);setAccountRevision(value=>value+1)
   }catch(e){if(current===generation.current){setBusy(false);setError(e instanceof Error?e.message:'Account verification unavailable.')}}
@@ -33,28 +33,28 @@ export function BuyerPrivacy({initialBuyer,expectedBuyer,unavailable}:{initialBu
   const focus=()=>{if(buyer&&!document.hidden)void recheckAccount()};document.addEventListener('visibilitychange',visibility);window.addEventListener('focus',focus)
   return()=>{document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus)}
  },[buyer?.id,expectedBuyer])
- async function loadExports(id:string,current=generation.current){const r=await fetch('/api/buyer/privacy/exports?request_id='+encodeURIComponent(id),{headers:await headers(),cache:'no-store'});if(!r.ok)throw new Error(await failure(r));const body=await r.json();if(!Array.isArray(body.data?.items))throw new Error('Export data is unavailable. Try refreshing.');if(current===generation.current)setExports(body.data.items)}
+ async function loadExports(id:string,current=generation.current){const r=await fetch('/api/buyer/privacy/exports?request_id='+encodeURIComponent(id),{headers:headers(),cache:'no-store'});if(!r.ok)throw new Error(await failure(r));const body=await r.json();if(!Array.isArray(body.data?.items))throw new Error('Export data is unavailable. Try refreshing.');if(current===generation.current)setExports(body.data.items)}
  async function signIn(event:FormEvent){event.preventDefault();setBusy(true);setError('');const current=++generation.current
-  try{const r=await fetch('/api/buyer/login',{method:'POST',headers:(await getAuthHeaders()),body:JSON.stringify({email,password:signInPassword,turnstileToken:human||''})});if(!r.ok)throw new Error(await failure(r));const body=await r.json();if(current!==generation.current)return
+  try{const r=await fetch('/api/buyer/login',{method:'POST',headers:getAuthHeaders(),body:JSON.stringify({email,password:signInPassword,turnstileToken:human||''})});if(!r.ok)throw new Error(await failure(r));const body=await r.json();if(current!==generation.current)return
    if(expectedBuyer&&body.buyer?.id!==expectedBuyer)throw new Error('Sign in with the buyer account used to open this page. No data has been loaded for the other account.')
    window.location.reload()
   }catch(e){if(current===generation.current)setError(e instanceof Error?e.message:'Sign-in unavailable.')}finally{setSignInPassword('');turnstile.current?.reset();setHuman(null);if(current===generation.current)setBusy(false)}
  }
  async function create(event:FormEvent){event.preventDefault();const current=generation.current;setBusy(true);setError('');setNotice('')
-  try{const r=await fetch('/api/buyer/privacy/requests',{method:'POST',headers:await headers(),body:JSON.stringify({type,notes})});if(!r.ok)throw new Error(await failure(r));if(current!==generation.current)return;setNotes('');setNotice(type==='access'?'Your access request is available below. Verify your password to prepare its restricted export.':'Your deletion request was received for review. No data was deleted.');await loadRequests()}
+  try{const r=await fetch('/api/buyer/privacy/requests',{method:'POST',headers:headers(),body:JSON.stringify({type,notes})});if(!r.ok)throw new Error(await failure(r));if(current!==generation.current)return;setNotes('');setNotice(type==='access'?'Your access request is available below. Verify your password to prepare its restricted export.':'Your deletion request was received for review. No data was deleted.');await loadRequests()}
   catch(e){if(current===generation.current)setError(e instanceof Error?e.message:'Request unavailable.')}finally{setBusy(false)}
  }
  async function choose(id:string){const current=++generation.current;setSelected(id);setExports([]);setPassword('');setKey(crypto.randomUUID());setNotice('');setError('');try{await loadExports(id,current)}catch(e){if(current===generation.current)setError(e instanceof Error?e.message:'Exports unavailable.')}}
  async function prepare(event:FormEvent){event.preventDefault();const current=generation.current;setBusy(true);setError('');setNotice('')
-  try{const r=await fetch('/api/buyer/privacy/prepare',{method:'POST',headers:await headers(),body:JSON.stringify({request_id:selected,request_key:key,password})});if(!r.ok)throw new Error(await failure(r));if(current!==generation.current)return;setNotice('Export prepared. Download it once before the displayed expiry.');await loadExports(selected,current)}
+  try{const r=await fetch('/api/buyer/privacy/prepare',{method:'POST',headers:headers(),body:JSON.stringify({request_id:selected,request_key:key,password})});if(!r.ok)throw new Error(await failure(r));if(current!==generation.current)return;setNotice('Export prepared. Download it once before the displayed expiry.');await loadExports(selected,current)}
   catch(e){if(current===generation.current)setError((e instanceof Error?e.message:'Preparation unavailable.')+' Re-enter your password to retry this same request, or refresh exports to recover a saved result.')}finally{setPassword('');if(current===generation.current)setBusy(false)}
  }
  async function download(row:ExportRow){const current=generation.current;setBusy(true);setError('');setNotice('')
-  try{const r=await fetch('/api/buyer/privacy/download',{method:'POST',headers:await headers(),body:JSON.stringify({request_id:selected,export_id:row.export_id})});if(!r.ok)throw new Error(await failure(r));const blob=await r.blob();if(current!==generation.current)return
+  try{const r=await fetch('/api/buyer/privacy/download',{method:'POST',headers:headers(),body:JSON.stringify({request_id:selected,export_id:row.export_id})});if(!r.ok)throw new Error(await failure(r));const blob=await r.blob();if(current!==generation.current)return
    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='letbuyy-data-'+row.export_id+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setNotice('Your browser was asked to save the export. This single-use permission is now used. If saving was interrupted, verify again to prepare a new export.');await loadExports(selected,current);setKey(crypto.randomUUID())
   }catch(e){if(current===generation.current)setError(e instanceof Error?e.message:'Download unavailable.')}finally{if(current===generation.current)setBusy(false)}
  }
- async function signOut(){generation.current++;setBusy(true);setError('');setRequests([]);setExports([]);setPassword('');try{const r=await fetch('/api/buyer/logout',{method:'POST',headers:(await getAuthHeaders()),body:'{}'});if(!r.ok)throw new Error(await failure(r));setBuyer(null);setSelected('');setNotice('Signed out.')}catch(e){setError(e instanceof Error?e.message:'Sign-out unavailable.')}finally{setBusy(false)}}
+ async function signOut(){generation.current++;setBusy(true);setError('');setRequests([]);setExports([]);setPassword('');try{const r=await fetch('/api/buyer/logout',{method:'POST',headers:getAuthHeaders(),body:'{}'});if(!r.ok)throw new Error(await failure(r));setBuyer(null);setSelected('');setNotice('Signed out.')}catch(e){setError(e instanceof Error?e.message:'Sign-out unavailable.')}finally{setBusy(false)}}
  return <main className={styles.page}><BrandLogo/><h1 className="text-2xl font-semibold">Your data access</h1>
   <p>Manage requests for your LetBuyy buyer account. The restricted V1 export includes your profile, saved addresses, your own authored support content and linked order commerce fields. It excludes credentials and internal operational notes.</p>
   {error&&<p role="alert" className="rounded border border-red-500 p-4">{error}</p>}{notice&&<p role="status" className="rounded border p-4">{notice}</p>}

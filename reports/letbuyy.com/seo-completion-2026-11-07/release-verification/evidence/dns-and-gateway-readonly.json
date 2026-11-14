@@ -1,0 +1,298 @@
+{
+  "capturedAt": "2026-11-07T03:49:54.893962+00:00",
+  "dns": [
+    {
+      "host": "seller.letbuyy.com",
+      "resolver": "1.1.1.1",
+      "status": "NXDOMAIN",
+      "cnames": [],
+      "exit": 0
+    },
+    {
+      "host": "seller.letbuyy.com",
+      "resolver": "8.8.8.8",
+      "status": "NXDOMAIN",
+      "cnames": [],
+      "exit": 0
+    },
+    {
+      "host": "developer.letbuyy.com",
+      "resolver": "1.1.1.1",
+      "status": "NXDOMAIN",
+      "cnames": [],
+      "exit": 0
+    },
+    {
+      "host": "developer.letbuyy.com",
+      "resolver": "8.8.8.8",
+      "status": "NXDOMAIN",
+      "cnames": [],
+      "exit": 0
+    },
+    {
+      "host": "developers.letbuyy.com",
+      "resolver": "1.1.1.1",
+      "status": "NXDOMAIN",
+      "cnames": [],
+      "exit": 0
+    },
+    {
+      "host": "developers.letbuyy.com",
+      "resolver": "8.8.8.8",
+      "status": "NXDOMAIN",
+      "cnames": [],
+      "exit": 0
+    },
+    {
+      "host": "www.letbuyy.com",
+      "resolver": "1.1.1.1",
+      "status": "NOERROR",
+      "cnames": [
+        "c69d9eec88d448f3.vercel-dns-017.com."
+      ],
+      "exit": 0
+    },
+    {
+      "host": "www.letbuyy.com",
+      "resolver": "8.8.8.8",
+      "status": "NOERROR",
+      "cnames": [
+        "c69d9eec88d448f3.vercel-dns-017.com."
+      ],
+      "exit": 0
+    },
+    {
+      "host": "accounts.letbuyy.com",
+      "resolver": "1.1.1.1",
+      "status": "NOERROR",
+      "cnames": [
+        "671daaee66e0b650.vercel-dns-017.com."
+      ],
+      "exit": 0
+    },
+    {
+      "host": "accounts.letbuyy.com",
+      "resolver": "8.8.8.8",
+      "status": "NOERROR",
+      "cnames": [
+        "671daaee66e0b650.vercel-dns-017.com."
+      ],
+      "exit": 0
+    }
+  ],
+  "routes": [
+    {
+      "url": "http://letbuyy.com/in",
+      "origin": null,
+      "method": "GET",
+      "status": 308,
+      "location": "https://letbuyy.com/in",
+      "acao": null,
+      "vary": null,
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "https://letbuyy.com/in",
+      "origin": null,
+      "method": "GET",
+      "status": 308,
+      "location": "https://www.letbuyy.com/in",
+      "acao": null,
+      "vary": null,
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "https://www.letbuyy.com/in",
+      "origin": null,
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "acao": "*",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "https://accounts.letbuyy.com/lookup",
+      "origin": null,
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "acao": "*",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/developers",
+      "origin": null,
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "acao": "*",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "http://127.0.0.1:9016/api",
+      "origin": null,
+      "method": "GET",
+      "status": 404,
+      "location": null,
+      "acao": null,
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "http://127.0.0.1:9016/sdk",
+      "origin": null,
+      "method": "GET",
+      "status": 307,
+      "location": "/in/sdk",
+      "acao": null,
+      "vary": "Accept-Language, Cookie",
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "http://127.0.0.1:9016/in",
+      "origin": null,
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "acao": null,
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "http://127.0.0.1:9016/lookup",
+      "origin": null,
+      "method": "GET",
+      "status": 307,
+      "location": "/in/lookup",
+      "acao": null,
+      "vary": "Accept-Language, Cookie",
+      "credentials": null,
+      "robotsHeader": null
+    }
+  ],
+  "cors": [
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "origin": "https://www.letbuyy.com",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "acao": "https://www.letbuyy.com",
+      "vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+      "credentials": "true",
+      "robotsHeader": null
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "origin": "https://letbuyy.com",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "acao": "https://letbuyy.com",
+      "vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+      "credentials": "true",
+      "robotsHeader": null
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "origin": "https://www.letbuyy.com.evil.invalid",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "acao": "https://letbuyy.com",
+      "vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+      "credentials": "true",
+      "robotsHeader": null
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "origin": "https://unconfigured.letbuyy.com",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "acao": "https://letbuyy.com",
+      "vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+      "credentials": "true",
+      "robotsHeader": null
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/orders",
+      "origin": null,
+      "method": "GET",
+      "status": 401,
+      "location": null,
+      "acao": "https://letbuyy.com",
+      "vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+      "credentials": "true",
+      "robotsHeader": null
+    },
+    {
+      "url": "https://api.letbuyy.com/v1/pricing",
+      "origin": "https://www.letbuyy.com",
+      "method": "GET",
+      "status": 403,
+      "location": null,
+      "acao": null,
+      "vary": null,
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "https://api.letbuyy.com/v1/pricing",
+      "origin": "https://letbuyy.com",
+      "method": "GET",
+      "status": 403,
+      "location": null,
+      "acao": null,
+      "vary": null,
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "https://api.letbuyy.com/v1/pricing",
+      "origin": "https://www.letbuyy.com.evil.invalid",
+      "method": "GET",
+      "status": 403,
+      "location": null,
+      "acao": null,
+      "vary": null,
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "https://api.letbuyy.com/v1/pricing",
+      "origin": "https://unconfigured.letbuyy.com",
+      "method": "GET",
+      "status": 403,
+      "location": null,
+      "acao": null,
+      "vary": null,
+      "credentials": null,
+      "robotsHeader": null
+    },
+    {
+      "url": "https://api.letbuyy.com/v1/orders",
+      "origin": null,
+      "method": "GET",
+      "status": 403,
+      "location": null,
+      "acao": null,
+      "vary": null,
+      "credentials": null,
+      "robotsHeader": null
+    }
+  ],
+  "localRuleCases": 70,
+  "providerMutations": 0
+}

@@ -11,7 +11,6 @@
 // use fakes and a fake that models the scoping cannot prove the scoping.
 
 import type { Hono } from 'hono';
-import { toBuyerOrderItemView } from '../../lib/buyer-order-item-view';
 import type { Env } from '../../index';
 import { sendBuyerEmailCode } from '../../lib/buyer-email-code';
 import { firebaseSigningKeys, verifyFirebaseIdToken } from '../../lib/firebase-id-token';
@@ -376,7 +375,10 @@ export function registerBuyerRealmRoutes(
                 const { store_id: _storeId, order_items: _rawItems, ...order } = hydrated;
                 // The common hydrator also serves internal readers. The buyer view
                 // gets its display fields, never arbitrary product snapshot data.
-                order.items = hydrated.items.map(toBuyerOrderItemView);
+                const fields = ['id','product_id','variant_id','name','title','sku','quantity',
+                    'price','unit_price','total','variant_title','image','image_url','variant'];
+                order.items = hydrated.items.map((item: Record<string, unknown>) =>
+                    Object.fromEntries(fields.filter((field) => Object.hasOwn(item, field)).map((field) => [field, item[field]])));
                 return { data: order, error: null };
             } catch (error) { return { data: null, error }; }
         },

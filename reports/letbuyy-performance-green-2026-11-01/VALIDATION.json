@@ -1,0 +1,12 @@
+{
+  "captured_at": "2026-11-01T05:43:29.515265+00:00",
+  "json_parsing": "PASS",
+  "all_report_links_exist": "PASS",
+  "source_and_documentation_hashes": "PASS",
+  "both_reverse_patch_dry_runs": "PASS",
+  "secret_pattern_matches": 0,
+  "functional_checks_pass": true,
+  "open_simulated_lcp_advisories": 2,
+  "not_a_whole_repository_green_claim": true,
+  "errors": []
+}

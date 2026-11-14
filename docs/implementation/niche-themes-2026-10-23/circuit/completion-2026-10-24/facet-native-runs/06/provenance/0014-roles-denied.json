@@ -1,7 +1,0 @@
-{
-  "runId": "786c7515c57a",
-  "operation": "roles-denied",
-  "value": {
-    "error": "ERROR:  permission denied for function browse_storefront_products_v1"
-  }
-}

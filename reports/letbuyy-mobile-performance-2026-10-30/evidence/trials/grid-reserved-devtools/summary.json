@@ -1,0 +1,144 @@
+{
+  "captured_at": "2026-10-29T23:02:35.992729+00:00",
+  "method": "Actual DevTools network/CPU throttling; separate from the default simulated Lantern model; no field data",
+  "rows": [
+    {
+      "name": "home",
+      "path": "/in",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.81,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2799.379,
+      "cls": 0.000123,
+      "tbt_ms": 333.3369999999991,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "home-repeat",
+      "path": "/in",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.87,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2463.331,
+      "cls": 0.000123,
+      "tbt_ms": 231.68399999999974,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "pricing",
+      "path": "/in/pricing",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.95,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2309.937,
+      "cls": 0.002438,
+      "tbt_ms": 68.46499999999969,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "setup-guide",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.94,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2412.738,
+      "cls": 8.3e-05,
+      "tbt_ms": 74.06599999618538,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "pricing-repeat",
+      "path": "/in/pricing",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.91,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2756.405,
+      "cls": 0.002438,
+      "tbt_ms": 68.79099999999926,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "setup-guide-repeat",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.94,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2408.56,
+      "cls": 7.9e-05,
+      "tbt_ms": 70.61500000000024,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    }
+  ]
+}

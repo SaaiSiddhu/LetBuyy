@@ -32,13 +32,14 @@ const columns: Array<ConsoleDataColumn<InternalMerchantSearchResult>> = [
             <div className="min-w-0">
                 <Link
                     href={`/merchants/${row.id}`}
-                    className="font-medium text-zinc-100 underline-offset-4 hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                    className="font-medium text-default underline-offset-4 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                 >
                     {row.store_name || row.name || row.subdomain || row.id}
                 </Link>
-                <p className="mt-1 truncate text-xs text-zinc-500">
+                <p className="mt-1 truncate text-xs text-subdued">
                     {row.custom_domain || (row.subdomain ? `${row.subdomain}.letbuyy.com` : row.id)}
                 </p>
+                <Link href={`/merchants/${row.id}/operations`} className="mt-2 inline-block text-sm underline underline-offset-4">Operations workspace</Link>
             </div>
         ),
     },
@@ -83,7 +84,7 @@ export default async function MerchantsPage({ searchParams }: PageProps) {
             title="Merchant 360"
             description="Find a merchant by store id, merchant id, owner email, name, subdomain, or custom domain."
         >
-            <Panel title="Search" description="Search returns governed site records and opens the audited Merchant 360 view.">
+            <Panel title="Search" description="Find up to 25 matching site records. Use the merchant directory for paginated browsing.">
                 <ConsoleSearchForm placeholder="Search merchant, email, domain, or store id..." defaultValue={q} />
             </Panel>
 

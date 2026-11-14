@@ -1,18 +1,6 @@
 # LetBuyy source handoff — 21 October 2026
 
-**Latest consolidation:** read [NEW_MACHINE_2026_10_21.md](NEW_MACHINE_2026_10_21.md) and [the consolidated receipt](consolidation-2026-10-21.json). All machine source inputs, including the later access, merchant and ten-theme work, are integrated by this owner-authorized consolidation. The sections below record earlier syncs and their superseded limitations.
-
 The owner explicitly requested committing the current launch work, merging it into develop and pushing GitHub so another machine can pull it. This supersedes the earlier no-merge/no-push boundary for this source sync only. No staging/main promotion, deployment, shared database migration, real payment or external message is authorized by this sync.
-
-## Follow-up source sync — 21 October 2026
-
-The verified Core read-performance candidate a92763b70f110db1c4d9ed5eb094e48ed40e568a is now merged into develop by11271049e1b3dafeb11f50729964ffcc540a924c. Its acceptance record is ../core-read-performance/acceptance.json: normal owned production-browser journey passed, Commerce1263 passed, types passed and canonical114 passed. This removes repeated render reads; it does not establish hosted latency or launch readiness.
-
-The unfinished compact-bootstrap source is committed on `letbuyy/week1-compact-bootstrap` and pushed separately for continuation. It is excluded from develop; read that branch’s `docs/evidence/web-launch-week1-2026-10-21/compact-bootstrap/MACHINE_HANDOFF.md` before resuming. Use `git switch --track origin/letbuyy/week1-compact-bootstrap` in a separate clean checkout if needed. Do not merge it until its missing owned/native/cache/publication acceptance is complete.
-
-Correction to the historical preview item below: the audit-only selected-store review proxy was repaired after the first push. Two policy test families and eight HTTP cases passed; seven product reads succeeded, but this is not universal Worker reliability proof. Archived diagnostic source and receipt are in `readonly-preview/`. Old non-public-media URLs still return404; no shared media was rewritten. This preview is separate from the performance serving fixture.
-
-The prior remote develop118209b4 receipt remains historical. The follow-up receipt identifies the merge and WIP branch. Final disposable-clone gate:114 passed, zero failed/blocked/skipped, one not-applicable; focused routing/preview7 passed. All six source-manifest hashes match the previously accepted browser-tested candidate. Raw audit HTML/logs/screenshots outside Git, restored database, uploaded objects, local secrets and sessions still require private transfer. CI was previously unable to start because of GitHub account billing/spending limits; no successful hosted CI or deployment is implied.
 
 ## What travels in develop
 

@@ -1,9 +1,0 @@
-{
-  "runId": "5d023114b98b",
-  "name": "stage-pass",
-  "sequence": 2,
-  "suiteSha256": "ff95aa6fb61dfd68df3ea2bfd1451e6923fa7d29faf33e493ff0e6212cb10e99",
-  "value": {
-    "name": "0 synthetic fixture and exact current authority baseline"
-  }
-}

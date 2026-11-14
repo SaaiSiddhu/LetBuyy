@@ -7,6 +7,8 @@ import {
     ComplianceDataSubjectStatusSchema,
     ComplianceDataSubjectSubjectTypeSchema,
 } from '@letbuyy/shared-types';
+import { AppError } from '../../lib/errors';
+import { consolePermission, requireConsolePermission } from '../../identity-foundation/console-approval-repository';
 import type { Env } from '../../index';
 import {
     buildComplianceOverview,
@@ -19,7 +21,7 @@ import {
     writeComplianceAudit,
     type JsonRecord,
 } from '../../lib/internal-compliance';
-import { getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminForOperatorRead, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../../lib/supabase';
 import { validateSensitiveReason } from '../../middleware/rbac';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -113,9 +115,9 @@ function emptyComplianceOverview() {
     };
 }
 
-router.get('/overview', async (c) => {
+router.get('/overview', consolePermission('compliance:view'), async (c) => {
     try {
-        return c.json(success(await buildComplianceOverview(getSupabaseAdmin(c))));
+        return c.json(success(await buildComplianceOverview(getSupabaseAdminForOperatorRead(c))));
     } catch (error) {
         if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
             return c.json(success(emptyComplianceOverview()));
@@ -124,7 +126,7 @@ router.get('/overview', async (c) => {
     }
 });
 
-router.get('/data-requests', async (c) => {
+router.get('/data-requests', consolePermission('compliance:view'), async (c) => {
     const parsed = ListQuerySchema.safeParse({
         page: c.req.query('page') || undefined,
         limit: c.req.query('limit') || undefined,
@@ -140,15 +142,16 @@ router.get('/data-requests', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: validationMessage(parsed.error) } }, 400);
     }
 
-    const db = getSupabaseAdmin(c);
+    const { state } = await requireConsolePermission(c, 'compliance:view', false);
+    const db = getSupabaseAdminForOperatorRead(c);
     try {
         const result = await listDataSubjectRequests(db, parsed.data);
-        await writeComplianceAudit(db, {
+        await writeComplianceAudit(getSupabaseAdmin(c), {
             action: 'data_subject_request.list',
             resourceType: 'data_subject_request',
-            actorId: parsed.data.actor_id || null,
-            actorEmail: parsed.data.actor_email || null,
-            actorType: 'super_admin',
+            actorId: state.actor_id,
+            actorEmail: state.email,
+            actorType: state.is_super_admin ? 'super_admin' : 'employee',
             requestId: requestId(c),
             metadata: {
                 audit_kind: 'sensitive_read',
@@ -168,7 +171,8 @@ router.get('/data-requests', async (c) => {
     }
 });
 
-router.post('/data-requests', async (c) => {
+router.post('/data-requests', consolePermission('compliance:manage'), async (c) => {
+    const { state: actor } = await requireConsolePermission(c, 'compliance:manage');
     const parsed = CreateRequestSchema.safeParse(await readJson(c));
     if (!parsed.success) {
         return c.json({ error: { code: 'VALIDATION', message: validationMessage(parsed.error) } }, 400);
@@ -183,17 +187,21 @@ router.post('/data-requests', async (c) => {
         const row = await createManualDataSubjectRequest(getSupabaseAdmin(c), {
             ...parsed.data,
             reason,
-            actor_type: 'super_admin',
+            actor_type: actor.is_super_admin ? 'super_admin' : 'employee',
+            actor_id: actor.actor_id, actor_email: actor.email,
             request_id: requestId(c),
         });
         return c.json(success({ request: row }), 201);
-    } catch {
+    } catch (error) {
+        if (error instanceof AppError) throw error;
         return c.json(dbError(), 500);
     }
 });
 
-router.get('/data-requests/:id', async (c) => {
-    const db = getSupabaseAdmin(c);
+router.get('/data-requests/:id', consolePermission('compliance:view'), async (c) => {
+    const actor = c.get('consolePermissionState')!;
+    if (!z.string().uuid().safeParse(c.req.param('id')).success) return c.json({error:{code:'VALIDATION',message:'A valid request ID is required.'}},400);
+    const db = getSupabaseAdminForOperatorRead(c);
     try {
         const { data, error } = await db
             .from('data_subject_requests')
@@ -210,13 +218,13 @@ router.get('/data-requests/:id', async (c) => {
         }
         if (!data) return c.json({ error: { code: 'NOT_FOUND', message: 'Data-subject request not found' } }, 404);
 
-        await writeComplianceAudit(db, {
+        await writeComplianceAudit(getSupabaseAdmin(c), {
             action: 'data_subject_request.view',
             resourceType: 'data_subject_request',
             resourceId: String((data as JsonRecord).id),
-            actorId: cleanOptional(c.req.query('actor_id')),
-            actorEmail: cleanOptional(c.req.query('actor_email')),
-            actorType: 'super_admin',
+            actorId: actor.actor_id,
+            actorEmail: actor.email,
+            actorType: actor.is_super_admin ? 'super_admin' : 'employee',
             reason: cleanOptional(c.req.query('reason')),
             requestId: requestId(c),
             metadata: { audit_kind: 'sensitive_read' },
@@ -231,7 +239,8 @@ router.get('/data-requests/:id', async (c) => {
     }
 });
 
-router.patch('/data-requests/:id', async (c) => {
+router.patch('/data-requests/:id', consolePermission('compliance:manage'), async (c) => {
+    const { state: actor } = await requireConsolePermission(c, 'compliance:manage');
     const parsed = UpdateRequestSchema.safeParse(await readJson(c));
     if (!parsed.success) {
         return c.json({ error: { code: 'VALIDATION', message: validationMessage(parsed.error) } }, 400);
@@ -242,23 +251,29 @@ router.patch('/data-requests/:id', async (c) => {
         return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason of at least 8 characters is required.' } }, 400);
     }
 
+    if (!z.string().uuid().safeParse(c.req.param('id')).success) return c.json({error:{code:'VALIDATION',message:'A valid request ID is required.'}},400);
+    const { data: target, error: targetError } = await getSupabaseAdminForOperatorRead(c).from('data_subject_requests').select('id,site_id').eq('id',c.req.param('id')).is('deleted_at',null).maybeSingle();
+    if (targetError) return c.json(dbError(),503);
+    if (!target) return c.json({error:{code:'NOT_FOUND',message:'Data-subject request not found'}},404);
     try {
         const row = await updateDataSubjectRequest(getSupabaseAdmin(c), c.req.param('id'), {
             ...parsed.data,
             reason,
-            actor_type: 'super_admin',
+            actor_type: actor.is_super_admin ? 'super_admin' : 'employee',
+            actor_id: actor.actor_id, actor_email: actor.email,
             request_id: requestId(c),
-        });
+        }, target.site_id);
         if (!row) return c.json({ error: { code: 'NOT_FOUND', message: 'Data-subject request not found' } }, 404);
         return c.json(success({ request: row }));
-    } catch {
+    } catch (error) {
+        if (error instanceof AppError) throw error;
         return c.json(dbError(), 500);
     }
 });
 
-router.get('/retention-policy', (c) => c.json(success(retentionPolicySnapshot())));
+router.get('/retention-policy', consolePermission('compliance:view'), (c) => c.json(success(retentionPolicySnapshot())));
 
-router.get('/audit-exports', async (c) => {
+router.get('/audit-exports', consolePermission('compliance:view'), async (c) => {
     try {
         return c.json(success({ cursors: await listAuditExportCursors(getSupabaseAdmin(c)) }));
     } catch (error) {
@@ -269,7 +284,8 @@ router.get('/audit-exports', async (c) => {
     }
 });
 
-router.post('/audit-exports/run', async (c) => {
+router.post('/audit-exports/run', consolePermission('compliance:manage'), async (c) => {
+    const { state: actor } = await requireConsolePermission(c, 'compliance:manage');
     const parsed = AuditExportRunSchema.safeParse(await readJson(c));
     if (!parsed.success) {
         return c.json({ error: { code: 'VALIDATION', message: validationMessage(parsed.error) } }, 400);
@@ -284,11 +300,13 @@ router.post('/audit-exports/run', async (c) => {
         const result = await runAuditExportDryRun(getSupabaseAdmin(c), {
             ...parsed.data,
             reason,
-            actor_type: 'super_admin',
+            actor_type: actor.is_super_admin ? 'super_admin' : 'employee',
+            actor_id: actor.actor_id, actor_email: actor.email,
             request_id: requestId(c),
         });
         return c.json(success(result));
-    } catch {
+    } catch (error) {
+        if (error instanceof AppError) throw error;
         return c.json(dbError(), 500);
     }
 });

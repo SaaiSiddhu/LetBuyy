@@ -6,45 +6,10 @@ SET LOCAL lock_timeout='2s';
 SELECT pg_advisory_xact_lock(hashtextextended('letbuyy:migration:361:collection-membership',0));
 -- Freeze the catalog/role/dependency classes read below. A concurrent DDL or
 -- privilege writer refuses this attempt rather than racing the source profile.
--- Preserve native catalog exclusion. Managed PostgreSQL requires the reviewed
--- provider-admin bootstrap; no advisory/event-trigger substitute is accepted.
-DO $managed_catalog_fence$
-BEGIN
- IF (SELECT rolsuper FROM pg_catalog.pg_roles WHERE rolname=current_user) THEN
-  LOCK TABLE pg_catalog.pg_proc,pg_catalog.pg_class,pg_catalog.pg_attribute,pg_catalog.pg_attrdef,
+LOCK TABLE pg_catalog.pg_proc,pg_catalog.pg_class,pg_catalog.pg_attribute,pg_catalog.pg_attrdef,
  pg_catalog.pg_constraint,pg_catalog.pg_index,pg_catalog.pg_trigger,pg_catalog.pg_policy,pg_catalog.pg_rewrite,
  pg_catalog.pg_depend,pg_catalog.pg_type,pg_catalog.pg_namespace,pg_catalog.pg_authid,pg_catalog.pg_auth_members,pg_catalog.pg_default_acl,pg_catalog.pg_event_trigger,pg_catalog.pg_inherits,pg_catalog.pg_description,pg_catalog.pg_seclabel,pg_catalog.pg_shdepend
  IN SHARE ROW EXCLUSIVE MODE NOWAIT;
- ELSE
-  IF current_user<>'postgres' OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
- WHERE p.oid=pg_catalog.to_regprocedure('letbuyy_maintenance.lock_catalogs_v1()')
- AND n.nspname='letbuyy_maintenance' AND n.nspowner='supabase_admin'::regrole
- AND p.proowner='supabase_admin'::regrole AND p.prosecdef AND p.prokind='f' AND NOT p.proretset
- AND p.prorettype='pg_catalog.void'::regtype AND p.prolang=(SELECT oid FROM pg_catalog.pg_language WHERE lanname='plpgsql')
- AND p.pronargs=0 AND p.pronargdefaults=0 AND p.proargnames IS NULL AND p.proargmodes IS NULL AND p.proallargtypes IS NULL
- AND NOT p.proisstrict AND NOT p.proleakproof AND p.prosupport=0 AND p.provolatile='v' AND p.proparallel='u'
- AND p.proconfig=ARRAY['search_path=pg_catalog, pg_temp']::text[]
- AND pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(p.prosrc,'UTF8')),'hex')='4772eebc5017ef1e188b188f87f1cca8fb8f2b9cfd1e928798ef5cd5dfebfabc'
- AND EXISTS(SELECT 1 FROM pg_catalog.pg_roles r WHERE r.oid=p.proowner AND r.rolsuper)
- AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner)))a
-  WHERE a.grantor<>p.proowner OR a.grantee NOT IN(p.proowner,'postgres'::regrole) OR (a.grantee<>p.proowner AND a.is_grantable))
- AND pg_catalog.has_function_privilege('postgres',p.oid,'EXECUTE')
- AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(n.nspacl,pg_catalog.acldefault('n',n.nspowner)))a
-  WHERE a.grantor<>n.nspowner OR a.grantee NOT IN(n.nspowner,'postgres'::regrole)
-   OR(a.grantee<>n.nspowner AND (a.is_grantable OR a.privilege_type<>'USAGE')))
- AND pg_catalog.has_schema_privilege('postgres',n.oid,'USAGE')
- AND (SELECT count(*) FROM pg_catalog.pg_proc x WHERE x.pronamespace=n.oid AND x.proname=p.proname)=1) THEN
-   RAISE EXCEPTION 'LETBUYY_PROVIDER_ADMIN_CATALOG_FENCE_REQUIRED' USING ERRCODE='42501';END IF;
-  PERFORM letbuyy_maintenance.lock_catalogs_v1();
-  -- Prove actual backend-held relation locks, including cluster-shared catalogs.
-  IF EXISTS(SELECT 1 FROM unnest(ARRAY['pg_catalog.pg_proc'::pg_catalog.regclass,'pg_catalog.pg_class'::pg_catalog.regclass,'pg_catalog.pg_attribute'::pg_catalog.regclass,'pg_catalog.pg_attrdef'::pg_catalog.regclass,'pg_catalog.pg_constraint'::pg_catalog.regclass,'pg_catalog.pg_index'::pg_catalog.regclass,'pg_catalog.pg_trigger'::pg_catalog.regclass,'pg_catalog.pg_policy'::pg_catalog.regclass,'pg_catalog.pg_rewrite'::pg_catalog.regclass,'pg_catalog.pg_depend'::pg_catalog.regclass,'pg_catalog.pg_type'::pg_catalog.regclass,'pg_catalog.pg_namespace'::pg_catalog.regclass,'pg_catalog.pg_authid'::pg_catalog.regclass,'pg_catalog.pg_auth_members'::pg_catalog.regclass,'pg_catalog.pg_default_acl'::pg_catalog.regclass,'pg_catalog.pg_event_trigger'::pg_catalog.regclass,'pg_catalog.pg_inherits'::pg_catalog.regclass,'pg_catalog.pg_description'::pg_catalog.regclass,'pg_catalog.pg_seclabel'::pg_catalog.regclass,'pg_catalog.pg_shdepend'::pg_catalog.regclass]::oid[]) catalog_oid
-    WHERE NOT EXISTS(SELECT 1 FROM pg_catalog.pg_locks l WHERE l.pid=pg_catalog.pg_backend_pid()
-     AND l.locktype='relation' AND l.relation=catalog_oid AND l.granted
-     AND l.mode IN('ShareRowExclusiveLock','ExclusiveLock','AccessExclusiveLock')
-     AND l.database IN(0,(SELECT oid FROM pg_catalog.pg_database WHERE datname=pg_catalog.current_database())))) THEN
-   RAISE EXCEPTION 'LETBUYY_NATIVE_CATALOG_LOCKS_REQUIRED';END IF;
- END IF;
-END $managed_catalog_fence$;
 DO $quiescent$
 BEGIN
  IF current_setting('transaction_isolation')<>'read committed' OR current_setting('session_replication_role')<>'origin'
@@ -73,7 +38,7 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
       WHEN 'authenticated' THEN ARRAY['statement_timeout=8s']::text[]
       WHEN 'authenticator' THEN ARRAY['session_preload_libraries=supautils, safeupdate','statement_timeout=8s','lock_timeout=8s']::text[]
       ELSE '{}'::text[] END))
-  OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='postgres' AND (rolsuper OR (NOT rolsuper AND rolinherit AND rolcreaterole AND rolcreatedb AND rolcanlogin AND rolreplication AND rolbypassrls AND EXISTS(SELECT 1 FROM pg_roles managed_admin WHERE managed_admin.rolname='supabase_admin' AND managed_admin.rolsuper) AND EXISTS(SELECT 1 FROM pg_auth_members managed_member JOIN pg_roles managed_parent ON managed_parent.oid=managed_member.roleid WHERE managed_member.member='postgres'::regrole AND managed_parent.rolname='supabase_privileged_role' AND managed_member.inherit_option AND managed_member.set_option AND NOT managed_member.admin_option))) AND rolinherit AND rolcreaterole AND rolcreatedb AND rolcanlogin AND rolreplication AND rolbypassrls)
+  OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='postgres' AND rolsuper AND rolinherit AND rolcreaterole AND rolcreatedb AND rolcanlogin AND rolreplication AND rolbypassrls)
   OR (SELECT count(*)FROM pg_roles WHERE rolname IN('anon','authenticated','app_tenant') AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND NOT rolbypassrls)<>3
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='service_role' AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND rolbypassrls)
   OR EXISTS(SELECT 1 FROM pg_roles WHERE rolname='authenticator' AND (rolsuper OR rolinherit OR rolcreaterole OR rolcreatedb OR NOT rolcanlogin OR rolreplication OR rolbypassrls)) THEN
@@ -84,11 +49,7 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
   OR EXISTS(SELECT 1 FROM pg_auth_members m JOIN pg_roles parent ON parent.oid=m.roleid JOIN pg_roles member ON member.oid=m.member
    WHERE (parent.rolname IN('postgres','app_tenant','anon','authenticated','service_role') OR member.rolname IN('anon','authenticated','service_role','app_tenant','authenticator')) AND NOT(
     (parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin')))
-    OR (parent.rolname IN('anon','authenticated','service_role') AND member.rolname='authenticator' AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin'))
-    OR (m.member='postgres'::regrole AND m.grantor=to_regrole('supabase_admin')
-     AND EXISTS(SELECT 1 FROM pg_roles managed_postgres WHERE managed_postgres.rolname='postgres' AND NOT managed_postgres.rolsuper)
-     AND ((m.roleid IN('anon'::regrole,'authenticated'::regrole,'service_role'::regrole) AND m.admin_option AND m.inherit_option AND m.set_option)
-       OR(m.roleid='app_tenant'::regrole AND m.admin_option AND NOT m.inherit_option AND NOT m.set_option)))))) THEN
+    OR (parent.rolname IN('anon','authenticated','service_role') AND member.rolname='authenticator' AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin'))))) THEN
   RAISE EXCEPTION 'COLLECTION_MEMBERSHIP361_ROLE_MEMBERSHIP';END IF;
  IF EXISTS(SELECT 1 FROM public.collection_membership_receipts)
   OR EXISTS(SELECT 1 FROM public.collections WHERE membership_version<>1)

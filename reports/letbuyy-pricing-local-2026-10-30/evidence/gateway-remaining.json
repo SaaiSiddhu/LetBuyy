@@ -1,0 +1,15 @@
+{
+  "url": "http://127.0.0.1:9010/v1/founding-program/remaining",
+  "status": 200,
+  "ms": 9,
+  "body": {
+    "success": true,
+    "data": {
+      "total_slots": 100,
+      "used_slots": 0,
+      "remaining_slots": 100,
+      "active": true,
+      "paused": false
+    }
+  }
+}

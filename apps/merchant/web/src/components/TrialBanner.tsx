@@ -1,7 +1,7 @@
 'use client'
 
-import { ArrowUpRight, Clock3 } from 'lucide-react'
-import { MerchantNavigationLink } from './MerchantNavigationLink'
+import { useState } from 'react'
+import { Button, MaterialIcon } from '@letbuyy/ui'
 
 interface TrialBannerProps {
     storeSlug: string
@@ -9,34 +9,66 @@ interface TrialBannerProps {
     trialStatus: string | null
 }
 
-export function getTrialDaysLeft(trialEndsAt: string | null, trialStatus: string | null): number | null {
-    if (!trialEndsAt || trialStatus !== 'active') return null
-    const remaining = new Date(trialEndsAt).getTime() - Date.now()
-    if (!Number.isFinite(remaining) || remaining <= 0) return null
-    return Math.ceil(remaining / 86_400_000)
-}
-
 export default function TrialBanner({ storeSlug, trialEndsAt, trialStatus }: TrialBannerProps) {
-    const daysLeft = getTrialDaysLeft(trialEndsAt, trialStatus)
-    if (daysLeft === null || !trialEndsAt) return null
-    const endDate = new Intl.DateTimeFormat('en-IN', {
-        day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata',
-    }).format(new Date(trialEndsAt))
+    const [collapsed, setCollapsed] = useState(false)
+    const [dismissed, setDismissed] = useState(false)
+
+    // Don't show if no trial or explicitly dismissed
+    if (!trialEndsAt || trialStatus !== 'active' || dismissed) {
+        return null
+    }
+
+    // Calculate remaining days
+    const trialEnd = new Date(trialEndsAt)
+    const now = new Date()
+    const diffMs = trialEnd.getTime() - now.getTime()
+    const daysLeft = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)))
+
+    if (!Number.isFinite(daysLeft) || daysLeft <= 0) return null
 
     return (
-        <aside className="admin-trial-toast" aria-label="Trial status">
-            <span className="admin-trial-toast-icon"><Clock3 size={18} aria-hidden="true" /></span>
-            <div className="admin-trial-toast-content">
-                <span className="admin-trial-toast-eyebrow">Your trial</span>
-                <strong>{daysLeft} day{daysLeft === 1 ? '' : 's'} remaining</strong>
-                <span>Ends {endDate}. Review plans when you’re ready.</span>
+        <div className="admin-trial-toast">
+            <div className="admin-trial-toast-header">
+                <Button unstyled
+                    type="button"
+                    className="admin-trial-toast-toggle"
+                    onClick={() => setCollapsed(!collapsed)}
+                    aria-expanded={!collapsed}
+                    aria-controls="admin-trial-toast-body"
+                >
+                    <span className="admin-trial-toast-title">
+                        <MaterialIcon name="sparkles" className="admin-trial-toast-title-icon" size={16} />
+                        {daysLeft} day{daysLeft !== 1 ? 's' : ''} left in your trial
+                    </span>
+                    <MaterialIcon
+                        name="expand_less"
+                        className={`admin-trial-toast-chevron ${collapsed ? 'collapsed' : ''}`}
+                        size={20}
+                    />
+                </Button>
+                <Button unstyled
+                    type="button"
+                    className="admin-trial-toast-dismiss"
+                    onClick={() => setDismissed(true)}
+                    aria-label="Dismiss trial banner"
+                >
+                    <MaterialIcon name="close" size={18} />
+                </Button>
             </div>
-            <MerchantNavigationLink
-                href={`/${encodeURIComponent(storeSlug)}/access_account/checkout/select-plan`}
-                className="admin-trial-toast-btn"
-            >
-                View plans <ArrowUpRight size={15} aria-hidden="true" />
-            </MerchantNavigationLink>
-        </aside>
+
+            {!collapsed && (
+                <div className="admin-trial-toast-body" id="admin-trial-toast-body">
+                    <p>
+                        Choose a plan before your current trial ends to keep your store running.
+                    </p>
+                    <a
+                        href={`/${encodeURIComponent(storeSlug)}/access_account/checkout/select-plan`}
+                        className="admin-trial-toast-btn"
+                    >
+                        Select a plan
+                    </a>
+                </div>
+            )}
+        </div>
     )
 }

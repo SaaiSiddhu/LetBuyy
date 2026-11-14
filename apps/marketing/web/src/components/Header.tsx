@@ -7,7 +7,8 @@ import Copy from '@/components/i18n/Copy'
 import Link from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
+import * as motion from 'framer-motion/m'
 import type { LucideIcon } from '@letbuyy/ui'
 import {
     ArrowLeft,
@@ -37,14 +38,12 @@ import {
     ThemeToggleButton,
     Truck,
     Users,
+    useFocusTrap,
     X,
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
 import featuredArtStyles from './header-featured-art.module.css'
-import { getDictionaryForSegment } from '@/lib/i18n'
 import type { Dictionary } from '@/lib/i18n/dictionaries/en'
-import { localeFromPathname } from '@/lib/i18n/routing'
-import { usePathname } from 'next/navigation'
 import {
     getAccountsUrl,
 } from '../lib/public-urls'
@@ -112,7 +111,7 @@ const whyCards: MenuItem[] = [
         href: '/#features',
         icon: IndianRupee,
         label: 'Made for India',
-        description: 'Take UPI, cards and cash on delivery. GST bills are created for you on every order.',
+        description: 'Configure eligible payment methods and the tax details that apply to your business.',
     },
     {
         href: '/#capabilities',
@@ -127,19 +126,19 @@ const whyBuiltIn: MenuItem[] = [
         href: '/#features',
         icon: CreditCard,
         label: 'Get paid on time',
-        description: 'Money reaches your bank account, and every payment and refund is tracked for you.',
+        description: 'Review payment and refund status; settlement follows your provider account terms.',
     },
     {
         href: '/#features',
         icon: Truck,
-        label: 'Deliver anywhere',
-        description: 'Ship across India with rates, pickup and tracking already set up.',
+        label: 'Plan your delivery coverage',
+        description: 'Set delivery zones, rates and the courier account required for your shipments.',
     },
     {
         href: '/#features',
         icon: ShieldCheck,
-        label: 'Safe and always open',
-        description: 'Your shop stays online round the clock, and customer details stay private.',
+        label: 'Review store readiness',
+        description: 'Check store setup, access controls and provider status before launch.',
     },
     {
         href: '/#features',
@@ -179,7 +178,7 @@ const productSections: MenuSection[] = [
             { href: '/#features', icon: Smartphone, label: 'Sell on Mobile' },
             { href: '/#features', icon: MessageCircle, label: 'WhatsApp Orders' },
             { href: '/#features', icon: Megaphone, label: 'Social Selling' },
-            { href: '/#features', icon: Globe, label: 'India & Overseas' },
+            { href: '/#features', icon: Globe, label: 'India-first setup' },
         ],
     },
     {
@@ -214,7 +213,7 @@ const productSections: MenuSection[] = [
         eyebrow: 'Make it your own',
         items: [
             { href: themeMarketplaceUrl, icon: Palette, label: 'Browse Designs', description: 'Ready-made looks for your shop.' },
-            { href: appMarketplaceUrl, icon: Puzzle, label: 'Browse Add-ons', description: 'Add new features in a click.' },
+            { href: appMarketplaceUrl, icon: Puzzle, label: 'App integration guide', description: 'Read about planned app integrations.' },
             { href: developerPortalUrl, icon: Code2, label: 'For Developers', description: 'Build custom features with our tools.' },
         ],
     },
@@ -231,13 +230,13 @@ const productHighlights: MenuItem[] = [
         href: '/#features',
         icon: Bot,
         label: 'AI that helps you',
-        description: 'Set up your shop and write product details in seconds, not hours.',
+        description: 'Prepare supported content drafts and review them before use.',
     },
     {
         href: '/#features',
         icon: ShieldCheck,
         label: 'Safe and reliable',
-        description: 'Your shop stays fast and online, and your business data stays private.',
+        description: 'Review your store controls and test the customer journey before publishing.',
     },
 ]
 
@@ -246,8 +245,8 @@ const productHighlights: MenuItem[] = [
    GST invoices are generated per order, and all three payment routes ship. */
 const whyProof = [
     { value: '0%', label: 'commission on your sales' },
-    { value: 'GST', label: 'invoice on every order' },
-    { value: 'UPI · Cards · COD', label: 'ready from day one' },
+    { value: 'GST', label: 'requires tax setup' },
+    { value: 'UPI · Cards · COD', label: 'provider setup required' },
 ]
 
 /* Four rendered columns from six authored sections: "Get paid" rides under
@@ -563,9 +562,7 @@ const MENU_MARGIN = 20
 const MENU_TEXT_INSET = 12
 
 export default function Header() {
-    const { t } = useCopy()
-    const pathname = usePathname()
-    const dict = getDictionaryForSegment(localeFromPathname(pathname).segment)
+    const { t, dictionary: dict } = useCopy()
     const [scrolled, setScrolled] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [activeDesktopMenu, setActiveDesktopMenu] = useState<DropdownKey | null>(null)
@@ -577,6 +574,9 @@ export default function Header() {
        @letbuyy/ui Button does not forward a ref, and adding one there would
        change a shared component for a layout detail local to this header. */
     const navRef = useRef<HTMLElement | null>(null)
+    const mobileDrawerRef = useRef<HTMLDivElement | null>(null)
+    const mobileTriggerRef = useRef<HTMLElement | null>(null)
+    useFocusTrap(mobileDrawerRef, { active: mobileMenuOpen, returnFocusRef: mobileTriggerRef })
     /* Hover only drives the menu where a real pointer exists. On touch the
        trigger stays a plain toggle, or the panel would open on first tap and
        the link underneath would never be reachable. */
@@ -717,6 +717,10 @@ export default function Header() {
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
+                clearHoverTimer()
+                if (activeDesktopMenu) {
+                    navRef.current?.querySelector<HTMLElement>(`[data-menu="${activeDesktopMenu}"]`)?.focus()
+                }
                 setActiveDesktopMenu(null)
                 setMobileMenuOpen(false)
                 setMobilePanel(null)
@@ -724,7 +728,7 @@ export default function Header() {
         }
         window.addEventListener('keydown', handleEscape)
         return () => window.removeEventListener('keydown', handleEscape)
-    }, [])
+    }, [activeDesktopMenu, clearHoverTimer])
 
     useEffect(() => {
         const desktopQuery = window.matchMedia('(min-width: 1120px)')
@@ -752,7 +756,8 @@ export default function Header() {
     const loginUrl = getAccountsUrl('/lookup')
     const signupUrl = getAccountsUrl('/signup')
 
-    const openMobileMenu = () => {
+    const openMobileMenu = (trigger: HTMLElement) => {
+        mobileTriggerRef.current = trigger
         setActiveDesktopMenu(null)
         setMobilePanel(null)
         setMobileMenuOpen(true)
@@ -841,7 +846,7 @@ export default function Header() {
 
                     <Button unstyled
                         className="mobile-menu-btn"
-                        onClick={mobileMenuOpen ? closeAllMenus : openMobileMenu}
+                        onClick={event => mobileMenuOpen ? closeAllMenus() : openMobileMenu(event.currentTarget)}
                         aria-label={mobileMenuOpen ? dict.nav.closeMenu : dict.nav.openMenu}
                         aria-expanded={mobileMenuOpen}
                     >
@@ -886,6 +891,7 @@ export default function Header() {
             <AnimatePresence>
                 {mobileMenuOpen ? (
                     <motion.div
+                        ref={mobileDrawerRef}
                         className="mobile-drawer"
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}

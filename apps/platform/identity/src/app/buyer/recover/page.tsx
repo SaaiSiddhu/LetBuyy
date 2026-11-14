@@ -42,18 +42,19 @@ function RecoverForm() {
         try {
             const res = await fetch('/api/buyer/recover/send', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ email: email.trim(), turnstileToken: turnstileToken || undefined }),
             })
             if (!res.ok) {
                 setError(await errorFrom(res, GENERIC))
+                turnstileRef.current?.reset()
+                setTurnstileToken(null)
                 return
             }
             setStep('code')
         } catch {
             setError(GENERIC)
         } finally {
-            turnstileRef.current?.reset()
             setLoading(false)
         }
     }
@@ -65,7 +66,7 @@ function RecoverForm() {
         try {
             const res = await fetch('/api/buyer/recover/confirm', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ email: email.trim(), code: code.trim(), password }),
             })
             if (!res.ok) {
@@ -87,7 +88,6 @@ function RecoverForm() {
     return (
         <main className="auth-container">
             <div className="auth-card">
-                <p className="auth-subtitle">This recovers your shopping profile. If you use LetBuyy for work, <a href="/forgot-password">recover that account</a>, then return and choose Use an existing LetBuyy account.</p>
                 <div className="auth-logo">
                     <BrandLogo />
                 </div>

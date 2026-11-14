@@ -1,14 +1,10 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
-import { getAccountsUrl, getStorefrontRootDomain } from '@/lib/public-urls'
+import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { DEFAULT_ADMIN_LOCALE, SUPPORTED_ADMIN_LOCALES, getAdminLocaleOptions, normalizeAdminLocale } from '@/lib/i18n/admin-locales'
 import {
-    Section,
-    Card,
     Banner,
     Button,
     CheckCircle2,
@@ -199,30 +195,22 @@ export default function GeneralSettingsPage() {
 
     // ── Load ──────────────────────────────────────────────────────────────────
 
-    const beginLocalization = useReadRequest(store)
     const reloadLocalization = useCallback(async (signal?: AbortSignal) => {
-        const request = beginLocalization()
-        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/localization`, { cache: 'no-store', signal: readSignal })
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/localization`, { cache: 'no-store', signal })
             const payload = await res.json().catch(() => null) as ApiPayload | null
-            if (signal?.aborted || !request.isCurrent()) return
             if (res.ok && isRecord(payload?.data)) setLocalization(payload.data as unknown as LocalizationSummary)
         } catch {
             /* localization is best-effort and must never block the page */
         }
-    }, [beginLocalization, store])
+    }, [store])
 
-    const beginLoad = useReadRequest(store)
     const loadData = useCallback(async (signal?: AbortSignal) => {
-        const request = beginLoad()
-        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         setLoading(true)
         setLoadError(null)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal: readSignal })
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal })
             const payload = await res.json().catch(() => null) as ApiPayload | null
-            if (signal?.aborted || !request.isCurrent()) return
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to load store details'))
 
             const d = isRecord(payload?.data) ? payload.data : null
@@ -262,14 +250,14 @@ export default function GeneralSettingsPage() {
             setSaveState('saved')
             void reloadLocalization(signal)
         } catch (err) {
-            if (signal?.aborted || !request.isCurrent()) return
+            if (signal?.aborted || (err instanceof DOMException && err.name === 'AbortError')) return
             const msg = err instanceof Error ? err.message : 'Unable to load store details'
             setLoadError(msg)
             notify({ title: 'Could not load store settings', description: msg, variant: 'critical' })
         } finally {
-            if (!signal?.aborted && request.isCurrent()) setLoading(false)
+            if (!signal?.aborted) setLoading(false)
         }
-    }, [beginLoad, notify, store, reloadLocalization])
+    }, [notify, store, reloadLocalization])
 
     useEffect(() => {
         const ctrl = new AbortController()
@@ -355,7 +343,7 @@ export default function GeneralSettingsPage() {
             const payload = await res.json().catch(() => null) as ApiPayload | null
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to delete store'))
             notify({ title: 'Store deletion started', description: 'Redirecting to your workspace…', variant: 'success' })
-            window.location.href = getAccountsUrl()
+            window.location.href = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.com'
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Unable to delete store'
             setDeleting(false)
@@ -427,13 +415,13 @@ export default function GeneralSettingsPage() {
 
     if (loading) {
         return (
-            <SettingsPane navigationKey="general" title="General" description="Store identity, contact details, address, defaults, and SEO." store={store}>
+            <SettingsPane title="General" description="Store identity, contact details, address, defaults, and SEO." store={store}>
                 <div className="settings-general-stack">
                     {[1, 2, 3, 4].map(i => (
-                        <Card key={i}>
-                            <Section><Skeleton variant="text" lines={1} /></Section>
+                        <div key={i} className="settings-home-card">
+                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
                             <div className="settings-form-body"><Skeleton variant="text" lines={3} /></div>
-                        </Card>
+                        </div>
                     ))}
                 </div>
             </SettingsPane>
@@ -460,7 +448,6 @@ export default function GeneralSettingsPage() {
     return (
         <>
             <SettingsPane
-                navigationKey="general"
                 title="General"
                 description="Store identity, contact details, address, defaults, and SEO."
                 store={store}
@@ -484,8 +471,9 @@ export default function GeneralSettingsPage() {
                 <form className="settings-general-stack" onSubmit={handleSave}>
 
                     {/* ── Store details ────────────────────────────────────── */}
-                    <Section variant="grouped" title="Store details" >
-
+                    <div className="settings-home-card">
+                        <div className="settings-home-section-label">Store details</div>
+                        <div className="settings-form-body">
                             <div className="settings-form-grid">
                                 <Input
                                     label="Store name"
@@ -516,12 +504,13 @@ export default function GeneralSettingsPage() {
                                 placeholder="Tell customers about your business, what you sell, and your story…"
                                 helperText="Used for internal reference and some app integrations."
                             />
-
-                    </Section>
+                        </div>
+                    </div>
 
                     {/* ── Store contact ─────────────────────────────────────── */}
-                    <Section variant="grouped" title="Store contact details" >
-
+                    <div className="settings-home-card">
+                        <div className="settings-home-section-label">Store contact details</div>
+                        <div className="settings-form-body">
                             <div className="settings-general-hint">
                                 Contact information used for customer communications, apps, and financial products.
                             </div>
@@ -551,12 +540,13 @@ export default function GeneralSettingsPage() {
                                 placeholder="https://yourstore.com"
                                 helperText="Your primary domain or marketing site (not your LetBuyy storefront)."
                             />
-
-                    </Section>
+                        </div>
+                    </div>
 
                     {/* ── Store address ─────────────────────────────────────── */}
-                    <Section variant="grouped" title="Store address" >
-
+                    <div className="settings-home-card">
+                        <div className="settings-home-section-label">Store address</div>
+                        <div className="settings-form-body">
                             <div className="settings-general-hint">
                                 Used on invoices, tax documents, and GST filings. Must match your registered business address.
                             </div>
@@ -603,12 +593,13 @@ export default function GeneralSettingsPage() {
                                 options={COUNTRY_OPTIONS}
                                 onChange={e => set('address_country', e.target.value)}
                             />
-
-                    </Section>
+                        </div>
+                    </div>
 
                     {/* ── Store defaults ────────────────────────────────────── */}
-                    <Section variant="grouped" title="Store defaults" >
-
+                    <div className="settings-home-card">
+                        <div className="settings-home-section-label">Store defaults</div>
+                        <div className="settings-form-body">
                             <div className="settings-form-grid">
                                 <Select
                                     label="Currency"
@@ -630,12 +621,13 @@ export default function GeneralSettingsPage() {
                                 onChange={e => set('timezone', e.target.value)}
                                 helperText="Sets the time for when orders and analytics are recorded."
                             />
-
-                    </Section>
+                        </div>
+                    </div>
 
                     {/* ── SEO ──────────────────────────────────────────────── */}
-                    <Section variant="grouped" title="Search engine optimization (SEO)" >
-
+                    <div className="settings-home-card">
+                        <div className="settings-home-section-label">Search engine optimization (SEO)</div>
+                        <div className="settings-form-body">
                             <div className="settings-general-hint">
                                 These defaults appear in search results. Individual pages and products can override them.
                             </div>
@@ -670,12 +662,13 @@ export default function GeneralSettingsPage() {
                                     </div>
                                 </div>
                             ) : null}
-
-                    </Section>
+                        </div>
+                    </div>
 
                     {/* ── Order ID format ───────────────────────────────────── */}
-                    <Section variant="grouped" title="Order ID format" >
-
+                    <div className="settings-home-card">
+                        <div className="settings-home-section-label">Order ID format</div>
+                        <div className="settings-form-body">
                             <div className="settings-general-hint">
                                 Shown on the orders page, customer pages, and order notification emails.
                             </div>
@@ -695,25 +688,27 @@ export default function GeneralSettingsPage() {
                                     </span>
                                 </div>
                             </div>
-
-                    </Section>
+                        </div>
+                    </div>
 
                     {/* ── Site type ─────────────────────────────────────────── */}
-                    <Section variant="grouped" title="Site type" >
-
+                    <div className="settings-home-card">
+                        <div className="settings-home-section-label">Site type</div>
+                        <div className="settings-form-body">
                             <Input
                                 label="Type"
                                 value={formatSiteType(data.site_type)}
                                 helperText="Changing site type requires a governed migration and is not available from settings."
                                 disabled
                             />
-
-                    </Section>
+                        </div>
+                    </div>
                 </form>
 
                 {/* ── Languages & localization ──────────────────────────────── */}
-                <Section variant="grouped" title="Languages &amp; localization" >
-
+                <div className="settings-home-card">
+                    <div className="settings-home-section-label">Languages &amp; localization</div>
+                    <div className="settings-form-body">
                         <div className="settings-general-hint">
                             Add the languages your storefront supports. Customers can switch between published
                             languages; the default (set by <strong>Storefront language</strong> above) is shown to
@@ -790,11 +785,12 @@ export default function GeneralSettingsPage() {
                                 )}
                             </>
                         )}
-
-                </Section>
+                    </div>
+                </div>
 
                 {/* ── Danger zone ───────────────────────────────────────────── */}
-                <Section variant="grouped" title="Danger zone"  className="settings-home-card--danger">
+                <div className="settings-home-card settings-home-card--danger">
+                    <div className="settings-home-section-label">Danger zone</div>
                     <div className="settings-form-danger-row">
                         <div className="settings-form-danger-copy">
                             <span className="settings-form-danger-title">Delete this store</span>
@@ -806,7 +802,7 @@ export default function GeneralSettingsPage() {
                             Delete store
                         </Button>
                     </div>
-                </Section>
+                </div>
             </SettingsPane>
 
             <ConfirmDialog

@@ -47,9 +47,6 @@ export const CLIENT_ACTIONABLE_ERROR_CODES = new Set([
     'FEATURE_DISABLED',
     'FORBIDDEN',
     'IDEMPOTENCY_CONFLICT',
-    // Only the bounded CSV parser emits these controlled validation messages.
-    'IMPORT_TOO_LARGE',
-    'INVALID_CSV',
     'INVALID_CREDENTIALS',
     'INVALID_EVENT',
     'INVALID_GRANT',

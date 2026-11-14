@@ -1,10 +1,6 @@
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
-import { isBoundStorefrontRequestTarget, isBoundDomainReconcileTarget, isNotificationRequestTarget } from '@letbuyy/auth-core';
-import { authenticateNotificationRequest } from '../lib/notification-internal-request';
-import { authenticateDomainReconcileRequest } from '../lib/domain-reconcile-internal-request';
-import { authenticateBoundStorefrontRequest } from '../lib/storefront-internal-request';
 
 type RuntimeEnvironmentFlags = Pick<Env, 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'DEPLOYMENT_ENV'>;
 
@@ -83,41 +79,6 @@ function hasInternalCredential(c: GatewayContext): boolean {
 }
 
 export const internalPerimeter = createMiddleware<{ Bindings: Env }>(async (c, next) => {
-    // Owner-approved fixed notification transport; no general RPC/IP exemption.
-    if (isNotificationRequestTarget(c.req.method, c.req.url)) {
-        const result = await authenticateNotificationRequest(c);
-        if (result !== 'accepted') return c.json({ success: false, error: {
-            code: result === 'unavailable' ? 'NOTIFICATION_JOB_UNAVAILABLE' : 'UNAUTHORIZED',
-            message: result === 'unavailable' ? 'Notification processing is unavailable.' : 'Invalid notification request',
-        } }, result === 'unavailable' ? 503 : 401);
-        await next(); return;
-    }
-    // Owner-approved workload boundary for these two fixed Commerce operations.
-    // Every other internal path still takes the IP perimeter below.
-    const storefrontPolicy = c.env.STOREFRONT_INTERNAL_PERIMETER?.trim();
-    if (storefrontPolicy && isBoundStorefrontRequestTarget(c.req.method, c.req.url)) {
-        const result = storefrontPolicy === 'bound-request-v1'
-            ? await authenticateBoundStorefrontRequest(c) : 'unavailable';
-        if (result !== 'accepted') {
-            return c.json({ success: false, error: {
-                code: result === 'unavailable' ? 'STOREFRONT_INTERNAL_UNAVAILABLE' : 'UNAUTHORIZED',
-                message: result === 'unavailable' ? 'Store access is unavailable.' : 'Invalid storefront internal request',
-            } }, result === 'unavailable' ? 503 : 401);
-        }
-        await next();
-        return;
-    }
-
-    // Owner-approved exception for exactly this queue-owned operation. A configured
-    // keyring opts in; every other path and an unconfigured deployment retain the IP gate.
-    if (c.env.INTERNAL_API_KEYRING && isBoundDomainReconcileTarget(c.req.method, c.req.url)) {
-        const result = await authenticateDomainReconcileRequest(c);
-        if (result !== 'accepted') return c.json({ success: false, error: {
-            code: result === 'unavailable' ? 'DOMAIN_RECONCILE_UNAVAILABLE' : 'UNAUTHORIZED',
-            message: result === 'unavailable' ? 'Domain reconciliation is unavailable.' : 'Invalid domain reconciliation request',
-        } }, result === 'unavailable' ? 503 : 401);
-        await next(); return;
-    }
     const entries = allowlistEntries(c.env);
     const production = isProductionRuntime(c.env);
 

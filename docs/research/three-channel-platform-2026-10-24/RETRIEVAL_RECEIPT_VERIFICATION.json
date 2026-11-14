@@ -1,9 +1,0 @@
-{
-  "kind": "local_retrieval_receipt_consistency_not_deep_review",
-  "source_count": 534,
-  "receipts_checked": 534,
-  "mismatches": [],
-  "passed": true,
-  "raw_source_text_delivered": false,
-  "raw_receipt_location": "Temporary research cache retained on this machine; not required for offline document integrity checks"
-}

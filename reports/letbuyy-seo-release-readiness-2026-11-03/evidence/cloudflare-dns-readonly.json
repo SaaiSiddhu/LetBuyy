@@ -1,0 +1,65 @@
+{
+  "capturedAt": "2026-11-03T02:28:16.534437+00:00",
+  "existingOAuthPresent": true,
+  "zoneRead": {
+    "httpStatus": 200,
+    "success": true,
+    "errorCodes": null
+  },
+  "records": [
+    {
+      "queryName": "letbuyy.com",
+      "httpStatus": 403,
+      "success": false,
+      "records": [],
+      "errorCodes": [
+        10000
+      ]
+    },
+    {
+      "queryName": "www.letbuyy.com",
+      "httpStatus": 403,
+      "success": false,
+      "records": [],
+      "errorCodes": [
+        10000
+      ]
+    },
+    {
+      "queryName": "seller.letbuyy.com",
+      "httpStatus": 403,
+      "success": false,
+      "records": [],
+      "errorCodes": [
+        10000
+      ]
+    },
+    {
+      "queryName": "developer.letbuyy.com",
+      "httpStatus": 403,
+      "success": false,
+      "records": [],
+      "errorCodes": [
+        10000
+      ]
+    },
+    {
+      "queryName": "developers.letbuyy.com",
+      "httpStatus": 403,
+      "success": false,
+      "records": [],
+      "errorCodes": [
+        10000
+      ]
+    }
+  ],
+  "zone": {
+    "name": "letbuyy.com",
+    "status": "active",
+    "type": "full",
+    "name_servers": [
+      "alex.ns.cloudflare.com",
+      "tara.ns.cloudflare.com"
+    ]
+  }
+}

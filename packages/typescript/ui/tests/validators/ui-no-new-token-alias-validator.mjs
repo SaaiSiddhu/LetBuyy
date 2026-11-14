@@ -129,18 +129,32 @@ if (update) {
 const expectedSnapshot = readSnapshot();
 
 if (selfTest) {
-    const [theme, groups] = Object.entries(currentSnapshot.themes)[0] ?? [];
-    if (!theme || !groups?.[0]) {
-        throw new Error('Token alias validator self-test failed: no duplicate-value group exists to mutate.');
+    const baselineViolations = findViolations(expectedSnapshot, currentSnapshot);
+    if (baselineViolations.length > 0) {
+        throw new Error(`Token alias validator self-test requires a clean baseline:\n${baselineViolations.join('\n')}`);
     }
 
-    const mutatedSnapshot = structuredClone(currentSnapshot);
-    mutatedSnapshot.themes[theme][0].variables.push('--lb-self-test-new-alias');
-    const violations = findViolations(expectedSnapshot, mutatedSnapshot);
-    if (violations.length === 0) {
-        throw new Error('Token alias validator self-test failed: simulated alias growth did not fail.');
+    let tested = 0;
+    for (const [theme, groups] of Object.entries(currentSnapshot.themes)) {
+        if (!groups.length) throw new Error(`No duplicate-value groups to test in ${theme}.`);
+        // Test both rejection paths independently. A stale real snapshot must
+        // never make a broken mutation check look successful.
+        const addedAlias = structuredClone(currentSnapshot);
+        addedAlias.themes[theme][0].variables.push('--lb-self-test-new-alias');
+        const newGroup = structuredClone(currentSnapshot);
+        newGroup.themes[theme].push({
+            value: '__self_test_unique_value__',
+            variables: ['--lb-self-test-first', '--lb-self-test-second'],
+        });
+        for (const [mutated, marker] of [[addedAlias, '--lb-self-test-new-alias'], [newGroup, '__self_test_unique_value__']]) {
+            const violations = findViolations(expectedSnapshot, mutated);
+            if (violations.length !== 1 || !violations[0].startsWith(`${theme}:`) || !violations[0].includes(marker)) {
+                throw new Error(`Token alias validator self-test failed for ${theme}: ${JSON.stringify(violations)}`);
+            }
+            tested++;
+        }
     }
-    console.log(`Token alias validator self-test passed; simulated alias growth detected: ${violations[0]}`);
+    console.log(`Token alias validator self-test passed (${tested} independent alias/group mutations rejected).`);
     process.exit(0);
 }
 

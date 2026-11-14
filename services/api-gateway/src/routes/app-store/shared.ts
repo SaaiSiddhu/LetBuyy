@@ -844,7 +844,6 @@ export async function registerAppExtensionRegistry(
         .from('app_extension_registrations')
         .update(revokePatch)
         .eq('installation_id', input.installationId)
-        .eq('site_id', input.storeId)
         .neq('status', 'revoked');
 
     if (revokeExtensionsError) {
@@ -855,7 +854,6 @@ export async function registerAppExtensionRegistry(
         .from('app_function_registrations')
         .update(revokePatch)
         .eq('installation_id', input.installationId)
-        .eq('site_id', input.storeId)
         .neq('status', 'revoked');
 
     if (revokeFunctionsError) {
@@ -914,7 +912,7 @@ export async function registerAppExtensionRegistry(
 
 export async function revokeAppExtensionRegistry(
     db: ReturnType<typeof getSupabaseAdmin>,
-    input: { installationId: string; storeId: string; actorId: string; revokedAt: string },
+    input: { installationId: string; actorId: string; revokedAt: string },
 ): Promise<AppExtensionRegistryPersistenceResult> {
     const patch = {
         status: 'revoked',
@@ -928,7 +926,6 @@ export async function revokeAppExtensionRegistry(
         .from('app_extension_registrations')
         .update(patch)
         .eq('installation_id', input.installationId)
-        .eq('site_id', input.storeId)
         .neq('status', 'revoked');
 
     if (extensionError) {
@@ -939,7 +936,6 @@ export async function revokeAppExtensionRegistry(
         .from('app_function_registrations')
         .update(patch)
         .eq('installation_id', input.installationId)
-        .eq('site_id', input.storeId)
         .neq('status', 'revoked');
 
     if (functionError) {

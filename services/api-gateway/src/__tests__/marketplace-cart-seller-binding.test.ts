@@ -25,8 +25,6 @@ function createRoute(input: { productReadError?: boolean } = {}) {
     const method = (init?.method || 'GET').toUpperCase();
     requests.push({ method, path: url.pathname });
 
-    if (url.pathname === '/rest/v1/carts' && method === 'GET') return new Response('null', { headers: { 'Content-Type': 'application/json' } });
-
     if (url.pathname === '/rest/v1/rpc/marketplace_listing_detail') {
       const body = JSON.parse(String(init?.body || '{}')) as { p_listing_id?: string };
       const listingId = body.p_listing_id;
@@ -99,7 +97,6 @@ test('marketplace cart rejects a mixed-seller cart before product or cart persis
   assert.equal((await response.json() as { error: { code: string } }).error.code, 'MARKETPLACE_LISTING_UNAVAILABLE');
   assert.equal(route.productReads(), 0, 'mixed-seller lines stop before product hydration');
   assert.deepEqual(route.requests, [
-    { method: 'GET', path: '/rest/v1/carts' },
     { method: 'POST', path: '/rest/v1/rpc/marketplace_listing_detail' },
     { method: 'POST', path: '/rest/v1/rpc/marketplace_listing_detail' },
   ], 'no cart, event or queue write occurs after seller mismatch');
@@ -120,5 +117,5 @@ test('same-seller marketplace lines pass seller binding and reach product hydrat
 
   assert.equal(response.status, 500, 'the synthetic downstream product-read failure is surfaced');
   assert.equal(route.productReads(), 1, 'same-seller lines reach server product hydration');
-  assert.deepEqual(route.requests, [{ method: 'GET', path: '/rest/v1/carts' }, { method: 'POST', path: '/rest/v1/rpc/marketplace_listing_detail' }], 'current-cart admission and seller validation only; no persistence before the injected read failure');
+  assert.equal(route.requests.length, 1, 'seller validation made only its listing lookup before the injected read failure');
 });

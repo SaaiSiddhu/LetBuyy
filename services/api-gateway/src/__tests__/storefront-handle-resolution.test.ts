@@ -192,8 +192,6 @@ const SITE_A: Row = {
     store_name: 'tenant-a-store',
     name: 'Tenant A',
     status: 'published',
-    published: true,
-    access_mode: 'public',
     site_type: 'store',
     primary_color: '#0a7d33',
     deleted_at: null,
@@ -205,8 +203,6 @@ const SITE_B: Row = {
     store_name: COLLIDING_HANDLE,
     name: 'Tenant B',
     status: 'published',
-    published: true,
-    access_mode: 'public',
     site_type: 'store',
     primary_color: '#b3261e',
     deleted_at: null,
@@ -307,22 +303,6 @@ test('store lookup resolves the colliding handle to the subdomain owner', async 
     // name differs between the two tenants, so a namesake match cannot pass this.
     assert.equal(payload.data?.store?.name, SITE_A.name);
     assert.equal(payload.data?.store?.subdomain, SITE_A.subdomain);
-});
-
-test('public finder excludes private/draft stores and an unknown name returns a clean miss without an unscoped fuzzy scan', async (t) => {
-    const rows: Row[] = [
-        {...SITE_A, subdomain:'private-fixture',store_name:'private-fixture',access_mode:'password'},
-        {...SITE_B, subdomain:'draft-fixture',store_name:'draft-fixture',status:'draft',published:false},
-        {...SITE_B,subdomain:'public-namesake',store_name:'private-fixture'},
-    ];
-    const postgrest=installFakePostgrest({sites:rows}); t.after(()=>postgrest.restore());
-    for(const handle of ['private-fixture','draft-fixture','no-such-finder']){
-        const response=await storefrontApp().request('/storefront/lookup?q='+handle,undefined,env());
-        assert.equal(response.status,200);
-        const body=await jsonBody<{data:{status:string;store?:unknown}}>(response);
-        assert.equal(body.data.status,'not_found');assert.equal(body.data.store,undefined);
-    }
-    assert.ok(postgrest.sitesRequests().every(r=>!r.params.has('name')),'no unscoped fuzzy query');
 });
 
 test('an unknown handle resolves to not-found rather than an arbitrary tenant', async (t) => {

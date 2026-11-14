@@ -1,9 +1,0 @@
-{
-  "packages/checkout-core/src/index.ts": "14a4902f18f950246b87123890ff8c7759ed6d1ce6c404fde3471526e24ab26f",
-  "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts": "c6450b725cb607bb861247de71741f1545190bca05ca1d327e5ac1efc4937162",
-  "services/api-gateway/src/__tests__/owned-db/marketplace-cart-origin.postgres.test.ts": "496467b4875fba03ba51ab7d6e8abea32323f4814f27a198d669e1a06a89e79d",
-  "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts": "698efaf0d0b037bc0cad58cc8241f9deab835f39c75becf60d8f986db16fecc6",
-  "services/api-gateway/src/routes/checkout.ts": "328ecff89e333d512fe68a0a80036dc19cc68f6ec7408b60a154e2ece8ba6f23",
-  "services/api-gateway/src/routes/storefront/cart-routes.ts": "9ee09848a1490bee8dcdee1603806b6606dd725eeebf252a2f725b25136ead28",
-  "tests/owned-db/storefront-access-worker.postgres.test.ts": "c678a2b536b1a45423913854fa0752083baaeceda41d3492c4e685681c3ffecb"
-}

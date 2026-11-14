@@ -1,0 +1,110 @@
+[
+  {
+    "name": "cartwhizz",
+    "url": "https://cartwhizz.com/online-store-builder-india",
+    "status": 200,
+    "title": "Online Store Builder for India | CartWhizz",
+    "h1": [
+      "Online store builder for Indian businesses"
+    ],
+    "word_count": 655,
+    "schema_types": [
+      "BreadcrumbList",
+      "ListItem",
+      "WebPage"
+    ],
+    "internal_links": 75,
+    "evidence_raw": "cartwhizz.html",
+    "evidence_parsed": "cartwhizz-parsed.json",
+    "captured_at_utc": "2026-10-29T18:00:37.099442+00:00",
+    "capture_timestamp_basis": "raw snapshot filesystem write time (UTC)"
+  },
+  {
+    "name": "instamojo",
+    "url": "https://www.instamojo.com/pricing",
+    "status": 200,
+    "title": "Affordable eCommerce Website Pricing - Starts at Just ₹10/day | Instamojo",
+    "h1": [
+      "Your business is totally inyour budget!"
+    ],
+    "word_count": 3454,
+    "schema_types": [
+      "BreadcrumbList",
+      "EntryPoint",
+      "ImageObject",
+      "ListItem",
+      "Organization",
+      "PostalAddress",
+      "ReadAction",
+      "SearchAction",
+      "WebPage",
+      "WebSite"
+    ],
+    "internal_links": 170,
+    "evidence_raw": "instamojo.html",
+    "evidence_parsed": "instamojo-parsed.json",
+    "captured_at_utc": "2026-10-29T18:00:35.150299+00:00",
+    "capture_timestamp_basis": "raw snapshot filesystem write time (UTC)"
+  },
+  {
+    "name": "shopify",
+    "url": "https://www.shopify.com/in/pricing",
+    "status": 200,
+    "title": "Shopify Pricing: Find the Right Plan for Your Business - Shopify India",
+    "h1": [
+      "You've got plans. Us too."
+    ],
+    "word_count": 2183,
+    "schema_types": [],
+    "internal_links": 145,
+    "evidence_raw": "shopify.html",
+    "evidence_parsed": "shopify-parsed.json",
+    "captured_at_utc": "2026-10-29T18:00:36.981808+00:00",
+    "capture_timestamp_basis": "raw snapshot filesystem write time (UTC)"
+  },
+  {
+    "name": "storzu",
+    "url": "https://storzu.com/",
+    "status": 200,
+    "title": "Free Online Store & Website in India — WhatsApp Orders & UPI",
+    "h1": [
+      "Create your free online store or website in India.WhatsApp orders. UPI payments."
+    ],
+    "word_count": 3834,
+    "schema_types": [
+      "Answer",
+      "ContactPoint",
+      "Country",
+      "FAQPage",
+      "ImageObject",
+      "Offer",
+      "Organization",
+      "PostalAddress",
+      "QuantitativeValue",
+      "Question",
+      "SoftwareApplication",
+      "WebSite"
+    ],
+    "internal_links": 37,
+    "evidence_raw": "storzu.html",
+    "evidence_parsed": "storzu-parsed.json",
+    "captured_at_utc": "2026-10-29T18:00:36.031970+00:00",
+    "capture_timestamp_basis": "raw snapshot filesystem write time (UTC)"
+  },
+  {
+    "name": "zoho",
+    "url": "https://www.zoho.com/commerce/ecommerce-website-builder.html",
+    "status": 200,
+    "title": "Ecommerce website builder | Build without code | Zoho",
+    "h1": [
+      "Ecommerce website builder that says yes to all your needs"
+    ],
+    "word_count": 1218,
+    "schema_types": [],
+    "internal_links": 8,
+    "evidence_raw": "zoho.html",
+    "evidence_parsed": "zoho-parsed.json",
+    "captured_at_utc": "2026-10-29T18:00:36.444657+00:00",
+    "capture_timestamp_basis": "raw snapshot filesystem write time (UTC)"
+  }
+]

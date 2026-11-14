@@ -1,0 +1,27 @@
+# Corrections and additions to the earlier audit
+
+The comprehensive audit remains a dated evidence set. These corrections narrow interpretation and add missing user-journey evidence; they do not erase valid prior canonical, sitemap, pricing, content or structured-data findings.
+
+| Earlier omission or overly broad interpretation | Corrected assessment | Practical consequence |
+|---|---|---|
+|The audit did not sufficiently inspect actual branded Google appearance.|The supplied screenshot must be recorded separately from crawling and search-tool records; exact sitelink URLs are hidden.|Add a branded-result baseline and exact-destination capture to future validation.|
+|Homepage duplicate brand was missed.|All3 fresh home titles repeat LetBuyy; root and locale title chain explains the emitted string.|Repair one metadata chain instead of only changing generic copy.|
+|Nested resource title duplication was missed.|3 fresh Payments variants repeat branding;42 broader template URLs supported by the dated crawl.|Check all affected templates/locales, not only home.|
+|Different snippet text could be treated as missing/ignored metadata.|The current meta description exists; the supplied snippet matches the first visible FAQ definition.|Align useful body copy and metadata; Google may still choose another snippet.|
+|Sitemap/support “winning” could be blamed on weak pricing links.|Dated English pricing has162 distinct source pages and327 occurrences; sitemap/support each162 sources and167 occurrences.|Improve page identity/intent; do not claim that merely adding more pricing links explains or fixes the selection.|
+|All six sitelinks were treated as wrong.|Support can be a useful destination; guide can be useful; screenshot labels are not verified targets.|Assess task usefulness individually rather than blanket removal.|
+|Mixed Hindi/Tamil results could be read as proof of broken hreflang.|Fresh candidate home/support/directory/guide triplets are self-canonical with matching alternates. Google settings and exact destinations unknown.|Preserve real languages; separate known archive canonical defects from unproven screenshot causation.|
+|Root html lang=en could be asserted as the Google-language cause.|Initial root language is an accessibility consistency issue; nested scopes/hydration mitigate it. Google uses visible content for language detection.|Fix accurately without promising English-only sitelinks.|
+|Demo was proposed as a preferred shortcut without eligibility review.|Fresh demo is intentionally noindex.|Keep the policy or create a justified content strategy; do not remove noindex just to chase a shortcut.|
+|HTML sitemap indexability was implicitly a bug.|The directory is deliberately indexable/XML-listed/user-linked; it can be useful.|Make a clear policy choice. Noindex removes the whole page, not just a sitelink.|
+|Site-name/favicons could receive speculative fixes.|The screenshot has correct LetBuyy site name and a displayed favicon. Current ICO includes256×256.|Do not add a duplicate WebSite entity or claim favicon delivery is broken. Current favicon guidelines differ from old48-multiple advice.|
+|Navigation schema ordering could be treated as control over sitelinks.|Schema nodes cannot prescribe shortcut order. Locale-free identity aliases and content-membership semantics can be made more precise.|Repair truthful metadata; no ranking subsystem or new SEO architecture.|
+|Only the main marketing host was treated as the brand estate.|Search returns historical seller/developer/admin records and an app listing; seller/developer have verified NXDOMAIN.|Maintain a URL lifecycle disposition and preserve legitimate accounts routing.|
+|The app listing relationship/destinations were left untested.|Direct listing links to a legacy merchant-sales site; its privacy URL renders the same homepage in Chromium.|Prioritize the confirmed privacy task failure; verify app ownership and audience relationship before editing external accounts.|
+|Old proof/price claims could be dismissed as irrelevant historical content.|The legacy site is still live and linked from the current public app listing; it shows500+ sellers/₹2Cr+ and older plan names.|Verify ongoing validity and owner intent; do not assert fraud or silently republish unverified claims.|
+|The old property’s public utility navigation was not tested.|3 tested Help Center/Contact Us/Terms links point to# and leave the homepage unchanged; starter title/description also remain.|Repair verified destinations after ownership review; do not assume every untested button is inert.|
+|Fresh and dated scope could be blurred.|26 fresh main-site resources,12 behavior probes,27 queries and focused external checks are separate from489 dated clean pages.|Use fresh counts for new observations; broader dated numbers remain explicitly dated.|
+
+There is no evidence here of a manual action, universal deindexing, measured CTR decline, ranking penalty, exposed private console, or a guaranteed mechanism determining the screenshot's six shortcuts. The browser tool's Work-settings restriction prevented a controlled new Google layout capture; this limitation is recorded rather than represented as a successful run.
+
+The follow-up register contains11 review records:8 Confirmed,1 Opportunity and2 Needs verification;1 High,5 Medium and5 Low. Some extend an existing audit category, especially TECH-08. Do not sum23+11 and present34 independent new defects. There is no new numerical SEO score.

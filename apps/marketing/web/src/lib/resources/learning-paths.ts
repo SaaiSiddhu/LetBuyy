@@ -29,7 +29,7 @@ export const LEARNING_PATHS: LearningPath[] = [
   {
     slug: 'first-100-orders',
     title: 'First 100 Orders',
-    description: 'Get your first 100 real customers — no ads required. The organic playbook for new Indian D2C brands.',
+    description: 'Plan organic acquisition and evaluate the path to your first orders. No customer or sales result is guaranteed.',
     level: 'beginner',
     estimatedTime: 45,
     color: 'var(--lb-primitive-color-purple-500)',
@@ -45,7 +45,7 @@ export const LEARNING_PATHS: LearningPath[] = [
   {
     slug: 'payments-mastery',
     title: 'Payments Mastery',
-    description: 'UPI, COD, GST, invoicing, refunds — master India\'s payment landscape and stay compliant.',
+    description: 'Learn payment, invoice and refund setup questions, with provider requirements and links for tax verification.',
     level: 'intermediate',
     estimatedTime: 50,
     color: 'var(--lb-primitive-color-emerald-500)',
@@ -61,7 +61,7 @@ export const LEARNING_PATHS: LearningPath[] = [
   {
     slug: 'scale-your-operations',
     title: 'Scale Your Operations',
-    description: 'From 10 to 1,000 orders per day — inventory systems, fulfillment operations, and logistics strategy.',
+    description: 'Review inventory, fulfillment and shipping decisions using your own stock, costs and service commitments.',
     level: 'intermediate',
     estimatedTime: 48,
     color: 'var(--lb-primitive-color-amber-500)',
@@ -77,7 +77,7 @@ export const LEARNING_PATHS: LearningPath[] = [
   {
     slug: 'developer-foundations',
     title: 'Developer Foundations',
-    description: 'Build on LetBuyy — APIs, webhooks, apps, Liquid themes, and custom integrations.',
+    description: 'Understand integration contracts and Liquid themes. Public app marketplace access remains deferred.',
     level: 'advanced',
     estimatedTime: 56,
     color: 'var(--lb-primitive-color-blue-500)',

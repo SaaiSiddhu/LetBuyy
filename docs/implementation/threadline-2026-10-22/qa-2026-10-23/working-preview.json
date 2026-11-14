@@ -1,9 +1,0 @@
-{
-  "runId": "e3596680a4c1",
-  "preview": "http://syn-threadline-ui-e853e084.localhost:58669",
-  "merchant": "http://localhost:58668",
-  "merchantThemes": "http://localhost:58668/syn-threadline-ui-e853e084/online-store/themes",
-  "privateStateFile": "/private/tmp/threadline-qa-review-20261023-state.json",
-  "status": "Live owned local production review fixture; normal merchant password login and published theme readback verified; bounded six-hour hold from readiness.",
-  "credentialBoundary": "Generated synthetic credentials are delivered directly to the requesting owner, never committed."
-}

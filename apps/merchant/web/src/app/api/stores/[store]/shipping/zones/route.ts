@@ -1,9 +1,7 @@
-import { validateMerchantMutationRequest } from '@/lib/api/request-origin'
 import { NextRequest, NextResponse } from 'next/server'
 import type { CreateShippingZoneInput } from '@letbuyy/api-client'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
-import { ShippingCapabilitiesSchema } from '@letbuyy/shared-types'
 
 export async function GET(
     _request: NextRequest,
@@ -16,11 +14,10 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const apiClient = createMerchantApiClient(resolved.storeId)
-        const [zones, rates, carrier, profiles] = await Promise.all([
+        const [zones, rates, carrier] = await Promise.all([
             apiClient.shipping.zones.list({ store_id: resolved.storeId }),
             apiClient.shipping.rates.list({ store_id: resolved.storeId }),
             apiClient.shippingLabels.providerMode({ store_id: resolved.storeId }),
-            apiClient.shipping.profiles.list({ store_id: resolved.storeId }),
         ])
 
         return NextResponse.json({
@@ -28,9 +25,7 @@ export async function GET(
             data: {
                 zones,
                 rates,
-                profiles,
-                provider_mode: ShippingCapabilitiesSchema.parse(carrier.capabilities).provider_mode,
-                capabilities: ShippingCapabilitiesSchema.parse(carrier.capabilities),
+                provider_mode: carrier.provider_mode,
             },
         })
     } catch (err) {
@@ -42,8 +37,6 @@ export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ store: string }> }
 ) {
-    const denied = validateMerchantMutationRequest(request, { requireKey: false })
-    if (denied) return denied
     try {
         const { store } = await params
         const resolved = await resolveOwnedStoreId(decodeURIComponent(store))

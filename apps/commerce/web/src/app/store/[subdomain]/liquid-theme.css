@@ -177,18 +177,6 @@
   .lb-header__actions { order: 2; }
 }
 
-/* Installed Threadline 2.0.0 keeps its immutable portable package. This runtime
-   compatibility rule lets its wide wordmark and 44px actions wrap at small
-   widths instead of clipping account/cart behind the page's overflow guard. */
-@media (max-width: 47.999em) {
-  .tl-theme .lb-header__inner { flex-wrap: wrap; column-gap: .75rem; row-gap: .5rem; }
-  .tl-theme .lb-header__brand { min-width: 0; max-width: calc(100% - 56px); overflow-wrap: anywhere; }
-  .tl-theme .lb-header__actions { margin-inline-start: auto; max-width: 100%; flex-wrap: wrap; }
-  .tl-theme .lb-orders__row a { grid-template-columns: minmax(0, 1fr) auto; min-width: 0; }
-  .tl-theme .lb-orders__num { overflow-wrap: anywhere; }
-  .tl-theme .lb-orders__total { grid-column: 1 / -1; text-align: start; }
-}
-
 /* ---- header search overlay + predictive search (T5/W3) ---- */
 .lb-header__search-overlay {
   position: absolute; inset: 100% 0 auto 0; z-index: 65;

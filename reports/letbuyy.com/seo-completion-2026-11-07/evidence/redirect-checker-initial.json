@@ -1,0 +1,101 @@
+{
+  "captured_at": "2026-11-07T02:50:58.185659+00:00",
+  "checks": [
+    {
+      "source": "/in-hi/resources/authors/arjun-developer",
+      "status": 308,
+      "location": "/in-hi/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in-hi/resources/authors/neha-payments",
+      "status": 308,
+      "location": "/in-hi/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in-hi/resources/authors/priya-commerce",
+      "status": 308,
+      "location": "/in-hi/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in-hi/resources/authors/ravi-operations",
+      "status": 308,
+      "location": "/in-hi/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in-ta/resources/authors/arjun-developer",
+      "status": 308,
+      "location": "/in-ta/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in-ta/resources/authors/neha-payments",
+      "status": 308,
+      "location": "/in-ta/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in-ta/resources/authors/priya-commerce",
+      "status": 308,
+      "location": "/in-ta/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in-ta/resources/authors/ravi-operations",
+      "status": 308,
+      "location": "/in-ta/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in/resources/authors/arjun-developer",
+      "status": 308,
+      "location": "/in/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in/resources/authors/neha-payments",
+      "status": 308,
+      "location": "/in/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in/resources/authors/priya-commerce",
+      "status": 308,
+      "location": "/in/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    },
+    {
+      "source": "/in/resources/authors/ravi-operations",
+      "status": 308,
+      "location": "/in/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": false,
+      "passed": false
+    }
+  ]
+}

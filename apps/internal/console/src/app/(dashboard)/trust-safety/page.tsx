@@ -28,9 +28,9 @@ export default async function TrustSafetyPage() {
             {result.error ? <ConsoleApiErrorPanel title="Trust & Safety API unavailable" message={result.error} /> : null}
 
             <MetricGrid>
-                <LeadershipMetric label="Open cases" value={overview ? String(overview.counts.open_cases) : 'Unavailable'} tone={(overview?.counts.open_cases || 0) > 0 ? 'warning' : 'success'} />
-                <LeadershipMetric label="Active takedowns" value={overview ? String(overview.counts.active_takedowns) : 'Unavailable'} tone={(overview?.counts.active_takedowns || 0) > 0 ? 'critical' : 'success'} />
-                <LeadershipMetric label="Pending appeals" value={overview ? String(overview.counts.pending_appeals) : 'Unavailable'} tone={(overview?.counts.pending_appeals || 0) > 0 ? 'warning' : 'success'} />
+                <LeadershipMetric label="Open cases" value={overview ? String(overview.counts.open_cases) : 'Unavailable'} tone={!overview ? 'warning' : (overview.counts.open_cases || 0) > 0 ? 'warning' : 'success'} />
+                <LeadershipMetric label="Active takedowns" value={overview ? String(overview.counts.active_takedowns) : 'Unavailable'} tone={!overview ? 'warning' : (overview.counts.active_takedowns || 0) > 0 ? 'critical' : 'success'} />
+                <LeadershipMetric label="Pending appeals" value={overview ? String(overview.counts.pending_appeals) : 'Unavailable'} tone={!overview ? 'warning' : (overview.counts.pending_appeals || 0) > 0 ? 'warning' : 'success'} />
                 <LeadershipMetric label="Case sample" value={overview ? String(overview.counts.total_cases_sampled) : 'Unavailable'} />
             </MetricGrid>
 

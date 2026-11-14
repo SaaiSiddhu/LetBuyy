@@ -1,0 +1,170 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "Main navigation":
+    - button "Why LetBuyy"
+    - button "Products"
+    - link "Themes":
+      - /url: /in/resources/platform/how-themes-work
+    - link "Apps":
+      - /url: /in/resources/platform/introduction-to-apps
+    - link "Developers":
+      - /url: /in/resources/developers
+    - link "Pricing":
+      - /url: /in/pricing
+  - button "Toggle theme"
+  - link "Log in":
+    - /url: https://accounts.letbuyy.com/lookup
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+- navigation "Resources navigation":
+  - link "Resources":
+    - /url: /in/resources
+  - link "All":
+    - /url: /in/resources
+  - link "Ecommerce":
+    - /url: /in/resources/ecommerce
+  - link "Growth":
+    - /url: /in/resources/growth
+  - link "Payments":
+    - /url: /in/resources/payments
+  - link "Operations":
+    - /url: /in/resources/operations
+  - link "AI Commerce":
+    - /url: /in/resources/ai-commerce
+  - link "Developers":
+    - /url: /in/resources/developers
+  - link "Changelog":
+    - /url: /in/resources/changelog
+  - button "Commerce updates"
+- main:
+  - navigation:
+    - link "Resources":
+      - /url: /in/resources
+    - text: › Authors › Neha Gupta
+  - text: "N"
+  - heading "Neha Gupta" [level=1]
+  - paragraph: Payments & Compliance
+  - paragraph: GST consultant and payments specialist focused on making India-first commerce frictionless for merchants of all sizes.
+  - paragraph: "5"
+  - paragraph: Articles published
+  - heading "Articles by Neha Gupta" [level=2]
+  - 'link "Payments Beginner Featured UPI vs COD: Which Payment Method Wins for Indian Stores The data on India''s two dominant payment methods — and how to optimize both. N Neha Gupta 9 min read"':
+    - /url: /in/resources/payments/upi-vs-cod-india
+    - text: Payments Beginner Featured
+    - 'heading "UPI vs COD: Which Payment Method Wins for Indian Stores" [level=3]'
+    - paragraph: The data on India's two dominant payment methods — and how to optimize both.
+    - text: N Neha Gupta 9 min read
+  - 'link "Payments Intermediate GST for Ecommerce in India: The Complete 2026 Guide GST compliance, filing, TCS, and input tax credit — explained for online sellers. N Neha Gupta 13 min read"':
+    - /url: /in/resources/payments/gst-for-ecommerce-india
+    - text: Payments Intermediate
+    - 'heading "GST for Ecommerce in India: The Complete 2026 Guide" [level=3]'
+    - paragraph: GST compliance, filing, TCS, and input tax credit — explained for online sellers.
+    - text: N Neha Gupta 13 min read
+  - 'link "Payments Intermediate GST Invoices for Indian Ecommerce: What Must Be Included Every field, every format, every rule — so your invoices are always compliant. N Neha Gupta 7 min read"':
+    - /url: /in/resources/payments/invoicing-india-merchants
+    - text: Payments Intermediate
+    - 'heading "GST Invoices for Indian Ecommerce: What Must Be Included" [level=3]'
+    - paragraph: Every field, every format, every rule — so your invoices are always compliant.
+    - text: N Neha Gupta 7 min read
+  - link "Payments Intermediate Building a Customer-Friendly Returns Policy for India The right returns policy builds trust and reduces RTO — without killing your margins. N Neha Gupta 8 min read":
+    - /url: /in/resources/payments/refunds-returns-policy-india
+    - text: Payments Intermediate
+    - heading "Building a Customer-Friendly Returns Policy for India" [level=3]
+    - paragraph: The right returns policy builds trust and reduces RTO — without killing your margins.
+    - text: N Neha Gupta 8 min read
+  - 'link "Payments Intermediate Accepting Payments on LetBuyy: UPI, Cards, and COD Everything you need to configure payments for your LetBuyy store. N Neha Gupta 7 min read"':
+    - /url: /in/resources/payments/razorpay-integration-guide
+    - text: Payments Intermediate
+    - 'heading "Accepting Payments on LetBuyy: UPI, Cards, and COD" [level=3]'
+    - paragraph: Everything you need to configure payments for your LetBuyy store.
+    - text: N Neha Gupta 7 min read
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.

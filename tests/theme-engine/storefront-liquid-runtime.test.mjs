@@ -86,7 +86,7 @@ test('storefront resolver and composition engine render full Liquid documents wi
   assert.match(source, /import \{[^}]*assembleLiquidPageFromRenderResult[^}]*\} from '\.\/liquid-page-assembly';/);
   assert.match(
     source,
-    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) \{\s*console\.warn\(JSON\.stringify\(\{ event: 'lb:liquid:render-unavailable', \.\.\.liquidRenderFailureDiagnostics\(result\) \}\)\);\s*return null;\s*\}\s*const assembled = assembleLiquidPageFromRenderResult\(result\.liquid, \{ beforeContentHtml: catalogDemo \? '' : productOriginFilterMarkup\(plan\.route, editorMode\), afterContentHtml \}\);/,
+    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) return null;\s*return assembleLiquidPageFromRenderResult\(result\.liquid, \{ beforeContentHtml: productOriginFilterMarkup\(plan\.route, editorMode\), afterContentHtml \}\);/,
   );
   assert.match(assemblySource, /export function assembleLiquidPageFromRenderResult\(\s*liquid: LiquidRenderedTheme,\s*controls: LiquidPlatformControls = \{\},?\s*\)/);
   assert.match(assemblySource, /const \{ header, contentForLayout, footer(?:, \w+)* \} = liquid;/);
@@ -142,7 +142,7 @@ test('storefront composition engine maps installed app blocks into Liquid app sl
   assert.match(source, /function buildLiquidAppBlocks/);
   assert.match(source, /\[block\.slot, source\]/);
   assert.match(source, /\[`app:\$\{block\.extension_id\}`, source\]/);
-  assert.match(source, /liquidAppBlocks: catalogDemo \? \{\} : buildLiquidAppBlocks\(store\.templateConfig\.appBlocks\)/);
+  assert.match(source, /liquidAppBlocks: buildLiquidAppBlocks\(store\.templateConfig\.appBlocks\)/);
   assert.match(source, /data-app-block-slot/);
 });
 
@@ -245,26 +245,35 @@ test('D4 collection drop on collection route uses resolvedCollectionMeta before 
 
   // resolvedCollectionMeta must be the variable used for collection title/id
   assert.match(source, /resolvedCollectionMeta/);
-  assert.match(source, /const resolvedCollectionMeta = boundCollection;/);
-  assert.match(source, /collections: discoveredCollections[.]map/);
-  assert.match(source, /handle: catalogDemo && 'handle' in item [\?] item[.]handle : item[.]id/);
-  assert.doesNotMatch(source, /fetchCollectionMeta|collections: collection [\?] \[collection\] : \[\]/);
-  const binder = read('apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts');
-  assert.match(binder, /loadNamedCollectionProductPage/);
-
+  // fetchCollectionMeta function must exist
+  assert.match(source, /async function fetchCollectionMeta/);
+  // on collection routes with no SectionRenderData collection, attempt gateway fetch
+  assert.match(source, /plan\.route\.type === 'collection' && !boundCollection/);
+  // Discovery is independent of the current collection/product slice.
+  assert.match(source, /collections: discoveredCollections\.map/);
+  assert.match(source, /handle: item\.id/);
+  assert.doesNotMatch(source, /collections: collection \? \[collection\] : \[\]/);
+  // fetchCollectionMeta is wrapped in try/catch or .catch() fallback
+  assert.match(source, /fetchCollectionMeta.*catch/s);
 });
 
 test('D5 search drop is populated when route carries a search term', () => {
   const source = read(COMPOSITION_ENGINE_SOURCE);
 
-  assert.match(source, /const searchTerm = query[?][.]search [??][??] plan[.]route[.]searchParams[?][.]search [??][??] '';/);
-  assert.match(source, /terms: searchTerm, results: products/);
-  assert.match(source, /results_count: discoveryPage[.]total/);
-  assert.match(source, /performed: Boolean[(]searchTerm [|][|] query && hasDiscoveryFilters[(]query[)][)]/);
-  assert.match(source, /searchDrop[\s\S]*?: null;/);
-  assert.doesNotMatch(source, /await ProductService[.]listProducts/);
+  // search term extraction from route path
+  assert.match(source, /\[?&\]search=([^&]*)/);
+  // search drop has terms/results/results_count keys
+  assert.match(source, /terms: searchTerm/);
+  assert.match(source, /results_count: resultProducts\.length/);
+  assert.match(source, /performed: true/);
+  // no fabricated data — when search term is absent, searchDrop remains null
+  assert.match(source, /searchDrop.*null/);
+  // error fallback when gateway fails — results=[] not fabricated
+  assert.match(source, /results: \[\]/);
+  // fetch uses the existing listProducts storefront client
+  assert.match(source, /listProducts.*search.*searchTerm/s);
+  // search is passed to the LiquidCommerceDrops return
   assert.match(source, /search: searchDrop/);
-
 });
 
 test('D7 font loading wires experience fonts for active theme settings', () => {

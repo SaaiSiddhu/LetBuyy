@@ -19,14 +19,14 @@ type WorkspaceCopy = {
 };
 
 type MetricTone = 'neutral' | 'success' | 'warning' | 'critical';
-type PillTone = 'success' | 'warning' | 'critical' | 'info';
+type PillTone = 'neutral' | 'success' | 'warning' | 'critical' | 'info';
 
 export function ConsoleWorkspace(props: WorkspaceCopy) {
-    return <InternalWorkspace {...props} />;
+    return <InternalWorkspace {...props} as="section" className="console-workspace" />;
 }
 
 export function MetricGrid({ children }: { children: ReactNode }) {
-    return <InternalMetricGrid>{children}</InternalMetricGrid>;
+    return <InternalMetricGrid className="console-metric-grid">{children}</InternalMetricGrid>;
 }
 
 export function LeadershipMetric({
@@ -40,7 +40,7 @@ export function LeadershipMetric({
     detail?: string;
     tone?: MetricTone;
 }) {
-    return <InternalMetric label={label} value={value} detail={detail} tone={tone} />;
+    return <InternalMetric className="console-metric" label={label} value={value} detail={detail} tone={tone} />;
 }
 
 export function Panel({
@@ -54,7 +54,7 @@ export function Panel({
     children: ReactNode;
     action?: ReactNode;
 }) {
-    return <InternalPanel title={title} description={description} action={action}>{children}</InternalPanel>;
+    return <InternalPanel className="console-panel" title={title} description={description} action={action}>{children}</InternalPanel>;
 }
 
 export function ModuleGrid({ children }: { children: ReactNode }) {
@@ -77,8 +77,8 @@ export function ModuleCard({
     return <InternalModuleCard title={title} description={description} href={href} status={status} detail={details} />;
 }
 
-export function StatusPill({ value, tone }: { value: string; tone?: PillTone }) {
-    return <InternalStatusPill value={value} tone={tone} />;
+export function StatusPill({ value, tone, label }: { value: string; tone?: PillTone; label?: string }) {
+    return <InternalStatusPill className="console-status-pill" value={value} tone={tone} label={label} />;
 }
 
 export function SkipBackendPanel({

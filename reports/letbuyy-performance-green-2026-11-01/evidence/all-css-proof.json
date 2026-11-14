@@ -1,0 +1,481 @@
+{
+  "css_files": 20,
+  "before_declarations": 14942,
+  "after_declarations": 14965,
+  "all_existing_declarations_conditions_keyframes_preserved": true,
+  "rows": [
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/category-illustrated.module.css",
+      "before": 171,
+      "after": 171,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/resources-home.module.css",
+      "before": 483,
+      "after": 483,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/sitemap/sitemap.module.css",
+      "before": 262,
+      "after": 262,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "before": 7483,
+      "after": 7505,
+      "missing": [],
+      "added": [
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-family",
+          "'LetBuyy Tamil Fallback'",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "src",
+          "local('TamilSangamMN')",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-style",
+          "normal",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-weight",
+          "normal",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-display",
+          "swap",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "unicode-range",
+          "U+0B80-0BFF",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-family",
+          "'LetBuyy Tamil Fallback'",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "src",
+          "local('TamilSangamMN-Bold')",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-style",
+          "normal",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-weight",
+          "500",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-display",
+          "swap",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "unicode-range",
+          "U+0B80-0BFF",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-family",
+          "'LetBuyy Tamil Fallback'",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "src",
+          "local('TamilSangamMN-Bold')",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-style",
+          "normal",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-weight",
+          "bold",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "font-display",
+          "swap",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "font-face",
+              ""
+            ]
+          ],
+          "unicode-range",
+          "U+0B80-0BFF",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "supports",
+              "(content-visibility: auto)"
+            ],
+            [
+              "selector",
+              ".select-plan-compare-section,\n  .marketing-site main > .faq"
+            ]
+          ],
+          "content-visibility",
+          "auto",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "supports",
+              "(content-visibility: auto)"
+            ],
+            [
+              "selector",
+              ".select-plan-compare-section"
+            ]
+          ],
+          "contain-intrinsic-block-size",
+          "auto 570px",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "supports",
+              "(content-visibility: auto)"
+            ],
+            [
+              "selector",
+              ".marketing-site main > .faq"
+            ]
+          ],
+          "contain-intrinsic-block-size",
+          "auto 1100px",
+          null
+        ],
+        [
+          [
+            [
+              "at-rule",
+              "supports",
+              "(content-visibility: auto)"
+            ],
+            [
+              "at-rule",
+              "media",
+              "(max-width: 767px)"
+            ],
+            [
+              "selector",
+              ".marketing-site main > .faq"
+            ]
+          ],
+          "contain-intrinsic-block-size",
+          "auto 1600px",
+          null
+        ]
+      ]
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "before": 2272,
+      "after": 2272,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/app/how-it-works.css",
+      "before": 246,
+      "after": 246,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/app/locale-typography.css",
+      "before": 3,
+      "after": 3,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "before": 2277,
+      "after": 2277,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/final-cta.module.css",
+      "before": 15,
+      "after": 15,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/header-featured-art.module.css",
+      "before": 50,
+      "after": 50,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/legal/legal-layout.module.css",
+      "before": 227,
+      "after": 227,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/platform-surfaces.module.css",
+      "before": 35,
+      "after": 35,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-section-visual.module.css",
+      "before": 23,
+      "after": 23,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-visual-overview.module.css",
+      "before": 101,
+      "after": 101,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/changelog.module.css",
+      "before": 242,
+      "after": 242,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/liquid-guide.module.css",
+      "before": 270,
+      "after": 270,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-artwork.module.css",
+      "before": 29,
+      "after": 29,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-list-visuals.module.css",
+      "before": 55,
+      "after": 55,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/theme-guide.module.css",
+      "before": 331,
+      "after": 332,
+      "missing": [],
+      "added": [
+        [
+          [
+            [
+              "selector",
+              ".heroImage"
+            ]
+          ],
+          "aspect-ratio",
+          "3 / 2",
+          null
+        ]
+      ]
+    },
+    {
+      "path": "apps/marketing/web/src/components/support/support-experience.module.css",
+      "before": 367,
+      "after": 367,
+      "missing": [],
+      "added": []
+    }
+  ],
+  "fonts": [
+    {
+      "name": "93f479601ee12b01-s.woff2",
+      "bytes": 31288,
+      "before_sha256": "b7ac144b394cbd81052d6397ec0c33397977b1d7e9bc095e744e652a378c6fb3",
+      "after_sha256": "b7ac144b394cbd81052d6397ec0c33397977b1d7e9bc095e744e652a378c6fb3",
+      "equal": true
+    },
+    {
+      "name": "e0c4929507195d52-s.p.woff2",
+      "bytes": 58308,
+      "before_sha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+      "after_sha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+      "equal": true
+    }
+  ],
+  "animation_sources": [
+    {
+      "path": "apps/marketing/web/src/components/CommerceGlobe.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceGlobeCanvas.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceNetwork.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingMotionProvider.tsx",
+      "unchanged": true
+    }
+  ],
+  "token_source_unchanged": true
+}

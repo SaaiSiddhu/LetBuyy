@@ -163,6 +163,14 @@ rejects('Console compatibility MFA endpoint cannot bypass Identity transport', '
   s => replace(s, "if(!await verifyInternalAppRequest(c,'accounts'))", 'if(false)'), /compatibility Console MFA route/);
 rejects('Console compatibility session router must stay mounted', 'services/api-gateway/src/routes/internal-console.ts',
   s => replace(s, "router.route('/sessions', internalConsoleSessionsRouter);", ''), /mount the canonical session router/);
+rejects('Console bridge cannot be disconnected from its router', 'services/api-gateway/src/routes/internal-console.ts',
+  s => replace(s, "router.use('*', consoleBridge);", "router.use('*', async (c,next)=>{await next();});"), /mount its actual service transport guard/);
+rejects('Console bridge import must resolve to its checked implementation', 'services/api-gateway/src/routes/internal-console.ts',
+  s => replace(s, "from '../identity-foundation/console-bridge'", "from '../identity-foundation/unbound'"), /mount its actual service transport guard/);
+rejects('Console bridge must reject an unconfigured transport', 'services/api-gateway/src/identity-foundation/console-bridge.ts',
+  s => replace(s, 'if (!expected) return c.json(', 'if (false) return c.json('), /fail-closed service transport gate/);
+rejects('Console bridge must verify the actual transport token', 'services/api-gateway/src/identity-foundation/console-bridge.ts',
+  s => replace(s, 'if (!token || !timingSafeEqualText(token, expected))', 'if (false)'), /fail-closed service transport gate/);
 rejects('MFA durable adapter cannot assume success', 'services/api-gateway/src/execution/console-mfa-execution.adapter.ts',
   s => stripFunction(s, 'completeConsoleMfa'), /bind verified predecessor and target/);
 rejects('Gateway cannot replace public verification with bearer authority', 'services/api-gateway/src/identity-foundation/console-session-repository.ts',

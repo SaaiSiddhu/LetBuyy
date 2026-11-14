@@ -1,9 +1,0 @@
-# Marginalia shopping discovery correction
-
-Stationery ruling now uses supplied canonical `books_ruling` facet values, labels and counts under the real books capability. It has a separate Stationery group; author/language/format remain in Book editions. Positive supplied rows advertise choices. Missing capability, absent metadata and synthetic/zero-result rows cannot invent available rulings. A valid current ruling with no supplied match remains explicitly marked as current, so submitting an unchanged form cannot silently clear it.
-
-The GET form uses `collection.discovery_query_fields` to retain every unedited canonical value and every repeated connector entry. Visible controlled fields are excluded from hidden fields, avoiding duplicate scalar submissions, and page is reset to 1. Independent applied-filter links use the exact canonical `active_filters[].clear_url`; there is no bare-route clear that drops country, category, search, limit or unrelated filters.
-
-**16 tests pass**: 11 engine tests and five query/form cases covering both collection and search. The latter use the actual app response projection, actual Liquid renderer, native JSDOM FormData/URLSearchParams and the canonical parser. The fixture supplies every canonical query key. It proves unchanged Apply, sort edits, ruling/author edits, optional-field removal, repeated connectors, exact independent clearing, paired-length clearing, missing metadata/capability and retained zero-result filters. Focused no-emit also passes. Details and source hashes are in `shopping-discovery-validation.json`.
-
-No backend, shared index, SQL, database, browser or build changes were made. Proposal 1686 remains immutable and on hold; no new proposal was generated. This is source/form behavior evidence and does not recertify historical browser captures or claim live backend filtering.

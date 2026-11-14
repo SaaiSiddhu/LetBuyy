@@ -1,0 +1,146 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "Main navigation":
+    - button "Why LetBuyy"
+    - button "Products"
+    - link "Themes":
+      - /url: /in/resources/platform/how-themes-work
+    - link "Apps":
+      - /url: /in/resources/platform/introduction-to-apps
+    - link "Developers":
+      - /url: /in/resources/developers
+    - link "Pricing":
+      - /url: /in/pricing
+  - button "Toggle theme"
+  - link "Log in":
+    - /url: https://accounts.letbuyy.com/lookup
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+- main:
+  - heading "See it on your own products" [level=1]
+  - paragraph: Thirty minutes with someone who builds LetBuyy. We set up a storefront against your catalogue, take a live UPI and COD order through checkout, and show the GST invoice it produces — then answer whatever you ask.
+  - list "Progress":
+    - listitem: About you
+    - listitem: Your business
+    - listitem: What you need
+    - listitem: Pick a time
+  - heading "About you" [level=2]
+  - paragraph: So we know who we are talking to.
+  - text: Full name
+  - textbox "Full name"
+  - text: Work email
+  - textbox "Work email"
+  - text: Phone
+  - textbox "Phone We call from an Indian number"
+  - text: We call from an Indian number Business name
+  - textbox "Business name"
+  - text: Current website or social page
+  - textbox "Current website or social page":
+    - /placeholder: instagram.com/yourshop
+  - text: Which language should we call you in?
+  - radiogroup:
+    - radio "Which language should we call you in? हिन्दी தமிழ்" [checked]: English
+    - radio "हिन्दी"
+    - radio "தமிழ்"
+  - button "Continue"
+  - paragraph:
+    - text: Not ready for a call? Read the
+    - link "guide library":
+      - /url: /in/resources
+    - text: ", check"
+    - link "pricing":
+      - /url: /in/pricing
+    - text: ", or just"
+    - link "email us":
+      - /url: /in/contact
+    - text: .
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.

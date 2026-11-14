@@ -1,0 +1,81 @@
+{
+  "runId": "8605d74bef2c",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-54759-mvu0pggt-a96ce1"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 0,
+  "tests": 7,
+  "assertionsPassed": 7,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 32.7,
+  "suiteSeconds": 30.8,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "merchant-account-messages.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-account-messages.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-54759-mvu0pggt-a96ce1",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 30.8,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_merchant_account_messages_postgres",
+      "templateSeconds": 23.7,
+      "provisionSeconds": 1,
+      "rest": {
+        "container": "letbuyy-exec-8605d74bef2c-rest-1",
+        "upstreamPort": 65227,
+        "proxyPort": 65228
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 258,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

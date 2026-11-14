@@ -1,0 +1,32 @@
+check,result,command_or_method,evidence
+marketing-tests,PASS,pnpm --dir apps/marketing/web test,evidence/marketing-tests.log
+marketing-types,PASS,pnpm --dir apps/marketing/web typecheck,evidence/marketing-types.log
+marketing-lint,PASS,pnpm --dir apps/marketing/web lint,evidence/marketing-lint.log
+ui-validation,PASS,pnpm --dir packages/typescript/ui validate:ui,evidence/ui-validation.log
+ui-types,PASS,pnpm --dir packages/typescript/ui typecheck,evidence/ui-types.log
+accepted-http.py,PASS,Read-only final-artifact harness,evidence/accepted-http.py.log
+accepted-final-site-browser.cjs,PASS,Read-only final-artifact harness,evidence/accepted-final-site-browser.cjs.log
+accepted-delivery-templates.cjs,PASS,Read-only final-artifact harness,evidence/accepted-delivery-templates.cjs.log
+accepted-final-animation-local-api.cjs,PASS,Read-only final-artifact harness,evidence/accepted-final-animation-local-api.cjs.log
+accepted-final-interactions-touch-final.cjs,PASS,Read-only final-artifact harness,evidence/accepted-final-interactions-touch-final.cjs.log
+accepted-final-touch-final.cjs,PASS,Read-only final-artifact harness,evidence/accepted-final-touch-final.cjs.log
+accepted-final-carousel-motion.cjs,PASS,Read-only final-artifact harness,evidence/accepted-final-carousel-motion.cjs.log
+accepted-final-menu-visual.cjs,PASS,Read-only final-artifact harness,evidence/accepted-final-menu-visual.cjs.log
+accepted-delivery-spa.cjs,PASS,Read-only final-artifact harness,evidence/accepted-delivery-spa.cjs.log
+accepted-delivery-native-parity.cjs,PASS,Read-only final-artifact harness,evidence/accepted-delivery-native-parity.cjs.log
+accepted-final-scroll-visual.cjs,PASS,Read-only final-artifact harness,evidence/accepted-final-scroll-visual.cjs.log
+production-build,PASS,pnpm build; exact copied source hashes matched,evidence/accepted-build.log
+design-system-governance,PASS,pnpm validate:design-system,evidence/design-system.log
+CSS/animation/font preservation,PASS,"All existing CSS declarations retained, exact used font binaries match baseline, unchanged animation source hashes",evidence/all-css-proof.json
+full-page comparisons with resolved rechecks,PASS,102 unique URL/width/theme samples; geometry/copy/styles checked; codec pixels measured separately,VISUAL-COMPARISON.json
+alias negative controls,PASS,"4 isolated mutations rejected, stale-baseline old false-positive reproduced and corrected",evidence/guard-negative-controls.json
+source rollback dry-run,PASS,git apply --reverse --check on isolated current copies,evidence/reverse-patch-validation.json
+mobile-ta-home,PASS,devtools; LCP<=2500ms/TBT<=200ms/CLS<=0.1,evidence/performance/exact-final/ta-home.json
+mobile-ta-pricing,PASS,devtools; LCP<=2500ms/TBT<=200ms/CLS<=0.1,evidence/performance/exact-final/ta-pricing.json
+mobile-en-pricing,PASS,devtools; LCP<=2500ms/TBT<=200ms/CLS<=0.1,evidence/performance/exact-final/en-pricing.json
+mobile-en-guide,PASS,devtools; LCP<=2500ms/TBT<=200ms/CLS<=0.1,evidence/performance/exact-final/en-guide.json
+mobile-en-pricing-model,OPEN: LCP advisory,simulate; LCP<=2500ms/TBT<=200ms/CLS<=0.1,evidence/performance/exact-final/en-pricing-model.json
+mobile-en-guide-model,OPEN: LCP advisory,simulate; LCP<=2500ms/TBT<=200ms/CLS<=0.1,evidence/performance/exact-final/en-guide-model.json
+font fallback absence control,PASS,Remove 3 new local-only font faces in browser and compare original fallback/layout,evidence/font-fallback-control.json
+normal 9006 and report rendering,PASS,"12 dev-page cases, actual 4-plan API, 375/1366 report viewports",evidence/normal-dev-and-report.json
+temporary listener cleanup,PASS,Only owned 9046–9049 stopped; normal 9006/9010/9002 remain,evidence/service-cleanup.json

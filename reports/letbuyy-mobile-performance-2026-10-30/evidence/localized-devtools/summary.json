@@ -1,0 +1,145 @@
+{
+  "captured_at": "2026-10-30T00:21:33.849262+00:00",
+  "build_id": "Jt6Duvm2bymgmwpDPdjxY",
+  "method": "Actual DevTools network/CPU throttling; separate from the default simulated Lantern model; no field data",
+  "rows": [
+    {
+      "name": "hindi-home",
+      "path": "/in-hi",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.96,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 1894.967,
+      "cls": 0,
+      "tbt_ms": 103.91799999618479,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "tamil-home",
+      "path": "/in-ta",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.9,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 1744.403,
+      "cls": 0,
+      "tbt_ms": 319.64600000000064,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "hindi-home-repeat",
+      "path": "/in-hi",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.96,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 1715.832,
+      "cls": 0,
+      "tbt_ms": 115.90699999999993,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "tamil-home-repeat",
+      "path": "/in-ta",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.89,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 1742.228,
+      "cls": 0,
+      "tbt_ms": 327.55499999999984,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "hindi-pricing",
+      "path": "/in-hi/pricing",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.95,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2223.149,
+      "cls": 0.001283,
+      "tbt_ms": 133.1840000000002,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "tamil-pricing",
+      "path": "/in-ta/pricing",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.89,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2410.035,
+      "cls": 0.000119,
+      "tbt_ms": 300.0799999999999,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    }
+  ]
+}

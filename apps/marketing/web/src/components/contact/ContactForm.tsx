@@ -1190,7 +1190,7 @@ export default function ContactForm() {
                         type="button"
                         className="ctc-btn ctc-btn-primary"
                         onClick={submit}
-                        disabled={submitting || !turnstileToken}
+                        disabled={submitting}
                     >
                         {t(submitting ? 'Sending…' : 'Send message')}
                         {!submitting && (

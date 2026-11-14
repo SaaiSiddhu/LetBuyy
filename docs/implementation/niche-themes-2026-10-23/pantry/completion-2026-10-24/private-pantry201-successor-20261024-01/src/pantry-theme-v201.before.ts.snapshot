@@ -1,8 +1,0 @@
-import { LiquidThemePackageBundleSchema, ThemeLiquidSectionSchema, type LiquidThemePackageBundle } from '../../../../../../../packages/theme-engine/src/theme-bundle.ts';
-import { createPantryTheme } from '../../../../../../../packages/theme-engine/src/pantry-theme.ts';
-import { withNicheOrderPresentation } from '../../../../../../../packages/theme-engine/src/niche-order-presentation.ts';
-
-/** RED baseline only; replaced by the bounded private successor implementation. */
-export function createPantryThemeV201(base: LiquidThemePackageBundle): LiquidThemePackageBundle {
-  return withNicheOrderPresentation(createPantryTheme(base));
-}

@@ -1,0 +1,28 @@
+{
+  "schema": {
+    "raw_log_sha256": "dc5f99daf6b8fa6086c6b82410876f11d4275be7df29abea78cd1fea3a409d3e",
+    "expected": true,
+    "actual": false
+  },
+  "cancelled_upcoming": {
+    "raw_log_sha256": "a6977fee2c797c46c378613614d9449ddb5666a3056dcbcb64229c3a134a469c",
+    "expected_minor": 0,
+    "actual_minor": 69900
+  },
+  "mandate_replay": {
+    "raw_log_sha256": "e9bb83851d447e8ca0621d75b8ef99bc3d0c0e6c21136502e7036b46a0284e2a",
+    "expected_status": 409,
+    "actual_status": 200
+  },
+  "mandate_race": {
+    "expected": "both200/201 with one row",
+    "actual": "one server error on unique constraint",
+    "before_suite_pass": 4,
+    "before_suite_fail": 2
+  },
+  "annual_badge": {
+    "raw_log_sha256": "b5397a4f29ab20cab2a3fa00d5a4d23897554fc5fb1d7001855001fab8114b28",
+    "expected": "no savings badge when annual equivalent equals monthly",
+    "actual": "hardcoded Save20%"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "captured_at": "2026-10-30T00:33:26.082Z",
+  "rows": [
+    {
+      "path": "/in",
+      "status": 200,
+      "lang": "en",
+      "worker": "dotted-canvas-worker"
+    },
+    {
+      "path": "/in-hi",
+      "status": 200,
+      "lang": "hi",
+      "worker": null
+    },
+    {
+      "path": "/in-ta",
+      "status": 200,
+      "lang": "ta",
+      "worker": null
+    },
+    {
+      "path": "/in/pricing",
+      "status": 200,
+      "lang": "en",
+      "worker": null
+    }
+  ],
+  "services": [
+    {
+      "name": "accounts",
+      "url": "http://localhost:9002/login",
+      "status": 200
+    },
+    {
+      "name": "merchant",
+      "url": "http://localhost:9001",
+      "status": 200
+    },
+    {
+      "name": "gateway",
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "status": 200
+    }
+  ],
+  "font_assets": [
+    {
+      "url": "http://127.0.0.1:9006/_next/static/media/e0c4929507195d52-s.p.woff2",
+      "bytes": 58308,
+      "status": 200
+    }
+  ],
+  "real_plans": [
+    {
+      "slug": "launch",
+      "founding_inr": 199,
+      "purchasable": true
+    },
+    {
+      "slug": "growth",
+      "founding_inr": 699,
+      "purchasable": true
+    },
+    {
+      "slug": "scale",
+      "founding_inr": 2499,
+      "purchasable": false
+    },
+    {
+      "slug": "commerce_os",
+      "founding_inr": 5999,
+      "purchasable": false
+    }
+  ],
+  "page_errors": [],
+  "read_only": true,
+  "passed": true
+}

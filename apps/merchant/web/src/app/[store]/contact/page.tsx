@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button,
@@ -10,6 +8,7 @@ import { Button,
     Banner,
     Card,
     ConfirmDialog,
+    EmptyState,
     Mail,
     MessageSquare,
     Page,
@@ -22,7 +21,6 @@ import { Button,
     X,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDateWithTime as formatDate } from '@letbuyy/ui/formatting'
 
 interface Submission {
@@ -73,18 +71,15 @@ export default function ContactPage() {
     const [submissionToDelete, setSubmissionToDelete] = useState<Submission | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadSubmissions = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions?type=contact&limit=100`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load contact submissions'))
@@ -97,7 +92,6 @@ export default function ContactPage() {
                 return nextItems.find((item: Submission) => item.id === current.id) || null
             })
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load contact submissions'
             setItems([])
             setSelected(null)
@@ -108,9 +102,9 @@ export default function ContactPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadSubmissions()
@@ -199,8 +193,7 @@ export default function ContactPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="content"
-                    recipe="index"
+                <PageHeader
                     title="Contact submissions"
                     description="Review customer questions and reply from one focused inbox."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Contact' }]}
@@ -216,8 +209,7 @@ export default function ContactPage() {
 
     return (
         <Page>
-            <PageHeader identity="content"
-                recipe="index"
+            <PageHeader
                 title="Contact submissions"
                 description="Review customer questions and reply from one focused inbox."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Contact' }]}
@@ -285,7 +277,7 @@ export default function ContactPage() {
             {items.length === 0 ? (
                 <Card>
                     <Section title="Inbox">
-                        <EmptyState scene="contact"
+                        <EmptyState
                             icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No contact submissions yet"
                             body="Messages sent through your storefront contact form will appear here with reply and moderation actions."

@@ -1,0 +1,53 @@
+{
+  "capturedAt": "2026-11-03T03:51:14.914758+00:00",
+  "readOnly": true,
+  "rows": [
+    {
+      "path": "/v1/pricing",
+      "origin": "https://www.letbuyy.com",
+      "status": 200,
+      "allowOrigin": "https://www.letbuyy.com",
+      "credentials": "true",
+      "reflected": true
+    },
+    {
+      "path": "/v1/pricing",
+      "origin": "https://letbuyy.com",
+      "status": 200,
+      "allowOrigin": "https://letbuyy.com",
+      "credentials": "true",
+      "reflected": true
+    },
+    {
+      "path": "/v1/pricing",
+      "origin": "https://random-store.letbuyy.com",
+      "status": 200,
+      "allowOrigin": "https://letbuyy.com",
+      "credentials": "true",
+      "reflected": false
+    },
+    {
+      "path": "/v1/pricing",
+      "origin": "https://www.letbuyy.com.evil.invalid",
+      "status": 200,
+      "allowOrigin": "https://letbuyy.com",
+      "credentials": "true",
+      "reflected": false
+    },
+    {
+      "path": "/v1/pricing",
+      "origin": "http://www.letbuyy.com",
+      "status": 200,
+      "allowOrigin": "https://letbuyy.com",
+      "credentials": "true",
+      "reflected": false
+    }
+  ],
+  "protectedRead": {
+    "path": "/v1/orders",
+    "status": 401,
+    "allowOrigin": "https://www.letbuyy.com",
+    "credentialsOrCookiesSent": false
+  },
+  "passed": true
+}

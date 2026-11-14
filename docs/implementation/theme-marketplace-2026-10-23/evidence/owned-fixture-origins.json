@@ -1,9 +1,0 @@
-{
-  "runId": "7116c403fe0e",
-  "identityOrigin": "http://localhost:56899",
-  "merchantOrigin": "http://localhost:56900",
-  "commerceOrigin": "http://localhost:56901",
-  "checkoutOrigin": "https://checkout.localhost:56903",
-  "apiOrigin": "http://127.0.0.1:56904",
-  "siteId": "9931a847-50af-40f2-af5c-1a865e9246ba"
-}

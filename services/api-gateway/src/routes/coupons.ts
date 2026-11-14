@@ -1,4 +1,3 @@
-import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 // ============================================================
 // COUPONS — CRUD + validation (Doc 05 + Doc 08 § 10)
 // ============================================================
@@ -139,7 +138,6 @@ router.get('/:id', async (c) => {
     const auth = c.get('auth');
     const couponId = c.req.param('id');
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) {
@@ -149,7 +147,7 @@ router.get('/:id', async (c) => {
     const { data, error } = await db
         .from('coupons')
         .select('*')
-        .eq('id', couponId).in('store_id', storeIds)
+        .eq('id', couponId)
         .single();
 
     if (error || !data || !(await verifySiteOwnership(db, data.store_id, customUser.id, auth.user.storeId))) {
@@ -166,7 +164,6 @@ router.patch('/:id', async (c) => {
     const body = await c.req.json() as CouponPatchInput;
     const patch = body as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     // V1 scope-lock: reject bogo type changes.
@@ -183,7 +180,7 @@ router.patch('/:id', async (c) => {
     const { data: existing } = await db
         .from('coupons')
         .select('id, store_id')
-        .eq('id', couponId).in('store_id', storeIds)
+        .eq('id', couponId)
         .single();
 
     const ownedCoupon = existing as CouponOwnerRow | null;
@@ -203,7 +200,7 @@ router.patch('/:id', async (c) => {
     const { data, error } = await db
         .from('coupons')
         .update(updates)
-        .eq('id', couponId).in('store_id', storeIds)
+        .eq('id', couponId)
         .select()
         .single();
 
@@ -219,13 +216,12 @@ router.delete('/:id', async (c) => {
     const auth = c.get('auth');
     const couponId = c.req.param('id');
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: existing } = await db
         .from('coupons')
         .select('id, store_id')
-        .eq('id', couponId).in('store_id', storeIds)
+        .eq('id', couponId)
         .single();
 
     const ownedCoupon = existing as CouponOwnerRow | null;
@@ -239,7 +235,7 @@ router.delete('/:id', async (c) => {
     const { error } = await db
         .from('coupons')
         .update({ is_active: false })
-        .eq('id', couponId).in('store_id', storeIds);
+        .eq('id', couponId);
 
     if (error) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createMerchantApiClient, merchantApiErrorResponse, merchantApiReadSignal } from '@/lib/api/client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { validateStaffMutationRequest } from '@/lib/staff/request-origin'
 
 // Thin authenticated proxy: account, token, expiry, grants, consent and atomic
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: { code: 'VALIDATION', message: 'A valid invitation and action are required.' } }, { status: 400 })
         }
         const client = createMerchantApiClient()
-        if (body.action === 'preview') return NextResponse.json({ data: await client.employees.previewInvite({ token: body.token }, { signal: merchantApiReadSignal(request.signal) }) })
+        if (body.action === 'preview') return NextResponse.json({ data: await client.employees.previewInvite({ token: body.token }) })
         const denied = validateStaffMutationRequest(request)
         if (denied) return denied
         const data = await client.employees.acceptInvite({ token: body.token }, { idempotencyKey: request.headers.get('X-Idempotency-Key') || '' })

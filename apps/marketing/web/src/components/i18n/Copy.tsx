@@ -1,6 +1,6 @@
 'use client'
 
-import type { CopyVariables } from '@/lib/i18n/copy'
+import type { CopyVariables } from '@/lib/i18n/copy-format'
 import { useCopy } from './useCopy'
 
 /** A small locale-aware text leaf for shared server/client presentation. */

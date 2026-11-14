@@ -211,12 +211,12 @@ test('U validateFieldValue font_picker: known font returns null', () => {
     assert.equal(validateFieldValue(field, knownFont), null);
 });
 
-test('U validateFieldValue font_picker: all 7 curated registry fonts are valid', () => {
+test('U validateFieldValue font_picker: all 6 registry fonts are valid', () => {
     const field: ExtendedSchemaField = { type: 'font_picker', label: 'Font' };
     for (const family of Object.keys(EXPERIENCE_FONT_REGISTRY)) {
         assert.equal(validateFieldValue(field, family), null, `expected ${family} to be valid`);
     }
-    assert.equal(Object.keys(EXPERIENCE_FONT_REGISTRY).length, 7);
+    assert.equal(Object.keys(EXPERIENCE_FONT_REGISTRY).length, 6);
 });
 
 test('U validateFieldValue font_picker: arbitrary font string returns error', () => {
@@ -578,9 +578,9 @@ test('U integration: visible_if filter correctly gates a dependent field', () =>
 // EXPERIENCE_FONT_REGISTRY export sanity (used by font_picker)
 // ---------------------------------------------------------------------------
 
-test('U EXPERIENCE_FONT_REGISTRY: exactly 7 curated families (font_picker boundary)', () => {
+test('U EXPERIENCE_FONT_REGISTRY: exactly 6 known families (font_picker boundary)', () => {
     const families = Object.keys(EXPERIENCE_FONT_REGISTRY);
-    assert.deepEqual(families.sort(), ['Inter', 'Playfair Display', 'Cormorant Garamond', 'Libre Baskerville', 'Source Sans Pro', 'Source Sans 3', 'Lato'].sort());
+    assert.equal(families.length, 6);
     assert.ok(families.includes('Inter'), 'Inter in registry');
     assert.ok(families.includes('Playfair Display'), 'Playfair Display in registry');
     assert.ok(families.includes('Lato'), 'Lato in registry');

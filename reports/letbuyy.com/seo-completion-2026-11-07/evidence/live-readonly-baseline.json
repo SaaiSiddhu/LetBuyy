@@ -1,0 +1,90 @@
+{
+  "captured_at": "2026-11-07T02:45:00.777555+00:00",
+  "role": "Pre-release observations only; no external mutation",
+  "rows": [
+    {
+      "requested_url": "https://www.letbuyy.com/in",
+      "final_url": "https://www.letbuyy.com/in",
+      "status": 200,
+      "title": "LetBuyy \u2014 India-first commerce operating system | LetBuyy",
+      "canonical": [
+        "https://www.letbuyy.com/in"
+      ],
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Access-Control-Allow-Origin": "*",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      }
+    },
+    {
+      "requested_url": "https://www.letbuyy.com/in/pricing",
+      "final_url": "https://www.letbuyy.com/in/pricing",
+      "status": 200,
+      "title": "Pricing",
+      "canonical": [
+        "https://www.letbuyy.com/in/pricing"
+      ],
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Access-Control-Allow-Origin": "*",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      }
+    },
+    {
+      "requested_url": "https://www.letbuyy.com/in/resources/tag/shopify",
+      "final_url": "https://www.letbuyy.com/in/resources/tag/shopify",
+      "status": 200,
+      "title": "#shopify \u2014 Resources | LetBuyy Resources",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/shopify"
+      ],
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      }
+    },
+    {
+      "requested_url": "https://www.letbuyy.com/robots.txt",
+      "final_url": "https://www.letbuyy.com/robots.txt",
+      "status": 200,
+      "title": null,
+      "canonical": [],
+      "headers": {
+        "Content-Type": "text/plain",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Access-Control-Allow-Origin": "*",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "body": "User-Agent: *\nAllow: /\nDisallow: /signup\n\nSitemap: https://www.letbuyy.com/sitemap.xml\nSitemap: https://themes.letbuyy.com/sitemap.xml\nSitemap: https://apps.letbuyy.com/sitemap.xml\nSitemap: https://developer.letbuyy.com/sitemap.xml\n"
+    },
+    {
+      "requested_url": "https://www.letbuyy.com/sitemap.xml",
+      "final_url": "https://www.letbuyy.com/sitemap.xml",
+      "status": 200,
+      "title": null,
+      "canonical": [],
+      "headers": {
+        "Content-Type": "application/xml",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Access-Control-Allow-Origin": "*",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "sitemap_url_count": 99
+    },
+    {
+      "requested_url": "https://api.letbuyy.com/v1/pricing",
+      "final_url": "https://api.letbuyy.com/v1/pricing",
+      "status": 200,
+      "title": null,
+      "canonical": [],
+      "headers": {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "https://letbuyy.com",
+        "Vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin"
+      }
+    }
+  ]
+}

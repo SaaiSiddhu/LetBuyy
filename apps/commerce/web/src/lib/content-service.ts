@@ -1,8 +1,6 @@
 import 'server-only';
 
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
-import type { ThemePreviewContentQuery } from '@letbuyy/api-client';
-import type { PaginatedResponse } from '@letbuyy/shared-types';
 
 export type StorefrontContentResource = {
     id: string;
@@ -98,39 +96,7 @@ async function fetchContent(fetcher: () => Promise<WorkerContentPayload>): Promi
     }
 }
 
-// Existing sitemap callers consume the summaries; listing callers also retain
-// the canonical pagination envelope. Both use the same scoped public read.
-async function listBlogPosts(subdomain: string): Promise<StorefrontBlogPostSummary[]>;
-async function listBlogPosts(subdomain: string, query: { page: number; limit: number }): Promise<PaginatedResponse<StorefrontBlogPostSummary>>;
-async function listBlogPosts(subdomain: string, query?: { page: number; limit: number }) {
-    try {
-        const response = await storefrontContentClient(subdomain, 'blog').blogPosts(subdomain, query || { page: 1, limit: 50 });
-        const result = { ...response, data: response.data.map(item => mapBlogPostSummary(item as Record<string, unknown>)) };
-        return query ? result : result.data;
-    } catch (error) {
-        if (isNotFoundError(error)) return query ? { data: [], total: 0, page: query.page, limit: query.limit, has_more: false } : [];
-        throw error;
-    }
-}
-
 export const ContentService = {
-    async getPreviewContent(subdomain: string, token: string, query: ThemePreviewContentQuery) {
-        try {
-            const payload = await createStorefrontApiClient({ cache: 'no-store' }).storefront.themePreviewContent(subdomain, token, query);
-            if (payload.resource !== query.resource || !Array.isArray(payload.articles) || !Number.isInteger(payload.pagination?.page) || typeof payload.pagination?.has_more !== 'boolean') throw new Error('Invalid preview content response');
-            if (query.resource !== 'blog' && payload.content?.id !== query.resource_id) throw new Error('Preview content does not match the selected resource');
-            const content = payload.content ? mapContentResource({
-                id: payload.content.id, title: payload.content.title ?? undefined, slug: payload.content.slug ?? undefined,
-                page_type: payload.content.page_type ?? undefined, content: asRecord(payload.content.content), seo: asRecord(payload.content.seo),
-                assigned_template_key: payload.content.assigned_template_key, published_at: payload.content.published_at, updated_at: payload.content.updated_at,
-            }) : null;
-            return { resource: payload.resource, content, articles: payload.articles.map(mapBlogPostSummary), pagination: payload.pagination };
-        } catch (error) {
-            if (isNotFoundError(error)) return null;
-            // Capability URLs and upstream response objects must never enter logs.
-            throw new Error('Preview content is unavailable. Retry the preview.');
-        }
-    },
     async listPages(subdomain: string) {
         try {
             const data = await storefrontContentClient(subdomain, 'pages').pages(subdomain);
@@ -141,7 +107,15 @@ export const ContentService = {
         }
     },
 
-    listBlogPosts,
+    async listBlogPosts(subdomain: string) {
+        try {
+            const response = await storefrontContentClient(subdomain, 'blog').blogPosts(subdomain, { limit: 100 });
+            return response.data.map((item) => mapBlogPostSummary(item as Record<string, unknown>));
+        } catch (error) {
+            if (isNotFoundError(error)) return [];
+            throw error;
+        }
+    },
 
     async getPageBySlug(subdomain: string, slug: string) {
         return fetchContent(() => storefrontContentClient(subdomain, 'pages').page(subdomain, slug) as Promise<WorkerContentPayload>);

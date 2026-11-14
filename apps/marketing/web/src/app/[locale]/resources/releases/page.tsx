@@ -10,13 +10,13 @@ import visualStyles from '@/components/resources/resource-list-visuals.module.cs
 import { CHANGELOG } from '@/lib/resources/changelog'
 
 const sourceMetadata: Metadata = {
-  title: 'Platform Releases — LetBuyy',
+  title: 'Platform Releases',
   description: 'Major releases, new features, and platform milestones for the LetBuyy commerce platform.',
   alternates: { canonical: '/resources/releases' },
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-    return localizeMetadata(sourceMetadata, (await params).locale, "/resources/releases")
+    return localizeMetadata({ ...sourceMetadata, ...(!CHANGELOG.length ? { robots: { index: false, follow: true } } : {}) }, (await params).locale, "/resources/releases")
 }
 
 
@@ -28,41 +28,7 @@ const TAG_STYLES: Record<string, string> = {
   breaking: 'rc-cl-tag-breaking',
 }
 
-const HIGHLIGHTS: Record<string, { title: string; items: string[] }[]> = {
-  'v2.8.0': [
-    {
-      title: 'AI-Powered Commerce Intelligence',
-      items: [
-        'Predictive restocking alerts with 14-day demand forecasting',
-        'Automated pricing recommendations based on competitor signals',
-        'Customer churn prediction with 85%+ accuracy',
-        'Natural-language search across your product catalog',
-      ],
-    },
-  ],
-  'v2.7.0': [
-    {
-      title: 'Razorpay International & UPI Turbo',
-      items: [
-        'Accept cards from 100+ countries with automatic currency conversion',
-        'UPI Turbo — pre-authenticated, sub-second payments for repeat buyers',
-        'Payment retry intelligence with smart routing fallback',
-        'Real-time webhook delivery with guaranteed ordering',
-      ],
-    },
-  ],
-  'v2.6.0': [
-    {
-      title: 'Commerce OS Dashboard',
-      items: [
-        'Unified merchant dashboard replacing 7 separate panels',
-        'Real-time revenue, orders, and inventory in one view',
-        'Mobile-first design — fully functional on 360px screens',
-        'Keyboard shortcuts for power users',
-      ],
-    },
-  ],
-}
+const HIGHLIGHTS: Record<string, { title: string; items: string[] }[]> = {}
 
 export default async function ReleasesPage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = getLocale((await params).locale)
@@ -83,6 +49,7 @@ export default async function ReleasesPage({ params }: { params: Promise<{ local
           <p><Copy text={"Major milestones and platform-level changes. For granular patch notes, see the"} />{' '}<Link href="/resources/changelog" style={{ color: 'var(--primary)' }}><Copy text={"Changelog"} /></Link>.</p>
         </div><Image src="/illustrations/resources/changelog-journal-v1.webp" alt="" width={1536} height={1024} sizes="(max-width: 640px) 80vw, 240px" loading="eager" unoptimized /></div>
 
+        {!CHANGELOG.length && <p><Copy text="No verified public release notes are published here yet. Contact support to confirm current feature availability." /></p>}
         {CHANGELOG.map(entry => {
           const extra = HIGHLIGHTS[entry.version]
           return (

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
 import { CONSOLE_SESSION_COOKIE, readConsoleSession } from './lib/console-session';
 import { isConsoleEmailAllowed } from './lib/console-access-allowlist';
 import { readCurrentConsoleSession } from './lib/console-live-session';
 
 const protectedPrefixes = [
     '/dashboard',
+    '/merchants',
+    '/support',
+    '/merchant-messages',
     '/operations',
     '/users',
     '/stores',
@@ -24,33 +26,8 @@ const protectedPrefixes = [
     '/money-reconciliation',
 ];
 
-const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const;
-const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com';
-
 function isProtectedPath(pathname: string) {
     return pathname === '/' || protectedPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
-}
-
-function getKnownPlatformRoot(hostname: string): string | null {
-    const normalized = hostname.toLowerCase().replace(/^www\./, '');
-    return PLATFORM_ROOT_DOMAINS.find((root) => normalized === root || normalized.endsWith(`.${root}`)) ?? null;
-}
-
-function getConfiguredPlatformRootDomain(): string {
-    return (
-        process.env.NEXT_PUBLIC_PLATFORM_ROOT_DOMAIN?.trim()
-        || process.env.PLATFORM_ROOT_DOMAIN?.trim()
-        || DEFAULT_PLATFORM_ROOT_DOMAIN
-    );
-}
-
-function getAccountsUrl(requestUrl: string): string {
-    const configured = process.env.NEXT_PUBLIC_ACCOUNTS_URL?.trim();
-    if (configured) return configured.replace(/\/+$/, '');
-
-    const requestOrigin = new URL(requestUrl);
-    const platformRoot = getKnownPlatformRoot(requestOrigin.hostname) || getConfiguredPlatformRootDomain();
-    return `${requestOrigin.protocol}//accounts.${platformRoot}`;
 }
 
 // Phase 2 auth hardening (Section 6): the session JWT's signature and `exp` are self-contained and
@@ -73,11 +50,6 @@ export async function proxy(request: NextRequest) {
     const signedSession = await readConsoleSession(value);
     const sessionRevoked = signedSession !== null && !isConsoleEmailAllowed(signedSession.email);
     const session = signedSession && !sessionRevoked ? await readCurrentConsoleSession(value) : signedSession;
-    const merchantSession = verifyLetbuyySessionCookieValue(
-        'merchant',
-        request.cookies.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value,
-    );
-
     if (pathname === '/login') {
         if (session?.mfaVerified && !sessionRevoked) {
             return NextResponse.redirect(new URL('/dashboard', request.url));
@@ -113,12 +85,8 @@ export async function proxy(request: NextRequest) {
     }
 
     if (!session) {
-        if (!merchantSession.accepted) {
-            const loginUrl = new URL('/lookup', getAccountsUrl(request.url));
-            loginUrl.searchParams.set('return_to', request.url);
-            return NextResponse.redirect(loginUrl);
-        }
-
+        // The existing Console entry uses Identity's operator realm. Generic
+        // account lookup starts the merchant flow and cannot admit an operator.
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
@@ -139,6 +107,9 @@ export const config = {
         '/login',
         '/mfa',
         '/dashboard/:path*',
+        '/merchants/:path*',
+        '/support/:path*',
+        '/merchant-messages/:path*',
         '/operations/:path*',
         '/users/:path*',
         '/stores/:path*',

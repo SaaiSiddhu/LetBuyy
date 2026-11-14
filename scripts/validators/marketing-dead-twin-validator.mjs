@@ -30,6 +30,14 @@ for (const file of twins) {
 }
 
 const pageSource = readFile("apps/marketing/web/src/app/[locale]/page.tsx");
+const compositionSource = readFile("apps/marketing/web/src/components/MarketingHome.tsx");
+const liveSource = pageSource + "\n" + compositionSource;
+reporter.assert(
+  pageSource.includes("@/components/MarketingHome") && /await loadPublicPricing\(\)/.test(pageSource)
+    && /<MarketingHome pricing=\{<Pricing initialData=\{initialData\}/.test(pageSource)
+    && compositionSource.includes("{pricing}"),
+  "marketing homepage must pass server-loaded Pricing into the live client composition",
+);
 for (const liveComponent of [
   "Header",
   "Hero",
@@ -43,7 +51,7 @@ for (const liveComponent of [
   "Footer",
 ]) {
   reporter.assert(
-    pageSource.includes(`@/components/${liveComponent}`),
+    liveSource.includes(`@/components/${liveComponent}`),
     `marketing homepage must keep using live ${liveComponent} component`,
   );
 }
@@ -60,7 +68,7 @@ for (const deadComponent of [
   "Capabilities",
 ]) {
   reporter.assert(
-    !pageSource.includes(`@/components/${deadComponent}`),
+    !liveSource.includes(`@/components/${deadComponent}`),
     `marketing homepage must not import archived ${deadComponent} twin`,
   );
 }

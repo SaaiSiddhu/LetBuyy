@@ -155,16 +155,15 @@ test('production app deployment matrices match production Vercel topology', () =
 
   assert.deepEqual(vercelAppRoots, topologyAppRoots);
 
-  const matrix=[...workflow.matchAll(/- app: ([^\n]+)\n\s+project_id: ([A-Z0-9_]+)/g)]
-    .map(([,appName,secret])=>({appName,secret}));
-  assert.deepEqual(matrix.map(app=>'apps/'+app.appName).sort(),topologyAppRoots);
-  assert.equal(new Set(matrix.map(app=>app.secret)).size,matrix.length,'each deployed app has a distinct project secret');
-  for (const app of matrix) {
-    assert.match(app.secret,/^PRODUCTION_[A-Z_]+_PROJECT_ID$/);
-    assert.ok(workflow.includes('HAS_'+app.secret+':'), app.secret+' is required by release preflight');
-    assert.ok(workflow.includes('missing+=("'+app.secret+'")'), app.secret+' fails closed when missing');
+  for (const app of productionVercelApps()) {
+    assert.match(
+      workflow,
+      new RegExp(`- app: ${regexEscape(app.appName)}\\s+project_id: ${regexEscape(app.projectId)}`),
+      `${app.appName} is in production-deploy.yml`,
+    );
+    assert.ok(workflow.includes(`HAS_${app.projectId}:`), `${app.projectId} is required by release preflight`);
+    assert.ok(workflow.includes(`missing+=("${app.projectId}")`), `${app.projectId} fails closed when missing`);
   }
-
 });
 
 test('legacy production deploy workflow stays retired', () => {

@@ -1,0 +1,274 @@
+[
+  {
+    "audit": "Comprehensive",
+    "issue_id": "AUD-01",
+    "original_state": "Confirmed",
+    "title": "Free launch offer markup conflicts with paid plans and trial messaging",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Removed the global unsupported zero-price/free-launch offer and free-forever CTA. Shared pricing/CTA copy distinguishes commission from subscription/provider charges."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "AUD-02",
+    "original_state": "Confirmed",
+    "title": "GST guide repeats superseded and overgeneralized guidance",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Replaced outdated blanket registration/rate/filing assertions with a limited sourced planning checklist in EN/HI/TA. No tax-professional review or personalized compliance conclusion is claimed."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "CONTENT-01",
+    "original_state": "Confirmed",
+    "title": "Conversion-lift headline and calculation overstate the example",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Removed the unsupported270% promise and underlying unverified1.7/4.6 figures from title/body/descriptions and synchronized translated summaries."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "CONTENT-02",
+    "original_state": "Confirmed",
+    "title": "Quantified article claims lack traceable in-body references",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Removed unsupported market/performance statistics in the19 priority articles; corrected related invoice guidance. Added safe paragraph references for retained tax/provider/SEO facts. Remaining instructional numbers are examples/choices, not measured business results."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-01",
+    "original_state": "Confirmed",
+    "title": "Resource category, tag and author canonicals remove the locale",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "All category/tag/author canonicals and language alternatives use the actual localized path through the existing metadata helper; verified in the489-route inventory."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-04",
+    "original_state": "Confirmed",
+    "title": "XML sitemap omits every discovered localized article",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Root sitemap contains all105 localized articles and198 retained canonical public URLs. Resource compatibility feeds derive from the same inventory."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "CONTENT-03",
+    "original_state": "Needs verification",
+    "title": "Merchant outcomes and expert biographies need provenance verification",
+    "resolution": "Partly mitigated; evidence needed",
+    "implementation_or_limit": "The unsupported Jaipur outcome is now explicitly illustrative, with no claimed conversion result. Expert biographies/byline identities still require owner provenance; they were not certified by this task."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "AUD-03",
+    "original_state": "Confirmed",
+    "title": "Public subscription prices arrive only after client fetching",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Server composition reads the existing public gateway and seeds the interactive Pricing view; no client fetch is required to see healthy plan data. Normal configured gateway9010 is offline; positive/negative states verified with isolated public-contract fixtures."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "AUD-04",
+    "original_state": "Confirmed",
+    "title": "Robots declares three sitemap hosts that do not resolve",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Robots declares only this active marketing sitemap. Dormant marketplace/developer sitemap declarations removed; runtimes not activated."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-02",
+    "original_state": "Confirmed",
+    "title": "Creation chooser inherits homepage metadata and language alternatives",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Creation chooser has localized task metadata/self identity and explicit noindex; removed from XML sitemap. Existing account handoff remains."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-03",
+    "original_state": "Confirmed",
+    "title": "Internal search pages are indexable, sitemap-listed and canonicalize to home",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Search has localized self identity and explicit noindex in server layout; excluded from XML feeds; useful existing H1 retained."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-06",
+    "original_state": "Confirmed",
+    "title": "Pricing lacks a primary heading and descriptive page title",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Pricing page has one H1 and descriptive localized title. Homepage pricing stays H2; no hardcoded metadata price competes with gateway data."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-07",
+    "original_state": "Confirmed",
+    "title": "Article entities and breadcrumbs do not use final localized identities",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Article identity, breadcrumbs, publisher, image and author URLs use absolute final localized identities. Team is Organization, not an invented Person reviewer."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-09",
+    "original_state": "Confirmed",
+    "title": "Unknown tags return indexable empty200 archives",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Unknown tags return404; known editorial cart and other tags continue to return200."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "AUD-05",
+    "original_state": "Opportunity",
+    "title": "Audit the homepage’s broad early image priority",
+    "resolution": "Opportunity; not claimed complete",
+    "implementation_or_limit": "No measured performance defect was confirmed in the audit. Broad image priority tuning and field CWV remain measurement work; no performance score or gain invented."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "AUD-06",
+    "original_state": "Opportunity",
+    "title": "Curate tag landing pages before expanding the indexable archive set",
+    "resolution": "Opportunity; retained existing policy",
+    "implementation_or_limit": "Known tags stay available and indexable with corrected identities. No blanket removal based on word count."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "CONTENT-04",
+    "original_state": "Needs verification",
+    "title": "Feature-action guides leave general availability unclear",
+    "resolution": "Partly mitigated; availability evidence needed",
+    "implementation_or_limit": "Main promise and several provider/financial statements are more restrained. Product/plan/provider availability for every documented procedure still needs owner verification; no dormant capability activated."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "CONTENT-05",
+    "original_state": "Opportunity",
+    "title": "Article bodies omit contextual links to prerequisite and next-step guides",
+    "resolution": "Opportunity; not required for confirmed scope",
+    "implementation_or_limit": "Safe in-body references now work. The separate44-link editorial strategy was not mechanically applied as a quota."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "EXT-01",
+    "original_state": "Opportunity",
+    "title": "Pair Commerce OS positioning with explicit store-builder language near the primary promise",
+    "resolution": "Implemented with confirmed repairs",
+    "implementation_or_limit": "Hero and first FAQ explicitly explain online-store/product/order tasks in all3 languages; Commerce OS brand retained. No Google snippet replacement promised."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-05",
+    "original_state": "Confirmed",
+    "title": "Sitemap lastmod is a fixed June date despite later release content",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Removed blanket fixed/build dates from both sitemap paths. Article lastmod comes from actual content records; real editorial corrections dated30October."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-08",
+    "original_state": "Confirmed",
+    "title": "Social previews lack consistent page images and final URLs",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Existing social-image work retained; helper completes final localized URL, image and locale. Legal/demo inheritance repaired after the full-route check found48 misses."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-10",
+    "original_state": "Confirmed",
+    "title": "RSS links and feed identity omit the served locale",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Feeds have matching served language, self URL and localized canonical item links; proper creator namespace. Existing English GUID identity retained as opaque non-permalink; HI/TA get distinct locale IDs."
+  },
+  {
+    "audit": "Comprehensive",
+    "issue_id": "TECH-11",
+    "original_state": "Confirmed",
+    "title": "Software app rich-result eligibility is not established",
+    "resolution": "Addressed; eligibility unclaimed",
+    "implementation_or_limit": "Truthful semantic software markup retained without fabricated offer/rating/review. Optional Google software rich-result eligibility and external validator execution are not claimed."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-PUB-01",
+    "original_state": "Confirmed",
+    "title": "Google Play privacy-policy destination renders the old marketing homepage",
+    "resolution": "Outside marketing-local scope",
+    "implementation_or_limit": "The app-store privacy destination is on the legacy Firebase property. No source authority/authorized publisher established here; local marketing changes cannot repair that external deep link."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-PUB-02",
+    "original_state": "Confirmed",
+    "title": "App-linked legacy landing has placeholder help, contact and terms navigation",
+    "resolution": "Outside marketing-local scope",
+    "implementation_or_limit": "Placeholder help/contact/terms links belong to the external legacy Firebase page. Do not recreate its retired runtime or fabricate policy content inside this app."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-MAIN-01",
+    "original_state": "Confirmed",
+    "title": "Homepage title repeats LetBuyy through inherited branding",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Localized homepage uses one absolute complete title; inherited extra brand suffix removed."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-SRC-01",
+    "original_state": "Confirmed",
+    "title": "Resource titles repeat the brand because page strings and parent template both add it",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Resource metadata uses one branding layer. Categories, author profiles, changelog and releases no longer double-brand titles."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-SRC-02",
+    "original_state": "Opportunity",
+    "title": "HTML sitemap is deliberately promoted as an indexable public landing page",
+    "resolution": "Opportunity; existing index policy retained",
+    "implementation_or_limit": "Human HTML directory remains indexable and useful. It is not a confirmed defect and no unwanted-sitelink-only removal control exists."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-SRC-03",
+    "original_state": "Confirmed",
+    "title": "Global navigation schema uses redirecting locale-free page identities and overstates site membership",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Global graph uses final localized public navigation identities; account-host links remain navigation, not marketing-site contained pages. No node-order ranking promise."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-SRC-04",
+    "original_state": "Confirmed",
+    "title": "Tamil and Hindi documents initially declare English on the root HTML element",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Path-derived server document language; client synchronizer preserved. Explicit locale URLs stay stable under opposite Accept-Language and a spoofed header is overwritten."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-SRC-05",
+    "original_state": "Needs verification",
+    "title": "Public-origin fallback can diverge between server and browser when canonical configuration is absent",
+    "resolution": "Needs verification; not reproduced",
+    "implementation_or_limit": "Preventive configuration fallback risk remains a separate item. Current explicit local origin is consistent; production missing-config conditions were not assumed or changed."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-SRC-06",
+    "original_state": "Confirmed",
+    "title": "Translated resource hubs inherit English Open Graph locale",
+    "resolution": "Fixed locally",
+    "implementation_or_limit": "Resource hub/category social locale derives from actual locale; complete metadata objects preserve current images."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-EXT-01",
+    "original_state": "Confirmed",
+    "title": "Two branded-search destinations point to independently confirmed NXDOMAIN hosts",
+    "resolution": "Outside marketing-local scope",
+    "implementation_or_limit": "Seller/developer NXDOMAIN requires owner/domain lifecycle work. No DNS or production redirect configuration changed."
+  },
+  {
+    "audit": "Branded",
+    "issue_id": "BR-EXT-02",
+    "original_state": "Needs verification",
+    "title": "Live consumer Google Play listing uses the shared brand and legacy web/privacy destinations",
+    "resolution": "Needs owner facts; external scope",
+    "implementation_or_limit": "App ownership, buyer/merchant relationship, old offers and legacy claim provenance need verified publishing facts; store listing not edited."
+  }
+]

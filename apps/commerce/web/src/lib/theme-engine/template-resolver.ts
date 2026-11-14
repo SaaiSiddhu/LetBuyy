@@ -1,6 +1,5 @@
 import {
     LiquidThemePackageBundleSchema,
-    withSavedOrderReceiptView,
     THEME_LIQUID_RENDERING_DEFAULT_ENABLED,
     isLiquidAppBlockType,
     resolveThemeLiquidRenderingEnabled,
@@ -108,7 +107,7 @@ function asRecord(value: unknown): Record<string, unknown> {
         : {};
 }
 
-function resolveLiquidBundle(store: StoreModel, orderReceiptView: boolean): LiquidThemePackageBundle | undefined {
+function resolveLiquidBundle(store: StoreModel): LiquidThemePackageBundle | undefined {
     const releaseManifest = asRecord(store.templateConfig.releaseManifest);
     const candidates = [
         store.templateConfig.liquidBundle,
@@ -119,7 +118,7 @@ function resolveLiquidBundle(store: StoreModel, orderReceiptView: boolean): Liqu
 
     for (const candidate of candidates) {
         const result = LiquidThemePackageBundleSchema.safeParse(candidate);
-        if (result.success) return orderReceiptView ? withSavedOrderReceiptView(result.data) : result.data;
+        if (result.success) return result.data;
     }
 
     return undefined;
@@ -246,7 +245,7 @@ export function resolveStorefrontTemplate(
             templateConfig: store.templateConfig,
             defaultEnabled: THEME_LIQUID_RENDERING_DEFAULT_ENABLED,
         });
-    const liquidBundle = liquidEnabled ? resolveLiquidBundle(store, route.type === 'customer_order' || route.type === 'customer_orders') : undefined;
+    const liquidBundle = liquidEnabled ? resolveLiquidBundle(store) : undefined;
     // Set only when this store runs Liquid, the route asked for a specific template, the bundle
     // has no matching template, and there is no fallback content to show instead — i.e. a genuine
     // miss with nothing honest to render. Callers that need a specific template (no

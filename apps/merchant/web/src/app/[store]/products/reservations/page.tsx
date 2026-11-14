@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -9,6 +7,7 @@ import {
     Banner,
     Button,
     Card,
+    EmptyState,
     Input,
     Page,
     PageHeader,
@@ -20,7 +19,6 @@ import {
     type SelectOption,
     type StatusVariant,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 // ── types ─────────────────────────────────────────────────────────────────────
@@ -118,10 +116,8 @@ export default function InventoryReservationsPage() {
     const [productFilter, setProductFilter] = useState('')
     const [page, setPage] = useState(1)
 
-    const beginRead = useReadRequest(store)
     const fetchReservations = useCallback(
         async (currentPage: number, currentStatus: string, currentProduct: string) => {
-            const request = beginRead()
             setLoading(true)
             setError(null)
             try {
@@ -134,7 +130,7 @@ export default function InventoryReservationsPage() {
                 if (currentStatus) url.searchParams.set('status', currentStatus)
                 if (currentProduct.trim()) url.searchParams.set('product_id', currentProduct.trim())
 
-                const res = await fetch(url.toString(), { cache: 'no-store', signal: request.signal })
+                const res = await fetch(url.toString())
                 const json = (await res.json()) as {
                     data?: unknown[]
                     meta?: PageMeta
@@ -142,7 +138,6 @@ export default function InventoryReservationsPage() {
                     message?: string
                 }
 
-                if (!request.isCurrent()) return
                 if (!res.ok) {
                     const msg =
                         typeof json.error === 'string'
@@ -166,21 +161,20 @@ export default function InventoryReservationsPage() {
                     }
                 )
             } catch (err) {
-                if (!request.isCurrent()) return
                 const msg = err instanceof Error ? err.message : 'Unknown error'
                 setError(msg)
                 notify({ title: 'Error', description: msg })
             } finally {
-                if (request.isCurrent()) setLoading(false)
+                setLoading(false)
             }
         },
-        [store, notify, beginRead]
+        [store, notify]
     )
 
     useEffect(() => {
-        setPage(1)
-        void fetchReservations(1, '', '')
-    }, [fetchReservations])
+        void fetchReservations(page, statusFilter, productFilter)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     function handleApply() {
         setPage(1)
@@ -215,8 +209,7 @@ export default function InventoryReservationsPage() {
 
     return (
         <Page>
-            <PageHeader identity="products"
-                recipe="index"
+            <PageHeader
                 title="Inventory Reservations"
                 description="Active, committed, and expired stock reservations"
             />
@@ -297,7 +290,7 @@ export default function InventoryReservationsPage() {
                         </div>
                     ) : !error && rows.length === 0 ? (
                         <div className="p-[var(--lb-space-6)]">
-                            <EmptyState scene="reservations"
+                            <EmptyState
                                 kind="inventory"
                                 title="No reservations found"
                                 body={

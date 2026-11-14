@@ -1,0 +1,144 @@
+{
+  "capturedAt": "2026-11-03T03:48:01.301982+00:00",
+  "readOnly": true,
+  "formsOrPaymentsSubmitted": false,
+  "rows": [
+    {
+      "url": "http://127.0.0.1:9006/in/pricing",
+      "status": 200,
+      "bodySha256": "6b0f5ca44dd6ccc59554c8e403343aa310dcdca3a29dcff117c6e3d6c0ab622b",
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' http://localhost:9000 http://localhost:9002 http://localhost:9001 http://localhost:9010 http://localhost:9005 http://localhost:9003 http://localhost:9004 https://api.letbuyy.com https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https: http://localhost:9000 http://localhost:9002 http://localhost:9001 http://localhost:9010 http://localhost:9005 http://localhost:9003 http://localhost:9004; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com http://localhost:9000 http://localhost:9002 http://localhost:9001 http://localhost:9010 http://localhost:9005 http://localhost:9003 http://localhost:9004; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "canonicalApiAllowed": true
+    },
+    {
+      "url": "http://127.0.0.1:9006/api/founding-pricing",
+      "status": 200,
+      "bodySha256": "ea2fdefdcbe468d58ac5c2ea93b9bb29e2d79c01ee02f82f018b36f72ec6af9a",
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' http://localhost:9000 http://localhost:9002 http://localhost:9001 http://localhost:9010 http://localhost:9005 http://localhost:9003 http://localhost:9004 https://api.letbuyy.com https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https: http://localhost:9000 http://localhost:9002 http://localhost:9001 http://localhost:9010 http://localhost:9005 http://localhost:9003 http://localhost:9004; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com http://localhost:9000 http://localhost:9002 http://localhost:9001 http://localhost:9010 http://localhost:9005 http://localhost:9003 http://localhost:9004; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "canonicalApiAllowed": true,
+      "plans": [
+        {
+          "slug": "launch",
+          "status": "available",
+          "purchasable": true,
+          "regular_inr": 299,
+          "founding_inr": 199
+        },
+        {
+          "slug": "growth",
+          "status": "available",
+          "purchasable": true,
+          "regular_inr": 999,
+          "founding_inr": 699
+        },
+        {
+          "slug": "scale",
+          "status": "coming_soon",
+          "purchasable": false,
+          "regular_inr": 2499,
+          "founding_inr": 2499
+        },
+        {
+          "slug": "commerce_os",
+          "status": "coming_soon",
+          "purchasable": false,
+          "regular_inr": 5999,
+          "founding_inr": 5999
+        }
+      ],
+      "responseKeys": [
+        "data"
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "status": 200,
+      "bodySha256": "a0b43b412d7c2f88ce140c8993af26cede5ec0a05c3e126fe1e3935dc8dfb003",
+      "csp": "default-src 'none'; frame-ancestors 'none'",
+      "canonicalApiAllowed": false,
+      "plans": [
+        {
+          "slug": "launch",
+          "status": "available",
+          "purchasable": true,
+          "regular_inr": 299,
+          "founding_inr": 199
+        },
+        {
+          "slug": "growth",
+          "status": "available",
+          "purchasable": true,
+          "regular_inr": 999,
+          "founding_inr": 699
+        },
+        {
+          "slug": "scale",
+          "status": "coming_soon",
+          "purchasable": false,
+          "regular_inr": 2499,
+          "founding_inr": 2499
+        },
+        {
+          "slug": "commerce_os",
+          "status": "coming_soon",
+          "purchasable": false,
+          "regular_inr": 5999,
+          "founding_inr": 5999
+        }
+      ],
+      "responseKeys": [
+        "success",
+        "data"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/pricing",
+      "status": 200,
+      "bodySha256": "17ecb8a702c0e20234adce7bb2935974a4ec75d6c331d573faab039311cb9f34",
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "canonicalApiAllowed": false
+    },
+    {
+      "url": "https://api.letbuyy.com/v1/pricing",
+      "status": 200,
+      "bodySha256": "a0b43b412d7c2f88ce140c8993af26cede5ec0a05c3e126fe1e3935dc8dfb003",
+      "csp": "default-src 'none'; frame-ancestors 'none'",
+      "canonicalApiAllowed": false,
+      "plans": [
+        {
+          "slug": "launch",
+          "status": "available",
+          "purchasable": true,
+          "regular_inr": 299,
+          "founding_inr": 199
+        },
+        {
+          "slug": "growth",
+          "status": "available",
+          "purchasable": true,
+          "regular_inr": 999,
+          "founding_inr": 699
+        },
+        {
+          "slug": "scale",
+          "status": "coming_soon",
+          "purchasable": false,
+          "regular_inr": 2499,
+          "founding_inr": 2499
+        },
+        {
+          "slug": "commerce_os",
+          "status": "coming_soon",
+          "purchasable": false,
+          "regular_inr": 5999,
+          "founding_inr": 5999
+        }
+      ],
+      "responseKeys": [
+        "success",
+        "data"
+      ]
+    }
+  ],
+  "rootBuildId": "KmCEOISVdbIG9LpzoC2QE"
+}

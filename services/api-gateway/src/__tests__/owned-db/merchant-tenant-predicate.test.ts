@@ -36,9 +36,9 @@ let rivalOrderId = '';
 let ownOrderId = '';
 
 before(() => {
-    seedSyntheticTenant(psql, tenant, { gst: true, taxRates: true });
+    seedSyntheticTenant(psql, tenant, { gst: true });
     ownOrderId = seedSyntheticOrder(psql, tenant).orderId;
-    seedSyntheticTenant(psql, rival, { gst: true, taxRates: true });
+    seedSyntheticTenant(psql, rival, { gst: true });
     rivalOrderId = seedSyntheticOrder(psql, rival).orderId;
 });
 

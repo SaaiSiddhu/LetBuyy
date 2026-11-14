@@ -1,13 +1,13 @@
+import { ConsoleActionForm } from '@/components/ConsoleActionForm';
 import { revalidatePath } from 'next/cache';
 import Link from 'next/link';
 import { z } from 'zod';
 import { ConsoleApprovalForm } from '@/components/ConsoleApprovalForm';
 import type {
-    InternalMerchantImpersonationResult,
     InternalMerchantImpersonationSession,
     InternalMerchantOverview,
 } from '@letbuyy/api-client';
-import { Button, Input, Textarea } from '@letbuyy/ui';
+import { Button, Input, Select, Textarea } from '@letbuyy/ui';
 import {
     ConsoleWorkspace,
     EmptyDataState,
@@ -37,40 +37,6 @@ function requireActorId(actorId: string | null | undefined): string {
     }
 
     return actorId;
-}
-
-async function startMerchantImpersonation(formData: FormData) {
-    'use server';
-
-    const session = await requireConsoleSession({ mfa: true });
-    const merchantId = String(formData.get('merchant_id') || '').trim();
-    const reason = String(formData.get('reason') || '').trim();
-    const ttlMinutes = Number(formData.get('ttl_minutes') || 30);
-
-    if (!merchantId || reason.length < 8) {
-        throw new Error('Read-only impersonation requires a merchant id and a clear reason.');
-    }
-
-    const result = await fetchConsoleApi<ConsoleDataResponse<InternalMerchantImpersonationResult>>(
-        `/internal/console/merchants/${merchantId}/impersonation`,
-        {
-            method: 'POST',
-            body: {
-                actor_id: requireActorId(session.userId),
-                actor_email: session.email,
-                operator_id: session.userId,
-                operator_email: session.email,
-                ttl_minutes: Number.isFinite(ttlMinutes) ? ttlMinutes : 30,
-                reason,
-            },
-        }
-    );
-
-    if (result.error) {
-        throw new Error(result.error);
-    }
-
-    revalidatePath(`/merchants/${merchantId}`);
 }
 
 async function endMerchantImpersonation(formData: FormData) {
@@ -137,11 +103,12 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
 
             {overview && site ? (
                 <>
+                    <Link href={`/merchants/${site.id}/operations`} className="font-medium underline underline-offset-4">Open merchant operations: catalog, orders and SaaS limits</Link>
                     <MetricGrid>
-                        <LeadershipMetric label="Store status" value={site.status || 'draft'} detail={site.subdomain || site.id} tone={site.status === 'suspended' ? 'critical' : 'success'} />
-                        <LeadershipMetric label="Orders" value={String(overview.commerce.order_count)} detail={`${overview.commerce.paid_order_count} paid`} />
-                        <LeadershipMetric label="Revenue" value={formatMoneyFromPaise(overview.commerce.revenue_paise, site.currency || 'INR')} detail="Paid order sample" />
-                        <LeadershipMetric label="Risk band" value={riskBand} detail={riskScore ? `Score ${String(riskScore.score ?? '-')}` : 'No score recorded'} tone={riskBand === 'high' ? 'critical' : riskBand === 'medium' ? 'warning' : 'success'} />
+                        <LeadershipMetric label="Store status" value={site.status || 'draft'} detail={site.subdomain || site.id} tone={site.status === 'suspended' ? 'critical' : site.status === 'published' ? 'success' : 'neutral'} />
+                        <LeadershipMetric label="Recent orders" value={String(overview.commerce.order_count)} detail={`${overview.commerce.paid_order_count} paid · up to ${overview.commerce.sample_limit} orders`} />
+                        <LeadershipMetric label="Sample paid order value" value={formatMoneyFromPaise(overview.commerce.revenue_paise, site.currency || 'INR')} detail="Paid order sample" />
+                        <LeadershipMetric label="Risk band" value={riskBand} detail={riskScore ? `Score ${String(riskScore.score ?? '-')}` : 'No score recorded'} tone={riskBand === 'high' ? 'critical' : riskBand === 'medium' ? 'warning' : riskBand === 'low' ? 'success' : 'neutral'} />
                     </MetricGrid>
 
                     <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-[1.1fr_0.9fr]">
@@ -167,6 +134,7 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
                         </Panel>
 
                         <Panel title="Subscription" description="Current billing and plan context returned by the control plane.">
+                            <Link className="console-secondary-button" href={`/merchants/${id}/billing`}>Open billing investigation</Link>
                             {overview.subscription ? (
                                 <dl className="grid gap-[var(--lb-space-3)] text-sm md:grid-cols-2">
                                     <Field label="Plan" value={labelFor(overview.subscription.plan)} />
@@ -175,7 +143,7 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
                                     <Field label="Current period end" value={formatDateTime(asNullableString(overview.subscription.current_period_end))} />
                                 </dl>
                             ) : (
-                                <EmptyDataState message="No active subscription was returned for this merchant." />
+                                <EmptyDataState message="No subscription was returned for this merchant." />
                             )}
                         </Panel>
                     </section>
@@ -207,6 +175,7 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
                         </Panel>
 
                         <Panel title="Support" description="Support context linked to the merchant record.">
+                            <p>{overview.support.open_ticket_count} open tickets · <Link href={`/support?site_id=${encodeURIComponent(site.id)}`} className="underline">Open support workspace</Link></p>
                             {overview.support.tickets.length === 0 ? (
                                 <EmptyDataState message="No support tickets are linked to this merchant." />
                             ) : (
@@ -223,10 +192,13 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
                     </section>
 
                     <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-2">
-                        <Panel title="Apps & Theme" description="Installed apps and active theme context.">
+                        <Panel title="Apps & Theme" description="Installation library and the current published storefront release.">
                             <dl className="grid gap-[var(--lb-space-3)] text-sm md:grid-cols-2">
                                 <Field label="Installed apps" value={String(overview.ecosystem.installed_apps.length)} />
-                                <Field label="Active theme" value={labelFor(overview.ecosystem.active_theme?.theme_slug || overview.ecosystem.active_theme?.id || '-')} />
+                                <Field label="Published theme" value={labelFor(overview.ecosystem.published_release?.theme_id || 'Not published')} />
+                                <Field label="Published release" value={String(overview.ecosystem.published_release?.id || 'None')} />
+                                <Field label="Release version" value={String(overview.ecosystem.published_release?.release_version ?? '-')} />
+                                <Field label="Publication consistency" value={overview.ecosystem.publication_consistent ? 'Consistent' : 'Site pointer differs from the current release'} />
                                 <Field label="Theme instances" value={String(overview.ecosystem.theme_instances.length)} />
                                 <Field label="Current release" value={site.current_theme_release_id || '-'} />
                             </dl>
@@ -251,28 +223,13 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
                     </section>
 
                     <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-2">
-                        <Panel title="Read-only Impersonation" description="Create or end time-boxed read-only operator sessions.">
-                            <form action={startMerchantImpersonation} className="grid gap-[var(--lb-space-3)]">
-                                <Input unstyled type="hidden" name="merchant_id" value={site.id} />
-                                <label className="grid gap-[var(--lb-space-1)] text-sm text-[var(--lb-color-text)]">
-                                    Duration
-                                    <select
-                                        name="ttl_minutes"
-                                        defaultValue="30"
-                                        className="min-h-11 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm text-[var(--lb-color-text)] outline-none focus:border-[var(--lb-color-primary)]"
-                                    >
-                                        <option value="15">15 minutes</option>
-                                        <option value="30">30 minutes</option>
-                                        <option value="60">60 minutes</option>
-                                    </select>
-                                </label>
-                                <Textarea name="reason" label="Reason" minLength={8} required placeholder="Explain why this read-only session is needed." />
-                                <Button type="submit">Start read-only session</Button>
-                            </form>
-
+                        <Panel title="Read-only merchant assistance" description="Review operational evidence under your current Console permissions. Each read is audited.">
+                            <Link href={`/merchants/${site.id}/operations`} className="font-medium underline underline-offset-4">Open read-only merchant workspace</Link>
+                            <p className="mt-[var(--lb-space-3)] text-sm text-[var(--lb-color-text-subdued)]">Catalog and order evidence is read-only. Use approved moderation and support workflows for changes.</p>
+                            <h3 className="mt-[var(--lb-space-5)] font-medium">Recorded assistance sessions</h3>
                             <div className="mt-[var(--lb-space-5)] divide-y divide-[var(--lb-color-border)]">
                                 {overview.impersonation_sessions.length === 0 ? (
-                                    <EmptyDataState message="No impersonation sessions have been recorded for this merchant." />
+                                    <EmptyDataState message="No assistance sessions have been recorded for this merchant." />
                                 ) : overview.impersonation_sessions.map((impersonation) => (
                                     <div key={impersonation.id} className="grid gap-[var(--lb-space-3)] py-[var(--lb-space-3)] md:grid-cols-[1fr_auto] md:items-start">
                                         <div className="min-w-0">
@@ -282,12 +239,12 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
                                             </p>
                                         </div>
                                         {isActiveImpersonationSession(impersonation) ? (
-                                            <form action={endMerchantImpersonation} className="grid gap-[var(--lb-space-2)]">
+                                            <ConsoleActionForm action={endMerchantImpersonation} className="grid gap-[var(--lb-space-2)]">
                                                 <Input unstyled type="hidden" name="merchant_id" value={site.id} />
                                                 <Input unstyled type="hidden" name="session_id" value={impersonation.id} />
                                                 <Input unstyled name="reason" minLength={8} required placeholder="Reason to end" />
-                                                <Button type="submit" variant="secondary">End session</Button>
-                                            </form>
+                                                <Button type="submit" variant="secondary">End recorded session</Button>
+                                            </ConsoleActionForm>
                                         ) : (
                                             <StatusPill value={impersonation.ended_at ? 'ended' : 'expired'} />
                                         )}
@@ -300,19 +257,12 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
                         <Panel title="Merchant Moderation" description="Suspend or restore the merchant with dual-control approval.">
                             <ConsoleApprovalForm action="/api/approvals/request" className="grid gap-[var(--lb-space-3)]">
                                 <Input unstyled type="hidden" name="merchant_id" value={site.id} />
-                                <label className="grid gap-[var(--lb-space-1)] text-sm text-[var(--lb-color-text)]">
-                                    Action
-                                    <select
-                                        name="action"
-                                        defaultValue={retryKey.success && ['restore', 'suspend'].includes(retryAction) ? retryAction : site.status === 'suspended' ? 'restore' : 'suspend'}
-                                        className="min-h-11 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm text-[var(--lb-color-text)] outline-none focus:border-[var(--lb-color-primary)]"
-                                    >
-                                        <option value="suspend">Suspend merchant</option>
-                                        <option value="restore">Restore merchant</option>
-                                    </select>
-                                </label>
+                                <Select label="Action" name="action"
+                                    defaultValue={retryKey.success && ['restore', 'suspend'].includes(retryAction) ? retryAction : site.status === 'suspended' ? 'restore' : 'suspend'}
+                                    options={[{value:'suspend',label:'Suspend merchant'},{value:'restore',label:'Restore merchant'}]}/>
                                 <Input unstyled type="hidden" name="request_key" value={retryKey.success ? retryKey.data : crypto.randomUUID()} />
                                 <p className="text-sm">A different active platform super admin must review and approve the exact request before you can execute it.</p>
+                                <p className="text-sm">Suspending sets the store to suspended and turns publication off. Restoring needs a separate approval.</p>
                                 <Textarea name="reason" label="Reason" minLength={8} required placeholder="Record the evidence and expected merchant impact." />
                                 <Button type="submit">Request independent approval</Button>
                             </ConsoleApprovalForm>

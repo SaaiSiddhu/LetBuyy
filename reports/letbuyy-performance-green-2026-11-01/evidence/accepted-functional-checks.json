@@ -1,0 +1,60 @@
+{
+  "build_id": "qIzBUmU9wa-xByyOS0W5I",
+  "rows": [
+    {
+      "script": "accepted-http.py",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:34:16.304420+00:00"
+    },
+    {
+      "script": "accepted-final-site-browser.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:38:03.619985+00:00"
+    },
+    {
+      "script": "accepted-delivery-templates.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:38:22.543857+00:00"
+    },
+    {
+      "script": "accepted-final-animation-local-api.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:39:15.459387+00:00"
+    },
+    {
+      "script": "accepted-final-interactions-touch-final.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:39:31.372769+00:00"
+    },
+    {
+      "script": "accepted-final-touch-final.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:39:38.602123+00:00"
+    },
+    {
+      "script": "accepted-final-carousel-motion.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:39:49.483272+00:00"
+    },
+    {
+      "script": "accepted-final-menu-visual.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:40:01.068500+00:00"
+    },
+    {
+      "script": "accepted-delivery-spa.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:40:25.128027+00:00"
+    },
+    {
+      "script": "accepted-delivery-native-parity.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:40:34.998002+00:00"
+    },
+    {
+      "script": "accepted-final-scroll-visual.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T05:41:15.796193+00:00"
+    }
+  ]
+}

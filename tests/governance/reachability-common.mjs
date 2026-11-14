@@ -3,7 +3,6 @@
 // answer to "what counts as application source, and what counts as a reference", and two drifting
 // copies of that answer would mean two guards enforcing subtly different rules.
 
-import ts from 'typescript';
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,11 +27,7 @@ export function migrationFiles() {
         .sort((a, b) => numericPrefix(a) - numericPrefix(b));
 }
 
-// Parse syntax before removing comments: URLs, regular expressions and SQL
-// templates can contain comment delimiters as data. Regex replacement erased
-// real RPC calls after such literals and fabricated unreachable-function failures.
-export const stripTsComments = (source, path = 'reference.ts') => ts.createPrinter({removeComments:true})
-    .printFile(ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true));
+export const stripTsComments = (s) => s.replace(/\/\/[^\n]*/g, ' ').replace(/\/\*[\s\S]*?\*\//g, ' ');
 export const stripSqlComments = (s) => s.replace(/--[^\n]*/g, ' ');
 
 // Application source: current candidate (including untracked overlay), non-test,
@@ -47,7 +42,7 @@ export function applicationSources() {
         .filter((p) => /\.(ts|tsx|mjs|cjs)$/.test(p))
         .filter((p) => !/(^|\/)(__tests__|tests?)\/|\.(test|spec)[.-]/.test(p))
         .filter((p) => !/tenant-tables\.registry\.ts$/.test(p))
-        .map((path) => ({path,text:stripTsComments(readFileSync(join(repoRoot,path),'utf8'),path)}));
+        .map((path) => ({path,text:stripTsComments(readFileSync(join(repoRoot,path),'utf8'))}));
 }
 
 export function migrationBodies() {

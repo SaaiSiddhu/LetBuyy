@@ -1,0 +1,21 @@
+{
+  "contents_button_rect": {
+    "x": 19,
+    "y": 852.2340698242188,
+    "width": 38,
+    "height": 38
+  },
+  "hit_tag": "SPAN",
+  "portal_buttons": [
+    {
+      "text": "-10 Issue",
+      "label": "Open issues overlay"
+    },
+    {
+      "text": "",
+      "label": "Collapse issues badge"
+    }
+  ],
+  "portal_dialogs": [],
+  "console_errors": []
+}

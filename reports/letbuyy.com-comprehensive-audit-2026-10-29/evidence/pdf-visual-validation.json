@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "pdf": "LetBuyy-Live-SEO-Audit-2026-10-29.pdf",
+  "pages": 35,
+  "format": "A4",
+  "renderer": "isolated Chromium",
+  "qa": [
+    "All35pages rendered to PNG with Poppler",
+    "All35pages inspected in three labelled contact sheets",
+    "No blank pages; minimum text709chars on cover",
+    "No clipped/overlapping issue tables or reference spill-only pages observed",
+    "Representative mobile source screenshots also visually inspected",
+    "No remote resources loaded during PDF export"
+  ],
+  "limitations": "Visual QA is document layout validation, not accessibility or website certification"
+}

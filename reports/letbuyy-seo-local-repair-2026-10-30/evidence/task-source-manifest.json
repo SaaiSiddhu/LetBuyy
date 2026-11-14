@@ -1,0 +1,372 @@
+[
+  {
+    "path": "apps/marketing/web/src/app/[locale]/create/layout.tsx",
+    "before_sha256": null,
+    "after_sha256": "6b4c38ca6daf977fb6c444f7dd4e2184cccf46f7fdf648678493bc37bcaac821"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/demo/page.tsx",
+    "before_sha256": "81d19315219d26cf3194a1d9db70a9459a359a767d7794a8bec0c6453d07cf37",
+    "after_sha256": "4c3ae3c5669b08910088a7caaae807d82bf60239170d0388a096893bd8a99703"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/layout.tsx",
+    "before_sha256": "a17e0723ccf191858cbbfc9c16b463fbb0588a4f082fd7895d4f81a367a8b2c4",
+    "after_sha256": "abdadb5caf24dd81a53504a1f408e87de982f041da9411549738ea996a408c23"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/legal/[slug]/page.tsx",
+    "before_sha256": "2b336873abf377d213f13b8b06339570bf28f20a90ea8686fb07be8785334d8e",
+    "after_sha256": "5f8769c963bf9116c8046bac2aaf3ee14482eb7d6c819eff172f26d140698d79"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/page.tsx",
+    "before_sha256": "6c4004f41203d22053ffa59ee136ea6dabdd1b5c793c2f2afccfff59429af5bd",
+    "after_sha256": "3cb3f5ef72ef373186ce60621a0a0445d899639ada0926f4fdc4287cbd5f8c1f"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/pricing/page.tsx",
+    "before_sha256": "3ad80d41d02383ad8f1c7a51de0813013b78d8eee0f6755d4579762a84055676",
+    "after_sha256": "c7aa9ce36ba316a9cbaea4627c7c58d0bc3600b8e5e0d0ff8ca11eb5040bc771"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/[category]/[slug]/page.tsx",
+    "before_sha256": "c5d6b36a028b84068d81de00dcaa91d9bfa6f8c43c5d2f05fb49731b16a00d92",
+    "after_sha256": "561b39d875e8dde5f09330dd31817378c6c54d8842f26aa416a02184a8ff45ac"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/[category]/page.tsx",
+    "before_sha256": "7633802559a0da95148986ce1cf7224ada74db5736b07bd120cca1d022313cc5",
+    "after_sha256": "e68d7364eb1271aecec0aebcdcc0b3058f51868ddd0acebca28fa781644fc7e4"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/authors/[slug]/page.tsx",
+    "before_sha256": "1e169423aa0785753b04b1b57b46b5f727d8c289e6bf48dbeadf90092f14924a",
+    "after_sha256": "cd6f56936277eae920ee96e6f238290dc280d11cc3883ba84aa42eab8c71e3e9"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/changelog/page.tsx",
+    "before_sha256": "d25b9fa260ea26e32857b1ca2dfa8e94c10485c80969e48f84ee224b4a947c54",
+    "after_sha256": "07e9f84dfe60a8e2bf8fac0d0cc77a84b91191218a50375ce6cb0925edd3fda9"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/layout.tsx",
+    "before_sha256": "a103803e080d4bd69900472aabb49a72b6c07f97ebbf882356283c2b86220025",
+    "after_sha256": "9fec473893c64692522f121afe83f6e914bbc344532bbe1302a97f8e2a852708"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/releases/page.tsx",
+    "before_sha256": "ef1d7f321886a3de537fa766946dd5c5b07bec02e4fc80d063b54bb06d27bfdd",
+    "after_sha256": "2e005acee11acb0667c21e1f3a3eedecba597bda4ec10779395d2138e5214880"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/rss.xml/route.ts",
+    "before_sha256": "f470ba805a613c2af9883671ded92b4f3acea84aa08f45fc29d5e6c9d2533c0e",
+    "after_sha256": "c184751cffc524b8f5f1eb2033b9c81eee49866f0c2b901f37d8be54cf8a9d16"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/search/layout.tsx",
+    "before_sha256": null,
+    "after_sha256": "d0a701707edcf2bd028927b9b8fe15ebd429658b1eb304e33045f2a7765f3549"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/sitemap.xml/route.ts",
+    "before_sha256": "f8930215bee35c8f9854a16384c4aa6e467a80ed73d78b821d9e80ab92093bde",
+    "after_sha256": "cf5d617eb4aafdd9a82d90318949b0d85b8e02fcc9e2f0e7db94f1f80b106015"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/resources/tag/[tag]/page.tsx",
+    "before_sha256": "21c00796333eb0857f6b4a9ffa39755b122b8522bb889d6726841ccb888ce281",
+    "after_sha256": "51b108a5357fade91d628a789f75483e40805cf5fcf0dd082fd718232b4bf7f1"
+  },
+  {
+    "path": "apps/marketing/web/src/app/api/founding-pricing/route.ts",
+    "before_sha256": "7cb9c59d6b3225a752eeb72ba6bf11fd3a634e742df9691e68b9d29776754f9f",
+    "after_sha256": "1043e272044a01a7af5555486aaf868a4094cfee9f303e4b4ee37043d6ae04fc"
+  },
+  {
+    "path": "apps/marketing/web/src/app/layout.tsx",
+    "before_sha256": "22acf16d5ea4a00b7041ed0681e02cc5d8cfce85d6af2f7098455d56884232cf",
+    "after_sha256": "9c2b1dd09417e784a0bf2503680e48151d8b22effe03c21b2e60caca613e9381"
+  },
+  {
+    "path": "apps/marketing/web/src/app/sitemap.ts",
+    "before_sha256": "2b3f22d8dd4e3a01f094f77d4c48457afb2997c44cbed32ab7a713a9d5c7ed2e",
+    "after_sha256": "4dde59ffbb3aaa53846a8cab57d6981c22da1bd078077abbef49cf44822d29ba"
+  },
+  {
+    "path": "apps/marketing/web/src/components/CapabilityMap.tsx",
+    "before_sha256": "7030a189b46d2cc2a0a79a12cb704ddce2b0bc3a1f826cdd646146c5c0b1321a",
+    "after_sha256": "458b0be2ec7cd8e04a788679b1f593bb60064d5d1542527232589bfd1103a8e4"
+  },
+  {
+    "path": "apps/marketing/web/src/components/FAQ.tsx",
+    "before_sha256": "2f299523f72f1850ee5f8869a92f4354ea97b3383a2c4275972f296f00e5aeb7",
+    "after_sha256": "34aa7d1281052d97e1085dd7affa27c825020e2666100611c8b05677abafbef8"
+  },
+  {
+    "path": "apps/marketing/web/src/components/FinalCTA.tsx",
+    "before_sha256": "abe7ab6f6405c5645385d02519eb8adbcac2ad31846ba1939cc33bebc7d4197d",
+    "after_sha256": "97b2ee2a83ac83772412b73e116249fe4eb9eea7bb0a0f937706e4270bd5cd6e"
+  },
+  {
+    "path": "apps/marketing/web/src/components/Hero.tsx",
+    "before_sha256": "caa24235a4f4b7a359287ff9f7b46a6a7421a17572d289c5d761758223491c77",
+    "after_sha256": "92effbdb83fd7a6b63c01295d40bbaa05cb6a809526f51f4a81040cd57068cf8"
+  },
+  {
+    "path": "apps/marketing/web/src/components/MarketingHome.tsx",
+    "before_sha256": null,
+    "after_sha256": "e4465fa3fffca3ca0cb5e567ce184866aadd15286a5e80f44b548bff376d1851"
+  },
+  {
+    "path": "apps/marketing/web/src/components/Pricing.tsx",
+    "before_sha256": "b24ad5316496e393e43636bba457aea0979ed0ab9e2b0894189cfac920297c33",
+    "after_sha256": "da2be14af7d6b97416d7093b9cb8291a6d0f3f54e66e426095f2833cf30e1c81"
+  },
+  {
+    "path": "apps/marketing/web/src/components/resources/ArticleBody.tsx",
+    "before_sha256": "6341534c7fa32050692460a0ef544e81bc2572921ef78f12f24557635a515611",
+    "after_sha256": "c8c44b4164d281da307446184ff9249fe32c72170c865dc38e9bca0a29f6488e"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/article-summaries.json",
+    "before_sha256": "450b9a1ab8dd67b575e24a2a6ec6bc37718e1acba0005134e3a96dffee4611df",
+    "after_sha256": "d8868e8babf0988e24cc2c955b7cff0a0f14809fbad0e44344175826eda3c135"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/ai-commerce-explained.json",
+    "before_sha256": "bf6cc3a453be97933a15892d0f69972f1485193c792610b8d445d1ebe6698b72",
+    "after_sha256": "75e7c0edc787e1af2f71f3cd7f341b56400a7b18e2e7d7fa18d4b0e540b75528"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/ai-product-recommendations.json",
+    "before_sha256": "5ff23347b5e6e6c90329560bb46ff38d22ebd46209cec96d3b2f432208cddf99",
+    "after_sha256": "14e520a88ce9aa5eb37aee25a6e6bd9822a8bd1db452317faeedf93258570274"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/d2c-brand-launch-guide.json",
+    "before_sha256": "b1dc8dfc46e0ce6c8be0e2f7a61b417494cb6d4904f8342d00eb3ab601258e23",
+    "after_sha256": "b7aaea4bf646cf2f94f5007c12d1967e20d58f9defdee674bc97a65df1d64e83"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/email-marketing-ecommerce.json",
+    "before_sha256": "4a857ae1ddfe8c7157d87e19c7655937f790b6008bed8abdce02f3dc18008a56",
+    "after_sha256": "ab143d218827e0c8df28a94215c940fbeba0024c2bb0246f82885ef930c4a2d2"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/first-100-orders-guide.json",
+    "before_sha256": "18c8191bc12805deb890a8d9e4856b7af22660e56c146b5c8b536b9caefb6436",
+    "after_sha256": "9461cd60be9cfb4d69d5282ed0980f8217b1d8930ad6c1066b98f049e7283277"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/gst-for-ecommerce-india.json",
+    "before_sha256": "6b804707638254540073403fe68ee56ee71c2af1426051a1d83620fe5d13e698",
+    "after_sha256": "32ea2ea37ca1c4838e069dc9af97611431bae140f2518a6a33ab652e2115ae8c"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-product-reviews-increase-conversion.json",
+    "before_sha256": "617e6fb2ae0ed7f6cc839e02a02473a0db51c3c5cea31d24c857562b58604ba1",
+    "after_sha256": "8dbd84e5090633f278217a24ead08f588daa3e1e23e59151e79b48541f1693ed"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-to-start-an-online-store-india.json",
+    "before_sha256": "371400e8ba9f16b307bd1fabc1f9833180c9ce93bac63bda6011e3c48aa5d79d",
+    "after_sha256": "ec3fc6c20b3f8e2a003eb59259f8db6be15b23018b43ed1e9a42d8e1878b257f"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/inventory-management-guide.json",
+    "before_sha256": "ec44865e6d06f93a3c47e55df76cb639a5ae375ce58d1b4f67243a5c2fd2ac06",
+    "after_sha256": "80f66e51ee7855b33bc6adf1fa72d219757cebb64abd997dbd672e07aa873d7d"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/invoicing-india-merchants.json",
+    "before_sha256": "ced44dfa172f015a77b78e53f23f5c600b2d90e549d0c92afc60bd4b0c865580",
+    "after_sha256": "638f969af904f88445f18c3d4327d51d8040b9af6f11361752f7413a0532d1ce"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/multi-warehouse-inventory.json",
+    "before_sha256": "25277a950351f1d5ab02b87165512441fbee175b8bd06a5bfade1f6d6c277eba",
+    "after_sha256": "25d70e242c88c94d6071a235bb96d4f3f7e767032eca1235837a540629ab078c"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/order-fulfillment-guide.json",
+    "before_sha256": "c1a525cce444259fd9494ba56cfcfe149bf40d3d293710b6e6818a0df99c4bbd",
+    "after_sha256": "6d154c15763b47c3a146d07679dc20a537dae71e2dbadf158920737383a3ddb4"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/product-page-optimization.json",
+    "before_sha256": "73064156f8e63c05a68d16c0ef02cfa46f46ba13a8b27481419a863b42db3b55",
+    "after_sha256": "4344dc12fefc3945451d8388ced4f7c4afa778536715935ada88f51c1990c7b9"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/reducing-cart-abandonment.json",
+    "before_sha256": "eca9a047f53955b71d4dd92d504e80cabf5bfa33fbaac5c2567c3e66c2affcd9",
+    "after_sha256": "a8c7391d5721a3d2b8cc5f6231017db4aab5089161729e72983870dd3c1e5f17"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/refunds-returns-policy-india.json",
+    "before_sha256": "94a1cfebb66e68c76481c97a979206d7148cd7cfd4e8a06197da822529b9421b",
+    "after_sha256": "05c2a211de2cfcac64d3789b60c7705a032f56fd32470abeeed265a1ff6ee0cb"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/retention-strategies-india.json",
+    "before_sha256": "275b398021613b445c4d4d24759f613d153c4a970b82dfe5a91c92b2a4540929",
+    "after_sha256": "d3ee72a25cecfbcb6d7b2aa65d9a39f44d464f2bbdd5c2c260ed4f603c536d2b"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/shipping-india-guide.json",
+    "before_sha256": "e3edd786471bdc9f0847470a792a7c107944129e7068476d5da586837575d7ff",
+    "after_sha256": "d14d065c247afaff54527c4fd6fdbbbdf752b4a8da7a8009cb706235cb75470c"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/social-commerce-india.json",
+    "before_sha256": "8ded998bc3d79823df75d5a4fb9c1615da6b2b295600928d10148d2429039496",
+    "after_sha256": "098063e1e63764986908fc53aa26cf4ae14ca1f5e9493c75f466a8b18f203ba0"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/store-seo-checklist.json",
+    "before_sha256": "807c96f764b3e3621d61bd1cb943d267b7f67e1a3bbd66291395f9c1a42cf46b",
+    "after_sha256": "f79a6c485154b136662395f9c7eaf77d29ace77ce7b923e737a919fba977814d"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/upi-vs-cod-india.json",
+    "before_sha256": "e467bc1eede669b369b560ea0cf558fec1103591266790b277f77e9caa64dd79",
+    "after_sha256": "b1892ba8e9a6e46e9b83ef89397e8da5b15b8fd73e33bd86ca54d0496b96f2a1"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/ai-commerce-explained.json",
+    "before_sha256": "35e045b5e74ccff82a9a2fb36c882a64d508af5a8884eda8b199927f3c979ed3",
+    "after_sha256": "7af69c8b35cce12b94f987e963fee8257811a358a77ae6c6303b710ca18cccf6"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/ai-product-recommendations.json",
+    "before_sha256": "64417ff9da92a6e63a2598858125c3fe18a3ce3809c8798cecdcd75393d02d2d",
+    "after_sha256": "764da5c9829e99b3bbccc4ea97dd149a57572acc0bf406261248b01b6974d690"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/d2c-brand-launch-guide.json",
+    "before_sha256": "f18ac1d5ebcac54154810592f388a2bda6dce4dd594848a3fc8f69a230869df1",
+    "after_sha256": "b61e61c2cea0144ea88bb21e7abb512351e2ff0004a14ef3c704ebfebeed918a"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/email-marketing-ecommerce.json",
+    "before_sha256": "5e6ed6806732c0dbbf7cd51cc1721816173af59d3b2981e6e90d9f6c038b02ad",
+    "after_sha256": "d80185d3908da8cbed499cda0dbae67d3bb4aa0cfc2122fae19d3f4d725ca4e0"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/first-100-orders-guide.json",
+    "before_sha256": "96c1bd431623d078cb27167180b0fbed8c71b449cc86cfcc392a521303f57f43",
+    "after_sha256": "66d9e986933bb4f6f5584c1e62fa944af6b72d195a0a04ce7ab76a7cea45c25d"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/gst-for-ecommerce-india.json",
+    "before_sha256": "204748323d955412cf47a29f5becc32734e8deda96c021eb091c653c2e1f9f76",
+    "after_sha256": "a6f171233b5cd88df1a46761276fd0d1f2caacd26dbc2ccc43565979e368367a"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-product-reviews-increase-conversion.json",
+    "before_sha256": "6b5b1dd086e4d7caec4e9049dc7d6fd16f0ec82bf3a85ac88ec0cac4e805780c",
+    "after_sha256": "9af70304f1034ae368adf6b5455eadd0d64a5b0301d324e213100183f2f3deb6"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-to-start-an-online-store-india.json",
+    "before_sha256": "9d9cd7af30d3711f0ab14832be4e373db4d4bb7fe4da5124f300ce72ec94e03a",
+    "after_sha256": "cdc8efdee77d4e27b420ff6f052ca76646d49db1bd6e312c83d14a799ccb60d9"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/inventory-management-guide.json",
+    "before_sha256": "e524070bb0188e2bc78afdf52acd71742096a0793f1db77cb5fd59c7e45bb7d2",
+    "after_sha256": "28f2eec7733fa97ba9f8381c481ffbf4a21df2758fa2829510274879bfc94f4a"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/invoicing-india-merchants.json",
+    "before_sha256": "f1dc26f11bf91a7e216e54d32a606a3137636e36080f10008a268c167d5d2ae1",
+    "after_sha256": "0e12de1dfca47a749cd3c8302ea67b919e90107acebf61efcbdc99cef53b62fe"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/multi-warehouse-inventory.json",
+    "before_sha256": "2970cb0a2d9ac7d6b71949b5e835eaab292e9cf679903a47657038d83a95c81c",
+    "after_sha256": "67562f7d4154a3ae55a7008dba5ef55d38cc04b2af113f44c818b84a9cf9ff08"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/order-fulfillment-guide.json",
+    "before_sha256": "7c39c08e17460969de4b776cd2b26e2dfb17aacad47a7de177110e80538524a0",
+    "after_sha256": "7fb5d690ff30bd9d8e9f0720ebb54c55e6fbb021a201f72f35c799a69d48331d"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/product-page-optimization.json",
+    "before_sha256": "eb8b2c856e55181488975672b6fdeccd6edabdaa8a8ec017a0283489bafb8274",
+    "after_sha256": "ea88103858b46b333016f0fbab76c1b119019116c70042d432b5c6b546869c3e"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/reducing-cart-abandonment.json",
+    "before_sha256": "a25a208a52257f4ba53e4ac16175d7d6fb6267f2636b1a4e873709e7bcc0ff36",
+    "after_sha256": "703f29d293f581703a614a87a32d463b0e6f72a984dfc86cb21d634a8079ce64"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/refunds-returns-policy-india.json",
+    "before_sha256": "a176b8171e4b08a8ef44fc430974793c945ddf2aaa109477065dc9947ace95f1",
+    "after_sha256": "1697ab42e4c8f491ec1f374418e709d5b74f5eee11142b2f429532daaa3605d0"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/retention-strategies-india.json",
+    "before_sha256": "c447ba87abf036b3b1e3551f639b998a9082f0f28e5fd95fa6dff0d96f12abc0",
+    "after_sha256": "969d03f61261fe4269f1ca7c1b9cab338d25193a9d7f9dbc79098a98a49330a3"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/shipping-india-guide.json",
+    "before_sha256": "1d772de3f18add847db373e6a3cc97442aae3c9fb1f251a9c0d222399b1a8e8e",
+    "after_sha256": "ab8a2a5d623a0fbdd5d13f69d166c140e4cc5cd5d6662a621964ba0fe8d24cf3"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/social-commerce-india.json",
+    "before_sha256": "c9261a60847d6541a030d858b3ebc31a18825cef95c44166522abb4858820e8a",
+    "after_sha256": "8f666423371b92cfa9901101b93b660b5fbbd7ff56cb44cb1a2ce0d7fb391a5a"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/store-seo-checklist.json",
+    "before_sha256": "de5c6ad77eec43675e00b336f0c05a1f8db256ec02def6f69e19948a468a9b54",
+    "after_sha256": "02f274e18883ea668f8f42c865b0adf217bf0f11fa5695fe0655db1eac663364"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/upi-vs-cod-india.json",
+    "before_sha256": "1bba439dce0aa852a8ee07cc1263aacf3233d2dbaece3e1d57b6427bcb85933f",
+    "after_sha256": "ad194caab35d39dfc1ebf41ec7cdc8e9689d67928d013e410df93c28c0dacc9e"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/copy-catalog.ts",
+    "before_sha256": "2ed005df365705b02de14fa1af0eb8f948948c8529f0afc2a6ff8cefb2f4f13c",
+    "after_sha256": "b1f42e06bd93fc12a039647d90c6ed63f4ba67897c820f9ace90d88bfb822abc"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/i18n/metadata.ts",
+    "before_sha256": "213cb77d4058b3ec745e45a0792de6e7574cfae9266f96cea84dd7f40a98a9bf",
+    "after_sha256": "9789ce90be063ae666fab8da74426a99f58172b02aee61d4a1bd951665c9e70d"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/platform-links.ts",
+    "before_sha256": "214abde6d3fea0c714247a0dfc198d83fd6714ab62e913978edccd7458660e09",
+    "after_sha256": "0ed7f0dd165ab4b01cf48ab638d41a43fe86ecd8eb2247321b2c7865f2baaa43"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/pricing.ts",
+    "before_sha256": null,
+    "after_sha256": "5375bdd8f4110f3facf0c1bd60177667d45515cc62f80ca19d8370008bb9cc0d"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/resources/articles.ts",
+    "before_sha256": "5be1a637f958a0f42c2ba2b6559b263661a5fe57bcd208b88ec7cb6b6902b08a",
+    "after_sha256": "b4bdfc4b7b05357252a5e40320f33d1ab475c1ab15f4c5fcb75eb81ed4bf1b1d"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/resources/types.ts",
+    "before_sha256": "b2ca666e7a326330db848ec2f133a57d6c9c73a4394d9467efce04d7f75f85b2",
+    "after_sha256": "5578d779c8e074d55920492170ba0b980529fd9611a8c7508b6e7d15ffc0ea03"
+  },
+  {
+    "path": "apps/marketing/web/src/middleware.ts",
+    "before_sha256": "94a7c05b716f648cec7547394d69752518ea91e9d0b67b597d456028a4020356",
+    "after_sha256": "1c45a1bb34d6ab7f898bd1b4f2b923834d3fba93d98a99eed7af4da189246a80"
+  }
+]

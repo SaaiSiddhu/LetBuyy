@@ -1,0 +1,1447 @@
+[
+  {
+    "url": "https://www.letbuyy.com/in",
+    "device": "mobile",
+    "captured_at": "2026-10-29T18:08:11.763557+00:00",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "status": 200,
+    "observations": {
+      "lcp": [
+        {
+          "startTime": 572,
+          "size": 18700,
+          "url": "",
+          "element": "P",
+          "text": "Run storefronts, inventory, orders, payments, analytics, AI, B2B, and operations from one unified pl"
+        }
+      ],
+      "shifts": [
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2255.0999999996275
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2287.5999999996275
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2304.7999999988824
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2320.9000000003725
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2338.2999999988824
+        },
+        {
+          "value": 2.847274462698278e-05,
+          "time": 2355
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2371.699999999255
+        },
+        {
+          "value": 2.905514167617106e-05,
+          "time": 2387.5
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2404.699999999255
+        },
+        {
+          "value": 2.905514167617106e-05,
+          "time": 2420.7999999988824
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2437.7999999988824
+        },
+        {
+          "value": 2.905514167617106e-05,
+          "time": 2454.2999999988824
+        },
+        {
+          "value": 2.905514167617106e-05,
+          "time": 2471.4000000003725
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2488
+        },
+        {
+          "value": 2.905514167617106e-05,
+          "time": 2504.9000000003725
+        },
+        {
+          "value": 2.905514167617106e-05,
+          "time": 2521.4000000003725
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2538.0999999996275
+        },
+        {
+          "value": 2.9637538725359347e-05,
+          "time": 2554.699999999255
+        },
+        {
+          "value": 2.905514167617106e-05,
+          "time": 2571.4000000003725
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2587.4000000003725
+        },
+        {
+          "value": 3.5170310692648045e-05,
+          "time": 2604.7999999988824
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2621.0999999996275
+        },
+        {
+          "value": 2.905514167617106e-05,
+          "time": 2638
+        },
+        {
+          "value": 2.984829662222745e-05,
+          "time": 2654.5999999996275
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2671.7999999988824
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2687.699999999255
+        },
+        {
+          "value": 2.905514167617106e-05,
+          "time": 2705.0999999996275
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2720.699999999255
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2754.2999999988824
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2771.9000000003725
+        },
+        {
+          "value": 2.8674427440301145e-05,
+          "time": 2787.9000000003725
+        },
+        {
+          "value": 2.1318158654662814e-05,
+          "time": 2838
+        },
+        {
+          "value": 4.805022446138226e-06,
+          "time": 2854.5
+        },
+        {
+          "value": 4.732663631034218e-06,
+          "time": 2871.699999999255
+        },
+        {
+          "value": 6.030374597469227e-06,
+          "time": 2904.9000000003725
+        },
+        {
+          "value": 6.226440169011737e-06,
+          "time": 3205.0999999996275
+        },
+        {
+          "value": 7.659075774636735e-06,
+          "time": 3221.5
+        },
+        {
+          "value": 7.900726896733723e-06,
+          "time": 3237.699999999255
+        },
+        {
+          "value": 8.347298543609254e-06,
+          "time": 3254.2999999988824
+        },
+        {
+          "value": 6.838165926005858e-06,
+          "time": 3271.7999999988824
+        },
+        {
+          "value": 6.746096190873049e-06,
+          "time": 3287.4000000003725
+        },
+        {
+          "value": 8.149715202250267e-06,
+          "time": 3304.699999999255
+        },
+        {
+          "value": 8.316567438462826e-06,
+          "time": 3320.699999999255
+        },
+        {
+          "value": 9.002589459715357e-06,
+          "time": 3354.0999999996275
+        },
+        {
+          "value": 8.11715887306171e-06,
+          "time": 3438.0999999996275
+        },
+        {
+          "value": 8.11715887306171e-06,
+          "time": 3471.5999999996275
+        },
+        {
+          "value": 3.012691402363561e-05,
+          "time": 5987.799999998882
+        },
+        {
+          "value": 2.3841879201145377e-05,
+          "time": 6004.9000000003725
+        },
+        {
+          "value": 2.918051881870465e-05,
+          "time": 6021
+        },
+        {
+          "value": 3.148584047174161e-05,
+          "time": 6038.5
+        },
+        {
+          "value": 3.704287898274649e-05,
+          "time": 6054.5999999996275
+        },
+        {
+          "value": 4.918828411269383e-05,
+          "time": 6071.5999999996275
+        },
+        {
+          "value": 4.420150937901914e-05,
+          "time": 6087.5999999996275
+        },
+        {
+          "value": 4.940668300613943e-05,
+          "time": 6105
+        },
+        {
+          "value": 6.082813624855412e-05,
+          "time": 6121.199999999255
+        },
+        {
+          "value": 5.331359654444417e-05,
+          "time": 6138.4000000003725
+        },
+        {
+          "value": 4.5693901817564125e-05,
+          "time": 6154.5999999996275
+        },
+        {
+          "value": 6.729921457286839e-05,
+          "time": 6171.799999998882
+        },
+        {
+          "value": 5.406585939964571e-05,
+          "time": 6187.699999999255
+        },
+        {
+          "value": 7.244372184069823e-05,
+          "time": 6205.0999999996275
+        },
+        {
+          "value": 6.77360123597596e-05,
+          "time": 6221.199999999255
+        },
+        {
+          "value": 7.815444846190556e-05,
+          "time": 6238.5999999996275
+        },
+        {
+          "value": 6.78492562304351e-05,
+          "time": 6254.9000000003725
+        },
+        {
+          "value": 7.773382837082514e-05,
+          "time": 6272
+        },
+        {
+          "value": 6.204146343436304e-05,
+          "time": 6287.799999998882
+        },
+        {
+          "value": 6.775219005557039e-05,
+          "time": 6304.5
+        },
+        {
+          "value": 7.863977933622915e-05,
+          "time": 6321.299999998882
+        },
+        {
+          "value": 6.749334692259781e-05,
+          "time": 6338.5999999996275
+        },
+        {
+          "value": 6.797867779692138e-05,
+          "time": 6355
+        },
+        {
+          "value": 6.775219005557039e-05,
+          "time": 6371
+        },
+        {
+          "value": 7.828387002839186e-05,
+          "time": 6388.0999999996275
+        },
+        {
+          "value": 6.841547558381261e-05,
+          "time": 6405.0999999996275
+        },
+        {
+          "value": 6.770365696813802e-05,
+          "time": 6421.5
+        },
+        {
+          "value": 4.5972967070300175e-05,
+          "time": 6438.699999999255
+        },
+        {
+          "value": 5.767348556545091e-05,
+          "time": 6454.5999999996275
+        },
+        {
+          "value": 6.823752092989395e-05,
+          "time": 6471.9000000003725
+        },
+        {
+          "value": 4.696789536266349e-05,
+          "time": 6487.699999999255
+        },
+        {
+          "value": 3.779514183794802e-05,
+          "time": 6505.199999999255
+        },
+        {
+          "value": 4.898201849110631e-05,
+          "time": 6521.199999999255
+        },
+        {
+          "value": 3.136450775316072e-05,
+          "time": 6538.5
+        },
+        {
+          "value": 3.74796767696377e-05,
+          "time": 6554.699999999255
+        },
+        {
+          "value": 2.4363609891043217e-05,
+          "time": 6571.9000000003725
+        },
+        {
+          "value": 3.59023514280861e-05,
+          "time": 6587.9000000003725
+        },
+        {
+          "value": 7.862360164041835e-06,
+          "time": 6605
+        },
+        {
+          "value": 2.728772840884273e-05,
+          "time": 6621.5999999996275
+        },
+        {
+          "value": 2.4436409522191753e-05,
+          "time": 6638.299999998882
+        }
+      ],
+      "longtasks": [
+        {
+          "startTime": 934.5999999996275,
+          "duration": 51
+        }
+      ],
+      "navigation": [
+        {
+          "responseStart": 248.7999999988824,
+          "domContentLoadedEventEnd": 560.0999999996275,
+          "loadEventEnd": 994.5,
+          "transferSize": 33688,
+          "encodedBodySize": 33388,
+          "decodedBodySize": 339643
+        }
+      ],
+      "paints": [
+        {
+          "name": "first-paint",
+          "startTime": 572
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 572
+        }
+      ]
+    },
+    "menu_opened": true,
+    "menu_a11y": "- banner:\n  - link \"LetBuyy Home\":\n    - /url: /in\n    - img \"LetBuyy\"\n  - link \"Start for free\":\n    - /url: https://accounts.letbuyy.com/signup\n  - button \"Close menu\" [expanded]\n- dialog \"Mobile navigation\":\n  - link \"LetBuyy\":\n    - /url: /in\n    - img \"LetBuyy\"\n  - button \"Toggle theme\"\n  - button \"Close menu\"\n  - heading \"Explore LetBuyy\" [level=2]\n  - paragraph: Tools and guidance for your next stage.\n  - paragraph: The platform\n  - navigation \"Mobile navigation\":\n    - button \"Why LetBuyy Discover our approach to commerce\":\n      - strong: Why LetBuyy\n      - text: Discover our approach to commerce\n    - button \"Products Explore your commerce workspace\":\n      - strong: Products\n      - text: Explore your commerce workspace\n    - paragraph: Resources & plans\n    - link \"Themes Storefront design and themes\":\n      - /url: /in/resources/platform/how-themes-work\n      - strong: Themes\n      - text: Storefront design and themes\n    - link \"Apps Understand platform integrations\":\n      - /url: /in/resources/platform/introduction-to-apps\n      - strong: Apps\n      - text: Understand platform integrations\n    - link \"Developers APIs, webhooks and technical guides\":\n      - /url: /in/resources/developers\n      - strong: Developers\n      - text: APIs, webhooks and technical guides\n    - link \"Pricing Find a plan for your business\":\n      - /url: /in/pricing\n      - strong: Pricing\n      - text: Find a plan for your business\n  - link \"Log in\":\n    - /url: https://accounts.letbuyy.com/lookup\n  - link \"Start for free\":\n    - /url: https://accounts.letbuyy.com/signup\n- main:\n  - text: Commerce Operating System\n  - heading \"More than a store. Your Commerce OS.\" [level=1]\n  - paragraph: Run storefronts, inventory, orders, payments, analytics, AI, B2B, and operations from one unified platform built for modern commerce.\n  - link \"Start Free\":\n    - /url: https://accounts.letbuyy.com/signup\n  - link \"Explore capabilities\":\n    - /url: \"#capabilities\"\n  - list \"Platform guarantees\":\n    - listitem: 0% Commission Forever\n    - listitem: UPI Native\n    - listitem: GST Ready\n    - listitem: AI Powered\n    - listitem: Built for Bharat\n  - figure \"Illustrative store creation journey from Tamil Nadu across India and the world\":\n    - text: \"A one-time illustrative journey: a detailed Tamil Nadu map expands to India and fades into a dotted globe. Stores appear across India, then Pakistan, China, Japan and other continents. At the end, the globe\u2019s dots scatter outward and a large \u201cLetBuyy \u2014 Sell worldwide\u201d title resolves into place with a brief flicker, then holds still. Reduced-motion visitors see the final title without animation. The journey does not restart. Example activity, not live merchant data. Hover or focus this illustration to pause motion.\"\n    - status\n  - paragraph: Commerce OS Capability Map\n  - heading \"Everything your business needs. One operating system.\" [level=2]\n  - paragraph: Run storefronts, orders, inventory, payments, analytics, AI, B2B and operations from one unified platform.\n  - complementary:\n    - group \"Commerce OS module map\":\n      - text: COMMERCE OS\n      - button \"Storefronts\" [pressed]: Storefront\n      - button \"Orders\"\n      - button \"Inventory\"\n      - button \"Payments\"\n      - button \"Customers\"\n      - button \"Analytics\"\n      - button \"AI Operator & Automation\": AI\n      - button \"B2B & Wholesale\": B2B\n    - button \"Pause automatic module tour\"\n  - region \"Commerce capability cards\":\n    - text: Swipe left or right, use the arrow keys, or choose a module in the map. Touch pauses automatic switching. Storefronts Your brand, live everywhere Live\n    - paragraph: Launch a fully branded storefront with custom domains, themes, and responsive product pages \u2014 all synced to your inventory and orders in real time.\n    - list \"Storefronts features\":\n      - listitem: Custom domains & SSL\n      - listitem: Mobile-first themes\n      - listitem: SEO-ready pages\n  - region \"From opening day to your next big move.\":\n    - paragraph: Merchant Growth Journey\n    - heading \"From opening day to your next big move.\" [level=2]\n    - paragraph: Explore five moments in a growing business\u2014and the LetBuyy tools you can use at each one.\n    - tablist \"Choose a business growth stage\":\n      - tab \"01. Launch Store\" [selected]\n      - tab \"02. First Order\"\n      - tab \"03. Scale Operations\"\n      - tab \"04. Build Brand\"\n      - tab \"05. Enterprise\"\n    - tabpanel \"01. Launch Store\":\n      - paragraph: Storefronts + Themes\n      - heading \"Make it yours. Then open the doors.\" [level=3]\n      - paragraph: Turn your products into a storefront that feels like your business. Start with the essentials and publish when you are ready.\n      - 'list \"What you can do: Launch Store\"':\n        - listitem:\n          - heading \"Shape your storefront\" [level=4]\n          - paragraph: Choose a theme, adjust your branding and preview it on different screens.\n        - listitem:\n          - heading \"Prepare your catalogue\" [level=4]\n          - paragraph: Add product photos, prices, sizes and available stock.\n        - listitem:\n          - heading \"Make it easy to find\" [level=4]\n          - paragraph: Use your LetBuyy address or connect an eligible custom domain.\n    - navigation \"Move through the business stages\":\n      - button \"Previous\" [disabled]\n      - text: 01 / 05\n      - button \"Next stage\"\n    - paragraph: Tools depend on your plan and setup. Payments, shipping and live email delivery require the relevant provider connections.\n  - region \"Build your store. Run the business behind it.\":\n    - paragraph: How LetBuyy works\n    - heading \"Build your store. Run the business behind it.\" [level=2]\n    - paragraph: LetBuyy brings your online shop, orders and customer tools into one workspace. Here\u2019s how they help you, from opening day to your next collection.\n    - list \"From creating your store to growing your business\":\n      - listitem:\n        - text: \"01\"\n        - paragraph: Make it yours\n        - heading \"Your products. Your own online store.\" [level=3]\n        - paragraph: Give your business a home online, with your branding and a storefront that works on phones, tablets and computers.\n        - list:\n          - listitem: Choose a theme and make it your own.\n          - listitem: Add product photos, prices, sizes and stock.\n          - listitem: Preview your shop, connect your domain and publish.\n        - link \"Explore storefront themes\":\n          - /url: /in/resources/platform/how-themes-work\n      - listitem:\n        - text: \"02\"\n        - paragraph: Start selling\n        - heading \"From a customer\u2019s basket to a packed order.\" [level=3]\n        - paragraph: Share your store link. Let customers browse and buy, then manage each order from your merchant workspace.\n        - list:\n          - listitem: Offer the payment methods you have enabled.\n          - listitem: See purchases, payment status and stock together.\n          - listitem: Prepare shipments, add tracking and handle returns.\n        - link \"See how order fulfilment works\":\n          - /url: /in/resources/operations/order-fulfillment-guide\n      - listitem:\n        - text: \"03\"\n        - paragraph: Keep them coming back\n        - heading \"Turn a first purchase into a relationship.\" [level=3]\n        - paragraph: Understand who buys from you, share your next collection and use your sales reports to decide what to do next.\n        - list:\n          - listitem: Find customer profiles and purchase history.\n          - listitem: Prepare email campaigns for subscribed customers.\n          - listitem: Review orders and revenue to plan your next move.\n        - link \"Read the email marketing guide\":\n          - /url: /in/resources/growth/email-marketing-ecommerce\n    - paragraph: Payment, shipping and email options depend on your plan, account setup and connected providers.\n    - region \"One T-shirt sold. The next steps, together.\":\n      - text: An everyday example\n      - heading \"One T-shirt sold. The next steps, together.\" [level=3]\n      - paragraph: A customer buys a navy T-shirt from your store. Follow the work that comes next, with the order details in one place.\n      - list \"Managing an example T-shirt order\":\n        - listitem:\n          - heading \"See the order\" [level=4]\n          - paragraph: The products, buyer and delivery details are together.\n        - listitem:\n          - heading \"Check the payment\" [level=4]\n          - paragraph: Know whether it is paid, pending or cash on delivery.\n        - listitem:\n          - heading \"Keep stock accurate\" [level=4]\n          - paragraph: Review available quantities before the next sale.\n        - listitem:\n          - heading \"Prepare delivery\" [level=4]\n          - paragraph: Pack the order and keep shipment progress up to date.\n    - heading \"What does that mean for your day?\" [level=3]\n    - paragraph: Start with the job you need to do.\n    - group: An order comes in\n    - group: A payment needs checking\n    - group: A customer needs a refund\n    - group: A product is running low\n    - group: You have a new collection to share\n    - group: You want to understand your earnings\n  - paragraph: Pricing\n  - heading \"Simple, transparent pricing\" [level=2]\n  - paragraph: Launch and Growth plans are live now. Scale and Commerce OS are coming soon. 0% transaction and platform fees \u2014 forever.\n  - paragraph: \ud83c\udfc6 Founding Merchant Program \u2014 100 / 100 slots remaining\n  - paragraph: Lock the founding price for life. Lifetime price lock, founding badge, priority access, and early features.\n  - article:\n    - heading \"Launch\" [level=3]\n    - paragraph: Everything you need to start selling\n    - paragraph: \u20b9199/month\n    - paragraph: Regular \u20b9299 \u00b7 Save \u20b9100/mo for life\n    - link \"Start free trial\":\n      - /url: https://accounts.letbuyy.com/signup\n    - list:\n      - listitem: 0% commission forever\n      - listitem: Unlimited products, orders & customers\n      - listitem: Online storefront + themes\n      - listitem: UPI, QR & COD\n      - listitem: GST tax invoices\n      - listitem: Free .letbuyy.com domain & hosting\n  - article:\n    - text: Most popular\n    - heading \"Growth\" [level=3]\n    - paragraph: Scale your store with advanced tools\n    - paragraph: \u20b9699/month\n    - paragraph: Regular \u20b9999 \u00b7 Save \u20b9300/mo for life\n    - link \"Start free trial\":\n      - /url: https://accounts.letbuyy.com/signup\n    - list:\n      - listitem: Everything in Launch\n      - listitem: Custom domain + remove branding\n      - listitem: Inventory management\n      - listitem: Bulk product import\n      - listitem: Discount engine\n      - listitem: Customer segments\n  - article:\n    - text: Coming soon\n    - heading \"Scale\" [level=3]\n    - paragraph: For scaling, multi-channel businesses\n    - paragraph: Coming soon\n    - text: Coming soon\n    - list:\n      - listitem: Everything in Growth\n      - listitem: Multi-warehouse inventory\n      - listitem: Purchase orders\n      - listitem: Loyalty & gift cards\n      - listitem: Reviews & UGC\n      - listitem: Abandoned-checkout recovery\n  - article:\n    - text: Coming soon\n    - heading \"Commerce OS\" [level=3]\n    - paragraph: Your commerce operating system\n    - paragraph: Coming soon\n    - text: Coming soon\n    - list:\n      - listitem: Everything in Scale\n      - listitem: POS / in-person sales\n      - listitem: Multi-store management\n      - listitem: B2B catalogs (B2B + DTC)\n      - listitem: AI Copilot + LCIS intelligence\n      - listitem: Operations & Executive Center\n  - heading \"Compare all plans\" [level=2]\n  - table \"Plan feature comparison\":\n    - row \"Only differences Launch Growth Most popular Scale Commerce OS\":\n      - columnheader \"Only differences\":\n        - checkbox \"Only differences\"\n        - text: Only differences\n      - columnheader \"Launch\"\n      - columnheader \"Growth Most popular\"\n      - columnheader \"Scale\"\n      - columnheader \"Commerce OS\"\n    - rowgroup:\n      - text: Pricing\n      - row \"Monthly price \u20b9299 \u20b9999 \u20b92,499 \u20b95,999\":\n        - cell \"Monthly price\"\n        - cell \"\u20b9299\"\n        - cell \"\u20b9999\"\n        - cell \"\u20b92,499\"\n        - cell \"\u20b95,999\"\n      - row \"Yearly price (per month) \u20b9249 \u20b9799 \u20b91,999 \u20b94,799\":\n        - cell \"Yearly price (per month)\"\n        - cell \"\u20b9249\"\n        - cell \"\u20b9799\"\n        - cell \"\u20b91,999\"\n        - cell \"\u20b94,799\"\n      - row \"Founding price \u20b9199 \u20b9699 \u2014 \u2014\":\n        - cell \"Founding price\"\n        - cell \"\u20b9199\"\n        - cell \"\u20b9699\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n      - row \"Platform commission 0% forever 0% forever 0% forever 0% forever\":\n        - cell \"Platform commission\"\n        - cell \"0% forever\"\n        - cell \"0% forever\"\n        - cell \"0% forever\"\n        - cell \"0% forever\"\n      - row \"Free trial 14 days 14 days 14 days 14 days\":\n        - cell \"Free trial\"\n        - cell \"14 days\"\n        - cell \"14 days\"\n        - cell \"14 days\"\n        - cell \"14 days\"\n      - row \"Setup fee \u20b90 \u20b90 \u20b90 \u20b90\":\n        - cell \"Setup fee\"\n        - cell \"\u20b90\"\n        - cell \"\u20b90\"\n        - cell \"\u20b90\"\n        - cell \"\u20b90\"\n    - rowgroup:\n      - text: Core commerce\n      - row \"Online storefront Full Full Full Full\":\n        - cell \"Online storefront\"\n        - cell \"Full\"\n        - cell \"Full\"\n        - cell \"Full\"\n        - cell \"Full\"\n      - row \"Themes & templates\":\n        - cell \"Themes & templates\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Unlimited products\":\n        - cell \"Unlimited products\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Unlimited orders\":\n        - cell \"Unlimited orders\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Unlimited customers\":\n        - cell \"Unlimited customers\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Staff accounts 1 3 10 25\":\n        - cell \"Staff accounts\"\n        - cell \"1\"\n        - cell \"3\"\n        - cell \"10\"\n        - cell \"25\"\n      - row \"Storage 1 GB 10 GB 50 GB 200 GB\":\n        - cell \"Storage\"\n        - cell \"1 GB\"\n        - cell \"10 GB\"\n        - cell \"50 GB\"\n        - cell \"200 GB\"\n      - row \"AI credits per month 50 250 1,000 5,000\":\n        - cell \"AI credits per month\"\n        - cell \"50\"\n        - cell \"250\"\n        - cell \"1,000\"\n        - cell \"5,000\"\n    - rowgroup:\n      - text: Products\n      - row \"Product variants\":\n        - cell \"Product variants\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Collections\":\n        - cell \"Collections\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Categories\":\n        - cell \"Categories\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Product media\":\n        - cell \"Product media\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Product reviews \u2014 \u2014\":\n        - cell \"Product reviews\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n      - row \"Custom data (metafields) \u2014\":\n        - cell \"Custom data (metafields)\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Bulk product import \u2014\":\n        - cell \"Bulk product import\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Purchase orders \u2014 \u2014\":\n        - cell \"Purchase orders\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n    - rowgroup:\n      - text: Inventory\n      - row \"Inventory tracking \u2014\":\n        - cell \"Inventory tracking\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Adjustments & history \u2014\":\n        - cell \"Adjustments & history\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Inventory locations \u2014 1 Multiple Multiple\":\n        - cell \"Inventory locations\"\n        - cell \"\u2014\"\n        - cell \"1\"\n        - cell \"Multiple\"\n        - cell \"Multiple\"\n      - row \"Multi-warehouse \u2014 \u2014\":\n        - cell \"Multi-warehouse\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n      - row \"Low-stock visibility \u2014\":\n        - cell \"Low-stock visibility\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n    - rowgroup:\n      - text: Orders\n      - row \"Order management\":\n        - cell \"Order management\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Draft orders \u2014\":\n        - cell \"Draft orders\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Order notes & tags\":\n        - cell \"Order notes & tags\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Returns & refunds\":\n        - cell \"Returns & refunds\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"COD reconciliation \u2014\":\n        - cell \"COD reconciliation\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Custom order ID format\":\n        - cell \"Custom order ID format\"\n        - cell\n        - cell\n        - cell\n        - cell\n    - rowgroup:\n      - text: Payments\n      - row \"Razorpay payments\":\n        - cell \"Razorpay payments\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"UPI payments\":\n        - cell \"UPI payments\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"QR payments\":\n        - cell \"QR payments\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Cash on delivery\":\n        - cell \"Cash on delivery\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"GST tax invoices\":\n        - cell \"GST tax invoices\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Gift cards \u2014 \u2014\":\n        - cell \"Gift cards\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n      - row \"Wallet & payouts\":\n        - cell \"Wallet & payouts\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"0% commission\":\n        - cell \"0% commission\"\n        - cell\n        - cell\n        - cell\n        - cell\n    - rowgroup:\n      - text: Checkout\n      - row \"Hosted checkout\":\n        - cell \"Hosted checkout\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Customer accounts\":\n        - cell \"Customer accounts\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Checkout customization Limited Limited Standard Full\":\n        - cell \"Checkout customization\"\n        - cell \"Limited\"\n        - cell \"Limited\"\n        - cell \"Standard\"\n        - cell \"Full\"\n      - row \"Abandoned-checkout recovery \u2014\":\n        - cell \"Abandoned-checkout recovery\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n    - rowgroup:\n      - text: Marketing\n      - row \"Coupons \u2014\":\n        - cell \"Coupons\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Discount engine \u2014\":\n        - cell \"Discount engine\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Customer segments \u2014\":\n        - cell \"Customer segments\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Email campaigns \u2014\":\n        - cell \"Email campaigns\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"WhatsApp commerce \u2014\":\n        - cell \"WhatsApp commerce\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Marketing automations \u2014 Basic\":\n        - cell \"Marketing automations\"\n        - cell \"\u2014\"\n        - cell \"Basic\"\n        - cell\n        - cell\n      - row \"Reviews & UGC \u2014 \u2014\":\n        - cell \"Reviews & UGC\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n      - row \"Blog\":\n        - cell \"Blog\"\n        - cell\n        - cell\n        - cell\n        - cell\n    - rowgroup:\n      - text: Customers\n      - row \"Customer profiles\":\n        - cell \"Customer profiles\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Notes & tags\":\n        - cell \"Notes & tags\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Saved addresses\":\n        - cell \"Saved addresses\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Customer segmentation \u2014\":\n        - cell \"Customer segmentation\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Loyalty program \u2014 \u2014\":\n        - cell \"Loyalty program\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n    - rowgroup:\n      - text: Shipping\n      - row \"Shipping zones\":\n        - cell \"Shipping zones\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Shipping rates\":\n        - cell \"Shipping rates\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"GST on shipping\":\n        - cell \"GST on shipping\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Shipping labels \u2014\":\n        - cell \"Shipping labels\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Order tracking\":\n        - cell \"Order tracking\"\n        - cell\n        - cell\n        - cell\n        - cell\n    - rowgroup:\n      - text: Tax\n      - row \"GST invoices\":\n        - cell \"GST invoices\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"GSTIN capture\":\n        - cell \"GSTIN capture\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"HSN codes\":\n        - cell \"HSN codes\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Tax-inclusive pricing\":\n        - cell \"Tax-inclusive pricing\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"GST state code\":\n        - cell \"GST state code\"\n        - cell\n        - cell\n        - cell\n        - cell\n    - rowgroup:\n      - text: AI\n      - row \"AI homepage builder\":\n        - cell \"AI homepage builder\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"AI product content \u2014\":\n        - cell \"AI product content\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"AI SEO \u2014\":\n        - cell \"AI SEO\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"AI marketing \u2014\":\n        - cell \"AI marketing\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"AI Copilot \u2014 \u2014\":\n        - cell \"AI Copilot\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n      - row \"AI Operations \u2014 \u2014 \u2014\":\n        - cell \"AI Operations\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"AI credits per month 50 250 1,000 5,000\":\n        - cell \"AI credits per month\"\n        - cell \"50\"\n        - cell \"250\"\n        - cell \"1,000\"\n        - cell \"5,000\"\n    - rowgroup:\n      - text: Analytics\n      - row \"Sales dashboard\":\n        - cell \"Sales dashboard\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Standard reports\":\n        - cell \"Standard reports\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Advanced reports \u2014\":\n        - cell \"Advanced reports\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Executive Center \u2014 \u2014 \u2014\":\n        - cell \"Executive Center\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"LCIS intelligence \u2014 \u2014 \u2014\":\n        - cell \"LCIS intelligence\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n    - rowgroup:\n      - text: Operations\n      - row \"Operations Center \u2014 \u2014 \u2014\":\n        - cell \"Operations Center\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"Runbooks & incidents \u2014 \u2014 \u2014\":\n        - cell \"Runbooks & incidents\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"Live operations \u2014 \u2014 \u2014\":\n        - cell \"Live operations\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"Bulk operations \u2014\":\n        - cell \"Bulk operations\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Enterprise automations \u2014 \u2014 \u2014\":\n        - cell \"Enterprise automations\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n    - rowgroup:\n      - text: Domains\n      - row \"Free .letbuyy.com address\":\n        - cell \"Free .letbuyy.com address\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Custom domain \u2014\":\n        - cell \"Custom domain\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n      - row \"Free SSL certificate\":\n        - cell \"Free SSL certificate\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Remove LetBuyy branding \u2014\":\n        - cell \"Remove LetBuyy branding\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n        - cell\n    - rowgroup:\n      - text: Global commerce\n      - row \"Storefront languages 1 3 All All\":\n        - cell \"Storefront languages\"\n        - cell \"1\"\n        - cell \"3\"\n        - cell \"All\"\n        - cell \"All\"\n      - row \"Default language\":\n        - cell \"Default language\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Markets \u2014 \u2014\":\n        - cell \"Markets\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n      - row \"Local currency display \u2014 \u2014\":\n        - cell \"Local currency display\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n        - cell\n    - rowgroup:\n      - text: B2B\n      - row \"B2B catalogs \u2014 \u2014 \u2014\":\n        - cell \"B2B catalogs\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"B2B + DTC from one store \u2014 \u2014 \u2014\":\n        - cell \"B2B + DTC from one store\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"Wholesale price lists \u2014 \u2014 \u2014\":\n        - cell \"Wholesale price lists\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n    - rowgroup:\n      - text: Multi-store\n      - row \"Multi-store management \u2014 \u2014 \u2014\":\n        - cell \"Multi-store management\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"Centralized catalog \u2014 \u2014 \u2014\":\n        - cell \"Centralized catalog\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"Store switching \u2014 \u2014 \u2014\":\n        - cell \"Store switching\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n    - rowgroup:\n      - text: Security\n      - row \"KYC verification\":\n        - cell \"KYC verification\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Two-factor authentication\":\n        - cell \"Two-factor authentication\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Passkeys\":\n        - cell \"Passkeys\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Users & permissions Standard Standard Standard Custom\":\n        - cell \"Users & permissions\"\n        - cell \"Standard\"\n        - cell \"Standard\"\n        - cell \"Standard\"\n        - cell \"Custom\"\n      - row \"Custom roles \u2014 \u2014 \u2014\":\n        - cell \"Custom roles\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n      - row \"Step-up verification\":\n        - cell \"Step-up verification\"\n        - cell\n        - cell\n        - cell\n        - cell\n      - row \"Policy pages\":\n        - cell \"Policy pages\"\n        - cell\n        - cell\n        - cell\n        - cell\n    - rowgroup:\n      - text: Support\n      - row \"Support channel Email Priority Priority + WhatsApp Dedicated manager\":\n        - cell \"Support channel\"\n        - cell \"Email\"\n        - cell \"Priority\"\n        - cell \"Priority + WhatsApp\"\n        - cell \"Dedicated manager\"\n      - row \"Onboarding Self-serve Guided Guided White-glove\":\n        - cell \"Onboarding\"\n        - cell \"Self-serve\"\n        - cell \"Guided\"\n        - cell \"Guided\"\n        - cell \"White-glove\"\n      - row \"Response priority Standard Priority Priority Highest\":\n        - cell \"Response priority\"\n        - cell \"Standard\"\n        - cell \"Priority\"\n        - cell \"Priority\"\n        - cell \"Highest\"\n      - row \"Dedicated success manager \u2014 \u2014 \u2014\":\n        - cell \"Dedicated success manager\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell \"\u2014\"\n        - cell\n  - button \"+ See all features\"\n  - region \"Everything you need to know before launching\":\n    - paragraph: Frequently Asked Questions\n    - heading \"Everything you need to know before launching\" [level=2]\n    - paragraph: Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.\n    - complementary \"Built for modern commerce\":\n      - heading \"Built for modern commerce\" [level=3]\n      - list:\n        - listitem: No transaction commissions\n        - listitem: Indian payment ecosystem\n        - listitem: Custom domains supported\n        - listitem: Migration assistance available\n        - listitem: AI-native commerce platform\n      - term: AI capabilities\n      - definition: 50+\n      - term: Monitoring\n      - definition: 24/7\n      - term: Data ownership\n      - definition: 100%\n      - term: Commission\n      - definition: 0%\n    - heading \"What is LetBuyy?\" [level=3]:\n      - button \"What is LetBuyy?\" [expanded]\n    - region \"What is LetBuyy?\":\n      - paragraph: LetBuyy is an AI-native Commerce Operating System that helps businesses manage storefronts, products, inventory, orders, payments, customers, analytics, and operations from one platform.\n      - paragraph: Unlike traditional store builders, LetBuyy is designed to run the entire commerce business, not just the online store.\n    - heading \"How is LetBuyy different from Shopify?\" [level=3]:\n      - button \"How is LetBuyy different from Shopify?\"\n    - heading \"Can I use my own custom domain?\" [level=3]:\n      - button \"Can I use my own custom domain?\"\n    - heading \"Which payment methods does LetBuyy support?\" [level=3]:\n      - button \"Which payment methods does LetBuyy support?\"\n    - heading \"Can I migrate from Shopify, WooCommerce, or another platform?\" [level=3]:\n      - button \"Can I migrate from Shopify, WooCommerce, or another platform?\"\n    - heading \"Is LetBuyy suitable for growing businesses?\" [level=3]:\n      - button \"Is LetBuyy suitable for growing businesses?\"\n    - heading \"Do you charge transaction commissions?\" [level=3]:\n      - button \"Do you charge transaction commissions?\"\n    - heading \"What happens after my free trial ends?\" [level=3]:\n      - button \"What happens after my free trial ends?\"\n    - heading \"Who owns my store data?\" [level=3]:\n      - button \"Who owns my store data?\"\n  - paragraph: LetBuyy Ecosystem\n  - heading \"One platform. Many powerful surfaces.\" [level=2]\n  - paragraph: Everything merchants, developers, operators, and partners need to run commerce from one connected ecosystem.\n  - text: 12+ Platform Surfaces 1 Unified Identity 100% Commerce Engine AI Native Foundation\n  - article:\n    - text: Core Platform Merchant Control Plane\n    - paragraph: The operating system behind every LetBuyy store.\n    - text: Products Orders Inventory Customers Analytics AI Copilot\n    - link \"Open Control Plane\":\n      - /url: https://accounts.letbuyy.com/signup\n  - paragraph: Platform surfaces\n  - link \"Themes Storefront themes guide Guide\":\n    - /url: /in/resources/platform/how-themes-work\n  - link \"Apps App integrations guide Guide\":\n    - /url: /in/resources/platform/introduction-to-apps\n  - link \"Developers APIs, Webhooks, OAuth, SDKs Guide\":\n    - /url: /in/resources/developers\n  - link \"Pricing Founder & growth plans Plans\":\n    - /url: /in/pricing\n  - paragraph: All surfaces share the same commerce engine, identity system, and data layer.\n  - heading \"Start building with LetBuyy today.\" [level=2]\n  - paragraph: Launch your store, blog, or landing page in minutes.\n  - link \"Get Started Free\":\n    - /url: https://accounts.letbuyy.com/signup\n  - link \"Request Demo\":\n    - /url: /in/demo\n  - paragraph: No credit card required \u2022 Free forever plan available\n- contentinfo \"LetBuyy footer\":\n  - heading \"LetBuyy footer\" [level=2]\n  - link \"LetBuyy home\":\n    - /url: /in\n    - img \"LetBuyy\"\n  - navigation \"LetBuyy\":\n    - heading \"LetBuyy\" [level=3]\n    - list:\n      - listitem:\n        - link \"What is LetBuyy?\":\n          - /url: /in\n      - listitem:\n        - link \"Pricing\":\n          - /url: /in/pricing\n      - listitem:\n        - link \"Start your store\":\n          - /url: /in/create\n  - navigation \"Ecosystem\":\n    - heading \"Ecosystem\" [level=3]\n    - list:\n      - listitem:\n        - link \"Theme guide\":\n          - /url: /in/resources/platform/how-themes-work\n      - listitem:\n        - link \"App integrations guide\":\n          - /url: /in/resources/platform/introduction-to-apps\n      - listitem:\n        - link \"Developer Docs\":\n          - /url: /in/resources/developers\n      - listitem:\n        - link \"Merchant login\":\n          - /url: https://accounts.letbuyy.com/lookup\n  - navigation \"Resources\":\n    - heading \"Resources\" [level=3]\n    - list:\n      - listitem:\n        - link \"All resources\":\n          - /url: /in/resources\n      - listitem:\n        - link \"Ecommerce guides\":\n          - /url: /in/resources/ecommerce\n      - listitem:\n        - link \"Developer Docs\":\n          - /url: /in/resources/developers\n      - listitem:\n        - link \"Changelog\":\n          - /url: /in/resources/changelog\n  - navigation \"Support\":\n    - heading \"Support\" [level=3]\n    - list:\n      - listitem:\n        - link \"Support centre\":\n          - /url: /in/support\n      - listitem:\n        - link \"Contact us\":\n          - /url: /in/contact\n      - listitem:\n        - link \"Grievance redressal\":\n          - /url: /in/legal/grievance\n      - listitem:\n        - link \"Security\":\n          - /url: /in/legal/security\n      - listitem:\n        - link \"Account access\":\n          - /url: https://accounts.letbuyy.com/lookup\n  - button \"Region and language\": India English\n  - navigation \"Legal links\":\n    - link \"Legal\":\n      - /url: /in/legal\n    - link \"Terms\":\n      - /url: /in/legal/terms\n    - link \"Privacy\":\n      - /url: /in/legal/privacy\n    - link \"Refunds\":\n      - /url: /in/legal/refunds\n    - link \"Sitemap\":\n      - /url: /in/sitemap\n    - button \"Your Privacy Choices\"\n  - navigation \"Social links\":\n    - link \"Facebook\":\n      - /url: https://www.facebook.com/share/14tEGNoJSXR/\n    - link \"X\":\n      - /url: https://x.com/letbuyyhq\n    - link \"YouTube\":\n      - /url: https://youtube.com/@letbuyyhq\n    - link \"Instagram\":\n      - /url: https://www.instagram.com/letbuyyhq\n  - paragraph: \u00a9 2026 LetBuyy. All rights reserved.\n- alert",
+    "escape_closes_menu": true
+  },
+  {
+    "url": "https://www.letbuyy.com/in",
+    "device": "desktop",
+    "captured_at": "2026-10-29T18:08:19.063804+00:00",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "status": 200,
+    "observations": {
+      "lcp": [
+        {
+          "startTime": 1052,
+          "size": 28287,
+          "url": "",
+          "element": "SPAN",
+          "text": "Your Commerce OS."
+        }
+      ],
+      "shifts": [
+        {
+          "value": 2.824395576131687e-06,
+          "time": 2473.2999999988824
+        },
+        {
+          "value": 2.824395576131687e-06,
+          "time": 2489
+        },
+        {
+          "value": 3.849451303155007e-06,
+          "time": 2506.0999999996275
+        },
+        {
+          "value": 3.849451303155007e-06,
+          "time": 2523
+        },
+        {
+          "value": 3.849451303155007e-06,
+          "time": 2539.699999999255
+        },
+        {
+          "value": 4.916302297668038e-06,
+          "time": 2556.2999999988824
+        },
+        {
+          "value": 4.916302297668038e-06,
+          "time": 2573
+        },
+        {
+          "value": 6.134259259259259e-06,
+          "time": 2590
+        },
+        {
+          "value": 6.0249485596707825e-06,
+          "time": 2606.2999999988824
+        },
+        {
+          "value": 6.134259259259259e-06,
+          "time": 2622.7999999988824
+        },
+        {
+          "value": 6.134259259259259e-06,
+          "time": 2639.699999999255
+        },
+        {
+          "value": 7.1753900891632375e-06,
+          "time": 2656.0999999996275
+        },
+        {
+          "value": 7.299168381344307e-06,
+          "time": 2673.0999999996275
+        },
+        {
+          "value": 7.299168381344307e-06,
+          "time": 2689.699999999255
+        },
+        {
+          "value": 7.299168381344307e-06,
+          "time": 2706.39999999851
+        },
+        {
+          "value": 7.299168381344307e-06,
+          "time": 2723
+        },
+        {
+          "value": 8.50480109739369e-06,
+          "time": 2739.699999999255
+        },
+        {
+          "value": 7.299168381344307e-06,
+          "time": 2756.5
+        },
+        {
+          "value": 8.50480109739369e-06,
+          "time": 2773.199999999255
+        },
+        {
+          "value": 8.50480109739369e-06,
+          "time": 2789.2999999988824
+        },
+        {
+          "value": 8.641975308641975e-06,
+          "time": 2806
+        },
+        {
+          "value": 8.50480109739369e-06,
+          "time": 2822.699999999255
+        },
+        {
+          "value": 8.50480109739369e-06,
+          "time": 2839.699999999255
+        },
+        {
+          "value": 1.0545267489711934e-05,
+          "time": 2856.39999999851
+        },
+        {
+          "value": 1.0871056241426612e-05,
+          "time": 2873
+        },
+        {
+          "value": 9.302126200274348e-06,
+          "time": 2889.2999999988824
+        },
+        {
+          "value": 1.0733882030178327e-05,
+          "time": 2906.0999999996275
+        },
+        {
+          "value": 1.1188271604938271e-05,
+          "time": 2923.199999999255
+        },
+        {
+          "value": 9.609696502057613e-06,
+          "time": 2939.699999999255
+        },
+        {
+          "value": 1.1218278463648836e-05,
+          "time": 2956.5999999996275
+        },
+        {
+          "value": 9.81599365569273e-06,
+          "time": 2973.2999999988824
+        },
+        {
+          "value": 1.1488340192043897e-05,
+          "time": 2989.5999999996275
+        },
+        {
+          "value": 9.999785665294925e-06,
+          "time": 3006.5
+        },
+        {
+          "value": 9.909765089163237e-06,
+          "time": 3023.199999999255
+        },
+        {
+          "value": 8.935449152816961e-06,
+          "time": 3039.5999999996275
+        },
+        {
+          "value": 1.032235939643347e-05,
+          "time": 3056.199999999255
+        },
+        {
+          "value": 8.7255658436214e-06,
+          "time": 3072.699999999255
+        },
+        {
+          "value": 8.809156378600824e-06,
+          "time": 3088.7999999988824
+        },
+        {
+          "value": 8.809156378600824e-06,
+          "time": 3106.0999999996275
+        },
+        {
+          "value": 1.1108393172014232e-05,
+          "time": 3122
+        },
+        {
+          "value": 1.1280534493089213e-05,
+          "time": 3139.39999999851
+        },
+        {
+          "value": 8.40645425113631e-06,
+          "time": 3156.0999999996275
+        },
+        {
+          "value": 1.1857781259774835e-05,
+          "time": 3173.39999999851
+        },
+        {
+          "value": 1.090986555332346e-05,
+          "time": 3189.699999999255
+        },
+        {
+          "value": 1.1145430827827609e-05,
+          "time": 3206.0999999996275
+        },
+        {
+          "value": 1.1437263933555906e-05,
+          "time": 3223
+        },
+        {
+          "value": 1.007890616261256e-05,
+          "time": 3239.39999999851
+        },
+        {
+          "value": 1.2204655894526729e-05,
+          "time": 3256.39999999851
+        },
+        {
+          "value": 1.0800135969625089e-05,
+          "time": 3272.5999999996275
+        },
+        {
+          "value": 1.9356401859487524e-06,
+          "time": 3289.5
+        },
+        {
+          "value": 9.570172621225953e-06,
+          "time": 3306.199999999255
+        },
+        {
+          "value": 2.33594278903328e-06,
+          "time": 3322.699999999255
+        },
+        {
+          "value": 2.3832724091120378e-06,
+          "time": 3339.39999999851
+        },
+        {
+          "value": 2.5720439657098795e-06,
+          "time": 3354.7999999988824
+        },
+        {
+          "value": 2.06494743441358e-06,
+          "time": 3372.7999999988824
+        },
+        {
+          "value": 2.4122110610145602e-06,
+          "time": 3388.2999999988824
+        },
+        {
+          "value": 1.9063585906689383e-06,
+          "time": 3406.0999999996275
+        },
+        {
+          "value": 1.9718792866941013e-06,
+          "time": 3439.699999999255
+        },
+        {
+          "value": 7.065973229532543e-06,
+          "time": 3455.0999999996275
+        },
+        {
+          "value": 6.51934360280449e-06,
+          "time": 3472.89999999851
+        },
+        {
+          "value": 6.897512548417875e-06,
+          "time": 3489.39999999851
+        },
+        {
+          "value": 7.047971482139557e-06,
+          "time": 3506.0999999996275
+        },
+        {
+          "value": 2.917876328623998e-06,
+          "time": 3521.699999999255
+        },
+        {
+          "value": 7.062290095825092e-06,
+          "time": 3539.699999999255
+        },
+        {
+          "value": 3.3626907646901323e-06,
+          "time": 3555.0999999996275
+        },
+        {
+          "value": 3.07482750818072e-06,
+          "time": 3572.7999999988824
+        },
+        {
+          "value": 2.9578787063865504e-06,
+          "time": 3589.699999999255
+        },
+        {
+          "value": 3.636649067019239e-06,
+          "time": 3606.0999999996275
+        },
+        {
+          "value": 3.284628335667572e-06,
+          "time": 3622.7999999988824
+        },
+        {
+          "value": 3.014901390782109e-06,
+          "time": 3639.5999999996275
+        },
+        {
+          "value": 3.3718840575512545e-06,
+          "time": 3656
+        },
+        {
+          "value": 1.3813512151950997e-05,
+          "time": 3672.89999999851
+        },
+        {
+          "value": 3.6447986653802817e-06,
+          "time": 3688.39999999851
+        },
+        {
+          "value": 6.4733401574552135e-06,
+          "time": 3706.0999999996275
+        },
+        {
+          "value": 1.0117425087875136e-05,
+          "time": 3721.5999999996275
+        },
+        {
+          "value": 5.98012598126677e-06,
+          "time": 3739.5
+        },
+        {
+          "value": 3.712226660980936e-06,
+          "time": 3756.0999999996275
+        },
+        {
+          "value": 6.00244341563786e-06,
+          "time": 3772.699999999255
+        },
+        {
+          "value": 7.244513031550068e-06,
+          "time": 3789.2999999988824
+        },
+        {
+          "value": 6.462191358024691e-06,
+          "time": 3806
+        },
+        {
+          "value": 7.145383230452675e-06,
+          "time": 3822.5999999996275
+        },
+        {
+          "value": 3.885888203017833e-06,
+          "time": 3839.39999999851
+        },
+        {
+          "value": 1.9718792866941013e-06,
+          "time": 3855.0999999996275
+        },
+        {
+          "value": 1.9718792866941013e-06,
+          "time": 3872.7999999988824
+        },
+        {
+          "value": 5.6584362139917696e-06,
+          "time": 3889.39999999851
+        },
+        {
+          "value": 1.4355066872427983e-06,
+          "time": 3906.2999999988824
+        },
+        {
+          "value": 1.3953189300411523e-06,
+          "time": 3922.39999999851
+        },
+        {
+          "value": 5.752426999096027e-06,
+          "time": 4124.5
+        },
+        {
+          "value": 1.1351165980795611e-05,
+          "time": 4274.699999999255
+        },
+        {
+          "value": 4.259902263374486e-06,
+          "time": 4367.39999999851
+        },
+        {
+          "value": 2.824395576131687e-06,
+          "time": 4404.0999999996275
+        },
+        {
+          "value": 1.4355066872427983e-06,
+          "time": 4422
+        },
+        {
+          "value": 1.4100544410150889e-05,
+          "time": 4440.0999999996275
+        },
+        {
+          "value": 4.319380144032922e-06,
+          "time": 4458.0999999996275
+        },
+        {
+          "value": 2.824395576131687e-06,
+          "time": 4494.0999999996275
+        },
+        {
+          "value": 2.824395576131687e-06,
+          "time": 4531.0999999996275
+        },
+        {
+          "value": 1.3953189300411523e-06,
+          "time": 4549.5
+        },
+        {
+          "value": 2.824395576131687e-06,
+          "time": 4567.5999999996275
+        },
+        {
+          "value": 2.824395576131687e-06,
+          "time": 4604.299999998882
+        },
+        {
+          "value": 1.5753600823045267e-05,
+          "time": 4642.39999999851
+        },
+        {
+          "value": 2.458311899862826e-05,
+          "time": 4906.299999998882
+        },
+        {
+          "value": 1.3158007544581618e-05,
+          "time": 4923
+        },
+        {
+          "value": 7.013567386831276e-06,
+          "time": 4939.0999999996275
+        },
+        {
+          "value": 8.379951131687244e-06,
+          "time": 4956.199999999255
+        },
+        {
+          "value": 8.410493827160493e-06,
+          "time": 4973
+        },
+        {
+          "value": 8.41210133744856e-06,
+          "time": 4989.5
+        },
+        {
+          "value": 5.668081275720164e-06,
+          "time": 5006.39999999851
+        },
+        {
+          "value": 9.836355452674898e-06,
+          "time": 5023.0999999996275
+        },
+        {
+          "value": 7.024819958847737e-06,
+          "time": 5039.5999999996275
+        },
+        {
+          "value": 9.826710390946503e-06,
+          "time": 5056.5
+        },
+        {
+          "value": 7.43741426611797e-06,
+          "time": 5073
+        },
+        {
+          "value": 8.402456275720164e-06,
+          "time": 5089.5999999996275
+        },
+        {
+          "value": 7.0232124485596704e-06,
+          "time": 5106.299999998882
+        },
+        {
+          "value": 8.376736111111111e-06,
+          "time": 5122.89999999851
+        },
+        {
+          "value": 6.950874485596708e-06,
+          "time": 5139.5999999996275
+        },
+        {
+          "value": 5.61181841563786e-06,
+          "time": 5156.199999999255
+        },
+        {
+          "value": 6.902649176954733e-06,
+          "time": 5173.0999999996275
+        },
+        {
+          "value": 2.824395576131687e-06,
+          "time": 5189.5999999996275
+        },
+        {
+          "value": 8.314043209876543e-06,
+          "time": 5206.5
+        },
+        {
+          "value": 5.5362654320987655e-06,
+          "time": 5223.199999999255
+        },
+        {
+          "value": 7.092335390946501e-06,
+          "time": 5239.699999999255
+        },
+        {
+          "value": 4.219714506172839e-06,
+          "time": 5256.39999999851
+        },
+        {
+          "value": 4.0830761316872426e-06,
+          "time": 5273.199999999255
+        },
+        {
+          "value": 4.560506687242798e-06,
+          "time": 5289.5999999996275
+        },
+        {
+          "value": 5.2453060699588475e-06,
+          "time": 5306.5
+        },
+        {
+          "value": 2.7906378600823046e-06,
+          "time": 5322.89999999851
+        },
+        {
+          "value": 3.861239711934156e-06,
+          "time": 5338.699999999255
+        },
+        {
+          "value": 1.3953189300411523e-06,
+          "time": 5356.199999999255
+        },
+        {
+          "value": 6.579539609053497e-06,
+          "time": 5373.0999999996275
+        },
+        {
+          "value": 2.7906378600823046e-06,
+          "time": 5405.699999999255
+        },
+        {
+          "value": 2.764917695473251e-06,
+          "time": 5422.89999999851
+        },
+        {
+          "value": 2.8308256172839506e-06,
+          "time": 5439.5999999996275
+        },
+        {
+          "value": 1.3953189300411523e-06,
+          "time": 5506.299999998882
+        },
+        {
+          "value": 1.3953189300411523e-06,
+          "time": 6106.199999999255
+        },
+        {
+          "value": 5.9301054526748964e-06,
+          "time": 6122.799999998882
+        },
+        {
+          "value": 1.1970820119515041e-05,
+          "time": 6139.5999999996275
+        },
+        {
+          "value": 1.6458762002743484e-05,
+          "time": 6156.199999999255
+        },
+        {
+          "value": 1.807576507861395e-05,
+          "time": 6172.89999999851
+        },
+        {
+          "value": 1.8608539094650206e-05,
+          "time": 6189.5999999996275
+        },
+        {
+          "value": 2.5734163769642183e-05,
+          "time": 6206.199999999255
+        },
+        {
+          "value": 2.4085862482853224e-05,
+          "time": 6223.199999999255
+        },
+        {
+          "value": 2.7342006699047953e-05,
+          "time": 6239.699999999255
+        },
+        {
+          "value": 2.842152942845851e-05,
+          "time": 6256.299999998882
+        },
+        {
+          "value": 2.9944701646090533e-05,
+          "time": 6273.199999999255
+        },
+        {
+          "value": 3.486901703194827e-05,
+          "time": 6289.699999999255
+        },
+        {
+          "value": 2.7314814814814816e-05,
+          "time": 6306.299999998882
+        },
+        {
+          "value": 4.057355967078189e-05,
+          "time": 6322.89999999851
+        },
+        {
+          "value": 3.5756923010973935e-05,
+          "time": 6339.5
+        },
+        {
+          "value": 3.613951045953361e-05,
+          "time": 6356.5
+        },
+        {
+          "value": 4.14909122085048e-05,
+          "time": 6373
+        },
+        {
+          "value": 4.146519204389575e-05,
+          "time": 6389.799999998882
+        },
+        {
+          "value": 4.1911008230452675e-05,
+          "time": 6406.39999999851
+        },
+        {
+          "value": 4.1820987654320994e-05,
+          "time": 6423
+        },
+        {
+          "value": 4.780092592592593e-05,
+          "time": 6439.5999999996275
+        },
+        {
+          "value": 4.236968449931413e-05,
+          "time": 6456.5
+        },
+        {
+          "value": 4.7950424382716055e-05,
+          "time": 6473.0999999996275
+        },
+        {
+          "value": 4.226251714677641e-05,
+          "time": 6489.299999998882
+        },
+        {
+          "value": 4.811439043209877e-05,
+          "time": 6506.39999999851
+        },
+        {
+          "value": 4.8206018518518525e-05,
+          "time": 6523.0999999996275
+        },
+        {
+          "value": 4.848572530864198e-05,
+          "time": 6539.299999998882
+        },
+        {
+          "value": 4.82542438271605e-05,
+          "time": 6556.299999998882
+        },
+        {
+          "value": 5.064139660493827e-05,
+          "time": 6573
+        },
+        {
+          "value": 4.819637345679012e-05,
+          "time": 6589.89999999851
+        },
+        {
+          "value": 5.107542438271605e-05,
+          "time": 6606.199999999255
+        },
+        {
+          "value": 5.1012731481481485e-05,
+          "time": 6622.0999999996275
+        },
+        {
+          "value": 5.134548611111111e-05,
+          "time": 6639.89999999851
+        },
+        {
+          "value": 5.1003086419753094e-05,
+          "time": 6656.5
+        },
+        {
+          "value": 5.0896990740740744e-05,
+          "time": 6673.199999999255
+        },
+        {
+          "value": 5.149016203703704e-05,
+          "time": 6689.699999999255
+        },
+        {
+          "value": 5.13792438271605e-05,
+          "time": 6706.39999999851
+        },
+        {
+          "value": 5.092110339506173e-05,
+          "time": 6722.0999999996275
+        },
+        {
+          "value": 5.143229166666667e-05,
+          "time": 6739.699999999255
+        },
+        {
+          "value": 4.5486111111111114e-05,
+          "time": 6756.199999999255
+        },
+        {
+          "value": 5.159625771604938e-05,
+          "time": 6773
+        },
+        {
+          "value": 4.1623799725651584e-05,
+          "time": 6789.89999999851
+        },
+        {
+          "value": 4.5443244170096026e-05,
+          "time": 6806.39999999851
+        },
+        {
+          "value": 4.551611796982167e-05,
+          "time": 6823.0999999996275
+        },
+        {
+          "value": 4.173954046639232e-05,
+          "time": 6839.699999999255
+        },
+        {
+          "value": 4.122942386831276e-05,
+          "time": 6856.39999999851
+        },
+        {
+          "value": 3.599697788065844e-05,
+          "time": 6873
+        },
+        {
+          "value": 3.9519032921810696e-05,
+          "time": 6889.5999999996275
+        },
+        {
+          "value": 3.587695044581619e-05,
+          "time": 6906.299999998882
+        },
+        {
+          "value": 3.87988683127572e-05,
+          "time": 6923.0999999996275
+        },
+        {
+          "value": 3.200606567215363e-05,
+          "time": 6939.89999999851
+        },
+        {
+          "value": 3.0240483539094648e-05,
+          "time": 6956.299999998882
+        },
+        {
+          "value": 2.7009387860082303e-05,
+          "time": 6972.799999998882
+        },
+        {
+          "value": 2.6697530864197533e-05,
+          "time": 6989.5999999996275
+        },
+        {
+          "value": 2.679076646090535e-05,
+          "time": 7006.5
+        },
+        {
+          "value": 2.1862139917695473e-05,
+          "time": 7022.799999998882
+        },
+        {
+          "value": 2.1803197873799724e-05,
+          "time": 7039.5999999996275
+        },
+        {
+          "value": 2.170138888888889e-05,
+          "time": 7056.299999998882
+        },
+        {
+          "value": 1.7159636488340192e-05,
+          "time": 7072.89999999851
+        },
+        {
+          "value": 1.4958419067215365e-05,
+          "time": 7088.5999999996275
+        },
+        {
+          "value": 1.499056927297668e-05,
+          "time": 7106.199999999255
+        },
+        {
+          "value": 1.2950102880658438e-05,
+          "time": 7122.799999998882
+        },
+        {
+          "value": 9.640239197530865e-06,
+          "time": 7139.5
+        },
+        {
+          "value": 4.266332304526749e-06,
+          "time": 7156.199999999255
+        }
+      ],
+      "longtasks": [
+        {
+          "startTime": 1173.3999999985099,
+          "duration": 54
+        }
+      ],
+      "navigation": [
+        {
+          "responseStart": 625.7999999988824,
+          "domContentLoadedEventEnd": 1030.0999999996275,
+          "loadEventEnd": 1298.8999999985099,
+          "transferSize": 33688,
+          "encodedBodySize": 33388,
+          "decodedBodySize": 339643
+        }
+      ],
+      "paints": [
+        {
+          "name": "first-paint",
+          "startTime": 1052
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 1052
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://www.letbuyy.com/in/pricing",
+    "device": "mobile",
+    "captured_at": "2026-10-29T18:08:26.420650+00:00",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "status": 200,
+    "observations": {
+      "lcp": [
+        {
+          "startTime": 564,
+          "size": 25460,
+          "url": "",
+          "element": "P",
+          "text": "Launch and Growth plans are live now. Scale and Commerce OS are coming soon. 0% transaction and plat"
+        },
+        {
+          "startTime": 692,
+          "size": 68266,
+          "url": "https://www.letbuyy.com/_next/image?url=%2Fillustrations%2Fcommerce-essentials-v1.png&w=640&q=75",
+          "element": "IMG",
+          "text": ""
+        }
+      ],
+      "shifts": [],
+      "longtasks": [
+        {
+          "startTime": 682.1999999992549,
+          "duration": 50
+        }
+      ],
+      "navigation": [
+        {
+          "responseStart": 195.09999999962747,
+          "domContentLoadedEventEnd": 561.5999999996275,
+          "loadEventEnd": 733.9000000003725,
+          "transferSize": 21597,
+          "encodedBodySize": 21297,
+          "decodedBodySize": 249099
+        }
+      ],
+      "paints": [
+        {
+          "name": "first-paint",
+          "startTime": 564
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 564
+        }
+      ]
+    },
+    "prices": [
+      "\u20b9199/month",
+      "\u20b9699/month",
+      "Coming soon",
+      "Coming soon"
+    ]
+  },
+  {
+    "url": "https://www.letbuyy.com/in/pricing",
+    "device": "desktop",
+    "captured_at": "2026-10-29T18:08:33.231362+00:00",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "status": 200,
+    "observations": {
+      "lcp": [
+        {
+          "startTime": 480,
+          "size": 35232,
+          "url": "",
+          "element": "P",
+          "text": "Launch and Growth plans are live now. Scale and Commerce OS are coming soon. 0% transaction and plat"
+        },
+        {
+          "startTime": 636,
+          "size": 68480,
+          "url": "https://www.letbuyy.com/_next/image?url=%2Fillustrations%2Fcommerce-essentials-v1.png&w=640&q=75",
+          "element": "IMG",
+          "text": ""
+        }
+      ],
+      "shifts": [
+        {
+          "value": 0.02855919656635803,
+          "time": 1287.7999999988824
+        }
+      ],
+      "longtasks": [
+        {
+          "startTime": 630.3999999985099,
+          "duration": 50
+        }
+      ],
+      "navigation": [
+        {
+          "responseStart": 198.7999999988824,
+          "domContentLoadedEventEnd": 473.7999999988824,
+          "loadEventEnd": 874.5,
+          "transferSize": 21597,
+          "encodedBodySize": 21297,
+          "decodedBodySize": 249099
+        }
+      ],
+      "paints": [
+        {
+          "name": "first-paint",
+          "startTime": 480
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 480
+        }
+      ]
+    },
+    "prices": [
+      "\u20b9199/month",
+      "\u20b9699/month",
+      "Coming soon",
+      "Coming soon"
+    ]
+  },
+  {
+    "url": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india",
+    "device": "mobile",
+    "captured_at": "2026-10-29T18:08:40.180186+00:00",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "status": 200,
+    "observations": {
+      "lcp": [
+        {
+          "startTime": 500,
+          "size": 29593,
+          "url": "",
+          "element": "H1",
+          "text": "GST for Ecommerce in India: The Complete 2026 Guide"
+        },
+        {
+          "startTime": 580,
+          "size": 53487,
+          "url": "https://www.letbuyy.com/illustrations/resources/reading-tax-documents-v1.webp",
+          "element": "IMG",
+          "text": ""
+        }
+      ],
+      "shifts": [],
+      "longtasks": [],
+      "navigation": [
+        {
+          "responseStart": 190.90000000037253,
+          "domContentLoadedEventEnd": 493.59999999962747,
+          "loadEventEnd": 1229.7000000011176,
+          "transferSize": 35479,
+          "encodedBodySize": 35179,
+          "decodedBodySize": 319445
+        }
+      ],
+      "paints": [
+        {
+          "name": "first-paint",
+          "startTime": 500
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 500
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india",
+    "device": "desktop",
+    "captured_at": "2026-10-29T18:08:47.474181+00:00",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "status": 200,
+    "observations": {
+      "lcp": [
+        {
+          "startTime": 552,
+          "size": 135000,
+          "url": "https://www.letbuyy.com/illustrations/resources/reading-tax-documents-v1.webp",
+          "element": "IMG",
+          "text": ""
+        }
+      ],
+      "shifts": [
+        {
+          "value": 0.0001839849108367627,
+          "time": 561.5
+        }
+      ],
+      "longtasks": [
+        {
+          "startTime": 601.3000000007451,
+          "duration": 80
+        }
+      ],
+      "navigation": [
+        {
+          "responseStart": 208.69999999925494,
+          "domContentLoadedEventEnd": 432.90000000037253,
+          "loadEventEnd": 844.4000000003725,
+          "transferSize": 35479,
+          "encodedBodySize": 35179,
+          "decodedBodySize": 319445
+        }
+      ],
+      "paints": [
+        {
+          "name": "first-paint",
+          "startTime": 552
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 552
+        }
+      ]
+    }
+  }
+]

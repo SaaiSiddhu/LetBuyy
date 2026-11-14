@@ -1,0 +1,888 @@
+{
+  "capturedAt": "2026-11-03T10:39:56.686412+00:00",
+  "scope": "Local marketing repair, authenticated read-only SEO/property evidence, review/release packets; no hosted changes",
+  "requestedOutcomeComplete": false,
+  "status": "ROW_BY_ROW_REPAIRS_VERIFIED_ORIGINAL_LCP_AND_EXTERNAL_ACCEPTANCE_OPEN",
+  "source": {
+    "branch": "codex/local-work-preserved-20261025",
+    "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+    "candidateBuildId": "fiI7E7RIv4e4VqtSPl2DG",
+    "rootBuildId": "b2CsFLYIUn25H5EguBjys",
+    "changedPaths": [
+      "apps/marketing/web/src/app/[locale]/create/page.tsx",
+      "apps/marketing/web/next.config.ts",
+      "config/security/next-security-headers.ts",
+      "packages/typescript/api-client/src/index.ts",
+      "packages/typescript/api-client/package.json",
+      "packages/typescript/api-client/src/origin.ts",
+      "tests/marketing/security-policy.test.ts",
+      "apps/marketing/web/src/lib/resources/articles.ts",
+      "apps/marketing/web/src/lib/i18n/content/hi/articles/building-first-letbuyy-store.json",
+      "apps/marketing/web/src/lib/i18n/content/ta/articles/building-first-letbuyy-store.json",
+      "tests/marketing/first-store-sequence.test.ts",
+      "tests/marketing/reading-visuals.test.ts",
+      "services/api-gateway/src/lib/cors.ts",
+      "tests/contracts/credentialed-cors.test.ts",
+      "apps/marketing/web/src/middleware.ts",
+      "apps/marketing/web/src/proxy.ts",
+      "tests/marketing/locale-proxy.test.ts",
+      "apps/marketing/web/src/app/sitemap.ts",
+      "apps/marketing/web/src/app/[locale]/sitemap/page.tsx",
+      "apps/marketing/web/src/lib/i18n/content/hi/articles/how-to-start-an-online-store-india.json",
+      "apps/marketing/web/src/lib/i18n/content/hi/articles/product-page-optimization.json",
+      "apps/marketing/web/src/lib/i18n/content/hi/articles/understanding-fulfillment.json",
+      "apps/marketing/web/src/lib/i18n/content/ta/articles/how-to-start-an-online-store-india.json",
+      "apps/marketing/web/src/lib/i18n/content/ta/articles/product-page-optimization.json",
+      "apps/marketing/web/src/lib/i18n/content/ta/articles/understanding-fulfillment.json",
+      "tests/federation/marketing-site-auth-boundary.test.mjs",
+      "apps/marketing/web/src/components/CapabilityArtwork.tsx",
+      "tests/marketing/online-store-sequence.test.ts",
+      "tests/marketing/directory-indexing.test.ts",
+      "tests/marketing/capability-artwork-priority.test.ts"
+    ],
+    "taskPatch": "SOURCE-CHANGES.patch",
+    "manifest": "evidence/completion-source-lineage.json",
+    "sourceArchive": "MARKETING-RELEASE-SOURCE.tar.gz",
+    "gatewayPatch": "GATEWAY-CORS-REPAIR.patch",
+    "proxyPatch": "PROXY-MIGRATION.patch",
+    "resolutionPatch": "RESOLUTION-REPAIRS.patch"
+  },
+  "local": {
+    "createCases": 12,
+    "createAllPassed": true,
+    "createMutations": 0,
+    "knownUrlSummary": {
+      "captured_at": "2026-11-03T02:44:24.159661+00:00",
+      "base": "http://127.0.0.1:9049",
+      "known_urls": 489,
+      "html_200": 477,
+      "redirects": 12,
+      "errors": [],
+      "feeds": [
+        {
+          "path": "/in/resources/rss.xml",
+          "status": 200,
+          "count": 35,
+          "passed": true
+        },
+        {
+          "path": "/in/resources/sitemap.xml",
+          "status": 200,
+          "count": 43,
+          "passed": true
+        },
+        {
+          "path": "/in-hi/resources/rss.xml",
+          "status": 200,
+          "count": 35,
+          "passed": true
+        },
+        {
+          "path": "/in-hi/resources/sitemap.xml",
+          "status": 200,
+          "count": 43,
+          "passed": true
+        },
+        {
+          "path": "/in-ta/resources/rss.xml",
+          "status": 200,
+          "count": 35,
+          "passed": true
+        },
+        {
+          "path": "/in-ta/resources/sitemap.xml",
+          "status": 200,
+          "count": 43,
+          "passed": true
+        }
+      ],
+      "sitemap_entries": 192,
+      "negative_controls": [
+        {
+          "path": "/in/resources/authors/unknown-profile",
+          "status": 404,
+          "passed": true
+        },
+        {
+          "path": "/in-hi/resources/tag/not-a-real-topic",
+          "status": 404,
+          "passed": true
+        },
+        {
+          "path": "/in-ta/resources/platform/missing-guide",
+          "status": 404,
+          "passed": true
+        }
+      ],
+      "canonical_note": "Root production artifact on9006; prior comparison origin9048 normalized to9006 for metadata comparisons."
+    },
+    "currentChromeSmoke": "evidence/current-chrome-local-smoke.json",
+    "noJavaScriptBroaderSuiteRerun": false,
+    "physicalDevicesVerified": false,
+    "humanNativeLegalTaxReviewPerformed": false,
+    "latestKnownUrlSummary": {
+      "captured_at": "2026-11-03T10:37:17.154916+00:00",
+      "base": "http://127.0.0.1:9006",
+      "known_urls": 489,
+      "html_200": 477,
+      "redirects": 12,
+      "errors": [],
+      "feeds": [
+        {
+          "path": "/in/resources/rss.xml",
+          "status": 200,
+          "count": 35,
+          "passed": true
+        },
+        {
+          "path": "/in/resources/sitemap.xml",
+          "status": 200,
+          "count": 43,
+          "passed": true
+        },
+        {
+          "path": "/in-hi/resources/rss.xml",
+          "status": 200,
+          "count": 35,
+          "passed": true
+        },
+        {
+          "path": "/in-hi/resources/sitemap.xml",
+          "status": 200,
+          "count": 43,
+          "passed": true
+        },
+        {
+          "path": "/in-ta/resources/rss.xml",
+          "status": 200,
+          "count": 35,
+          "passed": true
+        },
+        {
+          "path": "/in-ta/resources/sitemap.xml",
+          "status": 200,
+          "count": 43,
+          "passed": true
+        }
+      ],
+      "sitemap_entries": 189,
+      "negative_controls": [
+        {
+          "path": "/in/resources/authors/unknown-profile",
+          "status": 404,
+          "passed": true
+        },
+        {
+          "path": "/in-hi/resources/tag/not-a-real-topic",
+          "status": 404,
+          "passed": true
+        },
+        {
+          "path": "/in-ta/resources/platform/missing-guide",
+          "status": 404,
+          "passed": true
+        }
+      ],
+      "canonical_note": "Final retained root production build on9006; configured local canonical localhost:9006, loopback API/Accounts test origins; not deployed."
+    },
+    "latestCurrentChromeSmoke": "evidence/completion-current-chrome.json",
+    "latestGuideAnchors": "evidence/guide-sequence-http.json",
+    "latestReleaseCandidateUrlSummary": {
+      "captured_at": "2026-11-03T10:37:15.360627+00:00",
+      "base": "http://127.0.0.1:9048",
+      "known_urls": 489,
+      "html_200": 477,
+      "redirects": 12,
+      "errors": [],
+      "feeds": [
+        {
+          "path": "/in/resources/rss.xml",
+          "status": 200,
+          "count": 35,
+          "passed": true
+        },
+        {
+          "path": "/in/resources/sitemap.xml",
+          "status": 200,
+          "count": 43,
+          "passed": true
+        },
+        {
+          "path": "/in-hi/resources/rss.xml",
+          "status": 200,
+          "count": 35,
+          "passed": true
+        },
+        {
+          "path": "/in-hi/resources/sitemap.xml",
+          "status": 200,
+          "count": 43,
+          "passed": true
+        },
+        {
+          "path": "/in-ta/resources/rss.xml",
+          "status": 200,
+          "count": 35,
+          "passed": true
+        },
+        {
+          "path": "/in-ta/resources/sitemap.xml",
+          "status": 200,
+          "count": 43,
+          "passed": true
+        }
+      ],
+      "sitemap_entries": 189,
+      "negative_controls": [
+        {
+          "path": "/in/resources/authors/unknown-profile",
+          "status": 404,
+          "passed": true
+        },
+        {
+          "path": "/in-hi/resources/tag/not-a-real-topic",
+          "status": 404,
+          "passed": true
+        },
+        {
+          "path": "/in-ta/resources/platform/missing-guide",
+          "status": 404,
+          "passed": true
+        }
+      ],
+      "canonical_note": "Final retained source-closure build on9048; production canonical www.letbuyy.com, loopback API/Accounts test origins; not deployed."
+    },
+    "freshBrowserVerificationThisFollowup": false,
+    "currentBrowserLimitation": "evidence/resolution-followup/browser-access.json",
+    "initialPhaseChecks": [
+      {
+        "name": "marketing-tests",
+        "command": [
+          "pnpm",
+          "--dir",
+          "apps/marketing/web",
+          "test"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "marketing-typecheck",
+        "command": [
+          "pnpm",
+          "--dir",
+          "apps/marketing/web",
+          "typecheck"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "marketing-lint",
+        "command": [
+          "pnpm",
+          "--dir",
+          "apps/marketing/web",
+          "lint"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "final-root-production-build",
+        "command": [
+          "pnpm",
+          "--dir",
+          "apps/marketing/web",
+          "build"
+        ],
+        "exitCode": 0,
+        "evidence": "evidence/root-production-build.log",
+        "buildId": "tG7TW1sIGL_gn9Q4-AFXP"
+      },
+      {
+        "name": "ui-validation",
+        "command": [
+          "pnpm",
+          "--dir",
+          "packages/typescript/ui",
+          "validate:ui"
+        ],
+        "exitCode": 0,
+        "evidence": "evidence/ui-validation.log"
+      }
+    ],
+    "checks": [
+      {
+        "name": "proxy-marketing-tests",
+        "command": "pnpm --dir apps/marketing/web test",
+        "exitCode": "0",
+        "evidence": "evidence/proxy-followup/final-tests.log"
+      },
+      {
+        "name": "proxy-types",
+        "command": "pnpm --dir apps/marketing/web typecheck",
+        "exitCode": "0",
+        "evidence": "evidence/proxy-followup/final-types.log"
+      },
+      {
+        "name": "proxy-lint",
+        "command": "pnpm --dir apps/marketing/web lint",
+        "exitCode": "0",
+        "evidence": "evidence/proxy-followup/final-lint.log"
+      },
+      {
+        "name": "proxy-root-build",
+        "command": "pnpm --dir apps/marketing/web build",
+        "exitCode": "0",
+        "evidence": "evidence/proxy-followup/root-build.log"
+      },
+      {
+        "name": "proxy-exact-release-build",
+        "command": "Existing Vercel filtered Turbo build in owned source closure",
+        "exitCode": "0",
+        "evidence": "evidence/proxy-followup/release-build.log"
+      },
+      {
+        "name": "proxy-root-url-inventory",
+        "command": "Read-only489URL/XML/404 verification; configured local canonical",
+        "exitCode": "0",
+        "evidence": "evidence/proxy-followup/root-public-urls.json"
+      },
+      {
+        "name": "proxy-routing-before-after",
+        "command": "12read-onlyHTTP comparison cases",
+        "exitCode": "0",
+        "evidence": "evidence/proxy-followup/proxy-routing-parity.json"
+      },
+      {
+        "name": "proxy-negative-mutation",
+        "command": "Remove language-header replacement in isolated source; behavioral failure expected",
+        "exitCode": "1",
+        "evidence": "evidence/proxy-followup/locale-mutation.json"
+      },
+      {
+        "name": "proxy-original-performance-acceptance",
+        "command": "Three repeats x two pages x simulate/devtools; unchanged budgets",
+        "exitCode": "1",
+        "evidence": "evidence/proxy-final-performance/summary.json"
+      }
+    ],
+    "checksNote": "Latest Proxy follow-up checks; the isolated negative mutation exits1as expected. Performance acceptance exits1and remains failed. Initial/unchanged-lane receipts retain earlier dates.",
+    "contentVerification": "evidence/resolution-followup/content-http-verification.json",
+    "signalVerification": "evidence/resolution-followup/seo-signal-verification.json",
+    "homepageVerification": "evidence/resolution-followup/final-homepage-verification.json"
+  },
+  "data": {
+    "gscWeb": {
+      "start": "2026-08-01",
+      "end": "2026-10-31",
+      "clicks": 29,
+      "impressions": 384,
+      "displayedCtr": "7.6%",
+      "displayedAveragePosition": 24.3,
+      "visibleQueryClicks": 0,
+      "visibleQueryImpressions": 52,
+      "brandTrafficAttributionAvailable": false
+    },
+    "gscAi": {
+      "source": "Authenticated GSC Generative AI features Beta report and exported CSV",
+      "dateRange": "2026-08-01 through2026-10-31",
+      "impressions": 51,
+      "lastUpdateDisplayed": "4 hours ago",
+      "pageRowsExported": 15,
+      "limitation": "Impressions in this Google report are not citation counts, rank, share of voice, clicks or visibility across other assistants."
+    },
+    "gscIndexing": {
+      "lastUpdated": "2026-10-23",
+      "indexed": 221,
+      "notIndexed": 144,
+      "reasons": {
+        "Alternative page with proper canonical tag": 83,
+        "Page with redirect": 13,
+        "Excluded by noindex": 7,
+        "Soft 404": 2,
+        "Discovered currently not indexed": 36,
+        "Crawled currently not indexed": 2,
+        "Duplicate without user-selected canonical": 1
+      },
+      "soft404Examples": [
+        {
+          "url": "https://www.letbuyy.com/in/resources/tag/shopify",
+          "lastCrawled": "2026-09-11"
+        },
+        {
+          "url": "https://www.letbuyy.com/resources/tag/shopify",
+          "lastCrawled": "2026-09-09"
+        }
+      ]
+    },
+    "gscSitemap": {
+      "url": "https://www.letbuyy.com/sitemap.xml",
+      "submitted": "2026-06-10",
+      "lastRead": "2026-11-01",
+      "status": "Success",
+      "discoveredPages": 99,
+      "discoveredVideos": 0
+    },
+    "gscInspections": [
+      {
+        "url": "https://www.letbuyy.com/in",
+        "indexVerdict": "URL is on Google; Page is indexed",
+        "lastCrawlDisplayed": "1 Nov 2026,22:06:53",
+        "crawler": "Googlebot smartphone",
+        "crawlAllowed": true,
+        "fetch": "Successful",
+        "indexingAllowed": true,
+        "declaredCanonical": "https://www.letbuyy.com/in",
+        "googleSelectedCanonical": "Inspected URL",
+        "referringPages": [
+          "https://www.letbuyy.store/in",
+          "https://www.letbuyy.com/resources/developers/building-first-letbuyy-app",
+          "https://www.letbuyy.com/resources/payments",
+          "https://www.letbuyy.store/"
+        ]
+      },
+      {
+        "url": "https://www.letbuyy.com/in/pricing",
+        "indexVerdict": "URL is not on Google; Alternative page with proper canonical tag",
+        "lastCrawlDisplayed": "17 Aug 2026,02:24:26",
+        "crawler": "Googlebot smartphone",
+        "crawlAllowed": true,
+        "fetch": "Successful",
+        "indexingAllowed": true,
+        "declaredCanonical": "https://www.letbuyy.com/pricing",
+        "googleSelectedCanonical": "Same as user-declared canonical",
+        "sitemap": "https://www.letbuyy.com/sitemap.xml",
+        "interpretation": "Historical indexed snapshot; compare with fresh live response before diagnosing a current canonical defect.",
+        "liveTest": {
+          "testedAtDisplayed": "3 Nov 2026,08:11:35",
+          "verdict": "URL is available to Google; Page can be indexed",
+          "crawler": "Google Inspection Tool smartphone",
+          "crawlAllowed": true,
+          "fetch": "Successful",
+          "indexingAllowed": true,
+          "declaredCanonical": "https://www.letbuyy.com/in/pricing",
+          "googleSelectedCanonical": "Only determined after indexing",
+          "indexingRequestSubmitted": false
+        }
+      }
+    ],
+    "backlinks": {
+      "source": "Authenticated GSC links overview; available sample, not complete Internet backlink inventory",
+      "externalLinksReported": 3,
+      "externalTopLinkedPages": [
+        {
+          "url": "https://www.letbuyy.com/in",
+          "reportedLinks": 3
+        }
+      ],
+      "topLinkingSites": [
+        {
+          "domain": "letbuyy.store",
+          "reportedLinks": 2
+        },
+        {
+          "domain": "pixlnova.com",
+          "reportedLinks": 1
+        }
+      ],
+      "anchorText": [
+        "what is letbuyy",
+        "letbuyy com opens in a new tab"
+      ],
+      "internalLinksReported": 158,
+      "topInternalTargets": [
+        {
+          "url": "https://www.letbuyy.com/in",
+          "reportedLinks": 148
+        },
+        {
+          "url": "https://www.letbuyy.com/resources/authors/neha-payments",
+          "reportedLinks": 10
+        }
+      ]
+    },
+    "field": {
+      "source": "Search Console, Chrome UX report",
+      "lastUpdatedDisplayed": "01/11/2026",
+      "mobile": "Not enough usage data in the last 90 days for this device type.",
+      "desktop": "Not enough usage data in the last 90 days for this device type.",
+      "fieldLcpInpClsMeasured": false
+    },
+    "manualActions": "No issues detected, as displayed in authenticated GSC",
+    "securityIssues": "No issues detected, as displayed in authenticated GSC",
+    "ga4ExistingStreams": "evidence/ga4-existing-streams.json"
+  },
+  "performance": {
+    "newPerformanceSourceChange": true,
+    "newLighthouseRunExecuted": true,
+    "originalTargetMet": false,
+    "measurementSource": "evidence/resolution-final-performance/summary.json",
+    "measuredBuildId": "b2CsFLYIUn25H5EguBjys",
+    "priorLanes": [
+      {
+        "target": "/in/pricing",
+        "method": "simulate",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 0,
+        "medianLcpMs": 3537,
+        "status": "fail"
+      },
+      {
+        "target": "/in/pricing",
+        "method": "devtools",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 3,
+        "medianLcpMs": 1941.459,
+        "status": "pass"
+      },
+      {
+        "target": "/in/resources/platform/building-first-letbuyy-store",
+        "method": "simulate",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 1,
+        "medianLcpMs": 3874.744,
+        "status": "fail"
+      },
+      {
+        "target": "/in/resources/platform/building-first-letbuyy-store",
+        "method": "devtools",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 3,
+        "medianLcpMs": 2091.022,
+        "status": "pass"
+      }
+    ],
+    "fieldMeasured": false,
+    "fieldReason": "Authenticated GSC CWV has insufficient usage for mobile and desktop; PSI429",
+    "nextStep": "Original simulated acceptance remains open; no safe accepted source optimization or method waiver. Production and field checks remain distinct.",
+    "lanes": [
+      {
+        "target": "/in/pricing",
+        "method": "simulate",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 0,
+        "medianLcpMs": 3126,
+        "status": "fail"
+      },
+      {
+        "target": "/in/pricing",
+        "method": "devtools",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 3,
+        "medianLcpMs": 1934.397,
+        "status": "pass"
+      },
+      {
+        "target": "/in/resources/platform/building-first-letbuyy-store",
+        "method": "simulate",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 0,
+        "medianLcpMs": 3356.3025,
+        "status": "fail"
+      },
+      {
+        "target": "/in/resources/platform/building-first-letbuyy-store",
+        "method": "devtools",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 3,
+        "medianLcpMs": 2088.264,
+        "status": "pass"
+      }
+    ],
+    "allRequiredLanesPass": false,
+    "appliedLabTargetMet": true,
+    "previousSameDayLanes": [
+      {
+        "target": "/in/pricing",
+        "method": "simulate",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 0,
+        "medianLcpMs": 3124,
+        "status": "fail"
+      },
+      {
+        "target": "/in/pricing",
+        "method": "devtools",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 3,
+        "medianLcpMs": 1922.511,
+        "status": "pass"
+      },
+      {
+        "target": "/in/resources/platform/building-first-letbuyy-store",
+        "method": "simulate",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 0,
+        "medianLcpMs": 3833.9120000000003,
+        "status": "fail"
+      },
+      {
+        "target": "/in/resources/platform/building-first-letbuyy-store",
+        "method": "devtools",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 3,
+        "medianLcpMs": 2078.993,
+        "status": "pass"
+      }
+    ],
+    "diagnosticCandidates": "evidence/performance-candidate-results.json",
+    "sourceChangeScope": "Homepage decorative request priority; no accepted repair of the two warned LCP conditions"
+  },
+  "coverage": {
+    "workRecords": 56,
+    "historicAuditRecords": 34,
+    "followupRecords": 22,
+    "toolkitRoutes": 35,
+    "productionMatrixChecks": 23,
+    "fullNewAuditClaimed": false
+  },
+  "authorization": {
+    "deployed": false,
+    "dnsChanged": false,
+    "firebaseChanged": false,
+    "playListingChanged": false,
+    "indexingRequested": false,
+    "sitemapSubmitted": false,
+    "analyticsSettingsChanged": false,
+    "outreachSent": false,
+    "paidCreditsSpent": false,
+    "sharedDbMutation": false,
+    "credentialsChanged": false,
+    "consumerPrivacyWork": "Deferred by owner",
+    "browser": "Current Chrome profile requested; respected after steering"
+  },
+  "remaining": {
+    "local": [
+      "LOCAL-LCP-01",
+      "LOCAL-LCP-02"
+    ],
+    "external": [
+      "Review the materialized marketing source closure and separate gateway patch; full applicable release acceptance remains incomplete",
+      "Scoped marketing and Worker release authorization; final hosted configuration and live regression verification",
+      "Exact Cloudflare DNS/domain record access and bounded migration decision",
+      "Choose an existing GA4 marketing destination and approve consent/event integration",
+      "Qualified native/legal/tax reviewers and physical-device/AT acceptance",
+      "Scoped Worker CORS release and actual-browser verification; earlier1010did not reproduce in the fresh public probe"
+    ],
+    "deferred": [
+      "Consumer-app privacy/data practices and associated publication"
+    ],
+    "unavailable": [
+      "Current Chrome account dialog and disabled local browser access prevent fresh browser/account verification; prior observations are dated evidence",
+      "Cloudflare DNS record API403; no record-read entitlement or scope expansion established",
+      "Google API credentials absent; earlier browser GSC/GA4 read access is documented but not freshly repeated",
+      "PSI quota429; field usage insufficient",
+      "Optional provider entitlement/paid budgets unavailable; GA4 destination and consent/event decision pending",
+      "Valid Razorpay test keys and approved supplier prerequisites absent"
+    ]
+  },
+  "providerSandboxVerified": false,
+  "humanExpertReviewPerformed": false,
+  "finalizedAt": "2026-11-03T10:39:56.686412+00:00",
+  "completionFollowup": {
+    "newConfirmedDefects": 3,
+    "workRegisterRecords": 56,
+    "marketingTests": 224,
+    "authBoundaryTests": 4,
+    "gatewayUnitTests": 1609,
+    "apiHeaderContracts": 7,
+    "corsContracts": 4,
+    "exactReleaseTasks": {
+      "passed": 29,
+      "cached": 28,
+      "executed": 1
+    },
+    "sourceBundleFiles": 1289,
+    "sourceBundlePackages": 15,
+    "knownUrls": 489,
+    "html200": 477,
+    "intendedRedirects": 12,
+    "sitemapEntries": 189,
+    "localizedArticles": 105,
+    "performance": {
+      "budgets": {
+        "lcpMs": 2500,
+        "tbtMs": 200,
+        "cls": 0.1
+      },
+      "lanes": [
+        {
+          "target": "/in/pricing",
+          "method": "simulate",
+          "samples": 3,
+          "complete": true,
+          "passedSamples": 0,
+          "medianLcpMs": 3126,
+          "status": "fail"
+        },
+        {
+          "target": "/in/pricing",
+          "method": "devtools",
+          "samples": 3,
+          "complete": true,
+          "passedSamples": 3,
+          "medianLcpMs": 1934.397,
+          "status": "pass"
+        },
+        {
+          "target": "/in/resources/platform/building-first-letbuyy-store",
+          "method": "simulate",
+          "samples": 3,
+          "complete": true,
+          "passedSamples": 0,
+          "medianLcpMs": 3356.3025,
+          "status": "fail"
+        },
+        {
+          "target": "/in/resources/platform/building-first-letbuyy-store",
+          "method": "devtools",
+          "samples": 3,
+          "complete": true,
+          "passedSamples": 3,
+          "medianLcpMs": 2088.264,
+          "status": "pass"
+        }
+      ],
+      "originalSimulatedTargetMet": false,
+      "appliedLabTargetMet": true,
+      "allRequiredLanesPass": false,
+      "fieldCoreWebVitalsMeasured": false
+    },
+    "ga4": "evidence/ga4-existing-streams.json",
+    "ga4MarketingDestinationApproved": false,
+    "noHostedMutation": true,
+    "buyerPrivacyDeferred": true,
+    "cssPreservation": "evidence/completion-css-preservation.json",
+    "separateHostedVerificationRecord": "EDGE-ORIGIN-01",
+    "proxyRoutingUnitCases": 6,
+    "proxyHttpParityCases": 12,
+    "currentBrowserLimitation": "evidence/resolution-followup/browser-access.json",
+    "pendingHumanReviewRows": 202
+  },
+  "performanceLatestEvidence": "evidence/resolution-final-performance/summary.json",
+  "localServiceHealthPrevious": {
+    "capturedAt": "2026-11-03T03:23:14.559473+00:00",
+    "buildId": "tG7TW1sIGL_gn9Q4-AFXP",
+    "rows": [
+      {
+        "url": "http://127.0.0.1:9006/in/create",
+        "status": 200,
+        "mainCount": 1,
+        "robots": "noindex, follow",
+        "canonical": "http://localhost:9006/in/create"
+      },
+      {
+        "url": "http://127.0.0.1:9006/in-hi/create",
+        "status": 200,
+        "mainCount": 1,
+        "robots": "noindex, follow",
+        "canonical": "http://localhost:9006/in-hi/create"
+      },
+      {
+        "url": "http://127.0.0.1:9006/in-ta/create",
+        "status": 200,
+        "mainCount": 1,
+        "robots": "noindex, follow",
+        "canonical": "http://localhost:9006/in-ta/create"
+      },
+      {
+        "url": "http://127.0.0.1:9006/in/pricing",
+        "status": 200,
+        "mainCount": 1,
+        "robots": "index, follow",
+        "canonical": "http://localhost:9006/in/pricing"
+      },
+      {
+        "url": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+        "status": 200,
+        "mainCount": 1,
+        "robots": "index, follow",
+        "canonical": "http://localhost:9006/in/resources/platform/building-first-letbuyy-store"
+      },
+      {
+        "url": "http://127.0.0.1:9010/v1/pricing",
+        "status": 200,
+        "bytes": 76636
+      },
+      {
+        "url": "http://127.0.0.1:9006/api/founding-pricing",
+        "status": 200,
+        "bytes": 76731
+      },
+      {
+        "url": "http://127.0.0.1:9002/signup",
+        "status": 200,
+        "bytes": 225001
+      }
+    ],
+    "publicPlans": [
+      {
+        "slug": "launch",
+        "name": "Launch",
+        "status": "available",
+        "purchasable": true,
+        "regular_inr": 299,
+        "founding_inr": 199,
+        "has_founding": true
+      },
+      {
+        "slug": "growth",
+        "name": "Growth",
+        "status": "available",
+        "purchasable": true,
+        "regular_inr": 999,
+        "founding_inr": 699,
+        "has_founding": true
+      },
+      {
+        "slug": "scale",
+        "name": "Scale",
+        "status": "coming_soon",
+        "purchasable": false,
+        "regular_inr": 2499,
+        "founding_inr": 2499,
+        "has_founding": false
+      },
+      {
+        "slug": "commerce_os",
+        "name": "Commerce OS",
+        "status": "coming_soon",
+        "purchasable": false,
+        "regular_inr": 5999,
+        "founding_inr": 5999,
+        "has_founding": false
+      }
+    ]
+  },
+  "localServiceHealth": {
+    "rootBuildId": "b2CsFLYIUn25H5EguBjys",
+    "latestEvidence": "evidence/resolution-followup/final-health.json",
+    "localPricing": "evidence/final-csp-and-pricing.json",
+    "gatewayCors": "evidence/cors-local-after.json"
+  },
+  "currentResolution": {
+    "affectedContentArticles": 3,
+    "localizedContentUrls": 9,
+    "directoryUrlsNoindex": 3,
+    "guidesRemoved": 0,
+    "cssFilesEdited": 0,
+    "animationSourcesEdited": 0,
+    "homepageImagePreloadsBefore": 10,
+    "homepageImagePreloadsAfter": 2,
+    "freshAuthenticatedBrowserChecks": false,
+    "rowByRowReport": "ROW-BY-ROW-RESOLUTION.md",
+    "liveOriginResponseNow": "200butwrongwwwACAO",
+    "compressionCandidateAdopted": false
+  }
+}

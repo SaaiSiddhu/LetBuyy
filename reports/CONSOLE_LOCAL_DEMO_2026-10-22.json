@@ -1,0 +1,148 @@
+{
+  "status": "LOCAL_DEMO_SEEDED_AND_BROWSER_VERIFIED",
+  "date": "2026-10-22",
+  "branch": "develop",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "authorization": "Owner requested locations of all recent features and local mock/sample data. No hosted or real-provider operation authorized.",
+  "resource": "supabase_db_letbuyy-web-local-20261021",
+  "namespace": "console-20261022 / de202610-2200-4000-8000-*",
+  "postflight": {
+    "head": "372",
+    "orders": 2,
+    "stores": 3,
+    "invoices": 2,
+    "products": 6,
+    "snapshot": {
+      "catalog_name": "DEMO \u2014 Cotton Tee (new catalog name)",
+      "catalog_price": 549.0,
+      "original_item": {
+        "id": "fb26987c-2c3e-4e0e-9bb4-4d79179547d5",
+        "sku": "DEMO-TEE-001",
+        "name": "DEMO \u2014 Classic Cotton Tee",
+        "price": 499.0,
+        "title": "DEMO \u2014 Classic Cotton Tee",
+        "total": 499.0,
+        "site_id": "de202610-2200-4000-8000-000000000201",
+        "gst_rate": 0.0,
+        "hsn_code": null,
+        "order_id": "155d30a5-546a-42fa-842c-f266c84497a5",
+        "quantity": 1,
+        "store_id": "de202610-2200-4000-8000-000000000201",
+        "created_at": "2026-10-22T15:47:32.284947+00:00",
+        "deleted_at": null,
+        "product_id": "de202610-2200-4000-8000-000000000601",
+        "tax_amount": 0.0,
+        "unit_price": 499.0,
+        "updated_at": "2026-10-22T15:47:32.284947+00:00",
+        "variant_id": null,
+        "cgst_amount": 0.0,
+        "igst_amount": 0.0,
+        "sgst_amount": 0.0,
+        "variant_title": null,
+        "taxable_amount": 0.0,
+        "discount_amount": 0.0,
+        "product_snapshot": {
+          "sku": "DEMO-TEE-001",
+          "name": "DEMO \u2014 Classic Cotton Tee",
+          "price": 499.0,
+          "total": 499.0,
+          "quantity": 1,
+          "product_id": "de202610-2200-4000-8000-000000000601",
+          "variant_id": null,
+          "variant_title": null
+        },
+        "refunded_quantity": 0,
+        "returned_quantity": 0,
+        "fulfilled_quantity": 0,
+        "fulfillment_status": "unfulfilled",
+        "marketplace_listing_id": null,
+        "marketplace_category_id": null,
+        "marketplace_approved_fingerprint": null
+      }
+    },
+    "inbox_copies": 6,
+    "announcements": 4,
+    "demo_accounts": 2,
+    "subscriptions": 3,
+    "support_tickets": 3,
+    "paid_demo_orders": 0,
+    "tax_guard_enabled": true,
+    "postgres_superuser": false,
+    "public_demo_stores": 0,
+    "demo_credentialless": true,
+    "content_guard_enabled": true,
+    "demo_principal_grants": 0,
+    "paid_demo_subscriptions": 0,
+    "all_event_guards_enabled": true,
+    "non_demo_inbox_recipients": 0
+  },
+  "verification": {
+    "seedDryRun": "passed; full rollback",
+    "apply": "committed",
+    "repeatCheck": "passed; every INSERT reports0 rows; full rollback",
+    "nodeSyntax": "pass",
+    "whitespace": "pass",
+    "browser": [
+      "existing normal operator session; real configured TOTP renewal when session expired",
+      "four demo announcements; selected regulation review has2 fake accounts and1 marked read",
+      "three support tickets; urgent pending-internal conversation, overdue resolution and separate internal note",
+      "merchant operations:3 catalog products,1 order, persisted launch limits and4/7 setup checks",
+      "original order keeps Classic Cotton Tee499 while catalog has renamed Cotton Tee549",
+      "Lotus Home billing: Growth/past_due, effective free, failed unpaid invoice999 and no provider reference",
+      "Merchant 360 has protected moderation, real release evidence and operations/billing/support links",
+      "Merchant profiles search DEMO returns all3 sample stores and each operations link"
+    ],
+    "governance": {
+      "isolatedSnapshot": true,
+      "counts": {
+        "PASS": 110,
+        "FAIL": 4,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "limits": [
+        "route ownership: existing extracted merchant-operation/settings routes not recognized by validator",
+        "sequence: existing untracked migrations370-372",
+        "policy inventory: existing372 postgres-only custody policies unclassified",
+        "artifact gate: isolated snapshot dependency symlinks refused; no primary artifacts removed"
+      ],
+      "overallGreen": false
+    }
+  },
+  "preservation": {
+    "baselineFiles": 274,
+    "unchangedBeforeContinuity": 274,
+    "deleted": [],
+    "runtimeSourceEdits": false,
+    "sourceSha256": {
+      "scripts/dev/seed-console-demo.mjs": "cc8d10651cb7ad5490e7c0fc886bc94b72da9348a806480ff2b9c3c1fee71ae8",
+      "database/supabase/seeds/local-console-demo-20261022.sql": "651db56b16ee50de287e87078cdd5bff9a7bcc6d1a78b123d37604672a07df3c"
+    },
+    "intentionalContinuityUpdates": [
+      "EXECUTION_LEDGER.md",
+      "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md"
+    ],
+    "unchangedAfterContinuity": 272
+  },
+  "limits": [
+    "Only local DEMO records; no public demo storefront, password, verified identity, principal/staff/permission grant or provider payment",
+    "Sample publication history is explicitly fixture-seeded, not a claimed new normal admin publication/replay receipt",
+    "Two orders use canonical checkout RPC with explicit per-store GUC; no order snapshots are hand-edited",
+    "No native source/device verification change, merge/push/deploy, parent-programme or release acceptance",
+    "Persistent sample history follows existing audit/order/inbox retention; do not hard-delete protected evidence"
+  ],
+  "guide": "reports/CONSOLE_LOCAL_DEMO_2026-10-22.md",
+  "localBrowser": {
+    "leftAt": "http://localhost:9007/merchants?q=DEMO",
+    "normalOperatorSignedIn": true,
+    "screenshots": [
+      "demo-merchants.png",
+      "demo-messages.png",
+      "demo-support.png",
+      "demo-original-order.png",
+      "demo-billing.png"
+    ],
+    "screenshotLocation": "private task directory only"
+  }
+}

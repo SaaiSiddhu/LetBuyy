@@ -48,27 +48,9 @@ async function signIn(context:BrowserContext,id:string,password:string){
         stage='email';await page.getByLabel('Email',{exact:true}).fill(email(id));
         await page.getByRole('button',{name:'Continue with email',exact:true}).click();
         stage='password';await page.getByLabel('Password',{exact:true}).fill(password);
-        // Keep the actual password form open while its one-hour cookie expires.
-        // No reload, positive cookie injection or fabricated auth response repairs it.
-        stage='expired CSRF negative control';
-        await context.clearCookies({name:'letbuyy_csrf'});await context.clearCookies({name:'lb_csrf'});
-        assert.equal((await context.cookies(identityOrigin)).some(c=>['letbuyy_csrf','lb_csrf'].includes(c.name)),false);
-        const denied=await page.request.post(identityOrigin+'/api/auth/login',{headers:{Origin:identityOrigin},data:{}});
-        assert.equal(denied.status(),403,'the server must still reject a request without CSRF');
-        const loginPosts:string[]=[],renewals:string[]=[];
-        page.on('request',r=>{const path=new URL(r.url()).pathname;
-            if(path==='/api/auth/login'&&r.method()==='POST')loginPosts.push(path);
-            if(path==='/lookup'&&r.method()==='HEAD'){assert.equal(r.postData(),null);renewals.push(path);}
-        });
-        const [response,renewed]=await Promise.all([
-            page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST'),
-            page.waitForResponse(r=>new URL(r.url()).pathname==='/lookup'&&r.request().method()==='HEAD'),
-            page.getByRole('button',{name:'Log in',exact:true}).click(),
-        ]);
-        assert.equal(renewed.status(),200);assert.equal(renewals.length,1);assert.equal(loginPosts.length,1,'credentials are submitted once after renewal, never replayed');
+        const [response]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST'),page.getByRole('button',{name:'Log in',exact:true}).click()]);
         stage='issuer response';assert.equal(response.status(),200);
         stage='normal Merchant redirect';await page.waitForURL(url=>url.origin===merchantOrigin,{timeout:60000});
-        checkpoints.push('expired_csrf_rejected_then_normal_form_renewed_once_before_one_successful_login');
     }catch{throw new Error('Normal Identity sign-in failed at '+stage+'; private controls and responses were not retained.');}
     finally{await page.close();}
 }
@@ -111,7 +93,7 @@ before(async()=>{
     await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));
     const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
     const shared={INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
-    identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
+    identity=startOwnedClientRuntime(owned,'identity-next',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
         LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
         ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',
         NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',
@@ -120,7 +102,7 @@ before(async()=>{
     await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
     restTap=tapRest(owned.restUrl,async(call,forward)=>{
         if(failAssignedReads&&call.method==='GET'&&call.resource==='collection_products'){failedAssignedReads++;return restJson(503,{code:'XX000',message:'syn_private_membership_fault'});}
-        if(failProductReads&&((call.method==='GET'&&call.resource==='products')||(call.method==='POST'&&call.resource==='rpc/browse_storefront_products_v1'))){
+        if(failProductReads&&call.method==='GET'&&call.resource==='products'){
             failedProductReads++;
             return restJson(503,{code:'XX000',message:'relation "syn_private_preview_fault" does not exist',details:'synthetic-private-detail'});
         }
@@ -151,12 +133,12 @@ after(async()=>{
     console.info('OWNED_COLLECTION_MEMBERSHIP_BROWSER '+JSON.stringify({runId:owned.runId,checkpoints,
         normalSignIns:checkpoints.includes('one_normal_identity_owner_sign_in')?1:0,
         positiveCredentialInjection:false,positiveAPIFake:false,
-        fixtureKind:'production-built Identity + local Merchant/Commerce development runtimes + actual Gateway/PostgREST/owned PostgreSQL',
+        fixtureKind:'local Next development runtimes + actual Gateway/PostgREST/owned PostgreSQL',
         membershipAndChoicesCalls:calls.filter(c=>c.path.startsWith('/v1/products')),
         lostCommittedReplies,failedAssignedReads,cacheReads,cacheWrites,cacheAdapter:"Owned memory Cache API adapter; seeded stale entry copies an earlier REAL Gateway response. Hosted CDN unverified.",
         failedProductReads,gatewayExternalRequestsRefused:refusedGatewayExternalRequests,
         challengeMode:'Existing official Turnstile test-key transport; production anti-bot unverified',
-        runtimeSupervisors:[{kind:'merchant-next',pid:merchant?.pid},{kind:'identity-next-production',pid:identity?.pid??retiredIdentityPid},{kind:'commerce-next',pid:commerce?.pid}],
+        runtimeSupervisors:[{kind:'merchant-next',pid:merchant?.pid},{kind:'identity-next',pid:identity?.pid??retiredIdentityPid},{kind:'commerce-next',pid:commerce?.pid}],
         runtimeTransitions,maxSimultaneousNextRuntimes:2,normalCommerceBoundary:'Actual public tenant hostname -> existing proxy -> Next SSR page -> shared SDK -> real Gateway/ownedPG; local development mode, hostedCDN unverified',
         providerTransactions:0,hostedVerified:false,privateScreenshots:false}));
     failProductReads=false;failAssignedReads=false;loseNextMembershipReply=false;
@@ -192,8 +174,8 @@ async function openManage(saved:Manual){
         const[listed]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/stores/'+site.subdomain+'/collections'&&r.request().method()==='GET'),page.goto(merchantOrigin+'/'+site.subdomain+'/products/collections')]);
         assert.equal(listed.status(),200);
         const row=page.getByRole('row').filter({has:page.getByText(saved.name,{exact:true})});await expect(row).toBeVisible();
-        const choiceReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/stores/'+site.subdomain+'/products'&&r.request().method()==='GET',{timeout:90000});
-        const[reply]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===membershipPath(saved)&&r.request().method()==='GET',{timeout:90000}),row.getByRole('button',{name:'Manage products',exact:true}).click()]);
+        const choiceReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/stores/'+site.subdomain+'/products'&&r.request().method()==='GET');
+        const[reply]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===membershipPath(saved)&&r.request().method()==='GET'),row.getByRole('button',{name:'Manage products',exact:true}).click()]);
         const choices=await choiceReply;
         console.info('OWNED_COLLECTION_MEMBERSHIP_NORMAL_OPEN '+JSON.stringify({collectionStatus:reply.status(),choiceStatus:choices.status(),choiceQuery:new URL(choices.url()).search,normalIdentity:true,positiveFake:false}));
         return{page,reply,choices};
@@ -287,7 +269,6 @@ test('a lost committed reply survives reload and exact replay never overwrites a
 
 test('normal public Commerce render recovers from a real outage and shows the current owner-saved membership',{timeout:300000},async()=>{
     const saved=manualCollection('render'),consumer=await browser!.newContext(),page=await consumer.newPage();
-    consumer.setDefaultTimeout(90000);consumer.setDefaultNavigationTimeout(90000);
     const url=commerceOrigin+'/collections/'+saved.id;
     let edit:Awaited<ReturnType<typeof loaded>>|undefined;
     try{

@@ -1,3 +1,4 @@
+import { ConsoleActionForm } from '@/components/ConsoleActionForm';
 import { revalidatePath } from 'next/cache';
 import type {
     InternalProductionIncident,
@@ -185,27 +186,27 @@ export default async function IncidentsCenterPage() {
             <MetricGrid>
                 <LeadershipMetric
                     label="Total incidents"
-                    value={String(incidents.length)}
+                    value={data.errors.length ? 'Unavailable' : String(incidents.length)}
                 />
                 <LeadershipMetric
                     label="Open"
-                    value={String(open)}
+                    value={data.errors.length ? 'Unavailable' : String(open)}
                     tone={open > 0 ? 'critical' : 'success'}
                 />
                 <LeadershipMetric
                     label="Mitigating"
-                    value={String(mitigating)}
+                    value={data.errors.length ? 'Unavailable' : String(mitigating)}
                     tone={mitigating > 0 ? 'warning' : 'success'}
                 />
                 <LeadershipMetric
                     label="SEV-1/2 open"
-                    value={String(sev12Open)}
+                    value={data.errors.length ? 'Unavailable' : String(sev12Open)}
                     detail="Critical severity, not yet closed"
                     tone={sev12Open > 0 ? 'critical' : 'success'}
                 />
                 <LeadershipMetric
                     label="Closed"
-                    value={String(closed)}
+                    value={data.errors.length ? 'Unavailable' : String(closed)}
                     tone="neutral"
                 />
             </MetricGrid>
@@ -345,7 +346,7 @@ function IncidentCard({ incident }: { incident: InternalProductionIncident }) {
 
             {/* Status update form — only for non-closed incidents */}
             {incident.status !== 'closed' ? (
-                <form
+                <ConsoleActionForm
                     action={updateIncidentStatus}
                     className="mt-[var(--lb-space-4)] grid gap-[var(--lb-space-2)] sm:grid-cols-[1fr_1fr_auto]"
                 >
@@ -357,7 +358,7 @@ function IncidentCard({ incident }: { incident: InternalProductionIncident }) {
                     />
                     <label className="flex flex-col gap-[var(--lb-space-1)] text-sm font-medium">
                         <span className="sr-only">New status</span>
-                        <select
+                        <select aria-label="Status"
                             name="status"
                             defaultValue={incident.status}
                             className={inputClassName}
@@ -376,7 +377,7 @@ function IncidentCard({ incident }: { incident: InternalProductionIncident }) {
                     <Button type="submit" variant="secondary">
                         Update
                     </Button>
-                </form>
+                </ConsoleActionForm>
             ) : null}
 
             {/* Postmortem link if present */}
@@ -406,7 +407,7 @@ function DeclareIncidentPanel() {
             title="Declare Incident"
             description="All fields are required. Customer impact and reason must be at least 8 characters. The commander is set to the authenticated operator."
         >
-            <form
+            <ConsoleActionForm
                 action={createIncident}
                 className="grid gap-[var(--lb-space-3)]"
             >
@@ -424,7 +425,7 @@ function DeclareIncidentPanel() {
                 />
                 <label className="flex flex-col gap-[var(--lb-space-1)] text-sm font-medium">
                     Severity
-                    <select
+                    <select aria-label="Severity"
                         name="severity"
                         defaultValue="sev3"
                         className={inputClassName}
@@ -458,7 +459,7 @@ function DeclareIncidentPanel() {
                     required
                 />
                 <Button type="submit">Declare incident</Button>
-            </form>
+            </ConsoleActionForm>
         </Panel>
     );
 }

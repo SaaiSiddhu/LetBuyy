@@ -1,5 +1,4 @@
 import 'server-only';
-import { LetbuyyApiError } from '@letbuyy/api-client';
 
 import { createAppMarketplaceApiClient } from '@/lib/api/client';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
@@ -21,7 +20,6 @@ import type {
     AppActivityEvent,
     AppReviewPolicy,
     MarketplaceAppDeveloper,
-    StoreSummary,
 } from '@letbuyy/shared-types';
 
 export class MarketplaceUnavailableError extends Error {
@@ -87,15 +85,6 @@ function normalizedFeatureHandles(values: string[] | undefined): string[] {
 }
 
 export const AppService = {
-    async getInstallContext(): Promise<{ status: 'ready' | 'signed-out' | 'unavailable'; stores: StoreSummary[] }> {
-        try {
-            const api = await createAppMarketplaceApiClient({ requireSession: true });
-            const stores = await api.stores.list({ limit: 50 });
-            return { status: 'ready', stores: stores.data };
-        } catch (error) {
-            return { status: error instanceof LetbuyyApiError && error.status === 401 ? 'signed-out' : 'unavailable', stores: [] };
-        }
-    },
     async listApps(filters: AppFilters = {}): Promise<MarketplaceResult<AppSearchResult>> {
         const limit = filters.limit ?? 20;
         const offset = filters.offset ?? 0;

@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import {
+    ConsoleSupportQueueQuerySchema, ConsoleSupportOwnershipSchema,
     SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS,
     SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS,
     SupportTicketChannelSchema,
@@ -18,10 +19,13 @@ import { SupportExecutionAdapter, type SupportMutation } from '../../execution/s
 import { getSupabaseAdmin, getSupabaseAdminForOperatorRead, paginated, success } from '../../lib/supabase';
 import {
     logSensitiveRead,
+    loadEffectivePermissionScopes,
+    hasPermissionScope,
     requirePermission,
     requirePlatformOperator,
 } from '../../middleware/rbac';
 import { validate } from '../../middleware/validation';
+import { AppError } from '../../lib/errors';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -59,16 +63,7 @@ router.use('*', requirePlatformOperator({ admittedTiers: ['viewer', 'operator', 
 // buyer's privacy request is a ticket the queue holds, so an operator must be able to find them). Tickets and macros are
 // CREATED with SupportTicketTopicSchema, which does not: only the buyer's privacy intake writes a privacy ticket, and
 // widening the creation enum would let an operator write one with arbitrary metadata.
-const ListTicketsQuerySchema = z.object({
-    page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(100).default(25),
-    status: SupportTicketStatusSchema.optional(),
-    priority: SupportTicketPrioritySchema.optional(),
-    topic: SupportTicketQueueTopicSchema.optional(),
-    assignee_id: z.string().uuid().optional(),
-    site_id: z.string().uuid().optional(),
-    q: z.string().trim().max(160).optional(),
-});
+const ListTicketsQuerySchema = ConsoleSupportQueueQuerySchema;
 
 const TicketParamSchema = z.object({
     id: z.string().uuid(),
@@ -101,10 +96,7 @@ const MessageSchema = z.object({
     reason: z.string().trim().min(8).max(1000),
 });
 
-const AssignSchema = z.object({
-    assignee_id: z.string().uuid().nullable(),
-    reason: z.string().trim().min(8).max(1000),
-});
+const AssignSchema = ConsoleSupportOwnershipSchema;
 
 const EscalateSchema = z.object({
     target: SupportTicketEscalationTargetSchema,
@@ -196,6 +188,8 @@ async function fetchTicket(db: Db, ticketId: string): Promise<JsonRecord | null>
 // Called only inside a permission-gated, validated mutation route. Fresh authorization runs
 // before the execution contract can consult its durable database receipt.
 async function executeMutation(c: AppContext, operation: SupportMutation, targetId: string | null, status: 200 | 201 = 200) {
+    if(operation==='assign'){const capability=await getSupabaseAdmin(c).rpc('console_support_ownership_contract_v1');
+        if(capability.error||capability.data!==371)throw new AppError('Ticket ownership is temporarily unavailable. Reload after service is updated.',503,'SUPPORT_OWNERSHIP_UNAVAILABLE');}
     const result = await new SupportExecutionAdapter(getSupabaseAdmin(c)).execute({
         actorId: actorUserId(c), actorEmail: actorEmail(c), operation, targetId,
         key: c.req.header('Idempotency-Key') ?? null,
@@ -270,13 +264,23 @@ router.get('/tickets', requirePermission('support:view'), validate('query', List
     // limit.max(100), never an unbounded scan. See the allowlist entry for the full review.
     const db = getSupabaseAdminForOperatorRead(c);
 
+    const scopes = await loadEffectivePermissionScopes(getSupabaseAdmin(c), actorUserId(c), actorEmail(c) || undefined);
     let request = db
         .from('support_tickets')
-        .select('*', { count: 'exact' })
+        .select(`*,sla_clocks:ticket_sla_clocks${query.view === 'overdue' ? '!inner' : ''}(id,ticket_id,clock_type,due_at,paused,breached,satisfied_at)`, { count: 'exact' })
+        .is('sla_clocks.deleted_at', null)
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .range(from, to);
 
+    if (query.view === 'mine') {
+        if (scopes.employeeId) request = request.eq('assignee_id', scopes.employeeId);
+        else request = request.in('id', []);
+    }
+    if (query.view === 'unassigned') request = request.is('assignee_id', null).not('status', 'in', '(resolved,closed)');
+    if (query.view === 'overdue') request = request.is('sla_clocks.satisfied_at', null).eq('sla_clocks.paused', false)
+        .lt('sla_clocks.due_at', new Date().toISOString()).not('status', 'in', '(resolved,closed)');
     if (query.status) request = request.eq('status', query.status);
     if (query.priority) request = request.eq('priority', query.priority);
     if (query.topic) request = request.eq('topic', query.topic);
@@ -297,10 +301,40 @@ router.get('/tickets', requirePermission('support:view'), validate('query', List
         metadata: { filters: query },
     });
 
-    return c.json(paginated((data || []) as JsonRecord[], count || 0, query.page, query.limit));
+    const ownership=hasPermissionScope(scopes.scopes,'support:manage')?await getSupabaseAdmin(c).rpc('console_support_ownership_contract_v1'):{data:null,error:null};
+    return c.json({...paginated((data || []) as JsonRecord[], count || 0, query.page, query.limit),
+        observed_at:new Date().toISOString(),capabilities:{reply:hasPermissionScope(scopes.scopes,'support:reply'),can_manage:hasPermissionScope(scopes.scopes,'support:manage'),manage:hasPermissionScope(scopes.scopes,'support:manage')&&!ownership.error&&ownership.data===371,ownership_available:!ownership.error&&ownership.data===371,employee_id:scopes.employeeId}});
 });
 
-router.get('/tickets/:id', requirePermission('support:view'), validate('param', TicketParamSchema), async (c) => {
+router.post('/recovery',requirePermission('support:view'),validate('json',z.object({
+    operation:z.enum(['reply','resolve','assign','escalate']),target_id:z.string().uuid(),key:z.string().min(8).max(200),
+}).strict()),async c=>{
+    const body=c.get('validatedBody') as {operation:'reply'|'resolve'|'assign'|'escalate';target_id:string;key:string};
+    const permissions=await loadEffectivePermissionScopes(getSupabaseAdmin(c),actorUserId(c),actorEmail(c)||undefined);
+    if(!hasPermissionScope(permissions.scopes,body.operation==='assign'?'support:manage':'support:reply'))throw new AppError('Support action permission is required.',403,'FORBIDDEN');
+    const {data,error}=await getSupabaseAdminForOperatorRead(c).from('support_mutation_receipts').select('response')
+        .eq('actor_id',actorUserId(c)).eq('operation',body.operation).eq('target',body.target_id).eq('idempotency_key',body.key).maybeSingle();
+    if(error)throw new Error('Support receipt unavailable');
+    await logSensitiveRead(c,{action:'support.receipt.read',resourceType:'support_ticket',resourceId:body.target_id,reason:'Recover original support operation outcome.'});
+    return c.json(success({state:data?.response?'completed':'not_recorded',result:data?.response||null}));
+});
+
+router.get('/assignees', requirePermission('support:manage'), validate('query', z.object({
+    page:z.coerce.number().int().min(1).max(10000).default(1), limit:z.coerce.number().int().min(1).max(50).default(25),
+    q:z.string().trim().max(100).optional(),
+})), async c=>{
+    const query=c.get('validatedQuery') as {page:number;limit:number;q?:string};
+    const {from,to}=rangeFor(query.page,query.limit);
+    let request=getSupabaseAdminForOperatorRead(c).from('employees').select('id,user_id,full_name,email',{count:'exact'})
+        .is('store_id',null).eq('is_active',true).is('deleted_at',null).order('full_name').order('id').range(from,to);
+    if(query.q){const term=ilikeOperand(query.q);request=request.or(`full_name.ilike.${term},email.ilike.${term}`);}
+    const result=await request;
+    if(result.error)throw new AppError('Support staff lookup is unavailable.',503,'SUPPORT_ASSIGNEES_UNAVAILABLE');
+    await logSensitiveRead(c,{action:'support.assignee.list',resourceType:'employee',reason:'Operator searched active platform ticket owners.'});
+    return c.json(paginated(result.data||[],result.count||0,query.page,query.limit));
+});
+
+router.get('/tickets/:id', requirePermission('support:view'), validate('param', TicketParamSchema), validate('query', ListTicketsQuerySchema), async (c) => {
     // Phase 2 (Mandate 7 follow-up): fetchTicket below looks up by the ticket's own primary key
     // (id), whose site is not known until the row returns -- bounded to exactly one row by
     // construction (.maybeSingle()), never an enumeration. See the allowlist entry for the review.
@@ -309,12 +343,16 @@ router.get('/tickets/:id', requirePermission('support:view'), validate('param', 
     const ticket = await fetchTicket(db, ticketId);
     if (!ticket) return c.json({ error: { code: 'NOT_FOUND', message: 'Support ticket not found' } }, 404);
 
+    const query=c.get('validatedQuery') as z.infer<typeof ListTicketsQuerySchema>;
+    const {from,to}=rangeFor(query.page,query.limit);
     const [messages, clocks, csat, merchantContext] = await Promise.all([
-        db.from('ticket_messages').select('*').eq('ticket_id', ticketId).is('deleted_at', null).order('created_at', { ascending: true }),
-        db.from('ticket_sla_clocks').select('*').eq('ticket_id', ticketId).is('deleted_at', null).order('clock_type', { ascending: true }),
-        db.from('ticket_csat').select('*').eq('ticket_id', ticketId).is('deleted_at', null).order('created_at', { ascending: false }),
+        db.from('ticket_messages').select('*',{count:'exact'}).eq('ticket_id', ticketId).is('deleted_at', null).order('created_at', { ascending: true }).order('id',{ascending:true}).range(from,to),
+        db.from('ticket_sla_clocks').select('*').eq('ticket_id', ticketId).is('deleted_at', null).order('clock_type', { ascending: true }).limit(2),
+        db.from('ticket_csat').select('*').eq('ticket_id', ticketId).is('deleted_at', null).order('created_at', { ascending: false }).limit(25),
         fetchMerchantContext(db, stringValue(ticket.site_id)),
     ]);
+
+    if(messages.error||clocks.error||csat.error)throw new Error('Support detail is unavailable');
 
     await logSensitiveRead(c, {
         action: 'support.ticket.view',
@@ -327,6 +365,7 @@ router.get('/tickets/:id', requirePermission('support:view'), validate('param', 
     return c.json(success({
         ticket,
         messages: messages.data || [],
+        message_meta: paginated([],messages.count||0,query.page,query.limit).meta,
         sla_clocks: clocks.data || [],
         csat: csat.data || [],
         merchant_context: merchantContext,

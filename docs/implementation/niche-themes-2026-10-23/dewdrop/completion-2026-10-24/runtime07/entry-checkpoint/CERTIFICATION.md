@@ -1,7 +1,0 @@
-Dewdrop is **not certified**. The original 30 cases retain **26 PASS, 1 FAIL (M05) and 3 BLOCKED (D02/O05/S01)**. Expanded coverage remains 291 NOT_RUN.
-
-The explicit 2.0.1 successor has 16 passing canonical source control families and 61 synthetic render outputs. Strict no-emit type checking and lint pass. All 20 frozen catalogue hashes and default body/header/footer/style output across 21 page templates remain exact. See [the sealed source handoff](/Volumes/Projects/LetBuyy/docs/implementation/niche-themes-2026-10-23/dewdrop/completion-2026-10-24/proposals/successor-v201/SEALED_HANDOFF.json). Themes has integrated the explicit catalogue selector; its composed source suite passes 72 checks, including the 16 Dewdrop controls. The source integration seal is verified. Current installed/runtime/browser execution and full independent acceptance are pending. No live case was promoted.
-
-Razorpay Test API authentication is verified by the shared HTTP 200 receipt. Accepted public webhook ingress, runtime binding and an actual normal per-theme Test Mode payment remain unverified. LOCAL_E2E_VERIFIED, RAZORPAY_TEST_VERIFIED, REVIEW_ACCEPTED and FULL_THEME_CERTIFIED remain false. Production is NOT_REQUESTED.
-
-All LetBuyy work is paused by the latest project-wide human instruction recorded at 13:21 UTC on 24 October 2026. The goal is paused. The frozen 2.0.0 fixture plan and TLS preflight are preserved; no fresh browser cases ran. A later explicit human resume and fresh allocation are required. Retired fixture 936 is not reused.

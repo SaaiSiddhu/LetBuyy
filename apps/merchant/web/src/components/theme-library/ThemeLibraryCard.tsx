@@ -1,11 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import type { SiteThemeLibraryItem } from '@letbuyy/theme-engine'
-import { catalogArtworkUrl } from '@/lib/themes/catalog-artwork'
 import {
     Badge,
-    Card,
     Button,
     Dropdown,
     type DropdownItem,
@@ -24,7 +20,22 @@ import {
  * GET /api/themes/library. All fields are set by the gateway after joining
  * theme_instances + themes catalog + theme_releases.
  */
-export type SiteThemeRecord = SiteThemeLibraryItem
+export interface SiteThemeRecord {
+    slug: string
+    name: string
+    /** Current lifecycle status of the theme instance on this site */
+    instance_status: 'active' | 'installed' | 'inactive' | 'archived' | 'deleted'
+    installed_at: string | null
+    last_published_at: string | null
+    last_modified_at: string | null
+    /** Whether an unsaved draft exists in theme_editor_drafts */
+    hasDraft: boolean
+    /** Whether this theme slug matches sites.current_theme_release_id */
+    isCurrentlyPublished: boolean
+    /** Whether a newer package version is available in the marketplace */
+    updateAvailable: boolean
+    theme_package_version_id: string | null
+}
 
 interface ThemeLibraryCardProps {
     theme: SiteThemeRecord
@@ -55,7 +66,7 @@ function formatEnIn(isoDate: string | null): string {
 
 function statusLabel(theme: SiteThemeRecord): string {
     if (theme.isCurrentlyPublished) return 'Published'
-    if (theme.hasDraft) return 'Saved draft'
+    if (theme.hasDraft) return 'Draft'
     if (theme.instance_status === 'archived') return 'Archived'
     return 'Inactive'
 }
@@ -88,7 +99,6 @@ export function ThemeLibraryCard({
     onRollback,
     busySlug,
 }: ThemeLibraryCardProps) {
-    const router = useRouter()
     const isBusy = busySlug === theme.slug
     const isPublished = theme.isCurrentlyPublished
     const lastDate = theme.last_published_at || theme.last_modified_at
@@ -104,12 +114,12 @@ export function ThemeLibraryCard({
             label: 'Customize',
             icon: <Edit3 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
             onSelect: () => {
-                router.push(`/${store}/online-store/themes/${theme.slug}/editor`)
+                window.location.href = `/${store}/online-store/themes/${theme.slug}/editor`
             },
         },
         {
             id: 'preview',
-            label: 'Preview in editor',
+            label: 'Preview',
             icon: <Eye className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
             onSelect: () => {
                 window.open(`/${store}/online-store/themes/${theme.slug}/editor`, '_blank', 'noopener,noreferrer')
@@ -167,11 +177,10 @@ export function ThemeLibraryCard({
     ]
 
     return (
-        <Card as="article"
-            className="flex flex-col gap-[var(--lb-space-3)] p-[var(--lb-space-4)]"
+        <article
+            className="flex min-w-0 flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]"
             aria-label={`${theme.name} theme`}
         >
-            {catalogArtworkUrl(theme) && <img className="theme-library-thumbnail" src={catalogArtworkUrl(theme)!} alt={`${theme.name} design preview`} loading="lazy" />}
             {/* Card header */}
             <div className="flex min-w-0 items-start justify-between gap-[var(--lb-space-2)]">
                 <div className="min-w-0">
@@ -211,7 +220,7 @@ export function ThemeLibraryCard({
                 )}
                 {theme.hasDraft && !theme.isCurrentlyPublished && (
                     <span className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-info)]">
-                        Saved draft
+                        Unsaved draft
                     </span>
                 )}
                 <div className="ml-auto flex items-center gap-[var(--lb-space-2)]">
@@ -229,12 +238,11 @@ export function ThemeLibraryCard({
                         </Button>
                     )}
                     <Button
-                        variant="primary"
-                        size="sm"
+                        unstyled
                         type="button"
-                        className="h-[var(--lb-size-control-sm)] gap-[var(--lb-space-1)] px-[var(--lb-space-3)] leading-none"
+                        className="inline-flex h-[var(--lb-size-control-sm)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border-strong)] bg-[var(--lb-color-primary)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-none text-[color:var(--lb-color-text-on-primary)] hover:opacity-90 focus-visible:outline focus-visible:outline-[var(--lb-color-focus-ring)] disabled:opacity-50"
                         onClick={() => {
-                            router.push(`/${store}/online-store/themes/${theme.slug}/editor`)
+                            window.location.href = `/${store}/online-store/themes/${theme.slug}/editor`
                         }}
                         disabled={isBusy}
                         aria-label={`Customize ${theme.name}`}
@@ -244,6 +252,6 @@ export function ThemeLibraryCard({
                     </Button>
                 </div>
             </div>
-        </Card>
+        </article>
     )
 }

@@ -1,0 +1,11 @@
+{
+  "font_sha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+  "font_bytes": 58308,
+  "declared_unicode_range": "U+0, U+20-7E, U+A0-AC, U+AE-FF, U+3B8, U+2013-2014, U+2018-2019, U+201C-201D, U+2022, U+2026, U+2039-203A, U+20B9, U+2190-2193, U+2212, U+2318, U+2713",
+  "font_cmap_codepoints": 210,
+  "declared_codepoints": 210,
+  "exact_match": true,
+  "emitted_css_matches_source_declaration": true,
+  "indic_faces_and_glyphs_unchanged": true,
+  "method": "Actual WOFF2 cmap from isolated fontTools subset proof, compared with every declared codepoint and emitted production CSS"
+}

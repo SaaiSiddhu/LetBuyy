@@ -30,28 +30,13 @@ export const LIVE_EXTERNAL_SUITES = [];
 export const EXPLICIT_RUNTIME_SUITES = ['tests/runtime/reel-private-r2.workerd.test.mjs'];
 
 export const GATEWAY_DB_SUITE_DIR = 'services/api-gateway/src/__tests__/owned-db';
-// These suites intentionally qualify an exact predecessor and then apply/retire
-// its next migration. Newer current-stack journeys stay on the full chain.
-export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
-    'services/api-gateway/src/__tests__/owned-db/cart-order-fact-retirement388.postgres.test.ts': 388,
-    // These retire/reapply the exact captured schema/role profiles. Current-stack
-    // mounted-browser counterparts below retain the complete migration chain.
-    'services/api-gateway/src/__tests__/owned-db/console-oncall-schedules.postgres.test.ts': 362,
-    'services/api-gateway/src/__tests__/owned-db/console-runtime-command-history.postgres.test.ts': 363,
-    'services/api-gateway/src/__tests__/owned-db/storefront-discovery.postgres.test.ts': 387,
-    'services/api-gateway/src/__tests__/owned-db/storefront-measurement-discovery.postgres.test.ts': 388,
-    'services/api-gateway/src/__tests__/owned-db/storefront-electronics-search.postgres.test.ts': 391,
-    'services/api-gateway/src/__tests__/owned-db/theme-draft-cas.postgres.test.ts': 390,
-    'services/api-gateway/src/__tests__/owned-db/theme-editor-template-keys.postgres.test.ts': 390,
-    'services/api-gateway/src/__tests__/owned-db/pantry-variant-facts.postgres.test.ts': 387,
-});
-
 export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';
 // Explicit reviewed ownership inventory; new root suites must be registered,
 // never silently admitted as pure tests or provider/runtime code.
 export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/ad-credit-purchase.postgres.test.ts',
     'tests/owned-db/console-current-oncall-browser.postgres.test.ts',
+    'tests/owned-db/console-support-billing-browser.postgres.test.ts',
     'tests/owned-db/console-mfa-reset-delivery.postgres.test.ts',
     'tests/owned-db/console-mfa-reset.postgres.test.ts',
     'tests/owned-db/console-oncall-schedules-browser.postgres.test.ts',
@@ -60,18 +45,13 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/core-presets-browser.postgres.test.ts',
     'tests/owned-db/core-scheduled-search.postgres.test.ts',
     'tests/owned-db/core-store-bootstrap.postgres.test.ts',
-    'tests/owned-db/domain-reconcile-boundary.postgres.test.ts',
     'tests/owned-db/loyalty-earn-worker.postgres.test.ts',
     'tests/owned-db/loyalty-refund-scheduler.postgres.test.ts',
     'tests/owned-db/loyalty-reversal-recovery.postgres.test.ts',
-    'tests/owned-db/managed-supabase-migration-admission.postgres.test.ts',
-    'tests/owned-db/managed-supabase-support-free-admission.postgres.test.ts',
-    'tests/owned-db/order-lifecycle-email.postgres.test.ts',
-    'tests/owned-db/notification-worker-transport.postgres.test.ts',
     'tests/owned-db/merchant-collection-membership-browser.postgres.test.ts',
+    'tests/owned-db/merchant-account-messages-browser.postgres.test.ts',
     'tests/owned-db/merchant-dashboard-access.postgres.test.ts',
     'tests/owned-db/merchant-entitlement-authority-browser.postgres.test.ts',
-    'tests/owned-db/merchant-export.postgres.test.ts',
     'tests/owned-db/merchant-free-subscription-browser.postgres.test.ts',
     'tests/owned-db/merchant-inventory-adjustment-browser.postgres.test.ts',
     'tests/owned-db/merchant-loyalty-browser.postgres.test.ts',
@@ -79,7 +59,6 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/merchant-product-edit-browser.postgres.test.ts',
     'tests/owned-db/merchant-product-status-browser.postgres.test.ts',
     'tests/owned-db/merchant-public-signup-browser.postgres.test.ts',
-    'tests/owned-db/merchant-push-preferences.postgres.test.ts',
     'tests/owned-db/merchant-smart-collection-preview-browser.postgres.test.ts',
     'tests/owned-db/merchant-staff-invitation-delivery.postgres.test.ts',
     'tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts',
@@ -91,10 +70,8 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/private-reel-intake.postgres.test.ts',
     'tests/owned-db/published-storefront-recovery-browser.postgres.test.ts',
     'tests/owned-db/reel-review-revisions.postgres.test.ts',
-    'tests/owned-db/storefront-access-worker.postgres.test.ts',
     'tests/owned-db/storefront-buyer-support-recovery-browser.postgres.test.ts',
     'tests/owned-db/subscription-tax-gross-conservation.postgres.test.ts',
-    'tests/owned-db/turnstile-domain-provisioning.postgres.test.ts',
     'tests/owned-db/worker-sql-invocation.postgres.test.ts',
 ];
 export const isGatewayDatabaseSuite = (suite) =>

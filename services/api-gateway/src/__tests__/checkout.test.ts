@@ -4,7 +4,6 @@ import test from 'node:test';
 
 const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
 const routeSource = readFileSync(new URL('../routes/checkout.ts', import.meta.url), 'utf8');
-const commandSource = readFileSync(new URL('../lib/hosted-checkout-order-command.ts', import.meta.url), 'utf8');
 const checkoutCoreSource = readFileSync(new URL('../../../../packages/checkout-core/src/index.ts', import.meta.url), 'utf8');
 const migrationSource = readFileSync(new URL('../../../../database/supabase/migrations/146_executable_checkout_state_machine.sql', import.meta.url), 'utf8');
 const rollbackSource = readFileSync(new URL('../../../../database/supabase/rollback/146_executable_checkout_state_machine.rollback.sql', import.meta.url), 'utf8');
@@ -44,11 +43,10 @@ test('Wave 7 checkout confirm creates server order and posts provider capture to
     assert.match(routeSource, /import \{ OrderExecutionAdapter \} from '\.\.\/execution\/order-execution\.adapter'/);
     assert.match(routeSource, /import \{ PaymentExecutionAdapter(?:, readCaptureResult)? \} from '\.\.\/execution\/payment-execution\.adapter'/);
     assert.match(routeSource, /createPublicStorefrontTenantContext/);
-    assert.match(commandSource, /export function buildHostedCheckoutOrderCommand/);
-    assert.match(routeSource, /const orderPlan = buildHostedCheckoutOrderCommand\(/);
+    assert.match(routeSource, /export function buildHostedCheckoutOrderCommand/);
     assert.match(routeSource, /new OrderExecutionAdapter\(db\)\.createOrder\(orderPlan\.command,\s*tenant\)/);
     assert.match(routeSource, /CHECKOUT_PROVIDER_PAYMENT_REQUIRED/);
-    assert.match(routeSource, /verifyRazorpayPayment\(razorpayCredentials\.keySecret/);
+    assert.match(routeSource, /verifyRazorpayPayment\(c\.env\.RAZORPAY_KEY_SECRET/);
     assert.match(routeSource, /storedProviderOrderId:\s*boundProviderOrderId/);
     assert.match(routeSource, /assertProviderPaymentNotReplayed\(c/);
     assert.match(routeSource, /razorpay_payment_id/);
@@ -95,14 +93,14 @@ test('hosted checkout binds only a verified buyer before origin transfer and con
     assert.match(buyerBindingMigration, /GRANT EXECUTE[\s\S]*TO service_role/);
     assert.match(buyerBindingRollback, /DROP FUNCTION IF EXISTS public\.bind_hosted_checkout_buyer/);
     assert.match(routeSource, /session\.buyer_account_id/);
-    assert.match(commandSource, /session\.buyer_session_epoch/);
+    assert.match(routeSource, /session\.buyer_session_epoch/);
     assert.match(routeSource, /new OrderExecutionAdapter\(db\)\.createOrder\(orderPlan\.command,\s*tenant\)/);
-    assert.match(commandSource, /CHECKOUT_BUYER_BINDING_INVALID/);
+    assert.match(routeSource, /CHECKOUT_BUYER_BINDING_INVALID/);
 });
 
 test('Wave 7 checkout confirm fails closed for unsupported hosted payment methods', () => {
-    assert.match(commandSource, /CHECKOUT_PAYMENT_METHOD_UNSUPPORTED/);
-    assert.match(commandSource, /normalizeHostedCheckoutPaymentProvider/);
+    assert.match(routeSource, /CHECKOUT_PAYMENT_METHOD_UNSUPPORTED/);
+    assert.match(routeSource, /normalizeHostedCheckoutPaymentProvider/);
     assert.doesNotMatch(routeSource, /upi['"]\s*:\s*['"]razorpay/);
 });
 
@@ -142,6 +140,6 @@ test('Task 003 hosted checkout live origin is human-required, not auto-cut over'
 test('signed hosted delivery options use storefront quotes for storefront carts and preserve per-rate COD eligibility', () => {
     const deliveryOptionsRoute = routeSource.slice(routeSource.indexOf("checkoutRouter.get('/:cartId/delivery-options'"), routeSource.indexOf("checkoutRouter.post('/:cartId/contact'"));
     assert.match(deliveryOptionsRoute, /sales_origin === 'marketplace'[\s\S]*checkoutDeliveryOptions/);
-    assert.match(deliveryOptionsRoute, /listStorefrontShippingRates\(db, verified\.handoff\.siteId, address, subtotalMinor, checkoutOrderItems\(verified\.handoff\.cart\)\)/);
+    assert.match(deliveryOptionsRoute, /listStorefrontShippingRates\(db, verified\.handoff\.siteId, address, subtotalMinor\)/);
     assert.match(deliveryOptionsRoute, /cod_available: rate\.cod_available/);
 });

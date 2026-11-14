@@ -59,13 +59,6 @@ On any conflict, the higher number's document does **not** win — the **lower o
 
 > The single canonical architecture (memorize this): **one modular monolith (`api-gateway`) + four satellites (`queue-workers`, `mobile-bff`, `identity-platform`, `webhook-service`) over one RLS+GUC Postgres on Cloudflare (ap-south) + Vercel, one region** — canonical double-entry ledger as the sole money truth, `identity-platform` as sole asymmetric token issuer, server-authoritative Liquid-first commerce with a hosted `checkout.letbuyy.com` origin — every Shopify-scale capability frozen as an empty seam. (ADR-004; Constitution §2.)
 
-Owner decision27October2026 / Constitution Amendment4 amends only the checkout
-hostname choice: the same Commerce runtime may serve exact verified store-bound
-HTTPS checkout hosts, with origin/cart/site-bound handoffs and host-only cookies.
-The existing central checkout remains the provisioning/drain fallback. This does
-not permit arbitrary checkout hosts, new runtimes, parallel checkout or weaker
-money/tenant controls. See DOC01 Amendment4 for the accepted conditions.
-
 ### 1.1 The canonical runtime topology (`ARCH-TOPO`)
 
 - **ARCH-R1 — MUST** treat the following **8 runtimes** as the entire canonical active topology. This is the V1 8-runtime set, **NOT** the rejected 9-app AGENTS set.

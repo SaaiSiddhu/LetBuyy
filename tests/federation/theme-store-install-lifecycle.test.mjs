@@ -28,11 +28,10 @@ test('theme package uploads default to review-gated marketplace submissions', ()
   assert.match(bundle, /submission_mode: z\.enum\(\['marketplace', 'private_install'\]\)\.default\('marketplace'\)/);
   assert.match(registry, /publicationMode\?: 'marketplace' \| 'private_install'/);
   assert.match(registry, /const reviewRequired = options\.publicationMode !== 'private_install'/);
-  assert.match(registry, /const packageStatus = 'draft'/);
+  assert.match(registry, /const packageStatus = reviewRequired \? 'draft' : payload\.themePackage\.status/);
   assert.match(registry, /const versionStatus = reviewRequired \? 'draft' : payload\.themePackageVersion\.release_status/);
   assert.match(registry, /is_active: installable/);
-  assert.match(registry, /rpc\('upload_owned_theme_package_v1'/);
-  assert.match(registry, /p_mode: options\.publicationMode \|\| 'marketplace'/);
+  assert.match(registry, /review_required: reviewRequired/);
 
   assert.match(route, /const submissionMode = body\.submission_mode \|\| 'marketplace'/);
   assert.match(route, /publicationMode: submissionMode/);
@@ -76,18 +75,14 @@ test('theme marketplace install surface calls the gateway through the typed clie
   assert.doesNotMatch(service, /@supabase\//);
 
   assert.match(installPage, /async function installThemeAction\(formData: FormData\)/);
-  assert.match(installPage, /ThemeService\.getUserStores\(true\)/);
-  assert.match(installPage, /ThemeService\.installTheme\(slug, storeId, \{ version: intent\.data\.expected_version/);
-  assert.doesNotMatch(installPage, /name="preset"|marketplace_install: true/);
+  assert.match(installPage, /ThemeService\.getUserStores\(\)/);
+  assert.match(installPage, /ThemeService\.installTheme\(slug, storeId, \{/);
+  assert.match(installPage, /name="preset"/);
   assert.match(installPage, /name="store_id"/);
-  assert.match(service, /confirmThemeInstallReceipt\(wire, selected\)/);
-  assert.match(service, /confirmThemeInstallLibraryReadback\(await api\.themes\.listSiteLibrary\(storeId\), confirmed\.receipt\)/);
-  assert.match(installPage, /theme_instance_id: receipt\.theme_instance_id/);
-  assert.match(installPage, /theme_package_version_id: receipt\.theme_package_version_id/);
-  assert.match(installPage, /redirect\(editorHref\)/);
+  assert.match(installPage, /\/dashboard\/installations\?installed=/);
   assert.doesNotMatch(installPage, /@supabase\//);
 
-  assert.match(detailPage, /const addHref = isFree \? `\/install\?theme=\$\{encodeURIComponent\(theme\.slug\)\}&version=\$\{encodeURIComponent\(theme\.version\)\}` : `\/checkout\?theme=\$\{encodeURIComponent\(theme\.slug\)\}`/);
+  assert.match(detailPage, /const addHref = isFree \? `\/install\?theme=\$\{encodeURIComponent\(theme\.slug\)\}` : `\/checkout\?theme=\$\{encodeURIComponent\(theme\.slug\)\}`/);
   assert.match(detailPage, /href: addHref/);
   assert.match(detailPage, /href=\{addHref\}/);
   assert.match(checkoutSuccess, /`\/install\?theme=\$\{themeSlug\}`/);
@@ -158,9 +153,9 @@ test('installed themes render from the storefront release snapshot without store
   const storefrontStoreService = read(STOREFRONT_STORE_SERVICE);
 
   assert.match(themeExecution, /publishReleaseSnapshot/);
-  assert.match(themeExecution, /rpc\('install_owned_theme_v1'/);
-  const installer = read('database/supabase/migrations/377_theme_install_event_contract.sql');
-  for (const field of ['site_id','theme_package_id','theme_version_id','installation_id']) assert.ok(installer.includes("'"+field+"'"),field);
+  assert.match(themeExecution, /eventType: 'theme\.installed'/);
+  assert.match(themeExecution, /theme_package_id: runtime\.themePackageId/);
+  assert.match(themeExecution, /theme_version_id: runtime\.themePackageVersionId/);
   assert.match(storefrontStoreService, /current_theme_release/);
   assert.match(storefrontStoreService, /release\?\.template_snapshot \|\| release\?\.release_config/);
   assert.match(storefrontStoreService, /normalizeTemplates\(templateConfig\.templates/);
@@ -174,9 +169,6 @@ test('marketplace rollback preserves the reviewed current-release precondition a
   const compiled=ts.transpileModule(read(THEME_SERVICE),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
   runInNewContext(compiled,{module,exports:module.exports,require:name=>{
     if(name==='server-only')return {};
-    // This narrow rollback proof never invokes acquisition; those real schema
-    // and readback contracts have separate executable installation tests.
-    if(name==='@letbuyy/shared-types'||name==='@letbuyy/theme-engine')return {};
     if(name==='@/lib/api/client')return {createThemeMarketplaceApiClient:async()=>({themes:{rollbackRelease:async(...args)=>{calls.push(args);return {accepted:true};}}})};
     throw Error(`Unexpected rollback dependency: ${name}`);
   }});

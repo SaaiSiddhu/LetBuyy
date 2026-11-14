@@ -28,7 +28,7 @@ test('gateway owns server-side storefront cart persistence with opaque cart toke
     assert.match(source, /\.from\('carts'\)/);
     assert.match(source, /session_id: cartToken/);
     assert.match(source, /queryPublicProducts\(c, store\.id, \{[\s\S]*ids: productIds/);
-    assert.match(source, /line_total: unitPrice \* quantity/);
+    assert.match(source, /line_total: unitPrice \* line\.quantity/);
     assert.match(publicRoutesSource, /import \{ registerStorefrontCartRoutes \} from '\.\/cart-routes'/);
     assert.match(publicRoutesSource, /registerStorefrontCartRoutes\(router, \{/);
 });
@@ -42,15 +42,11 @@ test('storefront GraphQL cart reads delegate to the persisted cart REST endpoint
 
 test('storefront React cart uses server cart as source of truth and localStorage only as synced cache', () => {
     assert.match(cartContextSource, /CART_TOKEN_STORAGE_KEY = 'lb_cart_token'/);
-    assert.match(cartContextSource, /const reconciliation = reconcileStoredCart\(site\)/);
-    assert.match(cartContextSource, /const token = localStorage\.getItem\(CART_TOKEN_STORAGE_KEY\)/);
-    assert.match(cartContextSource, /const base = token \? await readCurrent\(site, token\) : null/);
-    assert.match(cartContextSource, /expected_updated_at: base\.updated_at/);
-    assert.match(cartContextSource, /storefrontBrowserApiFetch\(site, token \? `\/cart\/\$\{encodeURIComponent\(token\)\}` : '\/cart'/);
+    assert.match(cartContextSource, /storefrontBrowserApiFetch\(subdomain, cartToken \? `\/cart\/\$\{cartToken\}` : '\/cart'/);
     assert.match(cartContextSource, /serverCartToItems/);
     assert.match(cartContextSource, /cartLineInputFromItem/);
-    assert.match(cartContextSource, /localStorage\.setItem\(CART_TOKEN_STORAGE_KEY, cart\.cart_token\)/);
-    assert.match(cartContextSource, /localStorage\.setItem\(CART_STORAGE_KEY, JSON\.stringify\(accepted\)\)/);
+    assert.match(cartContextSource, /localStorage\.setItem\(CART_TOKEN_STORAGE_KEY, serverCart\.cart_token\)/);
+    assert.match(cartContextSource, /localStorage\.setItem\(CART_STORAGE_KEY, JSON\.stringify\(items\)\)/);
 });
 
 test('Liquid hydration islands sync add-to-cart through the same server cart API', () => {

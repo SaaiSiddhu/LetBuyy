@@ -1,0 +1,22 @@
+{
+  "captured_at": "2026-10-29T20:11:29.012Z",
+  "method": "Existing production build started temporarily at9036; real9010 gateway, no fixture",
+  "results": [
+    {
+      "path": "/in",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "path": "/in/pricing",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "path": "/api/founding-pricing",
+      "status": 200,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

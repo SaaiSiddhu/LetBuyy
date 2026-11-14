@@ -1,0 +1,54 @@
+{
+  "capturedAt": "2026-11-07T03:37:32.274Z",
+  "scope": "Single diagnostic sample per variant/page; cannot close acceptance",
+  "rows": [
+    {
+      "variant": "baseline",
+      "page": "pricing",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "runtimeError": null,
+      "lcpMs": 2903.83125,
+      "tbtMs": 34.5,
+      "cls": 0,
+      "scriptBytes": 224156,
+      "lighthouseVersion": "13.6.0"
+    },
+    {
+      "variant": "baseline",
+      "page": "guide",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "runtimeError": null,
+      "lcpMs": 3753.188,
+      "tbtMs": 23,
+      "cls": 0,
+      "scriptBytes": 230433,
+      "lighthouseVersion": "13.6.0"
+    },
+    {
+      "variant": "route-css",
+      "page": "pricing",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "runtimeError": null,
+      "lcpMs": 2867.725,
+      "tbtMs": 41,
+      "cls": 0,
+      "scriptBytes": 223510,
+      "lighthouseVersion": "13.6.0"
+    },
+    {
+      "variant": "route-css",
+      "page": "guide",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "runtimeError": null,
+      "lcpMs": 3751.395,
+      "tbtMs": 24.5,
+      "cls": 0,
+      "scriptBytes": 229773,
+      "lighthouseVersion": "13.6.0"
+    }
+  ]
+}

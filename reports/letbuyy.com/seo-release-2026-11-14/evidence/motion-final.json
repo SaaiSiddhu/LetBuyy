@@ -1,0 +1,50 @@
+[
+  {
+    "width": 320,
+    "colorScheme": "light",
+    "input": "touch",
+    "keyboard": true,
+    "pauseStopsGraph": true,
+    "reducedMotion": true
+  },
+  {
+    "width": 320,
+    "colorScheme": "dark",
+    "input": "touch",
+    "keyboard": true,
+    "pauseStopsGraph": true,
+    "reducedMotion": true
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "input": "touch",
+    "keyboard": true,
+    "pauseStopsGraph": true,
+    "reducedMotion": true
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "input": "touch",
+    "keyboard": true,
+    "pauseStopsGraph": true,
+    "reducedMotion": true
+  },
+  {
+    "width": 1366,
+    "colorScheme": "light",
+    "input": "pointer",
+    "keyboard": true,
+    "pauseStopsGraph": true,
+    "reducedMotion": true
+  },
+  {
+    "width": 1366,
+    "colorScheme": "dark",
+    "input": "pointer",
+    "keyboard": true,
+    "pauseStopsGraph": true,
+    "reducedMotion": true
+  }
+]

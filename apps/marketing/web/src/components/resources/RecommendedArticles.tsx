@@ -24,7 +24,7 @@ export default function RecommendedArticles({ articles }: Props) {
           >
             <ResourceArticleArtwork slug={article.slug} thumbnail />
             <div className="arc-rec-top">
-              <span className="arc-rec-cat" style={{ color: category.color }}>{category.label}</span>
+              <span className="arc-rec-cat" style={{ color: `color-mix(in srgb, ${category.color} 35%, var(--lb-color-text))` }}>{category.label}</span>
             </div>
             <p className="arc-rec-title">{article.title}</p>
             <p className="arc-rec-desc">{article.subtitle}</p>

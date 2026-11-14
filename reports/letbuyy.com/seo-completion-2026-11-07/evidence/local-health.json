@@ -1,0 +1,33 @@
+{
+  "captured_at": "2026-11-07T02:24:39.410357+00:00",
+  "checks": [
+    {
+      "url": "http://127.0.0.1:9006/in/pricing",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 447757,
+      "excerpt": null
+    },
+    {
+      "url": "http://127.0.0.1:9006/api/founding-pricing",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 76731,
+      "excerpt": "{\"data\":{\"pricing\":{\"plans\":[{\"slug\":\"launch\",\"name\":\"Launch\",\"tagline\":\"Everything you need to start selling\",\"is_popular\":false,\"display_order\":1,\"status\":\"av"
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 76636,
+      "excerpt": "{\"success\":true,\"data\":{\"plans\":[{\"slug\":\"launch\",\"name\":\"Launch\",\"tagline\":\"Everything you need to start selling\",\"is_popular\":false,\"display_order\":1,\"status\""
+    },
+    {
+      "url": "http://127.0.0.1:9002/signup",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 225001,
+      "excerpt": null
+    }
+  ]
+}

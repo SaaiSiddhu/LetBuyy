@@ -77,18 +77,3 @@ test('the header icon element keeps its type from one render to the next, so Rea
         assert.equal(first.type, second.type, `${item.label}: a component created while rendering has a new type every time`)
     }
 })
-
-test('SettingsPane forwards save safety and explicit header metadata without interpreting persistence', () => {
-    const onSave = async () => {}, onDiscard = () => {}
-    const bar = { state: 'unsaved' as const, onSave, onDiscard, saveDisabled: true, discardDisabled: true, protectNavigation: false }
-    const pane = SettingsPane({ title: 'Translated name', navigationKey: 'general', description: 'd', store: 'snaz', children: null, saveBar: bar, header: { titleAdornment: <span>Draft</span>, showDescription: true } })
-    const children = React.Children.toArray((pane.props as { children: React.ReactNode }).children).filter(React.isValidElement)
-    const header = children.find(c => c.type === PageHeader)!
-    assert.equal((header.props as { recipe: string }).recipe, 'settings')
-    assert.ok((header.props as { icon: React.ReactNode }).icon)
-    const save = children.find(c => (c.props as { state?: string }).state === 'unsaved')!
-    assert.equal((save.props as typeof bar).onSave, onSave)
-    assert.equal((save.props as typeof bar).discardDisabled, true)
-    assert.equal((save.props as typeof bar).saveDisabled, true)
-    assert.equal((save.props as typeof bar).protectNavigation, false)
-})

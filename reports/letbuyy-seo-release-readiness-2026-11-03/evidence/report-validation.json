@@ -1,0 +1,12 @@
+{
+  "capturedAt": "2026-11-03T03:25:09.212480+00:00",
+  "requiredDeliverables": 15,
+  "workRecords": 49,
+  "validationErrors": [],
+  "credentialPatternFindings": [],
+  "checks": "Required file presence, local report links, JSON syntax, unique work IDs, truthful status invariants and bounded credential-pattern scan",
+  "finalizedAt": "2026-11-03T03:26:28.465369+00:00",
+  "finalLocalLinkErrors": [],
+  "finalSourceDifferences": [],
+  "rootBuildId": "tG7TW1sIGL_gn9Q4-AFXP"
+}

@@ -1,9 +1,0 @@
-{
-  "classification": "LOCAL_EVIDENCE_READER_ASSUMPTION_FAILURE_NOT_NATIVE_OR_APP_FAILURE",
-  "exitCode": 1,
-  "assertion": "Expected PNG signature from controller screenshot .png filenames.",
-  "actual": "All nine retained Circuit .png names contain actual JPEG/JFIF bytes.",
-  "correction": "Verify actual PNG or complete JPEG encoding; record detected encoding and preserve original bytes/names. Visual inspection already decodes these images correctly.",
-  "nativeExecutions": 0,
-  "controllerArtifactsModified": false
-}

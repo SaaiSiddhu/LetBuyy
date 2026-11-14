@@ -1,0 +1,108 @@
+{
+  "status": "IMPLEMENTED_LOCAL_VERIFIED_NOT_DEPLOYED",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "scope": [
+    "support ownership, priority, queue filters, recorded SLA states and escalation",
+    "merchant SaaS invoice/payment/renewal/mandate investigation and safe record summaries",
+    "current database dependency evidence and connected existing operational recovery",
+    "Console-specific unauthenticated entry and normal local operator login"
+  ],
+  "verification": {
+    "consoleTests": {
+      "passed": 50,
+      "failed": 0
+    },
+    "authorityContracts": {
+      "passed": 12,
+      "failed": 0
+    },
+    "ownedRuns": {
+      "database": {
+        "runId": "8bceea57e087",
+        "passed": 58,
+        "failed": 4,
+        "cleanup": "verified empty"
+      },
+      "accepted": {
+        "runId": "31274208fa35",
+        "passed": 29,
+        "failed": 0,
+        "cleanup": "verified empty"
+      },
+      "final": {
+        "runId": "22176a691801",
+        "passed": 7,
+        "failed": 0,
+        "cleanup": "verified empty"
+      },
+      "delivered": {
+        "runId": "e55274852e99",
+        "passed": 1,
+        "failed": 0,
+        "cleanup": "verified empty"
+      },
+      "signin-final": {
+        "runId": "9f057db9517f",
+        "passed": 1,
+        "failed": 0,
+        "cleanup": "verified empty"
+      }
+    },
+    "productionBuild": "pass, isolated source copy",
+    "types": "Console, Gateway, shared-types and built API client pass",
+    "lint": "scoped Console ESLint, CSS stylelint and diff whitespace pass",
+    "governance": "domain boundary225, tenant isolation317, migration safety and design-system ratchet pass",
+    "migrationSequence": "remains red: migrations370 and371 are untracked local source; no staging/commit authorized",
+    "sourceMismatches": {
+      "candidate": [],
+      "build-candidate": []
+    }
+  },
+  "localUpgrade": {
+    "resource": "supabase_db_letbuyy-web-local-20261021",
+    "from": 369,
+    "to": 371,
+    "approvedByOwner": true,
+    "atomic": true,
+    "postgresSuperuserAfter": false,
+    "allEventTriggersEnabled": true,
+    "applicationGuardKeptEnabled": true,
+    "businessRowDML": false
+  },
+  "localBrowser": {
+    "authentication": "existing configured operator; normal Console magic proof and real TOTP",
+    "dashboard": "rendered",
+    "support": "loaded; empty canonical queue",
+    "settings": "fresh database evidence reachable",
+    "accountOrFactorChanges": false
+  },
+  "preservation": {
+    "preexistingChangedFiles": 198,
+    "intentionallyChangedPreexistingPathsBeforeContinuity": [
+      "apps/internal/console/src/app/(dashboard)/support/support-desk.tsx",
+      "apps/internal/console/src/app/api/v1/support/[[...segments]]/route.ts",
+      "services/api-gateway/src/routes/internal-console/operator-workspaces.ts",
+      "apps/internal/console/package.json",
+      "apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx",
+      "apps/internal/console/src/app/(dashboard)/settings/page.tsx",
+      "apps/internal/console/src/app/(dashboard)/subscriptions/page.tsx",
+      "apps/internal/console/src/app/globals.css",
+      "apps/internal/console/src/proxy.ts",
+      "config/eslint/boundary-baseline.json",
+      "docs/governance/app-api-route-ownership.md",
+      "packages/shared-types/src/index.ts",
+      "packages/typescript/api-client/src/index.ts",
+      "scripts/validators/app-api-route-inventory.mjs",
+      "services/api-gateway/src/__tests__/operator-scoped-admin-client-contract.test.ts",
+      "services/api-gateway/src/routes/internal-console.ts",
+      "services/api-gateway/src/routes/operations/support.ts"
+    ],
+    "unchangedPreexistingFilesBeforeContinuity": 181
+  },
+  "limits": [
+    "uncommitted local source; no push, merge or hosted deployment",
+    "browser acceptance uses disposable synthetic records; normal local check is read-only after sign-in",
+    "no new refund/charge/plan override, arbitrary queue replay, provider send control, global record search, attention inbox or merged timeline",
+    "no new mobile feature/device verification or parent-programme acceptance"
+  ]
+}

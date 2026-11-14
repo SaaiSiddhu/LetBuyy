@@ -1,0 +1,403 @@
+{
+  "recorded_at": "2026-10-21T23:11:04.118996+05:30",
+  "scope": "Setup checklist and store health across Merchant web/native and Console",
+  "status": "LOCAL_BOUNDED_VERIFIED_DEVICE_HOSTED_PENDING",
+  "checkout": "/Users/saai_mithra/Projects/Start_Up/LetBuyy",
+  "source_head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "branch": "develop",
+  "source_state": "uncommitted working tree",
+  "preservation": {
+    "original_dirty_files": 112,
+    "identical": 103,
+    "missing": [],
+    "intentional_overlaps": [
+      "apps/internal/console/src/app/(dashboard)/merchants/[id]/operations/page.tsx",
+      "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts",
+      "services/api-gateway/src/routes/internal-console/merchant-operations.ts",
+      "EXECUTION_LEDGER.md",
+      "apps/merchant/mobile/test/mobile_services_test.dart",
+      "apps/merchant/web/src/components/settings/settings-navigation.ts",
+      "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md",
+      "packages/shared-types/src/index.ts",
+      "packages/typescript/api-client/src/index.ts"
+    ],
+    "baseline_path": "/private/tmp/letbuyy-readiness-health-20261021/baseline.json",
+    "baseline_sha256": "aad9b7997f5663fd47d400f07d8152dbee350913351219a71dac9b55ab692201"
+  },
+  "runtime_source_matches_candidate": true,
+  "source_sha256": {
+    "EXECUTION_LEDGER.md": "580142250f9ee0fbbf087e91e53f05586ab2de5404548c95921a0e33c4eae297",
+    "apps/internal/console/src/app/(dashboard)/merchants/[id]/operations/page.tsx": "208e0140b97cc1492f4833f75b040b4e4dab8b451b50a5ae7312dd2b7ef017fc",
+    "apps/merchant/mobile/lib/screens/dashboard/home_screen.dart": "5d1ba49c24e215bc6eae6a779df311fb5144bf9e9ae9df78369325831707c74f",
+    "apps/merchant/mobile/lib/screens/store_health/store_health_screen.dart": "4b573becb63c7b59443ff8cedbbed98caed5644223da29df1e91d7ac91aff013",
+    "apps/merchant/mobile/test/goldens/store_health_center.png": "7e928b86451aa327830b0dd878f28e408e4d504dfcbe2999a2c327a7e06ee060",
+    "apps/merchant/mobile/test/merchant_goldens_test.dart": "62bd073a2512931de5cd76195ca836ae242d56f4303479384783edf8d4e7e359",
+    "apps/merchant/mobile/test/mobile_services_test.dart": "45515d0fe5023af5df2ef571db74ffc38040c388e42b0c43cd98c42489edb258",
+    "apps/merchant/mobile/test/store_health_recovery_test.dart": "169a169ad37e19c433b85168c5b60a51413f4435b82bcb8f966747c4f23dbdfe",
+    "apps/merchant/web/src/app/[store]/dashboard/DashboardClient.tsx": "725f36dbe83b73239f9665ba34b46fa230f1e9a283fe8d7a945fdb31c2043f63",
+    "apps/merchant/web/src/app/[store]/dashboard/dashboard-setup-status.ts": "5c6a614b8def0b164714d4e5c373231e4f23a435195100839c8d5f1109bd353d",
+    "apps/merchant/web/src/app/[store]/dashboard/page.tsx": "75d79110060bf6d633164fc64b89be2800798baf5b4d5a5cfbc45720e443dadb",
+    "apps/merchant/web/src/app/[store]/settings/store-health/page.tsx": "678cc0a111409aed56ea6e1a5180bc3f88fa88d72f6ad7e0c87ee9526f29e922",
+    "apps/merchant/web/src/components/StoreReadinessPanel.tsx": "a1a592b77211b38cdada9dfcacec5aa074adce6e958fc85599410511cc92c4b3",
+    "apps/merchant/web/src/components/settings/settings-navigation.ts": "fd65d206b4bb6f43f1004204ad85b0c44a15745aa23c56a08579de28944088cd",
+    "apps/merchant/web/tests/dashboard-setup-status.test.mjs": "9df638b0da1bb58c28d4ca8895f8fe383fd172bcee333b19c33e086728471c96",
+    "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md": "e41b3ed1f061950afc581873576d8e3749a220f1b2b7472b92538dd2d35cf71c",
+    "packages/shared-types/src/index.ts": "5d5dfa35a5f5c4c037407de087c15d8e95b7528290f3407438cf9f7d4912a0d7",
+    "packages/typescript/api-client/src/index.ts": "0f5478255833cba919393b3a696e611e04c3efe57e0ecb0844372d911d1685af",
+    "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts": "68f567a98f6c1fea3c33b18cf7cdd3ed666835c0aa6fc4767156b82e154b0ce3",
+    "services/api-gateway/src/__tests__/owned-db/store-readiness-health.postgres.test.ts": "5caeeb43471593bcbde73852d5b414df1e5f905e24dc17b2575780a7fa908dac",
+    "services/api-gateway/src/__tests__/store-publish.test.ts": "a994788d2a95069bb5cd81e558694228697e3161750b9f14b58c0b54ef1a6919",
+    "services/api-gateway/src/execution/store-health.adapter.ts": "0b88bd7944772de915a26e121820acfd9f9a28c268d9671ef99ab246ec739539",
+    "services/api-gateway/src/routes/internal-console/merchant-operations.ts": "eb73a2a683aca283ea19ef79968b33d319c90c08302fbf0acd506de6ac1bd73d",
+    "services/api-gateway/src/routes/stores.ts": "ff124225b72193dda7b20e079d8b6eab78208fc60c23a378c687b4382e9691d9"
+  },
+  "final_owned_runs": {
+    "accepted-db": {
+      "runId": "3ada12132e97",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "limits": {
+        "postgres": {
+          "memory": "1g",
+          "cpus": "2",
+          "pids": "512"
+        },
+        "rest": {
+          "memory": "256m",
+          "cpus": "1",
+          "pids": "256"
+        }
+      },
+      "jobs": 1,
+      "containers": [
+        "letbuyy-exec-18390-mviebak4-4a8057"
+      ],
+      "reaped": [],
+      "suites": 1,
+      "gatewayDbSuites": 1,
+      "failedSuites": 0,
+      "tests": 5,
+      "assertionsPassed": 5,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "wallSeconds": 31,
+      "suiteSeconds": 28.7,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "results": [
+        {
+          "name": "store-readiness-health.postgres",
+          "path": "services/api-gateway/src/__tests__/owned-db/store-readiness-health.postgres.test.ts",
+          "kind": "gateway-db",
+          "cluster": "letbuyy-exec-18390-mviebak4-4a8057",
+          "code": 0,
+          "timedOut": false,
+          "hasSummary": true,
+          "tests": 5,
+          "pass": 5,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0,
+          "seconds": 28.7,
+          "firstFailure": "",
+          "failures": [],
+          "skips": [],
+          "strayProcessesStopped": false,
+          "database": "letbuyy_exec_store_readiness_health_postgres",
+          "templateSeconds": 22.3,
+          "provisionSeconds": 1,
+          "rest": {
+            "container": "letbuyy-exec-3ada12132e97-rest-1",
+            "upstreamPort": 59232,
+            "proxyPort": 59233
+          },
+          "ownership": "verified before start",
+          "cleanup": {
+            "rest": true,
+            "database": true
+          },
+          "proxyRequests": {
+            "forwarded": 238,
+            "refused": 0,
+            "upstreamErrors": 1
+          }
+        }
+      ]
+    },
+    "accepted-browser": {
+      "runId": "477d2d71b508",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "limits": {
+        "postgres": {
+          "memory": "1g",
+          "cpus": "2",
+          "pids": "512"
+        },
+        "rest": {
+          "memory": "256m",
+          "cpus": "1",
+          "pids": "256"
+        }
+      },
+      "jobs": 1,
+      "containers": [
+        "letbuyy-exec-16659-mvie7o3m-628125"
+      ],
+      "reaped": [],
+      "suites": 1,
+      "gatewayDbSuites": 1,
+      "failedSuites": 0,
+      "tests": 1,
+      "assertionsPassed": 1,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "wallSeconds": 149,
+      "suiteSeconds": 147,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "results": [
+        {
+          "name": "merchant-console-support-browser.postgres",
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts",
+          "kind": "gateway-db",
+          "cluster": "letbuyy-exec-16659-mvie7o3m-628125",
+          "code": 0,
+          "timedOut": false,
+          "hasSummary": true,
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0,
+          "seconds": 147,
+          "firstFailure": "",
+          "failures": [],
+          "skips": [],
+          "strayProcessesStopped": false,
+          "database": "letbuyy_exec_merchant_console_support_browser_postgres",
+          "templateSeconds": 28.8,
+          "provisionSeconds": 1,
+          "rest": {
+            "container": "letbuyy-exec-477d2d71b508-rest-1",
+            "upstreamPort": 58117,
+            "proxyPort": 58118
+          },
+          "ownership": "verified before start",
+          "cleanup": {
+            "rest": true,
+            "database": true
+          },
+          "proxyRequests": {
+            "forwarded": 754,
+            "refused": 0,
+            "upstreamErrors": 1
+          }
+        }
+      ]
+    }
+  },
+  "runner_hashes": {
+    "accepted-db": "3809bef9778f0ac541c6521c9d124ec45260fabf44585ccf829a8c8bfa62cd42",
+    "accepted-browser": "a006ea9c39d16e73cb8f37651ffa5f8292afa31bc4c5b51601b618d294a8a710"
+  },
+  "unit_results": {
+    "merchant_web": {
+      "pass": 922,
+      "fail": 0,
+      "segments": [
+        116,
+        806
+      ]
+    },
+    "merchant_dashboard_mapping": {
+      "pass": 5,
+      "fail": 0
+    },
+    "publication_contracts": {
+      "pass": 6,
+      "fail": 0
+    },
+    "merchant_native": {
+      "pass": 362,
+      "fail": 0
+    },
+    "native_health_recovery": {
+      "pass": 4,
+      "fail": 0
+    }
+  },
+  "builds": {
+    "merchant_production": "passed inside final owned browser runtime",
+    "console_production": "exit 0",
+    "shared_types_and_sdk": "pnpm exec tsc -b packages/shared-types packages/typescript/api-client --pretty false; exit 0",
+    "native_bundle": {
+      "command": "flutter build bundle --debug --no-pub --target-platform=android-arm64 --target=lib/main.dart",
+      "exit_code": 0,
+      "kind": "kernel/assets; not APK or native-plugin/device proof",
+      "file_count": 22,
+      "bytes": 109048958,
+      "files_sha256": {
+        "NOTICES.Z": "2a23b41234eca8561a6748b5d4ddef7d62cdaefc7e7a57c400694f642e7ce872",
+        ".last_build_id": "22fa48fed836f3c0e6f0706bc151d8ebd650451f64d6dfb0fb4568ac1bc72d8e",
+        "NativeAssetsManifest.json": "9548a31e4a048135c1d94f919328bfb62ae2c7bb3cab96557c7941daa97776cb",
+        "vm_snapshot_data": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "isolate_snapshot_data": "86bca6674ce2054938fb6ef6e827a46e775def9c32ee4bec672085e4047bae7f",
+        "kernel_blob.bin": "473997f2abe93562853f9c336ba31f5cffd095d2a8877549ef4c62f6f344b48c",
+        "FontManifest.json": "cd7e03645bc44b2dd47b7cb626f51c4ecbf55a197ab77241628b47ac165fbe21",
+        "AssetManifest.bin": "9dfe9b20f844742da68f3374c52d5d50b1deecf0b04f329f90c0f12fd16c3e53",
+        "packages/cupertino_icons/assets/CupertinoIcons.ttf": "67c44fe9183b002e79dde7f6977e2988661c9a3e4a3c5fce968787efdbed823c",
+        "packages/fluttertoast/assets/toastify.js": "091c9a70994a2004ee02b04f111d40abe40c07b066856399f58c587042ec2990",
+        "packages/fluttertoast/assets/toastify.css": "69baf44fea5b3efd3377babc154ef1b83bf8263b910202a8c7d6e745d751349f",
+        "packages/flex_color_picker/assets/opacity.png": "8f40db314a0a7eab3ebc1817b78547496fbed922203783a1a8a4adb2afda0976",
+        "shaders/ink_sparkle.frag": "1fe8436a743884cb65078fe8c7b38e18f5365f2a2961270916f426fd13c604af",
+        "shaders/stretch_effect.frag": "bc7599dbbbaab310efe41520574138d21fb18a88c8fe4495ed79315309336f6f",
+        "fonts/MaterialIcons-Regular.otf": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453",
+        "assets/images/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "assets/images/letbuyy-logo-light.svg": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+        "assets/images/letbuyy-logo-dark.svg": "9d8a3691db07cb3cdde3e7325d3194777cec78bce20954f6014a05c25ca15220",
+        "assets/images/templates/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "assets/icons/app_icon.png": "7582bb93d2de94259e264a266098bcd1fd88117cab352d929cacede85939bc85",
+        "assets/icons/google.png": "721eaaa75386e99f3466fec38d2478508077522a6a18a0c996ae43d2ef08a2d8",
+        "assets/animations/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "logs": {
+    "merchant-tests-final.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/merchant-tests-final.log",
+      "sha256": "e2130ef90433b04cca21a39fbccbc6721aef97e74d8b1eb8813697e64afc8775"
+    },
+    "dashboard-contracts-final.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/dashboard-contracts-final.log",
+      "sha256": "eef5779dfb056d3a1ee2fbdd5eb498ac685130b83ae9a928f17576bcc733c0c5"
+    },
+    "store-health-unit.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/store-health-unit.log",
+      "sha256": "427e7f3d51af6640f41567110f21276e652b281531951310f6db50a809b59e00"
+    },
+    "mobile-tests-final.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/mobile-tests-final.log",
+      "sha256": "6d36b31ee3945f9a85293f7c78aeffd715ae2283e3eef540ceb07cfc84279f75"
+    },
+    "mobile-analyze-accepted.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/mobile-analyze-accepted.log",
+      "sha256": "9c62d91b0d43b9300ca6b69b12e29472b79584fd6a84fe72a68429b85af6b0cd"
+    },
+    "mobile-bundle.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/mobile-bundle.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "mobile-health-test-third.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/mobile-health-test-third.log",
+      "sha256": "2b3865fa1463afb03b290be902db8d03d3a96c70a094b360c384a4ae20eb6e62"
+    },
+    "mobile-golden-final.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/mobile-golden-final.log",
+      "sha256": "2ee9a4ff128caa7f05553e7737bcc35d3ae120df8da77f5011af137e2a9b3984"
+    },
+    "console-build-final.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/console-build-final.log",
+      "sha256": "c85670ac9bcc19b5040170c2339baf92dbfd24ca1864489c1cc678fab66516eb"
+    },
+    "gateway-types-accepted.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/gateway-types-accepted.log",
+      "sha256": "b6e70f1bff58ec529692e68bb1e9fff97cfa6c1380dce4a5a48e35294b1059f2"
+    },
+    "merchant-types-accepted.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/merchant-types-accepted.log",
+      "sha256": "53eb28e41c8f2ce4f4cc01ece70fdc3f9294b0126398b3c0848a1082369cd849"
+    },
+    "console-types.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/console-types.log",
+      "sha256": "f9d2c7d268e12cc62785ca86c0bfc7b07ee90bd256dd92596dd0cdffb17d3f19"
+    },
+    "shared-types.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/shared-types.log",
+      "sha256": "d382e9969816172c7c542d667f5d274cf6ba6e7c3883323555001f2a02c05803"
+    },
+    "sdk-build-final.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/sdk-build-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "merchant-lint-accepted.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/merchant-lint-accepted.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "console-lint.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/console-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "design-system-final.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/design-system-final.log",
+      "sha256": "bd5bcd1f15bfd15c7a882c748b5b92e2b9673a872d2704616b324fc994d34dc5"
+    },
+    "tenant-lint-final.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/tenant-lint-final.log",
+      "sha256": "70f509fbf59e3071871e6ea4a1fda7e2d64103cc3ad61d05380d39395004c44b"
+    },
+    "domain-lint-final.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/domain-lint-final.log",
+      "sha256": "d354f63dcff51aaf76d81cd86a7f4f9c5dfa156e7b91a442caaf721158d85cc6"
+    },
+    "session-lint.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/session-lint.log",
+      "sha256": "55b88cf5aa890f1b6f30af7620f99960dc561006d639bc27adbaa00efcebd0bc"
+    },
+    "import-lint.log": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/import-lint.log",
+      "sha256": "6acec28334fba7b749d6b50bd41d27edf99f2243c80e52b961b3debda61ebced"
+    }
+  },
+  "screenshots": {
+    "merchant-readiness-390px.png": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/screenshots/merchant-readiness-390px.png",
+      "sha256": "0a22cfa4ea8bacd4c0baec9a85817b161180340f90613f6eecae1193374958b7"
+    },
+    "merchant-readiness-desktop.png": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/screenshots/merchant-readiness-desktop.png",
+      "sha256": "2ac70887823f79f95c510aac5cce085ac34eba505b49361afd39c0f561b40c34"
+    },
+    "console-readiness-desktop.png": {
+      "path": "/private/tmp/letbuyy-readiness-health-20261021/screenshots/console-readiness-desktop.png",
+      "sha256": "8fa10b87cffb74d037c1064638ea510352dba07c15d9e54a14ae3c254c65f900"
+    }
+  },
+  "report": {
+    "path": "reports/MERCHANT_READINESS_HEALTH_2026-10-21.md",
+    "sha256": "9c5c39a79fac97ba4266fa4d017fad0a41f43a2b4c6b535db61d12dc0c5d54dd"
+  },
+  "notes": [
+    "One reader extends the existing Store Health contract; no parallel readiness store or gate.",
+    "SDK health response is schema-validated; failed/old contract reads are unavailable.",
+    "Owned browser final compilation preceded only a nonsemantic helper EOF trim; final runtime source matches the candidate.",
+    "Native golden uses the existing Ahem font/comparator, with the comparator unchanged.",
+    "Earlier failed aggregate runs remain distinct from the final green receipts."
+  ],
+  "new_migration": null,
+  "earlier_support_migration_370": "owned disposable only; hosted application remains open",
+  "commit_push_merge_deploy": false,
+  "remaining": [
+    "Android/iOS plugin builds and physical/emulated phone journey",
+    "Real domain/provider and hosted release acceptance",
+    "Controlled application of previous support migration 370"
+  ]
+}

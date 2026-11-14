@@ -55,8 +55,6 @@
  */
 
 import { useState, useCallback, useId, useEffect, useRef } from 'react'
-import { useReadRequest } from '@/lib/api/use-read-request'
-import { MerchantNavigationLink } from '@/components/MerchantNavigationLink'
 import {
     AlertTriangle,
     ArrowUp,
@@ -123,8 +121,6 @@ export interface ThemeUpdateDiff {
 
 /** Props for ThemeUpdatePanel. */
 export interface ThemeUpdatePanelProps {
-    /** Owned store path segment for the existing library duplication workflow. */
-    storeSlug: string
     /** Theme slug (used in API paths). */
     themeSlug: string
     /** Resolved store ID (UUID). Forwarded to the same-origin proxy. */
@@ -225,13 +221,7 @@ function friendlyError(payload: unknown, fallback: string): string {
  *  - Apply sends confirm_diff_hash (CAS guard); a stale hash returns 409.
  *  - RISK-DUAL-N01: no section_definitions mutation in this component.
  */
-export default function ThemeUpdatePanel(props: ThemeUpdatePanelProps) {
-    const scope = JSON.stringify([props.actorId, props.storeId, props.themeSlug, props.apiBase, props.currentVersionId, props.availableVersionId, props.currentReleaseId])
-    return <ScopedThemeUpdatePanel key={scope} {...props} />
-}
-
-function ScopedThemeUpdatePanel({
-    storeSlug,
+export default function ThemeUpdatePanel({
     themeSlug,
     storeId,
     currentVersionId,
@@ -244,7 +234,6 @@ function ScopedThemeUpdatePanel({
     onUpdateApplied,
     onRollbackApplied,
 }: ThemeUpdatePanelProps) {
-    const beginPreviewRead = useReadRequest(JSON.stringify([actorId, storeId, themeSlug, apiBase, availableVersionId]))
     const { notify } = useToast()
     const diffTableId = useId()
 
@@ -298,7 +287,6 @@ function ScopedThemeUpdatePanel({
 
     const handlePreview = useCallback(async () => {
         if (panelState === 'previewing' || !availableVersionId) return
-        const request = beginPreviewRead()
 
         setPanelState('previewing')
         setDiff(null)
@@ -311,9 +299,8 @@ function ScopedThemeUpdatePanel({
                 `?store_id=${encodeURIComponent(storeId)}` +
                 `&target_version_id=${encodeURIComponent(availableVersionId)}`
 
-            const res = await fetch(url, { credentials: 'same-origin', signal: request.signal })
+            const res = await fetch(url, { credentials: 'same-origin' })
             const payload = await res.json().catch(() => null) as Record<string, unknown> | null
-            if (!request.isCurrent()) return
 
             if (!res.ok) {
                 const msg = friendlyError(payload, 'Failed to preview the update. Try again.')
@@ -335,12 +322,11 @@ function ScopedThemeUpdatePanel({
 
             setPanelState(previewDiff.requiresDuplicate ? 'conflicts' : 'available')
         } catch (err) {
-            if (!request.isCurrent()) return
             const msg = err instanceof Error ? err.message : 'Preview request failed.'
             setErrorMessage(msg)
             setPanelState('error')
         }
-    }, [panelState, availableVersionId, apiBase, themeSlug, storeId, beginPreviewRead])
+    }, [panelState, availableVersionId, apiBase, themeSlug, storeId])
 
     // ── Apply update ─────────────────────────────────────────────────────────
 
@@ -550,13 +536,14 @@ function ScopedThemeUpdatePanel({
                         If you proceed without duplicating, content in removed sections will be lost.
                     </p>
                     <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                        <MerchantNavigationLink
-                            href={`/${encodeURIComponent(storeSlug)}/online-store/themes`}
+                        <Button
+                            unstyled
+                            type="button"
                             className="inline-flex h-[var(--lb-size-control-sm)] items-center rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border-strong)] bg-[var(--lb-color-primary)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-none text-[color:var(--lb-color-text-on-primary)] hover:opacity-90 focus-visible:outline focus-visible:outline-[var(--lb-color-focus-ring)]"
-                            aria-label="Open theme library to duplicate this theme before updating"
+                            aria-label="Duplicate theme before updating (recommended to preserve content)"
                         >
-                            Duplicate in theme library
-                        </MerchantNavigationLink>
+                            Duplicate first
+                        </Button>
                         <Button
                             unstyled
                             type="button"

@@ -1,0 +1,950 @@
+{
+  "version": "audit-plan-1",
+  "created_on": "2026-10-29",
+  "seed_keyword": "online store builder India",
+  "evidence": "evidence/content-search-samples.json; evidence/crawl.json; source registry used to locate existing pages",
+  "method": "Provisional editorial intent map. No controlled top-10 SERP-overlap clustering or search-volume data available. Page assignments are hypotheses requiring query/overlap validation.",
+  "serp_matrix": null,
+  "keyword_candidates": [
+    {
+      "phrase": "online store builder India",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "ecommerce website builder India",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "online store platform India",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "online store builder pricing India",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "zero commission online store",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "free trial online store builder",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "how to start online store India",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "how much does online store cost India",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "online store launch checklist",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "D2C brand launch India",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "how to get first online orders",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "product page optimization",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "ecommerce cart abandonment India",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "ecommerce reviews conversion",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "store SEO checklist",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "UPI vs COD ecommerce",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "cash on delivery return costs",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "UPI payment failures ecommerce",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "payment gateway settlement ecommerce",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "Razorpay store integration",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "GST registration ecommerce seller",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "GST ecommerce TCS India",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "GST invoice fields ecommerce",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "ecommerce returns policy India",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "ecommerce shipping pincode coverage",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "ecommerce order fulfillment",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "inventory management small online store",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "multi warehouse inventory ecommerce",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "email marketing ecommerce India",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "customer retention Indian D2C",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "social commerce India",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "Shopify alternative India",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "LetBuyy vs Shopify India",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "online store zero commission vs subscription",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "ecommerce platform migration checklist",
+      "intent": "informational",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    },
+    {
+      "phrase": "GST billing online store cost",
+      "intent": "commercial",
+      "volume": null,
+      "origin": "Editorial expansion from inspected offering, existing page topics and four focused query samples; not measured PAA/related-search extraction"
+    }
+  ],
+  "pillar": {
+    "slug": "how-to-start-an-online-store-india",
+    "category": "ecommerce",
+    "title": "How To Start an Online Store in India (2026 Guide)",
+    "url": "https://www.letbuyy.com/in/resources/ecommerce/how-to-start-an-online-store-india",
+    "keyword": "how to start an online store in India",
+    "volume": null,
+    "template": "ultimate-guide",
+    "wordCount": null,
+    "status": "written",
+    "editorial_status": "Existing page; correctness review required"
+  },
+  "clusters": [
+    {
+      "name": "Launch and conversion",
+      "color": "#4E79A7",
+      "posts": [
+        {
+          "slug": "building-first-letbuyy-store",
+          "category": "platform",
+          "title": "Building Your First LetBuyy Store: A Complete Walkthrough",
+          "url": "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store",
+          "keyword": "LetBuyy store setup walkthrough",
+          "volume": null,
+          "template": "how-to",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "product-page-optimization",
+          "category": "ecommerce",
+          "title": "Product Page Optimization: The Complete Guide",
+          "url": "https://www.letbuyy.com/in/resources/ecommerce/product-page-optimization",
+          "keyword": "product page optimization India",
+          "volume": null,
+          "template": "explainer",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "store-seo-checklist",
+          "category": "ecommerce",
+          "title": "The Complete Store SEO Checklist for Indian Merchants",
+          "url": "https://www.letbuyy.com/in/resources/ecommerce/store-seo-checklist",
+          "keyword": "online store SEO checklist",
+          "volume": null,
+          "template": "explainer",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "reducing-cart-abandonment",
+          "category": "ecommerce",
+          "title": "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores",
+          "url": "https://www.letbuyy.com/in/resources/ecommerce/reducing-cart-abandonment",
+          "keyword": "reduce cart abandonment India",
+          "volume": null,
+          "template": "explainer",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        }
+      ]
+    },
+    {
+      "name": "Payments and compliance",
+      "color": "#59A14F",
+      "posts": [
+        {
+          "slug": "upi-vs-cod-india",
+          "category": "payments",
+          "title": "UPI vs COD: Which Payment Method Wins for Indian Stores",
+          "url": "https://www.letbuyy.com/in/resources/payments/upi-vs-cod-india",
+          "keyword": "UPI vs cash on delivery",
+          "volume": null,
+          "template": "explainer",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "gst-for-ecommerce-india",
+          "category": "payments",
+          "title": "GST for Ecommerce in India: The Complete 2026 Guide",
+          "url": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india",
+          "keyword": "GST for ecommerce sellers India",
+          "volume": null,
+          "template": "explainer",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "invoicing-india-merchants",
+          "category": "payments",
+          "title": "GST Invoices for Indian Ecommerce: What Must Be Included",
+          "url": "https://www.letbuyy.com/in/resources/payments/invoicing-india-merchants",
+          "keyword": "GST invoice ecommerce India",
+          "volume": null,
+          "template": "explainer",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "razorpay-integration-guide",
+          "category": "payments",
+          "title": "Accepting Payments on LetBuyy: UPI, Cards, and COD",
+          "url": "https://www.letbuyy.com/in/resources/payments/razorpay-integration-guide",
+          "keyword": "LetBuyy Razorpay setup",
+          "volume": null,
+          "template": "how-to",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        }
+      ]
+    },
+    {
+      "name": "Shipping and operations",
+      "color": "#F28E2B",
+      "posts": [
+        {
+          "slug": "inventory-management-guide",
+          "category": "operations",
+          "title": "Inventory Management: From Chaos to Control",
+          "url": "https://www.letbuyy.com/in/resources/operations/inventory-management-guide",
+          "keyword": "ecommerce inventory management",
+          "volume": null,
+          "template": "how-to",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "shipping-india-guide",
+          "category": "operations",
+          "title": "Shipping in India: Pincode Coverage, Rates & Couriers",
+          "url": "https://www.letbuyy.com/in/resources/operations/shipping-india-guide",
+          "keyword": "ecommerce shipping India",
+          "volume": null,
+          "template": "how-to",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "order-fulfillment-guide",
+          "category": "operations",
+          "title": "Order Fulfillment: Processing 100 Orders Per Day Efficiently",
+          "url": "https://www.letbuyy.com/in/resources/operations/order-fulfillment-guide",
+          "keyword": "ecommerce order fulfillment process",
+          "volume": null,
+          "template": "how-to",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "refunds-returns-policy-india",
+          "category": "payments",
+          "title": "Building a Customer-Friendly Returns Policy for India",
+          "url": "https://www.letbuyy.com/in/resources/payments/refunds-returns-policy-india",
+          "keyword": "ecommerce returns policy India",
+          "volume": null,
+          "template": "explainer",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        }
+      ]
+    },
+    {
+      "name": "Acquisition and retention",
+      "color": "#B07AA1",
+      "posts": [
+        {
+          "slug": "first-100-orders-guide",
+          "category": "growth",
+          "title": "How to Get Your First 100 Orders",
+          "url": "https://www.letbuyy.com/in/resources/growth/first-100-orders-guide",
+          "keyword": "first 100 online orders",
+          "volume": null,
+          "template": "how-to",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "d2c-brand-launch-guide",
+          "category": "growth",
+          "title": "How To Launch a D2C Brand in India (Step by Step)",
+          "url": "https://www.letbuyy.com/in/resources/growth/d2c-brand-launch-guide",
+          "keyword": "launch D2C brand India",
+          "volume": null,
+          "template": "how-to",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "social-commerce-india",
+          "category": "growth",
+          "title": "Social Commerce in India: Instagram, WhatsApp & Beyond",
+          "url": "https://www.letbuyy.com/in/resources/growth/social-commerce-india",
+          "keyword": "social commerce India",
+          "volume": null,
+          "template": "explainer",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        },
+        {
+          "slug": "retention-strategies-india",
+          "category": "growth",
+          "title": "Customer Retention Strategies That Work for Indian Brands",
+          "url": "https://www.letbuyy.com/in/resources/growth/retention-strategies-india",
+          "keyword": "customer retention ecommerce India",
+          "volume": null,
+          "template": "explainer",
+          "wordCount": null,
+          "status": "written",
+          "editorial_status": "Existing page; correctness review required"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "pillar",
+      "to": "cluster-0-post-0",
+      "type": "mandatory",
+      "anchor": "LetBuyy store setup walkthrough"
+    },
+    {
+      "from": "cluster-0-post-0",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-0-post-1",
+      "type": "mandatory",
+      "anchor": "product page optimization India"
+    },
+    {
+      "from": "cluster-0-post-1",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-0-post-2",
+      "type": "mandatory",
+      "anchor": "online store SEO checklist"
+    },
+    {
+      "from": "cluster-0-post-2",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-0-post-3",
+      "type": "mandatory",
+      "anchor": "reduce cart abandonment India"
+    },
+    {
+      "from": "cluster-0-post-3",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "cluster-0-post-0",
+      "to": "cluster-0-post-1",
+      "type": "recommended",
+      "anchor": "product page optimization India"
+    },
+    {
+      "from": "cluster-0-post-1",
+      "to": "cluster-0-post-2",
+      "type": "recommended",
+      "anchor": "online store SEO checklist"
+    },
+    {
+      "from": "cluster-0-post-2",
+      "to": "cluster-0-post-3",
+      "type": "recommended",
+      "anchor": "reduce cart abandonment India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-1-post-0",
+      "type": "mandatory",
+      "anchor": "UPI vs cash on delivery"
+    },
+    {
+      "from": "cluster-1-post-0",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-1-post-1",
+      "type": "mandatory",
+      "anchor": "GST for ecommerce sellers India"
+    },
+    {
+      "from": "cluster-1-post-1",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-1-post-2",
+      "type": "mandatory",
+      "anchor": "GST invoice ecommerce India"
+    },
+    {
+      "from": "cluster-1-post-2",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-1-post-3",
+      "type": "mandatory",
+      "anchor": "LetBuyy Razorpay setup"
+    },
+    {
+      "from": "cluster-1-post-3",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "cluster-1-post-0",
+      "to": "cluster-1-post-1",
+      "type": "recommended",
+      "anchor": "GST for ecommerce sellers India"
+    },
+    {
+      "from": "cluster-1-post-1",
+      "to": "cluster-1-post-2",
+      "type": "recommended",
+      "anchor": "GST invoice ecommerce India"
+    },
+    {
+      "from": "cluster-1-post-2",
+      "to": "cluster-1-post-3",
+      "type": "recommended",
+      "anchor": "LetBuyy Razorpay setup"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-2-post-0",
+      "type": "mandatory",
+      "anchor": "ecommerce inventory management"
+    },
+    {
+      "from": "cluster-2-post-0",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-2-post-1",
+      "type": "mandatory",
+      "anchor": "ecommerce shipping India"
+    },
+    {
+      "from": "cluster-2-post-1",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-2-post-2",
+      "type": "mandatory",
+      "anchor": "ecommerce order fulfillment process"
+    },
+    {
+      "from": "cluster-2-post-2",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-2-post-3",
+      "type": "mandatory",
+      "anchor": "ecommerce returns policy India"
+    },
+    {
+      "from": "cluster-2-post-3",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "cluster-2-post-0",
+      "to": "cluster-2-post-1",
+      "type": "recommended",
+      "anchor": "ecommerce shipping India"
+    },
+    {
+      "from": "cluster-2-post-1",
+      "to": "cluster-2-post-2",
+      "type": "recommended",
+      "anchor": "ecommerce order fulfillment process"
+    },
+    {
+      "from": "cluster-2-post-2",
+      "to": "cluster-2-post-3",
+      "type": "recommended",
+      "anchor": "ecommerce returns policy India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-3-post-0",
+      "type": "mandatory",
+      "anchor": "first 100 online orders"
+    },
+    {
+      "from": "cluster-3-post-0",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-3-post-1",
+      "type": "mandatory",
+      "anchor": "launch D2C brand India"
+    },
+    {
+      "from": "cluster-3-post-1",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-3-post-2",
+      "type": "mandatory",
+      "anchor": "social commerce India"
+    },
+    {
+      "from": "cluster-3-post-2",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "pillar",
+      "to": "cluster-3-post-3",
+      "type": "mandatory",
+      "anchor": "customer retention ecommerce India"
+    },
+    {
+      "from": "cluster-3-post-3",
+      "to": "pillar",
+      "type": "mandatory",
+      "anchor": "launch an online store in India"
+    },
+    {
+      "from": "cluster-3-post-0",
+      "to": "cluster-3-post-1",
+      "type": "recommended",
+      "anchor": "launch D2C brand India"
+    },
+    {
+      "from": "cluster-3-post-1",
+      "to": "cluster-3-post-2",
+      "type": "recommended",
+      "anchor": "social commerce India"
+    },
+    {
+      "from": "cluster-3-post-2",
+      "to": "cluster-3-post-3",
+      "type": "recommended",
+      "anchor": "customer retention ecommerce India"
+    }
+  ],
+  "meta": {
+    "totalPosts": 17,
+    "totalClusters": 4,
+    "totalLinks": 44,
+    "estimatedWords": null
+  },
+  "site_inventory": [
+    {
+      "slug": "how-to-start-an-online-store-india",
+      "category": "ecommerce",
+      "title": "How To Start an Online Store in India (2026 Guide)",
+      "url": "https://www.letbuyy.com/in/resources/ecommerce/how-to-start-an-online-store-india"
+    },
+    {
+      "slug": "product-page-optimization",
+      "category": "ecommerce",
+      "title": "Product Page Optimization: The Complete Guide",
+      "url": "https://www.letbuyy.com/in/resources/ecommerce/product-page-optimization"
+    },
+    {
+      "slug": "reducing-cart-abandonment",
+      "category": "ecommerce",
+      "title": "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores",
+      "url": "https://www.letbuyy.com/in/resources/ecommerce/reducing-cart-abandonment"
+    },
+    {
+      "slug": "store-seo-checklist",
+      "category": "ecommerce",
+      "title": "The Complete Store SEO Checklist for Indian Merchants",
+      "url": "https://www.letbuyy.com/in/resources/ecommerce/store-seo-checklist"
+    },
+    {
+      "slug": "how-product-reviews-increase-conversion",
+      "category": "ecommerce",
+      "title": "How Product Reviews Increase Conversion by 270%",
+      "url": "https://www.letbuyy.com/in/resources/ecommerce/how-product-reviews-increase-conversion"
+    },
+    {
+      "slug": "first-100-orders-guide",
+      "category": "growth",
+      "title": "How to Get Your First 100 Orders",
+      "url": "https://www.letbuyy.com/in/resources/growth/first-100-orders-guide"
+    },
+    {
+      "slug": "d2c-brand-launch-guide",
+      "category": "growth",
+      "title": "How To Launch a D2C Brand in India (Step by Step)",
+      "url": "https://www.letbuyy.com/in/resources/growth/d2c-brand-launch-guide"
+    },
+    {
+      "slug": "email-marketing-ecommerce",
+      "category": "growth",
+      "title": "Email Marketing for Ecommerce: Building Your List in India",
+      "url": "https://www.letbuyy.com/in/resources/growth/email-marketing-ecommerce"
+    },
+    {
+      "slug": "social-commerce-india",
+      "category": "growth",
+      "title": "Social Commerce in India: Instagram, WhatsApp & Beyond",
+      "url": "https://www.letbuyy.com/in/resources/growth/social-commerce-india"
+    },
+    {
+      "slug": "retention-strategies-india",
+      "category": "growth",
+      "title": "Customer Retention Strategies That Work for Indian Brands",
+      "url": "https://www.letbuyy.com/in/resources/growth/retention-strategies-india"
+    },
+    {
+      "slug": "upi-vs-cod-india",
+      "category": "payments",
+      "title": "UPI vs COD: Which Payment Method Wins for Indian Stores",
+      "url": "https://www.letbuyy.com/in/resources/payments/upi-vs-cod-india"
+    },
+    {
+      "slug": "gst-for-ecommerce-india",
+      "category": "payments",
+      "title": "GST for Ecommerce in India: The Complete 2026 Guide",
+      "url": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india"
+    },
+    {
+      "slug": "invoicing-india-merchants",
+      "category": "payments",
+      "title": "GST Invoices for Indian Ecommerce: What Must Be Included",
+      "url": "https://www.letbuyy.com/in/resources/payments/invoicing-india-merchants"
+    },
+    {
+      "slug": "refunds-returns-policy-india",
+      "category": "payments",
+      "title": "Building a Customer-Friendly Returns Policy for India",
+      "url": "https://www.letbuyy.com/in/resources/payments/refunds-returns-policy-india"
+    },
+    {
+      "slug": "razorpay-integration-guide",
+      "category": "payments",
+      "title": "Accepting Payments on LetBuyy: UPI, Cards, and COD",
+      "url": "https://www.letbuyy.com/in/resources/payments/razorpay-integration-guide"
+    },
+    {
+      "slug": "inventory-management-guide",
+      "category": "operations",
+      "title": "Inventory Management: From Chaos to Control",
+      "url": "https://www.letbuyy.com/in/resources/operations/inventory-management-guide"
+    },
+    {
+      "slug": "order-fulfillment-guide",
+      "category": "operations",
+      "title": "Order Fulfillment: Processing 100 Orders Per Day Efficiently",
+      "url": "https://www.letbuyy.com/in/resources/operations/order-fulfillment-guide"
+    },
+    {
+      "slug": "shipping-india-guide",
+      "category": "operations",
+      "title": "Shipping in India: Pincode Coverage, Rates & Couriers",
+      "url": "https://www.letbuyy.com/in/resources/operations/shipping-india-guide"
+    },
+    {
+      "slug": "multi-warehouse-inventory",
+      "category": "operations",
+      "title": "Multi-Warehouse Inventory Management",
+      "url": "https://www.letbuyy.com/in/resources/operations/multi-warehouse-inventory"
+    },
+    {
+      "slug": "understanding-fulfillment",
+      "category": "operations",
+      "title": "Understanding Ecommerce Fulfillment in India",
+      "url": "https://www.letbuyy.com/in/resources/operations/understanding-fulfillment"
+    },
+    {
+      "slug": "ai-commerce-explained",
+      "category": "ai-commerce",
+      "title": "AI Commerce Explained: What It Means for Your Store",
+      "url": "https://www.letbuyy.com/in/resources/ai-commerce/ai-commerce-explained"
+    },
+    {
+      "slug": "automating-operations-ai",
+      "category": "ai-commerce",
+      "title": "Automating Store Operations with AI",
+      "url": "https://www.letbuyy.com/in/resources/ai-commerce/automating-operations-ai"
+    },
+    {
+      "slug": "commerce-copilot-guide",
+      "category": "ai-commerce",
+      "title": "The LetBuyy AI Copilot Guide",
+      "url": "https://www.letbuyy.com/in/resources/ai-commerce/commerce-copilot-guide"
+    },
+    {
+      "slug": "ai-product-recommendations",
+      "category": "ai-commerce",
+      "title": "AI Product Recommendations That Actually Convert",
+      "url": "https://www.letbuyy.com/in/resources/ai-commerce/ai-product-recommendations"
+    },
+    {
+      "slug": "workflow-automation-merchants",
+      "category": "ai-commerce",
+      "title": "Workflow Automation for Indian Merchants",
+      "url": "https://www.letbuyy.com/in/resources/ai-commerce/workflow-automation-merchants"
+    },
+    {
+      "slug": "letbuyy-api-getting-started",
+      "category": "developers",
+      "title": "Getting Started with the LetBuyy API",
+      "url": "https://www.letbuyy.com/in/resources/developers/letbuyy-api-getting-started"
+    },
+    {
+      "slug": "webhooks-complete-guide",
+      "category": "developers",
+      "title": "Webhooks: Real-Time Commerce Event Streaming",
+      "url": "https://www.letbuyy.com/in/resources/developers/webhooks-complete-guide"
+    },
+    {
+      "slug": "building-first-letbuyy-app",
+      "category": "developers",
+      "title": "Building Your First LetBuyy App",
+      "url": "https://www.letbuyy.com/in/resources/developers/building-first-letbuyy-app"
+    },
+    {
+      "slug": "liquid-theming-guide",
+      "category": "developers",
+      "title": "How Liquid Themes Work on LetBuyy",
+      "url": "https://www.letbuyy.com/in/resources/developers/liquid-theming-guide"
+    },
+    {
+      "slug": "custom-integrations-guide",
+      "category": "developers",
+      "title": "Creating Custom Integrations with LetBuyy",
+      "url": "https://www.letbuyy.com/in/resources/developers/custom-integrations-guide"
+    },
+    {
+      "slug": "building-first-letbuyy-store",
+      "category": "platform",
+      "title": "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "url": "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store"
+    },
+    {
+      "slug": "introduction-to-apps",
+      "category": "platform",
+      "title": "Introduction to the LetBuyy App Marketplace",
+      "url": "https://www.letbuyy.com/in/resources/platform/introduction-to-apps"
+    },
+    {
+      "slug": "how-themes-work",
+      "category": "platform",
+      "title": "How Themes Work on LetBuyy",
+      "url": "https://www.letbuyy.com/in/resources/platform/how-themes-work"
+    },
+    {
+      "slug": "letbuyy-platform-overview",
+      "category": "platform",
+      "title": "LetBuyy Platform Overview: Everything in One Place",
+      "url": "https://www.letbuyy.com/in/resources/platform/letbuyy-platform-overview"
+    },
+    {
+      "slug": "merchant-web-guide",
+      "category": "platform",
+      "title": "The Merchant Control Plane: Your Commerce OS Dashboard",
+      "url": "https://www.letbuyy.com/in/resources/platform/merchant-web-guide"
+    }
+  ],
+  "all_categories": [
+    "ai-commerce",
+    "developers",
+    "ecommerce",
+    "growth",
+    "operations",
+    "payments",
+    "platform"
+  ],
+  "scope_note": "Map visualizes 17 priority existing pages. Remaining existing articles are inventoried here; no new pages are authorized or required."
+}

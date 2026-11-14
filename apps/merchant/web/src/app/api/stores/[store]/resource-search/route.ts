@@ -67,11 +67,7 @@ export async function GET(
         }
 
         // Sanitize query (max 200 chars)
-        const q = searchParams.get('q') ?? ''
-        const page = Number(searchParams.get('page') ?? '1')
-        if (q.length > 200 || !Number.isInteger(page) || page < 1 || page > 1000) {
-            return NextResponse.json({ error: { code: 'VALIDATION_ERROR', message: 'Use a valid search and page number.' } }, { status: 400 })
-        }
+        const q = (searchParams.get('q') ?? '').slice(0, 200)
         const limit = parseLimit(searchParams.get('limit'))
 
         // Resolve + verify store ownership (merchant ES256 session only)
@@ -83,7 +79,7 @@ export async function GET(
             `/themes/resource-search?store_id=${encodeURIComponent(resolved.storeId)}` +
             `&type=${encodeURIComponent(type)}` +
             `&q=${encodeURIComponent(q)}` +
-            `&limit=${limit}&page=${page}`
+            `&limit=${limit}`
 
         const gatewayResponse = await merchantApiFetch(gatewayPath, { requireSession: true })
 

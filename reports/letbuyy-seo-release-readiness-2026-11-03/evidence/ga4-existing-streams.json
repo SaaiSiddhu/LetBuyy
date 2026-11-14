@@ -1,0 +1,37 @@
+{
+  "capturedAt": "2026-11-03T04:07:49.761905+00:00",
+  "browser": "Current Chrome profile; native UI read only",
+  "preferenceDialog": "No longer present on a later read; agent did not save email choices",
+  "properties": [
+    {
+      "name": "letbuy-y",
+      "propertyId": "513546435",
+      "streamName": "letbuy-y",
+      "streamId": "13007347185",
+      "measurementId": "G-6505K32E4R",
+      "type": "Web",
+      "websiteUrlShown": null,
+      "websiteUrlObservation": "Field visibly blank",
+      "collectionStatus": "Inactive; no data received in past48hours",
+      "enhancedMeasurementEnabled": false
+    },
+    {
+      "name": "let-buyy",
+      "propertyId": "505262659",
+      "streamName": "LetBuyy",
+      "streamId": "12176601288",
+      "measurementId": "G-Q6RT6CKQD2",
+      "type": "Web",
+      "websiteUrlShown": null,
+      "websiteUrlObservation": "No URL exposed in stream details",
+      "collectionStatus": "Inactive; no data received in past48hours",
+      "enhancedMeasurementEnabled": false
+    }
+  ],
+  "marketingDestinationApproved": false,
+  "settingsChangedByAgent": false,
+  "measurementProtocolSecretsOpened": false,
+  "tagsInstalled": false,
+  "eventsSentByAgent": false,
+  "nextStep": "Owner chooses the marketing destination and approved consent/event policy; no duplicate property created automatically"
+}

@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
@@ -10,6 +8,7 @@ import {
     Banner,
     Button,
     Card,
+    EmptyState,
     Input,
     MaterialIcon,
     Modal,
@@ -22,7 +21,6 @@ import {
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type { Supplier } from '@letbuyy/api-client'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -225,16 +223,13 @@ export default function SuppliersPage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [showCreate, setShowCreate] = useState(false)
 
-    const beginLoadSuppliers = useReadRequest(store)
     const loadSuppliers = useCallback(async () => {
-        const request = beginLoadSuppliers()
         if (!store) return
         setLoading(true)
         setLoadError(null)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/suppliers`, { cache: 'no-store', signal: request.signal })
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/suppliers`)
             const body = await res.json() as { data?: Supplier[]; error?: unknown }
-            if (!request.isCurrent()) return
             if (!res.ok) {
                 const msg = typeof body.error === 'string' ? body.error : 'Failed to load suppliers'
                 setLoadError(msg)
@@ -242,19 +237,17 @@ export default function SuppliersPage() {
             }
             setSuppliers(body.data ?? [])
         } catch {
-            if (!request.isCurrent()) return
             setLoadError('Unable to load suppliers — check your connection.')
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginLoadSuppliers, store])
+    }, [store])
 
     useEffect(() => { void loadSuppliers() }, [loadSuppliers])
 
     return (
         <Page>
-            <PageHeader identity="products"
-                recipe="index"
+            <PageHeader
                 title="Suppliers"
                 description="Manage your vendors and suppliers. Suppliers are linked to purchase orders for inbound inventory."
                 breadcrumbs={[{ label: 'Purchasing' }, { label: 'Suppliers' }]}
@@ -284,7 +277,7 @@ export default function SuppliersPage() {
                             ))}
                         </div>
                     ) : suppliers.length === 0 ? (
-                        <EmptyState scene="suppliers"
+                        <EmptyState
                             title="No suppliers yet"
                             body="Add a supplier to link vendors to purchase orders and track inbound inventory."
                             primaryAction={

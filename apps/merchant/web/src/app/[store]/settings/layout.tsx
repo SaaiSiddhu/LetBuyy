@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 import { SettingsShell } from '@/components/settings/SettingsShell'
-import { isAppPlatformEnabled } from '@/lib/app-platform-flag'
 
 interface SettingsLayoutProps {
     children: React.ReactNode
@@ -26,7 +25,6 @@ export default async function SettingsLayout({ children, params }: SettingsLayou
             subdomain={storeData.subdomain || storeData.store_name || store}
             userName={user.fullName || ''}
             userEmail={user.email}
-            appPlatformEnabled={isAppPlatformEnabled()}
         >
             {children}
         </SettingsShell>

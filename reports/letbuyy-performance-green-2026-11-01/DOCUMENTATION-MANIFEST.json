@@ -1,0 +1,23 @@
+{
+  "basis": "First-touch copies immediately before this task updated these documentation files; separate from task-start source snapshot",
+  "files": [
+    {
+      "path": "EXECUTION_LEDGER.md",
+      "first_touch_at": "2026-11-01T05:37:09.257850+00:00",
+      "before_sha256": "ef4eddfda0804a4f428efcd8b46007aa6b7b4f9cfd7b0cf7f5d152c9f264cae4",
+      "after_sha256": "9d4a5c9edaad23fa98ae117f34b07cae10b01002bf256109c4a76ce2fc117e21"
+    },
+    {
+      "path": "reports/letbuyy-marketing-ui-2026-11-01/VERIFICATION.md",
+      "first_touch_at": "2026-11-01T05:37:09.259389+00:00",
+      "before_sha256": "c934edc5c2562b20364f69e8687c6fc5d92d074fafcf829c0befaadb23879c97",
+      "after_sha256": "bd4bc1b8064359c2d1241a6c4fcb3e7634570ba30d545907682bf93312f8dadf"
+    },
+    {
+      "path": "reports/letbuyy-mobile-performance-2026-10-30/PERFORMANCE-VERIFICATION.md",
+      "first_touch_at": "2026-11-01T05:37:09.260149+00:00",
+      "before_sha256": "f78b52b553a7f345aac835448e294cf9d6912d36810ff475cf23983ea0a88591",
+      "after_sha256": "061d0d8ec9fb561ae8dd56c65fb495e93e88b85181bfecbe3397ed0f1f08d488"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ const client = readFile("apps/merchant/web/src/lib/domains/client.ts");
 const combined = `${page}\n${wizard}\n${detail}\n${client}`;
 
 for (const fragment of [
-  "checkout?.dns_records.map",
+  "NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET",
   "domainsClient",
   "Buy a",
   "Ownership",

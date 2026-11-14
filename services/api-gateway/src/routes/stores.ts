@@ -1,28 +1,24 @@
 import { Hono } from 'hono';
-import { prepareStoreCheckoutDomain } from '../lib/store-checkout-domain';
-import { assertReadyFirstPartyStorefrontDomain, provisionFirstPartyStorefrontDomain } from '../lib/first-party-storefront-domain';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
-import { hydratePaymentCredential, commitPaymentConfiguration } from '../lib/payment-credential-history';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
-import { resolveExperienceForIndustry, applyExperienceToTemplateConfig, firstPartyThemeListings, LETBUYY_CORE_THEME_SLUG } from '@letbuyy/theme-engine';
+import { resolveExperienceForIndustry, applyExperienceToTemplateConfig, LETBUYY_CORE_THEME_SLUG } from '@letbuyy/theme-engine';
 import { ThemeExecutionAdapter } from '../execution/theme-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
-import { readCustomDomainHealth } from '../lib/custom-domain-health';
+import { StoreHealthAdapter } from '../execution/store-health.adapter';
 import { getRequestId } from '../lib/tenant-context';
-import { healthPillar, type StoreHealthPillar } from '../lib/store-health';
 import {
     defaultPaymentConfig,
     encryptPaymentSecret,
     isMissingSitesPaymentColumnError,
-    projectStorePaymentConfig,
+    paymentConfigProviderMode,
+    sanitizePaymentSettings,
     verifyRazorpayCredentials,
     type PaymentSettings,
 } from '../lib/store-payment-config';
 import { isComingSoonSiteType, isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
-import { UpdateStorePaymentMethodsSchema, type CustomDomainHealth } from '@letbuyy/shared-types';
 import { registerStoreLocalizationRoutes } from './stores-localization';
 import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import { z } from 'zod';
@@ -160,7 +156,7 @@ router.get('/:id/payment-config', async (c) => {
     const buildPaymentQuery = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('sites')
-            .select('id, payment_settings, online_payment_enabled, cod_enabled, updated_at')
+            .select('id, payment_settings, online_payment_enabled, cod_enabled')
             .eq('id', storeId)
             .or(ownedByCustomUserFilter(customUser.id));
 
@@ -200,207 +196,35 @@ router.get('/:id/payment-config', async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     }
 
-    return c.json(success(await projectStorePaymentConfig(await hydratePaymentCredential(db, data), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY)));
+    return c.json(success({
+        store_id: data.id,
+        online_payment_enabled: data.online_payment_enabled !== false,
+        cod_enabled: data.cod_enabled !== false,
+        provider_mode: paymentConfigProviderMode({
+            onlinePaymentEnabled: data.online_payment_enabled !== false,
+            settings: data.payment_settings as PaymentSettings | null,
+        }),
+        payment_settings: sanitizePaymentSettings(data.payment_settings as PaymentSettings | null),
+    }));
 });
 
-// GET /stores/:id/health — Mobile Store Health score from real operational signals
+// GET /stores/:id/health — canonical setup checklist and operational evidence.
 router.get('/:id/health', async (c) => {
-    const auth = c.get('auth');
-    const storeId = c.req.param('id');
+    const parsedId = z.string().uuid().safeParse(c.req.param('id'));
+    if (!parsedId.success) throw new ValidationError('Invalid store ID.');
+    const storeId = parsedId.data;
+    c.header('Cache-Control', 'no-store');
     const db = getSupabaseAdmin(c);
+    const auth = c.get('auth');
     const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    if (!customUser || (auth.user.storeId && auth.user.storeId !== storeId)) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Store health requires its current owner.' } }, 403);
     }
-
-    const buildStoreQuery = (includeDeletedAtFilter: boolean) => {
-        const query = db
-            .from('sites')
-            .select('id,name,store_name,status,published_at,subdomain,custom_domain,custom_domain_status,custom_domain_verification_token,logo_url')
-            .eq('id', storeId)
-            .or(ownedByCustomUserFilter(customUser.id));
-
-        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
-    };
-
-    let { data: store, error: storeError } = await buildStoreQuery(true).single();
-    if (isMissingDeletedAtError(storeError)) {
-        ({ data: store, error: storeError } = await buildStoreQuery(false).single());
-    }
-
-    if (storeError || !store) {
-        return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-    }
-
-    const [
-        productResult,
-        lowStockResult,
-        orderResult,
-        openOrderResult,
-        pendingReviewResult,
-    ] = await Promise.all([
-        db.from('products').select('id', { count: 'exact', head: true }).eq('store_id', storeId).is('deleted_at', null),
-        db.from('products').select('id', { count: 'exact', head: true }).eq('store_id', storeId).lte('stock', 0).is('deleted_at', null),
-        db.from('orders').select('id', { count: 'exact', head: true }).eq('store_id', storeId).is('deleted_at', null),
-        db.from('orders').select('id', { count: 'exact', head: true }).eq('store_id', storeId).in('status', ['pending', 'pending_cod', 'confirmed', 'processing']).is('deleted_at', null),
-        db.from('product_reviews').select('id', { count: 'exact', head: true }).eq('store_id', storeId).eq('status', 'pending').is('deleted_at', null),
-    ]);
-
-    const productCount = safeCount(productResult);
-    const lowStockCount = safeCount(lowStockResult);
-    const orderCount = safeCount(orderResult);
-    const openOrderCount = safeCount(openOrderResult);
-    const pendingReviewCount = safeCount(pendingReviewResult);
-    const storeRecord = store as Record<string, unknown>;
-    const status = String(storeRecord.status || 'draft');
-    const isPublished = status === 'published' || Boolean(storeRecord.published_at);
-    const hasSubdomain = typeof storeRecord.subdomain === 'string' && storeRecord.subdomain.length > 0;
-    const customDomain = typeof storeRecord.custom_domain === 'string' ? storeRecord.custom_domain : '';
-    const customDomainStatus = typeof storeRecord.custom_domain_status === 'string'
-        ? storeRecord.custom_domain_status
-        : 'none';
-    const customDomainVerificationToken = typeof storeRecord.custom_domain_verification_token === 'string'
-        ? storeRecord.custom_domain_verification_token
-        : null;
-    const hasLogo = typeof storeRecord.logo_url === 'string' && storeRecord.logo_url.length > 0;
-    let domainHealth: CustomDomainHealth | null = null;
-    if (customDomain) {
-        try {
-            domainHealth = await readCustomDomainHealth(c.env, {
-                siteId: storeId,
-                domain: customDomain,
-                status: customDomainStatus,
-                verificationToken: customDomainVerificationToken,
-            });
-        } catch {
-            domainHealth = null;
-        }
-    }
-    const domainStatus = domainHealth?.status ?? customDomainStatus;
-    const domainDnsReady = domainHealth ? domainHealth.txt_verified && domainHealth.cname_verified : domainStatus === 'active';
-    const domainSslReady = domainHealth ? domainHealth.ssl_active : domainStatus === 'active';
-    const domainNeedsProvider = domainHealth?.provider_status === 'unavailable';
-    const domainScore = customDomain
-        ? domainDnsReady && domainSslReady
-            ? 100
-            : domainDnsReady
-                ? 72
-                : 58
-        : hasSubdomain ? 78 : 30;
-    const domainSummary = customDomain
-        ? domainDnsReady && domainSslReady
-            ? 'Custom domain DNS and SSL are healthy.'
-            : domainNeedsProvider
-                ? 'Custom domain DNS can be checked; SSL status is temporarily unavailable.'
-                : domainDnsReady
-                    ? 'DNS is connected; SSL or provider configuration still needs verification.'
-                    : 'Custom domain needs DNS verification.'
-        : hasSubdomain ? 'LetBuyy subdomain is ready; add a custom domain when needed.' : 'Set up a storefront domain.';
-
-    const pillars: StoreHealthPillar[] = [
-        healthPillar({
-            id: 'launch',
-            label: 'Launch readiness',
-            score: isPublished ? (hasLogo ? 100 : 88) : 45,
-            summary: isPublished
-                ? hasLogo ? 'Store is published with visible branding.' : 'Store is published; add a logo to improve trust.'
-                : 'Publish the store when setup is complete.',
-            action_label: isPublished && hasLogo ? null : 'Open store details',
-            route: '/store-details',
-            metrics: { status, has_logo: hasLogo },
-        }),
-        productCount === null ? healthPillar({
-            id: 'catalog',
-            label: 'Catalog and inventory',
-            score: 0,
-            status: 'unknown',
-            summary: 'Catalog signal is not available in this environment.',
-            action_label: 'Open products',
-            route: '/products',
-        }) : healthPillar({
-            id: 'catalog',
-            label: 'Catalog and inventory',
-            score: productCount === 0 ? 35 : lowStockCount && lowStockCount > 0 ? 72 : 100,
-            summary: productCount === 0
-                ? 'Add the first product before publication.'
-                : lowStockCount && lowStockCount > 0
-                    ? `${lowStockCount} product${lowStockCount === 1 ? '' : 's'} need inventory attention.`
-                    : 'Products are present and inventory has no zero-stock signal.',
-            action_label: productCount === 0 || (lowStockCount && lowStockCount > 0) ? 'Open products' : null,
-            route: '/products',
-            metrics: { product_count: productCount, low_stock_count: lowStockCount || 0 },
-        }),
-        orderCount === null ? healthPillar({
-            id: 'orders',
-            label: 'Orders',
-            score: 0,
-            status: 'unknown',
-            summary: 'Order signal is not available in this environment.',
-            action_label: 'Open orders',
-            route: '/orders',
-        }) : healthPillar({
-            id: 'orders',
-            label: 'Orders',
-            score: orderCount > 0 ? 100 : 70,
-            summary: openOrderCount && openOrderCount > 0
-                ? `${openOrderCount} open order${openOrderCount === 1 ? '' : 's'} need action.`
-                : orderCount > 0 ? 'Orders are flowing with no open action signal.' : 'Orders will appear here after checkout activity.',
-            action_label: openOrderCount && openOrderCount > 0 ? 'Open orders' : null,
-            route: '/orders',
-            metrics: { order_count: orderCount, open_order_count: openOrderCount || 0 },
-        }),
-        healthPillar({
-            id: 'domain',
-            label: 'Domain',
-            score: domainScore,
-            summary: domainSummary,
-            action_label: customDomain && domainDnsReady && domainSslReady ? null : 'Open domain settings',
-            route: '/domain-settings',
-            metrics: {
-                custom_domain: customDomain || null,
-                custom_domain_status: domainStatus,
-                dns_verified: domainDnsReady,
-                ssl_active: domainSslReady,
-                renewal_status: domainHealth?.renewal_status ?? null,
-                renewal_date: domainHealth?.renewal_date ?? null,
-            },
-        }),
-        pendingReviewCount === null ? healthPillar({
-            id: 'reviews',
-            label: 'Reviews',
-            score: 0,
-            status: 'unknown',
-            summary: 'Review moderation signal is not available in this environment.',
-            action_label: 'Open reviews',
-            route: '/reviews',
-        }) : healthPillar({
-            id: 'reviews',
-            label: 'Reviews',
-            score: pendingReviewCount > 0 ? 64 : 95,
-            summary: pendingReviewCount > 0
-                ? `${pendingReviewCount} review${pendingReviewCount === 1 ? '' : 's'} awaiting moderation.`
-                : 'No pending review moderation.',
-            action_label: pendingReviewCount > 0 ? 'Open reviews' : null,
-            route: '/reviews',
-            metrics: { pending_review_count: pendingReviewCount },
-        }),
-    ];
-
-    const scored = pillars.filter((pillar) => pillar.status !== 'unknown');
-    const score = scored.length === 0
-        ? 0
-        : Math.round(scored.reduce((total, pillar) => total + pillar.score, 0) / scored.length);
-
-    return c.json(success({
-        store_id: storeId,
-        score,
-        generated_at: new Date().toISOString(),
-        pillars,
-        metadata: {
-            source: 'api-gateway.stores.health',
-        },
-    }));
+    const ownership = await db.from('sites').select('id').eq('id', storeId)
+        .or(ownedByCustomUserFilter(customUser.id)).is('deleted_at', null).maybeSingle();
+    if (ownership.error) throw new AppError('Store health is temporarily unavailable.', 503, 'STORE_HEALTH_UNAVAILABLE');
+    if (!ownership.data) return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    return c.json(success(await new StoreHealthAdapter(db, Boolean(c.env.PAYMENT_CONFIG_ENCRYPTION_KEY)).read(storeId)));
 });
 
 // POST /stores/:id/payment-config — Save seller-owned Razorpay credentials
@@ -411,7 +235,6 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
         key_id: string;
         key_secret: string;
         test_mode: boolean;
-        expected_revision?: string;
     };
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -420,7 +243,7 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    if (!c.env.PAYMENT_CONFIG_ENCRYPTION_KEY || c.env.PAYMENT_CONFIG_ENCRYPTION_KEY.length < 16) {
+    if (!c.env.PAYMENT_CONFIG_ENCRYPTION_KEY) {
         return c.json(
             {
                 error: {
@@ -435,7 +258,7 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
     const buildPaymentQuery = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('sites')
-            .select('id, payment_settings, online_payment_enabled, cod_enabled, updated_at')
+            .select('id, payment_settings, cod_enabled')
             .eq('id', storeId)
             .or(ownedByCustomUserFilter(customUser.id));
 
@@ -464,69 +287,84 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
         return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     }
 
-    if (body.expected_revision && body.expected_revision !== store.updated_at) {
-        throw new AppError('Payment settings changed. Reload before saving.', 409, 'PAYMENT_CONFIG_CONFLICT');
-    }
-    if (!body.test_mode) {
-        throw new AppError('Live checkout requires qualified provider onboarding and settlement readiness. Keep this connection in test mode.', 409, 'PAYMENT_LIVE_NOT_READY');
-    }
-    const credentialId = crypto.randomUUID();
-    let keySecretCiphertext: string;
-    try {
-        keySecretCiphertext = await encryptPaymentSecret(body.key_secret, c.env.PAYMENT_CONFIG_ENCRYPTION_KEY, {
-            siteId: storeId, keyId: body.key_id, environment: 'sandbox', credentialId,
-        });
-    } catch {
-        throw new AppError('Payment credential encryption is temporarily unavailable. Your saved connection is unchanged.',503,'PAYMENT_CONFIG_UNAVAILABLE');
-    }
-    let verified: boolean;
+    const keySecretCiphertext = await encryptPaymentSecret(
+        body.key_secret,
+        c.env.PAYMENT_CONFIG_ENCRYPTION_KEY
+    );
+
+    let verified = false;
     try {
         verified = await verifyRazorpayCredentials(body.key_id, body.key_secret);
     } catch {
-        throw new AppError('Razorpay could not be reached to verify these credentials. Your saved connection is unchanged.', 503, 'PAYMENT_VERIFICATION_UNAVAILABLE');
+        verified = false;
     }
-    if (!verified) {
-        throw new AppError('Razorpay did not verify these credentials. Your saved connection is unchanged.', 400, 'PAYMENT_CREDENTIALS_INVALID');
-    }
-    const now = new Date().toISOString();
-    const paymentSettings: PaymentSettings = { mode: 'ownAccount', gateways: ['razorpay'], razorpay: {
-        credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext,
-        test_mode: true, verified: true, connected_at: now, updated_at: now,
-    } };
-    return c.json(await commitPaymentConfiguration(c, { actorId: customUser.id, current: store,
-        proposed: { ...store, payment_settings: paymentSettings, online_payment_enabled: false },
-        operation: 'save', payload: { credential_id: credentialId, key_id: body.key_id, key_secret_ciphertext: keySecretCiphertext },
-        credentialsUsable: true,
-    }));
-});
 
-// PATCH /stores/:id/payment-config — explicit method intent; effective eligibility is server-owned.
-router.patch('/:id/payment-config', validate('json', UpdateStorePaymentMethodsSchema), async (c) => {
-    const storeId = c.req.param('id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, c.get('auth').user);
-    if (!customUser) throw new AppError('Not authorized.', 403, 'FORBIDDEN');
-    const body = c.get('validatedBody') as import('@letbuyy/shared-types').UpdateStorePaymentMethodsInput;
-    const { data: row, error: readError } = await db.from('sites')
-        .select('id,payment_settings,online_payment_enabled,cod_enabled,updated_at')
-        .eq('id', storeId).or(ownedByCustomUserFilter(customUser.id)).is('deleted_at', null).maybeSingle();
-    if (readError) throw new AppError('Payment settings are temporarily unavailable.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
-    if (!row) throw new AppError('Store not found.', 404, 'NOT_FOUND');
-    if (body.expected_revision && body.expected_revision !== row.updated_at) {
-        throw new AppError('Payment settings changed. Reload before saving.', 409, 'PAYMENT_CONFIG_CONFLICT');
-    }
-    const before = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
-    if (body.online_payment_enabled === true && !before.setup?.can_enable_online) {
-        throw new AppError('Complete a verified test connection before enabling online checkout. Live payments remain gated.', 409, 'PAYMENT_NOT_READY');
-    }
-    const methods = {
-        ...(body.online_payment_enabled !== undefined ? { online_payment_enabled: body.online_payment_enabled } : {}),
-        ...(body.cod_enabled !== undefined ? { cod_enabled: body.cod_enabled } : {}),
+    const now = new Date().toISOString();
+    const existingSettings = (store.payment_settings || {}) as PaymentSettings;
+    const paymentSettings: PaymentSettings = {
+        ...existingSettings,
+        mode: 'ownAccount',
+        gateways: Array.from(new Set([...(existingSettings.gateways || []), 'razorpay'])),
+        razorpay: {
+            key_id: body.key_id,
+            key_secret_ciphertext: keySecretCiphertext,
+            test_mode: body.test_mode,
+            verified,
+            connected_at: existingSettings.razorpay?.connected_at || now,
+            updated_at: now,
+        },
     };
-    const hydrated = await hydratePaymentCredential(db, row);
-    return c.json(await commitPaymentConfiguration(c, { actorId: customUser.id, current: row,
-        proposed: { ...hydrated, ...methods }, operation: 'methods', payload: methods,
-        credentialsUsable: before.setup?.can_enable_online === true,
+
+    const updatePaymentSettings = (includeDeletedAtFilter: boolean) => {
+        const query = db
+            .from('sites')
+            .update({
+                payment_settings: paymentSettings,
+                online_payment_enabled: true,
+                cod_enabled: store.cod_enabled !== false,
+                updated_at: now,
+            })
+            .eq('id', storeId)
+            .or(ownedByCustomUserFilter(customUser.id));
+
+        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
+    };
+
+    let { data, error } = await updatePaymentSettings(true)
+        .select('id, payment_settings, online_payment_enabled, cod_enabled')
+        .single();
+
+    if (isMissingDeletedAtError(error)) {
+        ({ data, error } = await updatePaymentSettings(false)
+            .select('id, payment_settings, online_payment_enabled, cod_enabled')
+            .single());
+    }
+
+    if (isMissingSitesPaymentColumnError(error)) {
+        return c.json(
+            {
+                error: {
+                    code: 'PAYMENT_SCHEMA_MISSING',
+                    message: 'Payment settings require the latest sites payment columns before credentials can be saved',
+                },
+            },
+            503
+        );
+    }
+
+    if (error || !data) {
+        return c.json({ error: { code: 'DB_ERROR', message: error?.message || 'Unable to save payment config' } }, 500);
+    }
+
+    return c.json(success({
+        store_id: data.id,
+        online_payment_enabled: data.online_payment_enabled !== false,
+        cod_enabled: data.cod_enabled !== false,
+        provider_mode: paymentConfigProviderMode({
+            onlinePaymentEnabled: data.online_payment_enabled !== false,
+            settings: data.payment_settings as PaymentSettings | null,
+        }),
+        payment_settings: sanitizePaymentSettings(data.payment_settings as PaymentSettings | null),
     }));
 });
 
@@ -707,16 +545,6 @@ router.get('/:id', async (c) => {
     return c.json(success(data));
 });
 
-async function ownedStorefrontDomainAdmission(
-    db: ReturnType<typeof getSupabaseAdmin>, env: Env, storeId: string, ownerId: string,
-) {
-    const { data, error } = await db.from('sites').select('id,subdomain,store_name,published,status')
-        .eq('id', storeId).or(ownedByCustomUserFilter(ownerId)).is('deleted_at', null).maybeSingle();
-    if (error) throw new AppError('Storefront ownership could not be verified', 503, 'STOREFRONT_OWNERSHIP_UNAVAILABLE');
-    if (!data) throw new AppError('Store not found or not owned by you', 404, 'NOT_FOUND');
-    await assertReadyFirstPartyStorefrontDomain(env, data);
-}
-
 // POST /stores — Create a new store
 // FIX: Uses Zod validation with reserved subdomain blocking
 router.post('/', validate('json', CreateStoreSchema), async (c) => {
@@ -789,11 +617,8 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
             ownerUserId: customUser.id,
             requestId: getRequestId(c),
         });
-        const storefrontDomain = await provisionFirstPartyStorefrontDomain(c.env, store as { subdomain: string; store_name?: string });
-        const checkoutDomain = await prepareStoreCheckoutDomain(c, String(store.id), { reserveOnly: true });
-        c.executionCtx.waitUntil(prepareStoreCheckoutDomain(c, String(store.id)).catch(() => undefined));
         c.header('X-Idempotent-Replay', 'true');
-        return c.json(success(store, { meta: { storefront_domain: storefrontDomain, checkout_domain: checkoutDomain } }), 201);
+        return c.json(success(store), 201);
     };
 
     if (idempotencyKey) {
@@ -842,13 +667,14 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         return c.json({ error: { code: 'CONFLICT', message: 'Subdomain already taken' } }, 409);
     }
 
-    // Resolve a first-party store from its validated persisted catalog document.
-    // Keep survey metadata; authored niche designs keep their own appearance.
-    // Only the existing Core/legacy path applies an industry Experience overlay.
+    // Phase-2.5 Stream C — server-authoritative Experience auto-apply. When onboarding captured an
+    // industry (template_config.survey.industry) or an explicit experienceId, resolve the recommended
+    // Experience and merge its tokens into template_config so the new store opens already styled. The
+    // merchant can re-pick later in the editor's Experiences tab. Additive: no industry => unchanged
+    // template_config (no behaviour change for other callers). Unknown industry => Summit fallback.
     let templateConfig = (body.template_config ?? {}) as Record<string, unknown>;
-    const firstPartyDesign = firstPartyThemeListings().some(theme => theme.slug === body.theme_id);
-    if (body.theme_id === LETBUYY_CORE_THEME_SLUG || firstPartyDesign) {
-        templateConfig = await new ThemeExecutionAdapter(db).prepareCatalogStoreTemplate(body.theme_id, templateConfig);
+    if (body.theme_id === LETBUYY_CORE_THEME_SLUG) {
+        templateConfig = await new ThemeExecutionAdapter(db).prepareCoreStoreTemplate(templateConfig);
     }
     const surveyRecord = templateConfig.survey && typeof templateConfig.survey === 'object'
         ? (templateConfig.survey as Record<string, unknown>)
@@ -857,7 +683,7 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         || (surveyRecord && typeof surveyRecord.industry === 'string' ? surveyRecord.industry : '')
         || '';
     const experienceOverride = typeof templateConfig.experienceId === 'string' ? templateConfig.experienceId : undefined;
-    if (!firstPartyDesign && (industryHint || experienceOverride)) {
+    if (industryHint || experienceOverride) {
         const { experience } = resolveExperienceForIndustry(industryHint || null, experienceOverride);
         templateConfig = applyExperienceToTemplateConfig(templateConfig, experience);
     }
@@ -871,7 +697,6 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
             subdomain: body.subdomain.toLowerCase().replace(/[^a-z0-9-]/g, ''),
             site_type: body.site_type,
             status: 'draft',
-            online_payment_enabled: false,
             tagline: body.tagline || null,
             locale: body.locale || 'en-IN',
             theme_id: body.theme_id,
@@ -912,13 +737,7 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         requestId: getRequestId(c),
     });
 
-    const storefrontDomain = await provisionFirstPartyStorefrontDomain(c.env, data);
-    // Persist the exact address before returning: the existing scheduled reader
-    // can retry DNS/TLS even if this request lifetime ends or Vercel is unavailable.
-    // Provisioning a certificate never publishes this newly created private store.
-    const checkoutDomain = await prepareStoreCheckoutDomain(c, String(data.id), { reserveOnly: true });
-    c.executionCtx.waitUntil(prepareStoreCheckoutDomain(c, String(data.id)).catch(() => undefined));
-    return c.json(success(data, { meta: { storefront_domain: storefrontDomain, checkout_domain: checkoutDomain } }), 201);
+    return c.json(success(data), 201);
 });
 
 // PATCH /stores/:id — Update a store
@@ -956,28 +775,8 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'No valid fields to update' } }, 400);
     }
 
-    // General store updates cannot bypass payment-method eligibility or race a credential replacement.
-    let paymentRevision: string | null | undefined;
-    if (body.online_payment_enabled !== undefined || body.cod_enabled !== undefined) {
-        const { data: row, error } = await db.from('sites')
-            .select('id,payment_settings,online_payment_enabled,cod_enabled,updated_at')
-            .eq('id', storeId).or(ownedByCustomUserFilter(customUser.id)).is('deleted_at', null).maybeSingle();
-        if (error) throw new AppError('Payment settings are temporarily unavailable.', 503, 'PAYMENT_CONFIG_UNAVAILABLE');
-        if (!row) throw new AppError('Store not found.', 404, 'NOT_FOUND');
-        const current = await projectStorePaymentConfig(await hydratePaymentCredential(db, row), c.env.PAYMENT_CONFIG_ENCRYPTION_KEY);
-        if (body.online_payment_enabled === true && !current.setup?.can_enable_online) {
-            throw new AppError('Complete a verified test connection before enabling online checkout. Live payments remain gated.', 409, 'PAYMENT_NOT_READY');
-        }
-        if (row.payment_settings?.razorpay?.credential_id) {
-            throw new AppError('Use the payment method settings to change online checkout or COD.', 409, 'PAYMENT_METHODS_ENDPOINT_REQUIRED');
-        }
-        paymentRevision = row.updated_at || null;
-        updates.updated_at = new Date().toISOString();
-    }
-
     // Publish timestamp
     if (updates.status === 'published') {
-        await ownedStorefrontDomainAdmission(db, c.env, storeId, customUser.id);
         updates.published_at = new Date().toISOString();
     }
 
@@ -998,25 +797,22 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
             .eq('id', storeId)
             .or(ownedByCustomUserFilter(customUser.id));
 
-        const current = paymentRevision === undefined ? query : paymentRevision
-            ? query.eq('updated_at', paymentRevision) : query.is('updated_at', null);
-        return includeDeletedAtFilter ? current.is('deleted_at', null) : current;
+        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
 
     let { data, error } = await updateStore(true)
         .select()
-        .maybeSingle();
+        .single();
 
     if (isMissingDeletedAtError(error)) {
         ({ data, error } = await updateStore(false)
             .select()
-            .maybeSingle());
+            .single());
     }
 
     if (error) {
-        throw new AppError('Store settings could not be updated. Reload to confirm current settings.', 503, 'STORE_UPDATE_UNAVAILABLE');
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
-    if (!data) throw new AppError('Store settings changed. Reload before saving.', 409, 'STORE_UPDATE_CONFLICT');
 
     return c.json(success(data));
 });
@@ -1032,7 +828,6 @@ router.post('/:id/publish', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    await ownedStorefrontDomainAdmission(db, c.env, storeId, customUser.id);
     const publishUpdates = {
         status: 'published',
         published_at: new Date().toISOString(),

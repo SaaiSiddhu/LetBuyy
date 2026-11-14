@@ -7,7 +7,7 @@ import test from 'node:test';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {expect} from '@playwright/test';
 import {LETBUYY_PLATFORM_SESSION_COOKIE} from '@letbuyy/auth-core';
-import {withConsoleBrowser,consoleBrowserTotp} from './console-browser-fixture';
+import {withConsoleBrowser, expectConsoleAccount,consoleBrowserTotp} from './console-browser-fixture';
 import {requireOwnedDatabase} from './owned-db-support';
 const owned=requireOwnedDatabase();
 
@@ -34,7 +34,7 @@ test('normal Console recovery binds three real sign-ins, survives lost request/e
   await a.page.screenshot({path:evidenceRoot+'/requested-recovery.png',fullPage:true});
   await b.page.goto(origin+'/approvals/'+id);const consent=b.page.locator('form').filter({has:b.page.getByRole('button',{name:'Approve this request',exact:true})});await expect(consent).toHaveAttribute('data-enhanced','true');
   await b.page.getByLabel('I independently verified this operator recovery request and reviewed the account, reason and reset effect.',{exact:true}).check();await b.page.getByRole('button',{name:'Approve this request',exact:true}).click();await expect(b.page.getByRole('button',{name:'Approve this request',exact:true})).toHaveCount(0);
-  await t.page.reload();await expect(t.page.getByText(target.email,{exact:true})).toBeVisible();assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE action='operator.mfa.reset' AND resource_id='${target.id}';`),'0','consent alone must not reset the operator');
+  await t.page.reload();await expectConsoleAccount(t.page,target.email);assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE action='operator.mfa.reset' AND resource_id='${target.id}';`),'0','consent alone must not reset the operator');
   await a.page.reload();const execute=a.page.locator('form').filter({has:a.page.getByRole('button',{name:'Execute approved action',exact:true})});await expect(execute).toHaveAttribute('data-enhanced','true');loseNextMfaExecutionReply();
   await execute.getByRole('button',{name:'Execute approved action',exact:true}).click();await expect(execute.getByRole('alert')).toContainText('Retry the same form');
   assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE action='operator.mfa.reset' AND resource_id='${target.id}';`),'1');
@@ -43,7 +43,7 @@ test('normal Console recovery binds three real sign-ins, survives lost request/e
   const old=await login(target,{stopAtMfa:true});await old.page.getByLabel('Authenticator code',{exact:true}).fill(consoleBrowserTotp(originalFactor));await old.page.getByRole('button',{name:'Verify',exact:true}).click();await old.page.waitForURL(url=>url.pathname==='/mfa'&&url.searchParams.get('error')==='administrator_reset_required');await expect(old.page.getByText('Administrator recovery and a newly configured authenticator are required. Contact your platform administrator.',{exact:true})).toBeVisible();await old.page.getByLabel('Authenticator code',{exact:true}).fill('');await old.page.screenshot({path:evidenceRoot+'/retired-factor-refused.png',fullPage:true});
   const blocked=await old.context.request.get(origin+'/dashboard',{maxRedirects:0});assert.ok([303,307].includes(blocked.status()));assert.match(blocked.headers().location??'',/\/mfa/);
   await rotateConfiguredFactor(target,'ONSWG4TFOQXW4ZLO');
-  const restored=await login(target);await expect(restored.page.getByText(target.email,{exact:true})).toBeVisible();await restored.page.screenshot({path:evidenceRoot+'/configured-replacement-signed-in.png',fullPage:true});
+  const restored=await login(target);await expectConsoleAccount(restored.page,target.email);await restored.page.screenshot({path:evidenceRoot+'/configured-replacement-signed-in.png',fullPage:true});
   assert.equal(owned.psql(`SELECT (metadata->'console_mfa_factor'->>'reset_required')::boolean FROM principals WHERE realm='admin' AND legacy_user_id='${target.id}';`),'f');
   await a.page.goto(origin+'/approvals/'+id);await expect(a.page.getByText(/Executed at /)).toBeVisible();await b.page.goto(origin+'/approvals/'+id);await expect(b.page.getByText(/Executed at /)).toBeVisible();
   // Configuration rollback must not revive a deliberately retired factor.

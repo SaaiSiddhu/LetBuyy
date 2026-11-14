@@ -1,0 +1,237 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "Main navigation":
+    - button "Why LetBuyy"
+    - button "Products"
+    - link "Themes":
+      - /url: /in/resources/platform/how-themes-work
+    - link "Apps":
+      - /url: /in/resources/platform/introduction-to-apps
+    - link "Developers":
+      - /url: /in/resources/developers
+    - link "Pricing":
+      - /url: /in/pricing
+  - button "Toggle theme"
+  - link "Log in":
+    - /url: https://accounts.letbuyy.com/lookup
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+- main:
+  - navigation "Breadcrumb":
+    - link "Legal":
+      - /url: /in/legal
+    - text: Agreements Terms
+  - heading "Terms of Service" [level=1]
+  - paragraph: The agreement between you and LetBuyy for using the platform.
+  - term: Applies to
+  - definition: Merchants
+  - term: Clauses
+  - definition: "11"
+  - term: Reading time
+  - definition: 5 min
+  - term: Revised
+  - definition: 3 August 2026
+  - note:
+    - paragraph:
+      - strong: These policies are published for review and are not yet in force.
+      - text: LetBuyy has not opened to merchants, so no agreement has been formed with anyone. They take effect on the day the platform launches, and the effective date will be stated here. Last revised 3 August 2026.
+  - complementary "Clause index":
+    - list:
+      - listitem:
+        - link "01 What this agreement covers":
+          - /url: "#scope"
+      - listitem:
+        - link "02 Who sells to your customers":
+          - /url: "#roles"
+      - listitem:
+        - link "03 Your account":
+          - /url: "#account"
+      - listitem:
+        - link "04 Your content and data":
+          - /url: "#your-content"
+      - listitem:
+        - link "05 What you may sell":
+          - /url: "#what-you-sell"
+      - listitem:
+        - link "06 Fees":
+          - /url: "#fees"
+      - listitem:
+        - link "07 Availability and changes":
+          - /url: "#availability"
+      - listitem:
+        - link "08 Suspension and termination":
+          - /url: "#suspension"
+      - listitem:
+        - link "09 Liability":
+          - /url: "#liability"
+      - listitem:
+        - link "10 Governing law and disputes":
+          - /url: "#law"
+      - listitem:
+        - link "11 Changes to these terms":
+          - /url: "#changes"
+  - article:
+    - region "In short":
+      - heading "In short" [level=2]
+      - list:
+        - listitem: LetBuyy gives you software to run an online store. You remain the seller — your customers buy from you, not from us.
+        - listitem: You keep ownership of your products, content, customer list, and data. We do not sell your catalogue or compete with you.
+        - listitem: We charge no commission on your sales. Payment providers charge their own fees, which we do not control or receive.
+        - listitem: You are responsible for what you sell, what you tell customers, and the taxes you owe. We are responsible for the platform working.
+      - paragraph: This summary is written to be understood. The clauses below are what actually applies — where the two differ, the clauses govern.
+    - list:
+      - listitem:
+        - heading "What this agreement covers" [level=2]
+        - paragraph: These terms apply when you create a LetBuyy account, open a store, or use any part of the platform — the merchant dashboard, storefronts on a letbuyy.com subdomain or your own domain, the mobile merchant app, themes, apps, and the APIs.
+        - paragraph: If you use LetBuyy on behalf of a company, you confirm you are authorised to bind that company, and "you" means the company.
+        - paragraph: Note Separate documents govern payouts, refunds, data processing, and marketplace publishing. Where a specialised document conflicts with these terms, the specialised one governs that subject.
+      - listitem:
+        - heading "Who sells to your customers" [level=2]
+        - paragraph: LetBuyy is a technology provider. When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you. We are not a party to it, do not take title to your goods, and do not act as your agent.
+        - paragraph: "This means the obligations that attach to a seller attach to you: describing goods accurately, honouring the delivery timelines you publish, processing returns under your stated policy, issuing tax invoices, and answering your customers."
+        - paragraph: We may display your store name, logo, or storefront in examples of platform capability. Tell us to stop and we will.
+      - listitem:
+        - heading "Your account" [level=2]
+        - paragraph: You need an account to open a store. Keep your credentials confidential — activity under your account is treated as yours. Tell us immediately if you believe someone else has access.
+        - paragraph: Sensitive actions such as issuing refunds and changing payout destinations require additional verification beyond your password. This is deliberate and cannot be disabled.
+        - paragraph: "One person or company may operate multiple stores. Each store is isolated: its data is not readable from another store, including your own."
+      - listitem:
+        - heading "Your content and data" [level=2]
+        - paragraph: You own your product catalogue, media, storefront content, customer records, and order history. Using LetBuyy does not transfer any of it to us.
+        - paragraph: You grant us the limited licence needed to actually run the service — to store your content, serve it to shoppers, back it up, index it for search within your own store, and transmit it to the providers listed in our sub-processor register.
+        - paragraph: We do not sell your data, do not use your customer list to market to your customers, and do not use your catalogue to build a competing product.
+      - listitem:
+        - heading "What you may sell" [level=2]
+        - paragraph: You are responsible for the legality of everything you list. Some categories are prohibited outright and some are restricted; both are set out in the Acceptable Use Policy, which forms part of this agreement.
+        - paragraph: Payment providers and card networks impose their own category restrictions. A listing that we permit may still be refused by a payment provider, and we cannot override that.
+      - listitem:
+        - heading "Fees" [level=2]
+        - paragraph: LetBuyy charges no commission and no per-transaction platform fee on your sales. Subscription pricing, where it applies, is shown on the pricing page before you subscribe.
+        - paragraph: Payment providers, shipping partners, and any paid apps you install charge their own fees directly. Those are not ours, we do not receive a share of them, and we cannot waive them.
+        - paragraph: Where we owe GST on amounts we charge you, it is stated separately on our invoice.
+      - listitem:
+        - heading "Availability and changes" [level=2]
+        - paragraph: We work to keep the platform available and will give reasonable notice of planned maintenance that affects storefronts. We do not promise uninterrupted service.
+        - paragraph: We may add, change, or remove features. Where a change removes something you depend on, we will give notice proportionate to the disruption and, where practical, a migration path.
+        - paragraph: Some surfaces — the app marketplace, the theme marketplace, and the developer portal — are not open for new publishing. Their status is stated on the relevant pages and in the Marketplace Partner Terms.
+      - listitem:
+        - heading "Suspension and termination" [level=2]
+        - paragraph: You may close your account at any time. Before you do, export what you need — see the Data Processing Addendum for what happens to your data afterwards.
+        - paragraph: We may suspend a store immediately where it is being used for fraud, where it is causing harm to shoppers or to the platform, or where we are legally required to. Otherwise we will raise the problem with you and give you a reasonable chance to fix it first.
+        - paragraph: Suspension does not extinguish money already owed to you. Funds already settled remain yours; funds held against open disputes are handled under the Payouts and Settlements policy.
+      - listitem:
+        - heading "Liability" [level=2]
+        - paragraph: The platform is provided as-is beyond the warranties we cannot exclude by law. We are not liable for your lost profits, lost sales, or lost data, or for the acts of your customers, suppliers, or the payment and shipping providers you choose.
+        - paragraph: Where liability cannot be excluded, our total liability across all claims in any twelve-month period is limited to the fees you paid us in that period.
+        - paragraph: Nothing in this clause limits liability for fraud, wilful misconduct, or anything else that cannot be limited under Indian law.
+        - paragraph: Note Because we charge no commission, the fee cap above may be zero for merchants on a free plan. That is the honest consequence of the pricing model and you should weigh it.
+      - listitem:
+        - heading "Governing law and disputes" [level=2]
+        - paragraph: This agreement is governed by the laws of India.
+        - paragraph: Talk to us first — most disputes resolve faster through the grievance process than through a court, and the Grievance Redressal policy sets out the timelines we hold ourselves to.
+      - listitem:
+        - heading "Changes to these terms" [level=2]
+        - paragraph: We will post a revised version here and update the revision date. For changes that materially reduce your rights or increase your obligations, we will notify account holders by email before the change takes effect.
+        - paragraph: Continuing to use LetBuyy after a change takes effect means you accept the revised terms. If you do not, close your account before that date.
+    - heading "Questions about this document" [level=2]
+    - paragraph:
+      - text: Write to
+      - link "support@letbuyy.com":
+        - /url: mailto:support@letbuyy.com
+      - text: and quote the clause number. For a complaint rather than a question, use the
+      - link "grievance process":
+        - /url: /in/legal/grievance
+      - text: .
+    - navigation "Other legal documents":
+      - link "Next Acceptable Use Policy":
+        - /url: /in/legal/acceptable-use
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.

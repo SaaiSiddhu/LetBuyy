@@ -3,11 +3,11 @@ import {tryRestoreGiftCardForReversedOrder} from '../lib/gift-card-refund-recove
 import { stepUpErrorBody } from '../lib/security-controls';
 import { tryRestoreRedeemedLoyalty } from '../lib/loyalty-refund-recovery';
 import { Hono } from 'hono';
-import { AppError } from '../lib/errors';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { cursorPaginated, dbErrorBody, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
+import { AppError } from '../lib/errors';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
@@ -31,6 +31,7 @@ import {
     type OrderItemRelationRow,
     type ProductSnapshotRow,
 } from '../lib/order-read-compat';
+import { enqueueOrderLifecycleEmail } from '../lib/order-confirmation-email';
 import {
     CreateOrderSchema,
     UpdateOrderStatusSchema,
@@ -45,7 +46,6 @@ import {
     type CreateOrderInput,
     type UpdateOrderStatusInput,
     type FulfillOrderInput,
-    type UpdateOrderLineItemsInput,
     type ListDraftOrdersInput,
     type CreateDraftOrderInput,
     type ConvertDraftOrderInput,
@@ -290,9 +290,10 @@ async function emitOrderEvent(
 }
 
 function orderEventsForStatus(status: UpdateOrderStatusInput['status']): OrderEventType[] {
-    if (status === 'delivered') return ['order.delivered'];
+    if (status === 'delivered') return ['order.delivered', 'order.paid'];
     if (status === 'shipped') return ['order.fulfilled'];
     if (status === 'cancelled') return ['order.cancelled'];
+    if (status === 'refunded') return ['order.returned', 'order.refunded'];
     return [];
 }
 
@@ -352,14 +353,8 @@ async function applyLogisticsLabel(
     siteId: string,
     orderId: string,
     input: FulfillOrderInput,
-    environment: Env['ENVIRONMENT'],
 ): Promise<FulfillOrderInput> {
     if (!input.create_shipping_label || !input.logistics_provider) return input;
-    // Manual fulfillment remains available; a simulated AWB cannot establish
-    // carrier acceptance or advance a real production shipment.
-    if (environment === 'production') {
-        throw new AppError('Carrier booking is not connected. Use manual fulfillment with your carrier’s tracking details.', 503, 'CARRIER_SETUP_REQUIRED');
-    }
 
     const { data, error } = await db
         .from('orders')
@@ -870,167 +865,17 @@ router.get('/:id', async (c) => {
     }));
 });
 
-// PATCH /orders/:id/line-items — Edit line items and rebuild totals server-side
+// Placed orders are immutable commercial snapshots. Edit the canonical draft
+// before conversion; returns/refunds are separate guarded domain commands.
 router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), async (c) => {
-    const orderId = c.req.param('id');
-    const body = c.get('validatedBody') as UpdateOrderLineItemsInput;
-    const db = getSupabaseAdmin(c);
-    const tenant = await resolveTenantContextForOrder(c, orderId);
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId: tenant.siteId,
-        key: body.idempotency_key,
-        scope: `orders.line_items:${orderId}`,
-        requestBody: body,
-        requestId: tenant.requestId,
-    });
-
-    if (claim.kind === 'replay') {
-        return c.json(claim.responseBody as any, claim.statusCode as any);
-    }
-
-    try {
-        const removals = new Set([
-            ...body.remove_line_item_ids,
-            ...body.lines.filter((line) => line.quantity === 0).map((line) => line.order_item_id),
-        ]);
-        const quantityPatches = body.lines.filter((line) => line.quantity > 0);
-
-        for (const line of quantityPatches) {
-            const { data: existing, error: existingError } = await db
-                .from('order_items')
-                .select('id, price, unit_price')
-                .eq('store_id', tenant.siteId)
-                .eq('id', line.order_item_id)
-                .eq('order_id', orderId)
-                .is('deleted_at', null)
-                .maybeSingle();
-            if (existingError || !existing) {
-                return c.json({ success: false, error: { code: 'ORDER_LINE_NOT_FOUND', message: 'Order line not found.' } }, 404);
-            }
-            const unitPrice = numberValue((existing as Record<string, unknown>).unit_price) ?? numberValue((existing as Record<string, unknown>).price) ?? 0;
-            const { error } = await db
-                .from('order_items')
-                .update({
-                    quantity: line.quantity,
-                    unit_price: unitPrice,
-                    price: unitPrice,
-                    total: Math.round(unitPrice * line.quantity * 100) / 100,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('store_id', tenant.siteId)
-                .eq('id', line.order_item_id)
-                .eq('order_id', orderId);
-            if (error) throw new Error('Order line update failed');
-        }
-
-        if (removals.size > 0) {
-            const { error } = await db
-                .from('order_items')
-                .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-                .eq('store_id', tenant.siteId)
-                .in('id', Array.from(removals))
-                .eq('order_id', orderId);
-            if (error) throw new Error('Order line removal failed');
-        }
-
-        for (const item of body.add_items) {
-            const { data: product, error: productError } = await db
-                .from('products')
-                .select('id, store_id, name, title, sku, price, sale_price, images')
-                .eq('id', item.product_id)
-                .eq('store_id', tenant.siteId)
-                .is('deleted_at', null)
-                .maybeSingle();
-            if (productError || !product) {
-                return c.json({ success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found.' } }, 404);
-            }
-            const productRow = product as ProductSnapshotRow;
-            const unitPrice = numberValue(productRow.sale_price) ?? numberValue(productRow.price) ?? 0;
-            const name = textValue(productRow.name) || textValue(productRow.title) || 'Product';
-            const { error } = await db
-                .from('order_items')
-                .insert({
-                    store_id: tenant.siteId,
-                    order_id: orderId,
-                    product_id: item.product_id,
-                    variant_id: item.variant_id || null,
-                    name,
-                    title: name,
-                    sku: productRow.sku || null,
-                    quantity: item.quantity,
-                    price: unitPrice,
-                    unit_price: unitPrice,
-                    total: Math.round(unitPrice * item.quantity * 100) / 100,
-                    product_snapshot: productRow,
-                });
-            if (error) throw new Error('Order line insert failed');
-        }
-
-        const { data: activeLines, error: linesError } = await db
-            .from('order_items')
-            .select('total')
-            .eq('store_id', tenant.siteId)
-            .eq('order_id', orderId)
-            .is('deleted_at', null);
-        if (linesError) throw new Error('Order line total lookup failed');
-
-        const subtotal = ((activeLines || []) as Array<Record<string, unknown>>)
-            .reduce((sum, line) => sum + (numberValue(line.total) || 0), 0);
-        const { data: orderForTotals, error: orderError } = await db
-            .from('orders')
-            .select('shipping_cost, tax, discount')
-            .eq('id', orderId)
-            .eq('store_id', tenant.siteId)
-            .maybeSingle();
-        if (orderError || !orderForTotals) throw new Error('Order total lookup failed');
-
-        const total = Math.max(
-            0,
-            subtotal +
-            (numberValue((orderForTotals as Record<string, unknown>).shipping_cost) || 0) +
-            (numberValue((orderForTotals as Record<string, unknown>).tax) || 0) -
-            (numberValue((orderForTotals as Record<string, unknown>).discount) || 0),
-        );
-
-        const { error: updateOrderError } = await db
-            .from('orders')
-            .update({
-                subtotal: Math.round(subtotal * 100) / 100,
-                total: Math.round(total * 100) / 100,
-                notes: body.notes || undefined,
-                updated_at: new Date().toISOString(),
-                updated_by: tenant.userId,
-            })
-            .eq('id', orderId)
-            .eq('store_id', tenant.siteId);
-        if (updateOrderError) throw new Error('Order total update failed');
-
-        const { data: order, error: loadError } = await db
-            .from('orders')
-            .select(orderItemsRelationalReadsEnabled(c.env) ? ORDER_LIST_COLUMNS_RELATIONAL : '*')
-            .eq('id', orderId)
-            .eq('store_id', tenant.siteId)
-            .single();
-        if (loadError || !order) throw new Error('Order reload failed');
-
-        const rows = orderItemsRelationalReadsEnabled(c.env)
-            ? await hydrateOrderItems(db, [order as unknown as Record<string, unknown>])
-            : [order as unknown as Record<string, unknown>];
-        const responseBody = success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow));
-        type IdempotencyResponseBody = Parameters<IdempotencyExecutionAdapter['complete']>[0]['responseBody'];
-        await idempotency.complete({
-            id: claim.id,
-            responseBody: responseBody as unknown as IdempotencyResponseBody,
-            statusCode: 200,
-            resourceType: 'order',
-            resourceId: orderId,
-        });
-        return c.json(responseBody);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
-    }
+    const tenant = await resolveTenantContextForOrder(c, c.req.param('id'));
+    const staffBlock = await assertStaffPermission(c, tenant.siteId, tenant.userId, 'orders:write');
+    if (staffBlock) return staffBlock;
+    throw new AppError(
+        'Placed order items cannot be changed. Edit a draft before placing it, or use the return and refund workflow.',
+        409,
+        'ORDER_SNAPSHOT_IMMUTABLE',
+    );
 });
 
 // PATCH /orders/:id — Update order status (with state machine)
@@ -1070,8 +915,24 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
                 requestId: tenant.requestId,
             });
         }
-        // Transactional email intent is captured by migration402.
-        if (body.status === 'cancelled') {
+        // LB-10 — dispatch the cancelled/refunded customer email (best-effort; never blocks the status change).
+        if (body.status === 'cancelled' || body.status === 'refunded') {
+            try {
+                await enqueueOrderLifecycleEmail(c.env, db, {
+                    orderId,
+                    storeId: tenant.siteId,
+                    requestId: tenant.requestId,
+                    kind: body.status,
+                });
+            } catch (emailError) {
+                console.warn(JSON.stringify({
+                    level: 'warn',
+                    event: 'order_lifecycle_email_enqueue_failed',
+                    kind: body.status,
+                    order_id: orderId,
+                    error: String(emailError),
+                }));
+            }
             // LB-11 — restore any gift-card balance redeemed on this order (the whole order is
             // being reversed). Idempotent + best-effort; never blocks the status change.
             try {
@@ -1194,7 +1055,7 @@ router.post('/:id/fulfill', validate('json', FulfillOrderSchema), async (c) => {
 
     const service = new OrderExecutionAdapter(db);
     try {
-        const fulfillmentInput = await applyLogisticsLabel(db, tenant.siteId, orderId, body, c.env.ENVIRONMENT);
+        const fulfillmentInput = await applyLogisticsLabel(db, tenant.siteId, orderId, body);
         const data = await service.fulfillOrder(orderId, tenant, fulfillmentInput);
         await emitOrderEvent(db, {
             eventType: 'order.fulfilled',
@@ -1237,7 +1098,12 @@ router.post('/:id/refund/complete', validate('json', CompleteRefundSchema), asyn
     if (!replayed && recordValue(data.order).status === 'refunded') {
         await emitOrderEvent(db, { eventType: 'order.refunded', order: data.order,
             fallbackOrderId: orderId, siteId: tenant.siteId, actorId: tenant.userId, requestId: tenant.requestId });
-
+        try {
+            await enqueueOrderLifecycleEmail(c.env, db, { orderId, storeId: tenant.siteId,
+                requestId: tenant.requestId, kind: 'refunded' });
+        } catch {
+            console.warn(JSON.stringify({level:'warn',event:'order_lifecycle_email_enqueue_failed',order_id:orderId,kind:'refunded'}));
+        }
     }
     await tryRestoreGiftCardForReversedOrder(db,{...tenant,orderId},data.order);
     await tryRestoreRedeemedLoyalty(db, {...tenant,orderId});

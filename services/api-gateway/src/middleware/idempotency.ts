@@ -1,5 +1,4 @@
 import { createMiddleware } from 'hono/factory';
-import { z } from 'zod';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
@@ -9,13 +8,6 @@ import { assertStaffPermission } from './staff-permission';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 type GatewayContext = Context<{ Bindings: Env }>;
-
-declare module 'hono' {
-    interface ContextVariableMap {
-        paymentConfigurationClaim: { id: string; siteId: string; requestHash: string } | undefined;
-        atomicIdempotencyCommitted: boolean | undefined;
-    }
-}
 
 const MUTATION_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
@@ -68,14 +60,16 @@ const BOOTSTRAP_CREATION_PATHS = new Set(['/stores']);
 
 function isProtectedMutationPath(path: string, method?: string): boolean {
     const normalized = normalizePath(path);
-    // Device registration is actor-bound, including before store selection.
-    // Upsert(user_id,token) and DELETE(user_id,token) are intrinsically idempotent;
-    // the site-scoped response cache must never replay registration after logout.
-    if (normalized === '/notifications/device-tokens' && (method === 'POST' || method === 'DELETE')) return false;
     // The pre-store web draft is account-bound and has no site_id yet. Its
     // SECURITY DEFINER RPC takes a per-user advisory lock and upserts one row,
     // so the site-scoped idempotency table cannot represent this operation.
     if (method === 'PUT' && normalized === '/onboarding/web-draft') return false;
+    // Account inbox state is an intrinsically idempotent assignment after the
+    // route's user_id check. A site-scoped response cache cannot represent it.
+    // Notification sends, webhooks and device commands keep their own guards.
+    if ((method === 'PATCH' && /^\/notifications\/[0-9a-f-]{36}\/read$/i.test(normalized))
+        || (method === 'POST' && normalized === '/notifications/read-all')
+        || (method === 'DELETE' && /^\/notifications\/[0-9a-f-]{36}$/i.test(normalized))) return false;
     // Store creation (POST /stores) has no site_id yet — guarded by subdomain uniqueness.
     // All sub-resource mutations (/stores/{id}/...) still require idempotency.
     if (method === 'POST' && BOOTSTRAP_CREATION_PATHS.has(normalized)) return false;
@@ -204,10 +198,7 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     const routeOwnedCollectionMembership = method === 'PUT' && /^\/products\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/products$/i.test(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedProductReceipt = method === 'PATCH' && /^\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderPath);
-    // The gift-card RPC owns a serialised, site-bound issue receipt. HTTP replay
-    // would return its one-time code again and skip the route's live owner check.
-    const routeOwnedGiftCardIssue = method === 'POST' && orderPath === '/products/gift-cards';
-    if (routeOwnedGiftCardIssue || routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    if (routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }
@@ -233,11 +224,6 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         }, 400);
     }
 
-    if (!z.string().uuid().safeParse(siteId).success) {
-        return c.json({ error: { code: 'IDEMPOTENCY_SITE_INVALID',
-            message: 'A valid store context is required for this mutation.' } }, 400);
-    }
-
     // Product creation still owns its existing HTTP receipt and mandatory key.
     // Recheck the route's current principal authority before returning that
     // receipt, so a revoked owner/staff member cannot bypass the route guard.
@@ -254,11 +240,7 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     // Settings/cancellation receipts contain tenant configuration and billing
     // state. Re-verify the live owner before begin() can return an old response,
     // including revocation and signed-store/selection mismatches.
-    const storeSettingsReceipt = /^\/stores\/[^/]+(?:\/payment-config)?$/.test(orderPath);
-    if (storeSettingsReceipt && siteIdFromStorePath(c.req.path) !== siteId) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-    if (storeSettingsReceipt || orderPath === '/shipping-tax' || orderPath.startsWith('/shipping-tax/') || orderPath === '/payments/subscription/cancel') {
+    if (orderPath === '/shipping-tax' || orderPath.startsWith('/shipping-tax/') || orderPath === '/payments/subscription/cancel') {
         const auth = c.get('auth');
         const db = getSupabaseAdmin(c);
         const customUser = auth?.user ? await resolveCustomUser(db, auth.user) : null;
@@ -294,18 +276,12 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         });
     }
 
-    if (/^\/stores\/[^/]+\/payment-config$/.test(orderPath)) c.set('paymentConfigurationClaim', {
-        id: claim.id, siteId: claim.siteId, requestHash: claim.requestHash,
-    });
-
     try {
         await next();
     } catch (error) {
         await idempotency.fail(claim.id);
         throw error;
     }
-
-    if (c.get('atomicIdempotencyCommitted')) return;
 
     if (c.res.status < 200 || c.res.status >= 300) {
         await idempotency.fail(claim.id);

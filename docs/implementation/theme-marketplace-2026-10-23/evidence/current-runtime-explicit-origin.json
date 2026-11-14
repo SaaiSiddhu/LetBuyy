@@ -1,9 +1,0 @@
-{
-  "recordedAt": "2026-10-23T13:39:47.893738+00:00",
-  "scope": "Owned candidate test harness runtime configuration only; no shared app, registry, guard or auth source edit",
-  "archivedOwnPublicEnvFile": "/private/tmp/marketplace-9005-public-origin-env-preserved-20261023.txt",
-  "publicOrigin": "http://localhost:9005",
-  "candidateHarness": "/private/tmp/letbuyy-marketplace-candidate-20261023-110027/services/api-gateway/src/__tests__/owned-db/threadline-browser-fixture.ts",
-  "candidateSha256": "475deb0192c14288159ff31b650d3b8fdd5157cf61f6cef34e82e76f129281fb",
-  "delta": "One explicit NEXT_PUBLIC_THEME_MARKETPLACE_URL field in existing supervised client env; normal guard remains active"
-}

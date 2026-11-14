@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../app/store_context.dart';
+import '../../widgets/platform_message_body.dart';
 
 import '../../services/notification_settings_service.dart';
-import '../../services/push_service.dart';
 import '../../theme/app_theme_colors.dart';
+
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 
 class NotificationsScreen extends StatefulWidget {
@@ -19,6 +22,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   NotificationSettings? _settings;
   List<MerchantNotification> _notifications = [];
   int _unreadCount = 0;
+  int _page = 1;
+  bool _hasNext = false;
   bool _isLoading = true;
   bool _isSaving = false;
   String? _storeId;
@@ -39,32 +44,37 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     });
 
     try {
-      _storeId ??=
-          (await context.read<StoreContext>().ensureSelectedStore())?.id;
-      if (_storeId == null) {
-        if (mounted) {
-          setState(() {
-            _settings = null;
-            _notifications = [];
-            _unreadCount = 0;
-            _isLoading = false;
-          });
-        }
-        return;
-      }
-
+      final storeContext = context.read<StoreContext>();
+      _storeId = (await storeContext.ensureSelectedStore())?.id;
+      final epoch = storeContext.requestContextVersion;
       final service = context.read<NotificationSettingsService>();
-      final results = await Future.wait<Object>([
-        service.fetchSettings(_storeId!),
-        service.fetchInbox(limit: 20),
+      final results = await Future.wait<Object?>([
+        _storeId == null
+            ? Future<NotificationSettings?>.value(null)
+            : service
+                  .fetchSettings(_storeId!)
+                  .then<NotificationSettings?>((value) => value)
+                  .catchError((_) => null),
+        service.fetchInbox(page: _page, limit: 20),
         service.fetchUnreadCount(),
       ]);
-      final settings = results[0] as NotificationSettings;
+      final settings = results[0] as NotificationSettings?;
       final notifications = results[1] as List<MerchantNotification>;
       final unreadCount = results[2] as int;
+      if (!mounted) return;
+      if (epoch != storeContext.requestContextVersion) {
+        setState(() {
+          _settings = null;
+          _notifications = [];
+          _isLoading = false;
+          _error = 'Account or store changed. Refresh the inbox.';
+        });
+        return;
+      }
       if (mounted) {
         setState(() {
           _settings = settings;
+          _hasNext = service.inboxHasNext;
           _notifications = notifications;
           _unreadCount = unreadCount;
           _isLoading = false;
@@ -119,7 +129,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     : item,
               )
               .toList(growable: false);
-          _unreadCount = _notifications.where((item) => !item.isRead).length;
+          _unreadCount = context
+              .read<NotificationSettingsService>()
+              .unreadCount;
         });
       }
     } catch (_) {
@@ -158,7 +170,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           _notifications = _notifications
               .where((item) => item.id != notification.id)
               .toList(growable: false);
-          _unreadCount = _notifications.where((item) => !item.isRead).length;
+          _unreadCount = context
+              .read<NotificationSettingsService>()
+              .unreadCount;
         });
         _showSnackBar('Notification deleted');
       }
@@ -199,7 +213,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Notifications',
+                  'Account inbox',
                   style: TextStyle(
                     color: colors.textPrimary,
                     fontSize: 22,
@@ -207,10 +221,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ),
                 ),
                 Text(
-                  _isSaving
+                  _error != null
+                      ? 'Inbox unavailable · refresh to retry'
+                      : _isLoading
+                      ? 'Loading inbox...'
+                      : _isSaving
                       ? 'Saving...'
                       : _unreadCount == 0
-                      ? 'Inbox and merchant alerts'
+                      ? 'Messages from LetBuyy and merchant alerts'
                       : '$_unreadCount unread merchant alerts',
                   style: TextStyle(color: colors.textSecondary, fontSize: 12),
                 ),
@@ -251,10 +269,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     final settings = _settings;
     if (settings == null) {
-      return _centerState(
-        icon: Icons.notifications_off_outlined,
-        title: 'No store selected',
-        subtitle: 'Open a store before changing notification settings.',
+      return RefreshIndicator(
+        onRefresh: _loadNotifications,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _accountInboxSection(),
+            const SizedBox(height: 12),
+            Text(
+              _storeId == null
+                  ? 'Open a store to change notification channel settings. Your account inbox is available here.'
+                  : 'Channel settings are temporarily unavailable. Your account inbox is available; refresh to retry settings.',
+            ),
+          ],
+        ),
       );
     }
 
@@ -264,31 +292,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          _section(
-            title: 'Inbox',
-            action: _unreadCount == 0
-                ? null
-                : TextButton(
-                    onPressed: _markAllRead,
-                    child: const Text('Mark all read'),
-                  ),
-            child: _inboxList(),
-          ),
+          _accountInboxSection(),
           const SizedBox(height: 12),
-          ListTile(
-            leading: const Icon(Icons.phonelink_ring_outlined),
-            title: const Text('This device'),
-            subtitle: Text(switch (context.watch<PushService?>()?.registrationState) {
-              PushRegistrationState.registered => 'Device token registered. Delivery also requires an active push provider.',
-              PushRegistrationState.registering => 'Registering this device for push alerts…',
-              PushRegistrationState.permissionDenied => 'Android notification permission is off. Enable it in Settings, then retry.',
-              PushRegistrationState.failed => 'Device registration failed. Retry when connected.',
-              _ => 'Push delivery is not configured on this device. Inbox alerts are available.',
-            }),
-            trailing: context.watch<PushService?>()?.registrationState != PushRegistrationState.registered
-                ? TextButton(onPressed: () => context.read<PushService>().registerCurrentDeviceToken(), child: const Text('Retry device'))
-                : null,
-          ),
           _section(
             title: 'Channels',
             child: Column(
@@ -422,6 +427,49 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
+  Widget _accountInboxSection() {
+    return _section(
+      title: 'Inbox',
+      action: _unreadCount == 0
+          ? null
+          : TextButton(
+              onPressed: _markAllRead,
+              child: const Text('Mark all read'),
+            ),
+      child: Column(
+        children: [
+          _inboxList(),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              TextButton(
+                onPressed: _page <= 1 || _isLoading
+                    ? null
+                    : () {
+                        setState(() => _page--);
+                        _loadNotifications();
+                      },
+                child: const Text('Previous messages'),
+              ),
+              Text('Page $_page'),
+              TextButton(
+                onPressed: !_hasNext || _isLoading
+                    ? null
+                    : () {
+                        setState(() => _page++);
+                        _loadNotifications();
+                      },
+                child: const Text('More messages'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _notificationTile(MerchantNotification notification) {
     final unread = !notification.isRead;
     return InkWell(
@@ -486,21 +534,46 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ),
                   if (notification.message != null) ...[
                     const SizedBox(height: 4),
-                    Text(
-                      notification.message!,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colors.textSecondary,
-                        fontSize: 12,
+                    if (notification.data['source'] == 'letbuyy_platform')
+                      PlatformMessageBody(
+                        notification: notification,
+                        onOpen: (uri) async {
+                          try {
+                            final opened = await launchUrl(
+                              uri,
+                              mode: LaunchMode.externalApplication,
+                            );
+                            if (!opened && mounted)
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Could not open this link.'),
+                                ),
+                              );
+                          } catch (_) {
+                            if (mounted)
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Could not open this link.'),
+                                ),
+                              );
+                          }
+                        },
+                      )
+                    else
+                      Text(
+                        notification.message!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colors.textSecondary,
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
                   ],
                   const SizedBox(height: 6),
                   Text(
-                    DateFormat(
-                      'MMM d, h:mm a',
-                    ).format(notification.createdAt.toLocal()),
+                    DateFormat('MMM d, h:mm a')
+                        .format(notification.createdAt.toLocal()),
                     style: TextStyle(color: colors.textTertiary, fontSize: 11),
                   ),
                 ],

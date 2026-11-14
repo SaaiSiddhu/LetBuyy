@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { useReadRequest } from '@/lib/api/use-read-request'
-import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import {
     Badge,
-    Button,
     Banner,
     Card,
+    EmptyState,
     Page,
     PageHeader,
     Section,
@@ -16,13 +14,11 @@ import {
     Table,
     type StatusVariant,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import type {
     SupplierMetricsResult,
     WarehouseMetricsResult,
     TransferMetricsResult,
     OperationsSummaryResult,
-    GatewayPaginationMeta,
 } from '@letbuyy/api-client'
 
 // ── KPI card ─────────────────────────────────────────────────
@@ -59,10 +55,9 @@ function KpiCard({ label, value, subtext, variant }: KpiCardProps) {
 
 function transferStatusVariant(status: string): StatusVariant {
     switch (status) {
-        case 'received': return 'success'
-        case 'shipped':
-        case 'partially_received': return 'info'
-        case 'reserved': return 'default'
+        case 'completed': return 'success'
+        case 'in_transit': return 'info'
+        case 'draft': return 'default'
         case 'cancelled': return 'critical'
         default: return 'default'
     }
@@ -70,10 +65,9 @@ function transferStatusVariant(status: string): StatusVariant {
 
 function transferStatusLabel(status: string): string {
     switch (status) {
-        case 'reserved': return 'Reserved'
-        case 'shipped': return 'In transit'
-        case 'partially_received': return 'Partially received'
-        case 'received': return 'Received'
+        case 'draft': return 'Draft'
+        case 'in_transit': return 'In transit'
+        case 'completed': return 'Completed'
         case 'cancelled': return 'Cancelled'
         default: return status
     }
@@ -87,62 +81,52 @@ type FetchState<T> =
     | { status: 'error'; message: string }
     | { status: 'success'; data: T }
 
-function useFetch<T>(url: string | null, scope: string): FetchState<T> {
-    const identity = `${scope}:${url || ''}`
-    const beginRead = useReadRequest(identity)
-    const [result, setResult] = useState<{ identity: string; state: FetchState<T> } | null>(null)
+function useFetch<T>(url: string | null): FetchState<T> {
+    const [state, setState] = useState<FetchState<T>>({ status: 'idle' })
+
     useEffect(() => {
         if (!url) return
-        const request = beginRead()
+        setState({ status: 'loading' })
         let cancelled = false
-        fetch(url, { cache: 'no-store', signal: request.signal })
-            .then(async response => {
-                const body = await response.json() as { data?: T; error?: { message?: string } | string }
-                if (cancelled || !request.isCurrent()) return
-                if (!response.ok || body.data === undefined) {
-                    const message = typeof body.error === 'string' ? body.error : body.error?.message || `HTTP ${response.status}`
-                    setResult({ identity, state: { status:'error', message } })
-                } else setResult({ identity, state: { status:'success', data:body.data } })
-            })
-            .catch((error:unknown) => {
-                if (!cancelled && request.isCurrent()) setResult({ identity, state: { status:'error', message:error instanceof Error ? error.message : 'Network error' } })
-            })
-        return () => { cancelled = true }
-    }, [url, identity, beginRead])
-    if (!url) return { status:'idle' }
-    return result?.identity === identity ? result.state : { status:'loading' }
-}
 
-function MetricPager({ label, page, meta, pending, onPage }: { label:string; page:number; meta?:GatewayPaginationMeta; pending:boolean; onPage:(page:number)=>void }) {
-    if (page === 1 && !meta?.has_next) return null
-    return <div className="mt-[var(--lb-space-3)] flex items-center justify-between gap-[var(--lb-space-3)]">
-        <Button variant="secondary" disabled={page<=1 || pending} onClick={()=>onPage(page-1)}>Previous {label}</Button>
-        <span>{meta ? `${meta.total} ${label} · ` : ''}Page {page}</span>
-        <Button variant="secondary" disabled={!meta?.has_next || pending} onClick={()=>onPage(page+1)}>Next {label}</Button>
-    </div>
+        fetch(url)
+            .then(async (res) => {
+                const body = await res.json() as { data?: T; error?: unknown }
+                if (cancelled) return
+                if (!res.ok) {
+                    const msg = typeof body.error === 'string' ? body.error : `HTTP ${res.status}`
+                    setState({ status: 'error', message: msg })
+                } else {
+                    setState({ status: 'success', data: body.data as T })
+                }
+            })
+            .catch((err: unknown) => {
+                if (cancelled) return
+                const msg = err instanceof Error ? err.message : 'Network error'
+                setState({ status: 'error', message: msg })
+            })
+
+        return () => { cancelled = true }
+    }, [url])
+
+    return state
 }
 
 export default function OperationsDashboardPage() {
     const { store } = useParams<{ store: string }>()
-    const {actorId}=useMerchantSecurityContext(store)
-    const scope=`${actorId}:${store}`
-    const [supplierPaging,setSupplierPaging]=useState({key:scope,page:1})
-    const [warehousePaging,setWarehousePaging]=useState({key:scope,page:1})
-    const supplierPage=supplierPaging.key===scope?supplierPaging.page:1
-    const warehousePage=warehousePaging.key===scope?warehousePaging.page:1
     const [refreshKey, setRefreshKey] = useState(0)
 
     const base = store ? `/api/stores/${encodeURIComponent(store)}/commerce-analytics` : null
 
     const summaryUrl = base ? `${base}/operations-summary?_r=${refreshKey}` : null
-    const supplierUrl = base ? `${base}/supplier-metrics?page=${supplierPage}&limit=20&_r=${refreshKey}` : null
-    const warehouseUrl = base ? `${base}/warehouse-metrics?page=${warehousePage}&limit=20&_r=${refreshKey}` : null
+    const supplierUrl = base ? `${base}/supplier-metrics?_r=${refreshKey}` : null
+    const warehouseUrl = base ? `${base}/warehouse-metrics?_r=${refreshKey}` : null
     const transferUrl = base ? `${base}/transfer-metrics?_r=${refreshKey}` : null
 
-    const summaryState = useFetch<OperationsSummaryResult>(summaryUrl, scope)
-    const supplierState = useFetch<SupplierMetricsResult>(supplierUrl, scope)
-    const warehouseState = useFetch<WarehouseMetricsResult>(warehouseUrl, scope)
-    const transferState = useFetch<TransferMetricsResult>(transferUrl, scope)
+    const summaryState = useFetch<OperationsSummaryResult>(summaryUrl)
+    const supplierState = useFetch<SupplierMetricsResult>(supplierUrl)
+    const warehouseState = useFetch<WarehouseMetricsResult>(warehouseUrl)
+    const transferState = useFetch<TransferMetricsResult>(transferUrl)
 
     const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
 
@@ -161,8 +145,7 @@ export default function OperationsDashboardPage() {
 
     return (
         <Page>
-            <PageHeader identity="products"
-                recipe="index"
+            <PageHeader
                 title="Operations dashboard"
                 description="Real-time view of inventory, suppliers, warehouses, and transfers."
                 breadcrumbs={[{ label: 'Inventory' }, { label: 'Operations dashboard' }]}
@@ -196,7 +179,7 @@ export default function OperationsDashboardPage() {
                             {summaryState.message}
                         </Banner>
                     ) : !summary ? (
-                        <EmptyState scene="operations"
+                        <EmptyState
                             title="No data available"
                             body="Start by creating products, purchase orders, or inventory transfers."
                         />
@@ -276,7 +259,7 @@ export default function OperationsDashboardPage() {
                             {supplierState.message}
                         </Banner>
                     ) : !supplierResult || supplierResult.suppliers.length === 0 ? (
-                        <EmptyState scene="operations"
+                        <EmptyState
                             title="No supplier data yet"
                             body="Create purchase orders linked to suppliers to see performance metrics here."
                         />
@@ -332,7 +315,6 @@ export default function OperationsDashboardPage() {
                             </Table>
                         </div>
                     )}
-                    <MetricPager label="suppliers" page={supplierPage} meta={supplierResult?.meta} pending={supplierState.status==='loading'} onPage={page=>setSupplierPaging({key:scope,page})} />
                 </Section>
             </Card>
 
@@ -353,7 +335,7 @@ export default function OperationsDashboardPage() {
                             {warehouseState.message}
                         </Banner>
                     ) : !warehouseResult || warehouseResult.warehouses.length === 0 ? (
-                        <EmptyState scene="operations"
+                        <EmptyState
                             title="No inventory locations configured"
                             body="Set up inventory locations to track stock across warehouses and retail locations."
                         />
@@ -402,7 +384,6 @@ export default function OperationsDashboardPage() {
                             </Table>
                         </div>
                     )}
-                    <MetricPager label="locations" page={warehousePage} meta={warehouseResult?.meta} pending={warehouseState.status==='loading'} onPage={page=>setWarehousePaging({key:scope,page})} />
                 </Section>
             </Card>
 
@@ -423,7 +404,7 @@ export default function OperationsDashboardPage() {
                             {transferState.message}
                         </Banner>
                     ) : !transferResult || transferResult.total_count === 0 ? (
-                        <EmptyState scene="operations"
+                        <EmptyState
                             title="No transfers yet"
                             body="Create inventory transfers to move stock between locations and track pipeline here."
                         />

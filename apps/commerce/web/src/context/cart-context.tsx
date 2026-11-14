@@ -1,7 +1,6 @@
 'use client';
 
-import { StorefrontCartRevisionSchema, type CartItem, type StorefrontCartLineInput } from '@letbuyy/checkout-core';
-import { CART_RETIRED_EVENT, reconcileStoredCart } from '@/lib/checkout/cart-lifecycle';
+import type { CartItem, StorefrontCartLineInput } from '@letbuyy/checkout-core';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
@@ -35,9 +34,6 @@ export interface CartVariantContext {
 }
 
 type ServerCartLine = {
-    id?: string;
-    marketplace_listing_id?: string;
-    personalization?: StorefrontCartLineInput['personalization'];
     product_id: string;
     variant_id?: string | null;
     title: string;
@@ -51,8 +47,6 @@ type ServerCartLine = {
 
 type ServerCart = {
     cart_token: string;
-    updated_at: string;
-    status: string;
     lines: ServerCartLine[];
 };
 
@@ -105,9 +99,6 @@ function stringRecord(value: unknown): Record<string, string> | undefined {
 function serverCartToItems(serverCart: ServerCart): CartItem[] {
     return serverCart.lines.map((line) => ({
         id: line.product_id,
-        serverLineId: line.id,
-        marketplaceListingId: line.marketplace_listing_id,
-        personalizationDraft: line.personalization,
         variantId: line.variant_id ?? null,
         name: line.title,
         description: '',
@@ -128,8 +119,6 @@ function cartLineInputFromItem(item: CartItem): CartLineInput {
         variant_id: variantId,
         quantity: item.quantity,
         properties: item.selectedVariant || {},
-        ...(item.marketplaceListingId ? { marketplace_listing_id: item.marketplaceListingId } : {}),
-        ...(item.personalizationDraft ? { personalization: item.personalizationDraft } : {}),
     };
 }
 
@@ -145,140 +134,169 @@ function readCachedItems(): CartItem[] {
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
+    const [cartToken, setCartToken] = useState<string | null>(null);
     const [isOpen, setIsOpen] = useState(false);
+    const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
     const [syncError, setSyncError] = useState<string | null>(null);
-    const alive = useRef(true);
-    const generation = useRef(0);
-    const readSequence = useRef(0);
-    const writes = useRef<Promise<void>>(Promise.resolve());
+    const skipNextSyncRef = useRef(false);
+    const lastSyncPayloadRef = useRef('');
 
-    function adopt(cart: ServerCart) {
-        const accepted = serverCartToItems(cart);
-        setItems(accepted);
-        localStorage.setItem(CART_TOKEN_STORAGE_KEY, cart.cart_token);
-        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(accepted));
-        localStorage.setItem('lb_cart_server', JSON.stringify(cart));
-    }
+    useEffect(() => {
+        setItems((prev) => (prev.length > 0 ? prev : readCachedItems()));
+        setCartToken(window.localStorage.getItem(CART_TOKEN_STORAGE_KEY));
+        setHasLoadedStorage(true);
+    }, []);
 
-    async function readCurrent(subdomain: string, token: string): Promise<ServerCart> {
-        const response = await storefrontBrowserApiFetch(subdomain, `/cart/${encodeURIComponent(token)}`);
-        const result = await readStorefrontApiJson<ServerCart>(response);
-        if (!response.ok || !result.success || !result.data || result.data.cart_token !== token
-            || result.data.status !== 'active' || !Array.isArray(result.data.lines)
-            || !StorefrontCartRevisionSchema.safeParse(result.data.updated_at).success) {
-            throw new Error('Reload your saved cart before changing it.');
+    async function syncCartToServer(nextItems: CartItem[]) {
+        const subdomain = getStorefrontSubdomain();
+        if (!subdomain) return;
+
+        const body = {
+            lines: nextItems.map(cartLineInputFromItem),
+        };
+
+        try {
+            const response = await storefrontBrowserApiFetch(subdomain, cartToken ? `/cart/${cartToken}` : '/cart', {
+                method: cartToken ? 'PATCH' : 'POST',
+                body: JSON.stringify(body),
+            });
+            const result = await readStorefrontApiJson<ServerCart>(response);
+
+            // T10/W2 — the request reached the server and the server REJECTED it (e.g. a schema
+            // validation error). This is not "the gateway is unreachable" — the previous version
+            // of this function treated both the same way (silently give up), which is exactly how
+            // a 400 on every write from this renderer shipped unnoticed: the local cart kept
+            // showing the item, the server cart stayed empty, and the shopper was later bounced
+            // out of checkout with no explanation. A genuinely offline/unreachable gateway is
+            // still handled below, silently, by design — that distinction is the point.
+            if (!response.ok || !result.success || !result.data) {
+                const message = storefrontApiErrorMessage(result, 'Could not update your cart. Please try again.');
+                // eslint-disable-next-line no-console
+                console.error('[cart] server rejected cart sync', { status: response.status, body });
+                setSyncError(message);
+                return;
+            }
+
+            setSyncError(null);
+            const serverCart = result.data;
+            const serverItems = serverCartToItems(serverCart);
+            const serverPayload = JSON.stringify(serverItems);
+
+            setCartToken(serverCart.cart_token);
+            localStorage.setItem(CART_TOKEN_STORAGE_KEY, serverCart.cart_token);
+            localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+
+            if (serverPayload !== JSON.stringify(nextItems)) {
+                skipNextSyncRef.current = true;
+                lastSyncPayloadRef.current = serverPayload;
+                setItems(serverItems);
+            }
+        } catch (err) {
+            // Keep the browser cache usable while the gateway is temporarily unavailable — a
+            // transient network failure must not destroy a shopper's cart. Logged (not shown to
+            // the shopper — this branch is specifically the "offline-tolerant" case, distinct
+            // from the explicit-rejection branch above) so it is still visible in devtools/telemetry.
+            // eslint-disable-next-line no-console
+            console.error('[cart] cart sync network failure (server unreachable, will retry on next change)', err);
         }
-        return result.data;
     }
 
     useEffect(() => {
-        alive.current = true;
-        let live = true;
-        const loadEpoch = readSequence.current;
-        const ownsLoad = () => live && alive.current && readSequence.current === loadEpoch;
-        const retired = () => { generation.current++; setItems([]); };
-        window.addEventListener(CART_RETIRED_EVENT, retired);
-        const subdomain = getStorefrontSubdomain();
-        void (async () => {
-            const reconciliation = subdomain ? reconcileStoredCart(subdomain) : null;
-            if (reconciliation && await reconciliation === 'unavailable') {
-                if (ownsLoad()) { setItems(readCachedItems()); setSyncError('We could not check your previous checkout. Please try again.'); }
-                return;
-            }
-            const token = localStorage.getItem(CART_TOKEN_STORAGE_KEY);
-            if (!ownsLoad()) return;
-            if (!subdomain || !token) { setItems(readCachedItems()); return; }
-            try {
-                const cart = await readCurrent(subdomain, token);
-                if (ownsLoad() && getStorefrontSubdomain() === subdomain && localStorage.getItem(CART_TOKEN_STORAGE_KEY) === token) adopt(cart);
-            } catch { if (ownsLoad()) { setItems(readCachedItems()); setSyncError('We could not load your saved cart. Please try again.'); } }
-        })();
-        return () => { live = false; alive.current = false; readSequence.current++; generation.current++; window.removeEventListener(CART_RETIRED_EVENT, retired); };
-    }, []);
+        if (!hasLoadedStorage) return;
 
-    // The server cart is the one authority. Serialize explicit user intents and
-    // derive both full contents and raw revision from the same fresh read. A
-    // mount/read never writes cached contents back over another cart consumer.
-    function mutate(change: (current: CartItem[]) => CartItem[] | null): Promise<void> {
-        const site = getStorefrontSubdomain(), epoch = generation.current;
-        const work = async () => {
-            if (!alive.current || !site || getStorefrontSubdomain() !== site || epoch !== generation.current) return;
-            try {
-                readSequence.current++; // retire older mount reads, not a cart revision
-                const reconciliation = reconcileStoredCart(site);
-                if (reconciliation && await reconciliation === 'unavailable') throw new Error('We could not check your previous checkout. Please try again.');
-                const token = localStorage.getItem(CART_TOKEN_STORAGE_KEY);
-                const base = token ? await readCurrent(site, token) : null;
-                if (!alive.current || getStorefrontSubdomain() !== site || localStorage.getItem(CART_TOKEN_STORAGE_KEY) !== token) return;
-                const next = change(base ? serverCartToItems(base) : []);
-                if (!next) { if (base) adopt(base); return; }
-                if (!token && next.length === 0) { setItems([]); return; }
-                const lines = next.map(item => {
-                    const accepted = item.serverLineId && base?.lines.find(line => line.id === item.serverLineId);
-                    if (!accepted || accepted.product_id !== item.id || (accepted.variant_id ?? null) !== (item.variantId ?? null)) return cartLineInputFromItem(item);
-                    // This consumer only changes quantity/removal. Retain all
-                    // accepted configuration and JSON properties from the same
-                    // server object used for the revision precondition.
-                    return { product_id: accepted.product_id, variant_id: accepted.variant_id ?? null,
-                        quantity: item.quantity, properties: accepted.properties || {},
-                        ...(accepted.marketplace_listing_id ? { marketplace_listing_id: accepted.marketplace_listing_id } : {}),
-                        ...(accepted.personalization ? { personalization: accepted.personalization } : {}) };
-                });
-                const body = { lines, ...(base ? { expected_updated_at: base.updated_at } : {}) };
-                const response = await storefrontBrowserApiFetch(site, token ? `/cart/${encodeURIComponent(token)}` : '/cart', {
-                    method: token ? 'PATCH' : 'POST', body: JSON.stringify(body),
-                });
-                const result = await readStorefrontApiJson<ServerCart>(response);
-                if (!response.ok || !result.success || !result.data || result.data.status !== 'active'
-                    || typeof result.data.cart_token !== 'string' || !result.data.cart_token
-                    || token !== null && result.data.cart_token !== token || !Array.isArray(result.data.lines)
-                    || !StorefrontCartRevisionSchema.safeParse(result.data.updated_at).success) {
-                    generation.current++;
-                    throw new Error(storefrontApiErrorMessage(result, 'Could not update your cart. Review your saved cart and try again.'));
-                }
-                if (!alive.current || getStorefrontSubdomain() !== site || localStorage.getItem(CART_TOKEN_STORAGE_KEY) !== token) return;
-                adopt(result.data); setSyncError(null);
-            } catch (error) {
-                generation.current++; // queued old intents cannot silently retry an unknown write
-                if (alive.current) setSyncError(error instanceof Error ? error.message : 'Could not update your cart. Please try again.');
-            }
-        };
-        const pending = writes.current.then(work, work);
-        writes.current = pending;
-        return pending;
-    }
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+        if (skipNextSyncRef.current) {
+            skipNextSyncRef.current = false;
+            return;
+        }
 
-    const addToCart = async (product: ProductModel, variantContext?: CartVariantContext) => {
-        await mutate(current => {
-            const variantId = variantContext?.variantId ?? null;
-            const existing = current.find(item => item.id === product.id && (item.variantId ?? null) === variantId
-                && !item.personalizationDraft && !item.marketplaceListingId);
-            if (existing) return current.map(item => item === existing ? { ...item, quantity: item.quantity + 1 } : item);
-            return [...current, { ...product, price: variantContext?.price ?? product.price,
-                compareAtPrice: variantContext?.comparePrice === undefined ? product.compareAtPrice : variantContext.comparePrice ?? undefined,
-                quantity: 1, variantId }];
+        const payload = JSON.stringify(items.map(cartLineInputFromItem));
+        // Opening a storefront or editor preview is a read. Create the server
+        // cart when a real line exists; an existing cart can still be cleared.
+        if (!cartToken && items.length === 0) { lastSyncPayloadRef.current = payload; return; }
+        if (payload === lastSyncPayloadRef.current) return;
+        lastSyncPayloadRef.current = payload;
+        void syncCartToServer(items);
+    }, [items, hasLoadedStorage, cartToken]);
+
+    const addToCart = (product: ProductModel, variantContext?: CartVariantContext) => {
+        setItems(prev => {
+            const cartLineKey = variantContext?.variantId
+                ? `${product.id}:${variantContext.variantId}`
+                : product.id;
+            const existing = prev.find(i => {
+                const iKey = (i as CartItem & { variantId?: string | null }).variantId
+                    ? `${i.id}:${(i as CartItem & { variantId?: string | null }).variantId}`
+                    : i.id;
+                return iKey === cartLineKey;
+            });
+            const effectivePrice = variantContext?.price ?? product.price;
+            const effectiveCompareAtPrice = variantContext?.comparePrice !== undefined
+                ? variantContext.comparePrice ?? undefined
+                : product.compareAtPrice;
+            if (existing) {
+                return prev.map(i => {
+                    const iKey = (i as CartItem & { variantId?: string | null }).variantId
+                        ? `${i.id}:${(i as CartItem & { variantId?: string | null }).variantId}`
+                        : i.id;
+                    return iKey === cartLineKey ? { ...i, quantity: i.quantity + 1 } : i;
+                });
+            }
+            const newItem: CartItem & { variantId?: string | null; variantTitle?: string } = {
+                ...product,
+                price: effectivePrice,
+                compareAtPrice: effectiveCompareAtPrice,
+                quantity: 1,
+                variantId: variantContext?.variantId ?? null,
+                variantTitle: variantContext?.variantTitle,
+            };
+            return [...prev, newItem];
         });
         setIsOpen(true);
     };
-    const matches = (item: CartItem, productId: string, variantId?: string | null) => item.id === productId
-        && (variantId === undefined || (item.variantId ?? null) === variantId);
-    const removeFromCart = (productId: string, variantId?: string | null) => mutate(current => {
-        if (current.filter(item => matches(item, productId, variantId)).length > 1) {
-            setSyncError('This product has several saved configurations. Choose the specific configured line in your storefront cart.'); return null;
+
+    const removeFromCart = (productId: string, variantId?: string | null) => {
+        setItems(prev => prev.filter(i => {
+            const iVariantId = (i as CartItem & { variantId?: string | null }).variantId ?? null;
+            if (i.id !== productId) return true;
+            if (variantId !== undefined) return iVariantId !== variantId;
+            return false;
+        }));
+    };
+
+    const updateQuantity = (productId: string, quantity: number, variantId?: string | null) => {
+        if (quantity < 1) {
+            removeFromCart(productId, variantId);
+            return;
         }
-        return current.filter(item => !matches(item, productId, variantId));
-    });
-    const updateQuantity = (productId: string, quantity: number, variantId?: string | null) => mutate(current => {
-        if (current.filter(item => matches(item, productId, variantId)).length > 1) {
-            setSyncError('This product has several saved configurations. Choose the specific configured line in your storefront cart.'); return null;
-        }
-        return quantity < 1 ? current.filter(item => !matches(item, productId, variantId))
-            : current.map(item => matches(item, productId, variantId) ? { ...item, quantity } : item);
-    });
-    const clearCart = () => mutate(() => []);
-    return <CartContext.Provider value={{ items, addToCart, removeFromCart, updateQuantity, clearCart,
-        cartTotal: items.reduce((total,item) => total+item.price*item.quantity,0),
-        cartCount: items.reduce((total,item) => total+item.quantity,0), isOpen, setIsOpen, syncError }}>{children}</CartContext.Provider>;
+        setItems(prev => prev.map(i => {
+            const iVariantId = (i as CartItem & { variantId?: string | null }).variantId ?? null;
+            const matches = i.id === productId && (variantId === undefined || iVariantId === variantId);
+            return matches ? { ...i, quantity } : i;
+        }));
+    };
+
+    const clearCart = () => setItems([]);
+
+    const cartTotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const cartCount = items.reduce((count, item) => count + item.quantity, 0);
+
+    return (
+        <CartContext.Provider value={{
+            items,
+            addToCart: addToCart as CartContextType['addToCart'],
+            removeFromCart,
+            updateQuantity,
+            clearCart,
+            cartTotal,
+            cartCount,
+            isOpen,
+            setIsOpen,
+            syncError
+        }}>
+            {children}
+        </CartContext.Provider>
+    );
 }
 
 export const useCart = () => {

@@ -397,13 +397,11 @@ export function Text({
 
 export interface PageProps extends React.HTMLAttributes<HTMLElement> {
     children: React.ReactNode;
-    /** Use main only when this page owns the document landmark (outside an app frame). */
-    as?: 'div' | 'main';
 }
 
-export function Page({ children, as: Element = 'div', className = '', ...props }: PageProps) {
+export function Page({ children, className = '', ...props }: PageProps) {
     return (
-        <Element data-lb-page="true"
+        <main
             className={cx(
                 'mx-auto flex w-full max-w-[var(--lb-size-page-max)] flex-col gap-[var(--lb-density-page-gap)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[color:var(--lb-color-text)] sm:px-[var(--lb-density-card-padding)] sm:py-[var(--lb-density-page-gap)]',
                 className,
@@ -411,7 +409,7 @@ export function Page({ children, as: Element = 'div', className = '', ...props }
             {...props}
         >
             {children}
-        </Element>
+        </main>
     );
 }
 
@@ -531,14 +529,10 @@ export interface PageHeaderAction {
     onClick?: () => void;
     icon?: React.ReactNode;
     disabled?: boolean;
-    loading?: boolean;
-    loadingLabel?: string;
 }
 
 export interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
     title: string;
-    /** Explicit task composition; never inferred from a translated title. */
-    recipe?: 'index' | 'record' | 'editor' | 'settings' | 'workbench';
     description?: string;
     eyebrow?: string;
     breadcrumbs?: Array<{ label: string; href?: string }>;
@@ -567,7 +561,6 @@ export interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
     showDescription?: boolean;
     primaryAction?: PageHeaderAction;
     secondaryActions?: PageHeaderAction[];
-    overflowAction?: React.ReactNode;
     renderAction?: (action: PageHeaderAction, variant: 'primary' | 'secondary') => React.ReactNode;
 }
 
@@ -585,7 +578,6 @@ export function PageHeaderActions({ children, className = '', ...props }: PageHe
 
 export function PageHeader({
     title,
-    recipe = 'index',
     description,
     eyebrow,
     breadcrumbs = [],
@@ -600,30 +592,35 @@ export function PageHeader({
     showDescription,
     primaryAction,
     secondaryActions = [],
-    overflowAction,
     renderAction,
     titleAdornment,
     className = '',
     ...props
 }: PageHeaderProps) {
     const renderDefaultAction = (action: PageHeaderAction, variant: 'primary' | 'secondary') => {
+        const buttonClassName = cx(
+            'inline-flex h-[var(--lb-density-button-height)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:pointer-events-none disabled:opacity-50 [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)]',
+            variant === 'primary'
+                ? 'border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] text-[color:var(--lb-component-button-primary-text)] hover:bg-[var(--lb-component-button-primary-hover)] active:bg-[var(--lb-component-button-primary-active)]'
+                : 'border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] text-[color:var(--lb-component-button-secondary-text)] hover:bg-[var(--lb-component-button-secondary-hover)]',
+        );
         const content = (
             <>
-                {!action.loading && action.icon}
-                {action.loading ? action.loadingLabel ?? action.label : action.label}
+                {action.icon}
+                {action.label}
             </>
         );
 
         if (action.href) {
             return (
-                <Button key={action.label} variant={variant} as="a" href={action.href} disabled={action.disabled} loading={action.loading} aria-busy={action.loading || undefined}>
+                <Button key={action.label} unstyled as="a" className={buttonClassName} href={action.href} disabled={action.disabled}>
                     {content}
                 </Button>
             );
         }
 
         return (
-            <Button key={action.label} variant={variant} type="button" onClick={action.onClick} disabled={action.disabled} loading={action.loading} aria-busy={action.loading || undefined}>
+            <Button key={action.label} unstyled className={buttonClassName} type="button" onClick={action.onClick} disabled={action.disabled}>
                 {content}
             </Button>
         );
@@ -636,7 +633,7 @@ export function PageHeader({
     const resolvedIcon = icon ?? <MaterialIcon name={resolvedIconName} />;
 
     return (
-        <header data-lb-page-header-recipe={recipe} className={cx('flex flex-col gap-[var(--lb-space-2)]', className)} {...props}>
+        <header className={cx('flex flex-col gap-[var(--lb-space-2)]', className)} {...props}>
             {shouldShowBreadcrumbs && breadcrumbs.length > 0 && (
                 <Breadcrumbs items={breadcrumbs} separator="slash" currentTone="inherit" />
             )}
@@ -654,7 +651,7 @@ export function PageHeader({
                             </p>
                         )}
                         <div className="flex min-w-0 flex-wrap items-center gap-[var(--lb-space-2)]">
-                            <h1 data-lb-page-header-title="true" className="m-0 min-w-0 break-words [overflow-wrap:anywhere] text-[length:var(--lb-component-page-header-title-size)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-component-page-header-title-line-height)] text-[color:var(--lb-color-text)]">
+                            <h1 data-lb-page-header-title="true" className="m-0 min-w-0 truncate text-[length:var(--lb-component-page-header-title-size)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-component-page-header-title-line-height)] text-[color:var(--lb-color-text)]">
                                 {title}
                             </h1>
                             {titleAdornment && (
@@ -670,11 +667,10 @@ export function PageHeader({
                         )}
                     </div>
                 </div>
-                {(primaryAction || secondaryActions.length > 0 || overflowAction) && (
+                {(primaryAction || secondaryActions.length > 0) && (
                     <PageHeaderActions>
                         {secondaryActions.map((action) => renderAction?.(action, 'secondary') ?? renderDefaultAction(action, 'secondary'))}
                         {primaryAction && (renderAction?.(primaryAction, 'primary') ?? renderDefaultAction(primaryAction, 'primary'))}
-                        {overflowAction}
                     </PageHeaderActions>
                 )}
             </div>
@@ -685,7 +681,6 @@ export function PageHeader({
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     layout?: 'default' | 'stack' | 'split';
-    as?: 'section' | 'div' | 'article';
 }
 
 const cardLayoutClasses: Record<NonNullable<CardProps['layout']>, string> = {
@@ -694,9 +689,9 @@ const cardLayoutClasses: Record<NonNullable<CardProps['layout']>, string> = {
     split: 'grid gap-[var(--lb-density-card-gap)] md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
 };
 
-export function Card({ children, layout = 'default', as: Element = 'section', className = '', ...props }: CardProps) {
+export function Card({ children, layout = 'default', className = '', ...props }: CardProps) {
     return (
-        <Element
+        <section
             className={cx(
                 'min-w-0 overflow-hidden rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-card-border)] bg-[var(--lb-component-card-bg)] text-[color:var(--lb-component-card-text)] shadow-[var(--lb-component-card-shadow)]',
                 cardLayoutClasses[layout],
@@ -706,7 +701,7 @@ export function Card({ children, layout = 'default', as: Element = 'section', cl
             {...props}
         >
             {children}
-        </Element>
+        </section>
     );
 }
 
@@ -718,9 +713,14 @@ export interface SectionProps extends React.HTMLAttributes<HTMLElement> {
     action?: React.ReactNode;
     children: React.ReactNode;
     columns?: 1 | 2 | 3;
-    /** Grouped owns one Card boundary; default composes inside an existing Card. */
-    bodyClassName?: string;
-    headerClassName?: string;
+    /**
+     * 'default': the original padded title/description/action header.
+     * 'grouped': a self-contained bordered card with a compact uppercase
+     * label band (own border + bg, no description/columns support) — the
+     * settings-page convention established across domains, business,
+     * billing, plan, general and users. Renders its own border/radius/bg,
+     * so do not nest it inside another Card.
+     */
     variant?: SectionVariant;
 }
 
@@ -730,24 +730,47 @@ const sectionColumnClasses: Record<NonNullable<SectionProps['columns']>, string>
     3: 'md:grid md:grid-cols-2 xl:grid-cols-3',
 };
 
-export function Section({ title, description, action, children, columns = 1, variant = 'default', bodyClassName, headerClassName, className = '', ...props }: SectionProps) {
-    const content = (
-        <section className={cx('flex flex-col gap-[var(--lb-density-section-gap)] p-[var(--lb-density-card-padding)]', variant === 'default' && className)} {...(variant === 'default' ? props : {})}>
+export function Section({ title, description, action, children, columns = 1, variant = 'default', className = '', ...props }: SectionProps) {
+    if (variant === 'grouped') {
+        return (
+            <section
+                className={cx('overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]', className)}
+                {...props}
+            >
+                {title && (
+                    <div className="flex min-h-[34px] items-center justify-between gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-5)] py-[var(--lb-space-2)]">
+                        <span className="select-none text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.055em] text-[color:var(--lb-color-text-muted)]">
+                            {title}
+                        </span>
+                        {action}
+                    </div>
+                )}
+                <div className="flex flex-col gap-[var(--lb-space-4)] px-[var(--lb-space-5)] py-[var(--lb-space-4)]">
+                    {children}
+                </div>
+            </section>
+        );
+    }
+    return (
+        <section className={cx('flex flex-col gap-[var(--lb-density-section-gap)] p-[var(--lb-density-card-padding)]', className)} {...props}>
             {(title || description || action) && (
-                <div className={cx('flex flex-col gap-[var(--lb-space-3)] md:flex-row md:items-start md:justify-between', headerClassName)}>
-                    <div className="min-w-0 space-y-[var(--lb-space-1)]">
+                <div className="flex flex-col gap-[var(--lb-space-3)] md:flex-row md:items-start md:justify-between">
+                    <div className="space-y-[var(--lb-space-1)]">
                         {title && (
-                            <h2 className="m-0 text-[length:var(--lb-font-size-section-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-section-title)] text-[color:var(--lb-color-text)]">{title}</h2>
+                            <h2 className="m-0 text-[length:var(--lb-font-size-section-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-section-title)] text-[color:var(--lb-color-text)]">
+                                {title}
+                            </h2>
                         )}
                         {description && (
-                            <p className="m-0 text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">{description}</p>
+                            <p className="m-0 text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
+                                {description}
+                            </p>
                         )}
                     </div>
                     {action}
                 </div>
             )}
-            {children != null && <div className={cx('grid gap-[var(--lb-density-card-gap)]', sectionColumnClasses[columns], bodyClassName)}>{children}</div>}
+            {columns === 1 ? children : <div className={cx('grid gap-[var(--lb-density-card-gap)]', sectionColumnClasses[columns])}>{children}</div>}
         </section>
     );
-    return variant === 'grouped' ? <Card className={className} {...props}>{content}</Card> : content;
 }

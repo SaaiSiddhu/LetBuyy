@@ -1,0 +1,10 @@
+{
+  "captured_at": "2026-10-29T20:30:30.379Z",
+  "read_only": true,
+  "public_catalog_and_program_unchanged": true,
+  "selected_plan_count": 4,
+  "program_used_slots": 0,
+  "sha256": "f47c6e178e17cf43efe126de521fe66f0b9a19619a330e966425aaf5d0f2a7a2",
+  "shared_database_written": false,
+  "passed": true
+}

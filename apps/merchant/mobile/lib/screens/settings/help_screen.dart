@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import 'merchant_support_screen.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
@@ -18,6 +21,18 @@ class HelpScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          ListTile(
+            leading: const Icon(Icons.support_agent),
+            title: const Text('Support tickets'),
+            subtitle: const Text(
+              'Create a request and read replies for your store',
+            ),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const MerchantSupportScreen(),
+              ),
+            ),
+          ),
           // Contact card
           _buildContactCard(context),
           const SizedBox(height: 24),
@@ -102,18 +117,42 @@ class HelpScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Contact the LetBuyy support team for help with your store',
+            'Create a ticket and follow support replies in the app.',
             style: TextStyle(color: Colors.white70, fontSize: 13),
           ),
           const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () => _launchEmail(context),
-            icon: const Icon(Icons.email_rounded, size: 18),
-            label: const Text('Email support'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppColors.primary,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _launchWhatsApp(context),
+                  icon: const Icon(Icons.chat_rounded, size: 18),
+                  label: const Text('Chat'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _launchEmail(context),
+                  icon: const Icon(Icons.email_rounded, size: 18),
+                  label: const Text('Email'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -127,11 +166,12 @@ class HelpScreen extends StatelessWidget {
     required String subtitle,
     required String url,
   }) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      color: Theme.of(context).colorScheme.surface,
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: ListTile(
         leading: Container(
           width: 40,
@@ -160,6 +200,15 @@ class HelpScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _launchWhatsApp(BuildContext context) async {
+    final uri = Uri.parse(
+      'https://wa.me/919876543210?text=Hi, I need help with LetBuyy Store',
+    );
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   Future<void> _launchEmail(BuildContext context) async {
     final uri = Uri.parse(
       'mailto:support@letbuyy.com?subject=LetBuyy Store Support',
@@ -172,28 +221,23 @@ class HelpScreen extends StatelessWidget {
   static const _faqs = [
     {
       'q': 'How do I publish my store?',
-      'a':
-          'Go to the Home tab and toggle the Publish switch. Your store will be published at your subdomain within seconds.',
+      'a': 'Go to the Home tab and toggle the Publish switch. Your store will be published at your subdomain within seconds.',
     },
     {
       'q': 'How do I add products to my store?',
-      'a':
-          'Open Products and tap Add to create a product, or tap an existing product to edit it.',
+      'a': 'Go to the Products tab, search for your products, and tap to select which ones to show on your store.',
     },
     {
       'q': 'Can I use my own domain?',
-      'a':
-          'Open More > Domain Settings to check eligibility and configure your domain.',
+      'a': 'Yes! Premium users can connect a custom domain. Go to Settings > Domain Settings to set it up.',
     },
     {
       'q': 'How do I customize my store theme?',
-      'a':
-          'Open Home > Customize Design to choose a theme and edit its settings.',
+      'a': 'Go to the Theme tab to choose a preset theme or customize colors and fonts.',
     },
     {
       'q': 'How do I add sections to my store?',
-      'a':
-          'Open Customize Design, choose your theme, and use the theme editor to manage its supported sections.',
+      'a': 'Go to the Editor tab and tap "Add Section" to choose from 13 different section types.',
     },
   ];
 }
@@ -213,11 +257,12 @@ class _FaqTileState extends State<_FaqTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      color: Theme.of(context).colorScheme.surface,
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(

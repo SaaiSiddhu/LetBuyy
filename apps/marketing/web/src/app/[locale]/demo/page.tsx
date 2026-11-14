@@ -1,3 +1,4 @@
+import { localizeMetadata } from '@/lib/i18n/metadata'
 
 import Copy from '@/components/i18n/Copy'
 import type { Metadata } from 'next'
@@ -6,9 +7,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MarketingIllustration from '@/components/MarketingIllustration'
 import DemoRequestForm from '@/components/demo/DemoRequestForm'
-import { LOCALES, getLocale } from '@/lib/i18n/locales'
-import { buildAlternates } from '@/lib/i18n/routing'
-import { getMarketingSiteUrl } from '@/lib/public-urls'
+import { getLocale } from '@/lib/i18n/locales'
 
 export async function generateMetadata({
     params,
@@ -16,21 +15,11 @@ export async function generateMetadata({
     params: Promise<{ locale: string }>
 }): Promise<Metadata> {
     const { locale: segment } = await params
-    const locale = getLocale(segment)
-    const alternates = buildAlternates(getMarketingSiteUrl(), '/demo', LOCALES)
-
-    return {
+    return localizeMetadata({
         title: 'Request a demo',
-        description:
-            'See LetBuyy on a 30-minute call — storefront, payments, GST invoicing and shipping, set up against your own catalogue. No card required.',
-        alternates: {
-            canonical: alternates.canonicalOf(locale),
-            languages: alternates.languages,
-        },
-        /* A lead form has no business competing in search with the pages that
-           explain the product. */
-        robots: { index: false, follow: true },
-    }
+        description: 'Discuss your catalogue, setup needs and available LetBuyy features with the team.',
+        robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
+    }, segment, '/demo')
 }
 
 export default async function DemoPage({ params }: { params: Promise<{ locale: string }> }) {

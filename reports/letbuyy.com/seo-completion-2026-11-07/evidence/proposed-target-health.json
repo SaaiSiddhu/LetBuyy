@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-11-07T02:53:29.415257+00:00",
+  "role": "Read-only landing status only; no successful login or migration inferred",
+  "checks": [
+    {
+      "requested_url": "https://accounts.letbuyy.com/lookup",
+      "final_url": "https://accounts.letbuyy.com/lookup",
+      "status": 200
+    },
+    {
+      "requested_url": "https://www.letbuyy.com/in/resources/developers",
+      "final_url": "https://www.letbuyy.com/in/resources/developers",
+      "status": 200
+    },
+    {
+      "requested_url": "http://127.0.0.1:9002/lookup",
+      "final_url": "http://127.0.0.1:9002/lookup",
+      "status": 200
+    }
+  ]
+}

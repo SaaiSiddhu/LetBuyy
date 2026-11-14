@@ -3,9 +3,11 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 
 // ============================================================
-// RATE LIMITER — atomic Redis or the existing runtime coordinator.
-// KV compatibility is restricted to explicitly opted-in non-production guards.
-// In-memory admission is available only in local/non-production runtimes.
+// RATE LIMITER — Upstash Redis with Cloudflare KV and in-memory fallback.
+//
+// Fallbacks:
+// - Cloudflare KV in deployed Workers when Redis env vars are not configured.
+// - In-memory store in local/non-production runtimes only.
 // ============================================================
 
 // ─── In-Memory Fallback Store ───────────────────────────────────────
@@ -37,16 +39,6 @@ export interface QueryCostRateLimitResult extends RateLimitResult {
 const memoryStore = new Map<string, RateLimitEntry>();
 const queryCostMemoryStore = new Map<string, QueryCostLimitEntry>();
 let lastCleanupAt = 0;
-
-// A newly placed coordinator can initialize storage beyond the old two-second
-// budget. Keep a finite deadline while allowing that native cold-start grace.
-const COORDINATOR_ADMISSION_TIMEOUT_MS = 5000;
-
-function coordinatorFailureReason(error: unknown): string {
-    return error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError')
-        ? 'timeout'
-        : 'exception';
-}
 
 type RuntimeEnvironmentFlags = Pick<Env, 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>;
 
@@ -819,12 +811,12 @@ async function checkRateLimitKeys(
                 const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key));
                 const name='fixed-window:'+Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
                 const stub=env.RUNTIME_COORDINATOR!.get(env.RUNTIME_COORDINATOR!.idFromName(name));
-                const response=await stub.fetch('https://coordinator.internal/fixed-window',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({windowMs:duration,max}),signal:AbortSignal.timeout(COORDINATOR_ADMISSION_TIMEOUT_MS)});
-                if(!response.ok){warnRateLimitFailClosed('fixed_window_coordinator_http_'+response.status);return unavailableRateLimitResult(check,duration);}
+                const response=await stub.fetch('https://coordinator.internal/fixed-window',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({windowMs:duration,max}),signal:AbortSignal.timeout(2000)});
+                if(!response.ok)return unavailableRateLimitResult(check,duration);
                 const result=await response.json() as RateLimitResult;
-                if(typeof result.allowed!=='boolean' || !Number.isFinite(result.remaining) || !Number.isFinite(result.resetAt)){warnRateLimitFailClosed('fixed_window_coordinator_invalid_response');return unavailableRateLimitResult(check,duration);}
+                if(typeof result.allowed!=='boolean' || !Number.isFinite(result.remaining) || !Number.isFinite(result.resetAt))return unavailableRateLimitResult(check,duration);
                 return {...result,key:check.key,max,scope:check.scope};
-            } catch (error) { warnRateLimitFailClosed('fixed_window_coordinator_'+coordinatorFailureReason(error));return unavailableRateLimitResult(check,duration); }
+            } catch { return unavailableRateLimitResult(check,duration); }
         }));
     }
 
@@ -906,20 +898,15 @@ export async function checkQueryCostRateLimitKey(
             const response = await stub.fetch('https://coordinator.internal/query-cost', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ cost, pointsPerSecond, capacity }),
-                signal: AbortSignal.timeout(COORDINATOR_ADMISSION_TIMEOUT_MS),
+                signal: AbortSignal.timeout(2000),
             });
-            if (!response.ok) {
-                warnRateLimitFailClosed('query_cost_coordinator_http_' + response.status);
-                return unavailableQueryCostResult(cost, pointsPerSecond, capacity);
-            }
+            if (!response.ok) return unavailableQueryCostResult(cost, pointsPerSecond, capacity);
             const result = await response.json() as QueryCostRateLimitResult;
             if (typeof result.allowed !== 'boolean' || !Number.isFinite(result.remaining) || result.limit !== capacity) {
-                warnRateLimitFailClosed('query_cost_coordinator_invalid_response');
                 return unavailableQueryCostResult(cost, pointsPerSecond, capacity);
             }
             return result;
-        } catch (error) {
-            warnRateLimitFailClosed('query_cost_coordinator_' + coordinatorFailureReason(error));
+        } catch {
             return unavailableQueryCostResult(cost, pointsPerSecond, capacity);
         }
     }
@@ -1055,6 +1042,7 @@ export function queryCostRateLimit(options: QueryCostRateLimitOptions = {}) {
             capacity,
             prefix,
         });
+        const isProduction = isProductionRuntime(c.env);
 
         c.header('X-RateLimit-Limit', result.limit.toString());
         c.header('X-RateLimit-Remaining', result.remaining.toString());
@@ -1062,7 +1050,7 @@ export function queryCostRateLimit(options: QueryCostRateLimitOptions = {}) {
         c.header('X-RateLimit-Cost', result.cost.toString());
         c.header('X-RateLimit-Policy', result.policy);
 
-        if (result.unavailable) {
+        if (result.unavailable && isProduction) {
             return c.json(
                 {
                     error: {

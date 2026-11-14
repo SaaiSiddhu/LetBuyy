@@ -47,15 +47,17 @@ test('store publish updates only owned sites to published with a timestamp', () 
 
 test('store health computes mobile readiness from real owned store signals', () => {
     const routeSource = source('routes/stores.ts');
+    const healthSource = source('execution/store-health.adapter.ts');
 
     assert.match(routeSource, /router\.get\('\/:id\/health'/);
     assert.match(routeSource, /\.or\(ownedByCustomUserFilter\(customUser\.id\)\)/);
     assertOwnershipFilterIsEscaped(routeSource);
-    assert.match(routeSource, /\.from\('products'\)[\s\S]+\.select\('id',\s*\{ count: 'exact', head: true \}\)/);
-    assert.match(routeSource, /\.from\('orders'\)[\s\S]+\.in\('status',\s*\['pending', 'pending_cod', 'confirmed', 'processing'\]\)/);
-    assert.match(routeSource, /\.from\('product_reviews'\)[\s\S]+\.eq\('status',\s*'pending'\)/);
-    assert.match(routeSource, /api-gateway\.stores\.health/);
-    assert.doesNotMatch(routeSource, /Math\.random|fake|sample health/i);
+    assert.match(routeSource, /new StoreHealthAdapter/);
+    assert.match(healthSource, /\.from\('products'\)[\s\S]+\.select\('id',\s*\{ head: true, count: 'exact' \}\)/);
+    assert.match(healthSource, /\.from\('orders'\)[\s\S]+\.in\('status',\s*\['pending', 'pending_cod', 'confirmed', 'processing'\]\)/);
+    assert.match(healthSource, /\.from\('product_reviews'\)[\s\S]+\.eq\('status',\s*'pending'\)/);
+    assert.match(healthSource, /api-gateway\.stores\.health/);
+    assert.doesNotMatch(healthSource, /Math\.random|fake|sample health/i);
 });
 
 test('store PATCH accepts business profile and invoice address fields', () => {

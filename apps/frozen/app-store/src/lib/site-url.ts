@@ -19,8 +19,8 @@ const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const;
 const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com';
 
 const LOCAL_BROWSER_URLS: Record<PublicUrlKey, string> = {
-    accounts: 'http://127.0.0.1:9002',
-    admin: 'http://127.0.0.1:9001',
+    accounts: 'http://127.0.0.1:9001',
+    admin: 'http://127.0.0.1:9002',
     appMarketplace: 'http://127.0.0.1:9003',
     developerPortal: 'http://127.0.0.1:9004',
     marketing: 'http://127.0.0.1:9006',

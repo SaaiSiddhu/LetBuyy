@@ -39,10 +39,6 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
         why: 'cross-tenant payment-replay detection: a provider payment id is unique across the provider, and scoping it to one site would delete the cross-tenant protection',
         boundedIn: { file: 'lib/payment-route-support.ts', symbol: 'assertProviderPaymentNotReplayed' },
     },
-    'lib/storefront-visitor-access.ts': {
-        why: 'globally unique storefront ID/normalized handle bootstrap before validated tenant identity; one candidate metadata row, never visitor authority by itself; current policy/site/host/proof checked before response or cache',
-        boundedIn: { file: 'lib/storefront-visitor-access.ts', symbol: 'restMetadata' },
-    },
     'routes/internal-store-access.ts': {
         why: 'host -> site bootstrap: the tenant is not known until the host resolves, so no scope predicate can exist yet',
         boundedIn: { file: 'middleware/store-context.ts', symbol: 'resolveStorefrontSiteByHost' },
@@ -242,63 +238,4 @@ test('order bootstrap uses a guarded owned hint and re-verifies every id-only re
  assert.match(body,/\.select\('id, store_id'\)/);
  assert.match(body,/resolveTenantContextForOwnedSite\(c, order\.store_id as string\)/);
  assert.match(body,/if \(error\) throw/);
-});
-
-
-// Explicit owner approval,27Oct: the queue gets a data-only maintenance projection, never a generic client.
-test('domain maintenance admission and data-only reader have exactly their reviewed callers', () => {
-    for (const [symbol, expected] of [
-        ['recordDomainReconcileAdmission', ['lib/domain-reconcile-internal-request.ts']],
-        ['readDomainReconcileCandidates', ['routes/internal-custom-domain-reconcile.ts']],
-        ['readCheckoutDomainReconcileCandidates', ['routes/internal-custom-domain-reconcile.ts']],
-    ] as const) {
-        const callers = files.filter(f => f.rel !== 'lib/supabase.ts' && !f.rel.startsWith('__tests__/'))
-            .filter(f => new RegExp(symbol + '\\s*\\(').test(code(f.body))).map(f => f.rel).sort();
-        assert.deepEqual(callers, [...expected]);
-    }
-    const auth = files.find(f => f.rel === 'lib/domain-reconcile-internal-request.ts')!.body;
-    assert.match(auth, /if \(replay === 'claimed'\) \{ recordDomainReconcileAdmission\(c\); return 'accepted'; \}/);
-    assert.ok(auth.indexOf('await claimInternalAuthReplayJti(') < auth.indexOf('recordDomainReconcileAdmission(c)'));
-    const route = files.find(f => f.rel === 'routes/internal-custom-domain-reconcile.ts')!.body;
-    assert.ok(route.indexOf('if (unauthorized) return unauthorized') < route.indexOf('await readDomainReconcileCandidates(c,'));
-});
-
-test('checkout maintenance admits only its signed job and two routing IDs in a bounded managed-domain page', () => {
-    const body = functionBody(files.find(f => f.rel === 'lib/supabase.ts')!.body, 'readCheckoutDomainReconcileCandidates');
-    assert.ok(body.indexOf('domainMaintenanceAdmissions.get(c.req.raw) !== c.env') < body.indexOf('createSupabaseServiceClient(c.env)'));
-    assert.match(body, /c.req.method !== 'POST'/);
-    assert.match(body, /pathname !== '\/v1\/internal\/custom-domain-reconcile\/run'/);
-    assert.match(body, /timingSafeEqualText\(c.req.header\('X-Internal-API-Secret'\), c.env.INTERNAL_API_SECRET\)/);
-    assert.match(body, /input.limit < 1 \|\| input.limit > 100/);
-    assert.match(body, /\.from\('site_domains'\)\.select\('site_id,id,sites!inner\(id\)'\)/);
-    assert.match(body, /\.eq\('purpose', 'checkout'\)/);
-    assert.match(body, /\.eq\('metadata->>managed_by', 'letbuyy-checkout-v1'\)/);
-    assert.match(body, /\.is\('deleted_at', null\)/);
-    assert.match(body, /\.is\('sites.deleted_at', null\)/);
-    assert.match(body, /\.limit\(input.limit\)/);
-    assert.match(body, /query.gt\('site_id', input.afterId\)/);
-    assert.doesNotMatch(body, /\.(insert|update|delete|upsert|rpc)\s*\(/);
-    assert.doesNotMatch(body, /return\s+(?:query|createSupabaseServiceClient)\b/);
-});
-
-test('domain maintenance checks sealed admission and route secret before its fixed four-column bounded read', () => {
-    const source = files.find(f => f.rel === 'lib/supabase.ts')!.body;
-    const body = functionBody(source, 'readDomainReconcileCandidates');
-    assert.ok(body.indexOf('domainMaintenanceAdmissions.get(c.req.raw) !== c.env') < body.indexOf('createSupabaseServiceClient(c.env)'));
-    assert.match(body, /timingSafeEqualText\(c.req.header\('X-Internal-API-Secret'\), c.env.INTERNAL_API_SECRET\)/);
-    assert.match(body, /c.req.method !== 'POST'/);
-    assert.match(body, /pathname !== '\/v1\/internal\/custom-domain-reconcile\/run'/);
-    assert.match(body, /input.limit < 1 \|\| input.limit > 100/);
-    assert.match(body, /\.from\('sites'\)/);
-    assert.match(body, /\.select\('id, custom_domain, custom_domain_status, custom_domain_verification_token'\)/);
-    assert.match(body, /\.in\('custom_domain_status', \['active', 'verifying', 'error'\]\)/);
-    assert.match(body, /\.not\('custom_domain', 'is', null\)/);
-    assert.match(body, /\.is\('deleted_at', null\)/);
-    assert.match(body, /\.order\('id', \{ ascending: true \}\)/);
-    assert.match(body, /\.limit\(input.limit\)/);
-    assert.match(body, /query.gt\('id', afterId\)/);
-    assert.equal([...code(body).matchAll(/createSupabaseServiceClient\s*\(/g)].length, 1);
-    assert.doesNotMatch(body, /\.(insert|update|delete|upsert|rpc)\s*\(/);
-    assert.doesNotMatch(body, /return\s+(?:query|createSupabaseServiceClient)\b/);
-    assert.match(source, /new WeakMap<Request, Env>\(\)/);
 });

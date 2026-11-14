@@ -1,3 +1,4 @@
+import { BRAND_SOCIAL_IMAGE } from '@/lib/brand-assets'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { LOCALES, getLocale, isLocaleSegment } from '@/lib/i18n/locales'
@@ -5,6 +6,8 @@ import { buildAlternates } from '@/lib/i18n/routing'
 import { getDictionary } from '@/lib/i18n'
 import { getMarketingSiteUrl } from '@/lib/public-urls'
 import LocaleHtmlLang from '@/components/i18n/LocaleHtmlLang'
+import CopyProvider from '@/components/i18n/CopyProvider'
+import { getCopyMessages } from '@/lib/i18n/copy'
 
 const siteUrl = getMarketingSiteUrl()
 
@@ -24,13 +27,17 @@ export async function generateMetadata({
     const alternates = buildAlternates(siteUrl, '/', LOCALES)
 
     return {
-        title: dict.meta.title,
+        title: { absolute: dict.meta.title },
         description: dict.meta.description,
         alternates: {
             canonical: alternates.canonicalOf(locale),
             languages: alternates.languages,
         },
         openGraph: {
+            images: [BRAND_SOCIAL_IMAGE],
+            url: alternates.canonicalOf(locale),
+            type: 'website',
+            siteName: 'LetBuyy',
             title: dict.meta.title,
             description: dict.meta.description,
             locale: `${locale.language.bcp47}_${locale.country.code.toUpperCase()}`,
@@ -59,7 +66,9 @@ export default async function LocaleLayout({
             {/* The <html> element is owned by the root layout, which cannot see
                 the locale param. This syncs lang/dir from inside the segment. */}
             <LocaleHtmlLang lang={locale.language.bcp47} dir={locale.language.dir} />
-            <div lang={locale.language.bcp47} dir={locale.language.dir}>{children}</div>
+            <CopyProvider segment={segment} messages={getCopyMessages(locale.language.code)} dictionary={getDictionary(locale)}>
+                <div lang={locale.language.bcp47} dir={locale.language.dir}>{children}</div>
+            </CopyProvider>
         </>
     )
 }

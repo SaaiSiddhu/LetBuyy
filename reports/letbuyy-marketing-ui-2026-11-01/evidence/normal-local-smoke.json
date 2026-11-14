@@ -1,0 +1,27 @@
+{
+  "captured_at": "2026-11-01T03:27:36.448680+00:00",
+  "rows": [
+    {
+      "path": "/in",
+      "status": 200,
+      "contains_real_199_and_699": null
+    },
+    {
+      "path": "/in/pricing",
+      "status": 200,
+      "contains_real_199_and_699": true
+    },
+    {
+      "path": "/in/support",
+      "status": 200,
+      "contains_real_199_and_699": null
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "contains_real_199_and_699": null
+    }
+  ],
+  "real_plan_count": 4,
+  "passed": true
+}

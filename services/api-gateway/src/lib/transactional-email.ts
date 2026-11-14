@@ -1,4 +1,3 @@
-import { DEFAULT_EMAIL_BRAND, renderEmailShell, heading } from '@letbuyy/notification-core/email';
 import type { Env } from '../index';
 import { escapeHtml } from './customer-email';
 import { signQueueTenantEnvelope } from './queue-tenant-envelope';
@@ -120,7 +119,7 @@ export async function enqueueContactOwnerNotificationEmail(
             to: ownerEmail,
             subject: `New contact submission for ${storeName}`,
             text,
-            html: renderEmailShell(DEFAULT_EMAIL_BRAND, heading('A new customer message') + [
+            html: [
                 `<p>New contact submission for <strong>${escapeHtml(storeName)}</strong>.</p>`,
                 '<ul>',
                 `<li>Name: ${escapeHtml(customerName)}</li>`,
@@ -128,7 +127,7 @@ export async function enqueueContactOwnerNotificationEmail(
                 `<li>Phone: ${escapeHtml(customerPhone)}</li>`,
                 '</ul>',
                 `<p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
-            ].join(''),{preheader:'A visitor has contacted your store.',reason:'You received this message as the owner of the contacted store.',category:'transactional'}),
+            ].join(''),
             contact_submission_id: input.submissionId,
             store_id: input.storeId,
             template_key: 'contact_owner_notification',

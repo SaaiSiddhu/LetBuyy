@@ -1,0 +1,332 @@
+{
+  "capturedAt": "2026-11-07T03:57:31.284Z",
+  "reviews": [
+    {
+      "path": "/in/pricing",
+      "width": 375,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-ta/pricing",
+      "width": 375,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/legal/privacy",
+      "width": 375,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/contact",
+      "width": 375,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/pricing",
+      "width": 375,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-ta/pricing",
+      "width": 375,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/legal/privacy",
+      "width": 375,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/contact",
+      "width": 375,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/pricing",
+      "width": 1366,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-ta/pricing",
+      "width": 1366,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/legal/privacy",
+      "width": 1366,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/contact",
+      "width": 1366,
+      "colorScheme": "light",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/pricing",
+      "width": 1366,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in-ta/pricing",
+      "width": 1366,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/legal/privacy",
+      "width": 1366,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "path": "/in/contact",
+      "width": 1366,
+      "colorScheme": "dark",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    }
+  ],
+  "motion": [
+    {
+      "width": 375,
+      "colorScheme": "light",
+      "check": "Capability tour keyboard pause and resume",
+      "revealed": true,
+      "passed": true
+    },
+    {
+      "width": 375,
+      "colorScheme": "light",
+      "check": "Journey tab selection and reduced motion",
+      "animation": "mgj-chapter-enter",
+      "reduced": "none",
+      "passed": true
+    },
+    {
+      "width": 375,
+      "colorScheme": "dark",
+      "check": "Capability tour keyboard pause and resume",
+      "revealed": true,
+      "passed": true
+    },
+    {
+      "width": 375,
+      "colorScheme": "dark",
+      "check": "Journey tab selection and reduced motion",
+      "animation": "mgj-chapter-enter",
+      "reduced": "none",
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "colorScheme": "light",
+      "check": "Capability tour keyboard pause and resume",
+      "revealed": true,
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "colorScheme": "light",
+      "check": "Journey tab selection and reduced motion",
+      "animation": "mgj-chapter-enter",
+      "reduced": "none",
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "colorScheme": "dark",
+      "check": "Capability tour keyboard pause and resume",
+      "revealed": true,
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "colorScheme": "dark",
+      "check": "Journey tab selection and reduced motion",
+      "animation": "mgj-chapter-enter",
+      "reduced": "none",
+      "passed": true
+    }
+  ],
+  "remoteTracking": []
+}

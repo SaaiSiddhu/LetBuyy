@@ -1,0 +1,72 @@
+{
+  "base": "Frozen existing dirty working tree at task start; not HEAD",
+  "started_at": "2026-11-01T04:02:40.210997+00:00",
+  "head_at_start": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "files": [
+    {
+      "path": "apps/marketing/web/src/app/layout.tsx",
+      "before_sha256": "3db9ef2e4358f965876e671412e411f5ba99cf466694551377ce943bc3d01449",
+      "after_sha256": "10dbae1ebca5fbb8ac7e97a0fc926b01a6b3e0db8fcc2a4a79bc68129cf49faa"
+    },
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "before_sha256": "0e4351d9b2bdc2657ef9d33331986b9f270b7096c92d12300f4319d4e3fda2fe",
+      "after_sha256": "e2de7c6c61df5b89c47df3a2f3dcd5999f6e6b5d686b41f308342c590663cd50"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Footer.tsx",
+      "before_sha256": "4c23454c9ec8ff1c5c5bf2529e31a02a3c01900149d3dfe48f5af20567bc0f9d",
+      "after_sha256": "cdbbbec70a2eceae7661b2d5e0d411e728bafc14d17542efa844d904f02cfde6"
+    },
+    {
+      "path": "apps/marketing/web/src/components/CapabilityMap.tsx",
+      "before_sha256": "fd1e4ee5706f89b5311256fe372aad697051e12f0173e196a71bb57488469569",
+      "after_sha256": "0b9d6171bacaf83c4e3fb7cce64fc410371aa2e8b510584a86d00a37784ca08c"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/theme-guide.module.css",
+      "before_sha256": "6089830b2de1ff181f17f25ddd445d4ff8c298e251dff8a098f3706f58835ee7",
+      "after_sha256": "7eb8b3bdcfbd18194cf77fb8b96b4073bdc86518e154639ab51ec6aafc5464d8"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/LiquidGuide.tsx",
+      "before_sha256": "8365353de65d7a21b6a0c3090db5032ccd39b37dad84d18443172cd383dc13f9",
+      "after_sha256": "1e7348e708b0ccf8987c0e96f779bc9d9a9b3b84df29df2e3749ee872d904055"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleSectionVisual.tsx",
+      "before_sha256": "d9d7314edffae70a86349befcfced112f933a06e45d22b43ee263bfd7d41d9da",
+      "after_sha256": "ea4f36dda2f12f96297d17ec7ee47f975ee8a1ae6f47156175877d32e2e09171"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/BookmarkButton.tsx",
+      "before_sha256": "d9a85201355ae4c495b690df2d43bb45b58ffaf6acbc2fdc6ab020c2e454284c",
+      "after_sha256": "f294e9729668dfa8f725af92d8e672c95bf93353823a82cb9938eb0115b34127"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ThemeGuide.tsx",
+      "before_sha256": "5c74fd48f26057b374cba5caa789ae15888dde987f9042897e66184d2bbf536c",
+      "after_sha256": "e57378ab01d32c3cc778f5c6ab4bb67a33d930ef0aa169a5681189d237d7d567"
+    },
+    {
+      "path": "apps/marketing/web/next.config.ts",
+      "before_sha256": "34d503640eaf5dbf660ef8d2a988789bc6e8382f2ff7d8e52868a08f3d2b45b2",
+      "after_sha256": "6f0320662941f637b93b52f156b682b06a9e5c77726f19004302657a42a9ab09"
+    },
+    {
+      "path": "packages/typescript/ui/snapshots/token-aliases.json",
+      "before_sha256": "8460420ad5a4d02f73b8781bffd50e81d91f54c8b48cdc159b14663d2daa2042",
+      "after_sha256": "136705d5f9e9b15fb12760ffe8e4ac393231b8ffd677e41ae0dd82365afcab4c"
+    },
+    {
+      "path": "packages/typescript/ui/tests/validators/ui-no-new-token-alias-validator.mjs",
+      "before_sha256": "a478fe1ce7329b2e7dc07e061a8d5a99c707c637c99c6c9ba73d9b9569f2d88a",
+      "after_sha256": "bf1fa6fa486c3985b456bbcf6a637d7369fbeaf1c8753eb450065701bb3acf30"
+    },
+    {
+      "path": "packages/typescript/ui/package.json",
+      "before_sha256": "b727183a149dbb6073da7d146cd98e1790d818c1e4f2a5653cc9d729db6fa187",
+      "after_sha256": "a81dfd2a1078908afe9d3e979b629601d68fab4881481a39b95ad08d0362d3e6"
+    }
+  ]
+}

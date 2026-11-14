@@ -1,34 +1,19 @@
-import { defaultBranding, packExtendedBrandingIntoTokens } from '../lib/checkout-store-presentation';
-import { verifyHostedDiscountSelection } from '../lib/hosted-checkout-discount';
-import { quoteCheckoutTotals } from '../lib/checkout-tax-quote';
-import { checkoutOrderItems } from '../lib/hosted-checkout-order-command';
-import { verifyHandoffCheckoutOrigin } from '../lib/checkout-handoff-origin';
-import { hostedRazorpayTestCredentials } from '../lib/hosted-razorpay-credentials';
-import { cartLines, signedCartSubtotalMinor, stringValue, checkoutPaymentProvider, checkoutShippingMethod, buildHostedCheckoutOrderCommand, type CartRow, type HostedCheckoutPaymentProvider } from '../lib/hosted-checkout-order-command';
-export { buildHostedCheckoutOrderCommand } from '../lib/hosted-checkout-order-command';
-import { loadCheckoutStorePresentation } from '../lib/checkout-store-presentation';
-import { authorizeHostedStorefrontPurchase } from '../lib/storefront-visitor-access';
-import { loadBuyerSessionState } from '../middleware/buyer-session';
-import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
-import { redactReplayableSecrets } from '../lib/replayable-secret-redaction';
-import { sessionPayload, selectedHostedDiscountCodes, canRestartUnpaidHostedContact, canPrepareCodIntent, contactRestartPatch, confirmationDecision, confirmationClaimPatch, releaseRejectedCodClaimPatch, sessionMatchesScope, sessionRevision, sessionWriteAllowed, SESSION_REVISION, type HostedCheckoutSession, type ConfirmationClaim } from '../lib/hosted-checkout-session';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import {
     CheckoutConfirmSchema,
-    CheckoutStateReadSchema,
     CheckoutContactSchema,
     CheckoutDeliverySchema,
-    CheckoutQuoteSchema,
     CheckoutPaymentIntentSchema,
     StoreBrandingSchema,
     assertBrandingIsDataOnly,
     canonicalCheckoutCartBinding,
-    canonicalCheckoutBuyerBinding,
     canonicalCheckoutHandoffPayload,
     gstStateCodeFromName,
     normalizeCheckoutChannel,
+    planCheckoutStateTransition,
     type CreateCheckoutOrderCommand,
+    type CheckoutSessionState,
     type StoreBrandingInput,
 } from '@letbuyy/checkout-core';
 import type { Env } from '../index';
@@ -44,16 +29,52 @@ import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazor
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
-import { AppError, ConflictError } from '../lib/errors';
+import { ConflictError } from '../lib/errors';
 import { checkoutDeliveryOptions } from '../lib/checkout-delivery-options';
 import { listStorefrontShippingRates } from '../lib/storefront-shipping';
-import { toInrMinorUnits } from '@letbuyy/payments';
 
 type AppContext = Context<{ Bindings: Env }>;
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 type JsonRecord = { [key: string]: JsonValue };
 
-type CheckoutSessionRow = HostedCheckoutSession;
+type CartRow = {
+    id: string;
+    store_id: string;
+    session_id?: string | null;
+    items?: unknown;
+    coupon_code?: string | null;
+    buyer_email?: string | null;
+    channel?: string | null;
+    sales_origin?: 'storefront' | 'marketplace' | null;
+    status?: string | null;
+};
+
+type CheckoutSessionRow = {
+    id: string;
+    site_id: string;
+    cart_id?: string | null;
+    cart_token?: string | null;
+    channel?: string | null;
+    sales_origin?: 'storefront' | 'marketplace' | null;
+    checkout_state?: CheckoutSessionState | null;
+    status?: string | null;
+    customer_email?: string | null;
+    buyer_name?: string | null;
+    buyer_phone?: string | null;
+    buyer_gstin?: string | null;
+    shipping_address?: JsonRecord | null;
+    shipping_method?: string | null;
+    payment_method?: string | null;
+    delivery_quote?: JsonRecord | null;
+    payment_intent?: JsonRecord | null;
+    inventory_reservation_ids?: string[] | null;
+    discount_codes?: string[] | null;
+    confirmed_at?: string | null;
+    failed_at?: string | null;
+    metadata?: JsonRecord | null;
+    buyer_account_id?: string | null;
+    buyer_session_epoch?: number | null;
+};
 
 export type VerifiedHandoff = {
     siteId: string;
@@ -61,17 +82,14 @@ export type VerifiedHandoff = {
     cartToken: string;
     channel: string;
     cart: CartRow;
-    signature?: string;
-    buyerBinding?: { buyerAccountId: string; sessionEpoch: number };
 };
 
-type StepTarget = 'contact' | 'delivery' | 'payment_intent' | 'confirming' | 'completed' | 'failed';
+type StepTarget = 'contact' | 'delivery' | 'payment_intent' | 'completed' | 'failed';
 // Phase M1 (DOC 03 row 11 "Payments"): Razorpay + COD are the only live
 // hosted-checkout money-in rails.
-
+type HostedCheckoutPaymentProvider = 'razorpay' | 'cod';
 
 const checkoutRouter = new Hono<{ Bindings: Env }>();
-checkoutRouter.use('*',async(c,next)=>{c.header('Cache-Control','no-store');await next();});
 export const publicStoreBrandingRouter = new Hono<{ Bindings: Env }>();
 export const storeBrandingManagementRouter = new Hono<{ Bindings: Env }>();
 
@@ -106,6 +124,137 @@ function invalidHandoff(c: AppContext, message = 'Checkout handoff is invalid or
     }, 401);
 }
 
+function sessionPayload(row: CheckoutSessionRow) {
+    return {
+        id: row.id,
+        site_id: row.site_id,
+        cart_id: row.cart_id,
+        channel: row.channel || 'web',
+        sales_origin: row.sales_origin || 'storefront',
+        state: row.checkout_state || row.status || 'contact',
+        customer_email: row.customer_email || null,
+        buyer_name: row.buyer_name || null,
+        buyer_phone: row.buyer_phone || null,
+        shipping_address: row.shipping_address || {},
+        delivery_quote: row.delivery_quote || {},
+        payment_intent: row.payment_intent || {},
+        confirmed_at: row.confirmed_at || null,
+        failed_at: row.failed_at || null,
+    };
+}
+
+function cartLines(cart: CartRow): JsonRecord[] {
+    return Array.isArray(cart.items)
+        ? cart.items.filter((line): line is JsonRecord => Boolean(line) && typeof line === 'object' && !Array.isArray(line))
+        : [];
+}
+
+function signedCartSubtotalMinor(lines: JsonRecord[]): number | null {
+    if (lines.length === 0) return null;
+    let subtotalMinor = 0;
+    for (const line of lines) {
+        const quantity = typeof line.quantity === 'number' ? line.quantity : Number(line.quantity);
+        const lineTotal = typeof line.line_total === 'number' ? line.line_total : Number(line.line_total);
+        const unitPrice = typeof line.unit_price === 'number' ? line.unit_price : Number(line.unit_price);
+        const amount = Number.isFinite(lineTotal) ? lineTotal : quantity * unitPrice;
+        if (!Number.isSafeInteger(quantity) || quantity < 1 || !Number.isFinite(amount) || amount < 0) return null;
+        subtotalMinor += Math.round(amount * 100);
+        if (!Number.isSafeInteger(subtotalMinor)) return null;
+    }
+    return subtotalMinor;
+}
+
+function stringValue(value: unknown): string | undefined {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined;
+}
+
+function normalizeHostedCheckoutPaymentProvider(value: unknown): HostedCheckoutPaymentProvider | null {
+    const provider = stringValue(value)?.toLowerCase();
+    if (provider === 'razorpay' || provider === 'cod') {
+        return provider;
+    }
+    return null;
+}
+
+function checkoutPaymentProvider(session: CheckoutSessionRow): HostedCheckoutPaymentProvider | null {
+    const intent = session.payment_intent;
+    return normalizeHostedCheckoutPaymentProvider(intent?.provider)
+        || normalizeHostedCheckoutPaymentProvider(session.payment_method)
+        || null;
+}
+
+function checkoutShippingMethod(session: CheckoutSessionRow): 'standard' | 'express' {
+    const method = stringValue(session.shipping_method)
+        || stringValue(session.delivery_quote?.shipping_method)
+        || stringValue(session.delivery_quote?.method);
+    return method === 'express' ? 'express' : 'standard';
+}
+
+function checkoutOrderItems(cart: CartRow): CreateCheckoutOrderCommand['items'] {
+    return cartLines(cart).map((line) => ({
+        product_id: stringValue(line.product_id) || stringValue(line.productId) || '',
+        variant_id: stringValue(line.variant_id) || stringValue(line.variantId) || null,
+        ...(stringValue(line.marketplace_listing_id) ? { marketplace_listing_id: stringValue(line.marketplace_listing_id) } : {}),
+        quantity: Number(line.quantity || 0),
+    })).filter((line) => line.product_id && Number.isInteger(line.quantity) && line.quantity > 0);
+}
+
+export function buildHostedCheckoutOrderCommand(
+    handoff: Pick<VerifiedHandoff, 'siteId' | 'cartId' | 'cart'>,
+    session: CheckoutSessionRow,
+    idempotencyKey: string,
+): { ok: true; provider: HostedCheckoutPaymentProvider; command: CreateCheckoutOrderCommand & { shipping_rate_id?: string | null; expected_shipping_amount?: number | null; buyer_account_id?: string; buyer_session_epoch?: number } } | { ok: false; code: string; message: string } {
+    const provider = checkoutPaymentProvider(session);
+    if (!provider) {
+        return {
+            ok: false,
+            code: 'CHECKOUT_PAYMENT_METHOD_UNSUPPORTED',
+            message: 'Checkout payment method is not supported for hosted confirmation.',
+        };
+    }
+
+    const items = checkoutOrderItems(handoff.cart);
+    if (items.length === 0) {
+        return { ok: false, code: 'CHECKOUT_CART_EMPTY', message: 'Cart has no valid order items.' };
+    }
+    if (handoff.cart.sales_origin === 'marketplace' && items.some((item) => !item.marketplace_listing_id)) {
+        return { ok: false, code: 'MARKETPLACE_LISTING_REQUIRED', message: 'Every marketplace checkout item must remain bound to its approved listing.' };
+    }
+
+    const email = stringValue(session.customer_email) || stringValue(handoff.cart.buyer_email);
+    const name = stringValue(session.buyer_name) || email;
+    if (!email || !name) {
+        return { ok: false, code: 'CHECKOUT_CUSTOMER_REQUIRED', message: 'Checkout customer details are incomplete.' };
+    }
+    if ((session.buyer_account_id && !Number.isInteger(session.buyer_session_epoch))
+        || (!session.buyer_account_id && session.buyer_session_epoch !== null && session.buyer_session_epoch !== undefined)) {
+        return { ok: false, code: 'CHECKOUT_BUYER_BINDING_INVALID', message: 'Checkout identity could not be verified.' };
+    }
+
+    return {
+        ok: true,
+        provider,
+        command: {
+            customer_name: name,
+            customer_email: email,
+            customer_phone: stringValue(session.buyer_phone),
+            customer_gstin: stringValue(session.buyer_gstin),
+            shipping_address: session.shipping_address || {},
+            items,
+            payment_method: provider,
+            shipping_method: checkoutShippingMethod(session),
+            shipping_rate_id: stringValue(session.delivery_quote?.shipping_rate_id) || null,
+            expected_shipping_amount: typeof session.delivery_quote?.amount === 'number' ? session.delivery_quote.amount : null,
+            sales_origin: handoff.cart.sales_origin === 'marketplace' ? 'marketplace' : 'storefront',
+            coupon_code: stringValue(handoff.cart.coupon_code),
+            idempotency_key: `hosted-checkout:${handoff.cartId}:${idempotencyKey}`,
+            ...(session.buyer_account_id ? {
+                buyer_account_id: session.buyer_account_id,
+                buyer_session_epoch: session.buyer_session_epoch!,
+            } : {}),
+        },
+    };
+}
 
 function paymentIntentId(session: CheckoutSessionRow): string | null {
     const intent = session.payment_intent;
@@ -113,7 +262,7 @@ function paymentIntentId(session: CheckoutSessionRow): string | null {
     return id && id.trim().length > 0 ? id : null;
 }
 
-async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = true): Promise<
+async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
     | { ok: true; handoff: VerifiedHandoff }
     | { ok: false; response: Response }
 > {
@@ -122,7 +271,6 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = t
     const expiresAt = c.req.query('expires_at');
     const cartDigest = c.req.query('cart_digest');
     const signature = c.req.query('signature');
-    const buyerBindingDigest = c.req.query('buyer_binding');
     const channel = normalizeCheckoutChannel(c.req.query('channel'));
 
     if (!siteId || !cartToken || !expiresAt || !cartDigest || !signature) {
@@ -144,7 +292,7 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = t
     const db = getSupabaseAdmin(c);
     const { data: cart, error } = await db
         .from('carts')
-        .select('id, store_id, session_id, items, coupon_code, buyer_email, channel, sales_origin, status, checkout_handoff')
+        .select('id, store_id, session_id, items, coupon_code, buyer_email, channel, sales_origin, status')
         .eq('id', cartId)
         .eq('store_id', siteId)
         .eq('session_id', cartToken)
@@ -156,8 +304,6 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = t
     }
 
     const cartRow = cart as CartRow;
-    const checkoutOrigin = await verifyHandoffCheckoutOrigin(c,siteId,cartRow.checkout_handoff?.checkout_origin);
-    if (checkoutOrigin === null) return { ok: false, response: invalidHandoff(c) };
     const expectedCartDigest = await sha256Hex(canonicalCheckoutCartBinding({
         siteId,
         cartId,
@@ -172,21 +318,6 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = t
         return { ok: false, response: invalidHandoff(c) };
     }
 
-    let buyerBinding: VerifiedHandoff['buyerBinding'];
-    if (buyerBindingDigest !== undefined) {
-        const stored = cartRow.checkout_handoff?.buyer_binding;
-        if (!/^[a-f0-9]{64}$/.test(buyerBindingDigest) || !stored?.buyer_account_id
-            || !Number.isInteger(stored.session_epoch) || (stored.session_epoch ?? -1) < 0
-            || !stored.digest || !timingSafeEqualHex(stored.digest, buyerBindingDigest)) {
-            return { ok: false, response: invalidHandoff(c) };
-        }
-        const boundDigest = await sha256Hex(canonicalCheckoutBuyerBinding({
-            siteId, cartId, cartToken, channel, expiresAt, cartContentDigest: expectedCartDigest,
-            buyerAccountId: stored.buyer_account_id, buyerSessionEpoch: stored.session_epoch!,
-        }));
-        if (!timingSafeEqualHex(boundDigest, buyerBindingDigest)) return { ok: false, response: invalidHandoff(c) };
-        buyerBinding = { buyerAccountId: stored.buyer_account_id, sessionEpoch: stored.session_epoch! };
-    }
     const expected = await hmacSha256Hex(secret, canonicalCheckoutHandoffPayload({
         siteId,
         cartId,
@@ -195,8 +326,6 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = t
         salesOrigin: cartRow.sales_origin === 'marketplace' ? 'marketplace' : 'storefront',
         expiresAt,
         cartContentDigest: expectedCartDigest,
-        buyerBindingDigest,
-        checkoutOrigin,
         couponCodes: cartRow.coupon_code ? [cartRow.coupon_code] : [],
         lines: cartLines(cartRow),
     }));
@@ -204,26 +333,16 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = t
         return { ok: false, response: invalidHandoff(c) };
     }
 
-    const handoff: VerifiedHandoff = { siteId, cartId, cartToken, channel, cart: cartRow, signature };
-    if (purchase) await authorizeHostedPurchase(c, handoff);
     return {
         ok: true,
         handoff: {
-            signature,
             siteId,
             cartId,
             cartToken,
             channel,
             cart: cartRow,
-            ...(buyerBinding ? { buyerBinding } : {}),
         },
     };
-}
-
-async function authorizeHostedPurchase(c: AppContext, handoff: VerifiedHandoff): Promise<void> {
-    if (handoff.cart.sales_origin !== 'marketplace') {
-        await authorizeHostedStorefrontPurchase(c, handoff.siteId, handoff.cart.checkout_handoff?.storefront_admission, handoff.signature || '');
-    }
 }
 
 async function emitCheckoutEvent(
@@ -254,7 +373,7 @@ async function emitCheckoutEvent(
 }
 
 async function loadSession(db: ReturnType<typeof getSupabaseAdmin>, handoff: VerifiedHandoff): Promise<CheckoutSessionRow | null> {
-    const { data, error } = await db
+    const { data } = await db
         .from('checkout_sessions')
         .select('*')
         .eq('site_id', handoff.siteId)
@@ -262,70 +381,52 @@ async function loadSession(db: ReturnType<typeof getSupabaseAdmin>, handoff: Ver
         .is('deleted_at', null)
         .maybeSingle();
 
-    if (error) throw new AppError('Checkout is temporarily unavailable', 503, 'CHECKOUT_UNAVAILABLE');
     return data as CheckoutSessionRow | null;
 }
 
-function scopeFor(handoff: VerifiedHandoff) {
-    return { siteId: handoff.siteId, cartId: handoff.cartId, cartToken: handoff.cartToken, cartStatus: handoff.cart.status || null };
-}
-
-async function canRestartContact(c: AppContext, handoff: VerifiedHandoff, row: CheckoutSessionRow): Promise<boolean> {
-    if (handoff.cart.sales_origin === 'marketplace' || !canRestartUnpaidHostedContact(row, scopeFor(handoff))
-        || !row.buyer_account_id || !Number.isInteger(row.buyer_session_epoch)
-        || handoff.buyerBinding?.buyerAccountId !== row.buyer_account_id
-        || handoff.buyerBinding.sessionEpoch !== row.buyer_session_epoch) return false;
-    const admission = handoff.cart.checkout_handoff?.storefront_admission;
-    const currentSignature = admission && typeof admission === 'object' && 'signature' in admission ? admission.signature : null;
-    if (typeof currentSignature !== 'string' || !handoff.signature || !timingSafeEqualHex(currentSignature, handoff.signature)) return false;
-    const db = getSupabaseAdmin(c);
-    const { data: buyer, error: buyerError } = await loadBuyerSessionState(c, row.buyer_account_id);
-    if (buyerError || !buyer || buyer.status !== 'active' || buyer.session_epoch !== row.buyer_session_epoch) return false;
-    // A legacy/unknown committed order can precede session acknowledgement.
-    // Refuse recovery if canonical order facts already consumed this cart.
-    const { data: effects, error: effectError } = await db.from('order_items').select('id,orders!inner(store_id)')
-        .eq('site_id', handoff.siteId).eq('orders.store_id', handoff.siteId).contains('product_snapshot', { cart_id: handoff.cartId }).limit(1);
-    return !effectError && Array.isArray(effects) && effects.length === 0;
-}
-
 async function persistCheckoutStep(
-    c: AppContext, handoff: VerifiedHandoff, target: StepTarget, patch: JsonRecord,
-    observed?: CheckoutSessionRow | null,
-    recovery: 'normal' | 'contact_restart' | 'rejected_confirmation' = 'normal',
+    c: AppContext,
+    handoff: VerifiedHandoff,
+    target: StepTarget,
+    patch: JsonRecord,
 ): Promise<CheckoutSessionRow | null> {
     const db = getSupabaseAdmin(c);
-    const existing = observed === undefined ? await loadSession(db, handoff) : observed;
-    if (existing && (!sessionMatchesScope(existing, scopeFor(handoff)) || !existing.updated_at)) return null;
-    if (recovery === 'rejected_confirmation') {
-        if (!existing || target !== 'payment_intent' || existing.checkout_state !== 'confirming') return null;
-    } else if (!sessionWriteAllowed(existing, target, recovery === 'contact_restart')) return null;
-    const patchMetadata = patch.metadata && typeof patch.metadata === 'object' && !Array.isArray(patch.metadata) ? patch.metadata : {};
+    const existing = await loadSession(db, handoff);
+    const nextState: CheckoutSessionState = target === 'completed' || target === 'failed' ? target : target;
+    const transition = planCheckoutStateTransition(existing?.checkout_state ?? null, nextState);
+    if (!transition.allowed) return null;
+
     const row = {
+        site_id: handoff.siteId,
+        cart_id: handoff.cartId,
+        cart_token: handoff.cartToken,
+        channel: handoff.channel,
+        sales_origin: handoff.cart.sales_origin === 'marketplace' ? 'marketplace' : 'storefront',
+        status: nextState,
+        checkout_state: nextState,
+        idempotency_key: `checkout:${handoff.siteId}:${handoff.cartId}`,
+        metadata: {
+            source: 'hosted_checkout_v1',
+            cart_status: handoff.cart.status || null,
+        },
         ...patch,
-        site_id: handoff.siteId, cart_id: handoff.cartId, cart_token: handoff.cartToken,
-        channel: handoff.channel, sales_origin: handoff.cart.sales_origin === 'marketplace' ? 'marketplace' : 'storefront',
-        status: target, checkout_state: target, idempotency_key: `checkout:${handoff.siteId}:${handoff.cartId}`,
-        metadata: { ...(existing?.metadata || {}), ...patchMetadata, source: 'hosted_checkout_v1',
-            cart_status: handoff.cart.status || null, [SESSION_REVISION]: crypto.randomUUID() },
     };
-    if (!existing) {
-        const { data, error } = await db.from('checkout_sessions').insert(row).select('*').maybeSingle();
-        return !error && data ? data as CheckoutSessionRow : null;
-    }
-    // Keep the raw PostgreSQL timestamp (including microseconds). The private
-    // revision makes even equal-timestamp same-state writes mutually exclusive.
-    let query = db.from('checkout_sessions').update(row).eq('site_id', handoff.siteId).eq('id', existing.id)
-        .eq('cart_id', handoff.cartId).eq('cart_token', handoff.cartToken).is('deleted_at', null)
-        .eq('updated_at', existing.updated_at!);
-    query = existing.checkout_state ? query.eq('checkout_state', existing.checkout_state) : query.is('checkout_state', null);
-    query = existing.status ? query.eq('status', existing.status) : query.is('status', null);
-    const revision = sessionRevision(existing);
-    query = revision ? query.eq(`metadata->>${SESSION_REVISION}`, revision) : query.is(`metadata->>${SESSION_REVISION}`, null);
-    query = existing.buyer_account_id ? query.eq('buyer_account_id', existing.buyer_account_id) : query.is('buyer_account_id', null);
-    query = existing.buyer_session_epoch === null || existing.buyer_session_epoch === undefined
-        ? query.is('buyer_session_epoch', null) : query.eq('buyer_session_epoch', existing.buyer_session_epoch);
-    const { data, error } = await query.select('*').maybeSingle();
-    return !error && data ? data as CheckoutSessionRow : null;
+
+    const result = existing
+        ? await db
+            .from('checkout_sessions')
+            .update(row)
+            .eq('site_id', handoff.siteId)
+            .eq('id', existing.id)
+            .select('*')
+            .single()
+        : await db
+            .from('checkout_sessions')
+            .insert(row)
+            .select('*')
+            .single();
+
+    return result.data ? result.data as CheckoutSessionRow : null;
 }
 
 async function revalidateConfirmInputs(
@@ -348,9 +449,9 @@ async function revalidateConfirmInputs(
         if ((data || []).length !== reservationIds.length) return { ok: false, reason: 'inventory_reservation_invalid' };
     }
 
-    const selectedCodes = selectedHostedDiscountCodes(session, handoff.cart.coupon_code);
-    if (!selectedCodes) return { ok: false, reason: 'discount_invalid' };
-    const discountCodes = new Set(selectedCodes);
+    const discountCodes = new Set<string>();
+    if (handoff.cart.coupon_code) discountCodes.add(handoff.cart.coupon_code.toUpperCase());
+    for (const code of session.discount_codes || []) discountCodes.add(String(code).toUpperCase());
     if (discountCodes.size > 0) {
         const { data, error } = await db
             .from('coupons')
@@ -359,44 +460,10 @@ async function revalidateConfirmInputs(
             .in('code', [...discountCodes])
             .eq('is_active', true)
             .is('deleted_at', null);
-        if (error || (data || []).length < discountCodes.size) return { ok: false, reason: 'discount_invalid' };
+        if (!error && (data || []).length < discountCodes.size) return { ok: false, reason: 'discount_invalid' };
     }
 
     return { ok: true };
-}
-
-async function loadCommittedCodOrder(
-    db: ReturnType<typeof getSupabaseAdmin>, handoff: VerifiedHandoff,
-    session: CheckoutSessionRow, command: CreateCheckoutOrderCommand,
-): Promise<JsonRecord | null> {
-    const cartOrderId = handoff.cart.checkout_handoff?.order_id;
-    if (handoff.cart.status !== 'converted' || !cartOrderId || !session.buyer_account_id) return null;
-    const { data: receipt, error: receiptError } = await db.from('checkout_sessions').select('order_id')
-        .eq('site_id', handoff.siteId).eq('idempotency_key', command.idempotency_key)
-        .eq('order_id', cartOrderId).is('deleted_at', null).maybeSingle();
-    if (receiptError || receipt?.order_id !== cartOrderId) return null;
-    const { data: owner, error: ownerError } = await db.from('buyer_order_links').select('order_id')
-        .eq('site_id', handoff.siteId).eq('order_id', cartOrderId).eq('buyer_account_id', session.buyer_account_id)
-        .eq('link_basis', 'authenticated_checkout').maybeSingle();
-    if (ownerError || !owner) return null;
-    const { data: rows, error: rowsError } = await db.from('order_items')
-        .select('product_id,variant_id,quantity,marketplace_listing_id,product_snapshot')
-        .eq('site_id', handoff.siteId).eq('order_id', cartOrderId).is('deleted_at', null);
-    if (rowsError || !Array.isArray(rows) || rows.length !== command.items.length) return null;
-    const expected = command.items.map(item => [item.product_id, item.variant_id || null, item.quantity,
-        item.marketplace_listing_id || null, item.cart_fact_ref?.cart_id || null, item.cart_fact_ref?.line_id || null,
-        item.cart_fact_ref?.product_version ?? null, item.cart_fact_ref?.configuration_fingerprint || null,
-        item.cart_fact_ref?.snapshot_fingerprint || null]);
-    const actual = rows.map(item => [item.product_id, item.variant_id || null, item.quantity,
-        item.marketplace_listing_id || null, item.product_snapshot?.cart_id || null, item.product_snapshot?.cart_line_id || null,
-        item.product_snapshot?.product_version ?? null, item.product_snapshot?.configuration_fingerprint || null,
-        item.product_snapshot?.snapshot_fingerprint || null]);
-    const stable = (items: unknown[][]) => canonicalizeExecutionPayload(items.map(item => canonicalizeExecutionPayload(item)).sort());
-    if (stable(expected) !== stable(actual)) return null;
-    const { data: order, error: orderError } = await db.from('orders').select('*')
-        .eq('id', cartOrderId).eq('store_id', handoff.siteId).eq('payment_method', 'cod')
-        .is('deleted_at', null).maybeSingle();
-    return !orderError && order ? order as JsonRecord : null;
 }
 
 async function runIdempotentStep(
@@ -449,12 +516,17 @@ checkoutRouter.get('/:cartId/verify-handoff', async (c) => {
     if (!verified.ok) return verified.response;
 
     const lines = cartLines(verified.handoff.cart);
-    const presentation = await loadCheckoutStorePresentation(c, verified.handoff.siteId);
-    const checkout = await loadSession(getSupabaseAdmin(c), verified.handoff);
-    const codes = selectedHostedDiscountCodes(checkout, verified.handoff.cart.coupon_code);
-    const savedDiscount = checkout?.metadata?.hosted_discount_selection_v1 === true && codes?.length === 1
-        && Number.isFinite(Number(checkout.discount_total)) && Number(checkout.discount_total) >= 0
-        ? { code: codes[0], amount: Number(checkout.discount_total) } : undefined;
+    // Resolves the subdomain the checkout-origin page needs for its "back to store" links and
+    // to reuse the already-proven-reliable getStoreBySubdomain read path, deliberately not the
+    // legacy `GET /storefront/store/:storeId` route (kept for a different, older caller and not
+    // otherwise touched by this phase).
+    const db = getSupabaseAdmin(c);
+    const { data: site } = await db
+        .from('sites')
+        .select('subdomain, name')
+        .eq('id', verified.handoff.siteId)
+        .eq('status', 'published')
+        .maybeSingle();
 
     return c.json(success({
         site_id: verified.handoff.siteId,
@@ -462,9 +534,7 @@ checkoutRouter.get('/:cartId/verify-handoff', async (c) => {
         cart_token: verified.handoff.cartToken,
         channel: verified.handoff.channel,
         coupon_code: typeof verified.handoff.cart.coupon_code === 'string' ? verified.handoff.cart.coupon_code : null,
-        subdomain: presentation.subdomain,
-        presentation,
-        ...(savedDiscount ? { saved_discount: savedDiscount } : {}),
+        subdomain: (site as { subdomain?: string } | null)?.subdomain || null,
         lines,
     }));
 });
@@ -495,7 +565,7 @@ checkoutRouter.get('/:cartId/delivery-options', async (c) => {
             if (subtotalMinor === null) {
                 return c.json({ success: false, error: { code: 'CHECKOUT_SUBTOTAL_UNAVAILABLE', message: 'Cart pricing could not be verified. Refresh the cart and try again.' } }, 409);
             }
-            resolvedRates = (await listStorefrontShippingRates(db, verified.handoff.siteId, address, subtotalMinor, checkoutOrderItems(verified.handoff.cart)))
+            resolvedRates = (await listStorefrontShippingRates(db, verified.handoff.siteId, address, subtotalMinor))
                 .map((rate) => ({
                     id: rate.id,
                     name: rate.name,
@@ -513,24 +583,9 @@ checkoutRouter.get('/:cartId/delivery-options', async (c) => {
             carrier_confirmed: false,
             rates: resolvedRates,
         }));
-    } catch (error) {
-        if (error instanceof AppError) throw error;
+    } catch {
         return c.json({ success: false, error: { code: 'CHECKOUT_SHIPPING_UNAVAILABLE', message: 'Delivery options are temporarily unavailable. Please retry.' } }, 503);
     }
-});
-
-checkoutRouter.post('/:cartId/quote', validate('json', CheckoutQuoteSchema), async (c) => {
-    const verified = await verifyCheckoutHandoff(c, c.req.param('cartId'));
-    if (!verified.ok) return verified.response;
-    const body = c.get('validatedBody') as {
-        shipping_address: Record<string, unknown>; shipping_rate_id: string; coupon_code?: string | null; customer_email?: string | null;
-    };
-    const quote = await quoteCheckoutTotals(getSupabaseAdmin(c), {
-        siteId: verified.handoff.siteId, items: checkoutOrderItems(verified.handoff.cart),
-        shippingAddress: body.shipping_address, shippingRateId: body.shipping_rate_id,
-        couponCode: body.coupon_code, customerEmail: body.customer_email,
-    });
-    return c.json(success({ quote }));
 });
 
 checkoutRouter.post('/:cartId/contact', validate('json', CheckoutContactSchema), async (c) => {
@@ -539,16 +594,13 @@ checkoutRouter.post('/:cartId/contact', validate('json', CheckoutContactSchema),
     if (!verified.ok) return verified.response;
     const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; email: string; name: string; phone?: string | null; gstin?: string | null };
 
-    return runIdempotentStep(c, verified.handoff, `checkout.contact:${cartId}`, body.idempotency_key, body, async (claimId) => {
-        const observed = await loadSession(getSupabaseAdmin(c), verified.handoff);
-        const restart = observed ? await canRestartContact(c, verified.handoff, observed) : false;
+    return runIdempotentStep(c, verified.handoff, `checkout.contact:${cartId}`, body.idempotency_key, body, async () => {
         const session = await persistCheckoutStep(c, verified.handoff, 'contact', {
-            ...(restart ? contactRestartPatch(observed!, claimId, new Date().toISOString()) : {}),
             customer_email: body.email,
             buyer_name: body.name,
             buyer_phone: body.phone || null,
             buyer_gstin: body.gstin || null,
-        }, observed, restart ? 'contact_restart' : 'normal');
+        });
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to contact.' } }, status: 409 };
         await emitCheckoutEvent(c, {
             siteId: verified.handoff.siteId,
@@ -566,10 +618,9 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
     const cartId = c.req.param('cartId');
     const verified = await verifyCheckoutHandoff(c, cartId);
     if (!verified.ok) return verified.response;
-    const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; shipping_method: string; shipping_address: JsonRecord; cod_requested: boolean; shipping_quote: JsonRecord; discount_codes?: string[]; expected_discount_amount_minor?: number; expected_quote_fingerprint?: string };
+    const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; shipping_method: string; shipping_address: JsonRecord; cod_requested: boolean; shipping_quote: JsonRecord };
 
     return runIdempotentStep(c, verified.handoff, `checkout.delivery:${cartId}`, body.idempotency_key, body, async () => {
-        const observed = await loadSession(getSupabaseAdmin(c), verified.handoff);
         // V1 LB-7: server-resolve shipping price; ignore any client-supplied price in shipping_quote.
         let serverResolvedQuote: JsonRecord = { cod_requested: body.cod_requested };
         const shippingRateId = typeof (body.shipping_quote as JsonRecord)?.shipping_rate_id === 'string'
@@ -593,8 +644,7 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
                     { country: addressCountry, state: addressState, stateCode: addressStateCode, pincode: addressPincode },
                 );
                 selectedRate = rates.find((rate) => rate.id === shippingRateId);
-            } catch (error) {
-                if (error instanceof AppError) throw error;
+            } catch {
                 return { body: { success: false, error: { code: 'CHECKOUT_SHIPPING_UNAVAILABLE', message: 'Delivery options could not be verified. Please retry.' } }, status: 503, retryable: true };
             }
             if (!selectedRate) {
@@ -633,11 +683,10 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
                     getSupabaseAdmin(c),
                     verified.handoff.siteId,
                     { country: addressCountry, state: addressState, stateCode: addressStateCode, pincode: addressPincode },
-                    subtotalMinor, checkoutOrderItems(verified.handoff.cart),
+                    subtotalMinor,
                 );
                 selectedRate = rates.find((rate) => rate.id === shippingRateId);
-            } catch (error) {
-                if (error instanceof AppError) throw error;
+            } catch {
                 return { body: { success: false, error: { code: 'CHECKOUT_SHIPPING_UNAVAILABLE', message: 'Delivery options could not be verified. Please retry.' } }, status: 503, retryable: true };
             }
             if (!selectedRate) {
@@ -663,38 +712,17 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
             };
         }
 
-        const discount = await verifyHostedDiscountSelection(getSupabaseAdmin(c), {
-            siteId: verified.handoff.siteId, cart: verified.handoff.cart, observed,
-            shippingAmount: typeof serverResolvedQuote.amount === 'number' ? serverResolvedQuote.amount : 0,
-            codes: body.discount_codes, expectedAmountMinor: body.expected_discount_amount_minor,
-        });
-        if (!discount.ok) return discount.refusal;
-
         const shippingAddress = { ...body.shipping_address };
         if (!stringValue(shippingAddress.state_code)) {
             const stateCode = gstStateCodeFromName(stringValue(shippingAddress.state));
             if (stateCode) shippingAddress.state_code = stateCode;
         }
 
-        const totalsQuote = await quoteCheckoutTotals(getSupabaseAdmin(c), {
-            siteId: verified.handoff.siteId, items: checkoutOrderItems(verified.handoff.cart),
-            shippingAddress, shippingRateId: String(serverResolvedQuote.shipping_rate_id),
-            couponCode: discount.codes[0], customerEmail: observed?.customer_email,
-        });
-        if (body.expected_quote_fingerprint !== totalsQuote.fingerprint) {
-            return { body: { success: false, error: { code: 'CHECKOUT_QUOTE_CHANGED',
-                message: 'The order total changed. Review the current total before paying.' } }, status: 409 };
-        }
-        serverResolvedQuote = { ...serverResolvedQuote, tax_quote_fingerprint: totalsQuote.fingerprint,
-            totals_quote: totalsQuote as unknown as JsonRecord };
-
         const session = await persistCheckoutStep(c, verified.handoff, 'delivery', {
             shipping_method: body.shipping_method,
             shipping_address: shippingAddress,
             delivery_quote: serverResolvedQuote,
-            discount_codes: discount.codes, discount_total: discount.amount,
-            metadata: { ...(observed?.metadata || {}), hosted_discount_selection_v1: true, hosted_delivery_signature: verified.handoff.signature || null },
-        }, observed);
+        });
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to delivery.' } }, status: 409 };
         return { body: success({ checkout: sessionPayload(session) }), status: 200, resourceId: session.id };
     });
@@ -702,19 +730,13 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
 
 checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentIntentSchema), async (c) => {
     const cartId = c.req.param('cartId');
-    const verified = await verifyCheckoutHandoff(c, cartId, false);
+    const verified = await verifyCheckoutHandoff(c, cartId);
     if (!verified.ok) return verified.response;
     const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; provider: string; mode: string; tokenize: boolean; metadata: JsonRecord };
 
     if (body.provider !== 'razorpay' && body.provider !== 'cod') {
         return c.json({ success: false, error: { code: 'CHECKOUT_PAYMENT_METHOD_UNSUPPORTED', message: 'Checkout payment method is not supported.' } }, 400);
     }
-
-    const priorSetup = await loadSession(getSupabaseAdmin(c), verified.handoff);
-    const recoveringProviderAttempt = body.provider === 'razorpay'
-        && priorSetup?.payment_intent?.provider === 'razorpay'
-        && typeof priorSetup.payment_intent.order_id === 'string';
-    if (!recoveringProviderAttempt) await authorizeHostedPurchase(c, verified.handoff);
 
     // D08 is still unresolved: marketplace provider eligibility, contracting entity and
     // seller/funds-flow terms have not been accepted. Keep this check ahead of the idempotent
@@ -743,37 +765,23 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
         return c.json({ success: false, error: { code: 'PAYMENT_SETUP_REQUIRED', message: 'Payment provider setup is required.' } }, 503);
     }
 
-    const priorCredentialId = stringValue(priorSetup?.payment_intent?.credential_id);
-    const razorpayCredentials = body.provider === 'razorpay' ? await hostedRazorpayTestCredentials(c, verified.handoff.siteId, undefined,
-        recoveringProviderAttempt && priorCredentialId ? { credentialId: priorCredentialId } : undefined) : null;
     if (body.provider === 'razorpay') {
-        if (!razorpayCredentials) {
+        if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
             return c.json({ success: false, error: { code: 'PAYMENT_SETUP_REQUIRED', message: 'Payment provider setup is required.' } }, 503);
-        }
-        const priorKeyId = stringValue(priorSetup?.payment_intent?.key_id);
-        if (priorKeyId && priorKeyId !== razorpayCredentials!.keyId) {
-            return c.json({ success: false, error: { code: 'CHECKOUT_PAYMENT_CONFIGURATION_CHANGED', message: 'Payment settings changed. Contact the store before retrying this payment.' } }, 409);
         }
         if (body.tokenize) {
             return c.json({ success: false, error: { code: 'CHECKOUT_TOKENIZATION_UNAVAILABLE', message: 'Payment tokenization is not available for this checkout.' } }, 400);
         }
     }
 
-    return runIdempotentStep(c, verified.handoff, `checkout.payment_intent:${cartId}`, body.idempotency_key, body, async (claimId) => {
-        const observed = await loadSession(getSupabaseAdmin(c), verified.handoff);
+    return runIdempotentStep(c, verified.handoff, `checkout.payment_intent:${cartId}`, body.idempotency_key, body, async () => {
         if (body.provider === 'razorpay') {
             const db = getSupabaseAdmin(c);
-            const existing = observed;
+            const existing = await loadSession(db, verified.handoff);
             if (!existing || !existing.customer_email || !existing.shipping_address || Object.keys(existing.shipping_address).length === 0) {
                 return { body: { success: false, error: { code: 'CHECKOUT_DETAILS_REQUIRED', message: 'Complete checkout contact and delivery details first.' } }, status: 409 };
             }
             const priorIntent = existing.payment_intent || {};
-            if (stringValue(priorIntent.credential_id) && priorIntent.credential_id !== razorpayCredentials?.credentialId) {
-                return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'This payment belongs to its original connection. Reload checkout.' } }, status: 409 };
-            }
-            if (priorIntent.status === 'creating_local_order' && !stringValue(priorIntent.order_id)) {
-                return { body: { success: false, error: { code: 'CHECKOUT_PROVIDER_ORDER_RECONCILIATION_REQUIRED', message: 'Online payment setup needs support review before retrying.' } }, status: 503, resourceId: existing.id };
-            }
             const priorProvider = stringValue(priorIntent.provider);
             if (priorProvider && priorProvider !== 'razorpay') {
                 return { body: { success: false, error: { code: 'CHECKOUT_PAYMENT_METHOD_LOCKED', message: 'This checkout already selected another payment method.' } }, status: 409 };
@@ -798,7 +806,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                             provider: 'razorpay',
                             status: 'requires_action',
                             mode: 'sandbox',
-                            key_id: razorpayCredentials!.keyId,
+                            key_id: c.env.RAZORPAY_KEY_ID,
                             provider_order_id: stringValue(priorIntent.provider_order_id),
                             amount_minor: priorIntent.amount_minor,
                             currency: priorIntent.currency,
@@ -828,8 +836,11 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                     let expectedOrderAmountMinor: number | null = null;
                     try {
                         const payable = await paymentAdapter.loadStorefrontPayableOrder(orderId, verified.handoff.siteId);
-                        const amountMinor = toInrMinorUnits(payable.total);
-                        if ((payable.currency || 'INR').toUpperCase() === 'INR') {
+                        const total = Number(payable.total);
+                        const amountMinor = Math.round(total * 100);
+                        if ((payable.currency || 'INR').toUpperCase() === 'INR'
+                            && Number.isSafeInteger(amountMinor)
+                            && Math.abs(total * 100 - amountMinor) <= 0.000001) {
                             expectedOrderAmountMinor = amountMinor;
                         }
                     } catch {
@@ -841,7 +852,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                         providerOrders = c.env.ENVIRONMENT === 'test' && c.env.HOSTED_RAZORPAY_TEST_ADAPTER
                             ? await c.env.HOSTED_RAZORPAY_TEST_ADAPTER.fetchOrdersByReceipt(cartId)
                             : await fetchRazorpayOrdersByReceipt(
-                                { keyId: razorpayCredentials!.keyId, keySecret: razorpayCredentials!.keySecret },
+                                { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
                                 cartId,
                             );
                     } catch {
@@ -876,7 +887,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                         const recoveredSession = await persistCheckoutStep(c, verified.handoff, 'payment_intent', {
                             payment_method: 'razorpay',
                             payment_intent: paymentIntent,
-                        }, existing);
+                        });
                         if (!recoveredSession) {
                             return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to payment.' } }, status: 409, resourceId: existing.id };
                         }
@@ -895,7 +906,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                                     provider: 'razorpay',
                                     status: 'requires_action',
                                     mode: 'sandbox',
-                                    key_id: razorpayCredentials!.keyId,
+                                    key_id: c.env.RAZORPAY_KEY_ID,
                                     provider_order_id: providerOrderId,
                                     amount_minor: expectedAmountMinor,
                                     currency: 'INR',
@@ -916,9 +927,6 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                 };
             }
 
-            // Recovery of an old provider attempt never authorizes a new
-            // provider order if the stored state changed while we were reading.
-            await authorizeHostedPurchase(c, verified.handoff);
             const revalidation = await revalidateConfirmInputs(c, verified.handoff, existing);
             if (!revalidation.ok) {
                 return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout details are no longer valid. Refresh checkout and try again.' } }, status: 409 };
@@ -932,15 +940,6 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
             );
             if (!plan.ok) return { body: { success: false, error: { code: plan.code, message: plan.message } }, status: 400 };
 
-            const setupIntentId = crypto.randomUUID();
-            const setupSession = await persistCheckoutStep(c, verified.handoff, 'payment_intent', {
-                payment_method: 'razorpay',
-                payment_intent: { provider: 'razorpay', mode: 'sandbox', key_id: razorpayCredentials!.keyId,
-                    ...(razorpayCredentials!.credentialId ? { credential_id: razorpayCredentials!.credentialId } : {}),
-                    status: 'creating_local_order', payment_intent_id: setupIntentId, setup_claim_id: claimId },
-            }, existing);
-            if (!setupSession) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout changed before payment setup.' } }, status: 409, retryable: true };
-
             // The pending order is created once before provider order creation. Its stable cart key
             // prevents a retry from making a second order or buyer link; the external create attempt
             // is persisted below so an ambiguous provider response cannot trigger another create.
@@ -953,16 +952,16 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
 
             const paymentAdapter = new PaymentExecutionAdapter(db);
             const payable = await paymentAdapter.loadStorefrontPayableOrder(orderId, verified.handoff.siteId);
-            const amountMinor = toInrMinorUnits(payable.total);
-            if ((payable.currency || 'INR').toUpperCase() !== 'INR' || amountMinor <= 0) {
+            const total = Number(payable.total);
+            const amountMinor = Math.round(total * 100);
+            if ((payable.currency || 'INR').toUpperCase() !== 'INR' || !Number.isSafeInteger(amountMinor)
+                || amountMinor <= 0 || Math.abs(total * 100 - amountMinor) > 0.000001) {
                 return { body: { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only exact INR checkout amounts are supported.' } }, status: 400, resourceId: orderId };
             }
 
-            const paymentIntentId = setupIntentId;
+            const paymentIntentId = crypto.randomUUID();
             const creatingIntent = {
                 payment_intent_id: paymentIntentId,
-                key_id: razorpayCredentials!.keyId,
-                ...(razorpayCredentials!.credentialId ? { credential_id: razorpayCredentials!.credentialId } : {}),
                 provider: 'razorpay',
                 mode: 'sandbox',
                 status: 'creating_provider_order',
@@ -976,13 +975,13 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
             const creatingSession = await persistCheckoutStep(c, verified.handoff, 'payment_intent', {
                 payment_method: 'razorpay',
                 payment_intent: creatingIntent,
-            }, setupSession);
+            });
             if (!creatingSession) {
                 return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to payment.' } }, status: 409, resourceId: existing.id };
             }
 
             const provider = c.env.ENVIRONMENT === 'test' && c.env.HOSTED_RAZORPAY_TEST_ADAPTER
-                || createRazorpayPaymentProvider({ keyId: razorpayCredentials!.keyId, keySecret: razorpayCredentials!.keySecret });
+                || createRazorpayPaymentProvider({ keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET });
             let intent: Awaited<ReturnType<typeof provider.createIntent>>;
             try {
                 intent = await provider.createIntent({
@@ -1010,7 +1009,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
             const session = await persistCheckoutStep(c, verified.handoff, 'payment_intent', {
                 payment_method: 'razorpay',
                 payment_intent: paymentIntent,
-            }, creatingSession);
+            });
             if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to payment.' } }, status: 409, resourceId: existing.id };
 
             await paymentAdapter.attachPaymentReference({
@@ -1028,7 +1027,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                         provider: 'razorpay',
                         status: 'requires_action',
                         mode: 'sandbox',
-                        key_id: razorpayCredentials!.keyId,
+                        key_id: c.env.RAZORPAY_KEY_ID,
                         provider_order_id: providerOrderId,
                         amount_minor: amountMinor,
                         currency: 'INR',
@@ -1039,9 +1038,6 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
             };
         }
 
-        if (!canPrepareCodIntent(observed, scopeFor(verified.handoff), verified.handoff.signature)) {
-            return { body: { success: false, error: { code: 'CHECKOUT_DETAILS_REQUIRED', message: 'Review current contact and delivery details before selecting COD.' } }, status: 409 };
-        }
         const intent = {
             payment_intent_id: `cod_${crypto.randomUUID()}`,
             provider: 'cod',
@@ -1054,7 +1050,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
         const session = await persistCheckoutStep(c, verified.handoff, 'payment_intent', {
             payment_method: body.provider,
             payment_intent: intent,
-        }, observed);
+        });
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to payment intent.' } }, status: 409 };
         return { body: success({ checkout: sessionPayload(session), payment_intent: intent }), status: 201, resourceId: session.id };
     });
@@ -1062,7 +1058,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
 
 checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema), async (c) => {
     const cartId = c.req.param('cartId');
-    const verified = await verifyCheckoutHandoff(c, cartId, false);
+    const verified = await verifyCheckoutHandoff(c, cartId);
     if (!verified.ok) return verified.response;
     const body = c.get('validatedBody') as JsonRecord & {
         idempotency_key: string;
@@ -1072,24 +1068,8 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
         razorpay_signature?: string;
     };
 
-    // Recover a committed acknowledgement without claiming new work or
-    // applying storefront navigation policy to an existing outcome.
-    const priorReply = await new IdempotencyExecutionAdapter(getSupabaseAdmin(c)).readCompleted({
-        siteId: verified.handoff.siteId, key: body.idempotency_key,
-        scope: `checkout.confirm:${cartId}`, requestBody: body,
-    });
-    if (priorReply) return c.json(priorReply.responseBody as never, priorReply.statusCode as never);
-    const requestHash = await sha256Hex(canonicalizeExecutionPayload(body));
-    const priorSession = await loadSession(getSupabaseAdmin(c), verified.handoff);
-    const recoveringCapture = priorSession?.payment_intent?.provider === 'razorpay'
-        && typeof priorSession.payment_intent.order_id === 'string';
-    const priorClaim = priorSession?.metadata?.hosted_confirmation_claim;
-    const priorCompletedReceipt = priorSession?.checkout_state === 'completed' && priorSession.confirmed_at && priorSession.order_id
-        && priorClaim && typeof priorClaim === 'object' && !Array.isArray(priorClaim) && priorClaim.request_hash === requestHash;
-    if (!recoveringCapture && !priorCompletedReceipt) await authorizeHostedPurchase(c, verified.handoff);
-
-    return runIdempotentStep(c, verified.handoff, `checkout.confirm:${cartId}`, body.idempotency_key, body, async (claimId) => {
-        let existing = await loadSession(getSupabaseAdmin(c), verified.handoff);
+    return runIdempotentStep(c, verified.handoff, `checkout.confirm:${cartId}`, body.idempotency_key, body, async () => {
+        const existing = await loadSession(getSupabaseAdmin(c), verified.handoff);
         if (!existing) return { body: { success: false, error: { code: 'CHECKOUT_NOT_STARTED', message: 'Checkout has not started.' } }, status: 409 };
 
         const orderPlan = buildHostedCheckoutOrderCommand(verified.handoff, existing, body.idempotency_key);
@@ -1102,10 +1082,6 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
                 status: 400,
                 resourceId: existing.id,
             };
-        }
-
-        if (orderPlan.provider === 'cod' && recoveringCapture) {
-            await authorizeHostedPurchase(c, verified.handoff);
         }
 
         const requestedPaymentIntentId = stringValue(body.payment_intent_id);
@@ -1124,46 +1100,9 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             };
         }
 
-        const claim: ConfirmationClaim = { id: claimId, requestHash, intentId: expectedPaymentIntentId || '' };
-        // A restarted checkout must name its replacement intent explicitly. Fresh
-        // legacy COD commands remain compatible; an old intent-less command
-        // cannot adopt a replacement created after explicit re-entry.
-        if (orderPlan.provider === 'cod' && (!claim.intentId || (requestedPaymentIntentId && requestedPaymentIntentId !== claim.intentId)
-            || (!requestedPaymentIntentId && Array.isArray(existing.metadata?.hosted_contact_reentries) && existing.metadata.hosted_contact_reentries.length > 0))) {
-            return { body: { success: false, error: { code: 'CHECKOUT_PAYMENT_INTENT_MISMATCH', message: 'Review the current checkout payment choice.' } }, status: 409 };
-        }
-        const decision = confirmationDecision(existing, scopeFor(verified.handoff), claim);
-        if (decision === 'completed_receipt') {
-            const receipt = existing.metadata?.hosted_confirmation_order_receipt;
-            if (!receipt || typeof receipt !== 'object' || Array.isArray(receipt) || receipt.id !== existing.order_id) {
-                return { body: { success: false, error: { code: 'CHECKOUT_ORDER_UNAVAILABLE', message: 'The completed checkout acknowledgement needs recovery.' } }, status: 503, retryable: true };
-            }
-            return { body: success({ checkout: sessionPayload(existing), order: receipt }), status: 200, resourceId: existing.id };
-        }
-        if (decision === 'deny') return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout confirmation is already owned or closed.' } }, status: 409, retryable: true };
-        let claimEstablished = decision === 'resume' || decision === 'recover_committed';
-        const ensureConfirmationClaim = async (): Promise<boolean> => {
-            if (claimEstablished) return true;
-            const claimed = await persistCheckoutStep(c, verified.handoff, 'confirming', confirmationClaimPatch(existing!, claim), existing);
-            if (!claimed) return false;
-            existing = claimed;
-            claimEstablished = true;
-            return true;
-        };
         const db = getSupabaseAdmin(c);
-        const committedCodOrder = decision === 'recover_committed'
-            ? await loadCommittedCodOrder(db, verified.handoff, existing, orderPlan.command) : null;
-        if (decision === 'recover_committed' && !committedCodOrder) {
-            return { body: { success: false, error: { code: 'CHECKOUT_ORDER_UNAVAILABLE', message: 'The original checkout outcome needs recovery.' } }, status: 503, retryable: true };
-        }
         let existingRazorpayOrder: JsonRecord | null = null;
         if (orderPlan.provider === 'razorpay') {
-            const originalCredentialId = stringValue(existing.payment_intent?.credential_id);
-            const razorpayCredentials = await hostedRazorpayTestCredentials(c, verified.handoff.siteId, undefined,
-                originalCredentialId ? { credentialId: originalCredentialId } : undefined);
-            if (!razorpayCredentials) return { body: { success: false, error: { code: 'PAYMENT_SETUP_REQUIRED', message: 'Payment setup is required for this store.' } }, status: 503, retryable: true };
-            const boundKeyId = stringValue(existing.payment_intent?.key_id);
-            if (boundKeyId && boundKeyId !== razorpayCredentials.keyId) return { body: { success: false, error: { code: 'CHECKOUT_PAYMENT_CONFIGURATION_CHANGED', message: 'Payment settings changed. Contact the store before retrying this payment.' } }, status: 409, retryable: true };
             const providerOrderId = stringValue(body.razorpay_order_id);
             const providerPaymentId = stringValue(body.razorpay_payment_id);
             const signature = stringValue(body.razorpay_signature);
@@ -1181,7 +1120,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
                 };
             }
 
-            const proof = await verifyRazorpayPayment(razorpayCredentials.keySecret, {
+            const proof = await verifyRazorpayPayment(c.env.RAZORPAY_KEY_SECRET, {
                 providerOrderId,
                 providerPaymentId,
                 signature,
@@ -1218,24 +1157,17 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             } catch {
                 return { body: { success: false, error: { code: 'CHECKOUT_ORDER_UNAVAILABLE', message: 'Checkout could not be confirmed.' } }, status: 409, resourceId: existing.id };
             }
-            const orderAmountMinor = toInrMinorUnits(payable.total);
-            // The verified webhook may commit this same capture before the
-            // browser callback arrives. The canonical writer then replaces the
-            // order reference with its payment ID. Both still identify this
-            // bound attempt; the replay check above and provider read below
-            // independently enforce order, payment, amount and currency.
-            if ((payable.payment_id !== boundProviderOrderId && payable.payment_id !== providerPaymentId)
-                || payable.currency?.toUpperCase() !== expectedCurrency
+            const orderAmountMinor = Math.round(Number(payable.total) * 100);
+            if (payable.payment_id !== boundProviderOrderId || payable.currency?.toUpperCase() !== expectedCurrency
                 || orderAmountMinor !== expectedAmountMinor || !Number.isSafeInteger(orderAmountMinor)) {
                 return { body: { success: false, error: { code: 'CHECKOUT_PROVIDER_AMOUNT_MISMATCH', message: 'Payment could not be matched to this checkout.' } }, status: 409, resourceId: existing.id };
             }
 
-            if (!await ensureConfirmationClaim()) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout changed before payment confirmation.' } }, status: 409, retryable: true };
             let providerPayment: Awaited<ReturnType<typeof fetchRazorpayPayment>>;
             try {
                 providerPayment = c.env.ENVIRONMENT === 'test' && c.env.HOSTED_RAZORPAY_TEST_ADAPTER
                     ? await c.env.HOSTED_RAZORPAY_TEST_ADAPTER.fetchPayment(providerPaymentId)
-                    : await fetchRazorpayPayment({ keyId: razorpayCredentials.keyId, keySecret: razorpayCredentials.keySecret }, providerPaymentId);
+                    : await fetchRazorpayPayment({ keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET }, providerPaymentId);
             } catch {
                 return { body: { success: false, error: { code: 'CHECKOUT_PROVIDER_STATUS_UNAVAILABLE', message: 'Payment status is temporarily unavailable. Retry confirmation.' } }, status: 503, resourceId: existing.id, retryable: true };
             }
@@ -1292,8 +1224,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             };
         }
 
-        if (!await ensureConfirmationClaim()) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout changed before confirmation.' } }, status: 409, retryable: true };
-        const revalidation = orderPlan.provider === 'cod' && !committedCodOrder
+        const revalidation = orderPlan.provider === 'cod'
             ? await revalidateConfirmInputs(c, verified.handoff, existing)
             : { ok: true as const };
         if (!revalidation.ok) {
@@ -1301,7 +1232,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             const failedSession = await persistCheckoutStep(c, verified.handoff, 'failed', {
                 failed_at: new Date().toISOString(),
                 metadata: { ...(existing.metadata || {}), failure_reason: reason },
-            }, existing) || existing;
+            }) || existing;
             await emitCheckoutEvent(c, {
                 siteId: verified.handoff.siteId,
                 cartId,
@@ -1314,19 +1245,8 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
         }
 
         const tenant = await createPublicStorefrontTenantContext(c, verified.handoff.siteId);
-        let order: JsonRecord;
-        try {
-            // A converted-cart claim can only finish its proven existing order;
-            // it never reaches the creation RPC or current catalogue validators.
-            order = committedCodOrder
-                ? await new OrderExecutionAdapter(db).completeOrderPostCommitWork(orderPlan.command, tenant, committedCodOrder) as JsonRecord
-                : existingRazorpayOrder || await new OrderExecutionAdapter(db).createOrder(orderPlan.command, tenant) as JsonRecord;
-        } catch (error) {
-            const code = error instanceof AppError ? error.code : '';
-            const released = releaseRejectedCodClaimPatch(existing, claim, code);
-            if (released) await persistCheckoutStep(c, verified.handoff, 'payment_intent', released, existing, 'rejected_confirmation');
-            throw error;
-        }
+        const order = existingRazorpayOrder
+            || await new OrderExecutionAdapter(db).createOrder(orderPlan.command, tenant) as JsonRecord;
         const orderId = stringValue(order.id);
         if (!orderId) {
             throw new Error('Hosted checkout order creation returned no order id');
@@ -1358,7 +1278,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
                         capture_posted_to_ledger: true,
                         failure_reason: 'payment_captured_order_unfulfillable',
                     },
-                }, existing);
+                });
                 if (!failedSession) throw new Error('Could not persist unfulfillable captured-payment checkout state');
                 await emitCheckoutEvent(c, {
                     siteId: verified.handoff.siteId,
@@ -1407,10 +1327,9 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
                 order_id: orderId,
                 payment_provider: orderPlan.provider,
                 capture_posted_to_ledger: capturePostedToLedger,
-                hosted_confirmation_order_receipt: JSON.parse(JSON.stringify(redactReplayableSecrets(paidOrder as JsonValue))) as JsonValue,
             },
-        }, existing);
-        if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'The original checkout acknowledgement needs recovery.' } }, status: 503, retryable: true };
+        });
+        if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot be confirmed.' } }, status: 409 };
 
         await db
             .from('carts')
@@ -1431,20 +1350,58 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
 });
 
 checkoutRouter.get('/:id', async (c) => {
-    const siteIds = c.req.queries('site_id') || [];
-    const tokens = c.req.queries('cart_token') || [];
-    if (siteIds.length !== 1 || tokens.length > 1) return c.json({ success: false, error: { code: 'VALIDATION', message: 'One site and cart capability are required.' } }, 400);
-    if (!tokens[0]) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A checkout cart capability is required.' } }, 401);
-    const parsed = CheckoutStateReadSchema.safeParse({id: c.req.param('id'), site_id: siteIds[0], cart_token: tokens[0]});
-    if (!parsed.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Checkout reference is invalid.' } }, 400);
-    const { data, error } = await getSupabaseAdmin(c).from('checkout_sessions')
-        .select('id,site_id,cart_id,channel,sales_origin,checkout_state,status,customer_email,buyer_name,buyer_phone,shipping_address,delivery_quote,payment_intent,confirmed_at,failed_at')
-        .eq('site_id', parsed.data.site_id).eq('id', parsed.data.id)
-        .eq('cart_token', parsed.data.cart_token).is('deleted_at', null).maybeSingle();
-    if (error) throw new AppError('Checkout is temporarily unavailable', 503, 'CHECKOUT_UNAVAILABLE');
+    const checkoutId = c.req.param('id');
+    const siteId = c.req.query('site_id');
+    const cartToken = c.req.query('cart_token');
+    if (!siteId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'site_id required' } }, 400);
+
+    const db = getSupabaseAdmin(c);
+    let query = db
+        .from('checkout_sessions')
+        .select('*')
+        .eq('site_id', siteId)
+        .eq('id', checkoutId)
+        .is('deleted_at', null);
+    if (cartToken) query = query.eq('cart_token', cartToken);
+    const { data } = await query.maybeSingle();
     if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Checkout session not found' } }, 404);
     return c.json(success({ checkout: sessionPayload(data as CheckoutSessionRow) }));
 });
+
+function defaultBranding(siteId: string) {
+    return {
+        site_id: siteId,
+        logo_url: null,
+        favicon_url: null,
+        primary_color: '#111827',
+        accent_color: '#2563EB',
+        checkout_theme: 'system',
+        tokens: {},
+    };
+}
+
+// T8/W2 — store_branding's real columns are only site_id/logo_url/favicon_url/primary_color/
+// accent_color/checkout_theme/tokens/metadata (no migration this phase). The 7 new
+// StoreBrandingSchema fields (secondary/background/text/surface colour, both fonts, radius,
+// is_dark) are genuinely typed and validated at the Zod layer, but physically persist inside the
+// existing schemaless `tokens` jsonb column under this reserved, unambiguous key prefix — never
+// mixed with a merchant's own arbitrary `tokens` entries, and never spread directly onto the
+// upsert payload (the table has no such columns; doing that would 500 on a real write).
+const EXTENDED_BRANDING_TOKEN_PREFIX = 'theme_override__';
+const EXTENDED_BRANDING_FIELDS = [
+    'secondary_color', 'background_color', 'text_color', 'surface_color',
+    'heading_font_family', 'body_font_family', 'border_radius', 'is_dark',
+] as const;
+
+function packExtendedBrandingIntoTokens(body: StoreBrandingInput): Record<string, string | number | boolean> {
+    const packed: Record<string, string | number | boolean> = { ...body.tokens };
+    for (const field of EXTENDED_BRANDING_FIELDS) {
+        const value = body[field];
+        if (value === undefined || value === null) continue;
+        packed[`${EXTENDED_BRANDING_TOKEN_PREFIX}${field}`] = value;
+    }
+    return packed;
+}
 
 publicStoreBrandingRouter.get('/:storeId/branding', async (c) => {
     const storeId = c.req.param('storeId');

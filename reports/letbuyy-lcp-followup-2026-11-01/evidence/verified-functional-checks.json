@@ -1,0 +1,75 @@
+{
+  "build_id": "W9oy6Qmr7OkmbbL7Lz_ei",
+  "rows": [
+    {
+      "script": "accepted-http.py",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:36:01.801591+00:00"
+    },
+    {
+      "script": "accepted-final-site-browser.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:39:48.043095+00:00"
+    },
+    {
+      "script": "accepted-delivery-templates.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:40:06.924596+00:00"
+    },
+    {
+      "script": "accepted-final-animation-local-api.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:40:59.873441+00:00"
+    },
+    {
+      "script": "accepted-final-interactions-touch-final.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:41:15.513789+00:00"
+    },
+    {
+      "script": "accepted-final-touch-final.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:41:22.739836+00:00"
+    },
+    {
+      "script": "accepted-final-carousel-motion.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:41:33.624462+00:00"
+    },
+    {
+      "script": "accepted-final-menu-visual.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:41:45.255480+00:00"
+    },
+    {
+      "script": "accepted-delivery-spa.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:42:09.290356+00:00"
+    },
+    {
+      "script": "accepted-delivery-native-parity.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:42:19.031016+00:00"
+    },
+    {
+      "script": "accepted-final-scroll-visual.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:42:59.864246+00:00"
+    },
+    {
+      "script": "nojs.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:43:03.895108+00:00"
+    },
+    {
+      "script": "visual-final.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:48:55.074480+00:00"
+    },
+    {
+      "script": "ratio-fix-visual.cjs",
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:49:56.971161+00:00"
+    }
+  ]
+}

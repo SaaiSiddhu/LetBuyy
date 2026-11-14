@@ -60,7 +60,6 @@ export const ORDER_LIST_COLUMN_NAMES = [
     'customer_gstin',
     'place_of_supply_state',
     'gst_invoice_number',
-    'tax_snapshot',
     'gst_invoice',
 ] as const;
 export const ORDER_LIST_COLUMNS_RELATIONAL = ORDER_LIST_COLUMN_NAMES

@@ -1,11 +1,9 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { Button, Input, Table, Avatar, Badge, Banner, Card, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
 import { formatDisplayDate } from '@letbuyy/ui/formatting'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import type { InventoryLevel } from '@letbuyy/shared-types'
@@ -61,10 +59,10 @@ function normalizeInventoryItem(row: Record<string, unknown>): InventoryItem {
         sku: typeof row.sku === 'string' ? row.sku : null,
         images: Array.isArray(row.images) ? row.images.filter((image): image is string => typeof image === 'string') : [],
         available: typeof row.available === 'number' ? row.available : typeof row.available === 'string' && /^-?[0-9]+$/.test(row.available) ? Number(row.available) : Number.NaN,
-        reserved: typeof row.reserved === 'number' ? row.reserved : Number.NaN,
-        incoming: typeof row.incoming === 'number' ? row.incoming : Number.NaN,
-        on_hand: typeof row.on_hand === 'number' ? row.on_hand : Number.NaN,
-        sellable: typeof row.sellable === 'number' ? row.sellable : Number.NaN,
+        reserved: Number(row.reserved || 0),
+        incoming: Number(row.incoming || 0),
+        on_hand: Number(row.on_hand || 0),
+        sellable: Number(row.sellable || row.available || 0),
         track_inventory: row.track_inventory !== false,
         updated_at: typeof row.updated_at === 'string' ? row.updated_at : null,
     }
@@ -86,10 +84,6 @@ export default function InventoryPage() {
     const [accessChanged, setAccessChanged] = useState(false)
     const [products, setProducts] = useState<InventoryItem[]>([])
     const [loading, setLoading] = useState(true)
-    const [pageScope, setPageScope] = useState({ key: storageKey, page: 1 })
-    const page = pageScope.key === storageKey ? pageScope.page : 1
-    const [pageMeta, setPageMeta] = useState<{ total: number | null; hasNext: boolean }>({ total: null, hasNext: false })
-    const beginInventory = useReadRequest(`${storageKey}:${page}`)
     const [searchQuery, setSearchQuery] = useState('')
     const [editingId, setEditingId] = useState<string | null>(null)
     const [quantity, setQuantity] = useState('')
@@ -109,29 +103,24 @@ export default function InventoryPage() {
     }, [actorId, store, storageKey])
 
     const loadInventory = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginInventory()
         const captured = scope.current, sequence = ++readSequence.current
         if (!options?.quiet) setLoading(true)
         setError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory/levels?limit=100&page=${page}`, {
-                cache: 'no-store', signal: request.signal, headers: { 'X-LetBuyy-Merchant-Context': actorId },
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory/levels?limit=100`, {
+                cache: 'no-store', headers: { 'X-LetBuyy-Merchant-Context': actorId },
             })
             const payload = await response.json().catch(() => null)
             if (!response.ok) throw new Error(getErrorMessage(payload, 'Unable to load inventory'))
-            if (!Array.isArray(payload?.data)) throw new Error('Inventory response is incomplete')
-            const rows = payload.data.map((row: Record<string, unknown>) => normalizeInventoryItem(row)) as InventoryItem[]
-            if (!request.isCurrent() || !currentScope(captured) || sequence !== readSequence.current) return
-            setPageMeta({ total: Number.isSafeInteger(payload?.meta?.total) ? payload.meta.total : null, hasNext: payload?.meta?.has_next === true })
-            const verified = (row: InventoryItem) => Boolean(row.id && row.product_id)
-                && [row.available, row.reserved, row.incoming, row.on_hand, row.sellable].every(Number.isSafeInteger)
-            setProducts(rows.filter(verified))
-            if (rows.some(row => !verified(row))) setError('Some stock quantities could not be verified. Refresh before adjusting those records.')
+            const rows = Array.isArray(payload?.data) ? payload.data.map((row: Record<string, unknown>) => normalizeInventoryItem(row)) as InventoryItem[] : []
+            if (!currentScope(captured) || sequence !== readSequence.current) return
+            setProducts(rows.filter(row => row.id && Number.isSafeInteger(row.available)))
+            if (rows.some(row => !Number.isSafeInteger(row.available))) setError('Some stock quantities could not be verified. Refresh before adjusting those records.')
         } catch (inventoryError) {
-            if (!request.isCurrent() || !currentScope(captured) || sequence !== readSequence.current) return
+            if (!currentScope(captured) || sequence !== readSequence.current) return
             setProducts([]); setError(inventoryError instanceof Error ? inventoryError.message : 'Unable to load inventory')
-        } finally { if (request.isCurrent() && currentScope(captured) && sequence === readSequence.current) setLoading(false) }
-    }, [actorId, beginInventory, currentScope, page, store])
+        } finally { if (currentScope(captured) && sequence === readSequence.current) setLoading(false) }
+    }, [actorId, currentScope, store])
     useEffect(() => { void loadInventory(); return () => { readSequence.current++ } }, [loadInventory])
 
     const filtered = useMemo(() => {
@@ -309,8 +298,7 @@ export default function InventoryPage() {
 
     return (
         <Page>
-            <PageHeader identity="products"
-                recipe="index"
+            <PageHeader
                 title="Inventory"
                 description="Review stock availability and adjust tracked inventory quantities."
                 breadcrumbs={[{ label: 'Inventory' }]}
@@ -350,14 +338,23 @@ export default function InventoryPage() {
                 <Section
                     title="Stock levels"
                     description="Adjust available stock without changing product details."
-                    action={<Badge label={`${pageMeta.total ?? products.length} tracked`} variant="info" />}
+                    action={<Badge label={`${products.length} tracked`} variant="info" />}
                 >
                     {loading ? (
                         <Skeleton variant="table" lines={6} />
                     ) : products.length === 0 ? (
-                        <EmptyState scene="inventory"
-                            title={error ? 'Unable to load inventory' : page > 1 ? 'No stock levels on this page' : 'No inventory to track'}
-                            body={error || (page > 1 ? 'Return to the previous page or refresh to check current stock levels.' : 'Add products to your store to start tracking inventory levels.')}
+                        <EmptyState
+                            illustration={
+                                <Image
+                                    src="/Emptystate Illustration/Inventory_Emptystate.png"
+                                    alt=""
+                                    width={200}
+                                    height={200}
+                                    aria-hidden="true"
+                                />
+                            }
+                            title={error ? 'Unable to load inventory' : 'No inventory to track'}
+                            body={error || 'Add products to your store to start tracking inventory levels.'}
                             primaryAction={error ? (
                                 <Button type="button" onClick={() => void loadInventory()}>
                                     <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
@@ -369,7 +366,7 @@ export default function InventoryPage() {
                         <div className="space-y-[var(--lb-space-4)]">
                             <Input
                                 aria-label="Search inventory"
-                                placeholder="Search this page by product, SKU, or location..."
+                                placeholder="Search inventory by product, SKU, or location..."
                                 value={searchQuery}
                                 onChange={(event) => setSearchQuery(event.target.value)}
                                 leftIcon={<Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
@@ -380,7 +377,7 @@ export default function InventoryPage() {
                                 columns={columns}
                                 filterChips={searchQuery ? [{ label: `Search: ${searchQuery}`, onRemove: () => setSearchQuery('') }] : []}
                                 emptyState={(
-                                    <EmptyState scene="inventory"
+                                    <EmptyState
                                         icon={<Search className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                                         title="No inventory matches your search"
                                         body="Clear the search query to see all tracked inventory."
@@ -390,11 +387,6 @@ export default function InventoryPage() {
                             />
                         </div>
                     )}
-                    {(page > 1 || pageMeta.hasNext) && <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
-                        <Button variant="secondary" disabled={page <= 1 || loading || actionsBlocked || Boolean(editingId)} onClick={() => { setSearchQuery(''); setPageScope({ key: storageKey, page: page - 1 }) }}>Previous page</Button>
-                        <span>Page {page}</span>
-                        <Button variant="secondary" disabled={!pageMeta.hasNext || loading || actionsBlocked || Boolean(editingId)} onClick={() => { setSearchQuery(''); setPageScope({ key: storageKey, page: page + 1 }) }}>Next page</Button>
-                    </div>}
                 </Section>
             </Card>
 

@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
@@ -10,6 +8,7 @@ import {
     Button,
     Card,
     Drawer,
+    EmptyState,
     Input,
     MaterialIcon,
     NumberField,
@@ -21,7 +20,6 @@ import {
     Switch,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 // ---------------------------------------------------------------------------
@@ -484,19 +482,16 @@ export default function CustomerSegmentsPage() {
     // Load segments
     // -----------------------------------------------------------------------
 
-    const beginLoadSegments = useReadRequest(store)
     const loadSegments = useCallback(async () => {
-        const request = beginLoadSegments()
         setLoading(true)
         setListError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/customers/segments`,
-                { cache: 'no-store', signal: request.signal },
+                { cache: 'no-store' },
             )
             const payload = await response.json().catch(() => null) as { data?: unknown[]; error?: unknown } | null
 
-            if (!request.isCurrent()) return
             if (!response.ok) {
                 const msg = payload?.error
                     ? (typeof payload.error === 'string' ? payload.error : JSON.stringify(payload.error))
@@ -510,12 +505,11 @@ export default function CustomerSegmentsPage() {
                 : []
             setSegments(rows)
         } catch {
-            if (!request.isCurrent()) return
             setListError('Unable to load customer segments.')
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginLoadSegments, store])
+    }, [store])
 
     useEffect(() => {
         void loadSegments()
@@ -525,10 +519,7 @@ export default function CustomerSegmentsPage() {
     // Preview
     // -----------------------------------------------------------------------
 
-    const previewIdentity = JSON.stringify([store, drawerOpen, formStateToRules(form)])
-    const beginPreview = useReadRequest(previewIdentity)
     const runPreview = useCallback(async (currentForm: SegmentFormState) => {
-        const request = beginPreview()
         setPreviewLoading(true)
         setPreview(null)
         try {
@@ -537,22 +528,20 @@ export default function CustomerSegmentsPage() {
                 `/api/stores/${encodeURIComponent(store)}/customers/segments/preview`,
                 {
                     method: 'POST',
-                    signal: request.signal,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ rules }),
                 },
             )
             const payload = await response.json().catch(() => null) as { data?: Record<string, unknown> } | null
-            if (!request.isCurrent()) return
             if (response.ok && payload?.data) {
                 setPreview(mapPreview(payload.data as Record<string, unknown>))
             }
         } catch {
             // preview failure is non-fatal; just leave preview null
         } finally {
-            if (request.isCurrent()) setPreviewLoading(false)
+            setPreviewLoading(false)
         }
-    }, [beginPreview, store])
+    }, [store])
 
     const handlePreview = useCallback(() => {
         void runPreview(form)
@@ -560,8 +549,6 @@ export default function CustomerSegmentsPage() {
 
     // Auto-preview on form changes with debounce
     useEffect(() => {
-        setPreview(null)
-        setPreviewLoading(false)
         if (!drawerOpen) return
         if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current)
         previewTimeoutRef.current = setTimeout(() => {
@@ -570,7 +557,8 @@ export default function CustomerSegmentsPage() {
         return () => {
             if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current)
         }
-    }, [form, drawerOpen, runPreview])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [form, drawerOpen])
 
     // -----------------------------------------------------------------------
     // Open drawer
@@ -661,8 +649,7 @@ export default function CustomerSegmentsPage() {
 
     return (
         <Page>
-            <PageHeader identity="customers"
-                recipe="index"
+            <PageHeader
                 eyebrow="Relationships"
                 title="Customer segments"
                 description="Group customers by shared attributes to target campaigns and understand your audience."
@@ -696,7 +683,7 @@ export default function CustomerSegmentsPage() {
             ) : segments.length === 0 ? (
                 <Card>
                     <Section>
-                        <EmptyState scene="segments"
+                        <EmptyState
                             icon={<MaterialIcon name="group_work" />}
                             title="No segments yet"
                             body="Create a segment to group customers by status, tags, spend, order count, or last order date."

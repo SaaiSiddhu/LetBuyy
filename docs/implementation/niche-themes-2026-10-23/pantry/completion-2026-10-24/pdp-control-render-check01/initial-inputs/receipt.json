@@ -1,9 +1,0 @@
-{
-  "recordedAt": "2026-10-24T12:35:47.775701+00:00",
-  "tests": 6,
-  "pass": 5,
-  "fail": 1,
-  "failure": "PDPCTRL03 cleared description leaves empty disclosure",
-  "testSha256": "e3c3eee73adb8747dd5bd772156b068c3091e3d220797d7364acd43c13f2a12c",
-  "tapSha256": "695d5fe86581a198849fe0b944f48ba9ad33b4b87b5453243415a82968759135"
-}

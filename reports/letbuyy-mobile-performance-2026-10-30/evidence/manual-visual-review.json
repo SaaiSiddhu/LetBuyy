@@ -1,0 +1,18 @@
+{
+  "captured_at": "2026-10-30T00:29:02.821150+00:00",
+  "build_id": "Jt6Duvm2bymgmwpDPdjxY",
+  "reviewed": [
+    "visual/_in-375-light-before.png",
+    "visual/_in-375-light-after.png",
+    "visual/_in_pricing-1366-light-after.png",
+    "font-feature-home-before-crop.png",
+    "font-feature-home-after-crop.png"
+  ],
+  "observations": [
+    "Mobile hero mark, typography, copy, buttons, spacing and beginning of capability map visually match baseline.",
+    "Desktop pricing artwork, real prices, plan states, layout and typography remain readable and coherent.",
+    "Retained font outlines/geometry remain unchanged; raster equality is not asserted."
+  ],
+  "method": "Manual inspection of actual captured images, supplemented by the separate geometry/copy comparisons and animation scenarios",
+  "passed_within_reviewed_samples": true
+}

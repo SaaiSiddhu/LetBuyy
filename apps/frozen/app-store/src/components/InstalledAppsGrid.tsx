@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Activity, Button, ConfirmDialog, ExternalLink, Loader2, Package, Settings, ShieldCheck, Trash2 } from '@letbuyy/ui';
 import type { AppActivityEvent, InstalledApp } from '@letbuyy/shared-types';
 import Link from 'next/link';
@@ -273,7 +273,6 @@ function InstalledAppActivityPanel({ installation }: { installation: InstalledAp
 }
 
 export function InstalledAppsGrid({ installations }: InstalledAppsGridProps) {
-    const uninstallIntent = useRef<{ fingerprint: string; key: string } | null>(null);
     const [installedApps, setInstalledApps] = useState(installations);
     const [pendingUninstall, setPendingUninstall] = useState<InstalledApp | null>(null);
     const [uninstallReason, setUninstallReason] = useState('');
@@ -289,13 +288,9 @@ export function InstalledAppsGrid({ installations }: InstalledAppsGridProps) {
         setError(null);
 
         try {
-            const fingerprint = JSON.stringify([pendingUninstall.id, uninstallReason.trim()]);
-            if (uninstallIntent.current?.fingerprint !== fingerprint) {
-                uninstallIntent.current = { fingerprint, key: crypto.randomUUID() };
-            }
             const response = await fetch(`/api/apps/${pendingUninstall.app_id}/install?store_id=${encodeURIComponent(pendingUninstall.store_id)}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': uninstallIntent.current.key },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     reason_code: uninstallReason.trim() ? 'merchant_feedback' : undefined,
                     reason_text: uninstallReason.trim() || undefined,

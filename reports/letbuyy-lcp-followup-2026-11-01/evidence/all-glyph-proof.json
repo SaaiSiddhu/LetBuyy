@@ -1,0 +1,21 @@
+{
+  "all_glyph_count": 332,
+  "samples": 18260,
+  "including_non_unicode_alternates": true,
+  "all_outlines_and_advance_widths_exact": true,
+  "unchanged_table_bytes": {
+    "GSUB": true,
+    "GPOS": true,
+    "GDEF": true,
+    "HVAR": true,
+    "MVAR": true,
+    "avar": true,
+    "cmap": true,
+    "OS/2": true,
+    "hhea": true,
+    "hmtx": true,
+    "maxp": true,
+    "name": true,
+    "post": true
+  }
+}

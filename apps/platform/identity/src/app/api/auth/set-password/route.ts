@@ -13,15 +13,6 @@ import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
 import { validateCsrf } from '@/lib/auth/csrf'
 import { consumePasswordSetIntent } from '@/lib/auth/password-set-intent'
 
-/** Advisory form readiness only. POST consumes and validates the server intent. */
-export async function GET() {
-    const intentId = await getPasswordSetIntentCookie()
-    return NextResponse.json({ canSetPassword: Boolean(intentId) }, {
-        status: intentId ? 200 : 403,
-        headers: { 'Cache-Control': 'private, no-store' },
-    })
-}
-
 /**
  * POST /api/auth/set-password
  * Set password for a newly verified account (after OTP verification).

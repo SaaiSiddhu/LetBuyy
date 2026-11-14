@@ -1,0 +1,17 @@
+{
+  "capturedAt": "2026-11-03T08:42:06.774666+00:00",
+  "beforePath": "apps/marketing/web/src/middleware.ts",
+  "afterPath": "apps/marketing/web/src/proxy.ts",
+  "beforeSha256": "1c45a1bb34d6ab7f898bd1b4f2b923834d3fba93d98a99eed7af4da189246a80",
+  "afterSha256": "7c3d917ce3240400e297ee39672a9e4362d9e78b3b91490c8bcdfb6181108280",
+  "onlyEntrypointAndImportSpellingChanged": true,
+  "logicPreserved": true,
+  "deprecationWarningAbsent": true,
+  "unitCases": 6,
+  "httpParityCases": 12,
+  "canonicalKnownUrlChecks": 489,
+  "sourceCssEdited": false,
+  "fontChangesAdopted": false,
+  "uiPackageChangesAdopted": false,
+  "nextConfigInliningAdopted": false
+}

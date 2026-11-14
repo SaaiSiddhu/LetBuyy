@@ -1,8 +1,84 @@
 import { cache } from 'react'
-import { createMerchantApiClient } from '@/lib/api/client'
+import { LetbuyyApiError } from '@letbuyy/api-client'
+import { MerchantApiRequestError, createMerchantApiClient } from '@/lib/api/client'
 
-import { apiErrorStatus, retryMerchantRead } from '@/lib/api/read-retry'
-export { isQueryCostRateLimited } from '@/lib/api/read-retry'
+const QUERY_COST_RATE_LIMITED = 'QUERY_COST_RATE_LIMITED'
+// Backoff for transient merchant reads — ~16s total to cover both gateway
+// hot-reload (~16ms downtime after wrangler.toml fix) and cold start (~8-10s
+// for wrangler to bind :9010 on first `pnpm dev`). Covers: query-cost rate
+// limits (429), connection failures ("fetch failed" — null HTTP status), and
+// gateway-not-yet-ready (502/503/504). After all attempts the error surfaces.
+const QUERY_COST_RETRY_DELAYS_MS = [250, 500, 1_000, 2_000, 3_500, 5_000, 7_500] as const
+const MERCHANT_READ_RETRY_DELAYS_MS = QUERY_COST_RETRY_DELAYS_MS
+
+/**
+ * Extract the HTTP status code carried by a typed API error.
+ * Returns null for non-HTTP failures (network, timeout, unexpected throws),
+ * which callers treat as transient and rethrow.
+ */
+function apiErrorStatus(error: unknown): number | null {
+    if (error instanceof LetbuyyApiError) return error.status
+    if (error instanceof MerchantApiRequestError) return error.status
+    return null
+}
+
+function apiErrorCode(error: unknown): string | null {
+    if (error instanceof LetbuyyApiError) return error.code
+    if (error instanceof MerchantApiRequestError) {
+        const payload = error.payload
+        if (
+            payload &&
+            typeof payload === 'object' &&
+            'error' in payload &&
+            payload.error &&
+            typeof payload.error === 'object' &&
+            'code' in payload.error &&
+            typeof payload.error.code === 'string'
+        ) {
+            return payload.error.code
+        }
+    }
+    return null
+}
+
+export function isQueryCostRateLimited(error: unknown): boolean {
+    return apiErrorStatus(error) === 429 && apiErrorCode(error) === QUERY_COST_RATE_LIMITED
+}
+
+async function wait(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ * A merchant read is retryable when the failure is transient: a query-cost rate
+ * limit (429), a connection failure (no HTTP status — "fetch failed" when the
+ * gateway is down or mid hot-reload), or gateway-not-ready (502/503/504 during
+ * boot). These ride out a backend restart instead of crashing the SSR render.
+ */
+function isRetryableReadError(error: unknown): boolean {
+    if (isQueryCostRateLimited(error)) return true
+    const status = apiErrorStatus(error)
+    if (status === null) return true
+    return status === 502 || status === 503 || status === 504
+}
+
+async function retryMerchantRead<T>(operation: () => Promise<T>): Promise<T> {
+    let attempt = 0
+
+    while (true) {
+        try {
+            return await operation()
+        } catch (error) {
+            const delay = MERCHANT_READ_RETRY_DELAYS_MS[attempt]
+            if (delay === undefined || !isRetryableReadError(error)) {
+                throw error
+            }
+
+            attempt += 1
+            await wait(delay)
+        }
+    }
+}
 
 export interface SessionUser {
     id: string
@@ -33,8 +109,9 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     }
 })
 
-const getStoreForCurrentSession = cache(async (
-    storeName: string
+export const getStoreForUser = cache(async (
+    storeName: string,
+    _userId: string
 ): Promise<{
     id: string
     name: string
@@ -66,7 +143,7 @@ const getStoreForCurrentSession = cache(async (
             theme_id: data.theme_id || 'modern',
             theme_settings: data.theme_settings || null,
             custom_domain: data.custom_domain || null,
-            custom_domain_status: data.custom_domain_status || null,
+            custom_domain_status: data.custom_domain_status || 'none',
         }
     } catch (error) {
         // 401/403 (no access) and 404 (missing store) → not found.
@@ -77,13 +154,6 @@ const getStoreForCurrentSession = cache(async (
         throw error
     }
 })
-
-/** The gateway authorizes the current cookie; user hints never grant access.
- * Cache by handle within this request so layout/page callers share that read. */
-export function getStoreForUser(storeName: string, _userId?: string) {
-    void _userId // Compatibility only; the current session is the authority.
-    return getStoreForCurrentSession(storeName)
-}
 
 export const getUserStores = cache(async (
     _userId: string

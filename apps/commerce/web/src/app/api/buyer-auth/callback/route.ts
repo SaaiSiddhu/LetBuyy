@@ -39,7 +39,7 @@ function failure(message: string): NextResponse {
         `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">`
         + `<meta name="robots" content="noindex"><title>Sign-in did not finish</title></head>`
         + `<body style="font-family: system-ui, sans-serif; max-width: 28rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.5">`
-        + `<h1 style="font-size: 1.25rem">Sign-in did not finish</h1><p>${message}</p><p><a href="/api/buyer-auth/start">Start a new sign-in</a></p><p><a href="/">Back to the store</a></p></body></html>`,
+        + `<h1 style="font-size: 1.25rem">Sign-in did not finish</h1><p>${message}</p><p><a href="/">Back to the store</a></p></body></html>`,
         { status: 400, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } },
     );
     response.cookies.set(STOREFRONT_BUYER_FLOW_COOKIE, '', { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 0 });

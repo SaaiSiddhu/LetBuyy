@@ -1,3 +1,0 @@
-import { z } from 'zod';
-
-export const UuidSchema = z.string().uuid('Must be a valid UUID');

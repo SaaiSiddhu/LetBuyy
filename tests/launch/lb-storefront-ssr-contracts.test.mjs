@@ -100,7 +100,7 @@ test('F5 fallback_reason is conditioned on both liquidHtml===null AND plan.rende
   const calls = [...src.matchAll(/const (\w+) = await renderLiquidPlan\(/g)];
   assert.equal(calls.length, 1, 'StorefrontCompositionEngine must render the plan exactly once');
   const result = calls[0][1];
-  assert.match(src, new RegExp(`const engine = ${result} \\? 'liquid' : catalogDemo \\? 'unavailable' : 'react';`));
+  assert.match(src, new RegExp(`const engine = ${result} \\? 'liquid' : 'react';`));
   // The ternary must gate on BOTH conditions so React plans (which also yield a null result)
   // do not emit a misleading 'renderer_returned_null' in monitoring.
   assert.match(

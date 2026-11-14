@@ -1,6 +1,5 @@
 'use client'
 
-import { MerchantBuyerConnection } from './merchant-connection-client'
 import { useCallback, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button, Input } from '@letbuyy/ui'
@@ -40,7 +39,6 @@ export function BuyerAuthorize({
     const storeName = destination.name
     const router = useRouter()
     const mode = initialMode
-    const [merchantConnection,setMerchantConnection]=useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
@@ -65,7 +63,7 @@ export function BuyerAuthorize({
         try {
             const res = await fetch('/api/buyer/oauth/authorize', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     response_type: 'code',
                     client_id: request.clientId,
@@ -91,16 +89,9 @@ export function BuyerAuthorize({
 
     async function useAnotherAccount() {
         setLoading(true)
-        setError(null)
-        try {
-            const res = await fetch('/api/buyer/logout', { method: 'POST', headers: (await getAuthHeaders()) })
-            if (!res.ok) throw new Error(GENERIC)
-            router.refresh()
-        } catch {
-            setError(GENERIC)
-        } finally {
-            setLoading(false)
-        }
+        await fetch('/api/buyer/logout', { method: 'POST', headers: getAuthHeaders() }).catch(() => undefined)
+        setLoading(false)
+        router.refresh()
     }
 
     async function submitCredentials(event: React.FormEvent) {
@@ -110,7 +101,7 @@ export function BuyerAuthorize({
         try {
             const res = await fetch(mode === 'sign-in' ? '/api/buyer/login' : '/api/buyer/register', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ email: email.trim(), password, turnstileToken: turnstileToken || undefined }),
             })
             if (!res.ok) {
@@ -119,6 +110,8 @@ export function BuyerAuthorize({
                 } else {
                     setError(await errorFrom(res, mode === 'sign-in' ? 'Invalid email or password.' : 'Could not create the account.'))
                 }
+                turnstileRef.current?.reset()
+                setTurnstileToken(null)
                 return
             }
             setPassword('')
@@ -126,12 +119,9 @@ export function BuyerAuthorize({
         } catch {
             setError(GENERIC)
         } finally {
-            turnstileRef.current?.reset()
             setLoading(false)
         }
     }
-
-    if (merchantConnection && !buyerEmail) return <MerchantBuyerConnection request={request} destination={storeName} onCancel={()=>setMerchantConnection(false)}/>
 
     if (buyerEmail) {
         return (
@@ -176,11 +166,6 @@ export function BuyerAuthorize({
                             : `One account for ${storeName} and every other LetBuyy store.`}
                 </p>
 
-                <Button unstyled className="auth-btn-secondary" onClick={()=>setMerchantConnection(true)} disabled={loading}>
-                    Use an existing LetBuyy account
-                </Button>
-                <p className="auth-subtitle">Customers can sign in below or create an account. Already use LetBuyy for work? Connect that account securely.</p>
-                {destination.kind==='store' && <a href={new URL('/customers/login?legacy=1',request.redirectUri).toString()}>Have an older store-only account? Sign in to connect it</a>}
                 <form onSubmit={submitCredentials} className="auth-form">
                     <Input
                         id="buyerEmail"
@@ -225,7 +210,7 @@ export function BuyerAuthorize({
                             <span>New to LetBuyy?</span>{' '}
                             <a href={`${thisPage}&screen=register`}>Create an account</a>
                             {' · '}
-                            <a href={`/buyer/recover?continue=${encodeURIComponent(thisPage)}`}>Forgot buyer password?</a>
+                            <a href={`/buyer/recover?continue=${encodeURIComponent(thisPage)}`}>Forgot password?</a>
                         </>
                     ) : (
                         <>

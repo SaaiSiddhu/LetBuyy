@@ -12,11 +12,10 @@
  * RISK-DUAL-N01: receives value + onChange; never mutates the schema object.
  */
 
-import { CircleAlert } from 'lucide-react'
 import { useId } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue } from '@/lib/theme-schemas'
-import { Input } from '@letbuyy/ui'
+import { Input, MaterialIcon } from '@letbuyy/ui'
 import styles from './controls.module.css'
 
 interface CheckboxControlProps {
@@ -53,7 +52,7 @@ export function CheckboxControl({ field, value, onChange }: CheckboxControlProps
             </div>
             {error ? (
                 <p id={`${id}-error`} className={styles.fieldError} role="alert">
-                    <CircleAlert size={12} aria-hidden />
+                    <MaterialIcon name="error" size={12} aria-hidden />
                     {' '}{error}
                 </p>
             ) : null}

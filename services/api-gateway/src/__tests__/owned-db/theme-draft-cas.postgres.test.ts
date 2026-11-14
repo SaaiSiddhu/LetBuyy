@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import test, { before, after } from 'node:test';
+import test, { before } from 'node:test';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
@@ -13,8 +13,6 @@ let reapplied354 = false;
 let predecessor354Refused = false, defaults354Refused = false, concurrent354Verified = false;
 const sql354 = (kind: 'migrations' | 'rollback') => readFileSync(new URL(`../../../../../database/supabase/${kind}/354_atomic_theme_release_rollback${kind === 'rollback' ? '.rollback' : ''}.sql`, import.meta.url), 'utf8');
 const sql366 = (kind: 'migrations' | 'rollback') => readFileSync(new URL(`../../../../../database/supabase/${kind}/366_theme_publication_visibility${kind === 'rollback' ? '.rollback' : ''}.sql`, import.meta.url), 'utf8');
-const sql376 = (kind: 'migrations' | 'rollback') => readFileSync(new URL(`../../../../../database/supabase/${kind}/376_atomic_theme_instance_switch${kind === 'rollback' ? '.rollback' : ''}.sql`, import.meta.url), 'utf8');
-const sql384 = (kind: 'migrations' | 'rollback') => readFileSync(new URL(`../../../../../database/supabase/${kind}/384_theme_editor_template_keys${kind === 'rollback' ? '.rollback' : ''}.sql`, import.meta.url), 'utf8');
 const themeFunctionSignatures = [
     'public.theme_draft_actor_site_v1(uuid,uuid,uuid)',
     'public.read_owned_theme_draft_v1(uuid,uuid,text,text,uuid)',
@@ -50,10 +48,6 @@ function catalogScriptWhenQuiescent(sql: string) {
 before(async () => {
     // Historical retirement controls must run against their exact reviewed
     // predecessor, not weaken its body guard to accept a later forward repair.
-    //384 replaces the exact344 draft body. Retire the later repair first;
-    // historical retirement guards must still reject unknown implementations.
-    owned.script(sql384('rollback'));
-    owned.script(sql376('rollback'));
     owned.script(sql366('rollback'));
     const signature = 'public.rollback_owned_theme_release_v1(uuid,uuid,text,uuid,uuid,text,boolean,text,uuid,text)';
     assert.equal(owned.psql(`SELECT to_regprocedure('${signature}') IS NOT NULL;`), 't', 'the full migration template applied354');
@@ -91,7 +85,6 @@ before(async () => {
     assert.deepEqual(rollbackConservationSnapshot(), prior, 'clean354 retirement leaves the publisher/private344ACL/schema/data untouched');
     clean354Retirement = true;
 });
-after(() => { owned.script(sql384('migrations')); });
 let sequence = 0;
 const slug = 'letbuyy-core';
 async function fixture() {
@@ -422,7 +415,6 @@ test('344 rollback waits for an in-flight canonical save and refuses its newly c
 test('simultaneous same-key saves return one persisted receipt and one set of mandatory effects', async () => {
     // All business/race/replay cases below exercise the current publisher.
     owned.script(sql366('migrations'));
-    owned.script(sql376('migrations'));
     const j = await fixture(), key = crypto.randomUUID();
     const results = await Promise.all([j.save(0, key), j.save(0, key)]);
     assert.deepEqual(results.map(r => r.status), [200, 200], results.map(r => r.text).join('\n'));
@@ -606,10 +598,9 @@ test('artifact-enrichment failure leaves the exact last good release and draft u
 });
 
 test('a retained receipt prevents destructive rollback', () => {
-    owned.script(sql376('rollback'));
     owned.script(sql366('rollback'));
     try { assertRollbackRefusesUnchanged(/retained theme draft receipts/); }
-    finally { owned.script(sql366('migrations')); owned.script(sql376('migrations')); }
+    finally { owned.script(sql366('migrations')); }
     assert.equal(owned.psql("SELECT to_regprocedure('public.read_owned_theme_draft_v1(uuid,uuid,text,text,uuid)') IS NOT NULL;"), 't');
 });
 
@@ -702,13 +693,12 @@ test('legacy release rollback preserves an unrelated active canonical editor dra
         encode(sha256(convert_to(d.working_manifest::text,'UTF8')),'hex') FROM theme_instances i
         JOIN theme_instance_drafts d ON d.id=i.current_draft_id WHERE i.store_id='${j.tenant.siteId}';`);
     const before = snapshot(); assert.match(before, /\|3\|active\|/);
-    const reviewedCurrent = owned.scriptLarge(`SELECT release_id FROM public.publish_theme_release('${j.tenant.siteId}','${slug}',${quoteSql(JSON.stringify(j.config))}::jsonb,NULL,NULL,'${j.owner}','Synthetic legacy caller',false,NULL,NULL);`);
+    const reviewedCurrent = owned.psql(`SELECT release_id FROM public.publish_theme_release('${j.tenant.siteId}','${slug}',${quoteSql(JSON.stringify(j.config))}::jsonb,NULL,NULL,'${j.owner}','Synthetic legacy caller',false,NULL,NULL);`);
     assert.equal(snapshot(), before, 'the legacy publisher itself must preserve the unrelated active draft');
     const before354Reapply = rollbackConservationSnapshot();
-    owned.script(sql376('rollback'));
     owned.script(sql366('rollback'));
     try { owned.script(sql354('migrations')); reapplied354 = true; }
-    finally { owned.script(sql366('migrations')); owned.script(sql376('migrations')); }
+    finally { owned.script(sql366('migrations')); }
     assert.deepEqual(rollbackConservationSnapshot(), before354Reapply, 'reapplying354 changes no canonical row or344executionACL');
     const rollback = await j.request(`/v1/themes/${slug}/releases/${releaseId}/rollback`, 'POST', {
         store_id: j.tenant.siteId, expected_current_release_id: reviewedCurrent, idempotency_key: crypto.randomUUID(), make_store_live: false,

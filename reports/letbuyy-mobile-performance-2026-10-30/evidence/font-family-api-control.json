@@ -1,0 +1,11 @@
+{
+  "diagnostic_only": true,
+  "rows": [
+    {
+      "path": "/in",
+      "variant_actually_applied": true,
+      "exact_pixels_equal": false,
+      "layout_equal": true
+    }
+  ]
+}

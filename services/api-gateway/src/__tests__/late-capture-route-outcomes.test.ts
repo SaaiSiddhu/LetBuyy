@@ -19,7 +19,6 @@ import type { Env } from '../index';
 import { PaymentExecutionAdapter, readCaptureResult } from '../execution/payment-execution.adapter';
 import { getSupabaseAdminFromEnv } from '../lib/supabase';
 import { FIXED_PUBLIC_ERROR_MESSAGES } from '../lib/public-errors';
-import { toInrMinorUnits } from '@letbuyy/payments';
 import { registerStorefrontCheckoutPaymentRoutes } from '../routes/storefront/checkout-payment-routes';
 import { registerStorefrontInternalPaymentRoutes } from '../routes/storefront/internal-payment-routes';
 
@@ -318,29 +317,4 @@ test('no new payment may start against a released reservation', async (t) => {
     t.after(() => unreleased.restore());
     const payable = await new PaymentExecutionAdapter(getSupabaseAdminFromEnv(env())).loadStorefrontPayableOrder(ORDER, STORE);
     assert.equal(payable.id, ORDER);
-});
-
-test('the existing order readers preserve exact decimal totals, including paise above signed-int32 range', async () => {
-    for (const [total,paise] of [['0.01',1],['0.29',29],['6.59',659],['21474836.48',2147483648],['99999999.99',9999999999]] as const) {
-        const postgrest = installFakePostgrest({order:{...PENDING_ORDER,total}});
-        try {
-            const adapter = new PaymentExecutionAdapter(getSupabaseAdminFromEnv(env()));
-            for (const row of [await adapter.loadStorefrontPayableOrder(ORDER,STORE),await adapter.loadStorefrontOrderForCapture(ORDER,STORE)]) {
-                assert.equal(row.total,total,'do not coerce the stored decimal before canonical parsing');
-                assert.equal(toInrMinorUnits(row.total),paise,'provider paise remains exact and is never int32-truncated');
-            }
-            assert.equal(postgrest.requests.filter(request=>request.method!=='GET').length,0,'amount reads do not post money');
-        } finally { postgrest.restore(); }
-    }
-});
-
-test('malformed or fractional-paise order totals cannot be rounded into a new payment', async () => {
-    for (const total of ['0','-1','1.001','1e2','Infinity','999999999.99','not-money',0.30000000000000004]) {
-        const postgrest = installFakePostgrest({order:{...PENDING_ORDER,total}});
-        try {
-            const adapter = new PaymentExecutionAdapter(getSupabaseAdminFromEnv(env()));
-            await assert.rejects(adapter.loadStorefrontPayableOrder(ORDER,STORE),/exact payable total|payable total/);
-            assert.equal(postgrest.requests.filter(request=>request.method!=='GET').length,0,'invalid source totals have no money effect');
-        } finally { postgrest.restore(); }
-    }
 });

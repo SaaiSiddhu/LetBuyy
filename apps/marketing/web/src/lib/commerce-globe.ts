@@ -146,3 +146,13 @@ export function routeVector(from: GeoLocation, to: GeoLocation, fraction: number
     const lift = 1 + Math.sin(Math.PI * t) * Math.min(0.32, 0.08 + angle * 0.12)
     return [point[0] * lift, point[1] * lift, point[2] * lift]
 }
+
+/** Keep light-mode's opaque silhouette inside the canvas; all layers share this projection. */
+export function globeRadius(width: number, height: number, camera: ReturnType<typeof globeFrameAt>, palette: { opaque: boolean }) {
+    const radius = Math.min(width * .475, height * .65)
+    if (!palette.opaque) return radius * camera.zoom
+    const fitted = Math.min(width * .475, height * .455)
+    const zoomed = radius * camera.zoom
+    return zoomed + (Math.min(zoomed, fitted) - zoomed) * globeLayersAt(camera.time).world
+}
+

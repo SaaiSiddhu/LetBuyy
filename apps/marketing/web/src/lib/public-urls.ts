@@ -14,7 +14,7 @@ const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const
 const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'
 
 const LOCAL_BROWSER_URLS: Record<PublicUrlTarget, string> = {
-    accounts: 'http://127.0.0.1:9001',
+    accounts: 'http://127.0.0.1:9002',
     marketing: 'http://127.0.0.1:9006',
     themeMarketplace: 'http://127.0.0.1:9005',
     appMarketplace: 'http://127.0.0.1:9003',
@@ -40,10 +40,13 @@ const PLATFORM_SUBDOMAINS: Record<PublicUrlTarget, string | null> = {
 function normalizeOrigin(rawValue: string | undefined): string | null {
     const value = rawValue?.trim()
     if (!value) return null
+    if (/^[a-z][a-z0-9+.-]*:/i.test(value) && !/^https?:\/\//i.test(value)) return null
 
     const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`
     try {
-        return new URL(withProtocol).origin
+        const url = new URL(withProtocol)
+        if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return null
+        return url.origin
     } catch {
         return null
     }
@@ -124,14 +127,20 @@ function optionalPublicUrl(rawValue: string | undefined): string | null {
 }
 
 export function getAccountsUrl(path = ''): string {
-    const baseUrl = trimTrailingSlash(requiredPublicUrl('accounts', process.env.NEXT_PUBLIC_ACCOUNTS_URL))
+    const baseUrl = trimTrailingSlash(process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_ACCOUNTS_URL?.trim()
+        ? LOCAL_BROWSER_URLS.accounts : requiredPublicUrl('accounts', process.env.NEXT_PUBLIC_ACCOUNTS_URL))
     if (!path) return baseUrl
 
     return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`
 }
 
 export function getMarketingSiteUrl(path = ''): string {
-    const baseUrl = trimTrailingSlash(requiredPublicUrl('marketing', process.env.NEXT_PUBLIC_MARKETING_URL))
+    // Search identities must not depend on a request host or a preview deployment.
+    // Use the same explicit public origin in server and browser bundles.
+    const configured = process.env.NEXT_PUBLIC_MARKETING_URL?.trim()
+    const normalized = normalizeOrigin(configured)
+    if (configured && !normalized) throw new Error('NEXT_PUBLIC_MARKETING_URL must be a valid HTTP(S) origin without credentials')
+    const baseUrl = normalized ?? 'https://www.letbuyy.com'
     if (!path) return baseUrl
 
     return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`

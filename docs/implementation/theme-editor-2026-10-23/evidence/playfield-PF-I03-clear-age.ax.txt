@@ -1,5 +1,0 @@
-Browser tab: 11, Title: "Products | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/products?limit=20&search=Playfield&sort=display_order&interest=art".
-1 AXWebArea Products | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/products?limit=20&search=Playfield&sort=display_order&interest=art
-	2 container Loading storefront
-
-The focused UI element is 1 AXWebArea Products | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/products?limit=20&search=Playfield&sort=display_order&interest=art

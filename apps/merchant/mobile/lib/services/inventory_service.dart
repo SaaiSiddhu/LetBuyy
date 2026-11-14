@@ -117,20 +117,14 @@ class InventoryLocationContract {
   });
 
   factory InventoryLocationContract.fromJson(Map<String, dynamic> json) {
-    final address = _mapValue(json['address']);
     return InventoryLocationContract(
       id: _stringValue(json['id']),
       storeId: _stringValue(json['store_id'] ?? json['site_id']),
       name: _stringValue(json['name'], fallback: 'Location'),
-      address: _stringValue(
-        address.isEmpty ? json['address'] : address['address'],
-      ),
-      city: _stringValue(json['city'] ?? address['city']),
-      state: _stringValue(json['state'] ?? address['state']),
-      country: _stringValue(
-        json['country'] ?? address['country'],
-        fallback: 'IN',
-      ),
+      address: _stringValue(json['address']),
+      city: _stringValue(json['city']),
+      state: _stringValue(json['state']),
+      country: _stringValue(json['country'], fallback: 'IN'),
       isDefault: _boolValue(json['is_default']),
       status: _stringValue(json['status'], fallback: 'active'),
     );
@@ -329,13 +323,6 @@ class PurchaseOrderContract {
   });
 
   factory PurchaseOrderContract.fromJson(Map<String, dynamic> json) {
-    final command = json;
-    if (command['purchase_order'] is Map) {
-      json = {
-        ..._mapValue(command['purchase_order']),
-        'lines': command['lines'],
-      };
-    }
     final supplier = json['supplier'];
     final rawLines = json['lines'];
     return PurchaseOrderContract(
@@ -464,10 +451,6 @@ class InventoryTransferContract {
   });
 
   factory InventoryTransferContract.fromJson(Map<String, dynamic> json) {
-    final command = json;
-    if (command['transfer'] is Map) {
-      json = {..._mapValue(command['transfer']), 'lines': command['lines']};
-    }
     final rawLines = json['lines'];
     return InventoryTransferContract(
       id: _stringValue(json['id']),

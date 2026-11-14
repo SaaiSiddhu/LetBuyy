@@ -6,7 +6,7 @@
  * Renders a block instance in the section tree as a role=treeitem node, supporting:
  *   - Indented child rows for each depth level (1 up to MAX_EDITOR_BLOCK_DEPTH)
  *   - add-child / remove-child / reorder-child action affordances
- *   - ARIA tree levels include the owning section as level1
+ *   - ARIA tree levels (aria-level={depth}) for screen readers
  *   - Depth cap: nested children are NOT rendered past MAX_EDITOR_BLOCK_DEPTH (render-time
  *     bound complementing the parse-time bound in theme-document.ts)
  *
@@ -24,8 +24,7 @@
  */
 
 import { Button } from '@letbuyy/ui'
-import { ChevronRight, Eye, Plus, Trash2 } from 'lucide-react'
-import type { EditorBlockCatalog } from './editor-block-actions'
+import { ChevronRight, Plus, Trash2 } from 'lucide-react'
 import type { BlockEntry } from './SectionTreePanel'
 
 // ── Depth constant ─────────────────────────────────────────────────────────────
@@ -71,10 +70,6 @@ export type BlockChildRowProps = {
      * Falls back to block.type when undefined.
      */
     blockLabel?: string
-    blockCatalog?: EditorBlockCatalog
-    siblingIndex?: number
-    siblingCount?: number
-    onToggleBlock?: (sectionId: string, blockId: string) => void
     /**
      * Child block types that may be nested inside this block, sourced from
      * block_definitions[block.type].allowed_child_types. When undefined or empty
@@ -118,7 +113,7 @@ export type BlockChildRowProps = {
  * containing further <BlockChildRow> nodes at depth+1. The depth guard is applied
  * at the JSX level so malformed data never causes a stack overflow.
  *
- * ARIA: role="treeitem" + aria-level={depth + 1} includes the owning section.
+ * ARIA: role="treeitem" + aria-level={depth} marks the depth for screen readers.
  * The parent role="tree" container (in SectionTreePanel) owns keyboard navigation.
  */
 export function BlockChildRow({
@@ -128,10 +123,6 @@ export function BlockChildRow({
     parentBlockId,
     selectedBlockId,
     blockLabel,
-    blockCatalog,
-    siblingIndex = 0,
-    siblingCount = 1,
-    onToggleBlock,
     allowedChildTypes,
     onSelectBlock,
     onAddChildBlock,
@@ -160,16 +151,15 @@ export function BlockChildRow({
 
     return (
         // role=treeitem: part of the parent role=tree ARIA widget.
-        // aria-level: the owning section is level1; its direct blocks are level2.
+        // aria-level: hierarchical depth (1 = direct section child; max = MAX_EDITOR_BLOCK_DEPTH).
         // aria-expanded: set when the node has visible nested children.
         // tabIndex=-1: focus is managed by the parent TreeSectionRow roving tabindex.
         <div
             role="treeitem"
             aria-selected={isSelected}
-            aria-level={depth + 1}
+            aria-level={depth}
             aria-expanded={isExpanded || undefined}
             tabIndex={-1}
-            onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); onSelectBlock(block.id) } }}
             className={[
                 `theme-os-tree-block--depth-${depth}`,
             ].filter(Boolean).join(' ')}
@@ -189,16 +179,18 @@ export function BlockChildRow({
                 <span>{blockLabel ?? block.type}</span>
             </Button>
 
-            {/* Flat and nested instances use the same canonical draft actions. */}
+            {/* Remove / reorder actions — only for nested blocks (depth > 1).
+                Depth=1 blocks are section-level; their lifecycle is managed by
+                the section's own remove callback (not onRemoveChildBlock). */}
+            {depth > 1 ? (
                 <div className="theme-os-tree-block__actions">
-                    {onToggleBlock ? <Button unstyled type="button" aria-label={`Toggle ${blockLabel ?? block.type} block visibility`} aria-pressed={block.visible} onClick={() => onToggleBlock(sectionId, block.id)}><Eye size={12} aria-hidden="true" /></Button> : null}
                     {onMoveChildBlock ? (
                         <>
                             <Button
                                 unstyled
                                 type="button"
-                                aria-label={depth > 1 ? "Move child block up" : `Move ${blockLabel ?? block.type} block up`}
-                                disabled={siblingIndex === 0}
+                                tabIndex={-1}
+                                aria-label="Move child block up"
                                 onClick={() => onMoveChildBlock(sectionId, parentBlockId, block.id, -1)}
                             >
                                 <ChevronRight
@@ -210,8 +202,8 @@ export function BlockChildRow({
                             <Button
                                 unstyled
                                 type="button"
-                                aria-label={depth > 1 ? "Move child block down" : `Move ${blockLabel ?? block.type} block down`}
-                                disabled={siblingIndex >= siblingCount - 1}
+                                tabIndex={-1}
+                                aria-label="Move child block down"
                                 onClick={() => onMoveChildBlock(sectionId, parentBlockId, block.id, 1)}
                             >
                                 <ChevronRight
@@ -226,29 +218,36 @@ export function BlockChildRow({
                         <Button
                             unstyled
                             type="button"
-                            aria-label={depth > 1 ? "Remove child block" : `Remove ${blockLabel ?? block.type} block`}
+                            tabIndex={-1}
+                            aria-label="Remove child block"
                             onClick={() => onRemoveChildBlock(sectionId, parentBlockId, block.id)}
                         >
                             <Trash2 size={12} aria-hidden="true" />
                         </Button>
                     ) : null}
                 </div>
+            ) : null}
 
-            {/* Only explicit installed child declarations offer insertion controls. */}
-            {canAddChildren && onAddChildBlock ? allowedChildTypes!.map(childType => (
+            {/* Add-child affordance — shown only when:
+                  (a) the block's type definition declares allowed child types, AND
+                  (b) depth < MAX_EDITOR_BLOCK_DEPTH (render-time depth cap)
+                Uses the first allowed type as a default; a future picker UI can expand
+                this to a <Select> of all allowedChildTypes. */}
+            {canAddChildren && onAddChildBlock ? (
                 <Button
-                    key={childType}
                     unstyled
                     type="button"
-                    aria-label={`Add child block: ${blockCatalog?.reusableSchemas[childType]?.name || childType}`}
+                    tabIndex={-1}
+                    aria-label="Add child block"
                     className="theme-os-tree-block__add-child"
-                    disabled={(block.children?.length || 0) >= 100}
-                    onClick={() => onAddChildBlock(sectionId, block.id, childType)}
+                    onClick={() => {
+                        // allowedChildTypes is non-empty (checked by canAddChildren)
+                        onAddChildBlock(sectionId, block.id, allowedChildTypes![0]!)
+                    }}
                 >
                     <Plus size={12} aria-hidden="true" />
-                    <span>{blockCatalog?.reusableSchemas[childType]?.name || childType}</span>
                 </Button>
-            )) : null}
+            ) : null}
 
             {/* Nested children container — rendered only when:
                   (a) the block has children in the instance tree, AND
@@ -258,7 +257,7 @@ export function BlockChildRow({
                 connector lines and indentation as top-level section blocks. */}
             {canNestDeeper && hasChildren ? (
                 <div className="theme-os-tree-blocks" role="group">
-                    {block.children!.map((child, childIndex) => (
+                    {block.children!.map((child) => (
                         <BlockChildRow
                             key={child.id}
                             block={child}
@@ -266,12 +265,12 @@ export function BlockChildRow({
                             sectionId={sectionId}
                             parentBlockId={block.id}
                             selectedBlockId={selectedBlockId}
-                            blockLabel={blockCatalog?.reusableSchemas[child.type]?.name}
-                            blockCatalog={blockCatalog}
-                            siblingIndex={childIndex}
-                            siblingCount={block.children!.length}
-                            allowedChildTypes={blockCatalog?.childTypes[child.type]}
-                            onToggleBlock={onToggleBlock}
+                            // blockLabel and allowedChildTypes for children would be
+                            // resolved from the caller's sectionSchemas; for now they
+                            // fall back to block.type. A future enhancement can pass
+                            // them from the parent's schema lookup.
+                            blockLabel={undefined}
+                            allowedChildTypes={undefined}
                             onSelectBlock={onSelectBlock}
                             onAddChildBlock={onAddChildBlock}
                             onRemoveChildBlock={onRemoveChildBlock}

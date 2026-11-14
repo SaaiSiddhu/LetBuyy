@@ -1,0 +1,248 @@
+{
+  "date": "2026-10-26",
+  "method": "Same-origin fixed CSS viewport iframe, operated and inspected through the browser tool; not physical devices",
+  "cards": [
+    {
+      "label": "Storefronts",
+      "geometry": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 780,
+          "w": 390
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 431.2578125,
+          "w": 350
+        }
+      ]
+    },
+    {
+      "label": "Orders",
+      "geometry": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 780,
+          "w": 390
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 431.2578125,
+          "w": 350
+        }
+      ]
+    },
+    {
+      "label": "Inventory",
+      "geometry": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 780,
+          "w": 390
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 431.2578125,
+          "w": 350
+        }
+      ]
+    },
+    {
+      "label": "Payments",
+      "geometry": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 780,
+          "w": 390
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 431.2578125,
+          "w": 350
+        }
+      ]
+    },
+    {
+      "label": "Customers",
+      "geometry": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 780,
+          "w": 390
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 431.2578125,
+          "w": 350
+        }
+      ]
+    },
+    {
+      "label": "Analytics",
+      "geometry": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 780,
+          "w": 390
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 431.2578125,
+          "w": 350
+        }
+      ]
+    },
+    {
+      "label": "AI Operator & Automation",
+      "geometry": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 780,
+          "w": 390
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 431.2578125,
+          "w": 350
+        }
+      ]
+    },
+    {
+      "label": "B2B & Wholesale",
+      "geometry": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 780,
+          "w": 390
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 431.2578125,
+          "w": 350
+        }
+      ]
+    }
+  ],
+  "sizes": [
+    {
+      "size": "320,568",
+      "root": {
+        "client": 320,
+        "scroll": 320
+      },
+      "boxes": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 859.4765625,
+          "w": 320
+        },
+        {
+          "cls": "cmap-graph-container",
+          "h": 180,
+          "w": 280
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 518.890625,
+          "w": 280
+        }
+      ]
+    },
+    {
+      "size": "375,667",
+      "root": {
+        "client": 375,
+        "scroll": 375
+      },
+      "boxes": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 761.5234375,
+          "w": 375
+        },
+        {
+          "cls": "cmap-graph-container",
+          "h": 180,
+          "w": 335
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 437.734375,
+          "w": 335
+        }
+      ]
+    },
+    {
+      "size": "430,932",
+      "root": {
+        "client": 430,
+        "scroll": 430
+      },
+      "boxes": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 868,
+          "w": 430
+        },
+        {
+          "cls": "cmap-graph-container",
+          "h": 220,
+          "w": 390
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 427.1015625,
+          "w": 390
+        }
+      ]
+    },
+    {
+      "size": "768,1024",
+      "root": {
+        "client": 768,
+        "scroll": 768
+      },
+      "boxes": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 1277.5703125,
+          "w": 768
+        },
+        {
+          "cls": "cmap-graph-container",
+          "h": 1069.1875,
+          "w": 393.140625
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 1069.1875,
+          "w": 294.859375
+        }
+      ]
+    },
+    {
+      "size": "1280,800",
+      "root": {
+        "client": 1280,
+        "scroll": 1280
+      },
+      "boxes": [
+        {
+          "cls": "cmap cmap-viewport",
+          "h": 1016.2734375,
+          "w": 1280
+        },
+        {
+          "cls": "cmap-graph-container",
+          "h": 743,
+          "w": 640
+        },
+        {
+          "cls": "cmap-desktop-panel cmap-carousel",
+          "h": 743,
+          "w": 480
+        }
+      ]
+    }
+  ]
+}

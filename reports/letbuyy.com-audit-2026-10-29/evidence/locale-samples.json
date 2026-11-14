@@ -1,0 +1,2718 @@
+[
+  {
+    "url": "https://www.letbuyy.com/in-ta/resources/payments/gst-for-ecommerce-india",
+    "final_url": "https://www.letbuyy.com/in-ta/resources/payments/gst-for-ecommerce-india",
+    "status": 200,
+    "history": [
+      {
+        "url": "https://www.letbuyy.com/in-ta/resources/payments/gst-for-ecommerce-india",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "headers": {
+      "access-control-allow-origin": "*",
+      "age": "44120",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 17:26:55 GMT",
+      "etag": "W/\"360e338c6e34aa003aade44a06181c13\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/in-ta/resources/payments/gst-for-ecommerce-india",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::8vrmt-1793294815055-f6594285b776"
+    },
+    "bytes_downloaded": 49568.0,
+    "fetch_seconds": 0.389352,
+    "evidence_html": "evidence/9bf8b04c341d71c5.html",
+    "evidence_headers": "evidence/9bf8b04c341d71c5.headers",
+    "title": "இந்திய இணைய வணிகத்திற்கான GST: முழுமையான 2026 வழிகாட்டி | LetBuyy Resources",
+    "meta": [
+      {
+        "charset": "utf-8"
+      },
+      {
+        "name": "viewport",
+        "content": "width=device-width, initial-scale=1"
+      },
+      {
+        "name": "next-size-adjust",
+        "content": ""
+      },
+      {
+        "name": "description",
+        "content": "2026-இல் இந்திய இணைய விற்பனையாளர்கள் அறிய வேண்டிய GST—பதிவு, TCS, விலைப்பட்டியல், வரித் தாக்கல் மற்றும் இணக்கம்."
+      },
+      {
+        "name": "application-name",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "author",
+        "content": "Neha Gupta"
+      },
+      {
+        "name": "keywords",
+        "content": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace"
+      },
+      {
+        "name": "creator",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "publisher",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "robots",
+        "content": "index, follow"
+      },
+      {
+        "name": "googlebot",
+        "content": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+      },
+      {
+        "name": "category",
+        "content": "commerce platform"
+      },
+      {
+        "property": "og:title",
+        "content": "இந்திய இணைய வணிகத்திற்கான GST: முழுமையான 2026 வழிகாட்டி"
+      },
+      {
+        "property": "og:description",
+        "content": "2026-இல் இந்திய இணைய விற்பனையாளர்கள் அறிய வேண்டிய GST—பதிவு, TCS, விலைப்பட்டியல், வரித் தாக்கல் மற்றும் இணக்கம்."
+      },
+      {
+        "property": "og:type",
+        "content": "article"
+      },
+      {
+        "property": "article:published_time",
+        "content": "2026-03-01"
+      },
+      {
+        "property": "article:modified_time",
+        "content": "2026-06-16"
+      },
+      {
+        "property": "article:author",
+        "content": "Neha Gupta"
+      },
+      {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      },
+      {
+        "name": "twitter:title",
+        "content": "LetBuyy - India-first commerce operating system"
+      },
+      {
+        "name": "twitter:description",
+        "content": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations."
+      },
+      {
+        "name": "twitter:image",
+        "content": "https://www.letbuyy.com/og/letbuyy-default.png"
+      }
+    ],
+    "links": [
+      {
+        "rel": "preload",
+        "href": "/_next/static/media/0336a89fb4e7fc1d-s.p.woff2",
+        "as": "font",
+        "crossorigin": "",
+        "type": "font/woff2"
+      },
+      {
+        "rel": "preload",
+        "href": "/_next/static/media/93f479601ee12b01-s.p.woff2",
+        "as": "font",
+        "crossorigin": "",
+        "type": "font/woff2"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/assets/legal/privacy-choices.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/reading-tax-documents-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/guide-first-store-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/capabilities/inventory-scene-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/reading-tax-documents-v1.webp"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/93490f2121b4cdc7.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/b347359ed073494e.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/a40e3bf3e20fcbbe.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/79b625f4554cc373.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/141d9cd5473cfb91.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/26008953488318fa.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "preload",
+        "as": "script",
+        "fetchpriority": "low",
+        "href": "/_next/static/chunks/webpack-ff1b21ecea0c7fe8.js"
+      },
+      {
+        "rel": "canonical",
+        "href": "https://www.letbuyy.com/in-ta/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "en-IN",
+        "href": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "ta-IN",
+        "href": "https://www.letbuyy.com/in-ta/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "hi-IN",
+        "href": "https://www.letbuyy.com/in-hi/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "shortcut icon",
+        "href": "/icons/letbuyy-mark.svg"
+      },
+      {
+        "rel": "icon",
+        "href": "/favicon.ico?603d046c9a6fdfbb",
+        "type": "image/x-icon",
+        "sizes": "16x16"
+      },
+      {
+        "rel": "icon",
+        "href": "/icons/letbuyy-mark.svg"
+      },
+      {
+        "rel": "apple-touch-icon",
+        "href": "/icons/letbuyy-mark.svg"
+      }
+    ],
+    "anchors": [
+      {
+        "class": "header-logo",
+        "aria-label": "LetBuyy முகப்பு",
+        "href": "/in-ta"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-ta/resources/platform/how-themes-work"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-ta/resources/platform/introduction-to-apps"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-ta/resources/developers"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-ta/pricing"
+      },
+      {
+        "class": "btn btn-ghost",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "btn btn-primary",
+        "href": "https://accounts.letbuyy.com/signup"
+      },
+      {
+        "class": "mobile-start-link",
+        "href": "https://accounts.letbuyy.com/signup"
+      },
+      {
+        "class": "res-nav-label",
+        "href": "/in-ta/resources"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-ta/resources"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-ta/resources/ecommerce"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-ta/resources/growth"
+      },
+      {
+        "class": "res-nav-link active",
+        "aria-current": "page",
+        "href": "/in-ta/resources/payments"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-ta/resources/operations"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-ta/resources/ai-commerce"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-ta/resources/developers"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-ta/resources/changelog"
+      },
+      {
+        "href": "#gst-basics-for-ecommerce",
+        "class": "arc-toc-item"
+      },
+      {
+        "href": "#do-you-need-gst-registration",
+        "class": "arc-toc-item"
+      },
+      {
+        "href": "#gst-rates-for-common-ecommerce-categories",
+        "class": "arc-toc-item"
+      },
+      {
+        "href": "#monthly-filing-gstr-1-and-gstr-3b",
+        "class": "arc-toc-item"
+      },
+      {
+        "href": "#input-tax-credit-your-cost-advantage",
+        "class": "arc-toc-item"
+      },
+      {
+        "class": "arc-toc-back",
+        "href": "/in-ta/resources"
+      },
+      {
+        "href": "/in-ta/resources"
+      },
+      {
+        "style": "color:var(--lb-primitive-color-emerald-500)",
+        "href": "/in-ta/resources/payments"
+      },
+      {
+        "class": "arc-tag",
+        "href": "/in-ta/resources/tag/gst"
+      },
+      {
+        "class": "arc-tag",
+        "href": "/in-ta/resources/tag/tax"
+      },
+      {
+        "class": "arc-tag",
+        "href": "/in-ta/resources/tag/compliance"
+      },
+      {
+        "class": "arc-tag",
+        "href": "/in-ta/resources/tag/india"
+      },
+      {
+        "href": "#gst-basics-for-ecommerce",
+        "class": "article-visual-overview_readLink__U0NZM",
+        "aria-label": "பகுதியைப் படிக்கவும்: இணைய வணிகத்திற்கான GST அடிப்படைகள்"
+      },
+      {
+        "href": "#monthly-filing-gstr-1-and-gstr-3b",
+        "class": "article-visual-overview_readLink__U0NZM",
+        "aria-label": "பகுதியைப் படிக்கவும்: மாதாந்திரத் தாக்கல்: GSTR-1 மற்றும் GSTR-3B"
+      },
+      {
+        "href": "#input-tax-credit-your-cost-advantage",
+        "class": "article-visual-overview_readLink__U0NZM",
+        "aria-label": "பகுதியைப் படிக்கவும்: உள்ளீட்டு வரிக் கடன்: உங்கள் செலவுப் பலன்"
+      },
+      {
+        "class": "arc-completion-cta",
+        "href": "/in-ta/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "arc-author-all",
+        "href": "/in-ta/resources/authors/neha-payments"
+      },
+      {
+        "class": "btn btn-outline",
+        "href": "/in-ta/resources/rss.xml"
+      },
+      {
+        "class": "arc-rel-item",
+        "href": "/in-ta/resources/ecommerce/how-to-start-an-online-store-india"
+      },
+      {
+        "class": "arc-rel-item",
+        "href": "/in-ta/resources/payments/upi-vs-cod-india"
+      },
+      {
+        "class": "arc-rel-item",
+        "href": "/in-ta/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "arc-pn-card",
+        "href": "/in-ta/resources/payments/upi-vs-cod-india"
+      },
+      {
+        "class": "arc-pn-card arc-pn-next-card",
+        "href": "/in-ta/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "arc-rec-card",
+        "href": "/in-ta/resources/ecommerce/how-to-start-an-online-store-india"
+      },
+      {
+        "class": "arc-rec-card",
+        "href": "/in-ta/resources/payments/upi-vs-cod-india"
+      },
+      {
+        "class": "arc-rec-card",
+        "href": "/in-ta/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "btn btn-outline",
+        "href": "/in-ta/resources/rss.xml"
+      },
+      {
+        "class": "adock-next",
+        "href": "/in-ta/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "footer-mark",
+        "aria-label": "LetBuyy முகப்பு",
+        "href": "/in-ta"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/pricing"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/create"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/platform/how-themes-work"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/platform/introduction-to-apps"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/developers"
+      },
+      {
+        "class": "footer-link",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/ecommerce"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/developers"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/changelog"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/support"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/contact"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/legal/grievance"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/legal/security"
+      },
+      {
+        "class": "footer-link",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/legal"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/legal/terms"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/legal/privacy"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/legal/refunds"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/sitemap"
+      },
+      {
+        "href": "https://www.facebook.com/share/14tEGNoJSXR/",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "Facebook"
+      },
+      {
+        "href": "https://x.com/letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "X"
+      },
+      {
+        "href": "https://youtube.com/@letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "YouTube"
+      },
+      {
+        "href": "https://www.instagram.com/letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "Instagram"
+      }
+    ],
+    "images": [
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-light",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-dark",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "alt": "சிறிய பொதியுடன் விலைப்பட்டியல், கணிப்பான், கோப்புறை.",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/reading-tax-documents-v1.webp"
+      },
+      {
+        "alt": "சிறிய பொதியுடன் விலைப்பட்டியல், கணிப்பான், கோப்புறை.",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/reading-tax-documents-v1.webp"
+      },
+      {
+        "alt": "இருப்பு மேலாண்மைப் பணியிட விளக்கம்.",
+        "loading": "eager",
+        "width": "640",
+        "height": "585",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/capabilities/inventory-scene-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/guide-first-store-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/reading-tax-documents-v1.webp"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "loading": "lazy",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-light",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "loading": "lazy",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-dark",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "src": "/assets/legal/privacy-choices.svg",
+        "alt": "",
+        "width": "32",
+        "height": "16",
+        "aria-hidden": "true"
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "இந்திய இணைய வணிகத்திற்கான GST: முழுமையான 2026 வழிகாட்டி"
+      },
+      {
+        "tag": "h2",
+        "text": "இணைய வணிகத்திற்கான GST அடிப்படைகள்"
+      },
+      {
+        "tag": "h2",
+        "text": "மாதாந்திரத் தாக்கல்: GSTR-1 மற்றும் GSTR-3B"
+      },
+      {
+        "tag": "h2",
+        "text": "உள்ளீட்டு வரிக் கடன்: உங்கள் செலவுப் பலன்"
+      },
+      {
+        "tag": "h2",
+        "text": "இணைய வணிகத்திற்கான GST அடிப்படைகள்"
+      },
+      {
+        "tag": "h2",
+        "text": "GST பதிவு தேவையா?"
+      },
+      {
+        "tag": "h2",
+        "text": "பொதுவான இணைய வணிக வகைகளின் GST விகிதங்கள்"
+      },
+      {
+        "tag": "h2",
+        "text": "மாதாந்திரத் தாக்கல்: GSTR-1 மற்றும் GSTR-3B"
+      },
+      {
+        "tag": "h2",
+        "text": "உள்ளீட்டு வரிக் கடன்: உங்கள் செலவுப் பலன்"
+      },
+      {
+        "tag": "h2",
+        "text": "உங்களுக்கான பரிந்துரைகள்"
+      },
+      {
+        "tag": "h2",
+        "text": "LetBuyy அடிக்குறிப்பு"
+      },
+      {
+        "tag": "h3",
+        "text": "LetBuyy"
+      },
+      {
+        "tag": "h3",
+        "text": "சூழல் அமைப்பு"
+      },
+      {
+        "tag": "h3",
+        "text": "வளங்கள்"
+      },
+      {
+        "tag": "h3",
+        "text": "உதவி"
+      }
+    ],
+    "schemas": [
+      "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.letbuyy.com/#organization\",\"name\":\"LetBuyy\",\"legalName\":\"LetBuyy\",\"alternateName\":[\"Let Buyy\",\"Letbuyy\",\"LetBuyy Commerce\"],\"url\":\"https://www.letbuyy.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://www.letbuyy.com/icons/letbuyy-logo-512.png\",\"width\":512,\"height\":512},\"image\":\"https://www.letbuyy.com/og/letbuyy-default.png\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"slogan\":\"India-first commerce operating system\",\"email\":\"support@letbuyy.com\",\"foundingLocation\":{\"@type\":\"Country\",\"name\":\"India\"},\"areaServed\":{\"@type\":\"Country\",\"name\":\"India\"},\"knowsLanguage\":[\"en\",\"hi\",\"ta\"],\"contactPoint\":{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"email\":\"support@letbuyy.com\",\"areaServed\":\"IN\",\"availableLanguage\":[\"en\",\"hi\",\"ta\"]},\"sameAs\":[\"https://www.instagram.com/letbuyyhq\",\"https://x.com/letbuyyhq\",\"https://youtube.com/@letbuyyhq\",\"https://www.facebook.com/share/14tEGNoJSXR/\"]},{\"@type\":\"WebSite\",\"@id\":\"https://www.letbuyy.com/#website\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"inLanguage\":\"en-IN\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"hasPart\":[{\"@type\":\"WebPage\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\"},{\"@type\":\"WebPage\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\"},{\"@type\":\"WebPage\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\"},{\"@type\":\"WebPage\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\"},{\"@type\":\"WebPage\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\"},{\"@type\":\"WebPage\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\"},{\"@type\":\"WebPage\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\"},{\"@type\":\"WebPage\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\"},{\"@type\":\"WebPage\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\"}]},{\"@type\":\"SoftwareApplication\",\"name\":\"LetBuyy\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://www.letbuyy.com\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"INR\",\"description\":\"Free launch tier available with 0% transaction and platform fees.\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}}]}",
+      "{\"@context\":\"https://schema.org\",\"@type\":\"Article\",\"headline\":\"இந்திய இணைய வணிகத்திற்கான GST: முழுமையான 2026 வழிகாட்டி\",\"description\":\"2026-இல் இந்திய இணைய விற்பனையாளர்கள் அறிய வேண்டிய GST—பதிவு, TCS, விலைப்பட்டியல், வரித் தாக்கல் மற்றும் இணக்கம்.\",\"datePublished\":\"2026-03-01\",\"dateModified\":\"2026-06-16\",\"author\":{\"@type\":\"Person\",\"name\":\"Neha Gupta\",\"jobTitle\":\"பணப்பரிவர்த்தனை மற்றும் இணக்கம்\"},\"publisher\":{\"@type\":\"Organization\",\"name\":\"LetBuyy\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"/icons/letbuyy-logo-512.png\"}},\"mainEntityOfPage\":{\"@type\":\"WebPage\",\"@id\":\"/resources/payments/gst-for-ecommerce-india\"}}",
+      "{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Resources\",\"item\":\"/resources\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"பணப்பரிவர்த்தனை\",\"item\":\"/resources/payments\"},{\"@type\":\"ListItem\",\"position\":3,\"name\":\"இந்திய இணைய வணிகத்திற்கான GST: முழுமையான 2026 வழிகாட்டி\"}]}"
+    ],
+    "text": "இந்திய இணைய வணிகத்திற்கான GST: முழுமையான 2026 வழிகாட்டி | LetBuyy Resources ஏன் LetBuyy தயாரிப்புகள் வடிவமைப்புகள் ஆப்ஸ் டெவலப்பர்கள் விலை உள்நுழைக இலவசமாக தொடங்குங்கள் இலவசமாக தொடங்குங்கள் வளங்கள் அனைத்தும் மின்வணிகம் வளர்ச்சி பணப்பரிவர்த்தனை செயல்பாடுகள் AI வணிகம் உருவாக்குநர்கள் மாற்றப் பதிவு வணிகப் புதுப்பிப்புகள் உள்ளடக்கம் 01 இணைய வணிகத்திற்கான GST அடிப்படைகள் 02 GST பதிவு தேவையா? 03 பொதுவான இணைய வணிக வகைகளின் GST விகிதங்கள் 04 மாதாந்திரத் தாக்கல்: GSTR-1 மற்றும் GSTR-3B 05 உள்ளீட்டு வரிக் கடன்: உங்கள் செலவுப் பலன் 13 நிமிட வாசிப்பு புதுப்பிக்கப்பட்டது ஜூன் 2026 பகிரவும் அச்சிடவும் வளங்களுக்குத் திரும்பவும் வளங்கள் › பணப்பரிவர்த்தனை இந்திய இணைய வணிகத்திற்கான GST: முழுமையான 2026 வழிகாட்டி இணைய விற்பனையாளர்களுக்கான GST இணக்கம், தாக்கல், TCS மற்றும் உள்ளீட்டு வரிக் கடன் விளக்கம். N Neha Gupta பணப்பரிவர்த்தனை மற்றும் இணக்கம் 1 மார்., 2026 13 நிமிட வாசிப்பு புதுப்பிக்கப்பட்டது 16 ஜூன், 2026 இணைப்பை நகலெடுக்கவும் சேமிக்கவும் # gst # tax # compliance # india படங்களுடன் வழிகாட்டி விற்பனை, விலைப்பட்டியல், ஆதாரப் பதிவுகளை இணைத்திருங்கள். கருத்து விளக்கம் முதலில் கருத்தை ஆராய்ந்து பிறகு விரிவாகப் படியுங்கள். 01 அடிப்படைகள் 02 மாதத் தாக்கல் 03 உள்ளீட்டு வரிக் கடன் இணைய வணிகத்திற்கான GST அடிப்படைகள் சரக்கு மற்றும் சேவை வரியான GST, 2017-இல் 17 மத்திய மற்றும் மாநில வரிகளை மாற்றியது. இணைய வணிகத்தின் முக்கியக் கொள்கை: பொருள் வழங்கப்படும் இடத்தில் GST விதிக்கப்பட்டு வாங்குபவரிடமிருந்து வசூலிக்கப்பட்டு மாதந்தோறும் அரசுக்குச் செலுத்தப்படுகிறது. இந்தப் பகுதியைப் படிக்கவும் மாதாந்திரத் தாக்கல்: GSTR-1 மற்றும் GSTR-3B GSTR-1: ஒவ்வொரு மாதமும் 11-ஆம் தேதிக்குள் அனைத்து வெளி வழங்கல்களையும்—விற்பனைகளையும்—பட்டியலிடுங்கள் · GSTR-3B: உள்ளீட்டுக் கடனுக்குப் பின் நிகர வரியை ஒவ்வொரு மாதமும் 20-ஆம் தேதிக்குள் தாக்கல் செய்யுங்கள் இந்தப் பகுதியைப் படிக்கவும் உள்ளீட்டு வரிக் கடன்: உங்கள் செலவுப் பலன் வணிகக் கொள்முதல்களில் செலுத்திய GST-ஐ விற்பனையில் வசூலித்த GST-இலிருந்து கழிக்க உள்ளீட்டு வரிக் கடன் (ITC) உதவுகிறது. பொதிப் பொருட்களுக்கு ₹18 GST செலுத்தி விற்பனையில் ₹60 வசூலித்தால் ₹42 மட்டுமே செலுத்த வேண்டும். பொதி, அனுப்புதல் மற்றும் மூலப்பொருட்களின் ITC உங்கள் உண்மையான வரி விகிதத்தை 30–40% குறைக்கலாம். இந்தப் பகுதியைப் படிக்கவும் இந்திய பிராண்டுகளின் வளர்ச்சியை அதிகம் தடுக்கும் இணக்கப் பணி GST. அதற்கென சொற்கள், தளம், தாக்கல் அட்டவணை இருப்பதால் அச்சம் புரிந்துகொள்ளக்கூடியது. அடிப்படைகளைப் புரிந்துகொண்டால் அது சுமையாக இல்லாமல் ஓர் அமைப்பாக மாறுகிறது. இணைய வணிகத்திற்கான GST அடிப்படைகள் அடிப்படைகள் விற்பனை, விலைப்பட்டியல், ஆதாரப் பதிவுகளை இணைத்திருங்கள். கருத்து விளக்கம் சரக்கு மற்றும் சேவை வரியான GST, 2017-இல் 17 மத்திய மற்றும் மாநில வரிகளை மாற்றியது. இணைய வணிகத்தின் முக்கியக் கொள்கை: பொருள் வழங்கப்படும் இடத்தில் GST விதிக்கப்பட்டு வாங்குபவரிடமிருந்து வசூலிக்கப்பட்டு மாதந்தோறும் அரசுக்குச் செலுத்தப்படுகிறது. GST பதிவு தேவையா? ஆண்டு வருவாய் ₹20 லட்சத்துக்கு மேல்—சிறப்பு வகை மாநிலங்களில் ₹10 லட்சம்: கட்டாயம் ஆண்டு வருவாய் ₹20 லட்சத்துக்குக் கீழ்: விருப்பமானது; உள்ளீட்டு வரிக் கடனுக்குப் பரிந்துரைக்கப்படுகிறது Amazon, Flipkart போன்ற சந்தைகளில் விற்பனை: வருவாயைப் பொருட்படுத்தாமல் கட்டாயம் சொந்த இணையதளத்திலிருந்து பிற மாநிலங்களுக்கு விற்பனை: வருவாயைப் பொருட்படுத்தாமல் கட்டாயம் சந்தையின் TCS Amazon, Flipkart போன்ற சந்தைகள் உங்கள் வரிக்குரிய விற்பனையில் 1% மூலத்தில் வசூலிக்கும் வரியாக (TCS) பெற்று அரசுக்குச் செலுத்த வேண்டும். இது GSTR-2A-இல் தோன்றும்; ஒப்பிட்டுச் சரிபார்க்க வேண்டும். பொதுவான இணைய வணிக வகைகளின் GST விகிதங்கள் வகை GST விகிதம் குறிப்புகள் ₹1,000-க்குக் கீழ் ஆடைகள் 5% குறைந்த விலை ஆடைகளுக்கான குறைந்த விகிதம் ₹1,000-க்கு மேல் ஆடைகள் 12% ₹1,000-க்குக் கீழ் காலணிகள் 5% மின்னணுப் பொருட்கள் 18% பெரும்பாலான நுகர்வோர் மின்னணுப் பொருட்கள் பொதியிடப்பட்ட பிராண்டு உணவு 12% FSSAI பதிவு செய்யப்பட்ட தயாரிப்புகள் அழகு மற்றும் தனிப்பட்ட பராமரிப்பு 18% பெரும்பாலான வகைகள் புத்தகங்கள் 0% விலக்கு கைத்தறித் துணிகள் 5% சிறப்பு விகிதம் மாதாந்திரத் தாக்கல்: GSTR-1 மற்றும் GSTR-3B GSTR-1: ஒவ்வொரு மாதமும் 11-ஆம் தேதிக்குள் அனைத்து வெளி வழங்கல்களையும்—விற்பனைகளையும்—பட்டியலிடுங்கள் GSTR-3B: உள்ளீட்டுக் கடனுக்குப் பின் நிகர வரியை ஒவ்வொரு மாதமும் 20-ஆம் தேதிக்குள் தாக்கல் செய்யுங்கள் GSTR-3B தாக்கல் தேதிக்குள் செலுத்த வேண்டிய வரியைச் செலுத்துங்கள் GSTR-3B தாக்கலுக்கு முன் GSTR-2A-இல் TCS-ஐ ஒப்பிட்டுச் சரிபாருங்கள் உள்ளீட்டு வரிக் கடன்: உங்கள் செலவுப் பலன் உள்ளீட்டு வரிக் கடன் இருப்பு, அதன் இடம், கவனம் தேவைப்படுவதை அறியுங்கள். கருத்து விளக்கம் வணிகக் கொள்முதல்களில் செலுத்திய GST-ஐ விற்பனையில் வசூலித்த GST-இலிருந்து கழிக்க உள்ளீட்டு வரிக் கடன் (ITC) உதவுகிறது. பொதிப் பொருட்களுக்கு ₹18 GST செலுத்தி விற்பனையில் ₹60 வசூலித்தால் ₹42 மட்டுமே செலுத்த வேண்டும். பொதி, அனுப்புதல் மற்றும் மூலப்பொருட்களின் ITC உங்கள் உண்மையான வரி விகிதத்தை 30–40% குறைக்கலாம். கட்டுரை முடிந்தது அடுத்து: இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை 7 நிமிட வாசிப்பு தொடர்ந்து கற்றுக்கொள்ளுங்கள் N Neha Gupta பணப்பரிவர்த்தனை மற்றும் இணக்கம் அனைத்து அளவிலான வணிகர்களுக்கும் இந்திய வணிகத்தை எளிதாக்கும் GST ஆலோசகர், பணப்பரிவர்த்தனை நிபுணர். 5 கட்டுரைகள் 1 தலைப்புகள் பணப்பரிவர்த்தனை அனைத்துக் கட்டுரைகளும்: Neha வாராந்திர செய்திமடல் வணிக வழிகாட்டிகளும் தளப் புதுப்பிப்புகளும் வாராந்திர வணிகப் பார்வைகள் AI வணிகப் பார்வைகள் இந்திய வளர்ச்சித் திட்டங்கள் தள அம்சப் புதுப்பிப்புகள் விற்பனை மாற்ற உத்திகள் மின்னஞ்சல் சந்தா இன்னும் கிடைக்கவில்லை. உங்கள் RSS வாசிப்பானில் புதிய வழிகாட்டிகளைப் பின்தொடருங்கள். RSS வழியாகப் பின்தொடரவும் தொடர்புடைய வழிகாட்டிகள் மின்வணிகம் இந்தியாவில் இணையக் கடையைத் தொடங்குவது எப்படி (2026 வழிகாட்டி) 12 நிமிட வாசிப்பு பணப்பரிவர்த்தனை UPI அல்லது COD: இந்தியக் கடைகளுக்கு எந்தப் பணம் செலுத்தல் முறை சிறந்தது 9 நிமிட வாசிப்பு பணப்பரிவர்த்தனை இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை 7 நிமிட வாசிப்பு முந்தையது பணப்பரிவர்த்தனை UPI அல்லது COD: இந்தியக் கடைகளுக்கு எந்தப் பணம் செலுத்தல் முறை சிறந்தது 9 நிமிட வாசிப்பு அடுத்தது பணப்பரிவர்த்தனை இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை 7 நிமிட வாசிப்பு தொடர்ந்து படியுங்கள் உங்களுக்கான பரிந்துரைகள் மின்வணிகம் இந்தியாவில் இணையக் கடையைத் தொடங்குவது எப்படி (2026 வழிகாட்டி) தொடங்கி, விற்று, வளரத் தேவையான அனைத்தும் — GST பதிவிலிருந்து முதல் ஆர்டர் வரை. 12 நிமிட வாசிப்பு பணப்பரிவர்த்தனை UPI அல்லது COD: இந்தியக் கடைகளுக்கு எந்தப் பணம் செலுத்தல் முறை சிறந்தது இந்தியாவின் இரண்டு முக்கிய பணம் செலுத்தல் முறைகளின் தரவுகளும் இரண்டையும் மேம்படுத்தும் வழிகளும். 9 நிமிட வாசிப்பு பணப்பரிவர்த்தனை இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை ஒவ்வொரு விவரம், வடிவம், விதியும்—எப்போதும் இணக்கமான விலைப்பட்டியலுக்காக. 7 நிமிட வாசிப்பு மின்னஞ்சல் சந்தா இன்னும் கிடைக்கவில்லை. உங்கள் RSS வாசிப்பானில் புதிய வழிகாட்டிகளைப் பின்தொடருங்கள். RSS வழியாகப் பின்தொடரவும் 0 உள்ளடக்கம் அடுத்தது இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை LetBuyy அடிக்குறிப்பு LetBuyy LetBuyy என்றால் என்ன? விலை உங்கள் கடையைத் தொடங்குங்கள் சூழல் அமைப்பு தீம் வழிகாட்டி ஆப் ஒருங்கிணைப்பு வழிகாட்டி டெவலப்பர் ஆவணங்கள் வணிகர் உள்நுழைவு வளங்கள் அனைத்து வளங்களும் இணைய வணிக வழிகாட்டிகள் டெவலப்பர் ஆவணங்கள் மாற்றப் பதிவு உதவி உதவி மையம் எங்களைத் தொடர்பு கொள்ள குறைதீர்ப்பு பாதுகாப்பு கணக்கு அணுகல் இந்தியா தமிழ் சட்டம் விதிமுறைகள் தனியுரிமை பணத்திரும்பம் தள வரைபடம் உங்கள் தனியுரிமை விருப்பங்கள் © 2026 LetBuyy. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
+    "main_text": "உள்ளடக்கம் 01 இணைய வணிகத்திற்கான GST அடிப்படைகள் 02 GST பதிவு தேவையா? 03 பொதுவான இணைய வணிக வகைகளின் GST விகிதங்கள் 04 மாதாந்திரத் தாக்கல்: GSTR-1 மற்றும் GSTR-3B 05 உள்ளீட்டு வரிக் கடன்: உங்கள் செலவுப் பலன் 13 நிமிட வாசிப்பு புதுப்பிக்கப்பட்டது ஜூன் 2026 பகிரவும் அச்சிடவும் வளங்களுக்குத் திரும்பவும் வளங்கள் › பணப்பரிவர்த்தனை இந்திய இணைய வணிகத்திற்கான GST: முழுமையான 2026 வழிகாட்டி இணைய விற்பனையாளர்களுக்கான GST இணக்கம், தாக்கல், TCS மற்றும் உள்ளீட்டு வரிக் கடன் விளக்கம். N Neha Gupta பணப்பரிவர்த்தனை மற்றும் இணக்கம் 1 மார்., 2026 13 நிமிட வாசிப்பு புதுப்பிக்கப்பட்டது 16 ஜூன், 2026 இணைப்பை நகலெடுக்கவும் சேமிக்கவும் # gst # tax # compliance # india படங்களுடன் வழிகாட்டி விற்பனை, விலைப்பட்டியல், ஆதாரப் பதிவுகளை இணைத்திருங்கள். கருத்து விளக்கம் முதலில் கருத்தை ஆராய்ந்து பிறகு விரிவாகப் படியுங்கள். 01 அடிப்படைகள் 02 மாதத் தாக்கல் 03 உள்ளீட்டு வரிக் கடன் இணைய வணிகத்திற்கான GST அடிப்படைகள் சரக்கு மற்றும் சேவை வரியான GST, 2017-இல் 17 மத்திய மற்றும் மாநில வரிகளை மாற்றியது. இணைய வணிகத்தின் முக்கியக் கொள்கை: பொருள் வழங்கப்படும் இடத்தில் GST விதிக்கப்பட்டு வாங்குபவரிடமிருந்து வசூலிக்கப்பட்டு மாதந்தோறும் அரசுக்குச் செலுத்தப்படுகிறது. இந்தப் பகுதியைப் படிக்கவும் மாதாந்திரத் தாக்கல்: GSTR-1 மற்றும் GSTR-3B GSTR-1: ஒவ்வொரு மாதமும் 11-ஆம் தேதிக்குள் அனைத்து வெளி வழங்கல்களையும்—விற்பனைகளையும்—பட்டியலிடுங்கள் · GSTR-3B: உள்ளீட்டுக் கடனுக்குப் பின் நிகர வரியை ஒவ்வொரு மாதமும் 20-ஆம் தேதிக்குள் தாக்கல் செய்யுங்கள் இந்தப் பகுதியைப் படிக்கவும் உள்ளீட்டு வரிக் கடன்: உங்கள் செலவுப் பலன் வணிகக் கொள்முதல்களில் செலுத்திய GST-ஐ விற்பனையில் வசூலித்த GST-இலிருந்து கழிக்க உள்ளீட்டு வரிக் கடன் (ITC) உதவுகிறது. பொதிப் பொருட்களுக்கு ₹18 GST செலுத்தி விற்பனையில் ₹60 வசூலித்தால் ₹42 மட்டுமே செலுத்த வேண்டும். பொதி, அனுப்புதல் மற்றும் மூலப்பொருட்களின் ITC உங்கள் உண்மையான வரி விகிதத்தை 30–40% குறைக்கலாம். இந்தப் பகுதியைப் படிக்கவும் இந்திய பிராண்டுகளின் வளர்ச்சியை அதிகம் தடுக்கும் இணக்கப் பணி GST. அதற்கென சொற்கள், தளம், தாக்கல் அட்டவணை இருப்பதால் அச்சம் புரிந்துகொள்ளக்கூடியது. அடிப்படைகளைப் புரிந்துகொண்டால் அது சுமையாக இல்லாமல் ஓர் அமைப்பாக மாறுகிறது. இணைய வணிகத்திற்கான GST அடிப்படைகள் அடிப்படைகள் விற்பனை, விலைப்பட்டியல், ஆதாரப் பதிவுகளை இணைத்திருங்கள். கருத்து விளக்கம் சரக்கு மற்றும் சேவை வரியான GST, 2017-இல் 17 மத்திய மற்றும் மாநில வரிகளை மாற்றியது. இணைய வணிகத்தின் முக்கியக் கொள்கை: பொருள் வழங்கப்படும் இடத்தில் GST விதிக்கப்பட்டு வாங்குபவரிடமிருந்து வசூலிக்கப்பட்டு மாதந்தோறும் அரசுக்குச் செலுத்தப்படுகிறது. GST பதிவு தேவையா? ஆண்டு வருவாய் ₹20 லட்சத்துக்கு மேல்—சிறப்பு வகை மாநிலங்களில் ₹10 லட்சம்: கட்டாயம் ஆண்டு வருவாய் ₹20 லட்சத்துக்குக் கீழ்: விருப்பமானது; உள்ளீட்டு வரிக் கடனுக்குப் பரிந்துரைக்கப்படுகிறது Amazon, Flipkart போன்ற சந்தைகளில் விற்பனை: வருவாயைப் பொருட்படுத்தாமல் கட்டாயம் சொந்த இணையதளத்திலிருந்து பிற மாநிலங்களுக்கு விற்பனை: வருவாயைப் பொருட்படுத்தாமல் கட்டாயம் சந்தையின் TCS Amazon, Flipkart போன்ற சந்தைகள் உங்கள் வரிக்குரிய விற்பனையில் 1% மூலத்தில் வசூலிக்கும் வரியாக (TCS) பெற்று அரசுக்குச் செலுத்த வேண்டும். இது GSTR-2A-இல் தோன்றும்; ஒப்பிட்டுச் சரிபார்க்க வேண்டும். பொதுவான இணைய வணிக வகைகளின் GST விகிதங்கள் வகை GST விகிதம் குறிப்புகள் ₹1,000-க்குக் கீழ் ஆடைகள் 5% குறைந்த விலை ஆடைகளுக்கான குறைந்த விகிதம் ₹1,000-க்கு மேல் ஆடைகள் 12% ₹1,000-க்குக் கீழ் காலணிகள் 5% மின்னணுப் பொருட்கள் 18% பெரும்பாலான நுகர்வோர் மின்னணுப் பொருட்கள் பொதியிடப்பட்ட பிராண்டு உணவு 12% FSSAI பதிவு செய்யப்பட்ட தயாரிப்புகள் அழகு மற்றும் தனிப்பட்ட பராமரிப்பு 18% பெரும்பாலான வகைகள் புத்தகங்கள் 0% விலக்கு கைத்தறித் துணிகள் 5% சிறப்பு விகிதம் மாதாந்திரத் தாக்கல்: GSTR-1 மற்றும் GSTR-3B GSTR-1: ஒவ்வொரு மாதமும் 11-ஆம் தேதிக்குள் அனைத்து வெளி வழங்கல்களையும்—விற்பனைகளையும்—பட்டியலிடுங்கள் GSTR-3B: உள்ளீட்டுக் கடனுக்குப் பின் நிகர வரியை ஒவ்வொரு மாதமும் 20-ஆம் தேதிக்குள் தாக்கல் செய்யுங்கள் GSTR-3B தாக்கல் தேதிக்குள் செலுத்த வேண்டிய வரியைச் செலுத்துங்கள் GSTR-3B தாக்கலுக்கு முன் GSTR-2A-இல் TCS-ஐ ஒப்பிட்டுச் சரிபாருங்கள் உள்ளீட்டு வரிக் கடன்: உங்கள் செலவுப் பலன் உள்ளீட்டு வரிக் கடன் இருப்பு, அதன் இடம், கவனம் தேவைப்படுவதை அறியுங்கள். கருத்து விளக்கம் வணிகக் கொள்முதல்களில் செலுத்திய GST-ஐ விற்பனையில் வசூலித்த GST-இலிருந்து கழிக்க உள்ளீட்டு வரிக் கடன் (ITC) உதவுகிறது. பொதிப் பொருட்களுக்கு ₹18 GST செலுத்தி விற்பனையில் ₹60 வசூலித்தால் ₹42 மட்டுமே செலுத்த வேண்டும். பொதி, அனுப்புதல் மற்றும் மூலப்பொருட்களின் ITC உங்கள் உண்மையான வரி விகிதத்தை 30–40% குறைக்கலாம். கட்டுரை முடிந்தது அடுத்து: இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை 7 நிமிட வாசிப்பு தொடர்ந்து கற்றுக்கொள்ளுங்கள் N Neha Gupta பணப்பரிவர்த்தனை மற்றும் இணக்கம் அனைத்து அளவிலான வணிகர்களுக்கும் இந்திய வணிகத்தை எளிதாக்கும் GST ஆலோசகர், பணப்பரிவர்த்தனை நிபுணர். 5 கட்டுரைகள் 1 தலைப்புகள் பணப்பரிவர்த்தனை அனைத்துக் கட்டுரைகளும்: Neha வாராந்திர செய்திமடல் வணிக வழிகாட்டிகளும் தளப் புதுப்பிப்புகளும் வாராந்திர வணிகப் பார்வைகள் AI வணிகப் பார்வைகள் இந்திய வளர்ச்சித் திட்டங்கள் தள அம்சப் புதுப்பிப்புகள் விற்பனை மாற்ற உத்திகள் மின்னஞ்சல் சந்தா இன்னும் கிடைக்கவில்லை. உங்கள் RSS வாசிப்பானில் புதிய வழிகாட்டிகளைப் பின்தொடருங்கள். RSS வழியாகப் பின்தொடரவும் தொடர்புடைய வழிகாட்டிகள் மின்வணிகம் இந்தியாவில் இணையக் கடையைத் தொடங்குவது எப்படி (2026 வழிகாட்டி) 12 நிமிட வாசிப்பு பணப்பரிவர்த்தனை UPI அல்லது COD: இந்தியக் கடைகளுக்கு எந்தப் பணம் செலுத்தல் முறை சிறந்தது 9 நிமிட வாசிப்பு பணப்பரிவர்த்தனை இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை 7 நிமிட வாசிப்பு முந்தையது பணப்பரிவர்த்தனை UPI அல்லது COD: இந்தியக் கடைகளுக்கு எந்தப் பணம் செலுத்தல் முறை சிறந்தது 9 நிமிட வாசிப்பு அடுத்தது பணப்பரிவர்த்தனை இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை 7 நிமிட வாசிப்பு தொடர்ந்து படியுங்கள் உங்களுக்கான பரிந்துரைகள் மின்வணிகம் இந்தியாவில் இணையக் கடையைத் தொடங்குவது எப்படி (2026 வழிகாட்டி) தொடங்கி, விற்று, வளரத் தேவையான அனைத்தும் — GST பதிவிலிருந்து முதல் ஆர்டர் வரை. 12 நிமிட வாசிப்பு பணப்பரிவர்த்தனை UPI அல்லது COD: இந்தியக் கடைகளுக்கு எந்தப் பணம் செலுத்தல் முறை சிறந்தது இந்தியாவின் இரண்டு முக்கிய பணம் செலுத்தல் முறைகளின் தரவுகளும் இரண்டையும் மேம்படுத்தும் வழிகளும். 9 நிமிட வாசிப்பு பணப்பரிவர்த்தனை இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை ஒவ்வொரு விவரம், வடிவம், விதியும்—எப்போதும் இணக்கமான விலைப்பட்டியலுக்காக. 7 நிமிட வாசிப்பு மின்னஞ்சல் சந்தா இன்னும் கிடைக்கவில்லை. உங்கள் RSS வாசிப்பானில் புதிய வழிகாட்டிகளைப் பின்தொடருங்கள். RSS வழியாகப் பின்தொடரவும் 0 உள்ளடக்கம் அடுத்தது இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை",
+    "word_count": 814,
+    "main_word_count": 721
+  },
+  {
+    "url": "https://www.letbuyy.com/in-hi/resources/payments/gst-for-ecommerce-india",
+    "final_url": "https://www.letbuyy.com/in-hi/resources/payments/gst-for-ecommerce-india",
+    "status": 200,
+    "history": [
+      {
+        "url": "https://www.letbuyy.com/in-hi/resources/payments/gst-for-ecommerce-india",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "headers": {
+      "access-control-allow-origin": "*",
+      "age": "0",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 17:26:56 GMT",
+      "etag": "W/\"8702bcbddefabe013adfa59cf94e0359\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/in-hi/resources/payments/gst-for-ecommerce-india",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "PRERENDER",
+      "x-vercel-id": "bom1::59g2x-1793294816445-2783de5a824b"
+    },
+    "bytes_downloaded": 48852.0,
+    "fetch_seconds": 0.594763,
+    "evidence_html": "evidence/d7ca92e962568886.html",
+    "evidence_headers": "evidence/d7ca92e962568886.headers",
+    "title": "भारत में ईकॉमर्स के लिए GST: पूरी 2026 मार्गदर्शिका | LetBuyy Resources",
+    "meta": [
+      {
+        "charset": "utf-8"
+      },
+      {
+        "name": "viewport",
+        "content": "width=device-width, initial-scale=1"
+      },
+      {
+        "name": "next-size-adjust",
+        "content": ""
+      },
+      {
+        "name": "description",
+        "content": "2026 में भारतीय ईकॉमर्स विक्रेताओं के लिए GST की पूरी जानकारी—पंजीकरण, TCS, चालान, रिटर्न और अनुपालन।"
+      },
+      {
+        "name": "application-name",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "author",
+        "content": "Neha Gupta"
+      },
+      {
+        "name": "keywords",
+        "content": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace"
+      },
+      {
+        "name": "creator",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "publisher",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "robots",
+        "content": "index, follow"
+      },
+      {
+        "name": "googlebot",
+        "content": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+      },
+      {
+        "name": "category",
+        "content": "commerce platform"
+      },
+      {
+        "property": "og:title",
+        "content": "भारत में ईकॉमर्स के लिए GST: पूरी 2026 मार्गदर्शिका"
+      },
+      {
+        "property": "og:description",
+        "content": "2026 में भारतीय ईकॉमर्स विक्रेताओं के लिए GST की पूरी जानकारी—पंजीकरण, TCS, चालान, रिटर्न और अनुपालन।"
+      },
+      {
+        "property": "og:type",
+        "content": "article"
+      },
+      {
+        "property": "article:published_time",
+        "content": "2026-03-01"
+      },
+      {
+        "property": "article:modified_time",
+        "content": "2026-06-16"
+      },
+      {
+        "property": "article:author",
+        "content": "Neha Gupta"
+      },
+      {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      },
+      {
+        "name": "twitter:title",
+        "content": "LetBuyy - India-first commerce operating system"
+      },
+      {
+        "name": "twitter:description",
+        "content": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations."
+      },
+      {
+        "name": "twitter:image",
+        "content": "https://www.letbuyy.com/og/letbuyy-default.png"
+      }
+    ],
+    "links": [
+      {
+        "rel": "preload",
+        "href": "/_next/static/media/0336a89fb4e7fc1d-s.p.woff2",
+        "as": "font",
+        "crossorigin": "",
+        "type": "font/woff2"
+      },
+      {
+        "rel": "preload",
+        "href": "/_next/static/media/93f479601ee12b01-s.p.woff2",
+        "as": "font",
+        "crossorigin": "",
+        "type": "font/woff2"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/assets/legal/privacy-choices.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/reading-tax-documents-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/guide-first-store-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/capabilities/inventory-scene-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/reading-tax-documents-v1.webp"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/93490f2121b4cdc7.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/b347359ed073494e.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/a40e3bf3e20fcbbe.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/79b625f4554cc373.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/141d9cd5473cfb91.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/26008953488318fa.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "preload",
+        "as": "script",
+        "fetchpriority": "low",
+        "href": "/_next/static/chunks/webpack-ff1b21ecea0c7fe8.js"
+      },
+      {
+        "rel": "canonical",
+        "href": "https://www.letbuyy.com/in-hi/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "en-IN",
+        "href": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "ta-IN",
+        "href": "https://www.letbuyy.com/in-ta/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "hi-IN",
+        "href": "https://www.letbuyy.com/in-hi/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india"
+      },
+      {
+        "rel": "shortcut icon",
+        "href": "/icons/letbuyy-mark.svg"
+      },
+      {
+        "rel": "icon",
+        "href": "/favicon.ico?603d046c9a6fdfbb",
+        "type": "image/x-icon",
+        "sizes": "16x16"
+      },
+      {
+        "rel": "icon",
+        "href": "/icons/letbuyy-mark.svg"
+      },
+      {
+        "rel": "apple-touch-icon",
+        "href": "/icons/letbuyy-mark.svg"
+      }
+    ],
+    "anchors": [
+      {
+        "class": "header-logo",
+        "aria-label": "LetBuyy होम",
+        "href": "/in-hi"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-hi/resources/platform/how-themes-work"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-hi/resources/platform/introduction-to-apps"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-hi/resources/developers"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-hi/pricing"
+      },
+      {
+        "class": "btn btn-ghost",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "btn btn-primary",
+        "href": "https://accounts.letbuyy.com/signup"
+      },
+      {
+        "class": "mobile-start-link",
+        "href": "https://accounts.letbuyy.com/signup"
+      },
+      {
+        "class": "res-nav-label",
+        "href": "/in-hi/resources"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-hi/resources"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-hi/resources/ecommerce"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-hi/resources/growth"
+      },
+      {
+        "class": "res-nav-link active",
+        "aria-current": "page",
+        "href": "/in-hi/resources/payments"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-hi/resources/operations"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-hi/resources/ai-commerce"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-hi/resources/developers"
+      },
+      {
+        "class": "res-nav-link",
+        "href": "/in-hi/resources/changelog"
+      },
+      {
+        "href": "#gst-basics-for-ecommerce",
+        "class": "arc-toc-item"
+      },
+      {
+        "href": "#do-you-need-gst-registration",
+        "class": "arc-toc-item"
+      },
+      {
+        "href": "#gst-rates-for-common-ecommerce-categories",
+        "class": "arc-toc-item"
+      },
+      {
+        "href": "#monthly-filing-gstr-1-and-gstr-3b",
+        "class": "arc-toc-item"
+      },
+      {
+        "href": "#input-tax-credit-your-cost-advantage",
+        "class": "arc-toc-item"
+      },
+      {
+        "class": "arc-toc-back",
+        "href": "/in-hi/resources"
+      },
+      {
+        "href": "/in-hi/resources"
+      },
+      {
+        "style": "color:var(--lb-primitive-color-emerald-500)",
+        "href": "/in-hi/resources/payments"
+      },
+      {
+        "class": "arc-tag",
+        "href": "/in-hi/resources/tag/gst"
+      },
+      {
+        "class": "arc-tag",
+        "href": "/in-hi/resources/tag/tax"
+      },
+      {
+        "class": "arc-tag",
+        "href": "/in-hi/resources/tag/compliance"
+      },
+      {
+        "class": "arc-tag",
+        "href": "/in-hi/resources/tag/india"
+      },
+      {
+        "href": "#gst-basics-for-ecommerce",
+        "class": "article-visual-overview_readLink__U0NZM",
+        "aria-label": "यह भाग पढ़ें: ईकॉमर्स के लिए GST की मूल बातें"
+      },
+      {
+        "href": "#monthly-filing-gstr-1-and-gstr-3b",
+        "class": "article-visual-overview_readLink__U0NZM",
+        "aria-label": "यह भाग पढ़ें: मासिक रिटर्न: GSTR-1 और GSTR-3B"
+      },
+      {
+        "href": "#input-tax-credit-your-cost-advantage",
+        "class": "article-visual-overview_readLink__U0NZM",
+        "aria-label": "यह भाग पढ़ें: इनपुट टैक्स क्रेडिट: लागत में आपका लाभ"
+      },
+      {
+        "class": "arc-completion-cta",
+        "href": "/in-hi/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "arc-author-all",
+        "href": "/in-hi/resources/authors/neha-payments"
+      },
+      {
+        "class": "btn btn-outline",
+        "href": "/in-hi/resources/rss.xml"
+      },
+      {
+        "class": "arc-rel-item",
+        "href": "/in-hi/resources/ecommerce/how-to-start-an-online-store-india"
+      },
+      {
+        "class": "arc-rel-item",
+        "href": "/in-hi/resources/payments/upi-vs-cod-india"
+      },
+      {
+        "class": "arc-rel-item",
+        "href": "/in-hi/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "arc-pn-card",
+        "href": "/in-hi/resources/payments/upi-vs-cod-india"
+      },
+      {
+        "class": "arc-pn-card arc-pn-next-card",
+        "href": "/in-hi/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "arc-rec-card",
+        "href": "/in-hi/resources/ecommerce/how-to-start-an-online-store-india"
+      },
+      {
+        "class": "arc-rec-card",
+        "href": "/in-hi/resources/payments/upi-vs-cod-india"
+      },
+      {
+        "class": "arc-rec-card",
+        "href": "/in-hi/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "btn btn-outline",
+        "href": "/in-hi/resources/rss.xml"
+      },
+      {
+        "class": "adock-next",
+        "href": "/in-hi/resources/payments/invoicing-india-merchants"
+      },
+      {
+        "class": "footer-mark",
+        "aria-label": "LetBuyy होम",
+        "href": "/in-hi"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/pricing"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/create"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/platform/how-themes-work"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/platform/introduction-to-apps"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/developers"
+      },
+      {
+        "class": "footer-link",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/ecommerce"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/developers"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/changelog"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/support"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/contact"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/legal/grievance"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/legal/security"
+      },
+      {
+        "class": "footer-link",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/legal"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/legal/terms"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/legal/privacy"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/legal/refunds"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/sitemap"
+      },
+      {
+        "href": "https://www.facebook.com/share/14tEGNoJSXR/",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "Facebook"
+      },
+      {
+        "href": "https://x.com/letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "X"
+      },
+      {
+        "href": "https://youtube.com/@letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "YouTube"
+      },
+      {
+        "href": "https://www.instagram.com/letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "Instagram"
+      }
+    ],
+    "images": [
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-light",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-dark",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "alt": "छोटे पार्सल के पास इनवॉइस, कैलकुलेटर और फ़ोल्डर।",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/reading-tax-documents-v1.webp"
+      },
+      {
+        "alt": "छोटे पार्सल के पास इनवॉइस, कैलकुलेटर और फ़ोल्डर।",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/reading-tax-documents-v1.webp"
+      },
+      {
+        "alt": "स्टॉक प्रबंधन कार्यस्थल का चित्रण।",
+        "loading": "eager",
+        "width": "640",
+        "height": "585",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/capabilities/inventory-scene-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/guide-first-store-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/reading-tax-documents-v1.webp"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "loading": "lazy",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-light",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "loading": "lazy",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-dark",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "src": "/assets/legal/privacy-choices.svg",
+        "alt": "",
+        "width": "32",
+        "height": "16",
+        "aria-hidden": "true"
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "भारत में ईकॉमर्स के लिए GST: पूरी 2026 मार्गदर्शिका"
+      },
+      {
+        "tag": "h2",
+        "text": "ईकॉमर्स के लिए GST की मूल बातें"
+      },
+      {
+        "tag": "h2",
+        "text": "मासिक रिटर्न: GSTR-1 और GSTR-3B"
+      },
+      {
+        "tag": "h2",
+        "text": "इनपुट टैक्स क्रेडिट: लागत में आपका लाभ"
+      },
+      {
+        "tag": "h2",
+        "text": "ईकॉमर्स के लिए GST की मूल बातें"
+      },
+      {
+        "tag": "h2",
+        "text": "क्या GST पंजीकरण चाहिए?"
+      },
+      {
+        "tag": "h2",
+        "text": "आम ईकॉमर्स श्रेणियों की GST दरें"
+      },
+      {
+        "tag": "h2",
+        "text": "मासिक रिटर्न: GSTR-1 और GSTR-3B"
+      },
+      {
+        "tag": "h2",
+        "text": "इनपुट टैक्स क्रेडिट: लागत में आपका लाभ"
+      },
+      {
+        "tag": "h2",
+        "text": "आपके लिए सुझाव"
+      },
+      {
+        "tag": "h2",
+        "text": "LetBuyy फ़ुटर"
+      },
+      {
+        "tag": "h3",
+        "text": "LetBuyy"
+      },
+      {
+        "tag": "h3",
+        "text": "इकोसिस्टम"
+      },
+      {
+        "tag": "h3",
+        "text": "संसाधन"
+      },
+      {
+        "tag": "h3",
+        "text": "सहायता"
+      }
+    ],
+    "schemas": [
+      "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.letbuyy.com/#organization\",\"name\":\"LetBuyy\",\"legalName\":\"LetBuyy\",\"alternateName\":[\"Let Buyy\",\"Letbuyy\",\"LetBuyy Commerce\"],\"url\":\"https://www.letbuyy.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://www.letbuyy.com/icons/letbuyy-logo-512.png\",\"width\":512,\"height\":512},\"image\":\"https://www.letbuyy.com/og/letbuyy-default.png\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"slogan\":\"India-first commerce operating system\",\"email\":\"support@letbuyy.com\",\"foundingLocation\":{\"@type\":\"Country\",\"name\":\"India\"},\"areaServed\":{\"@type\":\"Country\",\"name\":\"India\"},\"knowsLanguage\":[\"en\",\"hi\",\"ta\"],\"contactPoint\":{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"email\":\"support@letbuyy.com\",\"areaServed\":\"IN\",\"availableLanguage\":[\"en\",\"hi\",\"ta\"]},\"sameAs\":[\"https://www.instagram.com/letbuyyhq\",\"https://x.com/letbuyyhq\",\"https://youtube.com/@letbuyyhq\",\"https://www.facebook.com/share/14tEGNoJSXR/\"]},{\"@type\":\"WebSite\",\"@id\":\"https://www.letbuyy.com/#website\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"inLanguage\":\"en-IN\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"hasPart\":[{\"@type\":\"WebPage\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\"},{\"@type\":\"WebPage\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\"},{\"@type\":\"WebPage\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\"},{\"@type\":\"WebPage\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\"},{\"@type\":\"WebPage\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\"},{\"@type\":\"WebPage\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\"},{\"@type\":\"WebPage\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\"},{\"@type\":\"WebPage\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\"},{\"@type\":\"WebPage\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\"}]},{\"@type\":\"SoftwareApplication\",\"name\":\"LetBuyy\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://www.letbuyy.com\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"INR\",\"description\":\"Free launch tier available with 0% transaction and platform fees.\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}}]}",
+      "{\"@context\":\"https://schema.org\",\"@type\":\"Article\",\"headline\":\"भारत में ईकॉमर्स के लिए GST: पूरी 2026 मार्गदर्शिका\",\"description\":\"2026 में भारतीय ईकॉमर्स विक्रेताओं के लिए GST की पूरी जानकारी—पंजीकरण, TCS, चालान, रिटर्न और अनुपालन।\",\"datePublished\":\"2026-03-01\",\"dateModified\":\"2026-06-16\",\"author\":{\"@type\":\"Person\",\"name\":\"Neha Gupta\",\"jobTitle\":\"भुगतान और अनुपालन\"},\"publisher\":{\"@type\":\"Organization\",\"name\":\"LetBuyy\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"/icons/letbuyy-logo-512.png\"}},\"mainEntityOfPage\":{\"@type\":\"WebPage\",\"@id\":\"/resources/payments/gst-for-ecommerce-india\"}}",
+      "{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Resources\",\"item\":\"/resources\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"भुगतान\",\"item\":\"/resources/payments\"},{\"@type\":\"ListItem\",\"position\":3,\"name\":\"भारत में ईकॉमर्स के लिए GST: पूरी 2026 मार्गदर्शिका\"}]}"
+    ],
+    "text": "भारत में ईकॉमर्स के लिए GST: पूरी 2026 मार्गदर्शिका | LetBuyy Resources LetBuyy क्यों प्रोडक्ट थीम ऐप्स डेवलपर कीमत लॉग इन मुफ़्त शुरू करें मुफ़्त शुरू करें संसाधन सभी ईकॉमर्स विकास भुगतान संचालन AI कॉमर्स डेवलपर बदलाव विवरण कॉमर्स अपडेट विषय सूची 01 ईकॉमर्स के लिए GST की मूल बातें 02 क्या GST पंजीकरण चाहिए? 03 आम ईकॉमर्स श्रेणियों की GST दरें 04 मासिक रिटर्न: GSTR-1 और GSTR-3B 05 इनपुट टैक्स क्रेडिट: लागत में आपका लाभ 13 मिनट का पठन अपडेट किया जून 2026 साझा करें प्रिंट करें संसाधनों पर वापस संसाधन › भुगतान भारत में ईकॉमर्स के लिए GST: पूरी 2026 मार्गदर्शिका ऑनलाइन विक्रेताओं के लिए GST अनुपालन, रिटर्न, TCS और इनपुट टैक्स क्रेडिट की सरल जानकारी। N Neha Gupta भुगतान और अनुपालन 1 मार्च 2026 13 मिनट का पठन अपडेट किया 16 जून 2026 लिंक कॉपी करें सेव करें # gst # tax # compliance # india चित्रों के साथ मार्गदर्शिका बिक्री, इनवॉइस और सहायक रिकॉर्ड जोड़कर रखें। अवधारणा चित्रण पहले विचार समझें, फिर विस्तार से पढ़ें। 01 बुनियादी बातें 02 मासिक फ़ाइलिंग 03 इनपुट क्रेडिट ईकॉमर्स के लिए GST की मूल बातें GST—वस्तु एवं सेवा कर—ने 2017 में 17 केंद्रीय और राज्य करों की जगह ली। ईकॉमर्स का मुख्य सिद्धांत है: आपूर्ति के स्थान, यानी जहाँ सामान पहुँचे, के अनुसार GST लगाया जाता है, खरीदार से वसूला जाता है और हर महीने सरकार को जमा किया जाता है। यह भाग पढ़ें मासिक रिटर्न: GSTR-1 और GSTR-3B GSTR-1: हर महीने की 11 तारीख तक सभी बाहरी आपूर्तियाँ—बिक्री—दर्ज करें · GSTR-3B: हर महीने की 20 तारीख तक इनपुट क्रेडिट के बाद शुद्ध कर देयता दाखिल करें यह भाग पढ़ें इनपुट टैक्स क्रेडिट: लागत में आपका लाभ इनपुट टैक्स क्रेडिट (ITC) से व्यवसाय की खरीद पर दिया GST, बिक्री से वसूले GST से घटा सकते हैं। पैकिंग पर ₹18 GST देकर बिक्री पर ₹60 वसूलें तो केवल ₹42 जमा करेंगे। पैकिंग, कूरियर और कच्चे माल का ITC प्रभावी कर दर 30–40% घटा सकता है। यह भाग पढ़ें GST ऐसा अनुपालन कार्य है जो सबसे अधिक भारतीय ब्रांडों के विस्तार में बाधा बनता है। चिंता स्वाभाविक है—इसकी अपनी शब्दावली, पोर्टल और रिटर्न समय-सारणी है। लेकिन मूल बातें समझने पर यह बोझ नहीं, एक व्यवस्थित प्रक्रिया बन जाता है। ईकॉमर्स के लिए GST की मूल बातें बुनियादी बातें बिक्री, इनवॉइस और सहायक रिकॉर्ड जोड़कर रखें। अवधारणा चित्रण GST—वस्तु एवं सेवा कर—ने 2017 में 17 केंद्रीय और राज्य करों की जगह ली। ईकॉमर्स का मुख्य सिद्धांत है: आपूर्ति के स्थान, यानी जहाँ सामान पहुँचे, के अनुसार GST लगाया जाता है, खरीदार से वसूला जाता है और हर महीने सरकार को जमा किया जाता है। क्या GST पंजीकरण चाहिए? सालाना टर्नओवर ₹20 लाख से अधिक—विशेष श्रेणी राज्यों में ₹10 लाख: अनिवार्य सालाना टर्नओवर ₹20 लाख से कम: वैकल्पिक, लेकिन इनपुट टैक्स क्रेडिट के लिए सुझाया जाता है Amazon, Flipkart जैसे मार्केटप्लेस पर बिक्री: टर्नओवर चाहे जितना हो, अनिवार्य अपनी वेबसाइट से अन्य राज्यों में बिक्री: टर्नओवर चाहे जितना हो, अनिवार्य मार्केटप्लेस TCS Amazon और Flipkart जैसे मार्केटप्लेस आपकी करयोग्य बिक्री का 1% स्रोत पर कर-संग्रह (TCS) करके सरकार को जमा करते हैं। यह GSTR-2A में दिखता है और इसका मिलान जरूरी है। आम ईकॉमर्स श्रेणियों की GST दरें श्रेणी GST दर टिप्पणी ₹1,000 से कम के कपड़े 5% सस्ते कपड़ों के लिए कम दर ₹1,000 से अधिक के कपड़े 12% ₹1,000 से कम के जूते 5% इलेक्ट्रॉनिक्स 18% अधिकांश उपभोक्ता इलेक्ट्रॉनिक सामान पैक किया खाद्य पदार्थ—ब्रांडेड 12% FSSAI पंजीकृत उत्पाद सौंदर्य और व्यक्तिगत देखभाल 18% अधिकांश श्रेणियाँ किताबें 0% कर-मुक्त हथकरघा वस्त्र 5% विशेष दर मासिक रिटर्न: GSTR-1 और GSTR-3B GSTR-1: हर महीने की 11 तारीख तक सभी बाहरी आपूर्तियाँ—बिक्री—दर्ज करें GSTR-3B: हर महीने की 20 तारीख तक इनपुट क्रेडिट के बाद शुद्ध कर देयता दाखिल करें GSTR-3B जमा करने की तारीख तक देय कर चुकाएँ GSTR-3B से पहले GSTR-2A के TCS का मिलान करें इनपुट टैक्स क्रेडिट: लागत में आपका लाभ इनपुट क्रेडिट स्टॉक, उसका स्थान और ध्यान देने वाली चीज़ें जानें। अवधारणा चित्रण इनपुट टैक्स क्रेडिट (ITC) से व्यवसाय की खरीद पर दिया GST, बिक्री से वसूले GST से घटा सकते हैं। पैकिंग पर ₹18 GST देकर बिक्री पर ₹60 वसूलें तो केवल ₹42 जमा करेंगे। पैकिंग, कूरियर और कच्चे माल का ITC प्रभावी कर दर 30–40% घटा सकता है। लेख पूरा हुआ आगे: भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए 7 मिनट का पठन सीखते रहें N Neha Gupta भुगतान और अनुपालन हर आकार के व्यापारी के लिए भारतीय कॉमर्स आसान बनाने पर केंद्रित GST सलाहकार और भुगतान विशेषज्ञ। 5 लेख 1 विषय भुगतान सभी लेख: Neha साप्ताहिक न्यूज़लेटर कॉमर्स मार्गदर्शिकाएँ और प्लेटफ़ॉर्म अपडेट साप्ताहिक कॉमर्स जानकारी AI कॉमर्स जानकारी भारत में विकास की योजनाएँ प्लेटफ़ॉर्म सुविधा अपडेट रूपांतरण दर के तरीके ईमेल सदस्यता अभी उपलब्ध नहीं है। RSS रीडर में नई मार्गदर्शिकाएँ देखें। RSS से फ़ॉलो करें संबंधित मार्गदर्शिकाएँ ईकॉमर्स भारत में ऑनलाइन स्टोर कैसे शुरू करें (2026 मार्गदर्शिका) 12 मिनट का पठन भुगतान UPI बनाम COD: भारतीय दुकानों के लिए कौन-सा भुगतान तरीका बेहतर है 9 मिनट का पठन भुगतान भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए 7 मिनट का पठन पिछला भुगतान UPI बनाम COD: भारतीय दुकानों के लिए कौन-सा भुगतान तरीका बेहतर है 9 मिनट का पठन अगला भुगतान भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए 7 मिनट का पठन पढ़ते रहें आपके लिए सुझाव ईकॉमर्स भारत में ऑनलाइन स्टोर कैसे शुरू करें (2026 मार्गदर्शिका) लॉन्च करने, बेचने और बढ़ने के लिए सब कुछ — GST पंजीकरण से आपके पहले ऑर्डर तक। 12 मिनट का पठन भुगतान UPI बनाम COD: भारतीय दुकानों के लिए कौन-सा भुगतान तरीका बेहतर है भारत के दो प्रमुख भुगतान तरीकों के आँकड़े और दोनों को बेहतर बनाने के उपाय। 9 मिनट का पठन भुगतान भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए हर जानकारी, प्रारूप और नियम—ताकि चालान हमेशा अनुपालन में हों। 7 मिनट का पठन ईमेल सदस्यता अभी उपलब्ध नहीं है। RSS रीडर में नई मार्गदर्शिकाएँ देखें। RSS से फ़ॉलो करें 0 विषय सूची अगला भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए LetBuyy फ़ुटर LetBuyy LetBuyy क्या है? कीमत अपनी दुकान शुरू करें इकोसिस्टम थीम मार्गदर्शिका ऐप एकीकरण मार्गदर्शिका डेवलपर डॉक्स मर्चेंट लॉगिन संसाधन सभी संसाधन ईकॉमर्स गाइड डेवलपर डॉक्स चेंजलॉग सहायता सहायता केंद्र संपर्क करें शिकायत निवारण सुरक्षा खाता एक्सेस भारत हिन्दी क़ानूनी शर्तें प्राइवेसी रिफ़ंड साइटमैप आपकी प्राइवेसी पसंद © 2026 LetBuyy. सर्वाधिकार सुरक्षित।",
+    "main_text": "विषय सूची 01 ईकॉमर्स के लिए GST की मूल बातें 02 क्या GST पंजीकरण चाहिए? 03 आम ईकॉमर्स श्रेणियों की GST दरें 04 मासिक रिटर्न: GSTR-1 और GSTR-3B 05 इनपुट टैक्स क्रेडिट: लागत में आपका लाभ 13 मिनट का पठन अपडेट किया जून 2026 साझा करें प्रिंट करें संसाधनों पर वापस संसाधन › भुगतान भारत में ईकॉमर्स के लिए GST: पूरी 2026 मार्गदर्शिका ऑनलाइन विक्रेताओं के लिए GST अनुपालन, रिटर्न, TCS और इनपुट टैक्स क्रेडिट की सरल जानकारी। N Neha Gupta भुगतान और अनुपालन 1 मार्च 2026 13 मिनट का पठन अपडेट किया 16 जून 2026 लिंक कॉपी करें सेव करें # gst # tax # compliance # india चित्रों के साथ मार्गदर्शिका बिक्री, इनवॉइस और सहायक रिकॉर्ड जोड़कर रखें। अवधारणा चित्रण पहले विचार समझें, फिर विस्तार से पढ़ें। 01 बुनियादी बातें 02 मासिक फ़ाइलिंग 03 इनपुट क्रेडिट ईकॉमर्स के लिए GST की मूल बातें GST—वस्तु एवं सेवा कर—ने 2017 में 17 केंद्रीय और राज्य करों की जगह ली। ईकॉमर्स का मुख्य सिद्धांत है: आपूर्ति के स्थान, यानी जहाँ सामान पहुँचे, के अनुसार GST लगाया जाता है, खरीदार से वसूला जाता है और हर महीने सरकार को जमा किया जाता है। यह भाग पढ़ें मासिक रिटर्न: GSTR-1 और GSTR-3B GSTR-1: हर महीने की 11 तारीख तक सभी बाहरी आपूर्तियाँ—बिक्री—दर्ज करें · GSTR-3B: हर महीने की 20 तारीख तक इनपुट क्रेडिट के बाद शुद्ध कर देयता दाखिल करें यह भाग पढ़ें इनपुट टैक्स क्रेडिट: लागत में आपका लाभ इनपुट टैक्स क्रेडिट (ITC) से व्यवसाय की खरीद पर दिया GST, बिक्री से वसूले GST से घटा सकते हैं। पैकिंग पर ₹18 GST देकर बिक्री पर ₹60 वसूलें तो केवल ₹42 जमा करेंगे। पैकिंग, कूरियर और कच्चे माल का ITC प्रभावी कर दर 30–40% घटा सकता है। यह भाग पढ़ें GST ऐसा अनुपालन कार्य है जो सबसे अधिक भारतीय ब्रांडों के विस्तार में बाधा बनता है। चिंता स्वाभाविक है—इसकी अपनी शब्दावली, पोर्टल और रिटर्न समय-सारणी है। लेकिन मूल बातें समझने पर यह बोझ नहीं, एक व्यवस्थित प्रक्रिया बन जाता है। ईकॉमर्स के लिए GST की मूल बातें बुनियादी बातें बिक्री, इनवॉइस और सहायक रिकॉर्ड जोड़कर रखें। अवधारणा चित्रण GST—वस्तु एवं सेवा कर—ने 2017 में 17 केंद्रीय और राज्य करों की जगह ली। ईकॉमर्स का मुख्य सिद्धांत है: आपूर्ति के स्थान, यानी जहाँ सामान पहुँचे, के अनुसार GST लगाया जाता है, खरीदार से वसूला जाता है और हर महीने सरकार को जमा किया जाता है। क्या GST पंजीकरण चाहिए? सालाना टर्नओवर ₹20 लाख से अधिक—विशेष श्रेणी राज्यों में ₹10 लाख: अनिवार्य सालाना टर्नओवर ₹20 लाख से कम: वैकल्पिक, लेकिन इनपुट टैक्स क्रेडिट के लिए सुझाया जाता है Amazon, Flipkart जैसे मार्केटप्लेस पर बिक्री: टर्नओवर चाहे जितना हो, अनिवार्य अपनी वेबसाइट से अन्य राज्यों में बिक्री: टर्नओवर चाहे जितना हो, अनिवार्य मार्केटप्लेस TCS Amazon और Flipkart जैसे मार्केटप्लेस आपकी करयोग्य बिक्री का 1% स्रोत पर कर-संग्रह (TCS) करके सरकार को जमा करते हैं। यह GSTR-2A में दिखता है और इसका मिलान जरूरी है। आम ईकॉमर्स श्रेणियों की GST दरें श्रेणी GST दर टिप्पणी ₹1,000 से कम के कपड़े 5% सस्ते कपड़ों के लिए कम दर ₹1,000 से अधिक के कपड़े 12% ₹1,000 से कम के जूते 5% इलेक्ट्रॉनिक्स 18% अधिकांश उपभोक्ता इलेक्ट्रॉनिक सामान पैक किया खाद्य पदार्थ—ब्रांडेड 12% FSSAI पंजीकृत उत्पाद सौंदर्य और व्यक्तिगत देखभाल 18% अधिकांश श्रेणियाँ किताबें 0% कर-मुक्त हथकरघा वस्त्र 5% विशेष दर मासिक रिटर्न: GSTR-1 और GSTR-3B GSTR-1: हर महीने की 11 तारीख तक सभी बाहरी आपूर्तियाँ—बिक्री—दर्ज करें GSTR-3B: हर महीने की 20 तारीख तक इनपुट क्रेडिट के बाद शुद्ध कर देयता दाखिल करें GSTR-3B जमा करने की तारीख तक देय कर चुकाएँ GSTR-3B से पहले GSTR-2A के TCS का मिलान करें इनपुट टैक्स क्रेडिट: लागत में आपका लाभ इनपुट क्रेडिट स्टॉक, उसका स्थान और ध्यान देने वाली चीज़ें जानें। अवधारणा चित्रण इनपुट टैक्स क्रेडिट (ITC) से व्यवसाय की खरीद पर दिया GST, बिक्री से वसूले GST से घटा सकते हैं। पैकिंग पर ₹18 GST देकर बिक्री पर ₹60 वसूलें तो केवल ₹42 जमा करेंगे। पैकिंग, कूरियर और कच्चे माल का ITC प्रभावी कर दर 30–40% घटा सकता है। लेख पूरा हुआ आगे: भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए 7 मिनट का पठन सीखते रहें N Neha Gupta भुगतान और अनुपालन हर आकार के व्यापारी के लिए भारतीय कॉमर्स आसान बनाने पर केंद्रित GST सलाहकार और भुगतान विशेषज्ञ। 5 लेख 1 विषय भुगतान सभी लेख: Neha साप्ताहिक न्यूज़लेटर कॉमर्स मार्गदर्शिकाएँ और प्लेटफ़ॉर्म अपडेट साप्ताहिक कॉमर्स जानकारी AI कॉमर्स जानकारी भारत में विकास की योजनाएँ प्लेटफ़ॉर्म सुविधा अपडेट रूपांतरण दर के तरीके ईमेल सदस्यता अभी उपलब्ध नहीं है। RSS रीडर में नई मार्गदर्शिकाएँ देखें। RSS से फ़ॉलो करें संबंधित मार्गदर्शिकाएँ ईकॉमर्स भारत में ऑनलाइन स्टोर कैसे शुरू करें (2026 मार्गदर्शिका) 12 मिनट का पठन भुगतान UPI बनाम COD: भारतीय दुकानों के लिए कौन-सा भुगतान तरीका बेहतर है 9 मिनट का पठन भुगतान भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए 7 मिनट का पठन पिछला भुगतान UPI बनाम COD: भारतीय दुकानों के लिए कौन-सा भुगतान तरीका बेहतर है 9 मिनट का पठन अगला भुगतान भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए 7 मिनट का पठन पढ़ते रहें आपके लिए सुझाव ईकॉमर्स भारत में ऑनलाइन स्टोर कैसे शुरू करें (2026 मार्गदर्शिका) लॉन्च करने, बेचने और बढ़ने के लिए सब कुछ — GST पंजीकरण से आपके पहले ऑर्डर तक। 12 मिनट का पठन भुगतान UPI बनाम COD: भारतीय दुकानों के लिए कौन-सा भुगतान तरीका बेहतर है भारत के दो प्रमुख भुगतान तरीकों के आँकड़े और दोनों को बेहतर बनाने के उपाय। 9 मिनट का पठन भुगतान भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए हर जानकारी, प्रारूप और नियम—ताकि चालान हमेशा अनुपालन में हों। 7 मिनट का पठन ईमेल सदस्यता अभी उपलब्ध नहीं है। RSS रीडर में नई मार्गदर्शिकाएँ देखें। RSS से फ़ॉलो करें 0 विषय सूची अगला भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए",
+    "word_count": 1044,
+    "main_word_count": 950
+  },
+  {
+    "url": "https://www.letbuyy.com/in-ta/contact",
+    "final_url": "https://www.letbuyy.com/in-ta/contact",
+    "status": 200,
+    "history": [
+      {
+        "url": "https://www.letbuyy.com/in-ta/contact",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "headers": {
+      "access-control-allow-origin": "*",
+      "age": "88423",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 17:26:58 GMT",
+      "etag": "W/\"d51f45b427ba6fda5eacfe8ed46b8203\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/in-ta/contact",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::4rxfl-1793294818105-c2de7143217d"
+    },
+    "bytes_downloaded": 33877.0,
+    "fetch_seconds": 0.364244,
+    "evidence_html": "evidence/7e87535ae28fe101.html",
+    "evidence_headers": "evidence/7e87535ae28fe101.headers",
+    "title": "LetBuyyஐத் தொடர்புகொள்ளவும்",
+    "meta": [
+      {
+        "charset": "utf-8"
+      },
+      {
+        "name": "viewport",
+        "content": "width=device-width, initial-scale=1"
+      },
+      {
+        "name": "next-size-adjust",
+        "content": ""
+      },
+      {
+        "name": "description",
+        "content": "LetBuyy தொடர்பு — வணிகர் உதவி, விற்பனை, பணம், GST, உருவாக்குநர், கூட்டாண்மை. ஒவ்வொரு செய்திக்கும் டிக்கெட், அணி, தெளிவான பதில் நேரம்."
+      },
+      {
+        "name": "application-name",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "author",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "keywords",
+        "content": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace"
+      },
+      {
+        "name": "creator",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "publisher",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "robots",
+        "content": "index, follow"
+      },
+      {
+        "name": "googlebot",
+        "content": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+      },
+      {
+        "name": "category",
+        "content": "commerce platform"
+      },
+      {
+        "property": "og:title",
+        "content": "LetBuyyஐத் தொடர்புகொள்ளவும்"
+      },
+      {
+        "property": "og:description",
+        "content": "ஒரே படிவம், பதின்மூன்று அணிகள், தெளிவான பதில் நேரம். ஒவ்வொரு செய்திக்கும் கண்காணிக்கக்கூடிய டிக்கெட்."
+      },
+      {
+        "property": "og:url",
+        "content": "https://www.letbuyy.com/contact"
+      },
+      {
+        "property": "og:locale",
+        "content": "ta_IN"
+      },
+      {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      },
+      {
+        "name": "twitter:title",
+        "content": "LetBuyy - India-first commerce operating system"
+      },
+      {
+        "name": "twitter:description",
+        "content": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations."
+      },
+      {
+        "name": "twitter:image",
+        "content": "https://www.letbuyy.com/og/letbuyy-default.png"
+      }
+    ],
+    "links": [
+      {
+        "rel": "preload",
+        "href": "/_next/static/media/0336a89fb4e7fc1d-s.p.woff2",
+        "as": "font",
+        "crossorigin": "",
+        "type": "font/woff2"
+      },
+      {
+        "rel": "preload",
+        "href": "/_next/static/media/93f479601ee12b01-s.p.woff2",
+        "as": "font",
+        "crossorigin": "",
+        "type": "font/woff2"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/support/contact-conversation-studio-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/support/support-care-studio-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/section-newsletter-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/guide-first-store-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/developer-api-studio-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/reading-learning-journey-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/assets/legal/privacy-choices.svg"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/93490f2121b4cdc7.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/b347359ed073494e.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/a40e3bf3e20fcbbe.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/79b625f4554cc373.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "preload",
+        "as": "script",
+        "fetchpriority": "low",
+        "href": "/_next/static/chunks/webpack-ff1b21ecea0c7fe8.js"
+      },
+      {
+        "rel": "canonical",
+        "href": "https://www.letbuyy.com/in-ta/contact"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "en-IN",
+        "href": "https://www.letbuyy.com/in/contact"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "ta-IN",
+        "href": "https://www.letbuyy.com/in-ta/contact"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "hi-IN",
+        "href": "https://www.letbuyy.com/in-hi/contact"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://www.letbuyy.com/in/contact"
+      },
+      {
+        "rel": "shortcut icon",
+        "href": "/icons/letbuyy-mark.svg"
+      },
+      {
+        "rel": "icon",
+        "href": "/favicon.ico?603d046c9a6fdfbb",
+        "type": "image/x-icon",
+        "sizes": "16x16"
+      },
+      {
+        "rel": "icon",
+        "href": "/icons/letbuyy-mark.svg"
+      },
+      {
+        "rel": "apple-touch-icon",
+        "href": "/icons/letbuyy-mark.svg"
+      }
+    ],
+    "anchors": [
+      {
+        "class": "header-logo",
+        "aria-label": "LetBuyy முகப்பு",
+        "href": "/in-ta"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-ta/resources/platform/how-themes-work"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-ta/resources/platform/introduction-to-apps"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-ta/resources/developers"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-ta/pricing"
+      },
+      {
+        "class": "btn btn-ghost",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "btn btn-primary",
+        "href": "https://accounts.letbuyy.com/signup"
+      },
+      {
+        "class": "mobile-start-link",
+        "href": "https://accounts.letbuyy.com/signup"
+      },
+      {
+        "href": "#contact-form",
+        "class": "support-experience_primary__8lpvP"
+      },
+      {
+        "class": "support-experience_textLink__I2iji",
+        "href": "/in-ta/support"
+      },
+      {
+        "class": "ctc-aside-mail",
+        "href": "mailto:support@letbuyy.com"
+      },
+      {
+        "href": "https://accounts.letbuyy.com/login",
+        "class": "ctc-card-action",
+        "target": "_blank",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://developer.letbuyy.com/docs",
+        "class": "ctc-card-action",
+        "target": "_blank",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "class": "ctc-card-action",
+        "href": "/in-ta/resources"
+      },
+      {
+        "href": "/in-ta/legal/privacy"
+      },
+      {
+        "class": "footer-mark",
+        "aria-label": "LetBuyy முகப்பு",
+        "href": "/in-ta"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/pricing"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/create"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/platform/how-themes-work"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/platform/introduction-to-apps"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/developers"
+      },
+      {
+        "class": "footer-link",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/ecommerce"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/developers"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/resources/changelog"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/support"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/contact"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/legal/grievance"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-ta/legal/security"
+      },
+      {
+        "class": "footer-link",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/legal"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/legal/terms"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/legal/privacy"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/legal/refunds"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-ta/sitemap"
+      },
+      {
+        "href": "https://www.facebook.com/share/14tEGNoJSXR/",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "Facebook"
+      },
+      {
+        "href": "https://x.com/letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "X"
+      },
+      {
+        "href": "https://youtube.com/@letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "YouTube"
+      },
+      {
+        "href": "https://www.instagram.com/letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "Instagram"
+      }
+    ],
+    "images": [
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-light",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-dark",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/support/contact-conversation-studio-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/support/support-care-studio-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/section-newsletter-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/guide-first-store-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/developer-api-studio-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/reading-learning-journey-v1.webp"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "loading": "lazy",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-light",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "loading": "lazy",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-dark",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "src": "/assets/legal/privacy-choices.svg",
+        "alt": "",
+        "width": "32",
+        "height": "16",
+        "aria-hidden": "true"
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "உருவாக்கியவர்களுடன்பேசுங்கள்."
+      },
+      {
+        "tag": "h2",
+        "text": "உங்கள் தேவையைக் கூறுங்கள்."
+      },
+      {
+        "tag": "h2",
+        "text": "பதில் நேர உறுதி"
+      },
+      {
+        "tag": "h2",
+        "text": "மின்னஞ்சல் விருப்பமா?"
+      },
+      {
+        "tag": "h2",
+        "text": "யாருடன் பேசுகிறோம்?"
+      },
+      {
+        "tag": "h2",
+        "text": "அல்லது நேரடியாகச் செய்யுங்கள்"
+      },
+      {
+        "tag": "h3",
+        "text": "வணிகர் உள்நுழைவு"
+      },
+      {
+        "tag": "h3",
+        "text": "உருவாக்குநர் ஆவணங்கள்"
+      },
+      {
+        "tag": "h3",
+        "text": "வழிகாட்டிகள் மற்றும் உதவிக் கட்டுரைகள்"
+      },
+      {
+        "tag": "h2",
+        "text": "LetBuyy அடிக்குறிப்பு"
+      },
+      {
+        "tag": "h3",
+        "text": "LetBuyy"
+      },
+      {
+        "tag": "h3",
+        "text": "சூழல் அமைப்பு"
+      },
+      {
+        "tag": "h3",
+        "text": "வளங்கள்"
+      },
+      {
+        "tag": "h3",
+        "text": "உதவி"
+      }
+    ],
+    "schemas": [
+      "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.letbuyy.com/#organization\",\"name\":\"LetBuyy\",\"legalName\":\"LetBuyy\",\"alternateName\":[\"Let Buyy\",\"Letbuyy\",\"LetBuyy Commerce\"],\"url\":\"https://www.letbuyy.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://www.letbuyy.com/icons/letbuyy-logo-512.png\",\"width\":512,\"height\":512},\"image\":\"https://www.letbuyy.com/og/letbuyy-default.png\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"slogan\":\"India-first commerce operating system\",\"email\":\"support@letbuyy.com\",\"foundingLocation\":{\"@type\":\"Country\",\"name\":\"India\"},\"areaServed\":{\"@type\":\"Country\",\"name\":\"India\"},\"knowsLanguage\":[\"en\",\"hi\",\"ta\"],\"contactPoint\":{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"email\":\"support@letbuyy.com\",\"areaServed\":\"IN\",\"availableLanguage\":[\"en\",\"hi\",\"ta\"]},\"sameAs\":[\"https://www.instagram.com/letbuyyhq\",\"https://x.com/letbuyyhq\",\"https://youtube.com/@letbuyyhq\",\"https://www.facebook.com/share/14tEGNoJSXR/\"]},{\"@type\":\"WebSite\",\"@id\":\"https://www.letbuyy.com/#website\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"inLanguage\":\"en-IN\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"hasPart\":[{\"@type\":\"WebPage\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\"},{\"@type\":\"WebPage\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\"},{\"@type\":\"WebPage\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\"},{\"@type\":\"WebPage\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\"},{\"@type\":\"WebPage\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\"},{\"@type\":\"WebPage\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\"},{\"@type\":\"WebPage\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\"},{\"@type\":\"WebPage\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\"},{\"@type\":\"WebPage\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\"}]},{\"@type\":\"SoftwareApplication\",\"name\":\"LetBuyy\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://www.letbuyy.com\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"INR\",\"description\":\"Free launch tier available with 0% transaction and platform fees.\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}}]}",
+      "{\"@context\":\"https://schema.org\",\"@type\":\"ContactPage\",\"name\":\"Contact LetBuyy\",\"url\":\"https://www.letbuyy.com/in/contact\",\"mainEntity\":{\"@type\":\"Organization\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"email\":\"support@letbuyy.com\",\"contactPoint\":[{\"@type\":\"ContactPoint\",\"contactType\":\"Sales & pricing\",\"email\":\"support@letbuyy.com\",\"availableLanguage\":[\"English\",\"Hindi\",\"Tamil\"],\"areaServed\":\"IN\"},{\"@type\":\"ContactPoint\",\"contactType\":\"Merchant support\",\"email\":\"support@letbuyy.com\",\"availableLanguage\":[\"English\",\"Hindi\",\"Tamil\"],\"areaServed\":\"IN\"},{\"@type\":\"ContactPoint\",\"contactType\":\"Payments, payouts & settlements\",\"email\":\"support@letbuyy.com\",\"availableLanguage\":[\"English\",\"Hindi\",\"Tamil\"],\"areaServed\":\"IN\"},{\"@type\":\"ContactPoint\",\"contactType\":\"Trust & safety\",\"email\":\"support@letbuyy.com\",\"availableLanguage\":[\"English\",\"Hindi\",\"Tamil\"],\"areaServed\":\"IN\"}]}}"
+    ],
+    "text": "LetBuyyஐத் தொடர்புகொள்ளவும் ஏன் LetBuyy தயாரிப்புகள் வடிவமைப்புகள் ஆப்ஸ் டெவலப்பர்கள் விலை உள்நுழைக இலவசமாக தொடங்குங்கள் இலவசமாக தொடங்குங்கள் தொடர்பு உருவாக்கியவர்களுடன் பேசுங்கள். LetBuyy இந்திய விற்பனையாளர்களுக்காக இந்தியாவில் உருவானது. தேவையைக் கூறுங்கள் — சரியான அணிக்கு நேரடியாகச் சென்று டிக்கெட் எண், தெளிவான பதில் நேரம் கிடைக்கும். ஒவ்வொரு செய்திக்கும் டிக்கெட் ஒவ்வொரு செய்திக்கும் LB-2608-000142 போன்ற எண் மின்னஞ்சலில் வரும்; இங்கே கண்காணிக்கலாம். வெளியிடப்பட்ட பதில் நேரம் ஒவ்வொரு தலைப்புக்கும் நேர உறுதி — பணம், பாதுகாப்புக்கு 4 வேலை மணிநேரத்தில் பதில். உங்கள் மொழியில் ஒரு நபர் ஆங்கிலம், இந்தி, தமிழில் பதிலளிக்கிறோம். விருப்ப மொழியைக் கூறுங்கள். செய்தி அனுப்பவும் உதவி மையத்திற்குச் செல்லவும் உங்கள் தேவையைக் கூறுங்கள். தலைப்பைத் தேர்ந்து சம்பந்தப்பட்ட அணிக்குச் செய்தி அனுப்புங்கள். பதில் நேர உறுதி விற்பனையும் விலையும் 4 h வணிகர் உதவி 8 h கட்டணமும் சந்தாவும் 8 h பணம், வழங்கல், தீர்வுகள் 4 h ஆர்டர்களும் அனுப்புதலும் 8 h GST மற்றும் இணக்கம் 12 h திங்கள் முதல் சனி வரை வேலை நேரம். அவசரம் எனக் குறிப்பிட்டால் பதில் நேரம் குறையும்; அதிகரிக்காது. மின்னஞ்சல் விருப்பமா? support@letbuyy.com நேரடியாக மின்னஞ்சல் அனுப்பினாலும் டிக்கெட் எண் கிடைக்கும். ஏற்கெனவே டிக்கெட் எண் உள்ளதா? 1 உங்களைப் பற்றி யாருடன் பேசுகிறோம் 2 உங்கள் விசாரணை எங்களிடம் என்ன தேவை 3 சூழல் சரியாகப் பதிலளிக்க உதவும் 4 அனுப்பவும் உங்களைத் தொடர்புகொள்வது எப்படி யாருடன் பேசுகிறோம்? ஆங்கிலம், இந்தி, தமிழில் பதிலளிக்கிறோம். இத்தகவல் LetBuyyக்கு வெளியே பகிரப்படாது. உங்களைச் சிறப்பாக விவரிப்பது எது? LetBuyy பற்றி ஆராய்கிறேன் ஏற்கெனவே LetBuyyஇல் விற்கிறேன் நான் உருவாக்குநர் அல்லது கூட்டாளர் முகமை நடத்துகிறேன் LetBuyy கடையில் வாங்கினேன் வேறு ஒன்று முழுப் பெயர் * மின்னஞ்சல் * டிக்கெட் உறுதி இங்கே வரும். தொலைபேசி * +91 +1 +44 +61 +65 +971 +60 +49 +33 வணிகம் அல்லது பிராண்டு பெயர் இணையதளம் அல்லது சமூகப் பக்கம் தொடரவும் Cloudflare Turnstile பாதுகாப்பு. மின்னஞ்சலில் கடவுச்சொல், OTP, அட்டை விவரம் கேட்கமாட்டோம். அல்லது நேரடியாகச் செய்யுங்கள் சிலவற்றைக் கேட்பதைவிட நேரடியாகச் செய்வது வேகம். வணிகர் உள்நுழைவு ஏற்கெனவே விற்கிறீர்களா, உள்நுழைய வேண்டுமா? கடையில் உள்நுழையவும் உருவாக்குநர் ஆவணங்கள் API சாவிகள், webhook, தீம்கள், செயலி விரிவாக்கங்கள். ஆவணங்களைப் படிக்கவும் வழிகாட்டிகள் மற்றும் உதவிக் கட்டுரைகள் பெரும்பாலான அமைப்புக் கேள்விகளுக்கு எழுத்தில் பதில் உள்ளது. நூலகத்தைப் பார்க்கவும் தவறான பயன்பாடு, போலிப் பொருள் அல்லது பாதுகாப்புப் புகாரா? தேர்ந்தெடுக்கவும்: நம்பிக்கையும் பாதுகாப்பும் மேலே — இதற்கு விரைவான பதில் கிடைக்கும். DPDP சட்டத் தரவு, தனியுரிமைக் கோரிக்கைக்கு பார்க்கவும்: தனியுரிமை அறிவிப்பு அல்லது தேர்ந்தெடுக்கவும்: தரவும் தனியுரிமையும் படிவத்தில். LetBuyy அடிக்குறிப்பு LetBuyy LetBuyy என்றால் என்ன? விலை உங்கள் கடையைத் தொடங்குங்கள் சூழல் அமைப்பு தீம் வழிகாட்டி ஆப் ஒருங்கிணைப்பு வழிகாட்டி டெவலப்பர் ஆவணங்கள் வணிகர் உள்நுழைவு வளங்கள் அனைத்து வளங்களும் இணைய வணிக வழிகாட்டிகள் டெவலப்பர் ஆவணங்கள் மாற்றப் பதிவு உதவி உதவி மையம் எங்களைத் தொடர்பு கொள்ள குறைதீர்ப்பு பாதுகாப்பு கணக்கு அணுகல் இந்தியா தமிழ் சட்டம் விதிமுறைகள் தனியுரிமை பணத்திரும்பம் தள வரைபடம் உங்கள் தனியுரிமை விருப்பங்கள் © 2026 LetBuyy. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
+    "main_text": "தொடர்பு உருவாக்கியவர்களுடன் பேசுங்கள். LetBuyy இந்திய விற்பனையாளர்களுக்காக இந்தியாவில் உருவானது. தேவையைக் கூறுங்கள் — சரியான அணிக்கு நேரடியாகச் சென்று டிக்கெட் எண், தெளிவான பதில் நேரம் கிடைக்கும். ஒவ்வொரு செய்திக்கும் டிக்கெட் ஒவ்வொரு செய்திக்கும் LB-2608-000142 போன்ற எண் மின்னஞ்சலில் வரும்; இங்கே கண்காணிக்கலாம். வெளியிடப்பட்ட பதில் நேரம் ஒவ்வொரு தலைப்புக்கும் நேர உறுதி — பணம், பாதுகாப்புக்கு 4 வேலை மணிநேரத்தில் பதில். உங்கள் மொழியில் ஒரு நபர் ஆங்கிலம், இந்தி, தமிழில் பதிலளிக்கிறோம். விருப்ப மொழியைக் கூறுங்கள். செய்தி அனுப்பவும் உதவி மையத்திற்குச் செல்லவும் உங்கள் தேவையைக் கூறுங்கள். தலைப்பைத் தேர்ந்து சம்பந்தப்பட்ட அணிக்குச் செய்தி அனுப்புங்கள். பதில் நேர உறுதி விற்பனையும் விலையும் 4 h வணிகர் உதவி 8 h கட்டணமும் சந்தாவும் 8 h பணம், வழங்கல், தீர்வுகள் 4 h ஆர்டர்களும் அனுப்புதலும் 8 h GST மற்றும் இணக்கம் 12 h திங்கள் முதல் சனி வரை வேலை நேரம். அவசரம் எனக் குறிப்பிட்டால் பதில் நேரம் குறையும்; அதிகரிக்காது. மின்னஞ்சல் விருப்பமா? support@letbuyy.com நேரடியாக மின்னஞ்சல் அனுப்பினாலும் டிக்கெட் எண் கிடைக்கும். ஏற்கெனவே டிக்கெட் எண் உள்ளதா? 1 உங்களைப் பற்றி யாருடன் பேசுகிறோம் 2 உங்கள் விசாரணை எங்களிடம் என்ன தேவை 3 சூழல் சரியாகப் பதிலளிக்க உதவும் 4 அனுப்பவும் உங்களைத் தொடர்புகொள்வது எப்படி யாருடன் பேசுகிறோம்? ஆங்கிலம், இந்தி, தமிழில் பதிலளிக்கிறோம். இத்தகவல் LetBuyyக்கு வெளியே பகிரப்படாது. உங்களைச் சிறப்பாக விவரிப்பது எது? LetBuyy பற்றி ஆராய்கிறேன் ஏற்கெனவே LetBuyyஇல் விற்கிறேன் நான் உருவாக்குநர் அல்லது கூட்டாளர் முகமை நடத்துகிறேன் LetBuyy கடையில் வாங்கினேன் வேறு ஒன்று முழுப் பெயர் * மின்னஞ்சல் * டிக்கெட் உறுதி இங்கே வரும். தொலைபேசி * +91 +1 +44 +61 +65 +971 +60 +49 +33 வணிகம் அல்லது பிராண்டு பெயர் இணையதளம் அல்லது சமூகப் பக்கம் தொடரவும் Cloudflare Turnstile பாதுகாப்பு. மின்னஞ்சலில் கடவுச்சொல், OTP, அட்டை விவரம் கேட்கமாட்டோம். அல்லது நேரடியாகச் செய்யுங்கள் சிலவற்றைக் கேட்பதைவிட நேரடியாகச் செய்வது வேகம். வணிகர் உள்நுழைவு ஏற்கெனவே விற்கிறீர்களா, உள்நுழைய வேண்டுமா? கடையில் உள்நுழையவும் உருவாக்குநர் ஆவணங்கள் API சாவிகள், webhook, தீம்கள், செயலி விரிவாக்கங்கள். ஆவணங்களைப் படிக்கவும் வழிகாட்டிகள் மற்றும் உதவிக் கட்டுரைகள் பெரும்பாலான அமைப்புக் கேள்விகளுக்கு எழுத்தில் பதில் உள்ளது. நூலகத்தைப் பார்க்கவும் தவறான பயன்பாடு, போலிப் பொருள் அல்லது பாதுகாப்புப் புகாரா? தேர்ந்தெடுக்கவும்: நம்பிக்கையும் பாதுகாப்பும் மேலே — இதற்கு விரைவான பதில் கிடைக்கும். DPDP சட்டத் தரவு, தனியுரிமைக் கோரிக்கைக்கு பார்க்கவும்: தனியுரிமை அறிவிப்பு அல்லது தேர்ந்தெடுக்கவும்: தரவும் தனியுரிமையும் படிவத்தில்.",
+    "word_count": 356,
+    "main_word_count": 284
+  },
+  {
+    "url": "https://www.letbuyy.com/in-hi/contact",
+    "final_url": "https://www.letbuyy.com/in-hi/contact",
+    "status": 200,
+    "history": [
+      {
+        "url": "https://www.letbuyy.com/in-hi/contact",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "headers": {
+      "access-control-allow-origin": "*",
+      "age": "169627",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 17:26:59 GMT",
+      "etag": "W/\"3754458762fe58d540c4f132a3408184\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/in-hi/contact",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::t9mrl-1793294819485-1c064beaa95c"
+    },
+    "bytes_downloaded": 33746.0,
+    "fetch_seconds": 0.350307,
+    "evidence_html": "evidence/0a4430fb21af94d3.html",
+    "evidence_headers": "evidence/0a4430fb21af94d3.headers",
+    "title": "LetBuyy से संपर्क करें",
+    "meta": [
+      {
+        "charset": "utf-8"
+      },
+      {
+        "name": "viewport",
+        "content": "width=device-width, initial-scale=1"
+      },
+      {
+        "name": "next-size-adjust",
+        "content": ""
+      },
+      {
+        "name": "description",
+        "content": "LetBuyy से बात करें — व्यापारी सहायता, बिक्री, भुगतान, GST, डेवलपर और साझेदारी। हर संदेश का टिकट, टीम और स्पष्ट जवाब का समय।"
+      },
+      {
+        "name": "application-name",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "author",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "keywords",
+        "content": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace"
+      },
+      {
+        "name": "creator",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "publisher",
+        "content": "LetBuyy"
+      },
+      {
+        "name": "robots",
+        "content": "index, follow"
+      },
+      {
+        "name": "googlebot",
+        "content": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+      },
+      {
+        "name": "category",
+        "content": "commerce platform"
+      },
+      {
+        "property": "og:title",
+        "content": "LetBuyy से संपर्क करें"
+      },
+      {
+        "property": "og:description",
+        "content": "एक फ़ॉर्म, तेरह टीमें, स्पष्ट जवाब का समय। हर संदेश को ट्रैक करने योग्य टिकट।"
+      },
+      {
+        "property": "og:url",
+        "content": "https://www.letbuyy.com/contact"
+      },
+      {
+        "property": "og:locale",
+        "content": "hi_IN"
+      },
+      {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      },
+      {
+        "name": "twitter:title",
+        "content": "LetBuyy - India-first commerce operating system"
+      },
+      {
+        "name": "twitter:description",
+        "content": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations."
+      },
+      {
+        "name": "twitter:image",
+        "content": "https://www.letbuyy.com/og/letbuyy-default.png"
+      }
+    ],
+    "links": [
+      {
+        "rel": "preload",
+        "href": "/_next/static/media/0336a89fb4e7fc1d-s.p.woff2",
+        "as": "font",
+        "crossorigin": "",
+        "type": "font/woff2"
+      },
+      {
+        "rel": "preload",
+        "href": "/_next/static/media/93f479601ee12b01-s.p.woff2",
+        "as": "font",
+        "crossorigin": "",
+        "type": "font/woff2"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/support/contact-conversation-studio-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/support/support-care-studio-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/section-newsletter-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/guide-first-store-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/developer-api-studio-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/illustrations/resources/thumbnails/reading-learning-journey-v1.webp"
+      },
+      {
+        "rel": "preload",
+        "as": "image",
+        "href": "/assets/legal/privacy-choices.svg"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/93490f2121b4cdc7.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/b347359ed073494e.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/a40e3bf3e20fcbbe.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "stylesheet",
+        "href": "/_next/static/css/79b625f4554cc373.css",
+        "data-precedence": "next"
+      },
+      {
+        "rel": "preload",
+        "as": "script",
+        "fetchpriority": "low",
+        "href": "/_next/static/chunks/webpack-ff1b21ecea0c7fe8.js"
+      },
+      {
+        "rel": "canonical",
+        "href": "https://www.letbuyy.com/in-hi/contact"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "en-IN",
+        "href": "https://www.letbuyy.com/in/contact"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "ta-IN",
+        "href": "https://www.letbuyy.com/in-ta/contact"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "hi-IN",
+        "href": "https://www.letbuyy.com/in-hi/contact"
+      },
+      {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://www.letbuyy.com/in/contact"
+      },
+      {
+        "rel": "shortcut icon",
+        "href": "/icons/letbuyy-mark.svg"
+      },
+      {
+        "rel": "icon",
+        "href": "/favicon.ico?603d046c9a6fdfbb",
+        "type": "image/x-icon",
+        "sizes": "16x16"
+      },
+      {
+        "rel": "icon",
+        "href": "/icons/letbuyy-mark.svg"
+      },
+      {
+        "rel": "apple-touch-icon",
+        "href": "/icons/letbuyy-mark.svg"
+      }
+    ],
+    "anchors": [
+      {
+        "class": "header-logo",
+        "aria-label": "LetBuyy होम",
+        "href": "/in-hi"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-hi/resources/platform/how-themes-work"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-hi/resources/platform/introduction-to-apps"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-hi/resources/developers"
+      },
+      {
+        "class": "header-nav-link",
+        "href": "/in-hi/pricing"
+      },
+      {
+        "class": "btn btn-ghost",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "btn btn-primary",
+        "href": "https://accounts.letbuyy.com/signup"
+      },
+      {
+        "class": "mobile-start-link",
+        "href": "https://accounts.letbuyy.com/signup"
+      },
+      {
+        "href": "#contact-form",
+        "class": "support-experience_primary__8lpvP"
+      },
+      {
+        "class": "support-experience_textLink__I2iji",
+        "href": "/in-hi/support"
+      },
+      {
+        "class": "ctc-aside-mail",
+        "href": "mailto:support@letbuyy.com"
+      },
+      {
+        "href": "https://accounts.letbuyy.com/login",
+        "class": "ctc-card-action",
+        "target": "_blank",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://developer.letbuyy.com/docs",
+        "class": "ctc-card-action",
+        "target": "_blank",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "class": "ctc-card-action",
+        "href": "/in-hi/resources"
+      },
+      {
+        "href": "/in-hi/legal/privacy"
+      },
+      {
+        "class": "footer-mark",
+        "aria-label": "LetBuyy होम",
+        "href": "/in-hi"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/pricing"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/create"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/platform/how-themes-work"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/platform/introduction-to-apps"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/developers"
+      },
+      {
+        "class": "footer-link",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/ecommerce"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/developers"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/resources/changelog"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/support"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/contact"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/legal/grievance"
+      },
+      {
+        "class": "footer-link",
+        "href": "/in-hi/legal/security"
+      },
+      {
+        "class": "footer-link",
+        "href": "https://accounts.letbuyy.com/lookup"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/legal"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/legal/terms"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/legal/privacy"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/legal/refunds"
+      },
+      {
+        "class": "footer-legal-link",
+        "href": "/in-hi/sitemap"
+      },
+      {
+        "href": "https://www.facebook.com/share/14tEGNoJSXR/",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "Facebook"
+      },
+      {
+        "href": "https://x.com/letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "X"
+      },
+      {
+        "href": "https://youtube.com/@letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "YouTube"
+      },
+      {
+        "href": "https://www.instagram.com/letbuyyhq",
+        "target": "_blank",
+        "rel": "noopener noreferrer",
+        "aria-label": "Instagram"
+      }
+    ],
+    "images": [
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-light",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-dark",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/support/contact-conversation-studio-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/support/support-care-studio-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/section-newsletter-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/guide-first-store-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/developer-api-studio-v1.webp"
+      },
+      {
+        "alt": "",
+        "loading": "eager",
+        "width": "1536",
+        "height": "1024",
+        "decoding": "async",
+        "data-nimg": "1",
+        "style": "color:transparent",
+        "src": "/illustrations/resources/thumbnails/reading-learning-journey-v1.webp"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "loading": "lazy",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-light",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-light-v3.svg"
+      },
+      {
+        "alt": "",
+        "aria-hidden": "true",
+        "loading": "lazy",
+        "width": "636",
+        "height": "180",
+        "decoding": "async",
+        "data-nimg": "1",
+        "class": "brand-logo-image brand-logo-image-dark",
+        "style": "color:transparent",
+        "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+      },
+      {
+        "src": "/assets/legal/privacy-choices.svg",
+        "alt": "",
+        "width": "32",
+        "height": "16",
+        "aria-hidden": "true"
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "उन लोगों से बात करेंजिन्होंने इसे बनाया।"
+      },
+      {
+        "tag": "h2",
+        "text": "अपनी ज़रूरत बताएँ।"
+      },
+      {
+        "tag": "h2",
+        "text": "जवाब का वादा"
+      },
+      {
+        "tag": "h2",
+        "text": "ईमेल पसंद है?"
+      },
+      {
+        "tag": "h2",
+        "text": "हम किससे बात कर रहे हैं?"
+      },
+      {
+        "tag": "h2",
+        "text": "या सीधे अपना काम करें"
+      },
+      {
+        "tag": "h3",
+        "text": "व्यापारी लॉगिन"
+      },
+      {
+        "tag": "h3",
+        "text": "डेवलपर दस्तावेज़"
+      },
+      {
+        "tag": "h3",
+        "text": "मार्गदर्शिकाएँ और सहायता लेख"
+      },
+      {
+        "tag": "h2",
+        "text": "LetBuyy फ़ुटर"
+      },
+      {
+        "tag": "h3",
+        "text": "LetBuyy"
+      },
+      {
+        "tag": "h3",
+        "text": "इकोसिस्टम"
+      },
+      {
+        "tag": "h3",
+        "text": "संसाधन"
+      },
+      {
+        "tag": "h3",
+        "text": "सहायता"
+      }
+    ],
+    "schemas": [
+      "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.letbuyy.com/#organization\",\"name\":\"LetBuyy\",\"legalName\":\"LetBuyy\",\"alternateName\":[\"Let Buyy\",\"Letbuyy\",\"LetBuyy Commerce\"],\"url\":\"https://www.letbuyy.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://www.letbuyy.com/icons/letbuyy-logo-512.png\",\"width\":512,\"height\":512},\"image\":\"https://www.letbuyy.com/og/letbuyy-default.png\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"slogan\":\"India-first commerce operating system\",\"email\":\"support@letbuyy.com\",\"foundingLocation\":{\"@type\":\"Country\",\"name\":\"India\"},\"areaServed\":{\"@type\":\"Country\",\"name\":\"India\"},\"knowsLanguage\":[\"en\",\"hi\",\"ta\"],\"contactPoint\":{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"email\":\"support@letbuyy.com\",\"areaServed\":\"IN\",\"availableLanguage\":[\"en\",\"hi\",\"ta\"]},\"sameAs\":[\"https://www.instagram.com/letbuyyhq\",\"https://x.com/letbuyyhq\",\"https://youtube.com/@letbuyyhq\",\"https://www.facebook.com/share/14tEGNoJSXR/\"]},{\"@type\":\"WebSite\",\"@id\":\"https://www.letbuyy.com/#website\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"inLanguage\":\"en-IN\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"hasPart\":[{\"@type\":\"WebPage\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\"},{\"@type\":\"WebPage\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\"},{\"@type\":\"WebPage\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\"},{\"@type\":\"WebPage\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\"},{\"@type\":\"WebPage\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\"},{\"@type\":\"WebPage\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\"},{\"@type\":\"WebPage\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\"},{\"@type\":\"WebPage\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\"},{\"@type\":\"WebPage\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\"}]},{\"@type\":\"SoftwareApplication\",\"name\":\"LetBuyy\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://www.letbuyy.com\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"INR\",\"description\":\"Free launch tier available with 0% transaction and platform fees.\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}}]}",
+      "{\"@context\":\"https://schema.org\",\"@type\":\"ContactPage\",\"name\":\"Contact LetBuyy\",\"url\":\"https://www.letbuyy.com/in/contact\",\"mainEntity\":{\"@type\":\"Organization\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"email\":\"support@letbuyy.com\",\"contactPoint\":[{\"@type\":\"ContactPoint\",\"contactType\":\"Sales & pricing\",\"email\":\"support@letbuyy.com\",\"availableLanguage\":[\"English\",\"Hindi\",\"Tamil\"],\"areaServed\":\"IN\"},{\"@type\":\"ContactPoint\",\"contactType\":\"Merchant support\",\"email\":\"support@letbuyy.com\",\"availableLanguage\":[\"English\",\"Hindi\",\"Tamil\"],\"areaServed\":\"IN\"},{\"@type\":\"ContactPoint\",\"contactType\":\"Payments, payouts & settlements\",\"email\":\"support@letbuyy.com\",\"availableLanguage\":[\"English\",\"Hindi\",\"Tamil\"],\"areaServed\":\"IN\"},{\"@type\":\"ContactPoint\",\"contactType\":\"Trust & safety\",\"email\":\"support@letbuyy.com\",\"availableLanguage\":[\"English\",\"Hindi\",\"Tamil\"],\"areaServed\":\"IN\"}]}}"
+    ],
+    "text": "LetBuyy से संपर्क करें LetBuyy क्यों प्रोडक्ट थीम ऐप्स डेवलपर कीमत लॉग इन मुफ़्त शुरू करें मुफ़्त शुरू करें संपर्क उन लोगों से बात करें जिन्होंने इसे बनाया। LetBuyy भारतीय विक्रेताओं के लिए भारत में बना है। अपनी ज़रूरत बताएँ — सही टीम को संदेश मिलेगा, टिकट संदर्भ और स्पष्ट जवाब का समय भी। हर संदेश का टिकट हर संदेश को LB-2608-000142 जैसा संदर्भ मिलता है, जो ईमेल से भेजा जाता है और यहाँ ट्रैक कर सकते हैं। स्पष्ट जवाब का समय हर विषय का तय समय — भुगतान और सुरक्षा के लिए 4 कार्य घंटे तक तेज़। आपकी भाषा में इंसान से बात हम अंग्रेज़ी, हिंदी और तमिल में जवाब देते हैं। अपनी पसंद बताएँ। संदेश भेजें सहायता केंद्र जाएँ अपनी ज़रूरत बताएँ। विषय चुनकर संबंधित टीम को संदेश भेजें। जवाब का वादा बिक्री और कीमत 4 h व्यापारी सहायता 8 h बिलिंग और सदस्यता 8 h भुगतान, पेआउट और निपटान 4 h ऑर्डर और शिपिंग 8 h GST और अनुपालन 12 h सोमवार से शनिवार के कार्य समय में। अत्यावश्यक संदेश का समय कम होता है, बढ़ता नहीं। ईमेल पसंद है? support@letbuyy.com सीधे ईमेल करने पर भी टिकट संदर्भ मिलेगा। टिकट संदर्भ पहले से है? 1 आपके बारे में आपकी जानकारी 2 आपका सवाल आपको क्या चाहिए 3 संदर्भ बेहतर जवाब में मदद 4 भेजें आपसे कैसे संपर्क करें हम किससे बात कर रहे हैं? हम अंग्रेज़ी, हिंदी और तमिल में जवाब देते हैं। यह जानकारी LetBuyy के बाहर साझा नहीं होती। आपके लिए सही विकल्प? मैं LetBuyy के बारे में जान रहा हूँ मैं LetBuyy पर बेचता हूँ मैं डेवलपर या पार्टनर हूँ मैं एजेंसी चलाता हूँ मैंने LetBuyy स्टोर से खरीदा है कुछ और पूरा नाम * ईमेल * टिकट की पुष्टि यहाँ आएगी। फ़ोन * +91 +1 +44 +61 +65 +971 +60 +49 +33 व्यवसाय या ब्रांड का नाम वेबसाइट या सोशल पेज आगे Cloudflare Turnstile से सुरक्षित। हम ईमेल पर पासवर्ड, OTP या कार्ड विवरण नहीं माँगते। या सीधे अपना काम करें कुछ काम पूछने से जल्दी खुद हो जाते हैं। व्यापारी लॉगिन पहले से बेच रहे हैं और लॉगिन चाहिए? अपने स्टोर में लॉगिन करें डेवलपर दस्तावेज़ API कुंजी, वेबहुक, थीम और ऐप एक्सटेंशन। दस्तावेज़ पढ़ें मार्गदर्शिकाएँ और सहायता लेख अधिकांश सेटअप सवालों के जवाब लेखों में हैं। पुस्तकालय देखें दुरुपयोग, नकली सामान या सुरक्षा की शिकायत? चुनें भरोसा और सुरक्षा ऊपर — इसका जवाब सबसे जल्दी मिलता है। DPDP अधिनियम के डेटा और गोपनीयता अनुरोध के लिए देखें गोपनीयता सूचना या चुनें डेटा और गोपनीयता फ़ॉर्म में। LetBuyy फ़ुटर LetBuyy LetBuyy क्या है? कीमत अपनी दुकान शुरू करें इकोसिस्टम थीम मार्गदर्शिका ऐप एकीकरण मार्गदर्शिका डेवलपर डॉक्स मर्चेंट लॉगिन संसाधन सभी संसाधन ईकॉमर्स गाइड डेवलपर डॉक्स चेंजलॉग सहायता सहायता केंद्र संपर्क करें शिकायत निवारण सुरक्षा खाता एक्सेस भारत हिन्दी क़ानूनी शर्तें प्राइवेसी रिफ़ंड साइटमैप आपकी प्राइवेसी पसंद © 2026 LetBuyy. सर्वाधिकार सुरक्षित।",
+    "main_text": "संपर्क उन लोगों से बात करें जिन्होंने इसे बनाया। LetBuyy भारतीय विक्रेताओं के लिए भारत में बना है। अपनी ज़रूरत बताएँ — सही टीम को संदेश मिलेगा, टिकट संदर्भ और स्पष्ट जवाब का समय भी। हर संदेश का टिकट हर संदेश को LB-2608-000142 जैसा संदर्भ मिलता है, जो ईमेल से भेजा जाता है और यहाँ ट्रैक कर सकते हैं। स्पष्ट जवाब का समय हर विषय का तय समय — भुगतान और सुरक्षा के लिए 4 कार्य घंटे तक तेज़। आपकी भाषा में इंसान से बात हम अंग्रेज़ी, हिंदी और तमिल में जवाब देते हैं। अपनी पसंद बताएँ। संदेश भेजें सहायता केंद्र जाएँ अपनी ज़रूरत बताएँ। विषय चुनकर संबंधित टीम को संदेश भेजें। जवाब का वादा बिक्री और कीमत 4 h व्यापारी सहायता 8 h बिलिंग और सदस्यता 8 h भुगतान, पेआउट और निपटान 4 h ऑर्डर और शिपिंग 8 h GST और अनुपालन 12 h सोमवार से शनिवार के कार्य समय में। अत्यावश्यक संदेश का समय कम होता है, बढ़ता नहीं। ईमेल पसंद है? support@letbuyy.com सीधे ईमेल करने पर भी टिकट संदर्भ मिलेगा। टिकट संदर्भ पहले से है? 1 आपके बारे में आपकी जानकारी 2 आपका सवाल आपको क्या चाहिए 3 संदर्भ बेहतर जवाब में मदद 4 भेजें आपसे कैसे संपर्क करें हम किससे बात कर रहे हैं? हम अंग्रेज़ी, हिंदी और तमिल में जवाब देते हैं। यह जानकारी LetBuyy के बाहर साझा नहीं होती। आपके लिए सही विकल्प? मैं LetBuyy के बारे में जान रहा हूँ मैं LetBuyy पर बेचता हूँ मैं डेवलपर या पार्टनर हूँ मैं एजेंसी चलाता हूँ मैंने LetBuyy स्टोर से खरीदा है कुछ और पूरा नाम * ईमेल * टिकट की पुष्टि यहाँ आएगी। फ़ोन * +91 +1 +44 +61 +65 +971 +60 +49 +33 व्यवसाय या ब्रांड का नाम वेबसाइट या सोशल पेज आगे Cloudflare Turnstile से सुरक्षित। हम ईमेल पर पासवर्ड, OTP या कार्ड विवरण नहीं माँगते। या सीधे अपना काम करें कुछ काम पूछने से जल्दी खुद हो जाते हैं। व्यापारी लॉगिन पहले से बेच रहे हैं और लॉगिन चाहिए? अपने स्टोर में लॉगिन करें डेवलपर दस्तावेज़ API कुंजी, वेबहुक, थीम और ऐप एक्सटेंशन। दस्तावेज़ पढ़ें मार्गदर्शिकाएँ और सहायता लेख अधिकांश सेटअप सवालों के जवाब लेखों में हैं। पुस्तकालय देखें दुरुपयोग, नकली सामान या सुरक्षा की शिकायत? चुनें भरोसा और सुरक्षा ऊपर — इसका जवाब सबसे जल्दी मिलता है। DPDP अधिनियम के डेटा और गोपनीयता अनुरोध के लिए देखें गोपनीयता सूचना या चुनें डेटा और गोपनीयता फ़ॉर्म में।",
+    "word_count": 469,
+    "main_word_count": 396
+  }
+]

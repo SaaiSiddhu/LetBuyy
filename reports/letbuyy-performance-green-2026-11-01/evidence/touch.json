@@ -1,0 +1,29 @@
+{
+  "captured_at": "2026-11-01T05:39:38.581Z",
+  "rows": [
+    {
+      "scheme": "light",
+      "pointer": "coarse",
+      "tap_menu_opens_and_closes": true,
+      "scroll_unlocks": true,
+      "horizontal_touch_swipe_changes_card": true,
+      "vertical_touch_scroll_keeps_card": true,
+      "before": "Storefront: Storefronts",
+      "after": "Orders: Orders",
+      "passed": true
+    },
+    {
+      "scheme": "dark",
+      "pointer": "coarse",
+      "tap_menu_opens_and_closes": true,
+      "scroll_unlocks": true,
+      "horizontal_touch_swipe_changes_card": true,
+      "vertical_touch_scroll_keeps_card": true,
+      "before": "Storefront: Storefronts",
+      "after": "Orders: Orders",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "physical_device": false
+}

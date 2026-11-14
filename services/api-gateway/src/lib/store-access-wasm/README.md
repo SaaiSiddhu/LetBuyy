@@ -1,9 +1,0 @@
-# Worker-compatible loader for store passwords
-
-The existing hash-wasm4.12.0 dynamically compiles embedded Wasm bytes. Actual workerd rejects that call; the former verifier caught the exception and mislabeled a correct password as invalid. This directory adapts only its loader. The Argon2id implementation, stored PHC encoding, generated salt,19,456KiB memory,3 iterations,1 lane and32-byte output remain unchanged.
-
-`node scripts/generators/generate-store-access-wasm.mjs` extracts the pinned upstream Argon2/BLAKE2 Wasm and emits only the two existing public Argon2 exports with static module imports. The original license is included. The generator checks exact upstream version/source SHA, replaces exactly one dynamic compiler call and records output bytes/hashes. `--check` regenerates in memory and refuses any artifact mismatch. Gateway Wrangler's build hook always runs this check; upgrading the upstream dependency requires a deliberate review and regeneration.
-
-Gateway package `#store-access-hashing` selects this artifact under `workerd`; Node keeps the original dependency. No global WebAssembly override, weaker hash, new dependency, identity issuer or runtime is introduced. The shared owned native compiler carries these same static module bytes, matching Wrangler's local dry-run artifact. Cross-runtime legacy hash/create/verify and real warmed CacheAPI/revocation tests live in tests/owned-db/storefront-access-worker.postgres.test.ts. No real credential or precomputed production password belongs here.
-
-These generated files are algorithm code/assets, not business or security authority. The source helper owns error behavior; malformed persisted state/runtime failure returns unavailable503. Browser unlock, admission/resource bounds and hosted limits require their own evidence. A local dry-run does not deploy or certify a provider account.

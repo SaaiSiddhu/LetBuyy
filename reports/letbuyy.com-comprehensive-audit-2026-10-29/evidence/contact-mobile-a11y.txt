@@ -1,0 +1,200 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+  - button "Open menu"
+- main:
+  - text: Contact
+  - heading "Talk to the people who built it." [level=1]
+  - paragraph: LetBuyy is made in India, for Indian sellers. Tell us what you need below and it goes straight to the team that owns it — with a ticket reference and a response time we publish rather than hide.
+  - list:
+    - listitem:
+      - strong: A ticket, not a void
+      - text: Every message gets a reference like LB-2608-000142, emailed to you and trackable on this page.
+    - listitem:
+      - strong: Published response times
+      - text: Each topic carries its own promise — as fast as 4 working hours for payments and trust-and-safety.
+    - listitem:
+      - strong: A person, in your language
+      - text: We answer in English, Hindi and Tamil. Say which you prefer and that is what you will get.
+  - link "Send a message":
+    - /url: "#contact-form"
+  - link "Visit the support centre":
+    - /url: /in/support
+  - heading "Tell us what you need." [level=2]
+  - paragraph: Choose a topic and send your message to the relevant team.
+  - complementary:
+    - heading "Response promise" [level=2]
+    - list:
+      - listitem: Sales & pricing 4h
+      - listitem: Merchant support 8h
+      - listitem: Billing & subscription 8h
+      - listitem: Payments, payouts & settlements 4h
+      - listitem: Orders & shipping 8h
+      - listitem: GST & compliance 12h
+    - paragraph: Working hours, Monday to Saturday. Marking a message urgent shortens the promise — it never lengthens it.
+    - heading "Prefer email?" [level=2]
+    - link "support@letbuyy.com":
+      - /url: mailto:support@letbuyy.com
+    - paragraph: Writing in directly works too — you will still get a ticket reference back.
+    - button "Already have a ticket reference?"
+  - list "Form progress":
+    - listitem:
+      - button "About you Who we are talking to"
+    - listitem:
+      - button "Your enquiry What you need from us" [disabled]
+    - listitem:
+      - button "Context Helps us answer properly" [disabled]
+    - listitem:
+      - button "Send How to reach you back" [disabled]
+  - heading "Who are we talking to?" [level=2]
+  - paragraph: We answer in English, Hindi and Tamil. Nothing here is shared outside LetBuyy.
+  - group "Which best describes you?":
+    - text: Which best describes you?
+    - button "I am exploring LetBuyy" [pressed]
+    - button "I already sell on LetBuyy"
+    - button "I am a developer or partner"
+    - button "I run an agency"
+    - button "I bought from a LetBuyy store"
+    - button "Something else"
+  - text: Full name *
+  - textbox "Full name *":
+    - /placeholder: Priya Raman
+  - text: Email *
+  - textbox "Email *":
+    - /placeholder: you@yourbrand.in
+  - paragraph: Your ticket confirmation goes here.
+  - text: Phone *
+  - combobox "Country dialling code":
+    - option "+91" [selected]
+    - option "+1"
+    - option "+44"
+    - option "+61"
+    - option "+65"
+    - option "+971"
+    - option "+60"
+    - option "+49"
+    - option "+33"
+  - textbox "Phone *":
+    - /placeholder: 98765 43210
+  - text: Business or brand name
+  - textbox "Business or brand name":
+    - /placeholder: Optional
+  - text: Website or social page
+  - textbox "Website or social page":
+    - /placeholder: instagram.com/yourbrand
+  - button "Continue"
+  - paragraph: Protected by Cloudflare Turnstile. We never ask for passwords, OTPs or card details over email.
+  - heading "Or skip the queue entirely" [level=2]
+  - paragraph: Some things are faster to do than to ask about.
+  - heading "Merchant login" [level=3]
+  - paragraph: Already selling with us and just need to get in?
+  - link "Sign in to your store":
+    - /url: https://accounts.letbuyy.com/login
+  - heading "Developer docs" [level=3]
+  - paragraph: API keys, webhooks, themes and app extensions.
+  - link "Read the docs":
+    - /url: https://developer.letbuyy.com/docs
+  - heading "Guides & help articles" [level=3]
+  - paragraph: Most setup questions are already answered in writing.
+  - link "Browse the library":
+    - /url: /in/resources
+  - paragraph:
+    - text: Reporting abuse, a counterfeit listing or a security issue? Choose
+    - strong: Trust & safety
+    - text: above — it carries our fastest response time. For data and privacy requests under the DPDP Act, see the
+    - link "privacy notice":
+      - /url: /in/legal/privacy
+    - text: or pick
+    - strong: Data & privacy
+    - text: in the form.
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.

@@ -1,4 +1,3 @@
-import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -90,12 +89,12 @@ function isEmbeddedRelationError(error: DatabaseErrorLike, relationName: string)
     );
 }
 
-async function loadReviewOwner(db: ReturnType<typeof getSupabaseAdmin>, reviewId: string, storeIds: string[]) {
+async function loadReviewOwner(db: ReturnType<typeof getSupabaseAdmin>, reviewId: string) {
     const buildQuery = (includeDeletedAtFilter: boolean) => {
         let request = db
             .from('product_reviews')
             .select('id, store_id')
-            .eq('id', reviewId).in('store_id', storeIds);
+            .eq('id', reviewId);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.maybeSingle();
@@ -193,10 +192,9 @@ router.patch('/:id', validate('json', UpdateProductReviewSchema), async (c) => {
     const reviewId = c.req.param('id');
     const body = c.get('validatedBody') as UpdateProductReviewInput;
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId, storeIds);
+    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId);
 
     if (existingError) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to load review' } }, 500);
@@ -213,7 +211,7 @@ router.patch('/:id', validate('json', UpdateProductReviewSchema), async (c) => {
             status: body.status,
             is_approved: body.status === 'approved',
         })
-        .eq('id', reviewId).in('store_id', storeIds)
+        .eq('id', reviewId)
         .select('*')
         .single();
 
@@ -221,7 +219,7 @@ router.patch('/:id', validate('json', UpdateProductReviewSchema), async (c) => {
         ({ data, error } = await db
             .from('product_reviews')
             .update({ is_approved: body.status === 'approved' })
-            .eq('id', reviewId).in('store_id', storeIds)
+            .eq('id', reviewId)
             .select('*')
             .single());
     }
@@ -238,10 +236,9 @@ router.post('/:id/reply', validate('json', ProductReviewReplySchema), async (c) 
     const reviewId = c.req.param('id');
     const body = c.get('validatedBody') as ProductReviewReplyInput;
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId, storeIds);
+    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId);
 
     if (existingError) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to load review' } }, 500);
@@ -261,7 +258,7 @@ router.post('/:id/reply', validate('json', ProductReviewReplySchema), async (c) 
             merchant_reply_at: repliedAt,
             updated_at: repliedAt,
         })
-        .eq('id', reviewId).in('store_id', storeIds)
+        .eq('id', reviewId)
         .select('*')
         .single();
 
@@ -286,10 +283,9 @@ router.delete('/:id', async (c) => {
     const auth = c.get('auth');
     const reviewId = c.req.param('id');
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId, storeIds);
+    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId);
 
     if (existingError) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to load review' } }, 500);
@@ -303,13 +299,13 @@ router.delete('/:id', async (c) => {
     let { error } = await db
         .from('product_reviews')
         .update({ deleted_at: new Date().toISOString() })
-        .eq('id', reviewId).in('store_id', storeIds);
+        .eq('id', reviewId);
 
     if (isMissingDeletedAtError(error)) {
         ({ error } = await db
             .from('product_reviews')
             .delete()
-            .eq('id', reviewId).in('store_id', storeIds));
+            .eq('id', reviewId));
     }
 
     if (error) {

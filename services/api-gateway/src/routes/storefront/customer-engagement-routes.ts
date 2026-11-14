@@ -1,6 +1,4 @@
-import { DEFAULT_EMAIL_BRAND, renderEmailShell, heading, paragraph, ctaRow, ctaButton, smallPrint, escapeHtml, formatEmailSender } from '@letbuyy/notification-core/email';
 import { Hono, type Context } from 'hono';
-import { CheckoutTotalsQuoteSchema } from '@letbuyy/shared-types';
 import * as bcrypt from 'bcryptjs';
 import type { Env } from '../../index';
 import { hmacSha256Hex } from '../../lib/crypto';
@@ -324,7 +322,7 @@ async function sendCustomerPasswordResetEmail(
     if (!isConfiguredResetEmailProvider(c)) return;
 
     const recipientName = input.fullName?.trim() || 'there';
-    const from = formatEmailSender(c.env.RESEND_FROM_EMAIL);
+    const from = c.env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>';
     const subject = 'Reset your LetBuyy store password';
     const text = [
         `Hi ${recipientName},`,
@@ -341,10 +339,6 @@ async function sendCustomerPasswordResetEmail(
         to: input.email,
         subject,
         text,
-        html: renderEmailShell(DEFAULT_EMAIL_BRAND, heading('Reset your store password') +
-            paragraph(`Hi ${escapeHtml(recipientName)}, use the secure link below to reset your existing store account password.`) +
-            ctaRow([ctaButton(input.resetUrl,'Reset store password')]) + smallPrint(`Expires at ${escapeHtml(input.expiresAt)}. If you did not request this, ignore this email.`),
-            {preheader:'A secure link for your existing store account.',reason:'You requested a password reset for your store account.',category:'security'}),
     }).catch(() => undefined);
 }
 
@@ -1034,8 +1028,8 @@ export function registerStorefrontCustomerEngagementRoutes(
             // payment status for every order (CAP-C51). Adding a read here without adding the column is
             // the failure mode; the test in customer-order-detail-fields.test.ts fails if they drift apart.
             .select(orderItemsRelationalReadsEnabled(c.env)
-                ? 'id, store_id, order_number, status, total, tax, tax_snapshot, gst_invoice_number, created_at, subtotal, discount, coupon_code, coupon_discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency'
-                : 'id, order_number, status, total, tax, tax_snapshot, gst_invoice_number, created_at, items, subtotal, discount, coupon_code, coupon_discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency')
+                ? 'id, store_id, order_number, status, total, tax, gst_invoice_number, created_at, subtotal, discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency'
+                : 'id, order_number, status, total, tax, gst_invoice_number, created_at, items, subtotal, discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency')
             .eq('store_id', storeId)
             .eq('customer_email', normalizeEmail(customer.email))
             .order('created_at', { ascending: false })
@@ -1044,10 +1038,7 @@ export function registerStorefrontCustomerEngagementRoutes(
         if (error) return c.json(dbFailureBody(), 500);
         const hydrated = await hydrateStorefrontOrderItems(c, (data || []) as unknown as SqlRecord[]);
         // store_id was added to the SELECT only to satisfy the order_items hydration guard above.
-        const orders = hydrated.map(({ store_id: _storeId, tax_snapshot, ...rest }) => {
-            const quote = CheckoutTotalsQuoteSchema.safeParse(tax_snapshot);
-            return { ...rest, ...(quote.success ? { totals_quote: quote.data } : {}) };
-        });
+        const orders = hydrated.map(({ store_id: _storeId, ...rest }) => rest);
         return c.json(success({ orders }));
     });
 

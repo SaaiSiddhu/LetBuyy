@@ -1,0 +1,77 @@
+{
+  "notes": [
+    "Illustrative repair using names/URLs/dates already observed; verify visible editorial truth before publication.",
+    "Merge with existing site Organization/WebSite instead of emitting duplicate competing entities.",
+    "No price/rating/review/person biography/address/telephone is invented. Price intentionally omitted pending confirmed offer facts.",
+    "An article image may be added only after a representative visible asset is verified; omission is not a JSON syntax error.",
+    "Adjust localized title, language and final URLs for other locales.",
+    "Published/modified dates here preserve observed values; do not fake reviewed dates."
+  ],
+  "json_ld": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://www.letbuyy.com/#organization",
+        "name": "LetBuyy",
+        "url": "https://www.letbuyy.com/in"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://www.letbuyy.com/#website",
+        "name": "LetBuyy",
+        "url": "https://www.letbuyy.com/in",
+        "inLanguage": "en-IN",
+        "publisher": {
+          "@id": "https://www.letbuyy.com/#organization"
+        }
+      },
+      {
+        "@type": "Article",
+        "@id": "https://www.letbuyy.com/in/resources/platform/how-themes-work#article",
+        "url": "https://www.letbuyy.com/in/resources/platform/how-themes-work",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://www.letbuyy.com/in/resources/platform/how-themes-work"
+        },
+        "headline": "How Themes Work on LetBuyy",
+        "description": "Complete guide to LetBuyy themes — theme types, customization options, the theme editor, and publishing a custom theme.",
+        "datePublished": "2026-04-20",
+        "dateModified": "2026-06-11",
+        "inLanguage": "en-IN",
+        "author": {
+          "@type": "Organization",
+          "name": "LetBuyy Team",
+          "url": "https://www.letbuyy.com/in/resources/authors/letbuyy-team"
+        },
+        "publisher": {
+          "@id": "https://www.letbuyy.com/#organization"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://www.letbuyy.com/in/resources/platform/how-themes-work#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Resources",
+            "item": "https://www.letbuyy.com/in/resources"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Platform",
+            "item": "https://www.letbuyy.com/in/resources/platform"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "How Themes Work on LetBuyy",
+            "item": "https://www.letbuyy.com/in/resources/platform/how-themes-work"
+          }
+        ]
+      }
+    ]
+  }
+}

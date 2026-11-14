@@ -1,0 +1,81 @@
+{
+  "capturedAt": "2026-11-03T02:49:39.557142+00:00",
+  "exitCode": 0,
+  "deployments": [
+    {
+      "uid": null,
+      "url": "marketing-site-7w5hrckul-letbuyy-store-s-projects.vercel.app",
+      "name": "marketing-site",
+      "state": "READY",
+      "readyState": null,
+      "created": null,
+      "target": "production",
+      "aliasAssigned": null,
+      "gitSource": {
+        "githubCommitRef": "main",
+        "githubCommitSha": "e4105581e3346041d71694d3db093eb713773e07",
+        "githubRepo": "LetBuyy"
+      }
+    },
+    {
+      "uid": null,
+      "url": "marketing-site-3yuo5jgcx-letbuyy-store-s-projects.vercel.app",
+      "name": "marketing-site",
+      "state": "BLOCKED",
+      "readyState": null,
+      "created": null,
+      "target": "production",
+      "aliasAssigned": null,
+      "gitSource": {
+        "githubCommitRef": "main",
+        "githubCommitSha": "14961c132d814e40cc0dfb268ecbaede3de5f76b",
+        "githubRepo": "LetBuyy"
+      }
+    },
+    {
+      "uid": null,
+      "url": "marketing-site-aa4sgzs8s-letbuyy-store-s-projects.vercel.app",
+      "name": "marketing-site",
+      "state": "BLOCKED",
+      "readyState": null,
+      "created": null,
+      "target": "production",
+      "aliasAssigned": null,
+      "gitSource": {
+        "githubCommitRef": "main",
+        "githubCommitSha": "77584d19dc3dc557f29f9e2fbc7a967fe38e132c",
+        "githubRepo": "LetBuyy"
+      }
+    },
+    {
+      "uid": null,
+      "url": "marketing-site-jh3rydfae-letbuyy-store-s-projects.vercel.app",
+      "name": "marketing-site",
+      "state": "CANCELED",
+      "readyState": null,
+      "created": null,
+      "target": "production",
+      "aliasAssigned": null,
+      "gitSource": {
+        "githubCommitRef": "main",
+        "githubCommitSha": "55975acd0da3fd39bcff56168e19b05ff598bc43",
+        "githubRepo": "LetBuyy"
+      }
+    },
+    {
+      "uid": null,
+      "url": "marketing-site-o2b1d22b3-letbuyy-store-s-projects.vercel.app",
+      "name": "marketing-site",
+      "state": "READY",
+      "readyState": null,
+      "created": null,
+      "target": "production",
+      "aliasAssigned": null,
+      "gitSource": {
+        "githubCommitRef": "staging",
+        "githubCommitSha": "a72196c6ea9cd86b07d6d8414da2b8176c41046a",
+        "githubRepo": "LetBuyy"
+      }
+    }
+  ]
+}

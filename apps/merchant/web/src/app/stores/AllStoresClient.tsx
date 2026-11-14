@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -7,6 +9,7 @@ import {
     Button,
     Dropdown,
     type DropdownItem,
+    EmptyState,
     LogOut,
     MaterialIcon,
     Plus,
@@ -15,9 +18,8 @@ import {
     Tabs,
     type TabItem,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { SITE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { getAccountsUrl, getStorefrontRootDomain } from '@/lib/public-urls'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 interface UserStore {
     id: string
@@ -80,7 +82,7 @@ interface StoreListPanelProps {
 function StoreListPanel({ stores, emptyTitle, emptyBody, onOpen, onCreate }: StoreListPanelProps) {
     if (stores.length === 0) {
         return (
-            <EmptyState scene="stores"
+            <EmptyState
                 className="all-stores-empty-state"
                 icon={<Store className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 title={emptyTitle}
@@ -113,7 +115,7 @@ function StoreListPanel({ stores, emptyTitle, emptyBody, onOpen, onCreate }: Sto
                                 <MaterialIcon name={getSiteTypeIcon(store.site_type)} />
                                 {getSiteTypeLabel(store.site_type)}
                             </span>
-                            <span className="all-stores-card-domain">{store.subdomain}.{getStorefrontRootDomain()}</span>
+                            <span className="all-stores-card-domain">{store.subdomain}.letbuyy.com</span>
                         </div>
                     </div>
                     <div className="all-stores-card-trailing">
@@ -216,6 +218,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
         <div className={`all-stores-shell ${isDark ? 'dark' : ''}`}>
             {/* Header bar — same dark chrome as the store dashboard header */}
             <header className="all-stores-header-bar">
+                <Link href="/inbox" className="underline">Account inbox</Link>
                 <div className="all-stores-header-logo" aria-label="LetBuyy">
                     <span className="all-stores-header-logo-frame" aria-hidden="true">
                         <Image

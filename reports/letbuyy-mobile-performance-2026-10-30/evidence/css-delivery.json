@@ -1,0 +1,169 @@
+{
+  "captured_at": "2026-10-30T00:26:38.413798+00:00",
+  "build_id": "Jt6Duvm2bymgmwpDPdjxY",
+  "method": "Actual stylesheet links parsed from final HTML and decoded response byte counts; not wire-compressed sizes",
+  "rows": [
+    {
+      "variant": "frozen baseline",
+      "path": "/in",
+      "styles": [
+        {
+          "url": "/_next/static/css/d268b10e209a2ebb.css",
+          "bytes": 878
+        },
+        {
+          "url": "/_next/static/css/e86771e92ff8f121.css",
+          "bytes": 557857
+        },
+        {
+          "url": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "bytes": 154
+        },
+        {
+          "url": "/_next/static/css/09bc8be7b7a016ac.css",
+          "bytes": 38928
+        }
+      ],
+      "total_css_bytes": 597817
+    },
+    {
+      "variant": "frozen baseline",
+      "path": "/in/pricing",
+      "styles": [
+        {
+          "url": "/_next/static/css/d268b10e209a2ebb.css",
+          "bytes": 878
+        },
+        {
+          "url": "/_next/static/css/e86771e92ff8f121.css",
+          "bytes": 557857
+        },
+        {
+          "url": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "bytes": 154
+        },
+        {
+          "url": "/_next/static/css/09bc8be7b7a016ac.css",
+          "bytes": 38928
+        }
+      ],
+      "total_css_bytes": 597817
+    },
+    {
+      "variant": "frozen baseline",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "styles": [
+        {
+          "url": "/_next/static/css/d268b10e209a2ebb.css",
+          "bytes": 878
+        },
+        {
+          "url": "/_next/static/css/e86771e92ff8f121.css",
+          "bytes": 557857
+        },
+        {
+          "url": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "bytes": 154
+        },
+        {
+          "url": "/_next/static/css/09bc8be7b7a016ac.css",
+          "bytes": 38928
+        },
+        {
+          "url": "/_next/static/css/141d9cd5473cfb91.css",
+          "bytes": 16587
+        },
+        {
+          "url": "/_next/static/css/c0f24baf9764d402.css",
+          "bytes": 37350
+        }
+      ],
+      "total_css_bytes": 651754
+    },
+    {
+      "variant": "candidate",
+      "path": "/in",
+      "styles": [
+        {
+          "url": "/_next/static/css/0470366bb3fef02b.css",
+          "bytes": 1028
+        },
+        {
+          "url": "/_next/static/css/4099679658edd4ed.css",
+          "bytes": 378731
+        },
+        {
+          "url": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "bytes": 154
+        },
+        {
+          "url": "/_next/static/css/ccc2dc94b8f2f977.css",
+          "bytes": 85122
+        },
+        {
+          "url": "/_next/static/css/09bc8be7b7a016ac.css",
+          "bytes": 38928
+        }
+      ],
+      "total_css_bytes": 503963
+    },
+    {
+      "variant": "candidate",
+      "path": "/in/pricing",
+      "styles": [
+        {
+          "url": "/_next/static/css/0470366bb3fef02b.css",
+          "bytes": 1028
+        },
+        {
+          "url": "/_next/static/css/4099679658edd4ed.css",
+          "bytes": 378731
+        },
+        {
+          "url": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "bytes": 154
+        },
+        {
+          "url": "/_next/static/css/09bc8be7b7a016ac.css",
+          "bytes": 38928
+        }
+      ],
+      "total_css_bytes": 418841
+    },
+    {
+      "variant": "candidate",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "styles": [
+        {
+          "url": "/_next/static/css/0470366bb3fef02b.css",
+          "bytes": 1028
+        },
+        {
+          "url": "/_next/static/css/4099679658edd4ed.css",
+          "bytes": 378731
+        },
+        {
+          "url": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "bytes": 154
+        },
+        {
+          "url": "/_next/static/css/7ca4a0ea6015c426.css",
+          "bytes": 78920
+        },
+        {
+          "url": "/_next/static/css/09bc8be7b7a016ac.css",
+          "bytes": 38928
+        },
+        {
+          "url": "/_next/static/css/141d9cd5473cfb91.css",
+          "bytes": 16587
+        },
+        {
+          "url": "/_next/static/css/26008953488318fa.css",
+          "bytes": 37350
+        }
+      ],
+      "total_css_bytes": 551698
+    }
+  ]
+}

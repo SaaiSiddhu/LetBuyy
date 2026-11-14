@@ -101,23 +101,30 @@ const FORGE_COMPOSITIONS: ExperienceComposition = {
   ],
 };
 
-// Threadline: editorial discovery -> real apparel -> independently priced outfits -> supplied facts.
+// ── SENSE (fashion) ─────────────────────────────────────────────────────────
+// Most editorial of the 10. No productGrid on home (editorial over browse).
+// testimonials before newsletter — social proof as parting impression.
+// No trustBadges (fashion is aspirational, not trust-heavy).
+// Product: editorial cross-sell "Complete the look".
+// Collection: heroBanner + filter + grid (aspirational browse).
+
 const SENSE_COMPOSITIONS: ExperienceComposition = {
   index: [
-    spec('sense', 'heroBanner', 'index', { eyebrow: 'THE EVERYDAY EDIT', heading: 'Made to move with you.', subheading: 'Considered clothing for your everyday.', ctaText: 'Explore new arrivals', ctaLink: '/products', secondaryText: 'Find your fit', secondaryLink: '/products' }),
-    spec('sense', 'categoryGrid', 'index', { title: 'Find your silhouette' }),
-    spec('sense', 'productGrid', 'index', { title: 'New arrivals', columns: 3, productLimit: 3 }),
-    spec('sense', 'featuredProducts', 'index', { requireSelection: true, title: 'Wear it your way.', subtitle: 'Every piece, individually chosen.', productLimit: 2 }),
-    spec('sense', 'aboutSection', 'index', { title: 'Good things take a little care.', content: '' }),
-    spec('sense', 'trustBadges', 'index', { fitText: '', serviceText: '', supportText: '' }),
+    spec('sense', 'announcementBar', 'index', { text: 'New season. New looks. Shop the edit.' }),
+    spec('sense', 'heroBanner', 'index', { heading: 'The new season', subheading: 'Curated looks for the discerning wardrobe.', ctaText: 'Explore', ctaLink: '/collections/new', height: 'full', textAlign: 'center' }),
+    spec('sense', 'categoryGrid', 'index', { title: 'Shop by style', columns: 3 }),
+    spec('sense', 'featuredProducts', 'index', { title: 'This season\'s edit', collectionHandle: 'featured' }),
+    spec('sense', 'testimonials', 'index', { title: 'What our customers say', layout: 'carousel', autoplay: true, showRating: true }),
+    spec('sense', 'newsletter', 'index', { title: 'Get the edit', subtitle: 'Lookbooks, style guides, and early access to new collections.' }),
   ],
   product: [
-    spec('sense', 'productDetail', 'product', { showGallery: true, showDescription: true, showBuyNow: false, showReviews: false }),
-    spec('sense', 'featuredProducts', 'product', { requireSelection: true, title: 'Complete the look', productLimit: 2 }),
+    spec('sense', 'productDetail', 'product', { showGallery: true, showDescription: true, showVariantSelector: true, showQuantity: true, showBuyNow: true }),
+    spec('sense', 'featuredProducts', 'product', { title: 'Complete the look', collectionHandle: 'complete-the-look' }),
   ],
   collection: [
-    spec('sense', 'collectionFilter', 'collection', {}),
-    spec('sense', 'productGrid', 'collection', { title: 'Clothing', columns: 3, productLimit: 24 }),
+    spec('sense', 'heroBanner', 'collection', { heading: 'The collection', height: 'medium', textAlign: 'left' }),
+    spec('sense', 'collectionFilter', 'collection', { showSearch: true, showSort: true, showPriceFilter: true, layout: 'topbar' }),
+    spec('sense', 'productGrid', 'collection', { columns: 3, cardStyle: 'minimal' }),
   ],
 };
 

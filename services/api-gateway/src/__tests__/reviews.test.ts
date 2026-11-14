@@ -20,10 +20,8 @@ test('merchant review replies validate input and verify review ownership before 
     const routeSource = source('routes/reviews.ts');
 
     assert.match(routeSource, /router\.post\('\/:id\/reply',\s*validate\('json',\s*ProductReviewReplySchema\)/);
-    assert.match(routeSource, /const \{ data: existing, error: existingError \} = await loadReviewOwner\(db,\s*reviewId,\s*storeIds\)/);
+    assert.match(routeSource, /const \{ data: existing, error: existingError \} = await loadReviewOwner\(db,\s*reviewId\)/);
     assert.match(routeSource, /verifySiteOwnership\(db,\s*ownedReview\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(routeSource, /await resolveMerchantResourceStoreIds\(c\)/);
-    assert.match(routeSource, /\.in\('store_id', storeIds\)/);
     assert.match(routeSource, /merchant_reply:\s*body\.message/);
     assert.match(routeSource, /merchant_reply_by:\s*customUser\.id/);
     assert.match(routeSource, /merchant_reply_at:\s*repliedAt/);

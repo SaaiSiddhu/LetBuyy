@@ -3,42 +3,19 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { dnsAnswerMatchesTarget, getCustomDomainCnameTarget } from '../lib/custom-domain-config';
 import { resolveDoh } from '../lib/dns';
-import { getSupabaseAdmin, readDomainReconcileCandidates, readCheckoutDomainReconcileCandidates, success, type DomainMaintenanceCandidate } from '../lib/supabase';
-import { prepareStoreCheckoutDomain } from '../lib/store-checkout-domain';
-import { domainReconcileEnvironment } from '@letbuyy/auth-core';
-import { AppError } from '../lib/errors';
-import { buildDomainEventEnvelope } from '@letbuyy/event-core';
+import { getSupabaseAdmin, success } from '../lib/supabase';
 import { readVercelDomainStatus } from '../lib/vercel-domains';
 import { timingSafeEqualText } from '../lib/crypto';
-import { customDomainCustomerVerification } from '../lib/turnstile-domain';
-import type { DomainCustomerVerification } from '@letbuyy/shared-types';
 
 const router = new Hono<{ Bindings: Env }>();
 
 type ReconciledStatus = 'verifying' | 'active' | 'error';
 
-type DomainRow = DomainMaintenanceCandidate;
-interface ReconcileResult {
-    domain: string;
-    previous_status: string | null;
-    status: ReconciledStatus | null;
-    changed: boolean;
-    reason: string;
-    customer_verification?: DomainCustomerVerification;
-}
-// At most2 domains in total, including the more expensive checkout HTTPS proof.
-// Shared site-ID pagination prevents either kind from starving on Free50.
-const MAX_DOMAINS_PER_INVOCATION = 2;
-const CURSOR_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-async function readCursor(c: Context<{ Bindings: Env }>, key: string): Promise<string | undefined> {
-    try { const value = await c.env.CACHE?.get(key); return typeof value === 'string' && CURSOR_UUID.test(value) ? value : undefined; }
-    catch { return undefined; }
-}
-
-async function saveCursor(c: Context<{ Bindings: Env }>, key: string, value: string): Promise<void> {
-    try { await c.env.CACHE?.put(key, value, { expirationTtl: 86400 }); }
-    catch { /* A scheduling hint never changes authorization or domain status. */ }
+interface DomainRow {
+    id: string;
+    custom_domain: string | null;
+    custom_domain_status: string | null;
+    custom_domain_verification_token: string | null;
 }
 
 function requireInternal(c: Context<{ Bindings: Env }>) {
@@ -62,44 +39,40 @@ async function emitDriftAlert(
     nextStatus: ReconciledStatus,
     reason: string,
 ): Promise<void> {
-    const now = new Date().toISOString();
-    const bucket = now.slice(0, 13);
-    const eventId = crypto.randomUUID();
-    const idempotencyKey = `custom-domain-drift:${siteId}:${domain}:${nextStatus}:${bucket}`;
-    const { error } = await db.from('platform_queue_jobs').upsert({
-        event_id: eventId,
+    const bucket = new Date().toISOString().slice(0, 13);
+    await db.from('platform_queue_jobs').upsert({
         queue_name: 'analytics-events',
         site_id: siteId,
         job_type: 'custom_domain.status_drift',
         status: 'queued',
-        payload: buildDomainEventEnvelope({
-            event_id: eventId, event_type: 'custom_domain.status_drift', site_id: siteId,
-            aggregate_type: 'site', aggregate_id: siteId, created_at: now,
-            request_id: `custom-domain-reconcile:${bucket}`, trace_id: `custom-domain-reconcile:${siteId}`,
-            idempotency_key: idempotencyKey, schema_version: 1,
-            payload: { site_id: siteId, domain, previous_status: previousStatus, next_status: nextStatus, reason },
-        }),
-        idempotency_key: idempotencyKey,
+        payload: {
+            event_type: 'custom_domain.status_drift',
+            site_id: siteId,
+            domain,
+            previous_status: previousStatus,
+            next_status: nextStatus,
+            reason,
+        },
+        idempotency_key: `custom-domain-drift:${siteId}:${nextStatus}:${bucket}`,
         available_at: new Date().toISOString(),
         request_id: `custom-domain-reconcile:${bucket}`,
         trace_id: `custom-domain-reconcile:${siteId}`,
     }, { onConflict: 'queue_name,idempotency_key', ignoreDuplicates: true });
-    if (error) throw new AppError('Domain observation could not be queued', 503, 'DOMAIN_RECONCILE_UNAVAILABLE');
 }
 
 async function reconcileDomain(
     c: Context<{ Bindings: Env }>,
     row: DomainRow,
     target: string,
-): Promise<ReconcileResult> {
+): Promise<{ domain: string; previous_status: string | null; status: ReconciledStatus; changed: boolean; reason: string }> {
     const domain = row.custom_domain || '';
     const txtVerified = row.custom_domain_verification_token
-        ? (await resolveDoh(`_letbuyy-challenge.${domain}`, 'TXT', { requireConclusive: true, signal: AbortSignal.timeout(3000) }))
+        ? (await resolveDoh(`_letbuyy-challenge.${domain}`, 'TXT').catch(() => []))
             .some((answer) => answer.includes(row.custom_domain_verification_token || ''))
         : true;
-    const cnameVerified = (await resolveDoh(domain, 'CNAME', { requireConclusive: true, signal: AbortSignal.timeout(3000) }))
+    const cnameVerified = (await resolveDoh(domain, 'CNAME').catch(() => []))
         .some((answer) => dnsAnswerMatchesTarget(answer, target));
-    const vercel = await readVercelDomainStatus(c.env, domain, (input, init) => fetch(input, { ...init, redirect: 'manual' }));
+    const vercel = await readVercelDomainStatus(c.env, domain);
 
     const nextStatus: ReconciledStatus = !txtVerified
         ? 'verifying'
@@ -123,27 +96,16 @@ async function reconcileDomain(
     const changed = row.custom_domain_status !== nextStatus;
     if (changed) {
         const db = getSupabaseAdmin(c);
-        // This is an observed provider drift, not a successful-mutation event. Queue it first:
-        // an uncertain write or retry cannot advance the status while silently losing its observation.
+        await db.from('sites').update({ custom_domain_status: nextStatus }).eq('id', row.id);
         await emitDriftAlert(db, row.id, domain, row.custom_domain_status, nextStatus, reason);
-        const { data, error } = await db.from('sites').update({ custom_domain_status: nextStatus })
-            .eq('id', row.id).eq('custom_domain', domain).eq('custom_domain_status', row.custom_domain_status)
-            .is('deleted_at', null).select('id').maybeSingle();
-        if (error) throw new AppError('Domain status could not be saved', 503, 'DOMAIN_RECONCILE_UNAVAILABLE');
-        if (!data) return { domain, previous_status: row.custom_domain_status, status: null, changed: false, reason: 'STATE_CHANGED' };
     }
 
-    const customerVerification = await customDomainCustomerVerification(c.env, row.id, domain, {
-        txt_verified: Boolean(row.custom_domain_verification_token) && txtVerified,
-        cname_verified: cnameVerified, ssl_active: nextStatus === 'active',
-    });
     return {
         domain,
         previous_status: row.custom_domain_status,
         status: nextStatus,
         changed,
         reason,
-        customer_verification: customerVerification,
     };
 }
 
@@ -152,48 +114,28 @@ router.post('/run', async (c) => {
     if (unauthorized) return unauthorized;
 
     const target = getCustomDomainCnameTarget(c.env);
-    const limit = batchLimit(c);
-    const cursorKey = `custom-domain-reconcile:v1:${domainReconcileEnvironment(c.env)}`;
-    const afterId = await readCursor(c, cursorKey);
-    let rows = await readDomainReconcileCandidates(c, { limit, afterId, wrap: false });
-    let checkoutRows = await readCheckoutDomainReconcileCandidates(c, { limit, afterId });
-    if (afterId && rows.length === 0 && checkoutRows.length === 0) {
-        rows = await readDomainReconcileCandidates(c, { limit, wrap: false });
-        checkoutRows = await readCheckoutDomainReconcileCandidates(c, { limit });
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('sites')
+        .select('id, custom_domain, custom_domain_status, custom_domain_verification_token')
+        .in('custom_domain_status', ['active', 'verifying', 'error'])
+        .not('custom_domain', 'is', null)
+        .is('deleted_at', null)
+        .limit(batchLimit(c));
+
+    if (error) throw new Error(`Custom-domain reconcile lookup failed: ${error.message}`);
+
+    const rows = Array.isArray(data) ? data as DomainRow[] : [];
+    const results = [];
+    for (const row of rows) {
+        if (!row.custom_domain) continue;
+        results.push(await reconcileDomain(c, row, target));
     }
-    const results: ReconcileResult[] = [];
-    const checkoutResults: Array<{ site_id: string; status: string; reason: string | null }> = [];
-    const siteIds = [...new Set([...rows.map(row => row.id), ...checkoutRows.map(row => row.id)])].sort();
-    let checked = 0, cursor = '', processedSites = 0;
-    for (const siteId of siteIds) {
-        const row = rows.find(row => row.id === siteId), checkout = checkoutRows.some(row => row.id === siteId);
-        if (checkout && checkoutResults.length >= 1) break;
-        const cost = Number(!!row) + Number(checkout);
-        if (checked && checked + cost > Math.min(limit, MAX_DOMAINS_PER_INVOCATION)) break;
-        // A site with both kinds is one indivisible scheduling item; it is still
-        // bounded to2 domains even when a caller requests a page of1 site.
-        if (row) try { results.push(await reconcileDomain(c, row, target)); }
-        catch (error) {
-            if (error instanceof AppError) throw error;
-            // Provider absence/outage is not proof of drift. Preserve the known state.
-            results.push({ domain: row.custom_domain, previous_status: row.custom_domain_status,
-                status: null, changed: false, reason: 'PROVIDER_UNAVAILABLE' });
-        }
-        if (checkout) {
-            const setup = await prepareStoreCheckoutDomain(c, siteId);
-            checkoutResults.push({ site_id: siteId, status: setup.status, reason: setup.reason });
-        }
-        checked += cost; cursor = siteId; processedSites++;
-    }
-    await saveCursor(c, cursorKey, cursor);
 
     return c.json(success({
-        checked,
+        checked: results.length,
         changed: results.filter((result) => result.changed).length,
-        batch_limit: limit,
-        deferred: siteIds.length > processedSites || rows.length === limit || checkoutRows.length === limit,
         results,
-        checkout_results: checkoutResults,
     }));
 });
 

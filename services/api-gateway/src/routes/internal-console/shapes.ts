@@ -121,7 +121,7 @@ export interface FunnelStepRow extends DbRecord {
 }
 
 export function dayBounds(date: string) {
-    const start = new Date(`${date}T00:00:00.000Z`);
+    const start = new Date(`${date}T00:00:00.000+05:30`);
     const end = new Date(start);
     end.setUTCDate(end.getUTCDate() + 1);
 

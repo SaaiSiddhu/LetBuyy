@@ -1,8 +1,8 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useMemo, useState, useTransition } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, PackageOpen } from 'lucide-react'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
 import type {
     DashboardActivity,
@@ -12,18 +12,20 @@ import type {
 } from './page'
 import { FoundingMerchantCard } from '@/components/founding/FoundingMerchantCard'
 import { resolveDashboardDomain } from './dashboard-setup-status'
-import { getStorefrontRootDomain } from '@/lib/public-urls'
-import { MerchantNavigationLink } from '@/components/MerchantNavigationLink'
-import { Badge,
+import { StoreReadinessPanel } from '@/components/StoreReadinessPanel'
+import type { StoreHealth } from '@letbuyy/shared-types'
+import { Button,
+    Badge,
     Banner,
     Card,
+    EmptyState,
     MaterialIcon,
     MetricCard,
     Page,
+    PageHeader,
     Section,
     Skeleton,
 } from '@letbuyy/ui'
-import HomeSetupGuide, { type HomeSetupStep } from './HomeSetupGuide'
 
 type SiteType = 'store' | 'portfolio' | 'resume' | 'landing' | 'blog'
 type SetupCheckKey = keyof SetupStatus
@@ -33,6 +35,7 @@ interface DashboardClientProps {
     storeInfo: StoreInfo
     setupStatus: SetupStatus
     homeData: DashboardHomeData
+    health?: StoreHealth | null
 }
 
 interface SetupHeroConfig {
@@ -57,6 +60,22 @@ interface SetupConfig {
     primary: SetupHeroConfig
     secondary: SetupHeroConfig
     miniCards: SetupMiniConfig[]
+}
+
+interface SetupChecklistItem {
+    title: string
+    description: string
+    icon: string
+    actionText: string
+    actionLink: string
+    complete: boolean
+    available: boolean
+    detail?: string
+}
+
+/** Only shipped assets belong here; other steps use their existing UI icon. */
+const ACTIVATION_ART: Record<string, string> = {
+    'online-store/themes': '/activation/choose-theme-left.png',
 }
 
 /**
@@ -89,7 +108,7 @@ function resolveStage(
     return hasProducts ? 'selling' : 'activating'
 }
 
-export default function DashboardClient({ store, storeInfo, setupStatus, homeData }: DashboardClientProps) {
+export default function DashboardClient({ store, storeInfo, setupStatus, homeData, health }: DashboardClientProps) {
     const router = useRouter()
     const [isRefreshing, startRefresh] = useTransition()
     const retrySetupChecks = () => startRefresh(() => router.refresh())
@@ -98,48 +117,538 @@ export default function DashboardClient({ store, storeInfo, setupStatus, homeDat
         subdomain: storeInfo.subdomain,
         customDomain: storeInfo.custom_domain,
         customDomainStatus: storeInfo.custom_domain_status,
-    }).domain ?? `${storeInfo.subdomain}.${getStorefrontRootDomain()}`
+    }).domain ?? `${storeInfo.subdomain}.letbuyy.com`
     const stage = resolveStage(storeInfo.site_type, setupStatus, homeData)
-    const setupSteps = buildSetupChecklist({
-        config,
-        currentDomain,
-        setupStatus,
-        siteType: storeInfo.site_type,
-        storeStatus: storeInfo.status,
-        customDomainActive: storeInfo.custom_domain_status === 'active',
-    })
 
     return (
         <Page>
-            <HomeSetupGuide
-                store={store}
-                storeName={storeInfo.name || store}
-                isStore={storeInfo.site_type === 'store'}
-                isDraft={storeInfo.status === 'draft'}
-                trialEndsAt={storeInfo.trial_ends_at}
-                trialStatus={storeInfo.trial_status}
-                steps={setupSteps}
-                compact={stage !== 'activating'}
-                onRetry={retrySetupChecks}
-                isRefreshing={isRefreshing}
-            />
-            {stage !== 'activating' && <HomeMetrics homeData={homeData} />}
-            <RecentActivity store={store} activities={homeData.recentActivity} />
+            {/* No PageHeader while activating: the store name and a duplicate
+                "Add product" CTA compete with the board, which already names the
+                store and carries every action as its own card. */}
+            {stage !== 'activating' && (
+                <PageHeader
+                    breadcrumbs={[{ label: 'Home' }]}
+                    eyebrow={formatSiteType(storeInfo.site_type)}
+                    title={storeInfo.name || store}
+                    description={`${config.dashboardDescription} Your current domain is ${currentDomain}.`}
+                    showIcon={false}
+                    primaryAction={{
+                        label: config.primary.actionText,
+                        href: `/${store}/${config.primary.actionLink}`,
+                        icon: <MaterialIcon name={config.primary.icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
+                    }}
+                    secondaryActions={[
+                        {
+                            label: 'Store settings',
+                            href: `/${store}/settings`,
+                            icon: <MaterialIcon name="settings" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
+                        },
+                    ]}
+                />
+            )}
+
+            {/* No PlanBanner / PlanUpsell here: AdminShell already renders the
+                app-wide TrialBanner, so those made three plan pitches on one
+                screen and cost the strip directly under the page title. */}
+
+            {/* ACTIVATING leads with the checklist — a store with no catalog does
+                not need to be told its revenue is zero. From SELLING onward the
+                numbers carry real information, so they move above it. */}
+            {storeInfo.site_type === 'store' ? (
+                <>
+                    <StoreReadinessPanel store={store} health={health || null} />
+                    {stage !== 'activating' && <HomeMetrics homeData={homeData} />}
+                    <RecentActivity store={store} activities={homeData.recentActivity} />
+                </>
+            ) : stage === 'activating' ? (
+                <>
+                    <ActivationBoard
+                        store={store}
+                        storeName={storeInfo.name || store}
+                        checklist={buildSetupChecklist({
+                            config,
+                            currentDomain,
+                            setupStatus,
+                            siteType: storeInfo.site_type,
+                            storeStatus: storeInfo.status,
+                        })}
+                        onRetry={retrySetupChecks}
+                        isRefreshing={isRefreshing}
+                    />
+                    {homeData.recentActivity.length > 0 && (
+                        <RecentActivity store={store} activities={homeData.recentActivity} />
+                    )}
+                </>
+            ) : (
+                <>
+                    <HomeMetrics homeData={homeData} />
+                    <SetupCards
+                        store={store}
+                        siteType={storeInfo.site_type}
+                        setupStatus={setupStatus}
+                        currentDomain={currentDomain}
+                        storeStatus={storeInfo.status}
+                        onRetry={retrySetupChecks}
+                        isRefreshing={isRefreshing}
+                    />
+                    <RecentActivity store={store} activities={homeData.recentActivity} />
+                </>
+            )}
 
             <FoundingMerchantCard />
         </Page>
     )
 }
 
-function HomeMetrics({ homeData }: { homeData: DashboardHomeData }) {
-    if (!homeData.analyticsAvailable) {
-        return <Banner variant="info" title="Analytics are still warming up">
-            Summary cards will appear when store activity can be loaded.
-        </Banner>
-    }
+/**
+ * The ACTIVATING surface: one card per launch step, each carrying its own
+ * illustration. Replaces the dense checklist for a store that has not opened
+ * yet — at this stage the page's whole job is to make the next action obvious.
+ * Steps come from the same buildSetupChecklist() the guide uses, so completion
+ * state can never disagree between the two views.
+ */
+function ActivationBoard({
+    store,
+    storeName,
+    checklist,
+    onRetry,
+    isRefreshing,
+}: {
+    store: string
+    storeName: string
+    checklist: SetupChecklistItem[]
+    onRetry: () => void
+    isRefreshing: boolean
+}) {
+    // Every step renders, always. Completed ones stay on the board wearing a
+    // finished state — a merchant should be able to see what they have already
+    // done, not watch cards disappear.
+    const done = checklist.filter((item) => item.available && item.complete).length
+    const total = checklist.filter((item) => item.available).length
+    const unavailable = checklist.filter((item) => !item.available).length
+    const nextLink = checklist.find((item) => item.available && !item.complete)?.actionLink ?? null
+    const [lead, second, ...rest] = checklist
 
     return (
+        <div className="grid gap-[var(--lb-space-6)]">
+            <div className="grid justify-items-center gap-[var(--lb-space-3)] text-center">
+                <div className="grid gap-[var(--lb-space-2)]">
+                    <h1 className="text-[length:var(--lb-font-size-page-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] tracking-[-0.02em] text-[color:var(--lb-color-text)]">
+                        Where do you want to start?
+                    </h1>
+                    <p className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                        {unavailable > 0
+                            ? `${unavailable} setup ${unavailable === 1 ? 'check needs' : 'checks need'} a refresh before progress can be confirmed.`
+                            : done === total
+                            ? `${storeName} is ready to sell.`
+                            : `Finish setting up ${storeName} — ${total - done} ${total - done === 1 ? 'step' : 'steps'} to go.`}
+                    </p>
+                </div>
+                <ActivationProgress done={done} total={total} unavailable={unavailable} />
+            </div>
+
+            {/* Two lead cards, then the remainder three-up — a flat row of five
+                equals gives the eye nowhere to land. */}
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                {[lead, second].filter(Boolean).map((item) => (
+                    <ActivationCard
+                        key={item.actionLink}
+                        store={store}
+                        item={item}
+                        featured
+                        isNext={item.actionLink === nextLink}
+                        onRetry={onRetry}
+                        isRefreshing={isRefreshing}
+                    />
+                ))}
+            </div>
+
+            {rest.length > 0 && (
+                <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-3">
+                    {rest.map((item) => (
+                        <ActivationCard
+                            key={item.actionLink}
+                            store={store}
+                            item={item}
+                            isNext={item.actionLink === nextLink}
+                            onRetry={onRetry}
+                            isRefreshing={isRefreshing}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
+/**
+ * Three-layer activation art. The side cut-outs drift outward and lift on
+ * hover, opening a gap around the coded centre — the same read as the Shopify
+ * onboarding cards, where the illustration reacts rather than just sitting there.
+ */
+function ActivationArt({ art, featured, icon }: { art?: string; featured: boolean; icon: string }) {
+    const [failed, setFailed] = useState(false)
+    if (!art || failed) return (
+        <div className="flex h-full items-center justify-center text-[color:var(--lb-color-text-subdued)]" aria-hidden="true">
+            <MaterialIcon name={icon} size={64} />
+        </div>
+    )
+    return (
+        <Image
+            src={art}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes={featured ? "(max-width: 768px) 92vw, 46vw" : "(max-width: 768px) 92vw, 30vw"}
+            className="activation-art__image object-contain"
+            onError={() => setFailed(true)}
+        />
+    )
+}
+
+/** Segmented progress — reads as a launch track rather than a loading bar. */
+function ActivationProgress({ done, total, unavailable }: { done: number; total: number; unavailable: number }) {
+    return (
+        <div className="flex items-center gap-[var(--lb-space-3)]">
+            <div className="flex items-center gap-[var(--lb-space-1)]" aria-hidden="true">
+                {Array.from({ length: total }, (_, index) => (
+                    <span
+                        key={index}
+                        className={[
+                            'h-1 w-[var(--lb-space-6)] rounded-[var(--lb-radius-full)] transition-colors duration-[var(--lb-motion-normal)] motion-reduce:transition-none',
+                            index < done
+                                ? 'bg-[var(--lb-color-primary)]'
+                                : 'bg-[var(--lb-color-border)]',
+                        ].join(' ')}
+                    />
+                ))}
+            </div>
+            <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
+                {done} of {total} checked steps complete{unavailable > 0 ? ` · ${unavailable} need checking` : ''}
+            </span>
+        </div>
+    )
+}
+
+function ActivationCard({
+    store,
+    item,
+    featured = false,
+    isNext = false,
+    onRetry,
+    isRefreshing,
+}: {
+    store: string
+    item: SetupChecklistItem
+    featured?: boolean
+    isNext?: boolean
+    onRetry: () => void
+    isRefreshing: boolean
+}) {
+    const art = ACTIVATION_ART[item.actionLink]
+
+    return (
+        <article
+            className={[
+                'activation-card',
+                // Done is a state, not an absence: full opacity, marked with a
+                // success edge + tick so finished work still reads as work.
+                item.available && item.complete ? 'activation-card--done' : isNext ? 'activation-card--next' : '',
+            ].filter(Boolean).join(' ')}
+        >
+            <div className="flex flex-col gap-[var(--lb-space-2)] p-[var(--lb-space-5)] pb-[var(--lb-space-3)]">
+                <div className="flex items-center gap-[var(--lb-space-2)]">
+                    {item.available && item.complete && (
+                        <span
+                            className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-success-soft)] text-[color:var(--lb-color-success)]"
+                            aria-hidden="true"
+                        >
+                            <MaterialIcon name="check" size={12} />
+                        </span>
+                    )}
+                    <h2 className="text-[length:var(--lb-font-size-card-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[color:var(--lb-color-text)]">
+                        {item.title}
+                    </h2>
+                    {!item.available && <Badge variant="warning" label="Couldn’t verify" />}
+                    {isNext && !item.complete && <Badge variant="info" label="Up next" />}
+                </div>
+                <p className="text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                    {!item.available
+                        ? 'We couldn’t check this setup step. Refresh the check to confirm its current state.'
+                        : item.complete ? (item.detail ?? item.description) : item.description}
+                </p>
+            </div>
+
+            {/* Shipped illustration or a meaningful local icon; no requests for missing assets. */}
+            <div
+                className={[
+                    'activation-art mx-[var(--lb-space-5)]',
+                    featured ? 'activation-art--featured' : '',
+                ].filter(Boolean).join(' ')}
+            >
+                <ActivationArt art={art} featured={featured} icon={item.icon} />
+            </div>
+
+            <div className="p-[var(--lb-space-5)] pt-[var(--lb-space-4)]">
+                <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                    {!item.available && (
+                        <Button type="button" variant="secondary" loading={isRefreshing} onClick={onRetry}>
+                            {isRefreshing ? 'Checking…' : 'Retry check'}
+                        </Button>
+                    )}
+                    <Button
+                        as="a"
+                        variant={item.complete ? 'secondary' : 'primary'}
+                        href={`/${store}/${item.actionLink}`}
+                    >
+                        {item.complete ? 'Review' : item.actionText}
+                    </Button>
+                </div>
+            </div>
+        </article>
+    )
+}
+
+interface SetupCardsProps {
+    store: string
+    siteType: SiteType
+    setupStatus: SetupStatus
+    currentDomain: string
+    storeStatus: string
+    onRetry: () => void
+    isRefreshing: boolean
+}
+
+function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus, onRetry, isRefreshing }: SetupCardsProps) {
+    const router = useRouter()
+    const [copiedDomain, setCopiedDomain] = useState(false)
+    const config = SETUP_CONFIGS[siteType] || SETUP_CONFIGS.store
+    const checklist = useMemo(
+        () => buildSetupChecklist({ config, currentDomain, setupStatus, siteType, storeStatus }),
+        [config, currentDomain, setupStatus, siteType, storeStatus],
+    )
+    const totalSteps = checklist.length
+    const availableSteps = checklist.filter((item) => item.available).length
+    const unavailableSteps = totalSteps - availableSteps
+    const completedSteps = checklist.filter((item) => item.available && item.complete).length
+    const completionPercent = availableSteps > 0 ? Math.round((completedSteps / availableSteps) * 100) : 0
+    const nextStepIndex = checklist.findIndex((item) => item.available && !item.complete)
+    const nextStep = nextStepIndex >= 0 ? checklist[nextStepIndex] : null
+    const blockers = checklist.filter((item) => item.available && !item.complete)
+    const allDone = unavailableSteps === 0 && completedSteps === totalSteps
+
+    const navigateTo = (path: string) => router.push(`/${store}/${path}`)
+    const copyDomain = () => {
+        void navigator.clipboard.writeText(currentDomain).then(() => {
+            setCopiedDomain(true)
+            window.setTimeout(() => setCopiedDomain(false), 1800)
+        })
+    }
+
+    const circumference = 2 * Math.PI * 29
+    const dashOffset = circumference * (1 - completionPercent / 100)
+
+    return (
+        <Card>
+            <Section
+                title="Setup guide"
+                description={unavailableSteps > 0
+                    ? `${unavailableSteps} setup ${unavailableSteps === 1 ? 'check is' : 'checks are'} temporarily unavailable. Retry those checks to confirm launch readiness.`
+                    : nextStep
+                    ? `Next: ${nextStep.title}. ${nextStep.description}`
+                    : 'All recommended launch steps are complete. Keep reviewing your storefront as orders come in.'}
+                action={
+                    <Badge
+                        label={`${completedSteps}/${totalSteps} complete`}
+                        variant={allDone ? 'success' : 'info'}
+                    />
+                }
+            >
+                {/* ── Hero banner ── */}
+                <div className="relative overflow-hidden rounded-[var(--lb-radius-xl)] border border-[var(--lb-component-card-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                    {/* Ambient glow blobs */}
+                    <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] opacity-[0.07] blur-3xl" aria-hidden="true" />
+                    <div className="pointer-events-none absolute -bottom-8 left-6 h-28 w-28 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] opacity-[0.04] blur-2xl" aria-hidden="true" />
+
+                    <div className="relative flex flex-col gap-[var(--lb-space-3)] sm:flex-row sm:items-center sm:justify-between">
+                        {/* Left: heading block */}
+                        <div className="space-y-[var(--lb-space-1)]">
+                            <span className="inline-flex items-center gap-[4px] rounded-[var(--lb-radius-full)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] px-[var(--lb-space-2)] py-[2px] text-[10px] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.08em] text-[color:var(--lb-color-primary)]">
+                                <MaterialIcon name="rocket_launch" size={10} aria-hidden="true" />
+                                Launch checklist
+                            </span>
+                            <h2 className="m-0 text-[length:var(--lb-font-size-h4)] font-[var(--lb-font-weight-bold)] leading-[1.2] tracking-[-0.01em] text-[color:var(--lb-color-text)]">
+                                Opening checklist for{' '}
+                                <span className="text-[color:var(--lb-color-primary)]">{store}</span>
+                            </h2>
+                            <p className="m-0 max-w-[360px] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                {allDone
+                                    ? 'All setup blockers are cleared.'
+                                    : `${blockers.length} step${blockers.length !== 1 ? 's' : ''} remaining before publication readiness.`}
+                            </p>
+                        </div>
+
+                        {/* Right: circular progress card */}
+                        <div className="flex shrink-0 flex-row items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-xl)] border border-[var(--lb-component-card-border)] bg-[var(--lb-component-card-bg)] px-[var(--lb-space-4)] py-[var(--lb-space-3)] shadow-[var(--lb-shadow-md)] sm:flex-col sm:gap-[var(--lb-space-2)]">
+                            <div className="relative flex items-center justify-center">
+                                <svg
+                                    width="64"
+                                    height="64"
+                                    viewBox="0 0 72 72"
+                                    style={{ transform: 'rotate(-90deg)' }}
+                                    aria-hidden="true"
+                                >
+                                    <circle cx="36" cy="36" r="29" fill="none" stroke="var(--lb-color-border)" strokeWidth="6" />
+                                    <circle
+                                        cx="36" cy="36" r="29"
+                                        fill="none"
+                                        stroke="var(--lb-color-primary)"
+                                        strokeWidth="6"
+                                        strokeLinecap="round"
+                                        strokeDasharray={circumference}
+                                        strokeDashoffset={dashOffset}
+                                        style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+                                    />
+                                </svg>
+                                <span
+                                    className="absolute text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-bold)] leading-none text-[color:var(--lb-color-text)]"
+                                    aria-live="polite"
+                                >
+                                    {completionPercent}%
+                                </span>
+                            </div>
+                            <div className="text-left sm:text-center">
+                                <p className="m-0 text-[10px] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text-subdued)]">
+                                    Setup progress
+                                </p>
+                                <p className="m-0 text-[10px] text-[color:var(--lb-color-text-subdued)]">
+                                    {completedSteps} of {availableSteps} checked steps complete{unavailableSteps > 0 ? ` · ${unavailableSteps} need checking` : ''}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── Step list ── */}
+                <div className="grid gap-[var(--lb-space-2)]">
+                    {checklist.map((item, index) => {
+                        const isNext = item.available && index === nextStepIndex
+                        const isDone = item.available && item.complete
+
+                        return (
+                            <div
+                                key={item.title}
+                                className={[
+                                    'grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-3)] transition-all duration-[var(--lb-motion-normal)] md:grid-cols-[auto_1fr_auto] md:items-center',
+                                    isNext
+                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] shadow-[0_0_0_1px_var(--lb-color-primary)]'
+                                        : isDone
+                                            ? 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] opacity-60'
+                                            : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]',
+                                ].join(' ')}
+                            >
+                                <div className="flex items-start gap-[var(--lb-space-3)] md:contents">
+                                    {/* Step indicator */}
+                                    <div className={[
+                                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] text-[11px] font-[var(--lb-font-weight-bold)] transition-all duration-[var(--lb-motion-normal)]',
+                                        isDone
+                                            ? 'bg-[var(--lb-color-success-soft)] text-[color:var(--lb-color-success)]'
+                                            : isNext
+                                                ? 'bg-[var(--lb-color-primary)] text-[color:var(--lb-color-text-inverse)] shadow-[var(--lb-shadow-accent-sm)]'
+                                                : 'border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text-subdued)]',
+                                    ].join(' ')}>
+                                        {!item.available
+                                            ? <MaterialIcon name="warning" size={16} aria-hidden="true" />
+                                            : isDone
+                                            ? <MaterialIcon name="check" size={16} aria-hidden="true" />
+                                            : <span>{index + 1}</span>}
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="min-w-0 space-y-[var(--lb-space-1)]">
+                                        <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                            <MaterialIcon
+                                                name={item.icon}
+                                                size={15}
+                                                className={[
+                                                    'h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]',
+                                                    isDone ? 'text-[color:var(--lb-color-text-subdued)]' : 'text-[color:var(--lb-color-primary)]',
+                                                ].join(' ')}
+                                                aria-hidden="true"
+                                            />
+                                            <h3 className={[
+                                                'm-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]',
+                                                isDone ? 'text-[color:var(--lb-color-text-subdued)]' : 'text-[color:var(--lb-color-text)]',
+                                            ].join(' ')}>
+                                                {item.title}
+                                            </h3>
+                                            {isNext && (
+                                                <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] px-[var(--lb-space-2)] py-[2px] text-[10px] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.05em] text-[color:var(--lb-color-text-inverse)]">
+                                                    Up next
+                                                </span>
+                                            )}
+                                            {isDone && (
+                                                <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-success-soft)] px-[var(--lb-space-2)] py-[2px] text-[10px] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.05em] text-[color:var(--lb-color-success)]">
+                                                    Done
+                                                </span>
+                                            )}
+                                            {!item.available && (
+                                                <Badge variant="warning" label="Couldn’t verify" />
+                                            )}
+                                        </div>
+                                        <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                            {item.available
+                                                ? item.description
+                                                : 'We couldn’t check this setup step. Refresh to confirm its current state.'}
+                                        </p>
+                                        {item.detail && (
+                                            <div className="mt-[var(--lb-space-2)] flex max-w-xs items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)]">
+                                                <MaterialIcon name="link" size={13} className="shrink-0 text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
+                                                <span className="min-w-0 flex-1 truncate font-mono text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                                    {item.detail}
+                                                </span>
+                                                <Button aria-label="Copy domain" size="icon" variant="ghost" onClick={copyDomain}>
+                                                    <MaterialIcon name={copiedDomain ? 'check' : 'content_copy'} size={13} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Action */}
+                                <div className="flex justify-start pl-11 md:justify-end md:pl-0">
+                                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                        {!item.available && (
+                                            <Button type="button" variant="secondary" loading={isRefreshing} onClick={onRetry}>
+                                                {isRefreshing ? 'Checking…' : 'Retry check'}
+                                            </Button>
+                                        )}
+                                        <Button
+                                            variant={isNext ? undefined : 'outline'}
+                                            onClick={() => navigateTo(item.actionLink)}
+                                        >
+                                            {isDone ? 'Review' : item.actionText}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </Section>
+        </Card>
+    )
+}
+
+function HomeMetrics({ homeData }: { homeData: DashboardHomeData }) {
+    return (
         <>
+            {!homeData.analyticsAvailable && (
+                <Banner variant="info" title="Analytics are still warming up">
+                    Summary cards will update when the analytics endpoint returns store activity.
+                </Banner>
+            )}
+
             <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-4">
                 <MetricCard
                     label="Revenue"
@@ -189,7 +698,7 @@ function RecentActivity({ store, activities }: { store: string; activities: Dash
                 {activities.length > 0 ? (
                     <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
                         {activities.map((activity) => (
-                            <MerchantNavigationLink
+                            <a
                                 key={activity.id}
                                 href={`/${store}/${activity.href}`}
                                 className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-4)] text-[color:var(--lb-color-text)] no-underline transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] md:grid-cols-[auto_1fr_auto] md:items-center"
@@ -211,22 +720,18 @@ function RecentActivity({ store, activities }: { store: string; activities: Dash
                                         {formatRelativeTime(activity.timestamp)}
                                     </span>
                                 </span>
-                            </MerchantNavigationLink>
+                            </a>
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-wrap items-center gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
-                        <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]">
-                            <PackageOpen size={20} aria-hidden="true" />
-                        </span>
-                        <div className="min-w-0 flex-1">
-                            <p className="m-0 font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">No activity yet</p>
-                            <p className="m-0 text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">Product updates and orders will appear here.</p>
-                        </div>
-                        <MerchantNavigationLink href={`/${store}/products/new`} className="inline-flex items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-card)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)] no-underline hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--lb-color-focus-ring)]">
-                            Add product <ArrowRight size={14} aria-hidden="true" />
-                        </MerchantNavigationLink>
-                    </div>
+                    <EmptyState
+                        kind="orders"
+                        icon={<MaterialIcon name="receipt_long" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[color:var(--lb-color-primary)]" />}
+                        title="Recent activity will appear here"
+                        body="Orders and product updates will show up as soon as this store has merchant or shopper activity."
+                        primaryAction={<Button type="button" onClick={() => { window.location.href = `/${store}/products/new` }}>Add product</Button>}
+                        secondaryAction={<Button type="button" variant="secondary" onClick={() => { window.location.href = `/${store}/orders` }}>View orders</Button>}
+                    />
                 )}
             </Section>
         </Card>
@@ -239,93 +744,102 @@ function buildSetupChecklist({
     setupStatus,
     siteType,
     storeStatus,
-    customDomainActive,
 }: {
     config: SetupConfig
     currentDomain: string
     setupStatus: SetupStatus
     siteType: SiteType
     storeStatus: string
-    customDomainActive: boolean
-}): HomeSetupStep[] {
+}): SetupChecklistItem[] {
     if (siteType === 'store') {
         return [
             {
-                id: 'details', title: 'Store details',
-                description: 'Review the name and contact details customers will see.',
-                actionText: 'Review details', actionLink: 'settings/general', art: 'details',
-                complete: false, available: true, tracked: false, optional: true,
+                title: 'Add product',
+                description: 'Create the first sellable item so shoppers can browse and buy.',
+                icon: 'product',
+                actionText: 'Add product',
+                actionLink: 'products/new',
+                complete: setupStatus.primaryComplete,
+                available: setupStatus.primaryAvailable,
             },
             {
-                id: 'product', title: 'Add first product',
-                description: 'Start your catalog, then confirm the product is ready to publish.',
-                actionText: 'Add product', actionLink: 'products/new', art: 'product',
-                complete: setupStatus.primaryComplete, available: setupStatus.primaryAvailable, tracked: true,
+                title: 'Customize theme',
+                description: 'Choose a theme and tune storefront branding before publication.',
+                icon: 'palette',
+                actionText: 'Customize',
+                actionLink: 'online-store/themes',
+                complete: setupStatus.themeCustomized,
+                available: true,
             },
             {
-                id: 'theme', title: 'Choose a theme',
-                description: 'Customize your storefront design and review its preview.',
-                actionText: 'Choose theme', actionLink: 'online-store/themes', art: 'theme',
-                complete: setupStatus.themeCustomized, available: true, tracked: true,
+                title: 'Set up payments',
+                description: 'Configure payment acceptance before taking live orders.',
+                icon: 'payments',
+                actionText: 'Activate',
+                actionLink: 'settings/payments',
+                complete: Boolean(setupStatus.paymentConfigured),
+                available: setupStatus.paymentAvailable ?? true,
             },
             {
-                id: 'payments', title: 'Set up payments',
-                description: 'Review your payment methods and their test or live readiness.',
-                actionText: 'Review payments', actionLink: 'settings/payments', art: 'payments',
-                complete: Boolean(setupStatus.paymentConfigured), available: setupStatus.paymentAvailable ?? false,
-                tracked: true, detail: setupStatus.paymentConfigured ? 'A payment option is configured. Review its provider mode before selling.' : undefined,
+                title: 'Connect domain',
+                description: 'Use the default LetBuyy domain or connect a custom storefront domain.',
+                icon: 'language',
+                actionText: 'Connect',
+                actionLink: 'settings/domains',
+                complete: setupStatus.domainConfigured,
+                available: true,
+                detail: currentDomain,
             },
             {
-                id: 'shipping', title: 'Shipping & delivery',
-                description: 'Review delivery zones, rates and serviceability.',
-                actionText: 'Review rates', actionLink: 'settings/shipping', art: 'shipping',
-                complete: Boolean(setupStatus.hasShipping), available: setupStatus.shippingAvailable ?? false, tracked: true,
-            },
-            {
-                id: 'taxes', title: 'Tax settings',
-                description: 'Review the tax rules that apply to your products and location.',
-                actionText: 'Review taxes', actionLink: 'settings/taxes', art: 'taxes',
-                complete: false, available: true, tracked: false, optional: true,
-            },
-            {
-                id: 'domain', title: 'Connect a custom domain',
-                description: `Your default address is ${currentDomain}. A custom domain is optional.`,
-                actionText: 'Review domain', actionLink: 'settings/domains', art: 'domain',
-                complete: customDomainActive, available: true, tracked: false, optional: true, group: 'additional',
-            },
-            {
-                id: 'launch', title: 'Publish storefront',
-                description: 'Review the storefront and its prerequisites before publication.',
-                actionText: 'Review launch', actionLink: 'online-store/themes', art: 'launch',
-                complete: storeStatus === 'published', available: true, tracked: true, group: 'additional',
-                detail: storeStatus === 'published' ? 'Store status is published. Review the public storefront to confirm what shoppers see.' : undefined,
+                title: 'Launch store',
+                description: 'Publish the storefront when products, theme, payments, and domain are ready.',
+                icon: 'rocket_launch',
+                actionText: 'Publish',
+                actionLink: 'online-store/themes',
+                complete: storeStatus === 'published',
+                available: true,
             },
         ]
     }
 
-    const mini: HomeSetupStep[] = config.miniCards.map((card, index) => ({
-        id: `step-${index}`,
-        title: card.title,
-        description: card.showDomain ? `Review the public address ${currentDomain}.` : 'Review this setup task for your site.',
-        actionText: card.showDomain ? 'Review domain' : card.actionText,
-        actionLink: card.showDomain ? 'settings/domains' : card.actionLink,
-        art: (card.showDomain ? 'domain' : card.checkKey === 'paymentConfigured' ? 'payments' : card.checkKey === 'hasShipping' ? 'shipping' : 'details') as HomeSetupStep['art'],
-        complete: Boolean(card.checkKey && setupStatus[card.checkKey]),
-        available: card.checkKey === 'primaryComplete' ? setupStatus.primaryAvailable
-            : card.checkKey === 'paymentConfigured' ? setupStatus.paymentAvailable ?? false
-                : card.checkKey === 'hasShipping' ? setupStatus.shippingAvailable ?? false : true,
-        tracked: Boolean(card.checkKey),
-        optional: !card.checkKey,
-    }))
     return [
-        { id: 'primary', title: config.primary.title, description: config.primary.description,
-            actionText: config.primary.actionText, actionLink: config.primary.actionLink, art: 'details',
-            complete: setupStatus.primaryComplete, available: setupStatus.primaryAvailable, tracked: true },
-        { id: 'theme', title: config.secondary.title, description: config.secondary.description,
-            actionText: config.secondary.actionText, actionLink: config.secondary.actionLink, art: 'theme',
-            complete: setupStatus.themeCustomized, available: true, tracked: true },
-        ...mini,
-    ]
+        {
+            title: config.primary.title,
+            description: config.primary.description,
+            icon: config.primary.icon,
+            actionText: config.primary.actionText,
+            actionLink: config.primary.actionLink,
+            complete: setupStatus.primaryComplete,
+            available: setupStatus.primaryAvailable,
+        },
+        {
+            title: config.secondary.title,
+            description: config.secondary.description,
+            icon: config.secondary.icon,
+            actionText: config.secondary.actionText,
+            actionLink: config.secondary.actionLink,
+            complete: setupStatus.themeCustomized,
+            available: true,
+        },
+        ...config.miniCards.map((card) => ({
+            title: card.title,
+            description: card.showDomain
+                ? 'Review the public domain visitors will use.'
+                : 'Complete this recommended launch preparation step.',
+            icon: card.icon,
+            actionText: card.showDomain ? 'Customize' : card.actionText,
+            actionLink: card.showDomain ? 'settings/domains' : card.actionLink,
+            complete: Boolean(card.checkKey && setupStatus[card.checkKey]),
+            available: card.checkKey === 'primaryComplete'
+                ? setupStatus.primaryAvailable
+                : card.checkKey === 'paymentConfigured'
+                    ? setupStatus.paymentAvailable ?? true
+                    : card.checkKey === 'hasShipping'
+                        ? setupStatus.shippingAvailable ?? true
+                        : true,
+            detail: card.showDomain ? currentDomain : undefined,
+        })),
+    ].slice(0, 5)
 }
 
 function formatNumber(value: number) {
@@ -415,6 +929,13 @@ const SETUP_CONFIGS: Record<SiteType, SetupConfig> = {
     },
 }
 
+
+function formatSiteType(siteType: SiteType) {
+    return siteType
+        .split('-')
+        .map((part) => part.slice(0, 1).toUpperCase() + part.slice(1))
+        .join(' ')
+}
 
 export function DashboardSkeleton() {
     return (

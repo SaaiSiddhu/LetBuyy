@@ -1,0 +1,30 @@
+{
+  "capturedAt": "2026-11-07T03:59:18.569Z",
+  "scope": "Single diagnostic sample per variant/page; cannot close acceptance",
+  "rows": [
+    {
+      "variant": "font-no-preload",
+      "page": "pricing",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "runtimeError": null,
+      "lcpMs": 2935.3725,
+      "tbtMs": 24,
+      "cls": 0.002438,
+      "scriptBytes": 223491,
+      "lighthouseVersion": "13.6.0"
+    },
+    {
+      "variant": "font-no-preload",
+      "page": "guide",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "runtimeError": null,
+      "lcpMs": 3758.037,
+      "tbtMs": 22.000000000000455,
+      "cls": 0.000079,
+      "scriptBytes": 229772,
+      "lighthouseVersion": "13.6.0"
+    }
+  ]
+}

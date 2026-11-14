@@ -1,0 +1,22 @@
+{
+  "capturedAt": "2026-11-03T02:31:40.098844+00:00",
+  "exitCode": 0,
+  "project": {
+    "name": "marketing-site",
+    "framework": "nextjs",
+    "rootDirectory": "apps/marketing/web",
+    "nodeVersion": "22.x",
+    "buildCommand": null,
+    "installCommand": null,
+    "outputDirectory": ".next",
+    "commandForIgnoringBuildStep": null,
+    "gitForkProtection": null,
+    "enableAffectedProjectsDeployments": null
+  },
+  "gitLink": {
+    "type": null,
+    "repo": null,
+    "productionBranch": null
+  },
+  "targetSummary": {}
+}

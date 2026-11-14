@@ -11,6 +11,8 @@ import { getSupabaseAdmin } from '../lib/supabase';
 import { hasPermissionScope, resolveEffectivePermissionScopes, type EmployeePermissionResolutionInput } from '../middleware/rbac';
 import { readConsoleCredential, type ConsoleCredential, type ConsoleSessionState } from './console-session-repository';
 
+declare module 'hono' { interface ContextVariableMap { consolePermissionState: ConsoleSessionState | undefined } }
+
 type ConsoleContext = Context<{ Bindings: Env }>;
 const ApprovalResultSchema = z.object({ accepted: z.literal(true), approval: InternalSensitiveApprovalSchema, replayed: z.boolean() });
 const SnapshotSchema = z.object({ accepted: z.literal(true), evidence_hash: z.string().regex(/^[0-9a-f]{64}$/),
@@ -61,6 +63,7 @@ export async function requireConsolePermission(c: ConsoleContext, scope: Interna
     if (!snapshot.success) throw new AppError('Operator permission state is unavailable.', 503, 'CONSOLE_PERMISSION_STATE_UNAVAILABLE');
     const resolution = resolveEffectivePermissionScopes(snapshot.data.input as EmployeePermissionResolutionInput);
     if (!hasPermissionScope(resolution.scopes, scope)) throw new AppError('The required operator permission is missing.', 403, 'PERMISSION_SCOPE_DENIED');
+    c.set('consolePermissionState', snapshot.data.session as unknown as ConsoleSessionState);
     return { credential, state: snapshot.data.session as unknown as ConsoleSessionState, witness: snapshot.data.evidence_hash };
 }
 /** A real bound human session and canonical live scope, for Console read routes. */

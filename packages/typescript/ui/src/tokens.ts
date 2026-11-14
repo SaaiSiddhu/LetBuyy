@@ -111,7 +111,6 @@ export const letbuyyPrimitiveTokens = {
             100: '#E7E3F7',
             200: '#C9BFED',
             300: '#9D8DD8',
-            350: '#8F88A9',
             400: '#6C54C4',
             500: '#523F97',
             600: '#443870',
@@ -168,6 +167,49 @@ export const letbuyyPrimitiveTokens = {
             700: '#0F766E',
             800: '#115E59',
             900: '#134E4A',
+        },
+        // Neutral graphite for long-session operations workspaces.
+        graphite: {
+            50: '#FAFBFC',
+            100: '#F4F6F8',
+            200: '#E1E6EA',
+            300: '#C5CDD4',
+            400: '#A6B1BB',
+            500: '#65717C',
+            600: '#505D68',
+            700: '#35414B',
+            750: '#303A43',
+            800: '#242C33',
+            850: '#1B2228',
+            900: '#151B20',
+            950: '#10161B',
+        },
+        // Owner-approved Console E: burgundy actions, a wine rail and porcelain layers.
+        burgundy: {
+            100: '#F4DDE4',
+            200: '#EAC0CE',
+            300: '#DEA3B7',
+            400: '#C47A92',
+            500: '#BE708B',
+            700: '#8D3F56',
+            800: '#713146',
+            850: '#5B2D3E',
+            900: '#44232E',
+            950: '#24141C',
+        },
+        porcelain: {
+            50: '#FAF8F9',
+            100: '#F6F2F3',
+            200: '#E7DEE1',
+            400: '#BFB0B6',
+            500: '#75666D',
+            700: '#594751',
+            750: '#483941',
+            800: '#30262C',
+            850: '#231D21',
+            900: '#1D171B',
+            950: '#171317',
+            text: '#30232B',
         },
         emerald: {
             500: '#10B981',
@@ -934,7 +976,6 @@ export const letbuyyTokens = {
         },
     },
     size: {
-        touchTarget: '44px',
         controlSm: 'var(--lb-density-icon-button-height)',
         controlMd: 'var(--lb-density-button-height)',
         controlLg: 'var(--lb-density-button-height-large)',
@@ -1111,7 +1152,6 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-motion-hover-lift': letbuyyTokens.motion.transform.hoverLift,
     '--lb-motion-hover-scale': letbuyyTokens.motion.transform.hoverScale,
     '--lb-size-control-sm': letbuyyTokens.size.controlSm,
-    '--lb-size-touch-target': letbuyyTokens.size.touchTarget,
     '--lb-size-control-md': letbuyyTokens.size.controlMd,
     '--lb-size-control-lg': letbuyyTokens.size.controlLg,
     '--lb-size-icon': letbuyyTokens.size.icon,
@@ -1236,79 +1276,33 @@ function colorVariables(theme: LetbuyyTheme): CssVariableMap {
  * must never re-declare `--lb-color-primary` from its own stylesheet to win a cascade race
  * against the injected tokens (DOC 03 §35: one token source).
  *
- * Only `admin` currently carries an identity. Every other surface resolves to the shared
- * defaults, so this is additive.
+ * Admin and operations own their colour identities here. Other surfaces retain
+ * the shared defaults.
  */
 const adminSurfaceIdentity: Record<LetbuyyTheme, CssVariableMap> = {
     light: {
-        // Quiet semantic chips and banners follow the Merchant lavender palette.
-        // Toasts retain their stronger colors for transient feedback.
-        '--lb-component-feedback-description-opacity': '1',
-        '--lb-component-badge-info-bg': primitive.color.brandInk[100],
-        '--lb-component-badge-info-text': primitive.color.brandInk[500],
-        '--lb-component-badge-success-bg': '#DDF3E9',
-        '--lb-component-badge-success-text': '#175C45',
-        '--lb-component-badge-warning-bg': '#FFF1DE',
-        '--lb-component-badge-warning-text': '#80520B',
-        '--lb-component-badge-danger-bg': '#FAE9ED',
-        '--lb-component-badge-danger-text': '#9B314C',
-        '--lb-component-banner-info-bg': '#F0EDFA',
-        '--lb-component-banner-info-text': primitive.color.brandInk[500],
-        '--lb-component-banner-info-border': '#D8D0F0',
-        '--lb-component-banner-success-bg': '#EEF8F2',
-        '--lb-component-banner-success-text': '#175C45',
-        '--lb-component-banner-success-border': '#CFE8DB',
-        '--lb-component-banner-warning-bg': '#FFF7EB',
-        '--lb-component-banner-warning-text': '#80520B',
-        '--lb-component-banner-warning-border': '#F0E1C5',
-        '--lb-component-banner-danger-bg': '#FDF1F3',
-        '--lb-component-banner-danger-text': '#9B314C',
-        '--lb-component-banner-danger-border': '#EFCFD7',
-        '--lb-component-toast-info-bg': primitive.color.blue[700],
-        '--lb-component-toast-success-bg': primitive.color.green[700],
-        '--lb-component-toast-warning-bg': primitive.color.amber[800],
-        '--lb-component-toast-danger-bg': primitive.color.red[700],
-        '--lb-component-banner-solid-info-bg': primitive.color.blue[700],
-        '--lb-component-banner-solid-success-bg': primitive.color.green[700],
-        '--lb-component-banner-solid-warning-bg': primitive.color.amber[800],
-        '--lb-component-banner-solid-danger-bg': primitive.color.red[700],
-        '--lb-component-badge-solid-info-bg': primitive.color.blue[700],
-        '--lb-component-badge-solid-success-bg': primitive.color.green[700],
-        '--lb-component-badge-solid-warning-bg': primitive.color.amber[800],
-        '--lb-component-badge-solid-danger-bg': primitive.color.red[700],
-        '--lb-component-header-bg': primitive.color.brandInk[850],
-        '--lb-component-header-text': primitive.color.white,
-        '--lb-component-header-text-subdued': primitive.color.brandInk[200],
-        '--lb-component-save-bar-bg': primitive.color.brandInk[850],
-        '--lb-component-save-bar-text': primitive.color.white,
-        '--lb-component-save-bar-border': primitive.color.brandInk[700],
-        '--lb-component-save-bar-action-bg': primitive.color.white,
-        '--lb-component-save-bar-action-hover': primitive.color.brandInk[100],
-        '--lb-component-save-bar-action-text': primitive.color.brandInk[800],
-        '--lb-component-save-bar-discard-hover': 'rgb(255 255 255 / 12%)',
-        '--lb-component-save-bar-focus': primitive.color.brandInk[200],
-        // Premium admin role mapping. Work surfaces remain neutral; chrome anchors the brand.
+        // The rail IS the brand. Primary, CTA and navigation all resolve to brandInk[800].
         '--lb-color-primary': primitive.color.brandInk[800],
         '--lb-color-primary-hover': primitive.color.brandInk[700],
-        '--lb-color-primary-active': primitive.color.brandInk[900],
+        '--lb-color-primary-active': primitive.color.brandInk[850],
         // Primary used AS TEXT on a light surface (links, badge labels) — not text ON primary.
-        '--lb-color-primary-text': primitive.color.brandInk[500],
+        '--lb-color-primary-text': primitive.color.brandInk[700],
         '--lb-color-primary-subtle': `color-mix(in srgb, ${primitive.color.brandInk[800]} 10%, transparent)`,
-        '--lb-color-primary-soft': primitive.color.brandInk[100],
-        '--lb-color-secondary-action': primitive.color.brandInk[500],
+        '--lb-color-primary-soft': `color-mix(in srgb, ${primitive.color.brandInk[800]} 6%, transparent)`,
+        '--lb-color-secondary-action': primitive.color.brandInk[700],
         '--lb-color-secondary-action-hover': primitive.color.brandInk[800],
         '--lb-color-secondary-action-subtle': `color-mix(in srgb, ${primitive.color.brandInk[800]} 10%, transparent)`,
         // Distinct from primary so the ring stays legible where primary is the background.
-        '--lb-color-focus-ring': primitive.color.brandInk[400],
+        '--lb-color-focus-ring': primitive.color.brandInk[600],
 
         '--lb-color-primary-cta': primitive.color.brandInk[800],
         '--lb-color-primary-cta-hover': primitive.color.brandInk[700],
-        '--lb-color-primary-cta-active': primitive.color.brandInk[900],
+        '--lb-color-primary-cta-active': primitive.color.brandInk[850],
         '--lb-color-primary-cta-text': primitive.color.white,
 
         '--lb-component-button-primary-bg': primitive.color.brandInk[800],
         '--lb-component-button-primary-hover': primitive.color.brandInk[700],
-        '--lb-component-button-primary-active': primitive.color.brandInk[900],
+        '--lb-component-button-primary-active': primitive.color.brandInk[850],
         '--lb-component-button-primary-text': primitive.color.white,
         '--lb-component-button-primary-border': primitive.color.brandInk[800],
         // Quiet member of the same family: a 5% ink wash, never a second filled button.
@@ -1317,26 +1311,25 @@ const adminSurfaceIdentity: Record<LetbuyyTheme, CssVariableMap> = {
         '--lb-component-button-secondary-text': primitive.color.gray[900],
         '--lb-component-button-secondary-border': `color-mix(in srgb, ${primitive.color.brandInk[800]} 22%, ${primitive.color.white})`,
 
-        '--lb-component-input-border': primitive.color.brandInk[350],
-        '--lb-component-input-focus-border': primitive.color.brandInk[400],
-        '--lb-component-input-focus-ring': `color-mix(in srgb, ${primitive.color.brandInk[400]} 18%, transparent)`,
+        '--lb-component-input-focus-border': primitive.color.brandInk[600],
+        '--lb-component-input-focus-ring': `color-mix(in srgb, ${primitive.color.brandInk[600]} 18%, transparent)`,
 
         // Accent-tinted chrome must follow the accent. Left on the shared ramp these
         // render stock violet directly beside an ink CTA — the exact "two primaries"
         // clash this identity exists to remove.
         '--lb-component-badge-accent-bg': `color-mix(in srgb, ${primitive.color.brandInk[800]} 10%, transparent)`,
-        '--lb-component-badge-accent-text': primitive.color.brandInk[500],
+        '--lb-component-badge-accent-text': primitive.color.brandInk[700],
         '--lb-component-badge-accent-border': `color-mix(in srgb, ${primitive.color.brandInk[800]} 30%, transparent)`,
         '--lb-component-empty-state-illustration-bg': `color-mix(in srgb, ${primitive.color.brandInk[800]} 10%, transparent)`,
-        '--lb-component-empty-state-illustration-ink': primitive.color.brandInk[500],
+        '--lb-component-empty-state-illustration-ink': primitive.color.brandInk[700],
 
         // A dark rail beneath a light page: text tokens come from the sidebar contract,
         // so no subtree needs to re-point --lb-color-text.
-        '--lb-component-sidebar-bg': primitive.color.brandInk[850],
+        '--lb-component-sidebar-bg': primitive.color.brandInk[800],
         '--lb-component-sidebar-border': primitive.color.brandInk[850],
         '--lb-component-sidebar-text': primitive.color.white,
-        '--lb-component-sidebar-text-subdued': primitive.color.gray[300],
-        '--lb-component-sidebar-section-text': primitive.color.gray[400],
+        '--lb-component-sidebar-text-subdued': primitive.color.brandInk[200],
+        '--lb-component-sidebar-section-text': primitive.color.brandInk[300],
         '--lb-component-sidebar-active-text': primitive.color.white,
         '--lb-component-sidebar-active-bg': 'rgb(255 255 255 / 12%)',
         '--lb-component-sidebar-hover-bg': 'rgb(255 255 255 / 6%)',
@@ -1385,8 +1378,8 @@ const adminSurfaceIdentity: Record<LetbuyyTheme, CssVariableMap> = {
         '--lb-component-sidebar-bg': primitive.color.brandInk[900],
         '--lb-component-sidebar-border': primitive.color.brandInk[850],
         '--lb-component-sidebar-text': primitive.color.white,
-        '--lb-component-sidebar-text-subdued': primitive.color.gray[300],
-        '--lb-component-sidebar-section-text': primitive.color.gray[400],
+        '--lb-component-sidebar-text-subdued': primitive.color.brandInk[200],
+        '--lb-component-sidebar-section-text': primitive.color.brandInk[300],
         '--lb-component-sidebar-active-text': primitive.color.white,
         '--lb-component-sidebar-active-bg': `color-mix(in srgb, ${primitive.color.brandInk[400]} 22%, transparent)`,
         '--lb-component-sidebar-hover-bg': 'rgb(255 255 255 / 5%)',
@@ -1396,8 +1389,83 @@ const adminSurfaceIdentity: Record<LetbuyyTheme, CssVariableMap> = {
     },
 };
 
+function operationsIdentity(theme: LetbuyyTheme): CssVariableMap {
+    const dark = theme === 'dark';
+    const neutral = primitive.color.porcelain;
+    const wine = primitive.color.burgundy;
+    const bg = dark ? neutral[950] : neutral[100];
+    const surface = dark ? neutral[850] : primitive.color.white;
+    const raised = dark ? neutral[800] : primitive.color.white;
+    const subdued = dark ? neutral[900] : neutral[50];
+    const border = dark ? neutral[750] : neutral[200];
+    const text = dark ? neutral[100] : neutral.text;
+    const muted = dark ? neutral[400] : neutral[500];
+    const accent = dark ? wine[300] : wine[700];
+    const sidebar = dark ? wine[950] : wine[900];
+    const sidebarActive = dark ? wine[900] : wine[850];
+    const accentText = dark ? wine[300] : wine[800];
+    const accentWash = `color-mix(in srgb, ${accent} ${dark ? 12 : 8}%, ${surface})`;
+    const cta = wine[700];
+
+    return {
+        '--lb-color-bg': bg, '--lb-color-background': bg, '--lb-content-bg': bg,
+        '--lb-color-surface': surface, '--lb-color-surface-raised': raised,
+        '--lb-color-surface-subdued': subdued, '--lb-color-card': surface, '--lb-card-bg': surface,
+        '--lb-color-header': dark ? neutral[900] : primitive.color.white,
+        '--lb-color-sidebar': sidebar,
+        '--lb-sidebar-bg': sidebar,
+        '--lb-color-border': border, '--lb-color-text': text, '--lb-color-text-subdued': muted,
+        '--lb-color-text-muted': muted,
+        '--lb-color-primary': accent, '--lb-color-primary-text': accentText,
+        '--lb-color-primary-hover': dark ? wine[200] : wine[800],
+        '--lb-color-primary-active': dark ? wine[400] : wine[900],
+        '--lb-color-primary-subtle': accentWash, '--lb-color-primary-soft': accentWash,
+        '--lb-color-primary-cta': cta, '--lb-color-primary-cta-hover': wine[800],
+        '--lb-color-primary-cta-active': wine[900], '--lb-color-primary-cta-text': primitive.color.white,
+        '--lb-color-secondary-action': accentText, '--lb-color-secondary-action-hover': accent,
+        '--lb-color-secondary-action-subtle': accentWash,
+        '--lb-color-focus-ring': dark ? wine[300] : wine[500],
+        '--lb-component-card-bg': surface, '--lb-component-card-text': text, '--lb-component-card-border': border,
+        '--lb-component-table-bg': surface, '--lb-component-table-header-bg': subdued,
+        '--lb-component-table-row-hover-bg': subdued, '--lb-component-table-border': border,
+        '--lb-component-table-text': text, '--lb-component-table-text-secondary': muted,
+        '--lb-component-button-primary-bg': cta, '--lb-component-button-primary-hover': wine[800],
+        '--lb-component-button-primary-active': wine[900], '--lb-component-button-primary-text': primitive.color.white,
+        '--lb-component-button-primary-border': cta,
+        '--lb-component-button-secondary-bg': surface, '--lb-component-button-secondary-hover': subdued,
+        '--lb-component-button-secondary-text': text, '--lb-component-button-secondary-border': border,
+        // White status copy needs a darker solid fill than the shared 600-tier ramp.
+        '--lb-component-badge-solid-default-bg': cta,
+        '--lb-component-badge-solid-success-bg': primitive.color.green[700],
+        '--lb-component-badge-solid-warning-bg': primitive.color.amber[800],
+        '--lb-component-banner-solid-success-bg': primitive.color.green[700],
+        '--lb-component-banner-solid-warning-bg': primitive.color.amber[800],
+        '--lb-component-toast-success-bg': primitive.color.green[700],
+        '--lb-component-toast-warning-bg': primitive.color.amber[800],
+        '--lb-component-input-bg': surface, '--lb-component-input-text': text, '--lb-component-input-border': border,
+        '--lb-component-input-focus-border': accent,
+        '--lb-component-input-focus-ring': `color-mix(in srgb, ${accent} 20%, transparent)`,
+        '--lb-component-empty-state-bg': subdued, '--lb-component-empty-state-border': border,
+        '--lb-component-empty-state-illustration-bg': accentWash, '--lb-component-empty-state-illustration-ink': accentText,
+        '--lb-component-empty-state-title': text, '--lb-component-empty-state-body': muted,
+        '--lb-component-badge-accent-bg': accentWash, '--lb-component-badge-accent-text': accentText,
+        '--lb-component-badge-accent-border': `color-mix(in srgb, ${accent} 22%, ${surface})`,
+        '--lb-component-sidebar-bg': sidebar,
+        '--lb-component-sidebar-border': dark ? wine[900] : wine[850],
+        '--lb-component-sidebar-text': neutral[100],
+        '--lb-component-sidebar-text-subdued': wine[200], '--lb-component-sidebar-section-text': wine[200],
+        '--lb-component-sidebar-active-text': primitive.color.white, '--lb-component-sidebar-active-bg': sidebarActive,
+        '--lb-component-sidebar-hover-bg': sidebarActive,
+        '--lb-component-sidebar-active-ring': 'none', '--lb-component-sidebar-rail-color': wine[300],
+        '--lb-component-sidebar-child-rail': wine[850],
+        '--lb-component-page-header-icon-bg': accentWash, '--lb-component-page-header-icon-text': accentText,
+        '--lb-component-page-header-icon-border': border,
+    };
+}
+
 const letbuyySurfaceIdentities: Partial<Record<LetbuyySurface, Record<LetbuyyTheme, CssVariableMap>>> = {
     admin: adminSurfaceIdentity,
+    operations: { light: operationsIdentity('light'), dark: operationsIdentity('dark') },
 };
 
 function surfaceVariables(surface: LetbuyySurface, theme: LetbuyyTheme): CssVariableMap {
@@ -1454,14 +1522,6 @@ function surfaceVariables(surface: LetbuyySurface, theme: LetbuyyTheme): CssVari
         '--lb-component-badge-accent-bg': component.badge.accentBg,
         '--lb-component-badge-accent-text': component.badge.accentText,
         '--lb-component-badge-accent-border': component.badge.accentBorder,
-        '--lb-component-badge-info-bg': component.banner.infoBg,
-        '--lb-component-badge-info-text': component.banner.infoText,
-        '--lb-component-badge-success-bg': component.banner.successBg,
-        '--lb-component-badge-success-text': component.banner.successText,
-        '--lb-component-badge-warning-bg': component.banner.warningBg,
-        '--lb-component-badge-warning-text': component.banner.warningText,
-        '--lb-component-badge-danger-bg': component.banner.dangerBg,
-        '--lb-component-badge-danger-text': component.banner.dangerText,
         '--lb-component-banner-info-bg': component.banner.infoBg,
         '--lb-component-banner-info-text': component.banner.infoText,
         '--lb-component-banner-info-border': component.banner.infoBorder,

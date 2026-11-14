@@ -1,9 +1,9 @@
 // ============================================================================
 // THEME PRESET ENGINE + EXPERIENCE REGISTRY  (Phase-2 Streams B + C)
 // ----------------------------------------------------------------------------
-// The ten original Experiences now back independently discoverable catalog themes.
-// Existing Core installations keep their saved experience selections. These validated
-// presets remain the single source for each design's original visual defaults.
+// LetBuyy ships ONE first-party Core theme. Merchants never see "themes" — they
+// see "Experiences": named, industry-tuned presets that overlay the Core theme's
+// design tokens and section layout. An Experience is a validated preset document.
 //
 // This module is the preset engine (schema · registry · loader · resolver ·
 // validation · metadata · preview · export · import) and the 10 Experience
@@ -186,17 +186,24 @@ const FORGE = defineExperience({
 
 const SENSE = defineExperience({
   id: 'sense',
-  name: 'Threadline',
-  description: 'Editorial apparel with silhouette discovery, garment measurements and size-aware shopping.',
+  name: 'Sense',
+  description:
+    'Editorial fashion with bold typography and lookbook imagery. Near-black and crimson for a modern, aspirational apparel brand.',
   industry: 'fashion',
   grounding: 'research',
-  notes: 'Threadline design version 2.0.0. Existing installations retain their captured document and release.',
+  notes: 'Heading font Playfair Display renders system-fallback until font loading is wired.',
   tokens: {
-    primaryColor: '#713F35', secondaryColor: '#65574C', accentColor: '#005FCC',
-    backgroundColor: '#FAF7F2', textColor: '#241E1A', surfaceColor: '#EFE7DC',
-    fontFamily: 'Inter', headingFontFamily: 'Playfair Display', borderRadius: 4,
+    primaryColor: '#1A1A2E',
+    secondaryColor: '#2D2D44',
+    accentColor: '#E63946',
+    backgroundColor: '#FFFFFF',
+    textColor: '#1A1A2E',
+    surfaceColor: '#FAFAFA',
+    fontFamily: 'Inter',
+    headingFontFamily: 'Playfair Display',
+    borderRadius: 4,
   },
-  defaultSections: ['announcementBar', 'heroBanner', 'categoryGrid', 'productGrid', 'featuredProducts', 'aboutSection', 'trustBadges'],
+  defaultSections: ['announcementBar', 'heroBanner', 'categoryGrid', 'featuredProducts', 'testimonials', 'newsletter'],
 });
 
 const AURA = defineExperience({

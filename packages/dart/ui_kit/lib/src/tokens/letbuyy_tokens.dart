@@ -72,18 +72,6 @@ class LetbuyyPrimitiveTokens {
   static const blue950 = Color(0xFF082F49);
   static const cyan500 = Color(0xFF06B6D4);
   static const teal500 = Color(0xFF14B8A6);
-  static const brandInk100 = Color(0xFFE7E3F7);
-  static const brandInk200 = Color(0xFFC9BFED);
-  static const brandInk300 = Color(0xFF9D8DD8);
-  static const brandInk350 = Color(0xFF8F88A9);
-  static const brandInk400 = Color(0xFF6C54C4);
-  static const brandInk500 = Color(0xFF523F97);
-  static const brandInk600 = Color(0xFF443870);
-  static const brandInk700 = Color(0xFF362C58);
-  static const brandInk800 = Color(0xFF2C2642);
-  static const brandInk850 = Color(0xFF1E1A2D);
-  static const brandInk900 = Color(0xFF181524);
-  static const brandInk950 = Color(0xFF0F0D17);
 
   static const purpleSubtle = Color(0x1F8B5CF6);
   static const overlayLight = Color(0x8F0F172A);

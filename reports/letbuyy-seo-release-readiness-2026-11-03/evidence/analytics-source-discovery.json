@@ -1,0 +1,42 @@
+{
+  "capturedAt": "2026-11-03T03:10:24.727520+00:00",
+  "literalPatterns": [
+    "googletagmanager.com",
+    "gtag(",
+    "google-analytics.com",
+    "matomo.php",
+    "_paq",
+    "reportWebVitals",
+    "web-vitals",
+    "plausible(",
+    "posthog.",
+    "analytics.track",
+    "trackEvent("
+  ],
+  "rows": [
+    {
+      "root": "apps/marketing/web/src",
+      "filesExamined": 153,
+      "hits": [
+        {
+          "file": "apps/marketing/web/src/lib/resources/articles.ts",
+          "patterns": [
+            "web-vitals"
+          ]
+        }
+      ]
+    },
+    {
+      "root": "apps/platform/identity/src",
+      "filesExamined": 94,
+      "hits": []
+    },
+    {
+      "root": "apps/merchant/web/src",
+      "filesExamined": 334,
+      "hits": []
+    }
+  ],
+  "limitation": "Bounded literal source scan, not proof no analytics exists anywhere or in uninspected deployed tags. No analytics configuration was changed.",
+  "inspectedHitInterpretation": "The articles.ts web-vitals hit is an editorial reference, not an executing analytics collector."
+}

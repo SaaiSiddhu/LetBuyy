@@ -30,5 +30,57 @@
     }
   ],
   "usedBy": "BrandLogo: header, mobile menu and footer.",
-  "validation": "XML, unique IDs, resolved gradients, no raster/text/font dependencies; rasterized vector previews inspected at 152px and 210px. Live browser preview unavailable: browser access disabled in Work settings."
+  "validation": "XML, unique IDs, resolved gradients, no raster/text/font dependencies; rasterized vector previews inspected at 152px and 210px. Live browser preview unavailable: browser access disabled in Work settings.",
+  "rollout20261026": {
+    "scope": "Marketing website only: all shared chrome, favicon, touch icon, publisher/RSS logo, author asset references and social previews. Other apps and external social profiles are not modified.",
+    "source": "Existing approved storefront-bag v3 SVG artwork; no new logo design.",
+    "registry": "apps/marketing/web/src/lib/brand-assets.ts",
+    "derivedAssets": [
+      {
+        "file": "public/icons/letbuyy-logo-512.png",
+        "size": [
+          512,
+          512
+        ],
+        "role": "Organization and publisher raster logo"
+      },
+      {
+        "file": "public/icons/letbuyy-apple-touch-v3.png",
+        "size": [
+          180,
+          180
+        ],
+        "role": "Apple touch icon"
+      },
+      {
+        "file": "src/app/favicon.ico",
+        "sizes": [
+          16,
+          32,
+          48,
+          64,
+          128,
+          256
+        ],
+        "role": "Browser favicon"
+      },
+      {
+        "file": "public/og/letbuyy-default.png",
+        "size": [
+          1200,
+          630
+        ],
+        "role": "Social preview using approved outlined wordmark"
+      }
+    ],
+    "method": "Existing SVG artwork rasterized with installed Sharp, preserving mark geometry and transparency. PNG frames packed into ICO. Share card composed from existing SVG; no generated bitmap redesign.",
+    "cache": "Version 3 query on updated PNG/social metadata and versioned SVG/touch paths.",
+    "browserEvidence": [
+      "site-logo-light-2026-10-26.jpg",
+      "site-logo-dark-2026-10-26.jpg"
+    ],
+    "verification": "Browser checked 429px mobile drawer in both themes and loaded header/footer asset pairs, new icon link declarations, homepage/resources social image; 1280px desktop resource page logo assets loaded. Initial author page uses initials, not logo artwork, so those initials were retained. Source scan has no old logo/mark SVG paths in marketing src. Focused ESLint, 184 existing tests, production build/TypeScript with 497 pages, and git diff --check pass.",
+    "limit": "After the owner said continue, another browser read reported local browser use disabled in Work settings. No further article metadata/footer screenshot is claimed; browser checks and screenshots above were completed earlier in this turn.",
+    "release": "Local only; no commit, push or deployment."
+  }
 }

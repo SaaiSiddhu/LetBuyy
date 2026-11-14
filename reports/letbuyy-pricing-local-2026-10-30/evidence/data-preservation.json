@@ -1,0 +1,10 @@
+{
+  "captured_at": "2026-10-29T20:11:28.537Z",
+  "method": "Before/after SELECT in READ ONLY transactions; public active store plans and get_founding_program_public()",
+  "equal": true,
+  "sha256": "f47c6e178e17cf43efe126de521fe66f0b9a19619a330e966425aaf5d0f2a7a2",
+  "database_reset": false,
+  "seeded": false,
+  "migrations_applied": false,
+  "passed": true
+}

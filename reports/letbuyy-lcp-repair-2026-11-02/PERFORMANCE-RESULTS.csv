@@ -1,0 +1,13 @@
+target,method,repeat,role,exitCode,runtimeError,lcpMs,tbtMs,cls
+/in/pricing,simulate,1,acceptance,0,,2875.746,12.999999999999773,0
+/in/resources/platform/building-first-letbuyy-store,simulate,1,acceptance,0,,1504.136,1.9999999999997726,0
+/in/pricing,devtools,1,acceptance,0,,1934.805,0.7379999923705327,0
+/in/resources/platform/building-first-letbuyy-store,devtools,1,acceptance,0,,2089.44,1.6790000000000873,0
+/in/pricing,simulate,2,acceptance,0,,3537,1,0
+/in/resources/platform/building-first-letbuyy-store,simulate,2,acceptance,0,,3874.744,0,0
+/in/pricing,devtools,2,acceptance,0,,1943.683,0.9830000000001746,0
+/in/resources/platform/building-first-letbuyy-store,devtools,2,acceptance,0,,2091.022,3.073999992370318,0
+/in/pricing,simulate,3,acceptance,0,,3538,0,0
+/in/resources/platform/building-first-letbuyy-store,simulate,3,acceptance,0,,3877.092,1,0
+/in/pricing,devtools,3,acceptance,0,,1941.459,0.26599999237032534,0
+/in/resources/platform/building-first-letbuyy-store,devtools,3,acceptance,0,,2091.659,1.9929999999999382,0

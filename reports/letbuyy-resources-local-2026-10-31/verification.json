@@ -1,0 +1,102 @@
+{
+  "captured_at": "2026-10-31T02:44:51.113038+00:00",
+  "user_facing_date": "2026-10-31",
+  "branch": "codex/local-work-preserved-20261025",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "base_url": "http://127.0.0.1:9006",
+  "http": {
+    "captured_at": "2026-10-31T02:38:28.738700+00:00",
+    "base_url": "http://127.0.0.1:9006",
+    "source_articles": 35,
+    "article_pages_checked": 105,
+    "total_checked": 435,
+    "by_kind": {
+      "article": 105,
+      "category": 21,
+      "changelog": 3,
+      "hub": 3,
+      "negative-control": 9,
+      "publisher": 3,
+      "releases": 3,
+      "retired-author": 12,
+      "search": 3,
+      "tag": 267,
+      "xml": 6
+    },
+    "status_counts": {
+      "200": 414,
+      "308": 12,
+      "404": 9
+    },
+    "failures": [],
+    "broken_resource_links": [],
+    "broken_fragments": [],
+    "passed": true
+  },
+  "browser_articles": 105,
+  "browser_template_samples": 42,
+  "browser_interactions": [
+    {
+      "width": 375,
+      "hub_search": "inventory",
+      "keyboard_opened_guide": "/in/resources/operations/inventory-management-guide",
+      "bookmark_toggle": true,
+      "table_of_contents_target_exists": true,
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "hub_search": "inventory",
+      "keyboard_opened_guide": "/in/resources/operations/inventory-management-guide",
+      "bookmark_toggle": true,
+      "table_of_contents_target_exists": true,
+      "passed": true
+    }
+  ],
+  "css": {
+    "captured_at": "2026-10-31T02:39:34.932578+00:00",
+    "files": [
+      {
+        "path": "apps/marketing/web/src/app/globals.css",
+        "bytes": 356415,
+        "lines": 10574,
+        "sha256": "0e4351d9b2bdc2657ef9d33331986b9f270b7096c92d12300f4319d4e3fda2fe",
+        "matches_previously_verified_source": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/home.css",
+        "bytes": 98238,
+        "lines": 2991,
+        "sha256": "da66f4b9abdaa1a9c9e82ecc9ff38c3d9d040cddfbcf705e413f28d1c2e881cb",
+        "matches_previously_verified_source": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/resources.css",
+        "bytes": 88430,
+        "lines": 1405,
+        "sha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+        "matches_previously_verified_source": true
+      }
+    ],
+    "combined_bytes": 543083,
+    "original_task_start_global_bytes": 540347,
+    "homepage_import_present": true,
+    "resource_layout_import_present": true,
+    "prior_css_split_rule_fingerprints_preserved": 3136,
+    "prior_proof": "reports/letbuyy-mobile-performance-2026-10-30/evidence/css-strict-proof.json",
+    "note": "Current source hashes and imports rechecked today. Rule fingerprint and 36/28/10 visual/navigation comparisons are dated prior evidence, not rerun as part of this page-opening check."
+  },
+  "source_change": {
+    "path": "apps/marketing/web/next.config.ts",
+    "purpose": "Disable the development indicator that overlaps the mobile article Contents control",
+    "before_sha256": "82a74a54687391727314fc5010a1154a342fa71be45f863d256d69dbfc6f6c67",
+    "after_sha256": "34d503640eaf5dbf660ef8d2a988789bc6e8382f2ff7d8e52868a08f3d2b45b2",
+    "added_lines": 2,
+    "deleted_lines": 0
+  },
+  "deployed": false,
+  "app_css_modified_this_task": false,
+  "article_records_modified_this_task": false,
+  "shared_data_or_provider_writes": false,
+  "passed": true
+}

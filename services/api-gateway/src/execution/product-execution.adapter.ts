@@ -12,8 +12,9 @@ import { AppError, NotFoundError, ForbiddenError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
 import { SaasExecutionAdapter } from './saas-execution.adapter';
 import type { Env } from '../index';
-import { executeProductCreate, executeProductMutation } from './product-mutation.adapter';
+import { executeProductMutation } from './product-mutation.adapter';
 import {
+    planProductCreate,
     type CreateProductCommand,
     type ProductOptionInput,
     type ProductVariantInput,
@@ -153,10 +154,21 @@ export class ProductExecutionAdapter {
         }
         await this.assertProductQuota(input.store_id);
 
-        const data = await executeProductCreate(this.options.mutationEnv, input, userId);
-        const productId = String(data.id);
-        await this.recordProductUsage(input.store_id, 1, `product.create:${productId}`, userId, productId);
-        return data;
+        const createPlan = planProductCreate(input);
+
+        const { data, error } = await this.db
+            .from('products')
+            .insert(createPlan.productInsert)
+            .select()
+            .single();
+
+        if (error) throw new Error(`Product creation failed: ${error.message}`);
+        await this.replaceProductOptions(data.id, createPlan.productOptions);
+        await this.replaceProductVariants(data.id, input.price, createPlan.productVariants, userId);
+        await this.setInventoryAvailable(data.id, null, createPlan.initialStock, userId, 'product.create');
+        const variants = await this.refreshProductVariantJsonbCache(data.id, input.store_id);
+        await this.recordProductUsage(input.store_id, 1, `product.create:${data.id}`, userId, data.id);
+        return { ...data, variants };
     }
 
     /**

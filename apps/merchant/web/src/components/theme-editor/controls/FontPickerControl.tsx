@@ -12,11 +12,10 @@
  * RISK-DUAL-N01: receives value + onChange; never mutates the schema object.
  */
 
-import { CircleAlert } from 'lucide-react'
 import { useId } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue } from '@/lib/theme-schemas'
-
+import { MaterialIcon } from '@letbuyy/ui'
 import { EXPERIENCE_FONT_REGISTRY } from '@letbuyy/theme-engine'
 import styles from './controls.module.css'
 
@@ -81,7 +80,7 @@ export function FontPickerControl({ field, value, onChange }: FontPickerControlP
 
             {error ? (
                 <p id={`${id}-error`} className={styles.fieldError} role="alert">
-                    <CircleAlert size={12} aria-hidden />
+                    <MaterialIcon name="error" size={12} aria-hidden />
                     {' '}{error}
                 </p>
             ) : null}

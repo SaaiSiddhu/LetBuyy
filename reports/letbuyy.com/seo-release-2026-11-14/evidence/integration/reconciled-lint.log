@@ -1,0 +1,8 @@
+
+> @letbuyy/marketing-site@0.1.0 lint /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/apps/marketing/web
+> eslint src && pnpm lint:css
+
+
+> @letbuyy/marketing-site@0.1.0 lint:css /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/apps/marketing/web
+> stylelint --config stylelint.config.cjs "src/**/*.css"
+

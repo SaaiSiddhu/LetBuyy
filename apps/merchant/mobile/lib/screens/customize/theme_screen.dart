@@ -607,7 +607,6 @@ class _ThemeScreenState extends State<ThemeScreen> {
   }
 
   Widget _buildThemeThumbnail(ThemeCatalogItem theme) {
-    final thumbnail = ThemeService.resolveCatalogThumbnail(theme.thumbnailUrl);
     return Container(
       width: 72,
       height: 86,
@@ -617,9 +616,9 @@ class _ThemeScreenState extends State<ThemeScreen> {
         border: Border.all(color: colors.divider),
       ),
       clipBehavior: Clip.antiAlias,
-      child: thumbnail != null
+      child: theme.thumbnailUrl != null && theme.thumbnailUrl!.isNotEmpty
           ? CachedMerchantImage(
-              imageUrl: thumbnail,
+              imageUrl: theme.thumbnailUrl!,
               fit: BoxFit.cover,
             )
           : Icon(Icons.web_rounded, color: colors.textSecondary),

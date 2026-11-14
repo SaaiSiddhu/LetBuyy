@@ -1,0 +1,7 @@
+{
+  "adopted": false,
+  "state": "Rejected before performance acceptance",
+  "observed": "Proxy rewrite returned compressed bytes without correct Content-Encoding/Content-Type. Negotiation/body checks failed.",
+  "lighthouseAcceptanceRun": false,
+  "rootSourceChangedByCandidate": false
+}

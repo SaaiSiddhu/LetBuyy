@@ -310,6 +310,9 @@ class NotificationSettingsService extends ChangeNotifier {
   List<MerchantNotification> get notifications =>
       List.unmodifiable(_notifications);
 
+  bool _inboxHasNext = false;
+  bool get inboxHasNext => _inboxHasNext;
+
   int _unreadCount = 0;
   int get unreadCount => _unreadCount;
 
@@ -352,7 +355,7 @@ class NotificationSettingsService extends ChangeNotifier {
       _notifications = response.data
           .map(MerchantNotification.fromJson)
           .toList(growable: false);
-      _unreadCount = _notifications.where((item) => !item.isRead).length;
+      _inboxHasNext = response.hasNext ?? response.hasMore;
       return _notifications;
     } finally {
       _isLoading = false;
@@ -368,10 +371,13 @@ class NotificationSettingsService extends ChangeNotifier {
 
   Future<void> markRead(String id) async {
     await _api.notifications.markRead(id);
+    final wasUnread = _notifications.any(
+      (item) => item.id == id && !item.isRead,
+    );
     _notifications = _notifications
         .map((item) => item.id == id ? item.copyWith(isRead: true) : item)
         .toList(growable: false);
-    _unreadCount = _notifications.where((item) => !item.isRead).length;
+    if (wasUnread && _unreadCount > 0) _unreadCount--;
     notifyListeners();
   }
 
@@ -386,10 +392,13 @@ class NotificationSettingsService extends ChangeNotifier {
 
   Future<void> deleteNotification(String id) async {
     await _api.notifications.remove(id);
+    final wasUnread = _notifications.any(
+      (item) => item.id == id && !item.isRead,
+    );
     _notifications = _notifications
         .where((item) => item.id != id)
         .toList(growable: false);
-    _unreadCount = _notifications.where((item) => !item.isRead).length;
+    if (wasUnread && _unreadCount > 0) _unreadCount--;
     notifyListeners();
   }
 

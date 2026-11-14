@@ -70,8 +70,8 @@ test('merchant notification delivery logs expose push failures by owned site', (
         routeSource.indexOf("// GET /notifications/webhooks"),
     );
 
-    assert.match(deliveryLogBlock, /router\.get\('\/delivery-logs',\s*validate\('query',\s*DeliveryLogQuerySchema\)/);
-    assert.match(deliveryLogBlock, /const siteId = filters\.site_id \|\| auth\.user\.storeId/);
+    assert.match(deliveryLogBlock, /router\.get\('\/delivery-logs'/);
+    assert.match(deliveryLogBlock, /const siteId = c\.req\.query\('site_id'\) \|\| auth\.user\.storeId/);
     assert.match(deliveryLogBlock, /verifyOptionalStoreOwnership\(db,\s*auth\.user,\s*siteId\)/);
     assert.match(deliveryLogBlock, /\.from\('notification_logs'\)/);
     assert.match(deliveryLogBlock, /\.eq\('site_id',\s*siteId\)/);

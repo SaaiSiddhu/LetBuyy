@@ -53,8 +53,7 @@ test('Task 014 removes the 2.5% GMV rake from data defaults, checkout payloads, 
 
     assert.doesNotMatch(billingCore, /gmv_percentage:\s*2\.5/);
     assert.match(billingCore, /gmv_percentage:\s*0/);
-    assert.match(planUi, /gmv_percentage: typeof plan\.gmv_percentage === 'number' \? plan\.gmv_percentage : 0/);
-    assert.doesNotMatch(planUi, /gmv_percentage:\s*2\.5/);
+    assert.match(planUi, /gmv_percentage:\s*0/);
     assert.doesNotMatch(selectPlan, /transaction fee/i);
     assert.doesNotMatch(subscribeCheckout, /Transaction fee/i);
     assert.match(migration, /plans_store_zero_gmv_rake_check/);

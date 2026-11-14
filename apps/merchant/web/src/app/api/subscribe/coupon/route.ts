@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { ValidateSubscriptionCouponInput } from '@letbuyy/api-client'
-import { createMerchantApiClient, merchantApiErrorResponse, merchantApiReadSignal } from '@/lib/api/client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 
 /**
  * POST /api/subscribe/coupon
@@ -13,7 +13,7 @@ import { createMerchantApiClient, merchantApiErrorResponse, merchantApiReadSigna
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const payload = await createMerchantApiClient().payments.subscription.coupon(body as ValidateSubscriptionCouponInput, { signal: merchantApiReadSignal(request.signal) })
+        const payload = await createMerchantApiClient().payments.subscription.coupon(body as ValidateSubscriptionCouponInput)
 
         return NextResponse.json(payload)
     } catch (err) {

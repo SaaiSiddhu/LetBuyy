@@ -1,0 +1,2645 @@
+{
+  "status": "partial: two original simulated LCP targets remain open",
+  "generated_at": "2026-11-01T08:58:01.673146+00:00",
+  "website": "http://127.0.0.1:9006/in",
+  "live_site_changed": false,
+  "deployed": false,
+  "build_id": "W9oy6Qmr7OkmbbL7Lz_ei",
+  "checks": {
+    "rows": [
+      {
+        "check": "marketing-tests",
+        "command": [
+          "pnpm",
+          "--dir",
+          "apps/marketing/web",
+          "test"
+        ],
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:17:36.930605+00:00"
+      },
+      {
+        "check": "marketing-types",
+        "command": [
+          "pnpm",
+          "--dir",
+          "apps/marketing/web",
+          "typecheck"
+        ],
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:17:40.404888+00:00"
+      },
+      {
+        "check": "marketing-lint",
+        "command": [
+          "pnpm",
+          "--dir",
+          "apps/marketing/web",
+          "lint"
+        ],
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:17:47.150222+00:00"
+      },
+      {
+        "check": "ui-validation",
+        "command": [
+          "pnpm",
+          "--dir",
+          "packages/typescript/ui",
+          "validate:ui"
+        ],
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:17:54.106612+00:00"
+      },
+      {
+        "check": "ui-types",
+        "command": [
+          "pnpm",
+          "--dir",
+          "packages/typescript/ui",
+          "typecheck"
+        ],
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:17:55.098268+00:00"
+      }
+    ]
+  },
+  "functional_checks": {
+    "build_id": "W9oy6Qmr7OkmbbL7Lz_ei",
+    "rows": [
+      {
+        "script": "accepted-http.py",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:36:01.801591+00:00"
+      },
+      {
+        "script": "accepted-final-site-browser.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:39:48.043095+00:00"
+      },
+      {
+        "script": "accepted-delivery-templates.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:40:06.924596+00:00"
+      },
+      {
+        "script": "accepted-final-animation-local-api.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:40:59.873441+00:00"
+      },
+      {
+        "script": "accepted-final-interactions-touch-final.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:41:15.513789+00:00"
+      },
+      {
+        "script": "accepted-final-touch-final.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:41:22.739836+00:00"
+      },
+      {
+        "script": "accepted-final-carousel-motion.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:41:33.624462+00:00"
+      },
+      {
+        "script": "accepted-final-menu-visual.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:41:45.255480+00:00"
+      },
+      {
+        "script": "accepted-delivery-spa.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:42:09.290356+00:00"
+      },
+      {
+        "script": "accepted-delivery-native-parity.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:42:19.031016+00:00"
+      },
+      {
+        "script": "accepted-final-scroll-visual.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:42:59.864246+00:00"
+      },
+      {
+        "script": "nojs.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:43:03.895108+00:00"
+      },
+      {
+        "script": "visual-final.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:48:55.074480+00:00"
+      },
+      {
+        "script": "ratio-fix-visual.cjs",
+        "exit_code": 0,
+        "completed_at": "2026-11-01T08:49:56.971161+00:00"
+      }
+    ]
+  },
+  "performance": {
+    "captured_at": "2026-11-01T08:23:57.079897+00:00",
+    "unchanged_budgets": {
+      "lcp_ms": 2500,
+      "tbt_ms": 200,
+      "cls": 0.1
+    },
+    "rows": [
+      {
+        "name": "pricing-simulate-1",
+        "path": "/in/pricing",
+        "throttling_method": "simulate",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 3393.3279999999995,
+        "tbt_ms": 35.00000000000023,
+        "cls": 0,
+        "score": 0.92,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 1000,
+          "pauseAfterLoadMs": 1000,
+          "networkQuietThresholdMs": 1000,
+          "cpuQuietThresholdMs": 1000,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "simulate",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": false
+      },
+      {
+        "name": "guide-simulate-1",
+        "path": "/in/resources/platform/building-first-letbuyy-store",
+        "throttling_method": "simulate",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 3757.656,
+        "tbt_ms": 22.999999999999545,
+        "cls": 0,
+        "score": 0.89,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 1000,
+          "pauseAfterLoadMs": 1000,
+          "networkQuietThresholdMs": 1000,
+          "cpuQuietThresholdMs": 1000,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "simulate",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": false
+      },
+      {
+        "name": "pricing-simulate-2",
+        "path": "/in/pricing",
+        "throttling_method": "simulate",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 3559,
+        "tbt_ms": 33,
+        "cls": 0,
+        "score": 0.91,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 1000,
+          "pauseAfterLoadMs": 1000,
+          "networkQuietThresholdMs": 1000,
+          "cpuQuietThresholdMs": 1000,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "simulate",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": false
+      },
+      {
+        "name": "guide-simulate-2",
+        "path": "/in/resources/platform/building-first-letbuyy-store",
+        "throttling_method": "simulate",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 3827.6320000000005,
+        "tbt_ms": 23.5,
+        "cls": 0,
+        "score": 0.88,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 1000,
+          "pauseAfterLoadMs": 1000,
+          "networkQuietThresholdMs": 1000,
+          "cpuQuietThresholdMs": 1000,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "simulate",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": false
+      },
+      {
+        "name": "pricing-simulate-3",
+        "path": "/in/pricing",
+        "throttling_method": "simulate",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 3450.2440000000006,
+        "tbt_ms": 30.655499999999847,
+        "cls": 0,
+        "score": 0.91,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 1000,
+          "pauseAfterLoadMs": 1000,
+          "networkQuietThresholdMs": 1000,
+          "cpuQuietThresholdMs": 1000,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "simulate",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": false
+      },
+      {
+        "name": "guide-simulate-3",
+        "path": "/in/resources/platform/building-first-letbuyy-store",
+        "throttling_method": "simulate",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 3828.0160000000005,
+        "tbt_ms": 24,
+        "cls": 0,
+        "score": 0.88,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 1000,
+          "pauseAfterLoadMs": 1000,
+          "networkQuietThresholdMs": 1000,
+          "cpuQuietThresholdMs": 1000,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "simulate",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": false
+      },
+      {
+        "name": "in-home-observed",
+        "path": "/in",
+        "throttling_method": "devtools",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 1976.467,
+        "tbt_ms": 63.74999999618558,
+        "cls": 0,
+        "score": 0.96,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "in-pricing-observed",
+        "path": "/in/pricing",
+        "throttling_method": "devtools",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 1978.523,
+        "tbt_ms": 54.39999999618567,
+        "cls": 0,
+        "score": 0.98,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "in-guide-observed",
+        "path": "/in/resources/platform/building-first-letbuyy-store",
+        "throttling_method": "devtools",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 2058.104,
+        "tbt_ms": 57.70400000000018,
+        "cls": 0,
+        "score": 0.97,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "in-hi-home-observed",
+        "path": "/in-hi",
+        "throttling_method": "devtools",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 1897.334,
+        "tbt_ms": 126.13100000000077,
+        "cls": 0,
+        "score": 0.95,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "in-hi-pricing-observed",
+        "path": "/in-hi/pricing",
+        "throttling_method": "devtools",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 1947.083,
+        "tbt_ms": 42.26700000000028,
+        "cls": 0,
+        "score": 0.98,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "in-hi-guide-observed",
+        "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+        "throttling_method": "devtools",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 2121.167,
+        "tbt_ms": 110.01100000000042,
+        "cls": 0,
+        "score": 0.96,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "in-ta-home-observed",
+        "path": "/in-ta",
+        "throttling_method": "devtools",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 1881.751,
+        "tbt_ms": 79.93299999999908,
+        "cls": 0,
+        "score": 0.96,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "in-ta-pricing-observed",
+        "path": "/in-ta/pricing",
+        "throttling_method": "devtools",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 1911.903,
+        "tbt_ms": 43.52099999999973,
+        "cls": 0,
+        "score": 0.98,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "in-ta-guide-observed",
+        "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+        "throttling_method": "devtools",
+        "form_factor": "mobile",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 2082.32,
+        "tbt_ms": 74.25899999999956,
+        "cls": 0,
+        "score": 0.97,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "mobile",
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": true,
+            "width": 412,
+            "height": 823,
+            "deviceScaleFactor": 1.75,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "home-desktop",
+        "path": "/in",
+        "throttling_method": "devtools",
+        "form_factor": "desktop",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 138.478,
+        "tbt_ms": 0,
+        "cls": 0,
+        "score": 1,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "desktop",
+          "throttling": {
+            "rttMs": 40,
+            "throughputKbps": 10240,
+            "requestLatencyMs": 0,
+            "downloadThroughputKbps": 0,
+            "uploadThroughputKbps": 0,
+            "cpuSlowdownMultiplier": 1
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": false,
+            "width": 1350,
+            "height": 940,
+            "deviceScaleFactor": 1,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "pricing-desktop",
+        "path": "/in/pricing",
+        "throttling_method": "devtools",
+        "form_factor": "desktop",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 120.862,
+        "tbt_ms": 0,
+        "cls": 0,
+        "score": 1,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "desktop",
+          "throttling": {
+            "rttMs": 40,
+            "throughputKbps": 10240,
+            "requestLatencyMs": 0,
+            "downloadThroughputKbps": 0,
+            "uploadThroughputKbps": 0,
+            "cpuSlowdownMultiplier": 1
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": false,
+            "width": 1350,
+            "height": 940,
+            "deviceScaleFactor": 1,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      },
+      {
+        "name": "guide-desktop",
+        "path": "/in/resources/platform/building-first-letbuyy-store",
+        "throttling_method": "devtools",
+        "form_factor": "desktop",
+        "exit_code": 0,
+        "runtime_error": null,
+        "lcp_ms": 132.02,
+        "tbt_ms": 0,
+        "cls": 0,
+        "score": 1,
+        "settings": {
+          "output": [
+            "json"
+          ],
+          "maxWaitForFcp": 30000,
+          "maxWaitForLoad": 45000,
+          "pauseAfterFcpMs": 5250,
+          "pauseAfterLoadMs": 5250,
+          "networkQuietThresholdMs": 5250,
+          "cpuQuietThresholdMs": 5250,
+          "formFactor": "desktop",
+          "throttling": {
+            "rttMs": 40,
+            "throughputKbps": 10240,
+            "requestLatencyMs": 0,
+            "downloadThroughputKbps": 0,
+            "uploadThroughputKbps": 0,
+            "cpuSlowdownMultiplier": 1
+          },
+          "throttlingMethod": "devtools",
+          "screenEmulation": {
+            "mobile": false,
+            "width": 1350,
+            "height": 940,
+            "deviceScaleFactor": 1,
+            "disabled": false
+          },
+          "emulatedUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+          "auditMode": false,
+          "gatherMode": false,
+          "clearStorageTypes": [
+            "file_systems",
+            "shader_cache",
+            "service_workers",
+            "cache_storage"
+          ],
+          "disableStorageReset": false,
+          "debugNavigation": false,
+          "channel": "cli",
+          "usePassiveGathering": false,
+          "disableFullPageScreenshot": false,
+          "skipAboutBlank": false,
+          "blankPage": "about:blank",
+          "ignoreStatusCode": false,
+          "locale": "en-US",
+          "blockedUrlPatterns": null,
+          "additionalTraceCategories": null,
+          "extraHeaders": null,
+          "precomputedLanternData": null,
+          "onlyAudits": null,
+          "onlyCategories": [
+            "performance"
+          ],
+          "skipAudits": null
+        },
+        "pass": true
+      }
+    ]
+  },
+  "open_issues": [
+    {
+      "issue_id": "LOCAL-LCP-01",
+      "category": "Performance",
+      "title": "Pricing exceeds the original simulated LCP target",
+      "severity": "Medium",
+      "confidence": "High (measured budget overrun; cause not fully established)",
+      "finding_state": "Confirmed",
+      "affected_url_count": 1,
+      "representative_urls": "http://127.0.0.1:9006/in/pricing",
+      "template_or_page": "Page-specific measurement; shared runtime contributes to the model",
+      "evidence": "Three final Lighthouse 13.6 mobile HTTP/1.1 simulate runs: 3393.3 ms, 3559.0 ms, 3450.2 ms",
+      "business_impact": "Local modeled slow-network budget unmet. Real-user impact and ranking impact not established.",
+      "recommended_fix": "Continue profiling initial shared JS and server/client boundaries; retain the current budget and visual/functionality gates. No validated complete repair is claimed.",
+      "owner_role": "Frontend performance / design-system engineer",
+      "effort": "Not estimated; further profiling needed",
+      "dependencies": "No external credential is required for more local work. Field data would be a separate validation input.",
+      "validation_steps": "Three fresh default simulated mobile runs per page, same browser/settings/transport, followed by the marketing/UI, observed performance and visual checks.",
+      "success_indicator": "Each LCP <=2500ms, TBT <=200ms and CLS <=0.1, with all preservation checks passing."
+    },
+    {
+      "issue_id": "LOCAL-LCP-02",
+      "category": "Performance",
+      "title": "First-store guide exceeds the original simulated LCP target",
+      "severity": "Medium",
+      "confidence": "High (measured budget overrun; cause not fully established)",
+      "finding_state": "Confirmed",
+      "affected_url_count": 1,
+      "representative_urls": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+      "template_or_page": "Page-specific measurement; shared runtime contributes to the model",
+      "evidence": "Three final Lighthouse 13.6 mobile HTTP/1.1 simulate runs: 3757.7 ms, 3827.6 ms, 3828.0 ms",
+      "business_impact": "Local modeled slow-network budget unmet. Real-user impact and ranking impact not established.",
+      "recommended_fix": "Continue profiling initial shared JS and server/client boundaries; retain the current budget and visual/functionality gates. No validated complete repair is claimed.",
+      "owner_role": "Frontend performance / design-system engineer",
+      "effort": "Not estimated; further profiling needed",
+      "dependencies": "No external credential is required for more local work. Field data would be a separate validation input.",
+      "validation_steps": "Three fresh default simulated mobile runs per page, same browser/settings/transport, followed by the marketing/UI, observed performance and visual checks.",
+      "success_indicator": "Each LCP <=2500ms, TBT <=200ms and CLS <=0.1, with all preservation checks passing."
+    }
+  ],
+  "coverage": {
+    "known_urls": 489,
+    "html_200": 477,
+    "intended_redirects": 12,
+    "browser_cases": 573,
+    "visual_main_comparisons": 96,
+    "visual_unique_configurations": 102,
+    "observed_mobile_cases": 9,
+    "observed_desktop_cases": 3,
+    "simulated_repeats": 6
+  },
+  "preservation": {
+    "css_files": 20,
+    "all_css_byte_identical": true,
+    "css": [
+      {
+        "path": "apps/marketing/web/src/app/home.css",
+        "sha256": "77923e1c6b5cb17abb707eb143ba69cae3d44b26ab892eff3c396345fab0bfd4",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/locale-typography.css",
+        "sha256": "8e8ec11eee5e768d79b8862f40cb66098cde149bf8dade236bc09b85c440196e",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/how-it-works.css",
+        "sha256": "62e25060f9823f77deda7b647b471109ccefc006982769bf92125d67af3e54ae",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/globals.css",
+        "sha256": "e2de7c6c61df5b89c47df3a2f3dcd5999f6e6b5d686b41f308342c590663cd50",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/resources.css",
+        "sha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/[locale]/resources/resources-home.module.css",
+        "sha256": "a6801d9e2a3d46f6a9e9e0e852378a0ad52ebc9e1aab0c3e111679571b1bfb67",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/[locale]/resources/[category]/category-illustrated.module.css",
+        "sha256": "ca816eef758333ef5a529a0d27cb5cc9de5678394c7088f019428c180db4a14f",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/[locale]/sitemap/sitemap.module.css",
+        "sha256": "34c0c5a781784798f994df1308778d9429c1fc32ed8025acf3022f01d95bca7d",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/platform-surfaces.module.css",
+        "sha256": "11b8532b9d0386f3488eb416e3c8d8fbeed1ada784c6de63a09a66f553b68d76",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/final-cta.module.css",
+        "sha256": "47c08d2facb86e49838074e6c0ffb18687bb6c238b623607a044f47c4c68e214",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/header-featured-art.module.css",
+        "sha256": "a74befaf9288acc46ca456995ad8710a966dc7184e8b9df450140fdbaedcbcbe",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/resources/theme-guide.module.css",
+        "sha256": "7eb8b3bdcfbd18194cf77fb8b96b4073bdc86518e154639ab51ec6aafc5464d8",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/resources/article-visual-overview.module.css",
+        "sha256": "bceaa87f9cbc4331d30d776bb1b20e2e91d45d0e4b72441c0c4bd4e2d96f7d7a",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/resources/liquid-guide.module.css",
+        "sha256": "3073a7695d31802bea7c6158f859067208a28bca600eaafbf747e9456bfbcc73",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/resources/changelog.module.css",
+        "sha256": "e202bec9ec797f384f648dec7cc760656f0ac938ec8b13b9f343c370b0c3d180",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/resources/resource-artwork.module.css",
+        "sha256": "8c13b6c30c8c50471deb40dfe5b20e22869d6b2be6ea563d4c759d0caa73417a",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/resources/resource-list-visuals.module.css",
+        "sha256": "e6d3ac5a62e59dfb803f1b01e5ee376573a3899f01f87a72a37cf593bf5d5054",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/resources/article-section-visual.module.css",
+        "sha256": "04b0b33213bd47a92c10eed18a146863f85aca079835898294e489b2d02e8d63",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/support/support-experience.module.css",
+        "sha256": "ac9506f560a259809f723887b0ee6cb75e9a9f8abe04b28b7ffc51043d4ee644",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/legal/legal-layout.module.css",
+        "sha256": "c35704c40c2d09b41e834ee42a35ccb39bdab85549a53bd09ccd55e8b1a921ef",
+        "unchanged": true
+      }
+    ],
+    "pre_existing_asset_count": 142,
+    "all_pre_existing_assets_byte_identical": true,
+    "assets": [
+      {
+        "path": "apps/marketing/web/public/hero-commerce-workspace.jpg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/maps/india-states-v1.json",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/maps/earth-land-dots-v1.json",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/commerce-launch-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/sitemap-directory-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/merchant-support-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/storefront-launch-cta-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/commerce-essentials-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resource-library-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/storefront/urban-kicks-products-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/storefront/urban-kicks-hero-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/customers-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/product-hoodie-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/orders-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/customers-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/product-jogger-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/payments-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/b2b-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/ai-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/analytics-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/inventory-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/catalog-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/inventory-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/product-cap-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/b2b-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/analytics-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/storefronts-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/orders-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/ai-v1.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/product-sneaker-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/product-tee-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/payments-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/icons/inventory-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/icons/orders-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/icons/storefronts-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/icons/analytics-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/icons/customers-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/icons/b2b-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/icons/ai-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/capabilities/icons/payments-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/section-hero-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/section-products-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/theme-free-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/developer-integrations-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/section-newsletter-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/reading-search-discovery-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/ai-commerce-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/guide-apps-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/reading-returns-care-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/guide-liquid-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/reading-learning-journey-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/reading-customer-lifecycle-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/reading-fulfillment-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/theme-custom-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/guide-first-store-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/developer-webhooks-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/ai-workflow-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/reading-developer-connections-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/changelog-journal-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/reading-payments-choice-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/developer-api-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/reading-growth-audience-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/ai-operations-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/ai-copilot-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/theme-marketplace-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/reading-tax-documents-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/section-image-text-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/ai-recommendations-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/section-products-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/developer-integrations-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/section-newsletter-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-search-discovery-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-commerce-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/guide-apps-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-returns-care-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/guide-liquid-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/inventory-scene-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-learning-journey-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-customer-lifecycle-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-fulfillment-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/theme-custom-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/guide-first-store-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/developer-webhooks-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-workflow-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-developer-connections-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-payments-choice-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/developer-api-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-growth-audience-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-operations-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-copilot-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-tax-documents-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-recommendations-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/step-payment-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/fulfill-order-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/everyday-merchant-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/build-store-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/artwork-manifest.json",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/order-story-background-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/step-stock-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/step-order-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/step-delivery-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/how-it-works/grow-customers-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/growth-artwork-manifest.json",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/first-order-story-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/scale-illustration-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/growth-commerce-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/growth-background-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/brand-illustration-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/stage-artwork-manifest.json",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/brand-story-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/launch-story-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/enterprise-illustration-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/growth-commerce-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/enterprise-story-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/first-order-illustration-v2.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/journey/scale-story-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/support/support-care-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/support/contact-conversation-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/support/grievance-care-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/support/security-data-studio-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/surfaces/surface-apps-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/surfaces/surface-pricing-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/surfaces/surface-themes-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/illustrations/surfaces/surface-developers-v1.webp",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-store-mark-v3.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-logo-512.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-signature-dark-v2.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-store-logo-light-v3.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-signature-light-v2.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-mark.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-studio-dark.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-logo-light.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-logo-dark.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-apple-touch-v3.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/icons/letbuyy-store-logo-dark-v3.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/og/letbuyy-default.png",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/fonts/Inter-OFL.txt",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/fonts/Inter-Variable.woff2",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/fonts/Inter-Variable-Marketing.woff2",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/assets/legal/privacy-choices.svg",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/public/animations/letbuyy-finale-v1.json",
+        "unchanged": true
+      }
+    ],
+    "animation_sources": [
+      {
+        "path": "apps/marketing/web/src/components/Hero.tsx",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/CommerceGlobeCanvas.tsx",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/CommerceNetwork.tsx",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/MarketingMotionProvider.tsx",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/CapabilityMap.tsx",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/MarketingHome.tsx",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/FAQ.tsx",
+        "unchanged": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/CommerceGlobe.tsx",
+        "unchanged": true
+      }
+    ],
+    "all_animation_sources_byte_identical": true,
+    "header_motion_state_effects_and_markup_exact": true,
+    "token_engine_unchanged": true,
+    "source_build_id": "W9oy6Qmr7OkmbbL7Lz_ei",
+    "source_build_mismatches": [],
+    "documented_post_build_doc_changes": [
+      {
+        "path": "apps/marketing/web/public/fonts/README.md",
+        "build_time_sha256": "a960e76cd8e9e981c1f0666775daf74494afc4bf7715d60936b4db3e6450972f",
+        "current_sha256": "389dea9a133971a5bf2980e44abf73869d6f14a2c4f8c75b47e901b78f9c5871",
+        "reason": "Clarify the Python launcher in the regeneration command; no compiled source or font bytes changed."
+      }
+    ],
+    "font_proof": {
+      "source_sha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+      "output_sha256": "4333e5b1fdb186a15ab1fce785e288ee3253393ae9b7e18c4bb5e3e23326881d",
+      "source_bytes": 58308,
+      "output_bytes": 44600,
+      "removed_zero_contribution_tuples": 655,
+      "cmap_codepoints": 210,
+      "glyph_samples": 11550,
+      "outlines_and_advances_exact": true,
+      "name_table_exact": true,
+      "weight_range": [
+        400,
+        900
+      ],
+      "optical_size_range": [
+        14,
+        32
+      ],
+      "fonttools": "4.60.1"
+    }
+  },
+  "all_glyph_proof": {
+    "all_glyph_count": 332,
+    "samples": 18260,
+    "including_non_unicode_alternates": true,
+    "all_outlines_and_advance_widths_exact": true,
+    "unchanged_table_bytes": {
+      "GSUB": true,
+      "GPOS": true,
+      "GDEF": true,
+      "HVAR": true,
+      "MVAR": true,
+      "avar": true,
+      "cmap": true,
+      "OS/2": true,
+      "hhea": true,
+      "hmtx": true,
+      "maxp": true,
+      "name": true,
+      "post": true
+    }
+  },
+  "visual_mean_max": 0.0009644622991347343,
+  "sampled_sans_font_weights": [
+    400,
+    500,
+    600,
+    700,
+    750,
+    800
+  ],
+  "limitations": [
+    "Field Core Web Vitals and INP not measured",
+    "Chromium mobile emulation is not a physical-device cross-browser certification",
+    "Two original local HTTP/1.1 simulated LCP cases remain open; no all-green acceptance claim",
+    "No payment/account mutation or deployment in this follow-up"
+  ],
+  "normal_development_port": {
+    "captured_at": "2026-11-01T08:53:36.445Z",
+    "rows": [
+      {
+        "path": "/in",
+        "width": 375,
+        "status": 200,
+        "lang": "en",
+        "h1": "More than a store. Your Commerce OS.",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in/pricing",
+        "width": 375,
+        "status": 200,
+        "lang": "en",
+        "h1": "Simple, transparent pricing",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in/resources/platform/building-first-letbuyy-store",
+        "width": 375,
+        "status": 200,
+        "lang": "en",
+        "h1": "Building Your First LetBuyy Store: A Complete Walkthrough",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in",
+        "width": 1366,
+        "status": 200,
+        "lang": "en",
+        "h1": "More than a store. Your Commerce OS.",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in/pricing",
+        "width": 1366,
+        "status": 200,
+        "lang": "en",
+        "h1": "Simple, transparent pricing",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in/resources/platform/building-first-letbuyy-store",
+        "width": 1366,
+        "status": 200,
+        "lang": "en",
+        "h1": "Building Your First LetBuyy Store: A Complete Walkthrough",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-hi",
+        "width": 375,
+        "status": 200,
+        "lang": "hi",
+        "h1": "स्टोर से बढ़कर। आपका कॉमर्स OS।",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-hi/pricing",
+        "width": 375,
+        "status": 200,
+        "lang": "hi",
+        "h1": "सरल और स्पष्ट कीमत",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+        "width": 375,
+        "status": 200,
+        "lang": "hi",
+        "h1": "अपना पहला LetBuyy स्टोर बनाएँ: पूरा मार्गदर्शन",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-hi",
+        "width": 1366,
+        "status": 200,
+        "lang": "hi",
+        "h1": "स्टोर से बढ़कर। आपका कॉमर्स OS।",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-hi/pricing",
+        "width": 1366,
+        "status": 200,
+        "lang": "hi",
+        "h1": "सरल और स्पष्ट कीमत",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+        "width": 1366,
+        "status": 200,
+        "lang": "hi",
+        "h1": "अपना पहला LetBuyy स्टोर बनाएँ: पूरा मार्गदर्शन",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-ta",
+        "width": 375,
+        "status": 200,
+        "lang": "ta",
+        "h1": "கடைக்கும் மேலாக. உங்கள் வணிக OS.",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-ta/pricing",
+        "width": 375,
+        "status": 200,
+        "lang": "ta",
+        "h1": "எளிய, வெளிப்படையான விலை",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+        "width": 375,
+        "status": 200,
+        "lang": "ta",
+        "h1": "உங்கள் முதல் LetBuyy கடை: முழு நடைமுறை வழிகாட்டி",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-ta",
+        "width": 1366,
+        "status": 200,
+        "lang": "ta",
+        "h1": "கடைக்கும் மேலாக. உங்கள் வணிக OS.",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-ta/pricing",
+        "width": 1366,
+        "status": 200,
+        "lang": "ta",
+        "h1": "எளிய, வெளிப்படையான விலை",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      },
+      {
+        "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+        "width": 1366,
+        "status": 200,
+        "lang": "ta",
+        "h1": "உங்கள் முதல் LetBuyy கடை: முழு நடைமுறை வழிகாட்டி",
+        "overflow": false,
+        "font_urls": [
+          "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+        ],
+        "errors": []
+      }
+    ],
+    "pricing": {
+      "marketing_status": 200,
+      "gateway_status": 200,
+      "marketing_plans": [
+        {
+          "slug": "launch",
+          "name": "Launch",
+          "founding_inr": 199,
+          "regular_inr": 299,
+          "status": "available",
+          "purchasable": true
+        },
+        {
+          "slug": "growth",
+          "name": "Growth",
+          "founding_inr": 699,
+          "regular_inr": 999,
+          "status": "available",
+          "purchasable": true
+        },
+        {
+          "slug": "scale",
+          "name": "Scale",
+          "founding_inr": 2499,
+          "regular_inr": 2499,
+          "status": "coming_soon",
+          "purchasable": false
+        },
+        {
+          "slug": "commerce_os",
+          "name": "Commerce OS",
+          "founding_inr": 5999,
+          "regular_inr": 5999,
+          "status": "coming_soon",
+          "purchasable": false
+        }
+      ],
+      "gateway_plans": [
+        {
+          "slug": "launch",
+          "name": "Launch",
+          "founding_inr": 199,
+          "regular_inr": 299,
+          "status": "available",
+          "purchasable": true
+        },
+        {
+          "slug": "growth",
+          "name": "Growth",
+          "founding_inr": 699,
+          "regular_inr": 999,
+          "status": "available",
+          "purchasable": true
+        },
+        {
+          "slug": "scale",
+          "name": "Scale",
+          "founding_inr": 2499,
+          "regular_inr": 2499,
+          "status": "coming_soon",
+          "purchasable": false
+        },
+        {
+          "slug": "commerce_os",
+          "name": "Commerce OS",
+          "founding_inr": 5999,
+          "regular_inr": 5999,
+          "status": "coming_soon",
+          "purchasable": false
+        }
+      ],
+      "remaining": {
+        "total_slots": 100,
+        "used_slots": 0,
+        "remaining_slots": 100,
+        "active": true,
+        "paused": false
+      }
+    },
+    "font": {
+      "status": 200,
+      "bytes": 44600,
+      "sha256": "4333e5b1fdb186a15ab1fce785e288ee3253393ae9b7e18c4bb5e3e23326881d"
+    },
+    "pass": true
+  },
+  "rollback": {
+    "root_reverse_check_exit": 0,
+    "isolated_apply_exit": 0,
+    "rows": [
+      {
+        "path": "apps/marketing/web/next.config.ts",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/layout.tsx",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "apps/marketing/web/src/app/[locale]/layout.tsx",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/i18n/CopyProvider.tsx",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/Header.tsx",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/Footer.tsx",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/FinalCTA.tsx",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "apps/marketing/web/src/components/resources/ArticleSidebar.tsx",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "apps/marketing/web/src/lib/pricing.ts",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "apps/marketing/web/public/fonts/README.md",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "packages/typescript/ui/src/icons.tsx",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "tests/marketing/pricing-delivery.test.ts",
+        "restored_original_bytes_or_removed_new_file": true
+      },
+      {
+        "path": "scripts/marketing/prepare-inter-weight-subset.py",
+        "restored_original_bytes_or_removed_new_file": true
+      }
+    ],
+    "binary_note": "The new font is not embedded in the text patch. Its owned path/hash is recorded separately; reverting the layout restores the retained original font."
+  },
+  "metadata_corrections": [
+    {
+      "file": "visual-comparison.json",
+      "old_method": "Frozen task-start production baseline9046 versus final repaired source build9048; natural scrolling first reveals progressive sections, then content-visibility:auto is disabled only for a complete full-page visual/copy capture; independent natural viewport comparisons retain it; fixed reduced-motion light/dark viewports; all art explicitly decoded and all sections fully revealed for visual capture; pixel differences from responsive codec changes retained separately from structural equality; IMG computed color is excluded because next/image adds color:transparent to an otherwise identical external SVG; SVG label geometry is included; progressive previews revealed by real scrolling",
+      "corrected_method": "Frozen task-start baseline9049 versus retained source build9048. Reduced-motion light/dark responsive captures, art/fonts decoded; natural scrolling reveals progressive sections, then content-visibility is disabled only for full-page comparison. Geometry, copy and sampled styles are checked; pixel differences are reported separately. Independent natural-scroll comparisons retain content-visibility.",
+      "reason": "Copied harness label referenced the earlier task port; actual capture calls used baseline9049 and candidate9048. Measurements and rows are unchanged."
+    },
+    {
+      "file": "ratio-fix-visual.json",
+      "old_method": "Frozen task-start production baseline9046 versus final repaired source build9048; natural scrolling first reveals progressive sections, then content-visibility:auto is disabled only for a complete full-page visual/copy capture; independent natural viewport comparisons retain it; fixed reduced-motion light/dark viewports; all art explicitly decoded and all sections fully revealed for visual capture; pixel differences from responsive codec changes retained separately from structural equality; IMG computed color is excluded because next/image adds color:transparent to an otherwise identical external SVG; SVG label geometry is included; progressive previews revealed by real scrolling",
+      "corrected_method": "Frozen task-start baseline9049 versus retained source build9048. Reduced-motion light/dark responsive captures, art/fonts decoded; natural scrolling reveals progressive sections, then content-visibility is disabled only for full-page comparison. Geometry, copy and sampled styles are checked; pixel differences are reported separately. Independent natural-scroll comparisons retain content-visibility.",
+      "reason": "Copied harness label referenced the earlier task port; actual capture calls used baseline9049 and candidate9048. Measurements and rows are unchanged."
+    }
+  ],
+  "closing_checks": {
+    "captured_at": "2026-11-01T09:11:56.227206+00:00",
+    "service_cleanup": {
+      "captured_at": "2026-11-01T09:11:56.227206+00:00",
+      "listeners": {
+        "9006": true,
+        "9010": true,
+        "9002": true,
+        "9048": false,
+        "9049": false,
+        "9050": false,
+        "9051": false
+      },
+      "health": [
+        {
+          "url": "http://127.0.0.1:9006/in/pricing",
+          "final_url": "http://127.0.0.1:9006/in/pricing",
+          "status": 200,
+          "bytes": 492213
+        },
+        {
+          "url": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+          "final_url": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+          "status": 200,
+          "bytes": 399346
+        },
+        {
+          "url": "http://127.0.0.1:9010/v1/pricing",
+          "final_url": "http://127.0.0.1:9010/v1/pricing",
+          "status": 200,
+          "bytes": 76636
+        },
+        {
+          "url": "http://127.0.0.1:9002/login",
+          "final_url": "http://127.0.0.1:9002/login",
+          "status": 200,
+          "bytes": 224659
+        }
+      ],
+      "review_listeners_stopped": true,
+      "normal_stack_left_running": true,
+      "no_deployment": true
+    },
+    "source_receipt": {
+      "captured_at": "2026-11-01T09:11:56.227206+00:00",
+      "source_files_checked": 424,
+      "mismatches": [],
+      "branch": "codex/local-work-preserved-20261025",
+      "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+      "root_source_unchanged_since_full_verification": true,
+      "new_trials_isolated_only": true
+    },
+    "discarded_additional_trials": [
+      "inline-art-metrics",
+      "sync-decode-metrics"
+    ],
+    "lantern_graph_reproduced_guide_lcp_ms": 3757.656
+  }
+}

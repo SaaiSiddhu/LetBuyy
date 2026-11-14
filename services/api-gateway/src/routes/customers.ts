@@ -1,13 +1,11 @@
-import { formatEmailSender } from '@letbuyy/notification-core/email';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import { emailProviderConfigured, escapeHtml } from '../lib/customer-email';
 import { customerCursorPage, orderCustomerSummaries } from '../lib/customer-pagination';
-import { customerSortedPage } from '../lib/customer-pagination';
 import { cursorPaginated, getSupabaseAdmin, paginated, success } from '../lib/supabase';
-import { resolveOwnedStoreScope, resolveMerchantResourceStoreIds } from '../lib/tenant-context';
+import { resolveOwnedStoreScope } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import {
     CreateCustomerSchema,
@@ -131,57 +129,52 @@ async function loadStoreCustomerRows(
     db: ReturnType<typeof getSupabaseAdmin>,
     storeId: string,
 ) {
-    const readPages = async (includeDeletedAtFilter: boolean) => {
-        const rows: StoreCustomerRecord[] = [];
-        const batchSize = 1000;
-        for (let offset = 0; ; offset += batchSize) {
-            let query = db
-                .from('store_customers')
-                .select('id,email,full_name,phone,status,total_orders,total_spent,accepts_marketing,tags,created_at,last_order_at')
-                .eq('store_id', storeId)
-                .order('last_order_at', { ascending: false, nullsFirst: false })
-                .order('id', { ascending: true })
-                .range(offset, offset + batchSize - 1);
-            if (includeDeletedAtFilter) query = query.is('deleted_at', null);
-            const { data, error } = await query;
-            if (error) return { data: [] as StoreCustomerRecord[], error };
-            rows.push(...(data || []) as StoreCustomerRecord[]);
-            if (!data || data.length < batchSize) return { data: rows, error: null };
-        }
+    const buildQuery = (includeDeletedAtFilter: boolean) => {
+        let query = db
+            .from('store_customers')
+            .select('id,email,full_name,phone,status,total_orders,total_spent,accepts_marketing,tags,created_at,last_order_at')
+            .eq('store_id', storeId)
+            .order('last_order_at', { ascending: false, nullsFirst: false })
+            .limit(5000);
+
+        if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+        return query;
     };
 
-    let result = await readPages(true);
-    if (isMissingColumnError(result.error, 'deleted_at')) result = await readPages(false);
-    if (isMissingTableError(result.error, 'store_customers')) return { data: [] as StoreCustomerRecord[], error: null };
-    return result;
+    let { data, error } = await buildQuery(true);
+    if (isMissingColumnError(error, 'deleted_at')) {
+        ({ data, error } = await buildQuery(false));
+    }
+
+    if (isMissingTableError(error, 'store_customers')) {
+        return { data: [] as StoreCustomerRecord[], error: null };
+    }
+
+    return { data: (data || []) as StoreCustomerRecord[], error };
 }
 
 async function loadCustomerOrderRows(
     db: ReturnType<typeof getSupabaseAdmin>,
     storeId: string,
 ) {
-    const readPages = async (includeDeletedAtFilter: boolean) => {
-        const rows: CustomerOrderRecord[] = [];
-        const batchSize = 1000;
-        for (let offset = 0; ; offset += batchSize) {
-            let query = db
-                .from('orders')
-                .select('id,customer_email,customer_name,customer_phone,total,created_at')
-                .eq('store_id', storeId)
-                .order('created_at', { ascending: false })
-                .order('id', { ascending: true })
-                .range(offset, offset + batchSize - 1);
-            if (includeDeletedAtFilter) query = query.is('deleted_at', null);
-            const { data, error } = await query;
-            if (error) return { data: [] as CustomerOrderRecord[], error };
-            rows.push(...(data || []) as CustomerOrderRecord[]);
-            if (!data || data.length < batchSize) return { data: rows, error: null };
-        }
+    const buildQuery = (includeDeletedAtFilter: boolean) => {
+        let query = db
+            .from('orders')
+            .select('id,customer_email,customer_name,customer_phone,total,created_at')
+            .eq('store_id', storeId)
+            .order('created_at', { ascending: false })
+            .limit(5000);
+
+        if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+        return query;
     };
 
-    let result = await readPages(true);
-    if (isMissingColumnError(result.error, 'deleted_at')) result = await readPages(false);
-    return result;
+    let { data, error } = await buildQuery(true);
+    if (isMissingColumnError(error, 'deleted_at')) {
+        ({ data, error } = await buildQuery(false));
+    }
+
+    return { data: (data || []) as CustomerOrderRecord[], error };
 }
 
 async function hasOwnedStoreScope(c: CustomerRouteContext, storeId: string): Promise<boolean> {
@@ -357,35 +350,18 @@ router.get('/', validate('query', ListCustomersQuery), async (c) => {
     }
 
     const tag = q.tag?.trim().toLowerCase();
-    const now = Date.now();
     const summaries = orderCustomerSummaries(summariesResult.summaries
         .filter((customer) => matchesCustomerSearch(customer, q.search))
         .filter((customer) => !tag || customer.tags.some((value) => value.toLowerCase() === tag))
-        .filter((customer) => q.has_orders === undefined || (q.has_orders ? customer.total_orders > 0 : customer.total_orders === 0))
-        .filter((customer) => {
-            switch (q.view) {
-                case 'active': return ['active', 'enabled'].includes(customer.status.toLowerCase());
-                case 'has-orders': return customer.total_orders > 0;
-                case 'high-value': return customer.total_spent >= 5000;
-                case 'new': {
-                    const createdAt = customer.created_at ? Date.parse(customer.created_at) : NaN;
-                    return Number.isFinite(createdAt) && createdAt <= now && now - createdAt <= 30 * 24 * 60 * 60 * 1000;
-                }
-                default: return true;
-            }
-        }), q.sort, q.order);
+        .filter((customer) => q.has_orders === undefined || (q.has_orders ? customer.total_orders > 0 : customer.total_orders === 0)));
 
-    const customOrder = Boolean(q.sort || q.order === 'asc');
-    const page = customOrder
-        ? customerSortedPage(summaries, { cursor: q.cursor, page: q.page, limit: q.limit, sort: q.sort || 'last_order_at', order: q.order || 'desc' })
-        : customerCursorPage(summaries, q);
-    const result = cursorPaginated(page.rows.map((summary) => customerSummaryPayload(summary, storeId)), {
+    const page = customerCursorPage(summaries, q);
+    return c.json(cursorPaginated(page.rows.map((summary) => customerSummaryPayload(summary, storeId)), {
         page: q.page,
         limit: q.limit,
         total: q.withCount ? summaries.length : null,
         nextCursor: page.nextCursor,
-    });
-    return c.json(result);
+    }));
 });
 
 router.post('/', validate('json', CreateCustomerSchema), async (c) => {
@@ -498,12 +474,11 @@ router.patch('/segments/:id', validate('json', UpdateCustomerSegmentSchema), asy
     const id = c.req.param('id');
     const body = c.get('validatedBody') as UpdateCustomerSegmentInput;
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
 
     const { data: existing, error: existingError } = await db
         .from('customer_segments')
         .select('id,store_id,rules')
-        .eq('id', id).in('store_id', storeIds)
+        .eq('id', id)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -526,7 +501,7 @@ router.patch('/segments/:id', validate('json', UpdateCustomerSegmentSchema), asy
     const { data, error } = await db
         .from('customer_segments')
         .update(updates)
-        .eq('id', id).in('store_id', storeIds)
+        .eq('id', id)
         .eq('store_id', existingSegment.store_id)
         .select('id,store_id,name,description,rules,created_by,updated_by,deleted_by,created_at,updated_at,deleted_at')
         .single();
@@ -913,7 +888,7 @@ router.post('/:email/email', validate('json', SendCustomerEmailSchema), async (c
     const html = `<p>${escapeHtml(body.message).replaceAll('\n', '<br>')}</p>`;
     const result = await sendResendEmail({
         apiKey: c.env.RESEND_API_KEY,
-        from: formatEmailSender(c.env.RESEND_FROM_EMAIL),
+        from: `LetBuyy <${c.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.com'}>`,
         to: email,
         subject: body.subject,
         html,
@@ -1333,13 +1308,12 @@ router.patch('/:email/addresses/:id', async (c) => {
     const addressId = c.req.param('id');
     const body = await c.req.json() as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: existing } = await db
         .from('customer_addresses')
         .select('store_id')
-        .eq('id', addressId).in('store_id', storeIds)
+        .eq('id', addressId)
         .eq('customer_email', email)
         .single();
 
@@ -1379,13 +1353,12 @@ router.delete('/:email/addresses/:id', async (c) => {
     const email = decodeURIComponent(c.req.param('email'));
     const addressId = c.req.param('id');
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: existing } = await db
         .from('customer_addresses')
         .select('store_id')
-        .eq('id', addressId).in('store_id', storeIds)
+        .eq('id', addressId)
         .eq('customer_email', email)
         .single();
 
@@ -1394,7 +1367,7 @@ router.delete('/:email/addresses/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const { error } = await db.from('customer_addresses').delete().eq('id', addressId).in('store_id', storeIds);
+    const { error } = await db.from('customer_addresses').delete().eq('id', addressId);
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);

@@ -1,0 +1,87 @@
+{
+  "events": [
+    {
+      "type": "pointerdown",
+      "button": 0,
+      "primary": true,
+      "x": 290,
+      "y": 215.078125,
+      "target": "cmap-panel-visual"
+    },
+    {
+      "type": "pointermove",
+      "button": -1,
+      "primary": true,
+      "x": 268.75,
+      "y": 215.078125,
+      "target": "cmap-panel-visual"
+    },
+    {
+      "type": "pointermove",
+      "button": -1,
+      "primary": true,
+      "x": 247.5,
+      "y": 215.078125,
+      "target": "cmap-desktop-panel cmap-carousel"
+    },
+    {
+      "type": "pointermove",
+      "button": -1,
+      "primary": true,
+      "x": 226.25,
+      "y": 215.078125,
+      "target": "cmap-desktop-panel cmap-carousel"
+    },
+    {
+      "type": "pointermove",
+      "button": -1,
+      "primary": true,
+      "x": 205,
+      "y": 215.078125,
+      "target": "cmap-desktop-panel cmap-carousel"
+    },
+    {
+      "type": "pointermove",
+      "button": -1,
+      "primary": true,
+      "x": 183.75,
+      "y": 215.078125,
+      "target": "cmap-desktop-panel cmap-carousel"
+    },
+    {
+      "type": "pointermove",
+      "button": -1,
+      "primary": true,
+      "x": 162.5,
+      "y": 215.078125,
+      "target": "cmap-desktop-panel cmap-carousel"
+    },
+    {
+      "type": "pointermove",
+      "button": -1,
+      "primary": true,
+      "x": 141.25,
+      "y": 215.078125,
+      "target": "cmap-desktop-panel cmap-carousel"
+    },
+    {
+      "type": "pointermove",
+      "button": -1,
+      "primary": true,
+      "x": 120,
+      "y": 215.078125,
+      "target": "cmap-desktop-panel cmap-carousel"
+    },
+    {
+      "type": "pointerup",
+      "button": 0,
+      "primary": true,
+      "x": 120,
+      "y": 215.078125,
+      "target": "cmap-desktop-panel cmap-carousel"
+    }
+  ],
+  "scrollY": 1129,
+  "active": "Orders: Orders",
+  "touchAction": "pan-y pinch-zoom"
+}

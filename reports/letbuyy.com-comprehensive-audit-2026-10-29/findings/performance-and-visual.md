@@ -1,0 +1,13 @@
+# Performance, mobile and accessibility evidence
+
+PSI mobile and desktop returned rate-limit errors; the documented four-route Unlighthouse attempt timed out after 240 seconds without scores. No Lighthouse category score, Lighthouse Agentic Browsing X/N, CrUX percentile or field INP is available.
+
+Six cold-context headless Chromium observations cover homepage, pricing and GST article, each desktop/mobile. Network and CPU were unthrottled, one run each, six seconds of observation. These are diagnostic browser measurements, not representative field CWV or a reproducible mobile benchmark. Last LCP candidates ranged 552–1052 ms in these conditions. Per-entry shift sums are diagnostics and do not implement the CLS session-window algorithm. No good/poor field verdict is assigned. See [measurement summary](../evidence/browser-performance-summary.json).
+
+The homepage has 16 image preloads and 22 eager images, including lower sections. All 489 locale pages together have 4,413 image occurrences, 95 distinct src URLs, 0 missing alt attributes and0missing dimension pairs. Emptyalt is common on decorative/redundant art and is not automatically wrong. Sixteen image assets were probed for bytes/format/dimensions; the512px organization PNG is225263bytes, a compression opportunity that does not prove an LCP issue.
+
+Twenty-three rendered samples cover every major template plus Tamil/Hindi homepages. Five English templates were also inspected at 375 × 812. All23samples have no document horizontal overflow at their tested viewport. Visual screenshots were inspected for the mobile homepage, pricing and contact. The mobile hero H1 begins around y=432; large art precedes the promise. The header CTA remains visible. This is a prioritization hypothesis, not evidence of lost conversions.
+
+The mobile menu opens and Escape closes it in the measured browser sample. Contact initial-step inputs have associated visible labels or the country selector aria label. The component uses client-side step controls rather than a native form; no conclusion of broken submission follows from absence of a form tag. Empty inputs were not submitted and no personal data was entered. All required-state, keyboard/error/recovery paths are not certified.
+
+The installed agent-UX helper returned 100/100, 75 interactive nodes, 0 unnamed interactive nodes in its homepage sample. This is that tool’s local heuristic, not a WCAG score, whole-site guarantee or Lighthouse Agentic Browsing fraction. HTTP access checks include unverified user-agent requests; successful responses do not prove actual bot identity/indexing/citations. See [agent evidence](../evidence/agent-http.json) and [heuristic output](../evidence/agent-ux.json).

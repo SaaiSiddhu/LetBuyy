@@ -1,0 +1,53 @@
+{
+  "captured_at": "2026-10-29T23:54:18.282612+00:00",
+  "build_id": "WjJdSfSpKMd1zGzQOhDXJ",
+  "method": "Actual DevTools network/CPU throttling; separate from the default simulated Lantern model; no field data",
+  "rows": [
+    {
+      "name": "tamil-home",
+      "path": "/in-ta",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.83,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2659.608,
+      "cls": 0,
+      "tbt_ms": 304.1439999961858,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    },
+    {
+      "name": "tamil-home-repeat",
+      "path": "/in-ta",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.87,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2020.993,
+      "cls": 0,
+      "tbt_ms": 338.38899999999967,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "method": "devtools"
+    }
+  ]
+}

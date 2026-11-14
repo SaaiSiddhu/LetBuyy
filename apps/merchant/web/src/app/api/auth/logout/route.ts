@@ -25,9 +25,6 @@ export async function POST() {
                     Origin: getAdminUrl(),
                 },
                 cache: 'no-store',
-                // Revocation is already best effort on network failure. Bound
-                // this wait so clearing the local cookie cannot hang forever.
-                signal: AbortSignal.timeout(5_000),
             }).catch(() => null)
         }
 
@@ -50,12 +47,13 @@ export async function POST() {
         return NextResponse.json({
             success: true,
             redirectTo: getAccountsUrl('/lookup'),
-        }, { headers: { 'Cache-Control': 'private, no-store' } })
+        })
     } catch (error) {
         console.error('Logout error:', error)
+        // Even if DB delete fails, still redirect
         return NextResponse.json({
-            success: false,
-            error: { code: 'LOGOUT_UNCONFIRMED', message: 'Session cleanup could not be confirmed.' },
-        }, { status: 503, headers: { 'Cache-Control': 'private, no-store' } })
+            success: true,
+            redirectTo: getAccountsUrl('/lookup'),
+        })
     }
 }

@@ -87,6 +87,7 @@ import operationsRbacRouter from './routes/operations/rbac';
 import operationsIncidentCommandRouter from './routes/operations/incident-command';
 import operationsRiskRouter from './routes/operations/risk';
 import operationsSupportRouter from './routes/operations/support';
+import merchantSupportRouter from './routes/merchant-support';
 import operationsTrustSafetyRouter from './routes/operations/trust-safety';
 import internalConsoleRouter from './routes/internal-console';
 import internalOperatorIdentityRouter from './routes/internal-operator-identity';
@@ -95,7 +96,6 @@ import internalEventsRouter from './routes/internal-events';
 import domainsRouter from './routes/domains';
 import customDomainsRouter, { storeAccessRouter } from './routes/custom-domains';
 import internalCustomDomainReconcileRouter from './routes/internal-custom-domain-reconcile';
-import internalNotificationJobsRouter from './routes/internal-notification-jobs';
 import internalStoreAccessRouter from './routes/internal-store-access';
 import { createAdminGraphQLRouter } from './graphql/admin';
 import { createStorefrontGraphQLRouter } from './graphql/storefront';
@@ -225,8 +225,6 @@ export interface Env {
     REGISTRAR_SANDBOX_ENABLED?: string;
     CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
     TURNSTILE_SECRET_KEY?: string;
-    /** Account-scoped management credential; separate from the Siteverify secret. */
-    TURNSTILE_DOMAIN_MANAGEMENT?: string;
     LETBUYY_KMS_MODE?: 'sandbox' | 'live';
     LETBUYY_KMS_SANDBOX_SECRET?: string;
     LETBUYY_KMS_KEY_ID?: string;
@@ -239,9 +237,6 @@ export interface Env {
     QUEUE_TENANT_ENVELOPE_SECRET?: string;
     WORKER_INTERNAL_API_SECRET?: string;
     INTERNAL_GATEWAY_IP_ALLOWLIST?: string;
-    INTERNAL_API_KEYRING?: string;
-    STOREFRONT_INTERNAL_PERIMETER?: string;
-    STOREFRONT_INTERNAL_REQUEST_KEYRING?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
     PLATFORM_CONSOLE_SESSION_SECRET?: string;
     ASSET_PUBLIC_BASE_URL?: string;
@@ -810,7 +805,6 @@ api.route('/internal/founding', internalFoundingRouter);
 api.route('/internal/events', internalEventsRouter);
 api.route('/internal/store-access', internalStoreAccessRouter);
 api.route('/internal/custom-domain-reconcile', internalCustomDomainReconcileRouter);
-api.route('/internal/notification-jobs', internalNotificationJobsRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);
@@ -847,6 +841,7 @@ api.route('/wallet', walletRouter);
 api.route('/commission', commissionRouter);
 api.route('/settlements', settlementsRouter);
 api.route('/billing', billingRouter);
+api.route('/merchant/support', merchantSupportRouter);
 api.route('/founding', foundingRouter);
 api.route('/security', securityRouter);
 api.route('/cod', codReconciliationRouter);

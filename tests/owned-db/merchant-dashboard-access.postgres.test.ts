@@ -49,9 +49,8 @@ async function fixture(grants: string[] = ['reports:read']) {
       }} } as never);
       return {status:response.status,json:await response.json() as {data?:{partial_errors?:{key:string;status:number}[];analytics?:Record<string,unknown>}}};
     };
-    const readUnpaced = async (path: string, extra: Record<string,unknown> = {}, bound?: string, asOwner=false) => gateway.request(path,{
+    const read = async (path: string, extra: Record<string,unknown> = {}, bound?: string, asOwner=false) => gateway.request(path,{
       headers:await signedIdentityHeaders(asOwner?owner:staff,asOwner?ownerEmail:staffEmail,bound)},gatewayEnv(owned,keys,extra));
-    const read=async(...args:Parameters<typeof readUnpaced>)=>{await new Promise(done=>setTimeout(done,550));return readUnpaced(...args);};
     return {tenant,other,owner,staff,memberId:member.json?.data.id,gateway,keys,ownerToken,staffToken,seen,composite,read};
 }
 
@@ -100,7 +99,6 @@ test('live grant removal, disabled, inactive, deleted and removed membership den
   for(const change of ["permissions='{\"granted\":[]}'::jsonb",'is_active=false',"status='invited'", "status='disabled'",'deleted_at=now()',"status='removed',is_active=false"]) {
     owned.psql(`UPDATE employees SET ${change} WHERE id='${j.memberId}';`);
     assert.equal((await j.read(path)).status,403,change);
-    await new Promise(done=>setTimeout(done,5000));
     const revoked=await j.composite(j.staffToken);assert.equal(revoked.status,502,change);
     assert.ok(j.seen.slice(-6).every(hop=>hop.status===403),'retained merchant session cannot bypass live membership denial');
     owned.psql(`UPDATE employees SET permissions='{"granted":["reports:read"]}'::jsonb,is_active=true,status='active',deleted_at=NULL WHERE id='${j.memberId}';`);

@@ -1,0 +1,42 @@
+{
+  "captured_at": "2026-10-29T20:32:09.316Z",
+  "rows": [
+    {
+      "run": "8b06b211a780",
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "run": "cd701afb0698",
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "run": "9e18e8324e96",
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "run": "bcabbbdf6bb2",
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "run": "bebef96311c1",
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    {
+      "run": "065945b2aac3",
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  ],
+  "passed": true
+}

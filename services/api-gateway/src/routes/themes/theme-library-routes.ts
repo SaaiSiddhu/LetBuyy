@@ -33,10 +33,71 @@ import {
     type DuplicateSiteThemeInput,
     type RenameSiteThemeInput,
 } from '../../schemas/theme.schema';
+import { applyStorePlanTierDefaults, type BillingPlanCatalogRecord } from '@letbuyy/billing-core';
 import { ThemeExecutionAdapter } from '../../execution/theme-execution.adapter';
 
-import { countInstalledSiteThemes, resolveStoreThemeLimit } from '../../lib/theme-library-limits';
-export { countInstalledSiteThemes, resolveStoreThemeLimit } from '../../lib/theme-library-limits';
+interface StoreThemeLimit {
+    limit: number | null;
+    plan_name: string;
+}
+
+export async function resolveStoreThemeLimit(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    storeId: string,
+): Promise<StoreThemeLimit> {
+    const { data: site } = await db
+        .from('sites')
+        .select('site_type')
+        .eq('id', storeId)
+        .maybeSingle();
+    const siteType = typeof site?.site_type === 'string' && site.site_type ? site.site_type : 'store';
+
+    const { data: sub } = await db
+        .from('subscriptions')
+        .select('plan')
+        .eq('store_id', storeId)
+        .in('status', ['active', 'past_due', 'failed'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+    const slug = typeof sub?.plan === 'string' && sub.plan ? sub.plan : 'free';
+
+    const { data: planRow } = await db
+        .from('plans')
+        .select('*')
+        .eq('site_type', siteType)
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .maybeSingle();
+
+    const plan = applyStorePlanTierDefaults(
+        (planRow as BillingPlanCatalogRecord) ||
+            ({ slug, site_type: siteType, name: slug } as unknown as BillingPlanCatalogRecord),
+    );
+
+    const rawThemeLimit = (plan.limits as Record<string, unknown> | null | undefined)?.themes;
+    const themeLimit = rawThemeLimit === null || rawThemeLimit === undefined
+        ? null
+        : Number(rawThemeLimit);
+
+    return {
+        limit: Number.isFinite(themeLimit) ? themeLimit : null,
+        plan_name: plan.name || slug,
+    };
+}
+
+export async function countInstalledSiteThemes(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    storeId: string,
+): Promise<number> {
+    const { count } = await db
+        .from('theme_instances')
+        .select('id', { count: 'exact', head: true })
+        .eq('store_id', storeId)
+        .not('instance_status', 'in', '(archived,deleted)')
+        .is('deleted_at', null);
+    return count || 0;
+}
 
 function getRequestId(c: Context<{ Bindings: Env }>): string {
     return c.req.header('x-request-id') || crypto.randomUUID();
@@ -96,12 +157,12 @@ export function mountThemeLibraryRoutes(router: Hono<{ Bindings: Env }>) {
         // Runs after ownership is confirmed so billing info is only visible to the owner.
         const { limit, plan_name } = await resolveStoreThemeLimit(db, body.store_id);
         if (limit !== null) {
-            const used = await countInstalledSiteThemes(db, body.store_id, customUser.id);
+            const used = await countInstalledSiteThemes(db, body.store_id);
             if (used >= limit) {
                 return c.json({
                     error: {
                         code: 'THEME_LIMIT_REACHED',
-                        message: `Your ${plan_name} plan allows up to ${limit} custom theme(s). The ten included themes do not use these slots. Archive a custom theme or upgrade to add more.`,
+                        message: `Your ${plan_name} plan allows up to ${limit} theme(s). Upgrade to add more.`,
                         details: { limit, used, plan_name },
                     },
                 }, 409);
@@ -143,12 +204,12 @@ export function mountThemeLibraryRoutes(router: Hono<{ Bindings: Env }>) {
 
         const { limit, plan_name } = await resolveStoreThemeLimit(db, body.store_id);
         if (limit !== null) {
-            const used = await countInstalledSiteThemes(db, body.store_id, customUser.id);
+            const used = await countInstalledSiteThemes(db, body.store_id);
             if (used >= limit) {
                 return c.json({
                     error: {
                         code: 'THEME_LIMIT_REACHED',
-                        message: `Your ${plan_name} plan allows up to ${limit} custom theme(s). The ten included themes do not use these slots. Archive a custom theme or upgrade to add more.`,
+                        message: `Your ${plan_name} plan allows up to ${limit} theme(s). Upgrade to add more.`,
                         details: { limit, used, plan_name },
                     },
                 }, 409);

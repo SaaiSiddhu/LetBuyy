@@ -1,0 +1,2590 @@
+{
+  "capturedAt": "2026-11-03T02:29:46.775036+00:00",
+  "rows": [
+    {
+      "url": "https://www.letbuyy.com/robots.txt",
+      "capturedAt": "2026-11-03T02:29:35.497031+00:00",
+      "status": 200,
+      "finalUrl": "https://www.letbuyy.com/robots.txt",
+      "redirectChain": [],
+      "bytes": 232,
+      "seconds": 0.777,
+      "headers": {
+        "Age": "149106",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "Content-Type": "text/plain",
+        "Etag": "\"67798cb48f3830ce2df066a6b004f65c\"",
+        "Server": "Vercel",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "X-Vercel-Cache": "HIT",
+        "X-Vercel-Id": "bom1::tdns2-1793672975910-b870e3e165fd"
+      },
+      "sha256": "accf36c701c4b78b1e8230a75a2314a99258a9a7a9876d2e856055c4238877c7",
+      "robotsText": "User-Agent: *\nAllow: /\nDisallow: /signup\n\nSitemap: https://www.letbuyy.com/sitemap.xml\nSitemap: https://themes.letbuyy.com/sitemap.xml\nSitemap: https://apps.letbuyy.com/sitemap.xml\nSitemap: https://developer.letbuyy.com/sitemap.xml\n"
+    },
+    {
+      "url": "https://www.letbuyy.com/sitemap.xml",
+      "capturedAt": "2026-11-03T02:29:36.430513+00:00",
+      "status": 200,
+      "finalUrl": "https://www.letbuyy.com/sitemap.xml",
+      "redirectChain": [],
+      "bytes": 56457,
+      "seconds": 0.356,
+      "headers": {
+        "Age": "147496",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "Content-Type": "application/xml",
+        "Etag": "\"1995886045c476d746227caba45c680b\"",
+        "Server": "Vercel",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "X-Vercel-Cache": "HIT",
+        "X-Vercel-Id": "bom1::bgnv4-1793672976661-3f38ded762f1"
+      },
+      "sha256": "30db1d920db70fbd06bd6ebb9fcb8d2c925f3d025b25a2015af510d506b600c3"
+    },
+    {
+      "url": "https://www.letbuyy.com/in",
+      "capturedAt": "2026-11-03T02:29:36.942346+00:00",
+      "status": 200,
+      "finalUrl": "https://www.letbuyy.com/in",
+      "redirectChain": [],
+      "bytes": 346763,
+      "seconds": 1.826,
+      "headers": {
+        "Age": "148448",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "Content-Type": "text/html; charset=utf-8",
+        "Etag": "\"ee98dc851b63bded2e2862e4156cb55f\"",
+        "Server": "Vercel",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "X-Vercel-Cache": "HIT",
+        "X-Vercel-Id": "bom1::jw9hf-1793672977191-0a42306f1e1d"
+      },
+      "sha256": "ea1b8d28ac75b5233f627f266da039cb0acf437425d01fc67c77eba5ce48865e",
+      "title": "LetBuyy \u2014 India-first commerce operating system | LetBuyy",
+      "lang": "en",
+      "canonical": [
+        "https://www.letbuyy.com/in"
+      ],
+      "hreflang": [
+        {
+          "lang": "en-IN",
+          "href": "https://www.letbuyy.com/in"
+        },
+        {
+          "lang": "ta-IN",
+          "href": "https://www.letbuyy.com/in-ta"
+        },
+        {
+          "lang": "hi-IN",
+          "href": "https://www.letbuyy.com/in-hi"
+        },
+        {
+          "lang": "x-default",
+          "href": "https://www.letbuyy.com/in"
+        }
+      ],
+      "mainCount": 1,
+      "h1": "More than a store.   Your Commerce OS.",
+      "meta": {
+        "": null,
+        "viewport": "width=device-width, initial-scale=1",
+        "next-size-adjust": "",
+        "description": "Launch an online store in India with UPI, cash on delivery, GST invoices and shipping built in. 0% commission on your sales.",
+        "application-name": "LetBuyy",
+        "author": "LetBuyy",
+        "keywords": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace",
+        "creator": "LetBuyy",
+        "publisher": "LetBuyy",
+        "robots": "index, follow",
+        "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+        "category": "commerce platform",
+        "og:title": "LetBuyy \u2014 India-first commerce operating system",
+        "og:description": "Launch an online store in India with UPI, cash on delivery, GST invoices and shipping built in. 0% commission on your sales.",
+        "og:locale": "en_IN",
+        "twitter:card": "summary_large_image",
+        "twitter:title": "LetBuyy - India-first commerce operating system",
+        "twitter:description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+        "twitter:image": "https://www.letbuyy.com/og/letbuyy-default.png"
+      },
+      "links": [
+        "/in",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/developers",
+        "/in/pricing",
+        "https://accounts.letbuyy.com/lookup",
+        "https://accounts.letbuyy.com/signup",
+        "https://accounts.letbuyy.com/signup",
+        "https://accounts.letbuyy.com/signup",
+        "#capabilities",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/operations/order-fulfillment-guide",
+        "/in/resources/growth/email-marketing-ecommerce",
+        "https://accounts.letbuyy.com/signup",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/developers",
+        "/in/pricing",
+        "https://accounts.letbuyy.com/signup",
+        "/in/demo",
+        "/in",
+        "/in",
+        "/in/pricing",
+        "/in/create",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/developers",
+        "https://accounts.letbuyy.com/lookup",
+        "/in/resources",
+        "/in/resources/ecommerce",
+        "/in/resources/developers",
+        "/in/resources/changelog",
+        "/in/support",
+        "/in/contact",
+        "/in/legal/grievance",
+        "/in/legal/security",
+        "https://accounts.letbuyy.com/lookup",
+        "/in/legal",
+        "/in/legal/terms",
+        "/in/legal/privacy",
+        "/in/legal/refunds",
+        "/in/sitemap",
+        "https://www.facebook.com/share/14tEGNoJSXR/",
+        "https://x.com/letbuyyhq",
+        "https://youtube.com/@letbuyyhq",
+        "https://www.instagram.com/letbuyyhq"
+      ],
+      "scripts": [
+        "/_next/static/chunks/fee3e60c-aa3ab2d59836057c.js",
+        "/_next/static/chunks/6030-729d5479b4c2b3b5.js",
+        "/_next/static/chunks/main-app-a5f2984222edc062.js",
+        "/_next/static/chunks/2176-f320e6740e4fc981.js",
+        "/_next/static/chunks/4419-ca6f174d77088d11.js",
+        "/_next/static/chunks/app/layout-2e62e482bcb79ae2.js",
+        "/_next/static/chunks/7986-9309bf7cb6a7b30a.js",
+        "/_next/static/chunks/8364-cb6b0810e2a244c3.js",
+        "/_next/static/chunks/9894-7c700046c5b2ad58.js",
+        "/_next/static/chunks/9731-21f967b8d31df952.js",
+        "/_next/static/chunks/928-b27011242e460642.js",
+        "/_next/static/chunks/1848-fc69f82615ee7454.js",
+        "/_next/static/chunks/8947-216731afb483e518.js",
+        "/_next/static/chunks/9480-948b93a20db6b17a.js",
+        "/_next/static/chunks/1911-68b1dc1b87097be6.js",
+        "/_next/static/chunks/6564-637acf0f0d32c6c0.js",
+        "/_next/static/chunks/app/%5Blocale%5D/page-591ea0c2ac49fd46.js",
+        "/_next/static/chunks/app/%5Blocale%5D/layout-454049c42c09d054.js",
+        "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+        "/_next/static/chunks/webpack-2939bc8b3035161a.js"
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://www.letbuyy.com/#organization",
+              "name": "LetBuyy",
+              "legalName": "LetBuyy",
+              "alternateName": [
+                "Let Buyy",
+                "Letbuyy",
+                "LetBuyy Commerce"
+              ],
+              "url": "https://www.letbuyy.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.letbuyy.com/icons/letbuyy-logo-512.png",
+                "width": 512,
+                "height": 512
+              },
+              "image": "https://www.letbuyy.com/og/letbuyy-default.png",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "slogan": "India-first commerce operating system",
+              "email": "support@letbuyy.com",
+              "foundingLocation": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "areaServed": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "knowsLanguage": [
+                "en",
+                "hi",
+                "ta"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "customer support",
+                "email": "support@letbuyy.com",
+                "areaServed": "IN",
+                "availableLanguage": [
+                  "en",
+                  "hi",
+                  "ta"
+                ]
+              },
+              "sameAs": [
+                "https://www.instagram.com/letbuyyhq",
+                "https://x.com/letbuyyhq",
+                "https://youtube.com/@letbuyyhq",
+                "https://www.facebook.com/share/14tEGNoJSXR/"
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.letbuyy.com/#website",
+              "name": "LetBuyy",
+              "url": "https://www.letbuyy.com",
+              "inLanguage": "en-IN",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "hasPart": [
+                {
+                  "@type": "WebPage",
+                  "name": "Pricing",
+                  "url": "https://www.letbuyy.com/pricing",
+                  "description": "Plans for stores, creators, and growing merchant teams."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Themes",
+                  "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+                  "description": "Read how LetBuyy storefront themes work."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Apps",
+                  "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+                  "description": "Learn about planned app integrations and platform capabilities."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Developers",
+                  "url": "https://www.letbuyy.com/resources/developers",
+                  "description": "Public guides for APIs, webhooks and integrations."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Log in",
+                  "url": "https://accounts.letbuyy.com/lookup",
+                  "description": "Merchant account lookup and sign-in."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Resources",
+                  "url": "https://www.letbuyy.com/resources",
+                  "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Contact",
+                  "url": "https://www.letbuyy.com/contact",
+                  "description": "Reach LetBuyy support, sales, and developer help."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Legal",
+                  "url": "https://www.letbuyy.com/legal",
+                  "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Sign up",
+                  "url": "https://accounts.letbuyy.com/signup",
+                  "description": "Create a LetBuyy merchant account and open a store."
+                }
+              ]
+            },
+            {
+              "@type": "SoftwareApplication",
+              "name": "LetBuyy",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://www.letbuyy.com",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "INR",
+                "description": "Free launch tier available with 0% transaction and platform fees."
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Pricing",
+              "url": "https://www.letbuyy.com/pricing",
+              "description": "Plans for stores, creators, and growing merchant teams.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Themes",
+              "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+              "description": "Read how LetBuyy storefront themes work.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Apps",
+              "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+              "description": "Learn about planned app integrations and platform capabilities.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Developers",
+              "url": "https://www.letbuyy.com/resources/developers",
+              "description": "Public guides for APIs, webhooks and integrations.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Log in",
+              "url": "https://accounts.letbuyy.com/lookup",
+              "description": "Merchant account lookup and sign-in.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Resources",
+              "url": "https://www.letbuyy.com/resources",
+              "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Contact",
+              "url": "https://www.letbuyy.com/contact",
+              "description": "Reach LetBuyy support, sales, and developer help.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Legal",
+              "url": "https://www.letbuyy.com/legal",
+              "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Sign up",
+              "url": "https://accounts.letbuyy.com/signup",
+              "description": "Create a LetBuyy merchant account and open a store.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            }
+          ]
+        }
+      ],
+      "textCharacters": 14318,
+      "textSha256": "f211b50e8284d57d103d0a40b6975573492ebbc4b5157d4b2a045844e029726c"
+    },
+    {
+      "url": "https://www.letbuyy.com/in/pricing",
+      "capturedAt": "2026-11-03T02:29:38.946367+00:00",
+      "status": 200,
+      "finalUrl": "https://www.letbuyy.com/in/pricing",
+      "redirectChain": [],
+      "bytes": 256219,
+      "seconds": 0.66,
+      "headers": {
+        "Age": "131664",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "Content-Type": "text/html; charset=utf-8",
+        "Etag": "\"8f52799397c84109ea5e478e6cf5091b\"",
+        "Server": "Vercel",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "X-Vercel-Cache": "HIT",
+        "X-Vercel-Id": "bom1::m2w9b-1793672979229-c8088292f434"
+      },
+      "sha256": "17ecb8a702c0e20234adce7bb2935974a4ec75d6c331d573faab039311cb9f34",
+      "title": "Pricing",
+      "lang": "en",
+      "canonical": [
+        "https://www.letbuyy.com/in/pricing"
+      ],
+      "hreflang": [
+        {
+          "lang": "en-IN",
+          "href": "https://www.letbuyy.com/in/pricing"
+        },
+        {
+          "lang": "ta-IN",
+          "href": "https://www.letbuyy.com/in-ta/pricing"
+        },
+        {
+          "lang": "hi-IN",
+          "href": "https://www.letbuyy.com/in-hi/pricing"
+        },
+        {
+          "lang": "x-default",
+          "href": "https://www.letbuyy.com/in/pricing"
+        }
+      ],
+      "mainCount": 1,
+      "h1": "",
+      "meta": {
+        "": null,
+        "viewport": "width=device-width, initial-scale=1",
+        "next-size-adjust": "",
+        "description": "LetBuyy Launch plan starts at \u20b9299/month. 0% commission forever. UPI, COD, and GST-ready payments built in. Review plans before paying.",
+        "application-name": "LetBuyy",
+        "author": "LetBuyy",
+        "keywords": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace",
+        "creator": "LetBuyy",
+        "publisher": "LetBuyy",
+        "robots": "index, follow",
+        "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+        "category": "commerce platform",
+        "og:title": "LetBuyy pricing \u2014 Launch from \u20b9299/month",
+        "og:description": "Launch and Growth plans available now. Scale and Commerce OS coming soon. 0% commission forever. India-first commerce platform.",
+        "og:url": "https://www.letbuyy.com/pricing",
+        "og:locale": "en_IN",
+        "og:image": "https://www.letbuyy.com/icons/letbuyy-logo-light.svg",
+        "og:image:width": "680",
+        "og:image:height": "220",
+        "og:image:alt": "LetBuyy pricing",
+        "twitter:card": "summary_large_image",
+        "twitter:title": "LetBuyy pricing \u2014 Launch from \u20b9299/month",
+        "twitter:description": "Launch and Growth plans live now. 0% commission. UPI, COD, GST-ready. Review plans before paying.",
+        "twitter:image": "https://www.letbuyy.com/icons/letbuyy-logo-light.svg"
+      },
+      "links": [
+        "/in",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/developers",
+        "/in/pricing",
+        "https://accounts.letbuyy.com/lookup",
+        "https://accounts.letbuyy.com/signup",
+        "https://accounts.letbuyy.com/signup",
+        "https://accounts.letbuyy.com/signup",
+        "/in/demo",
+        "/in",
+        "/in",
+        "/in/pricing",
+        "/in/create",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/developers",
+        "https://accounts.letbuyy.com/lookup",
+        "/in/resources",
+        "/in/resources/ecommerce",
+        "/in/resources/developers",
+        "/in/resources/changelog",
+        "/in/support",
+        "/in/contact",
+        "/in/legal/grievance",
+        "/in/legal/security",
+        "https://accounts.letbuyy.com/lookup",
+        "/in/legal",
+        "/in/legal/terms",
+        "/in/legal/privacy",
+        "/in/legal/refunds",
+        "/in/sitemap",
+        "https://www.facebook.com/share/14tEGNoJSXR/",
+        "https://x.com/letbuyyhq",
+        "https://youtube.com/@letbuyyhq",
+        "https://www.instagram.com/letbuyyhq"
+      ],
+      "scripts": [
+        "/_next/static/chunks/fee3e60c-aa3ab2d59836057c.js",
+        "/_next/static/chunks/6030-729d5479b4c2b3b5.js",
+        "/_next/static/chunks/main-app-a5f2984222edc062.js",
+        "/_next/static/chunks/2176-f320e6740e4fc981.js",
+        "/_next/static/chunks/4419-ca6f174d77088d11.js",
+        "/_next/static/chunks/app/layout-2e62e482bcb79ae2.js",
+        "/_next/static/chunks/7986-9309bf7cb6a7b30a.js",
+        "/_next/static/chunks/8364-cb6b0810e2a244c3.js",
+        "/_next/static/chunks/9894-7c700046c5b2ad58.js",
+        "/_next/static/chunks/9731-21f967b8d31df952.js",
+        "/_next/static/chunks/1848-fc69f82615ee7454.js",
+        "/_next/static/chunks/8947-216731afb483e518.js",
+        "/_next/static/chunks/9480-948b93a20db6b17a.js",
+        "/_next/static/chunks/1911-68b1dc1b87097be6.js",
+        "/_next/static/chunks/6564-637acf0f0d32c6c0.js",
+        "/_next/static/chunks/app/%5Blocale%5D/pricing/page-e35a261dd0048b4f.js",
+        "/_next/static/chunks/app/%5Blocale%5D/layout-454049c42c09d054.js",
+        "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+        "/_next/static/chunks/webpack-2939bc8b3035161a.js"
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://www.letbuyy.com/#organization",
+              "name": "LetBuyy",
+              "legalName": "LetBuyy",
+              "alternateName": [
+                "Let Buyy",
+                "Letbuyy",
+                "LetBuyy Commerce"
+              ],
+              "url": "https://www.letbuyy.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.letbuyy.com/icons/letbuyy-logo-512.png",
+                "width": 512,
+                "height": 512
+              },
+              "image": "https://www.letbuyy.com/og/letbuyy-default.png",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "slogan": "India-first commerce operating system",
+              "email": "support@letbuyy.com",
+              "foundingLocation": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "areaServed": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "knowsLanguage": [
+                "en",
+                "hi",
+                "ta"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "customer support",
+                "email": "support@letbuyy.com",
+                "areaServed": "IN",
+                "availableLanguage": [
+                  "en",
+                  "hi",
+                  "ta"
+                ]
+              },
+              "sameAs": [
+                "https://www.instagram.com/letbuyyhq",
+                "https://x.com/letbuyyhq",
+                "https://youtube.com/@letbuyyhq",
+                "https://www.facebook.com/share/14tEGNoJSXR/"
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.letbuyy.com/#website",
+              "name": "LetBuyy",
+              "url": "https://www.letbuyy.com",
+              "inLanguage": "en-IN",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "hasPart": [
+                {
+                  "@type": "WebPage",
+                  "name": "Pricing",
+                  "url": "https://www.letbuyy.com/pricing",
+                  "description": "Plans for stores, creators, and growing merchant teams."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Themes",
+                  "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+                  "description": "Read how LetBuyy storefront themes work."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Apps",
+                  "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+                  "description": "Learn about planned app integrations and platform capabilities."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Developers",
+                  "url": "https://www.letbuyy.com/resources/developers",
+                  "description": "Public guides for APIs, webhooks and integrations."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Log in",
+                  "url": "https://accounts.letbuyy.com/lookup",
+                  "description": "Merchant account lookup and sign-in."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Resources",
+                  "url": "https://www.letbuyy.com/resources",
+                  "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Contact",
+                  "url": "https://www.letbuyy.com/contact",
+                  "description": "Reach LetBuyy support, sales, and developer help."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Legal",
+                  "url": "https://www.letbuyy.com/legal",
+                  "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Sign up",
+                  "url": "https://accounts.letbuyy.com/signup",
+                  "description": "Create a LetBuyy merchant account and open a store."
+                }
+              ]
+            },
+            {
+              "@type": "SoftwareApplication",
+              "name": "LetBuyy",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://www.letbuyy.com",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "INR",
+                "description": "Free launch tier available with 0% transaction and platform fees."
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Pricing",
+              "url": "https://www.letbuyy.com/pricing",
+              "description": "Plans for stores, creators, and growing merchant teams.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Themes",
+              "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+              "description": "Read how LetBuyy storefront themes work.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Apps",
+              "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+              "description": "Learn about planned app integrations and platform capabilities.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Developers",
+              "url": "https://www.letbuyy.com/resources/developers",
+              "description": "Public guides for APIs, webhooks and integrations.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Log in",
+              "url": "https://accounts.letbuyy.com/lookup",
+              "description": "Merchant account lookup and sign-in.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Resources",
+              "url": "https://www.letbuyy.com/resources",
+              "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Contact",
+              "url": "https://www.letbuyy.com/contact",
+              "description": "Reach LetBuyy support, sales, and developer help.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Legal",
+              "url": "https://www.letbuyy.com/legal",
+              "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Sign up",
+              "url": "https://accounts.letbuyy.com/signup",
+              "description": "Create a LetBuyy merchant account and open a store.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            }
+          ]
+        }
+      ],
+      "textCharacters": 1908,
+      "textSha256": "ccbfb90b58e0e9f765eddaf3fe6df331bd8c6bfc0864b98432c5cd9b0a77d23f"
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store",
+      "capturedAt": "2026-11-03T02:29:39.772709+00:00",
+      "status": 200,
+      "finalUrl": "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store",
+      "redirectChain": [],
+      "bytes": 324476,
+      "seconds": 0.607,
+      "headers": {
+        "Age": "76518",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "Content-Type": "text/html; charset=utf-8",
+        "Etag": "\"47392d73486f0b08526e12b933346712\"",
+        "Server": "Vercel",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "X-Vercel-Cache": "HIT",
+        "X-Vercel-Id": "bom1::8lpqj-1793672979999-de17f179c4cc"
+      },
+      "sha256": "6443d901f68d6ec273aa6e57114d542c015bd5bd181d64efeb5d68c7c61408ac",
+      "title": "Building Your First LetBuyy Store: A Complete Walkthrough | LetBuyy Resources",
+      "lang": "en",
+      "canonical": [
+        "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store"
+      ],
+      "hreflang": [
+        {
+          "lang": "en-IN",
+          "href": "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store"
+        },
+        {
+          "lang": "ta-IN",
+          "href": "https://www.letbuyy.com/in-ta/resources/platform/building-first-letbuyy-store"
+        },
+        {
+          "lang": "hi-IN",
+          "href": "https://www.letbuyy.com/in-hi/resources/platform/building-first-letbuyy-store"
+        },
+        {
+          "lang": "x-default",
+          "href": "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store"
+        }
+      ],
+      "mainCount": 2,
+      "h1": "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "meta": {
+        "": null,
+        "viewport": "width=device-width, initial-scale=1",
+        "next-size-adjust": "",
+        "description": "Step-by-step walkthrough of building a LetBuyy store from scratch \u2014 theme selection, products, payments, and going live.",
+        "application-name": "LetBuyy",
+        "author": "LetBuyy Team",
+        "keywords": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace",
+        "creator": "LetBuyy",
+        "publisher": "LetBuyy",
+        "robots": "index, follow",
+        "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+        "category": "commerce platform",
+        "og:title": "Building Your First LetBuyy Store: A Complete Walkthrough",
+        "og:description": "Step-by-step walkthrough of building a LetBuyy store from scratch \u2014 theme selection, products, payments, and going live.",
+        "og:type": "article",
+        "article:published_time": "2026-05-28",
+        "article:modified_time": "2026-06-16",
+        "article:author": "LetBuyy Team",
+        "twitter:card": "summary_large_image",
+        "twitter:title": "LetBuyy - India-first commerce operating system",
+        "twitter:description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+        "twitter:image": "https://www.letbuyy.com/og/letbuyy-default.png"
+      },
+      "links": [
+        "/in",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/developers",
+        "/in/pricing",
+        "https://accounts.letbuyy.com/lookup",
+        "https://accounts.letbuyy.com/signup",
+        "https://accounts.letbuyy.com/signup",
+        "/in/resources",
+        "/in/resources",
+        "/in/resources/ecommerce",
+        "/in/resources/growth",
+        "/in/resources/payments",
+        "/in/resources/operations",
+        "/in/resources/ai-commerce",
+        "/in/resources/developers",
+        "/in/resources/changelog",
+        "#1-create-your-account",
+        "#2-name-your-store",
+        "#3-select-a-theme",
+        "#4-add-your-first-product",
+        "#5-configure-payments",
+        "#6-set-shipping-zones",
+        "#7-enter-your-gstin",
+        "#8-publish-and-test",
+        "/in/resources",
+        "/in/resources",
+        "/in/resources/platform",
+        "/in/resources/tag/getting-started",
+        "/in/resources/tag/platform",
+        "/in/resources/tag/store-setup",
+        "/in/resources/tag/walkthrough",
+        "#3-select-a-theme",
+        "#4-add-your-first-product",
+        "#8-publish-and-test",
+        "/in/resources/platform/introduction-to-apps",
+        "https://x.com/letbuyy",
+        "https://linkedin.com/company/letbuyy",
+        "/in/resources/authors/letbuyy-team",
+        "/in/resources/rss.xml",
+        "/in/resources/ecommerce/how-to-start-an-online-store-india",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/ecommerce/how-to-start-an-online-store-india",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/rss.xml",
+        "/in/resources/platform/introduction-to-apps",
+        "/in",
+        "/in",
+        "/in/pricing",
+        "/in/create",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/developers",
+        "https://accounts.letbuyy.com/lookup",
+        "/in/resources",
+        "/in/resources/ecommerce",
+        "/in/resources/developers",
+        "/in/resources/changelog",
+        "/in/support",
+        "/in/contact",
+        "/in/legal/grievance",
+        "/in/legal/security",
+        "https://accounts.letbuyy.com/lookup",
+        "/in/legal",
+        "/in/legal/terms",
+        "/in/legal/privacy",
+        "/in/legal/refunds",
+        "/in/sitemap",
+        "https://www.facebook.com/share/14tEGNoJSXR/",
+        "https://x.com/letbuyyhq",
+        "https://youtube.com/@letbuyyhq",
+        "https://www.instagram.com/letbuyyhq"
+      ],
+      "scripts": [
+        "/_next/static/chunks/fee3e60c-aa3ab2d59836057c.js",
+        "/_next/static/chunks/6030-729d5479b4c2b3b5.js",
+        "/_next/static/chunks/main-app-a5f2984222edc062.js",
+        "/_next/static/chunks/7986-9309bf7cb6a7b30a.js",
+        "/_next/static/chunks/8364-cb6b0810e2a244c3.js",
+        "/_next/static/chunks/2176-f320e6740e4fc981.js",
+        "/_next/static/chunks/1848-fc69f82615ee7454.js",
+        "/_next/static/chunks/4419-ca6f174d77088d11.js",
+        "/_next/static/chunks/8947-216731afb483e518.js",
+        "/_next/static/chunks/app/%5Blocale%5D/resources/%5Bcategory%5D/%5Bslug%5D/page-9d00cdf25411d4bf.js",
+        "/_next/static/chunks/9894-7c700046c5b2ad58.js",
+        "/_next/static/chunks/9731-21f967b8d31df952.js",
+        "/_next/static/chunks/9480-948b93a20db6b17a.js",
+        "/_next/static/chunks/1911-68b1dc1b87097be6.js",
+        "/_next/static/chunks/app/%5Blocale%5D/resources/layout-91672000f4d72f4b.js",
+        "/_next/static/chunks/app/%5Blocale%5D/layout-454049c42c09d054.js",
+        "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+        "/_next/static/chunks/webpack-2939bc8b3035161a.js"
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://www.letbuyy.com/#organization",
+              "name": "LetBuyy",
+              "legalName": "LetBuyy",
+              "alternateName": [
+                "Let Buyy",
+                "Letbuyy",
+                "LetBuyy Commerce"
+              ],
+              "url": "https://www.letbuyy.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.letbuyy.com/icons/letbuyy-logo-512.png",
+                "width": 512,
+                "height": 512
+              },
+              "image": "https://www.letbuyy.com/og/letbuyy-default.png",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "slogan": "India-first commerce operating system",
+              "email": "support@letbuyy.com",
+              "foundingLocation": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "areaServed": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "knowsLanguage": [
+                "en",
+                "hi",
+                "ta"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "customer support",
+                "email": "support@letbuyy.com",
+                "areaServed": "IN",
+                "availableLanguage": [
+                  "en",
+                  "hi",
+                  "ta"
+                ]
+              },
+              "sameAs": [
+                "https://www.instagram.com/letbuyyhq",
+                "https://x.com/letbuyyhq",
+                "https://youtube.com/@letbuyyhq",
+                "https://www.facebook.com/share/14tEGNoJSXR/"
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.letbuyy.com/#website",
+              "name": "LetBuyy",
+              "url": "https://www.letbuyy.com",
+              "inLanguage": "en-IN",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "hasPart": [
+                {
+                  "@type": "WebPage",
+                  "name": "Pricing",
+                  "url": "https://www.letbuyy.com/pricing",
+                  "description": "Plans for stores, creators, and growing merchant teams."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Themes",
+                  "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+                  "description": "Read how LetBuyy storefront themes work."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Apps",
+                  "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+                  "description": "Learn about planned app integrations and platform capabilities."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Developers",
+                  "url": "https://www.letbuyy.com/resources/developers",
+                  "description": "Public guides for APIs, webhooks and integrations."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Log in",
+                  "url": "https://accounts.letbuyy.com/lookup",
+                  "description": "Merchant account lookup and sign-in."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Resources",
+                  "url": "https://www.letbuyy.com/resources",
+                  "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Contact",
+                  "url": "https://www.letbuyy.com/contact",
+                  "description": "Reach LetBuyy support, sales, and developer help."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Legal",
+                  "url": "https://www.letbuyy.com/legal",
+                  "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Sign up",
+                  "url": "https://accounts.letbuyy.com/signup",
+                  "description": "Create a LetBuyy merchant account and open a store."
+                }
+              ]
+            },
+            {
+              "@type": "SoftwareApplication",
+              "name": "LetBuyy",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://www.letbuyy.com",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "INR",
+                "description": "Free launch tier available with 0% transaction and platform fees."
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Pricing",
+              "url": "https://www.letbuyy.com/pricing",
+              "description": "Plans for stores, creators, and growing merchant teams.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Themes",
+              "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+              "description": "Read how LetBuyy storefront themes work.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Apps",
+              "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+              "description": "Learn about planned app integrations and platform capabilities.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Developers",
+              "url": "https://www.letbuyy.com/resources/developers",
+              "description": "Public guides for APIs, webhooks and integrations.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Log in",
+              "url": "https://accounts.letbuyy.com/lookup",
+              "description": "Merchant account lookup and sign-in.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Resources",
+              "url": "https://www.letbuyy.com/resources",
+              "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Contact",
+              "url": "https://www.letbuyy.com/contact",
+              "description": "Reach LetBuyy support, sales, and developer help.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Legal",
+              "url": "https://www.letbuyy.com/legal",
+              "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Sign up",
+              "url": "https://accounts.letbuyy.com/signup",
+              "description": "Create a LetBuyy merchant account and open a store.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Building Your First LetBuyy Store: A Complete Walkthrough",
+          "description": "Step-by-step walkthrough of building a LetBuyy store from scratch \u2014 theme selection, products, payments, and going live.",
+          "datePublished": "2026-05-28",
+          "dateModified": "2026-06-16",
+          "author": {
+            "@type": "Person",
+            "name": "LetBuyy Team",
+            "jobTitle": "Platform"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "LetBuyy",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "/icons/letbuyy-logo-512.png"
+            }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "/resources/platform/building-first-letbuyy-store"
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Resources",
+              "item": "/resources"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Platform",
+              "item": "/resources/platform"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Building Your First LetBuyy Store: A Complete Walkthrough"
+            }
+          ]
+        }
+      ],
+      "textCharacters": 5632,
+      "textSha256": "aab461b8f6d90fcc88910df390b6c1347109c00eb43955343ffb32b255cf860c"
+    },
+    {
+      "url": "https://www.letbuyy.com/in-hi/support",
+      "capturedAt": "2026-11-03T02:29:40.547642+00:00",
+      "status": 200,
+      "finalUrl": "https://www.letbuyy.com/in-hi/support",
+      "redirectChain": [],
+      "bytes": 273663,
+      "seconds": 0.599,
+      "headers": {
+        "Age": "124337",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "Content-Type": "text/html; charset=utf-8",
+        "Etag": "\"d3f6ff375ad41b8d7e5cfb55349eb93b\"",
+        "Server": "Vercel",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "X-Vercel-Cache": "HIT",
+        "X-Vercel-Id": "bom1::wjmbr-1793672980799-51266e6cd89a"
+      },
+      "sha256": "a2162c96830680650c84f451ce986b61c0442e1343246740ffdc276a9896abeb",
+      "title": "\u0938\u0939\u093e\u092f\u0924\u093e \u0915\u0947\u0902\u0926\u094d\u0930 \u2014 LetBuyy",
+      "lang": "en",
+      "canonical": [
+        "https://www.letbuyy.com/in-hi/support"
+      ],
+      "hreflang": [
+        {
+          "lang": "en-IN",
+          "href": "https://www.letbuyy.com/in/support"
+        },
+        {
+          "lang": "ta-IN",
+          "href": "https://www.letbuyy.com/in-ta/support"
+        },
+        {
+          "lang": "hi-IN",
+          "href": "https://www.letbuyy.com/in-hi/support"
+        },
+        {
+          "lang": "x-default",
+          "href": "https://www.letbuyy.com/in/support"
+        }
+      ],
+      "mainCount": 1,
+      "h1": "\u0938\u094d\u092a\u0937\u094d\u091f \u0905\u0917\u0932\u093e \u0915\u0926\u092e\u0964 \u0939\u0930 \u0915\u0926\u092e \u092a\u0930 \u0925\u094b\u0921\u093c\u0940 \u092e\u0926\u0926\u0964",
+      "meta": {
+        "": null,
+        "viewport": "width=device-width, initial-scale=1",
+        "next-size-adjust": "",
+        "description": "\u092e\u093e\u0930\u094d\u0917\u0926\u0930\u094d\u0936\u093f\u0915\u093e \u092a\u093e\u090f\u0901, \u091f\u0940\u092e \u0938\u0947 \u0938\u0902\u092a\u0930\u094d\u0915 \u0915\u0930\u0947\u0902, \u091f\u093f\u0915\u091f \u091c\u093e\u0901\u091a\u0947\u0902 \u092f\u093e \u0936\u093f\u0915\u093e\u092f\u0924 \u092a\u094d\u0930\u0915\u094d\u0930\u093f\u092f\u093e \u092a\u0922\u093c\u0947\u0902\u0964",
+        "application-name": "LetBuyy",
+        "author": "LetBuyy",
+        "keywords": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace",
+        "creator": "LetBuyy",
+        "publisher": "LetBuyy",
+        "robots": "index, follow",
+        "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+        "category": "commerce platform",
+        "og:title": "LetBuyy \u2014 \u092d\u093e\u0930\u0924 \u0915\u0947 \u0932\u093f\u090f \u092c\u0928\u093e \u0915\u0949\u092e\u0930\u094d\u0938 \u0911\u092a\u0930\u0947\u091f\u093f\u0902\u0917 \u0938\u093f\u0938\u094d\u091f\u092e",
+        "og:description": "UPI, \u0915\u0948\u0936 \u0911\u0928 \u0921\u093f\u0932\u0940\u0935\u0930\u0940, GST \u0907\u0928\u0935\u0949\u0907\u0938 \u0914\u0930 \u0936\u093f\u092a\u093f\u0902\u0917 \u0915\u0947 \u0938\u093e\u0925 \u092d\u093e\u0930\u0924 \u092e\u0947\u0902 \u0905\u092a\u0928\u0940 \u0911\u0928\u0932\u093e\u0907\u0928 \u0926\u0941\u0915\u093e\u0928 \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902\u0964 \u0906\u092a\u0915\u0940 \u092c\u093f\u0915\u094d\u0930\u0940 \u092a\u0930 0% \u0915\u092e\u0940\u0936\u0928\u0964",
+        "og:locale": "hi_IN",
+        "twitter:card": "summary_large_image",
+        "twitter:title": "LetBuyy - India-first commerce operating system",
+        "twitter:description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+        "twitter:image": "https://www.letbuyy.com/og/letbuyy-default.png"
+      },
+      "links": [
+        "/in-hi",
+        "/in-hi/resources/platform/how-themes-work",
+        "/in-hi/resources/platform/introduction-to-apps",
+        "/in-hi/resources/developers",
+        "/in-hi/pricing",
+        "https://accounts.letbuyy.com/lookup",
+        "https://accounts.letbuyy.com/signup",
+        "https://accounts.letbuyy.com/signup",
+        "/in-hi/contact#contact-form",
+        "#help-guides",
+        "/in-hi/resources",
+        "/in-hi/contact#contact-form",
+        "/in-hi/legal/grievance",
+        "/in-hi/resources/search",
+        "/in-hi/resources/ecommerce",
+        "/in-hi/resources/payments",
+        "/in-hi/resources/operations",
+        "/in-hi/resources/platform/how-themes-work",
+        "/in-hi/resources/developers",
+        "/in-hi/resources/ai-commerce",
+        "mailto:support@letbuyy.com",
+        "https://accounts.letbuyy.com/lookup",
+        "/in-hi",
+        "/in-hi",
+        "/in-hi/pricing",
+        "/in-hi/create",
+        "/in-hi/resources/platform/how-themes-work",
+        "/in-hi/resources/platform/introduction-to-apps",
+        "/in-hi/resources/developers",
+        "https://accounts.letbuyy.com/lookup",
+        "/in-hi/resources",
+        "/in-hi/resources/ecommerce",
+        "/in-hi/resources/developers",
+        "/in-hi/resources/changelog",
+        "/in-hi/support",
+        "/in-hi/contact",
+        "/in-hi/legal/grievance",
+        "/in-hi/legal/security",
+        "https://accounts.letbuyy.com/lookup",
+        "/in-hi/legal",
+        "/in-hi/legal/terms",
+        "/in-hi/legal/privacy",
+        "/in-hi/legal/refunds",
+        "/in-hi/sitemap",
+        "https://www.facebook.com/share/14tEGNoJSXR/",
+        "https://x.com/letbuyyhq",
+        "https://youtube.com/@letbuyyhq",
+        "https://www.instagram.com/letbuyyhq"
+      ],
+      "scripts": [
+        "/_next/static/chunks/fee3e60c-aa3ab2d59836057c.js",
+        "/_next/static/chunks/6030-729d5479b4c2b3b5.js",
+        "/_next/static/chunks/main-app-a5f2984222edc062.js",
+        "/_next/static/chunks/7986-9309bf7cb6a7b30a.js",
+        "/_next/static/chunks/8364-cb6b0810e2a244c3.js",
+        "/_next/static/chunks/2176-f320e6740e4fc981.js",
+        "/_next/static/chunks/9894-7c700046c5b2ad58.js",
+        "/_next/static/chunks/9731-21f967b8d31df952.js",
+        "/_next/static/chunks/1848-fc69f82615ee7454.js",
+        "/_next/static/chunks/4419-ca6f174d77088d11.js",
+        "/_next/static/chunks/8947-216731afb483e518.js",
+        "/_next/static/chunks/9480-948b93a20db6b17a.js",
+        "/_next/static/chunks/1911-68b1dc1b87097be6.js",
+        "/_next/static/chunks/5249-4ac4f3cc5ecc7dc9.js",
+        "/_next/static/chunks/app/%5Blocale%5D/support/page-4bb39f235c22ace7.js",
+        "/_next/static/chunks/app/%5Blocale%5D/layout-454049c42c09d054.js",
+        "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+        "/_next/static/chunks/webpack-2939bc8b3035161a.js"
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://www.letbuyy.com/#organization",
+              "name": "LetBuyy",
+              "legalName": "LetBuyy",
+              "alternateName": [
+                "Let Buyy",
+                "Letbuyy",
+                "LetBuyy Commerce"
+              ],
+              "url": "https://www.letbuyy.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.letbuyy.com/icons/letbuyy-logo-512.png",
+                "width": 512,
+                "height": 512
+              },
+              "image": "https://www.letbuyy.com/og/letbuyy-default.png",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "slogan": "India-first commerce operating system",
+              "email": "support@letbuyy.com",
+              "foundingLocation": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "areaServed": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "knowsLanguage": [
+                "en",
+                "hi",
+                "ta"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "customer support",
+                "email": "support@letbuyy.com",
+                "areaServed": "IN",
+                "availableLanguage": [
+                  "en",
+                  "hi",
+                  "ta"
+                ]
+              },
+              "sameAs": [
+                "https://www.instagram.com/letbuyyhq",
+                "https://x.com/letbuyyhq",
+                "https://youtube.com/@letbuyyhq",
+                "https://www.facebook.com/share/14tEGNoJSXR/"
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.letbuyy.com/#website",
+              "name": "LetBuyy",
+              "url": "https://www.letbuyy.com",
+              "inLanguage": "en-IN",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "hasPart": [
+                {
+                  "@type": "WebPage",
+                  "name": "Pricing",
+                  "url": "https://www.letbuyy.com/pricing",
+                  "description": "Plans for stores, creators, and growing merchant teams."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Themes",
+                  "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+                  "description": "Read how LetBuyy storefront themes work."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Apps",
+                  "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+                  "description": "Learn about planned app integrations and platform capabilities."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Developers",
+                  "url": "https://www.letbuyy.com/resources/developers",
+                  "description": "Public guides for APIs, webhooks and integrations."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Log in",
+                  "url": "https://accounts.letbuyy.com/lookup",
+                  "description": "Merchant account lookup and sign-in."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Resources",
+                  "url": "https://www.letbuyy.com/resources",
+                  "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Contact",
+                  "url": "https://www.letbuyy.com/contact",
+                  "description": "Reach LetBuyy support, sales, and developer help."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Legal",
+                  "url": "https://www.letbuyy.com/legal",
+                  "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Sign up",
+                  "url": "https://accounts.letbuyy.com/signup",
+                  "description": "Create a LetBuyy merchant account and open a store."
+                }
+              ]
+            },
+            {
+              "@type": "SoftwareApplication",
+              "name": "LetBuyy",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://www.letbuyy.com",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "INR",
+                "description": "Free launch tier available with 0% transaction and platform fees."
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Pricing",
+              "url": "https://www.letbuyy.com/pricing",
+              "description": "Plans for stores, creators, and growing merchant teams.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Themes",
+              "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+              "description": "Read how LetBuyy storefront themes work.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Apps",
+              "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+              "description": "Learn about planned app integrations and platform capabilities.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Developers",
+              "url": "https://www.letbuyy.com/resources/developers",
+              "description": "Public guides for APIs, webhooks and integrations.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Log in",
+              "url": "https://accounts.letbuyy.com/lookup",
+              "description": "Merchant account lookup and sign-in.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Resources",
+              "url": "https://www.letbuyy.com/resources",
+              "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Contact",
+              "url": "https://www.letbuyy.com/contact",
+              "description": "Reach LetBuyy support, sales, and developer help.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Legal",
+              "url": "https://www.letbuyy.com/legal",
+              "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Sign up",
+              "url": "https://accounts.letbuyy.com/signup",
+              "description": "Create a LetBuyy merchant account and open a store.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            }
+          ]
+        }
+      ],
+      "textCharacters": 1348,
+      "textSha256": "b386c8f0bddcc5133208d6ee2fc0528c9c389dc364aac0ddfdb92594ab2b879a"
+    },
+    {
+      "url": "https://www.letbuyy.com/in-ta/contact",
+      "capturedAt": "2026-11-03T02:29:41.314746+00:00",
+      "status": 200,
+      "finalUrl": "https://www.letbuyy.com/in-ta/contact",
+      "redirectChain": [],
+      "bytes": 281482,
+      "seconds": 0.483,
+      "headers": {
+        "Age": "78413",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "Content-Type": "text/html; charset=utf-8",
+        "Etag": "\"ca9e83787fd8e781acab07e3d1972f19\"",
+        "Server": "Vercel",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "X-Vercel-Cache": "HIT",
+        "X-Vercel-Id": "bom1::pn4n9-1793672981562-b5c91b15cc65"
+      },
+      "sha256": "66ae838dd5ae2ffc9c781192fba1cc0278c079a7625169d38cf61763d78cdda0",
+      "title": "LetBuyy\u0b90\u0ba4\u0bcd \u0ba4\u0bca\u0b9f\u0bb0\u0bcd\u0baa\u0bc1\u0b95\u0bca\u0bb3\u0bcd\u0bb3\u0bb5\u0bc1\u0bae\u0bcd",
+      "lang": "en",
+      "canonical": [
+        "https://www.letbuyy.com/in-ta/contact"
+      ],
+      "hreflang": [
+        {
+          "lang": "en-IN",
+          "href": "https://www.letbuyy.com/in/contact"
+        },
+        {
+          "lang": "ta-IN",
+          "href": "https://www.letbuyy.com/in-ta/contact"
+        },
+        {
+          "lang": "hi-IN",
+          "href": "https://www.letbuyy.com/in-hi/contact"
+        },
+        {
+          "lang": "x-default",
+          "href": "https://www.letbuyy.com/in/contact"
+        }
+      ],
+      "mainCount": 1,
+      "h1": "\u0b89\u0bb0\u0bc1\u0bb5\u0bbe\u0b95\u0bcd\u0b95\u0bbf\u0baf\u0bb5\u0bb0\u0bcd\u0b95\u0bb3\u0bc1\u0b9f\u0ba9\u0bcd \u0baa\u0bc7\u0b9a\u0bc1\u0b99\u0bcd\u0b95\u0bb3\u0bcd.",
+      "meta": {
+        "": null,
+        "viewport": "width=device-width, initial-scale=1",
+        "next-size-adjust": "",
+        "description": "LetBuyy \u0ba4\u0bca\u0b9f\u0bb0\u0bcd\u0baa\u0bc1 \u2014 \u0bb5\u0ba3\u0bbf\u0b95\u0bb0\u0bcd \u0b89\u0ba4\u0bb5\u0bbf, \u0bb5\u0bbf\u0bb1\u0bcd\u0baa\u0ba9\u0bc8, \u0baa\u0ba3\u0bae\u0bcd, GST, \u0b89\u0bb0\u0bc1\u0bb5\u0bbe\u0b95\u0bcd\u0b95\u0bc1\u0ba8\u0bb0\u0bcd, \u0b95\u0bc2\u0b9f\u0bcd\u0b9f\u0bbe\u0ba3\u0bcd\u0bae\u0bc8. \u0b92\u0bb5\u0bcd\u0bb5\u0bca\u0bb0\u0bc1 \u0b9a\u0bc6\u0baf\u0bcd\u0ba4\u0bbf\u0b95\u0bcd\u0b95\u0bc1\u0bae\u0bcd \u0b9f\u0bbf\u0b95\u0bcd\u0b95\u0bc6\u0b9f\u0bcd, \u0b85\u0ba3\u0bbf, \u0ba4\u0bc6\u0bb3\u0bbf\u0bb5\u0bbe\u0ba9 \u0baa\u0ba4\u0bbf\u0bb2\u0bcd \u0ba8\u0bc7\u0bb0\u0bae\u0bcd.",
+        "application-name": "LetBuyy",
+        "author": "LetBuyy",
+        "keywords": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace",
+        "creator": "LetBuyy",
+        "publisher": "LetBuyy",
+        "robots": "index, follow",
+        "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+        "category": "commerce platform",
+        "og:title": "LetBuyy\u0b90\u0ba4\u0bcd \u0ba4\u0bca\u0b9f\u0bb0\u0bcd\u0baa\u0bc1\u0b95\u0bca\u0bb3\u0bcd\u0bb3\u0bb5\u0bc1\u0bae\u0bcd",
+        "og:description": "\u0b92\u0bb0\u0bc7 \u0baa\u0b9f\u0bbf\u0bb5\u0bae\u0bcd, \u0baa\u0ba4\u0bbf\u0ba9\u0bcd\u0bae\u0bc2\u0ba9\u0bcd\u0bb1\u0bc1 \u0b85\u0ba3\u0bbf\u0b95\u0bb3\u0bcd, \u0ba4\u0bc6\u0bb3\u0bbf\u0bb5\u0bbe\u0ba9 \u0baa\u0ba4\u0bbf\u0bb2\u0bcd \u0ba8\u0bc7\u0bb0\u0bae\u0bcd. \u0b92\u0bb5\u0bcd\u0bb5\u0bca\u0bb0\u0bc1 \u0b9a\u0bc6\u0baf\u0bcd\u0ba4\u0bbf\u0b95\u0bcd\u0b95\u0bc1\u0bae\u0bcd \u0b95\u0ba3\u0bcd\u0b95\u0bbe\u0ba3\u0bbf\u0b95\u0bcd\u0b95\u0b95\u0bcd\u0b95\u0bc2\u0b9f\u0bbf\u0baf \u0b9f\u0bbf\u0b95\u0bcd\u0b95\u0bc6\u0b9f\u0bcd.",
+        "og:url": "https://www.letbuyy.com/contact",
+        "og:locale": "ta_IN",
+        "twitter:card": "summary_large_image",
+        "twitter:title": "LetBuyy - India-first commerce operating system",
+        "twitter:description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+        "twitter:image": "https://www.letbuyy.com/og/letbuyy-default.png"
+      },
+      "links": [
+        "/in-ta",
+        "/in-ta/resources/platform/how-themes-work",
+        "/in-ta/resources/platform/introduction-to-apps",
+        "/in-ta/resources/developers",
+        "/in-ta/pricing",
+        "https://accounts.letbuyy.com/lookup",
+        "https://accounts.letbuyy.com/signup",
+        "https://accounts.letbuyy.com/signup",
+        "#contact-form",
+        "/in-ta/support",
+        "mailto:support@letbuyy.com",
+        "https://accounts.letbuyy.com/login",
+        "https://developer.letbuyy.com/docs",
+        "/in-ta/resources",
+        "/in-ta/legal/privacy",
+        "/in-ta",
+        "/in-ta",
+        "/in-ta/pricing",
+        "/in-ta/create",
+        "/in-ta/resources/platform/how-themes-work",
+        "/in-ta/resources/platform/introduction-to-apps",
+        "/in-ta/resources/developers",
+        "https://accounts.letbuyy.com/lookup",
+        "/in-ta/resources",
+        "/in-ta/resources/ecommerce",
+        "/in-ta/resources/developers",
+        "/in-ta/resources/changelog",
+        "/in-ta/support",
+        "/in-ta/contact",
+        "/in-ta/legal/grievance",
+        "/in-ta/legal/security",
+        "https://accounts.letbuyy.com/lookup",
+        "/in-ta/legal",
+        "/in-ta/legal/terms",
+        "/in-ta/legal/privacy",
+        "/in-ta/legal/refunds",
+        "/in-ta/sitemap",
+        "https://www.facebook.com/share/14tEGNoJSXR/",
+        "https://x.com/letbuyyhq",
+        "https://youtube.com/@letbuyyhq",
+        "https://www.instagram.com/letbuyyhq"
+      ],
+      "scripts": [
+        "/_next/static/chunks/fee3e60c-aa3ab2d59836057c.js",
+        "/_next/static/chunks/6030-729d5479b4c2b3b5.js",
+        "/_next/static/chunks/main-app-a5f2984222edc062.js",
+        "/_next/static/chunks/7986-9309bf7cb6a7b30a.js",
+        "/_next/static/chunks/8364-cb6b0810e2a244c3.js",
+        "/_next/static/chunks/2176-f320e6740e4fc981.js",
+        "/_next/static/chunks/9894-7c700046c5b2ad58.js",
+        "/_next/static/chunks/9731-21f967b8d31df952.js",
+        "/_next/static/chunks/1848-fc69f82615ee7454.js",
+        "/_next/static/chunks/4419-ca6f174d77088d11.js",
+        "/_next/static/chunks/8947-216731afb483e518.js",
+        "/_next/static/chunks/9480-948b93a20db6b17a.js",
+        "/_next/static/chunks/1911-68b1dc1b87097be6.js",
+        "/_next/static/chunks/5249-4ac4f3cc5ecc7dc9.js",
+        "/_next/static/chunks/app/%5Blocale%5D/contact/page-f21f2e34cb80ba90.js",
+        "/_next/static/chunks/app/%5Blocale%5D/layout-454049c42c09d054.js",
+        "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+        "/_next/static/chunks/webpack-2939bc8b3035161a.js"
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://www.letbuyy.com/#organization",
+              "name": "LetBuyy",
+              "legalName": "LetBuyy",
+              "alternateName": [
+                "Let Buyy",
+                "Letbuyy",
+                "LetBuyy Commerce"
+              ],
+              "url": "https://www.letbuyy.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.letbuyy.com/icons/letbuyy-logo-512.png",
+                "width": 512,
+                "height": 512
+              },
+              "image": "https://www.letbuyy.com/og/letbuyy-default.png",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "slogan": "India-first commerce operating system",
+              "email": "support@letbuyy.com",
+              "foundingLocation": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "areaServed": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "knowsLanguage": [
+                "en",
+                "hi",
+                "ta"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "customer support",
+                "email": "support@letbuyy.com",
+                "areaServed": "IN",
+                "availableLanguage": [
+                  "en",
+                  "hi",
+                  "ta"
+                ]
+              },
+              "sameAs": [
+                "https://www.instagram.com/letbuyyhq",
+                "https://x.com/letbuyyhq",
+                "https://youtube.com/@letbuyyhq",
+                "https://www.facebook.com/share/14tEGNoJSXR/"
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.letbuyy.com/#website",
+              "name": "LetBuyy",
+              "url": "https://www.letbuyy.com",
+              "inLanguage": "en-IN",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "hasPart": [
+                {
+                  "@type": "WebPage",
+                  "name": "Pricing",
+                  "url": "https://www.letbuyy.com/pricing",
+                  "description": "Plans for stores, creators, and growing merchant teams."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Themes",
+                  "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+                  "description": "Read how LetBuyy storefront themes work."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Apps",
+                  "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+                  "description": "Learn about planned app integrations and platform capabilities."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Developers",
+                  "url": "https://www.letbuyy.com/resources/developers",
+                  "description": "Public guides for APIs, webhooks and integrations."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Log in",
+                  "url": "https://accounts.letbuyy.com/lookup",
+                  "description": "Merchant account lookup and sign-in."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Resources",
+                  "url": "https://www.letbuyy.com/resources",
+                  "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Contact",
+                  "url": "https://www.letbuyy.com/contact",
+                  "description": "Reach LetBuyy support, sales, and developer help."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Legal",
+                  "url": "https://www.letbuyy.com/legal",
+                  "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Sign up",
+                  "url": "https://accounts.letbuyy.com/signup",
+                  "description": "Create a LetBuyy merchant account and open a store."
+                }
+              ]
+            },
+            {
+              "@type": "SoftwareApplication",
+              "name": "LetBuyy",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://www.letbuyy.com",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "INR",
+                "description": "Free launch tier available with 0% transaction and platform fees."
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Pricing",
+              "url": "https://www.letbuyy.com/pricing",
+              "description": "Plans for stores, creators, and growing merchant teams.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Themes",
+              "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+              "description": "Read how LetBuyy storefront themes work.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Apps",
+              "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+              "description": "Learn about planned app integrations and platform capabilities.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Developers",
+              "url": "https://www.letbuyy.com/resources/developers",
+              "description": "Public guides for APIs, webhooks and integrations.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Log in",
+              "url": "https://accounts.letbuyy.com/lookup",
+              "description": "Merchant account lookup and sign-in.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Resources",
+              "url": "https://www.letbuyy.com/resources",
+              "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Contact",
+              "url": "https://www.letbuyy.com/contact",
+              "description": "Reach LetBuyy support, sales, and developer help.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Legal",
+              "url": "https://www.letbuyy.com/legal",
+              "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Sign up",
+              "url": "https://accounts.letbuyy.com/signup",
+              "description": "Create a LetBuyy merchant account and open a store.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in/contact",
+          "mainEntity": {
+            "@type": "Organization",
+            "name": "LetBuyy",
+            "url": "https://www.letbuyy.com",
+            "email": "support@letbuyy.com",
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales & pricing",
+                "email": "support@letbuyy.com",
+                "availableLanguage": [
+                  "English",
+                  "Hindi",
+                  "Tamil"
+                ],
+                "areaServed": "IN"
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Merchant support",
+                "email": "support@letbuyy.com",
+                "availableLanguage": [
+                  "English",
+                  "Hindi",
+                  "Tamil"
+                ],
+                "areaServed": "IN"
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Payments, payouts & settlements",
+                "email": "support@letbuyy.com",
+                "availableLanguage": [
+                  "English",
+                  "Hindi",
+                  "Tamil"
+                ],
+                "areaServed": "IN"
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Trust & safety",
+                "email": "support@letbuyy.com",
+                "availableLanguage": [
+                  "English",
+                  "Hindi",
+                  "Tamil"
+                ],
+                "areaServed": "IN"
+              }
+            ]
+          }
+        }
+      ],
+      "textCharacters": 3004,
+      "textSha256": "efd2c0f3a167b8f04ad2d8611f25f1f1ad8f3ffb6b212eac5772e9d1b1fbb6e2"
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/authors/ravi-operations",
+      "capturedAt": "2026-11-03T02:29:41.960673+00:00",
+      "status": 200,
+      "finalUrl": "https://www.letbuyy.com/in/resources/authors/ravi-operations",
+      "redirectChain": [],
+      "bytes": 263211,
+      "seconds": 0.659,
+      "headers": {
+        "Age": "144963",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "Content-Type": "text/html; charset=utf-8",
+        "Etag": "\"63c18b51bbe1d444a81bf777911f457c\"",
+        "Server": "Vercel",
+        "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "X-Vercel-Cache": "HIT",
+        "X-Vercel-Id": "bom1::n24fg-1793672982339-bc3e9ea75931"
+      },
+      "sha256": "8cda6c6ab12b3cc0245b4220025dbca255addedbff5ffa370e5371a015acb91a",
+      "title": "Ravi Krishnan \u2014 LetBuyy Resources | LetBuyy Resources",
+      "lang": "en",
+      "canonical": [
+        "https://www.letbuyy.com/resources/authors/ravi-operations"
+      ],
+      "hreflang": [],
+      "mainCount": 1,
+      "h1": "Ravi Krishnan",
+      "meta": {
+        "": null,
+        "viewport": "width=device-width, initial-scale=1",
+        "next-size-adjust": "",
+        "description": "Supply chain and operations expert who has helped over 200 Indian brands streamline fulfillment and reduce return rates.",
+        "application-name": "LetBuyy",
+        "author": "LetBuyy",
+        "keywords": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace",
+        "creator": "LetBuyy",
+        "publisher": "LetBuyy",
+        "robots": "index, follow",
+        "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+        "category": "commerce platform",
+        "og:title": "Ravi Krishnan \u2014 LetBuyy Resources | LetBuyy Resources",
+        "og:description": "Supply chain and operations expert who has helped over 200 Indian brands streamline fulfillment and reduce return rates.",
+        "og:site_name": "LetBuyy",
+        "og:locale": "en_IN",
+        "og:type": "website",
+        "twitter:card": "summary_large_image",
+        "twitter:title": "LetBuyy - India-first commerce operating system",
+        "twitter:description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+        "twitter:image": "https://www.letbuyy.com/og/letbuyy-default.png"
+      },
+      "links": [
+        "/in",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/developers",
+        "/in/pricing",
+        "https://accounts.letbuyy.com/lookup",
+        "https://accounts.letbuyy.com/signup",
+        "https://accounts.letbuyy.com/signup",
+        "/in/resources",
+        "/in/resources",
+        "/in/resources/ecommerce",
+        "/in/resources/growth",
+        "/in/resources/payments",
+        "/in/resources/operations",
+        "/in/resources/ai-commerce",
+        "/in/resources/developers",
+        "/in/resources/changelog",
+        "/in/resources",
+        "/in/resources/operations/inventory-management-guide",
+        "/in/resources/operations/order-fulfillment-guide",
+        "/in/resources/operations/shipping-india-guide",
+        "/in/resources/operations/multi-warehouse-inventory",
+        "/in/resources/operations/understanding-fulfillment",
+        "/in",
+        "/in",
+        "/in/pricing",
+        "/in/create",
+        "/in/resources/platform/how-themes-work",
+        "/in/resources/platform/introduction-to-apps",
+        "/in/resources/developers",
+        "https://accounts.letbuyy.com/lookup",
+        "/in/resources",
+        "/in/resources/ecommerce",
+        "/in/resources/developers",
+        "/in/resources/changelog",
+        "/in/support",
+        "/in/contact",
+        "/in/legal/grievance",
+        "/in/legal/security",
+        "https://accounts.letbuyy.com/lookup",
+        "/in/legal",
+        "/in/legal/terms",
+        "/in/legal/privacy",
+        "/in/legal/refunds",
+        "/in/sitemap",
+        "https://www.facebook.com/share/14tEGNoJSXR/",
+        "https://x.com/letbuyyhq",
+        "https://youtube.com/@letbuyyhq",
+        "https://www.instagram.com/letbuyyhq"
+      ],
+      "scripts": [
+        "/_next/static/chunks/fee3e60c-aa3ab2d59836057c.js",
+        "/_next/static/chunks/6030-729d5479b4c2b3b5.js",
+        "/_next/static/chunks/main-app-a5f2984222edc062.js",
+        "/_next/static/chunks/7986-9309bf7cb6a7b30a.js",
+        "/_next/static/chunks/8364-cb6b0810e2a244c3.js",
+        "/_next/static/chunks/2176-f320e6740e4fc981.js",
+        "/_next/static/chunks/1848-fc69f82615ee7454.js",
+        "/_next/static/chunks/4419-ca6f174d77088d11.js",
+        "/_next/static/chunks/app/%5Blocale%5D/resources/page-1b9de348620fa1b8.js",
+        "/_next/static/chunks/9894-7c700046c5b2ad58.js",
+        "/_next/static/chunks/9731-21f967b8d31df952.js",
+        "/_next/static/chunks/8947-216731afb483e518.js",
+        "/_next/static/chunks/9480-948b93a20db6b17a.js",
+        "/_next/static/chunks/1911-68b1dc1b87097be6.js",
+        "/_next/static/chunks/app/%5Blocale%5D/resources/layout-91672000f4d72f4b.js",
+        "/_next/static/chunks/app/%5Blocale%5D/layout-454049c42c09d054.js",
+        "/_next/static/chunks/app/%5Blocale%5D/resources/authors/%5Bslug%5D/page-1919fbaab61b4ea6.js",
+        "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+        "/_next/static/chunks/webpack-2939bc8b3035161a.js"
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://www.letbuyy.com/#organization",
+              "name": "LetBuyy",
+              "legalName": "LetBuyy",
+              "alternateName": [
+                "Let Buyy",
+                "Letbuyy",
+                "LetBuyy Commerce"
+              ],
+              "url": "https://www.letbuyy.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.letbuyy.com/icons/letbuyy-logo-512.png",
+                "width": 512,
+                "height": 512
+              },
+              "image": "https://www.letbuyy.com/og/letbuyy-default.png",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "slogan": "India-first commerce operating system",
+              "email": "support@letbuyy.com",
+              "foundingLocation": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "areaServed": {
+                "@type": "Country",
+                "name": "India"
+              },
+              "knowsLanguage": [
+                "en",
+                "hi",
+                "ta"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "customer support",
+                "email": "support@letbuyy.com",
+                "areaServed": "IN",
+                "availableLanguage": [
+                  "en",
+                  "hi",
+                  "ta"
+                ]
+              },
+              "sameAs": [
+                "https://www.instagram.com/letbuyyhq",
+                "https://x.com/letbuyyhq",
+                "https://youtube.com/@letbuyyhq",
+                "https://www.facebook.com/share/14tEGNoJSXR/"
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.letbuyy.com/#website",
+              "name": "LetBuyy",
+              "url": "https://www.letbuyy.com",
+              "inLanguage": "en-IN",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "hasPart": [
+                {
+                  "@type": "WebPage",
+                  "name": "Pricing",
+                  "url": "https://www.letbuyy.com/pricing",
+                  "description": "Plans for stores, creators, and growing merchant teams."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Themes",
+                  "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+                  "description": "Read how LetBuyy storefront themes work."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Apps",
+                  "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+                  "description": "Learn about planned app integrations and platform capabilities."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Developers",
+                  "url": "https://www.letbuyy.com/resources/developers",
+                  "description": "Public guides for APIs, webhooks and integrations."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Log in",
+                  "url": "https://accounts.letbuyy.com/lookup",
+                  "description": "Merchant account lookup and sign-in."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Resources",
+                  "url": "https://www.letbuyy.com/resources",
+                  "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Contact",
+                  "url": "https://www.letbuyy.com/contact",
+                  "description": "Reach LetBuyy support, sales, and developer help."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Legal",
+                  "url": "https://www.letbuyy.com/legal",
+                  "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal."
+                },
+                {
+                  "@type": "WebPage",
+                  "name": "Sign up",
+                  "url": "https://accounts.letbuyy.com/signup",
+                  "description": "Create a LetBuyy merchant account and open a store."
+                }
+              ]
+            },
+            {
+              "@type": "SoftwareApplication",
+              "name": "LetBuyy",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://www.letbuyy.com",
+              "description": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.",
+              "publisher": {
+                "@id": "https://www.letbuyy.com/#organization"
+              },
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "INR",
+                "description": "Free launch tier available with 0% transaction and platform fees."
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Pricing",
+              "url": "https://www.letbuyy.com/pricing",
+              "description": "Plans for stores, creators, and growing merchant teams.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Themes",
+              "url": "https://www.letbuyy.com/resources/platform/how-themes-work",
+              "description": "Read how LetBuyy storefront themes work.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Apps",
+              "url": "https://www.letbuyy.com/resources/platform/introduction-to-apps",
+              "description": "Learn about planned app integrations and platform capabilities.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Developers",
+              "url": "https://www.letbuyy.com/resources/developers",
+              "description": "Public guides for APIs, webhooks and integrations.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Log in",
+              "url": "https://accounts.letbuyy.com/lookup",
+              "description": "Merchant account lookup and sign-in.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Resources",
+              "url": "https://www.letbuyy.com/resources",
+              "description": "Guides on selling online in India \u2014 payments, GST, shipping, and growth.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Contact",
+              "url": "https://www.letbuyy.com/contact",
+              "description": "Reach LetBuyy support, sales, and developer help.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Legal",
+              "url": "https://www.letbuyy.com/legal",
+              "description": "Terms, privacy, refunds, shipping, payouts, and grievance redressal.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Sign up",
+              "url": "https://accounts.letbuyy.com/signup",
+              "description": "Create a LetBuyy merchant account and open a store.",
+              "isPartOf": {
+                "@id": "https://www.letbuyy.com/#website"
+              }
+            }
+          ]
+        }
+      ],
+      "textCharacters": 1690,
+      "textSha256": "8e817222d05d027ac993155e8968ba09033a7719a0571d9f0f37ae5f7b0691a2"
+    },
+    {
+      "url": "https://letbuy-y.web.app/robots.txt",
+      "capturedAt": "2026-11-03T02:29:42.787910+00:00",
+      "status": 200,
+      "finalUrl": "https://letbuy-y.web.app/robots.txt",
+      "redirectChain": [],
+      "bytes": 76437,
+      "seconds": 0.847,
+      "headers": {
+        "Cache-Control": "max-age=3600",
+        "Content-Type": "text/html; charset=utf-8",
+        "Etag": "\"3b17f85c53034678af7d59cfa843dc35895cabf29e2fbf490f96de4372d46d67\"",
+        "Vary": "x-fh-requested-host, accept-encoding"
+      },
+      "sha256": "2d37e0be684b7372a7bb44d444c0e7ec73066d2eeb70988cce5936ed149519d1",
+      "robotsText": "<!DOCTYPE html><!--4_b09ipvZwenRyUhcmWne--><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" href=\"/_next/static/media/797e433ab948586e-s.p.dbea232f.woff2\" as=\"font\" crossorigin=\"\" type=\"font/woff2\"/><link rel=\"preload\" href=\"/_next/static/media/caa3a2e1cccd8315-s.p.853070df.woff2\" as=\"font\" crossorigin=\"\" type=\"font/woff2\"/><link rel=\"preload\" as=\"image\" href=\"https://randomuser.me/api/portraits/women/44.jpg\"/><link rel=\"preload\" as=\"image\" href=\"https://randomuser.me/api/portraits/men/32.jpg\"/><link rel=\"preload\" as=\"image\" href=\"https://randomuser.me/api/portraits/women/68.jpg\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/25ad11fd7dcb2524.css\" data-precedence=\"next\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/4017b7a5f44d71c4.js\"/><script src=\"/_next/static/chunks/236f7e5abd6f09ff.js\" async=\"\"></script><script src=\"/_next/static/chunks/cc759f7c2413b7ff.js\" async=\"\"></script><script src=\"/_next/static/chunks/1f0ec75da032508a.js\" async=\"\"></script><script src=\"/_next/static/chunks/turbopack-76702810c22c5142.js\" async=\"\"></script><script src=\"/_next/static/chunks/ff1a16fafef87110.js\" async=\"\"></script><script src=\"/_next/static/chunks/7340adf74ff47ec0.js\" async=\"\"></script><script src=\"/_next/static/chunks/796e69ae18b2784c.js\" async=\"\"></script><script src=\"/_next/static/chunks/ae46d9bbf2067a83.js\" async=\"\"></script><meta name=\"next-size-adjust\" content=\"\"/><title>Create Next App</title><meta name=\"description\" content=\"Generated by create next app\"/><link rel=\"icon\" href=\"/favicon.ico?favicon.0b3bf435.ico\" sizes=\"256x256\" type=\"image/x-icon\"/><script src=\"/_next/static/chunks/a6dad97d9634a72d.js\" noModule=\"\"></script></head><body class=\"geist_a71539c9-module__T19VSG__variable geist_mono_8d43a2aa-module__8Li5zG__variable antialiased\"><div hidden=\"\"><!--$--><!--/$--></div><div class=\"min-h-screen\" style=\"background:linear-gradient(135deg, #F8FAFF 0%, #EEF2FF 50%, #FAF5FF 100%)\"><nav class=\"fixed top-0 left-0 right-0 z-50 transition-all duration-300 \" style=\"opacity:0;transform:translateY(-20px)\"><div class=\"max-w-[1400px] mx-auto px-5 md:px-10 lg:px-20\"><div class=\"flex items-center justify-between h-16 md:h-20\"><a class=\"flex items-center gap-3\" href=\"/\"><div class=\"w-10 h-10 rounded-xl flex items-center justify-center\" style=\"background:linear-gradient(135deg, #6366F1, #8B5CF6)\"><svg class=\"w-5 h-5 text-white\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z\"></path></svg></div><span class=\"text-lg font-bold\" style=\"color:#0F172A\">LetBuyy</span></a><div class=\"hidden md:flex items-center gap-8\"><a href=\"#features\" class=\"text-sm font-medium transition-colors hover:text-[#6366F1]\" style=\"color:#64748B\">Features</a><a href=\"#pricing\" class=\"text-sm font-medium transition-colors hover:text-[#6366F1]\" style=\"color:#64748B\">Pricing</a><a href=\"#testimonials\" class=\"text-sm font-medium transition-colors hover:text-[#6366F1]\" style=\"color:#64748B\">Testimonials</a></div><div class=\"flex items-center gap-3\"><a class=\"hidden sm:block text-sm font-semibold px-4 py-2 rounded-lg transition-colors hover:bg-gray-100\" style=\"color:#1E293B\" href=\"/auth/login/\">Log in</a><a class=\"text-sm font-semibold px-4 py-2.5 rounded-xl text-white transition-all hover:opacity-90 hover:scale-105\" style=\"background:linear-gradient(135deg, #6366F1, #8B5CF6);box-shadow:0 4px 12px #6366F140\" href=\"/auth/login/\">Get Started</a><button class=\"md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5\"></path></svg></button></div></div></div></nav><section class=\"pt-24 md:pt-32 lg:pt-40 px-5 md:px-10 lg:px-20 pb-16 md:pb-24\"><div class=\"max-w-[1400px] mx-auto text-center\"><div style=\"opacity:0;transform:translateY(30px)\"><h1 class=\"text-4xl md:text-5xl lg:text-[64px] font-extrabold leading-[1.1] tracking-[-2px]\" style=\"color:#0F172A\">Stop Renting.</h1><h1 class=\"text-4xl md:text-5xl lg:text-[64px] font-extrabold leading-[1.1] tracking-[-2px] bg-clip-text text-transparent\" style=\"background-image:linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);opacity:0;transform:translateY(20px)\">Start Owning.</h1><p class=\"mt-4 text-lg md:text-xl font-semibold tracking-[-0.5px]\" style=\"color:#64748B;opacity:0\">Your Store. Your Customers. Your Data.</p></div><p class=\"mt-6 text-base md:text-lg max-w-[600px] mx-auto\" style=\"color:#64748B;opacity:0;transform:translateY(20px)\">Break free from marketplace fees and restrictions. Build a store that&#x27;s truly yours.</p><div class=\"mt-12 md:mt-16 relative\" style=\"opacity:0;transform:translateY(40px) scale(0.95)\"><div class=\"relative max-w-4xl mx-auto rounded-2xl overflow-hidden\" style=\"background:linear-gradient(180deg, #1E293B 0%, #0F172A 100%);box-shadow:0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 60px rgba(99, 102, 241, 0.1)\"><div class=\"flex items-center gap-2 px-4 py-3 border-b border-white/10\"><div class=\"flex gap-1.5\"><div class=\"w-3 h-3 rounded-full bg-red-500\"></div><div class=\"w-3 h-3 rounded-full bg-yellow-500\"></div><div class=\"w-3 h-3 rounded-full bg-green-500\"></div></div><div class=\"flex-1 mx-8\"><div class=\"bg-white/10 rounded-lg px-4 py-1.5 text-xs text-white/60 text-center\">yourstore.letbuyy.store</div></div></div><div class=\"p-4 md:p-6 aspect-[16/9] bg-gradient-to-br from-slate-900 to-slate-800\"><div class=\"grid grid-cols-4 gap-4 h-full\"><div class=\"col-span-4 grid grid-cols-2 md:grid-cols-4 gap-3\"><div class=\"bg-white/5 rounded-xl p-3 md:p-4 border border-white/10\" style=\"opacity:0;transform:translateY(20px)\"><div class=\"text-xs text-white/50\">Revenue</div><div class=\"text-xl md:text-2xl font-bold text-white mt-1\">\u20b92.4L</div><div class=\"w-full h-1 rounded-full mt-2\" style=\"background-color:#10B98130\"><div class=\"h-full rounded-full\" style=\"background-color:#10B981;width:0px\"></div></div></div><div class=\"bg-white/5 rounded-xl p-3 md:p-4 border border-white/10\" style=\"opacity:0;transform:translateY(20px)\"><div class=\"text-xs text-white/50\">Orders</div><div class=\"text-xl md:text-2xl font-bold text-white mt-1\">142</div><div class=\"w-full h-1 rounded-full mt-2\" style=\"background-color:#6366F130\"><div class=\"h-full rounded-full\" style=\"background-color:#6366F1;width:0px\"></div></div></div><div class=\"bg-white/5 rounded-xl p-3 md:p-4 border border-white/10\" style=\"opacity:0;transform:translateY(20px)\"><div class=\"text-xs text-white/50\">Visitors</div><div class=\"text-xl md:text-2xl font-bold text-white mt-1\">1.2K</div><div class=\"w-full h-1 rounded-full mt-2\" style=\"background-color:#8B5CF630\"><div class=\"h-full rounded-full\" style=\"background-color:#8B5CF6;width:0px\"></div></div></div><div class=\"bg-white/5 rounded-xl p-3 md:p-4 border border-white/10\" style=\"opacity:0;transform:translateY(20px)\"><div class=\"text-xs text-white/50\">Conversion</div><div class=\"text-xl md:text-2xl font-bold text-white mt-1\">3.2%</div><div class=\"w-full h-1 rounded-full mt-2\" style=\"background-color:#EC489930\"><div class=\"h-full rounded-full\" style=\"background-color:#EC4899;width:0px\"></div></div></div></div></div></div></div><div class=\"absolute -right-4 top-1/4 hidden lg:block bg-white rounded-xl p-4 shadow-xl border border-gray-100\" style=\"opacity:0;transform:translateX(50px) rotate(3deg)\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-full flex items-center justify-center\" style=\"background-color:#10B98120\"><svg class=\"w-5 h-5\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg></div><div><div class=\"text-xs text-gray-500\">New Order!</div><div class=\"text-sm font-semibold text-gray-900\">\u20b92,450.00</div></div></div></div><div class=\"absolute -left-4 top-1/3 hidden lg:block bg-white rounded-xl p-4 shadow-xl border border-gray-100\" style=\"opacity:0;transform:translateX(-50px) rotate(-3deg)\"><div class=\"flex items-center gap-2\"><div class=\"w-2 h-2 rounded-full bg-green-500 animate-pulse\"></div><span class=\"text-sm font-medium text-gray-700\">Store is Live</span></div></div></div><div class=\"mt-10 md:mt-12 flex flex-wrap justify-center gap-4 md:gap-6\" style=\"opacity:0\"><div class=\"flex items-center gap-2\" style=\"opacity:0;transform:translateY(10px)\"><div class=\"w-6 h-6 rounded-lg flex items-center justify-center text-xs\" style=\"background-color:#10B98115;color:#10B981\">\u2713</div><span class=\"text-sm font-medium\" style=\"color:#64748B\">Free to start</span></div><div class=\"flex items-center gap-2\" style=\"opacity:0;transform:translateY(10px)\"><div class=\"w-6 h-6 rounded-lg flex items-center justify-center text-xs\" style=\"background-color:#6366F115;color:#6366F1\">\u20b9</div><span class=\"text-sm font-medium\" style=\"color:#64748B\">No commission</span></div><div class=\"flex items-center gap-2\" style=\"opacity:0;transform:translateY(10px)\"><div class=\"w-6 h-6 rounded-lg flex items-center justify-center text-xs\" style=\"background-color:#8B5CF615;color:#8B5CF6\">\ud83d\udcf1</div><span class=\"text-sm font-medium\" style=\"color:#64748B\">Mobile-first</span></div></div><div class=\"mt-10 flex flex-col sm:flex-row items-center justify-center gap-4\" style=\"opacity:0;transform:translateY(20px)\"><a class=\"group flex items-center gap-2 px-6 py-3.5 rounded-full text-white font-semibold transition-all hover:scale-105 hover:shadow-lg\" style=\"background:linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);box-shadow:0 8px 20px #6366F140\" href=\"/auth/login/\">Create Your Store<svg class=\"w-4 h-4 transition-transform group-hover:translate-x-1\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3\"></path></svg></a><button class=\"flex items-center gap-2 px-5 py-3 rounded-full bg-white border font-semibold transition-all hover:bg-gray-50 hover:shadow-md\" style=\"border-color:#E2E8F0;color:#1E293B\">How It Works<svg class=\"w-4 h-4\" fill=\"#6366F1\" viewBox=\"0 0 24 24\"><path d=\"M8 5v14l11-7z\"></path></svg></button></div><div class=\"mt-12 flex flex-wrap items-center justify-center gap-6 md:gap-8\" style=\"opacity:0\"><div class=\"flex items-center gap-2\"><span class=\"text-lg font-extrabold\" style=\"color:#6366F1\">500+</span><span class=\"text-sm\" style=\"color:#94A3B8\">Indian Sellers</span></div><div class=\"flex items-center gap-2\"><span class=\"text-lg font-extrabold\" style=\"color:#6366F1\">\u20b92Cr+</span><span class=\"text-sm\" style=\"color:#94A3B8\">Processed</span></div><div class=\"h-6 w-px bg-gray-200\"></div><div class=\"flex items-center gap-2 text-xs\" style=\"color:#94A3B8\">Powered by <span class=\"font-semibold text-gray-700\">Razorpay</span> \u2022 <span class=\"font-semibold text-gray-700\">Shiprocket</span></div></div></div></section><section class=\"jsx-8e8e0661d14ead5e py-8 md:py-12 overflow-hidden\"><div class=\"jsx-8e8e0661d14ead5e max-w-[1400px] mx-auto px-5 md:px-10\"><p class=\"text-center text-sm text-gray-500 mb-6\" style=\"opacity:0\">Trusted by 500+ sellers across India</p></div><div class=\"jsx-8e8e0661d14ead5e relative\"><div class=\"jsx-8e8e0661d14ead5e absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none\"></div><div class=\"jsx-8e8e0661d14ead5e absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none\"></div><div class=\"flex gap-12 animate-marquee\" style=\"opacity:0\"><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">FashionHub</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">TechKart</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">OrganicLife</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">UrbanTrends</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">LuxeLiving</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">DailyNeeds</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">StyleStore</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">HomeDecor</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">BeautyBox</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">FoodMart</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">FashionHub</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">TechKart</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">OrganicLife</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">UrbanTrends</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">LuxeLiving</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">DailyNeeds</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">StyleStore</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">HomeDecor</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">BeautyBox</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">FoodMart</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">FashionHub</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">TechKart</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">OrganicLife</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">UrbanTrends</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">LuxeLiving</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">DailyNeeds</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">StyleStore</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">HomeDecor</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">BeautyBox</span></div><div class=\"jsx-8e8e0661d14ead5e flex-shrink-0 px-6 py-3 bg-gray-50 rounded-xl border border-gray-100\"><span class=\"jsx-8e8e0661d14ead5e text-sm font-semibold text-gray-600 whitespace-nowrap\">FoodMart</span></div></div></div></section><section class=\"py-16 md:py-24\"><div class=\"max-w-[1400px] mx-auto\"><div class=\"text-center px-5 md:px-10 mb-10\"><div class=\"inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4\" style=\"background:linear-gradient(135deg, #6366F115, #8B5CF610);border:1px solid #6366F120;opacity:0;transform:scale(0.95)\"><span class=\"w-2 h-2 rounded-full\" style=\"background:linear-gradient(135deg, #6366F1, #8B5CF6)\"></span><span class=\"text-sm font-semibold\" style=\"color:#6366F1\">Features</span></div><h2 class=\"text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-[-1px]\" style=\"color:#0F172A;opacity:0;transform:translateY(20px)\">Everything You Need</h2><p class=\"mt-3 text-base md:text-lg\" style=\"color:#64748B;opacity:0\">Powerful tools to grow your business</p></div><div class=\"flex gap-5 overflow-x-auto pb-6 px-5 md:px-10 scrollbar-hide snap-x snap-mandatory\" style=\"scroll-snap-type:x mandatory\"><div class=\"flex-shrink-0 w-[300px] md:w-[320px] snap-start\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"h-full p-6 bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl\" style=\"border-color:#E5E7EB;box-shadow:0 15px 30px #8B5CF610\"><div class=\"flex items-start justify-between mb-6\"><div class=\"w-14 h-14 rounded-2xl flex items-center justify-center text-2xl\" style=\"background:linear-gradient(135deg, #8B5CF6, #8B5CF6CC);box-shadow:0 8px 16px #8B5CF640\">\ud83c\udfac</div><span class=\"px-3 py-1 rounded-full text-xs font-bold\" style=\"background-color:#8B5CF615;color:#8B5CF6;border:1px solid #8B5CF630\">Popular</span></div><div class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background:linear-gradient(135deg, #8B5CF615, #8B5CF608);color:#8B5CF6;border:1px solid #8B5CF620\">3x More Sales</div><h3 class=\"text-xl font-bold mb-1\" style=\"color:#0F172A\">Shoppable Stories</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Turn reels into revenue</p><div class=\"flex flex-wrap gap-2\"><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Product tagging</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>One-tap checkout</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Engagement analytics</span></div></div></div><div class=\"flex-shrink-0 w-[300px] md:w-[320px] snap-start\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"h-full p-6 bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl\" style=\"border-color:#E5E7EB;box-shadow:0 15px 30px #14B8A610\"><div class=\"flex items-start justify-between mb-6\"><div class=\"w-14 h-14 rounded-2xl flex items-center justify-center text-2xl\" style=\"background:linear-gradient(135deg, #14B8A6, #14B8A6CC);box-shadow:0 8px 16px #14B8A640\">\ud83d\udcca</div><span class=\"px-3 py-1 rounded-full text-xs font-bold\" style=\"background-color:#14B8A615;color:#14B8A6;border:1px solid #14B8A630\">New</span></div><div class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background:linear-gradient(135deg, #14B8A615, #14B8A608);color:#14B8A6;border:1px solid #14B8A620\">Smart Data</div><h3 class=\"text-xl font-bold mb-1\" style=\"color:#0F172A\">Live Analytics</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Real-time insights dashboard</p><div class=\"flex flex-wrap gap-2\"><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#14B8A6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Revenue tracking</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#14B8A6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Customer insights</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#14B8A6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Sales reports</span></div></div></div><div class=\"flex-shrink-0 w-[300px] md:w-[320px] snap-start\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"h-full p-6 bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl\" style=\"border-color:#E5E7EB;box-shadow:0 15px 30px #10B98110\"><div class=\"flex items-start justify-between mb-6\"><div class=\"w-14 h-14 rounded-2xl flex items-center justify-center text-2xl\" style=\"background:linear-gradient(135deg, #10B981, #10B981CC);box-shadow:0 8px 16px #10B98140\">\ud83d\udcb3</div></div><div class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background:linear-gradient(135deg, #10B98115, #10B98108);color:#10B981;border:1px solid #10B98120\">Zero Hold</div><h3 class=\"text-xl font-bold mb-1\" style=\"color:#0F172A\">Instant Payments</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Get paid in 24 hours</p><div class=\"flex flex-wrap gap-2\"><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>UPI &amp; Cards</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>COD support</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Auto-settlement</span></div></div></div><div class=\"flex-shrink-0 w-[300px] md:w-[320px] snap-start\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"h-full p-6 bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl\" style=\"border-color:#E5E7EB;box-shadow:0 15px 30px #F59E0B10\"><div class=\"flex items-start justify-between mb-6\"><div class=\"w-14 h-14 rounded-2xl flex items-center justify-center text-2xl\" style=\"background:linear-gradient(135deg, #F59E0B, #F59E0BCC);box-shadow:0 8px 16px #F59E0B40\">\ud83d\ude9a</div></div><div class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background:linear-gradient(135deg, #F59E0B15, #F59E0B08);color:#F59E0B;border:1px solid #F59E0B20\">5+ Couriers</div><h3 class=\"text-xl font-bold mb-1\" style=\"color:#0F172A\">Smart Shipping</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Multi-courier integration</p><div class=\"flex flex-wrap gap-2\"><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#F59E0B\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Auto labels</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#F59E0B\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Live tracking</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#F59E0B\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Best rates</span></div></div></div><div class=\"flex-shrink-0 w-[300px] md:w-[320px] snap-start\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"h-full p-6 bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl\" style=\"border-color:#E5E7EB;box-shadow:0 15px 30px #EC489910\"><div class=\"flex items-start justify-between mb-6\"><div class=\"w-14 h-14 rounded-2xl flex items-center justify-center text-2xl\" style=\"background:linear-gradient(135deg, #EC4899, #EC4899CC);box-shadow:0 8px 16px #EC489940\">\ud83d\udce6</div></div><div class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background:linear-gradient(135deg, #EC489915, #EC489908);color:#EC4899;border:1px solid #EC489920\">Real-time</div><h3 class=\"text-xl font-bold mb-1\" style=\"color:#0F172A\">Stock Sync</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Never oversell again</p><div class=\"flex flex-wrap gap-2\"><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#EC4899\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Multi-channel</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#EC4899\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Low alerts</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#EC4899\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Bulk upload</span></div></div></div><div class=\"flex-shrink-0 w-[300px] md:w-[320px] snap-start\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"h-full p-6 bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl\" style=\"border-color:#E5E7EB;box-shadow:0 15px 30px #6366F110\"><div class=\"flex items-start justify-between mb-6\"><div class=\"w-14 h-14 rounded-2xl flex items-center justify-center text-2xl\" style=\"background:linear-gradient(135deg, #6366F1, #6366F1CC);box-shadow:0 8px 16px #6366F140\">\ud83d\udce3</div></div><div class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background:linear-gradient(135deg, #6366F115, #6366F108);color:#6366F1;border:1px solid #6366F120\">Built-in SEO</div><h3 class=\"text-xl font-bold mb-1\" style=\"color:#0F172A\">Marketing Suite</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Grow your audience</p><div class=\"flex flex-wrap gap-2\"><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#6366F1\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Discount codes</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#6366F1\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Social share</span><span class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium\" style=\"background-color:#F8FAFF;border:1px solid #E5E7EB;color:#0F172A\"><svg class=\"w-3 h-3\" fill=\"#6366F1\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg>Email tools</span></div></div></div></div><div class=\"flex justify-center gap-2 mt-6\"><button class=\"transition-all duration-300\" style=\"width:28px;height:8px;border-radius:4px;background:linear-gradient(135deg, #6366F1, #8B5CF6);box-shadow:0 2px 8px #6366F140\"></button><button class=\"transition-all duration-300\" style=\"width:8px;height:8px;border-radius:4px;background:#E2E8F0;box-shadow:none\"></button><button class=\"transition-all duration-300\" style=\"width:8px;height:8px;border-radius:4px;background:#E2E8F0;box-shadow:none\"></button><button class=\"transition-all duration-300\" style=\"width:8px;height:8px;border-radius:4px;background:#E2E8F0;box-shadow:none\"></button><button class=\"transition-all duration-300\" style=\"width:8px;height:8px;border-radius:4px;background:#E2E8F0;box-shadow:none\"></button><button class=\"transition-all duration-300\" style=\"width:8px;height:8px;border-radius:4px;background:#E2E8F0;box-shadow:none\"></button></div><div class=\"flex justify-center items-center gap-2 mt-4\" style=\"opacity:0\"><span class=\"text-xs\" style=\"color:#64748B80\">\ud83d\udc46 Swipe to explore</span></div></div></section><section class=\"py-16 md:py-24 px-5 md:px-10 lg:px-20\"><div class=\"max-w-[1400px] mx-auto\"><div class=\"text-center mb-12 md:mb-16\"><div class=\"inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4\" style=\"background:#14B8A615;border:1px solid #14B8A630;opacity:0;transform:scale(0.95)\"><span class=\"w-2 h-2 rounded-full\" style=\"background-color:#14B8A6\"></span><span class=\"text-sm font-semibold\" style=\"color:#14B8A6\">Your Journey</span></div><h2 class=\"text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-[-1px]\" style=\"color:#0F172A;opacity:0;transform:translateY(20px)\">Launch in 10 Minutes</h2><div class=\"mt-3 flex items-center justify-center gap-2\" style=\"opacity:0\"><span style=\"color:#64748B\">From zero to selling in</span><span class=\"px-3 py-1 rounded-lg text-xs font-bold text-white\" style=\"background:linear-gradient(135deg, #6366F1, #8B5CF6)\">4 steps</span></div></div><div class=\"hidden md:block relative h-1 bg-gray-200 rounded-full mx-20 mb-10\"><div class=\"absolute top-0 left-0 h-full rounded-full\" style=\"background:linear-gradient(90deg, #8B5CF6, #14B8A6, #10B981, #EC4899);box-shadow:0 0 12px #6366F150;width:0px\"></div></div><div class=\"grid md:grid-cols-4 gap-6\"><div class=\"text-center\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"mx-auto mb-5\" style=\"transform:scale(0.8)\"><div class=\"relative w-16 h-16 md:w-20 md:h-20 mx-auto\"><div class=\"absolute inset-0 rounded-full\" style=\"border:2px solid #8B5CF630\"></div><div class=\"absolute inset-2 rounded-full flex items-center justify-center text-2xl md:text-3xl\" style=\"background:linear-gradient(135deg, #8B5CF6, #8B5CF6CC);box-shadow:0 8px 20px #8B5CF640\">\ud83d\udcf2</div></div></div><span class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background-color:#8B5CF615;color:#8B5CF6\">STEP <!-- -->01</span><h3 class=\"text-lg font-bold mb-1\" style=\"color:#0F172A\">Download App</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Get started in seconds</p><div class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs mb-4\" style=\"background-color:white;border:1px solid #E5E7EB\"><span style=\"color:#8B5CF6\">\u23f1\ufe0f</span><span class=\"font-bold\" style=\"color:#8B5CF6\">2 min</span></div><div class=\"space-y-2\"><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">One-tap signup</span></div><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">Free subdomain</span></div><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">No docs needed</span></div></div></div><div class=\"text-center\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"mx-auto mb-5\" style=\"transform:scale(0.8)\"><div class=\"relative w-16 h-16 md:w-20 md:h-20 mx-auto\"><div class=\"absolute inset-0 rounded-full\" style=\"border:2px solid #14B8A630\"></div><div class=\"absolute inset-2 rounded-full flex items-center justify-center text-2xl md:text-3xl\" style=\"background:linear-gradient(135deg, #14B8A6, #14B8A6CC);box-shadow:0 8px 20px #14B8A640\">\ud83d\udcf8</div></div></div><span class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background-color:#14B8A615;color:#14B8A6\">STEP <!-- -->02</span><h3 class=\"text-lg font-bold mb-1\" style=\"color:#0F172A\">Add Products</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Upload or shoot reels</p><div class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs mb-4\" style=\"background-color:white;border:1px solid #E5E7EB\"><span style=\"color:#14B8A6\">\u23f1\ufe0f</span><span class=\"font-bold\" style=\"color:#14B8A6\">5 min</span></div><div class=\"space-y-2\"><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#14B8A6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">Bulk upload</span></div><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#14B8A6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">Video editor</span></div><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#14B8A6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">Auto-optimize</span></div></div></div><div class=\"text-center\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"mx-auto mb-5\" style=\"transform:scale(0.8)\"><div class=\"relative w-16 h-16 md:w-20 md:h-20 mx-auto\"><div class=\"absolute inset-0 rounded-full\" style=\"border:2px solid #10B98130\"></div><div class=\"absolute inset-2 rounded-full flex items-center justify-center text-2xl md:text-3xl\" style=\"background:linear-gradient(135deg, #10B981, #10B981CC);box-shadow:0 8px 20px #10B98140\">\ud83d\ude80</div></div></div><span class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background-color:#10B98115;color:#10B981\">STEP <!-- -->03</span><h3 class=\"text-lg font-bold mb-1\" style=\"color:#0F172A\">Go Live</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Share &amp; start selling</p><div class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs mb-4\" style=\"background-color:white;border:1px solid #E5E7EB\"><span style=\"color:#10B981\">\u23f1\ufe0f</span><span class=\"font-bold\" style=\"color:#10B981\">1 min</span></div><div class=\"space-y-2\"><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">Instant publish</span></div><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">WhatsApp ready</span></div><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">Social share</span></div></div></div><div class=\"text-center\" style=\"opacity:0;transform:translateY(30px)\"><div class=\"mx-auto mb-5\" style=\"transform:scale(0.8)\"><div class=\"relative w-16 h-16 md:w-20 md:h-20 mx-auto\"><div class=\"absolute inset-0 rounded-full\" style=\"border:2px solid #EC489930\"></div><div class=\"absolute inset-2 rounded-full flex items-center justify-center text-2xl md:text-3xl\" style=\"background:linear-gradient(135deg, #EC4899, #EC4899CC);box-shadow:0 8px 20px #EC489940\">\ud83d\udcc8</div></div></div><span class=\"inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3\" style=\"background-color:#EC489915;color:#EC4899\">STEP <!-- -->04</span><h3 class=\"text-lg font-bold mb-1\" style=\"color:#0F172A\">Scale &amp; Grow</h3><p class=\"text-sm mb-4\" style=\"color:#64748B\">Track &amp; optimize</p><div class=\"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs mb-4\" style=\"background-color:white;border:1px solid #E5E7EB\"><span style=\"color:#EC4899\">\u23f1\ufe0f</span><span class=\"font-bold\" style=\"color:#EC4899\">\u221e</span></div><div class=\"space-y-2\"><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#EC4899\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">Order alerts</span></div><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#EC4899\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">Analytics</span></div><div class=\"flex items-center justify-center gap-2 text-sm\"><svg class=\"w-4 h-4 flex-shrink-0\" fill=\"#EC4899\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#64748B\">Auto shipping</span></div></div></div></div><div class=\"mt-12 md:mt-16 p-6 md:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6\" style=\"background:linear-gradient(135deg, #6366F1, #8B5CF6);box-shadow:0 20px 40px #6366F130;opacity:0;transform:translateY(30px)\"><div><h3 class=\"text-xl md:text-2xl font-bold text-white mb-1\">Ready to launch?</h3><p class=\"text-white/80 text-sm md:text-base\">Join 500+ sellers already growing</p></div><button class=\"flex items-center gap-2 px-6 py-3 bg-white rounded-xl font-bold transition-all hover:scale-105\" style=\"color:#6366F1;box-shadow:0 4px 12px rgba(0,0,0,0.15)\">Get Started<svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" stroke-width=\"2.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3\"></path></svg></button></div></div></section><section id=\"pricing\" class=\"py-16 md:py-24 px-5 md:px-10 lg:px-20 bg-gradient-to-b from-white to-slate-50/50\"><div class=\"max-w-[1400px] mx-auto\"><div class=\"text-center mb-12\"><div class=\"inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4\" style=\"background:#10B98115;border:1px solid #10B98130;opacity:0;transform:scale(0.95)\"><span class=\"w-2 h-2 rounded-full\" style=\"background-color:#10B981\"></span><span class=\"text-sm font-semibold\" style=\"color:#10B981\">Pricing</span></div><h2 class=\"text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-[-1px]\" style=\"color:#0F172A;opacity:0;transform:translateY(20px)\">Simple, Transparent Pricing</h2><p class=\"mt-3 text-base md:text-lg\" style=\"color:#64748B;opacity:0\">Start free, upgrade when you need</p><div class=\"mt-8 inline-flex items-center gap-4 p-1.5 bg-gray-100 rounded-full\" style=\"opacity:0;transform:translateY(10px)\"><button class=\"px-5 py-2 rounded-full text-sm font-semibold transition-all bg-white shadow-md text-gray-900\">Monthly</button><button class=\"flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all text-gray-500\">Yearly<span class=\"px-2 py-0.5 rounded-full text-[10px] font-bold text-white\" style=\"background-color:#10B981\">20% OFF</span></button></div></div><div class=\"grid md:grid-cols-3 gap-6 max-w-5xl mx-auto\"><div class=\"relative p-6 md:p-8 rounded-2xl transition-all duration-300 bg-white border hover:shadow-xl\" style=\"border-color:#E5E7EB;opacity:0;transform:translateY(30px)\"><h3 class=\"text-lg font-bold mb-1\" style=\"color:#64748B\">Free</h3><p class=\"text-sm mb-6\" style=\"color:#64748B\">Perfect for testing ideas</p><div class=\"mb-6\"><div class=\"flex items-baseline gap-1\" style=\"opacity:0;transform:translateY(-10px)\"><span class=\"text-4xl md:text-5xl font-extrabold\">\u20b90</span><span class=\"text-sm\" style=\"color:#64748B\">/month</span></div></div><ul class=\"space-y-3 mb-8\"><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#64748B\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#0F172A\">10 Products</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#64748B\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#0F172A\">1 Store</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#64748B\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#0F172A\">Basic Themes</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#64748B\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#0F172A\">LetBuyy Branding</span></li></ul><a class=\"block w-full py-3 rounded-xl text-center font-semibold transition-all hover:scale-[1.02] border-2 hover:bg-gray-50\" style=\"border-color:#64748B;color:#64748B\" href=\"/auth/login/\">Start Free</a></div><div class=\"relative p-6 md:p-8 rounded-2xl transition-all duration-300 bg-gradient-to-br from-slate-900 to-slate-800 text-white scale-105 shadow-2xl\" style=\"border-color:transparent;box-shadow:0 25px 50px #6366F130;opacity:0;transform:translateY(30px)\"><div class=\"absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white\" style=\"background:linear-gradient(135deg, #6366F1, #EC4899)\">Most Popular</div><h3 class=\"text-lg font-bold mb-1\" style=\"color:white\">Pro</h3><p class=\"text-sm mb-6\" style=\"color:rgba(255,255,255,0.7)\">For serious sellers</p><div class=\"mb-6\"><div class=\"flex items-baseline gap-1\" style=\"opacity:0;transform:translateY(-10px)\"><span class=\"text-4xl md:text-5xl font-extrabold\">\u20b9499</span><span class=\"text-sm\" style=\"color:rgba(255,255,255,0.6)\">/month</span></div></div><ul class=\"space-y-3 mb-8\"><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:rgba(255,255,255,0.9)\">Unlimited Products</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:rgba(255,255,255,0.9)\">3 Stores</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:rgba(255,255,255,0.9)\">Custom Domain</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:rgba(255,255,255,0.9)\">No Branding</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#10B981\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:rgba(255,255,255,0.9)\">Analytics</span></li></ul><a class=\"block w-full py-3 rounded-xl text-center font-semibold transition-all hover:scale-[1.02] bg-white text-gray-900 hover:bg-gray-100\" style=\"border-color:transparent;color:#0F172A\" href=\"/auth/login/\">Get Started</a></div><div class=\"relative p-6 md:p-8 rounded-2xl transition-all duration-300 bg-white border hover:shadow-xl\" style=\"border-color:#E5E7EB;opacity:0;transform:translateY(30px)\"><h3 class=\"text-lg font-bold mb-1\" style=\"color:#8B5CF6\">Max</h3><p class=\"text-sm mb-6\" style=\"color:#64748B\">For scaling brands</p><div class=\"mb-6\"><div class=\"flex items-baseline gap-1\" style=\"opacity:0;transform:translateY(-10px)\"><span class=\"text-4xl md:text-5xl font-extrabold\">\u20b91999</span><span class=\"text-sm\" style=\"color:#64748B\">/month</span></div></div><ul class=\"space-y-3 mb-8\"><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#0F172A\">Everything in Pro</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#0F172A\">Unlimited Stores</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#0F172A\">Priority Support</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#0F172A\">White-label</span></li><li class=\"flex items-center gap-3 text-sm\"><svg class=\"w-5 h-5 flex-shrink-0\" fill=\"#8B5CF6\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path></svg><span style=\"color:#0F172A\">API Access</span></li></ul><a class=\"block w-full py-3 rounded-xl text-center font-semibold transition-all hover:scale-[1.02] border-2 hover:bg-gray-50\" style=\"border-color:#8B5CF6;color:#8B5CF6\" href=\"/auth/login/\">Get Started</a></div></div></div></section><section id=\"testimonials\" class=\"py-16 md:py-24 px-5 md:px-10 lg:px-20\"><div class=\"max-w-[1400px] mx-auto\"><div class=\"text-center mb-12\"><div class=\"inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4\" style=\"background:#EC489915;border:1px solid #EC489930;opacity:0;transform:scale(0.95)\"><span class=\"w-2 h-2 rounded-full\" style=\"background-color:#EC4899\"></span><span class=\"text-sm font-semibold\" style=\"color:#EC4899\">Testimonials</span></div><h2 class=\"text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-[-1px]\" style=\"color:#0F172A;opacity:0;transform:translateY(20px)\">Loved by Sellers</h2><p class=\"mt-3 text-base md:text-lg\" style=\"color:#64748B;opacity:0\">Join 500+ successful store owners</p></div><div class=\"grid md:grid-cols-3 gap-6\"><div class=\"p-6 bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl\" style=\"border-color:#E5E7EB;opacity:0;transform:translateY(30px)\"><div class=\"flex gap-1 mb-4\"><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg></div><p class=\"text-base md:text-lg mb-6 leading-relaxed\" style=\"color:#0F172A\">&quot;<!-- -->LetBuyy transformed my small business into a brand. The video feature is a game changer!<!-- -->&quot;</p><div class=\"flex items-center gap-4\"><img src=\"https://randomuser.me/api/portraits/women/44.jpg\" alt=\"Priya Sharma\" class=\"w-12 h-12 rounded-full object-cover\"/><div><div class=\"font-semibold\" style=\"color:#0F172A\">Priya Sharma</div><div class=\"text-sm\" style=\"color:#64748B\">Fashion Store Owner</div></div></div></div><div class=\"p-6 bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl\" style=\"border-color:#E5E7EB;opacity:0;transform:translateY(30px)\"><div class=\"flex gap-1 mb-4\"><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg></div><p class=\"text-base md:text-lg mb-6 leading-relaxed\" style=\"color:#0F172A\">&quot;<!-- -->The best platform specific for Indian market. UPI payments work flawlessly.<!-- -->&quot;</p><div class=\"flex items-center gap-4\"><img src=\"https://randomuser.me/api/portraits/men/32.jpg\" alt=\"Rahul Verma\" class=\"w-12 h-12 rounded-full object-cover\"/><div><div class=\"font-semibold\" style=\"color:#0F172A\">Rahul Verma</div><div class=\"text-sm\" style=\"color:#64748B\">Electronics Seller</div></div></div></div><div class=\"p-6 bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl\" style=\"border-color:#E5E7EB;opacity:0;transform:translateY(30px)\"><div class=\"flex gap-1 mb-4\"><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg><svg class=\"w-5 h-5 text-amber-400\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path d=\"M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z\"></path></svg></div><p class=\"text-base md:text-lg mb-6 leading-relaxed\" style=\"color:#0F172A\">&quot;<!-- -->Support is amazing. I set up my store in 10 minutes and got my first order the same day.<!-- -->&quot;</p><div class=\"flex items-center gap-4\"><img src=\"https://randomuser.me/api/portraits/women/68.jpg\" alt=\"Anita Desai\" class=\"w-12 h-12 rounded-full object-cover\"/><div><div class=\"font-semibold\" style=\"color:#0F172A\">Anita Desai</div><div class=\"text-sm\" style=\"color:#64748B\">Home Decor</div></div></div></div></div></div></section><section class=\"py-16 md:py-24 px-5 md:px-10 lg:px-20\"><div class=\"max-w-[1200px] mx-auto\"><div class=\"relative overflow-hidden rounded-3xl p-8 md:p-16 text-center\" style=\"background:linear-gradient(135deg, #6366F1, #8B5CF6, #EC4899);box-shadow:0 30px 60px #6366F140;opacity:0;transform:translateY(30px)\"><div class=\"absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-20\" style=\"background:radial-gradient(circle, white 0%, transparent 70%)\"></div><div class=\"absolute -bottom-20 -left-20 w-48 h-48 rounded-full opacity-20\" style=\"background:radial-gradient(circle, white 0%, transparent 70%)\"></div><h2 class=\"relative text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-[-1px] mb-4\" style=\"opacity:0;transform:translateY(20px)\">Ready to Build Your Empire?</h2><p class=\"relative text-lg md:text-xl text-white/80 max-w-xl mx-auto mb-8\" style=\"opacity:0\">Join 500+ sellers who chose independence. Your store, your rules.</p><div class=\"relative flex flex-col sm:flex-row items-center justify-center gap-4\" style=\"opacity:0;transform:translateY(20px)\"><a class=\"group flex items-center gap-2 px-8 py-4 bg-white rounded-full font-bold text-gray-900 transition-all hover:scale-105 hover:shadow-xl\" href=\"/auth/login/\">Start Free Today<svg class=\"w-5 h-5 transition-transform group-hover:translate-x-1\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" stroke-width=\"2.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3\"></path></svg></a><span class=\"text-white/60 text-sm\">No credit card required</span></div></div></div></section><footer class=\"bg-slate-900 pt-16 pb-8\"><div class=\"max-w-[1400px] mx-auto px-5 md:px-10 lg:px-20\"><div class=\"h-1 w-full rounded-full mb-12\" style=\"background:linear-gradient(90deg, #6366F1, #8B5CF6, transparent)\"></div><div class=\"grid grid-cols-2 md:grid-cols-5 gap-8 mb-12\"><div class=\"col-span-2 md:col-span-1\"><div class=\"flex items-center gap-2 mb-4\"><div class=\"w-10 h-10 rounded-xl flex items-center justify-center\" style=\"background:linear-gradient(135deg, #6366F1, #8B5CF6)\"><svg class=\"w-5 h-5 text-white\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z\"></path></svg></div><span class=\"text-lg font-bold text-white\">LetBuyy</span></div><p class=\"text-sm text-slate-400 mb-4\">Your store. Your brand. Your empire.</p><div class=\"flex gap-3\"><a href=\"#\" class=\"w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors\"><svg class=\"w-4 h-4\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><path d=\"M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z\"></path></svg></a><a href=\"#\" class=\"w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors\"><svg class=\"w-4 h-4\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"></path></svg></a><a href=\"#\" class=\"w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors\"><svg class=\"w-4 h-4\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><path d=\"M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z\"></path></svg></a></div></div><div><h4 class=\"text-sm font-semibold text-white uppercase tracking-wider mb-4\">product</h4><ul class=\"space-y-3\"><li><a href=\"#features\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Features</a></li><li><a href=\"#pricing\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Pricing</a></li><li><a href=\"#testimonials\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Testimonials</a></li></ul></div><div><h4 class=\"text-sm font-semibold text-white uppercase tracking-wider mb-4\">company</h4><ul class=\"space-y-3\"><li><a href=\"#\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">About</a></li><li><a href=\"#\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Blog</a></li><li><a href=\"#\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Careers</a></li></ul></div><div><h4 class=\"text-sm font-semibold text-white uppercase tracking-wider mb-4\">legal</h4><ul class=\"space-y-3\"><li><a href=\"#\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Privacy Policy</a></li><li><a href=\"#\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Terms of Service</a></li><li><a href=\"#\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Refund Policy</a></li></ul></div><div><h4 class=\"text-sm font-semibold text-white uppercase tracking-wider mb-4\">support</h4><ul class=\"space-y-3\"><li><a href=\"#\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Help Center</a></li><li><a href=\"#\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">Contact Us</a></li><li><a href=\"#\" class=\"text-sm text-slate-400 hover:text-white transition-colors\">WhatsApp</a></li></ul></div></div><div class=\"border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4\"><p class=\"text-sm text-slate-500\">\u00a9 <!-- -->2026<!-- --> LetBuyy. All rights reserved.</p><div class=\"flex items-center gap-2 text-sm text-slate-500\">Made with <span class=\"text-red-500\">\u2764\ufe0f</span> in India</div></div></div></footer></div><!--$--><!--/$--><script src=\"/_next/static/chunks/4017b7a5f44d71c4.js\" id=\"_R_\" async=\"\"></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,\"1:\\\"$Sreact.fragment\\\"\\n2:I[39756,[\\\"/_next/static/chunks/ff1a16fafef87110.js\\\",\\\"/_next/static/chunks/7340adf74ff47ec0.js\\\"],\\\"default\\\"]\\n3:I[37457,[\\\"/_next/static/chunks/ff1a16fafef87110.js\\\",\\\"/_next/static/chunks/7340adf74ff47ec0.js\\\"],\\\"default\\\"]\\n4:I[47257,[\\\"/_next/static/chunks/ff1a16fafef87110.js\\\",\\\"/_next/static/chunks/7340adf74ff47ec0.js\\\"],\\\"ClientPageRoot\\\"]\\n5:I[52683,[\\\"/_next/static/chunks/796e69ae18b2784c.js\\\",\\\"/_next/static/chunks/ae46d9bbf2067a83.js\\\"],\\\"default\\\"]\\n8:I[97367,[\\\"/_next/static/chunks/ff1a16fafef87110.js\\\",\\\"/_next/static/chunks/7340adf74ff47ec0.js\\\"],\\\"OutletBoundary\\\"]\\n9:\\\"$Sreact.suspense\\\"\\nb:I[97367,[\\\"/_next/static/chunks/ff1a16fafef87110.js\\\",\\\"/_next/static/chunks/7340adf74ff47ec0.js\\\"],\\\"ViewportBoundary\\\"]\\nd:I[97367,[\\\"/_next/static/chunks/ff1a16fafef87110.js\\\",\\\"/_next/static/chunks/7340adf74ff47ec0.js\\\"],\\\"MetadataBoundary\\\"]\\nf:I[68027,[],\\\"default\\\"]\\n:HL[\\\"/_next/static/chunks/25ad11fd7dcb2524.css\\\",\\\"style\\\"]\\n:HL[\\\"/_next/static/media/797e433ab948586e-s.p.dbea232f.woff2\\\",\\\"font\\\",{\\\"crossOrigin\\\":\\\"\\\",\\\"type\\\":\\\"font/woff2\\\"}]\\n:HL[\\\"/_next/static/media/caa3a2e1cccd8315-s.p.853070df.woff2\\\",\\\"font\\\",{\\\"crossOrigin\\\":\\\"\\\",\\\"type\\\":\\\"font/woff2\\\"}]\\n\"])</script><script>self.__next_f.push([1,\"0:{\\\"P\\\":null,\\\"b\\\":\\\"4_b09ipvZwenRyUhcmWne\\\",\\\"c\\\":[\\\"\\\",\\\"\\\"],\\\"q\\\":\\\"\\\",\\\"i\\\":false,\\\"f\\\":[[[\\\"\\\",{\\\"children\\\":[\\\"__PAGE__\\\",{}]},\\\"$undefined\\\",\\\"$undefined\\\",true],[[\\\"$\\\",\\\"$1\\\",\\\"c\\\",{\\\"children\\\":[[[\\\"$\\\",\\\"link\\\",\\\"0\\\",{\\\"rel\\\":\\\"stylesheet\\\",\\\"href\\\":\\\"/_next/static/chunks/25ad11fd7dcb2524.css\\\",\\\"precedence\\\":\\\"next\\\",\\\"crossOrigin\\\":\\\"$undefined\\\",\\\"nonce\\\":\\\"$undefined\\\"}]],[\\\"$\\\",\\\"html\\\",null,{\\\"lang\\\":\\\"en\\\",\\\"children\\\":[\\\"$\\\",\\\"body\\\",null,{\\\"className\\\":\\\"geist_a71539c9-module__T19VSG__variable geist_mono_8d43a2aa-module__8Li5zG__variable antialiased\\\",\\\"children\\\":[\\\"$\\\",\\\"$L2\\\",null,{\\\"parallelRouterKey\\\":\\\"children\\\",\\\"error\\\":\\\"$undefined\\\",\\\"errorStyles\\\":\\\"$undefined\\\",\\\"errorScripts\\\":\\\"$undefined\\\",\\\"template\\\":[\\\"$\\\",\\\"$L3\\\",null,{}],\\\"templateStyles\\\":\\\"$undefined\\\",\\\"templateScripts\\\":\\\"$undefined\\\",\\\"notFound\\\":[[[\\\"$\\\",\\\"title\\\",null,{\\\"children\\\":\\\"404: This page could not be found.\\\"}],[\\\"$\\\",\\\"div\\\",null,{\\\"style\\\":{\\\"fontFamily\\\":\\\"system-ui,\\\\\\\"Segoe UI\\\\\\\",Roboto,Helvetica,Arial,sans-serif,\\\\\\\"Apple Color Emoji\\\\\\\",\\\\\\\"Segoe UI Emoji\\\\\\\"\\\",\\\"height\\\":\\\"100vh\\\",\\\"textAlign\\\":\\\"center\\\",\\\"display\\\":\\\"flex\\\",\\\"flexDirection\\\":\\\"column\\\",\\\"alignItems\\\":\\\"center\\\",\\\"justifyContent\\\":\\\"center\\\"},\\\"children\\\":[\\\"$\\\",\\\"div\\\",null,{\\\"children\\\":[[\\\"$\\\",\\\"style\\\",null,{\\\"dangerouslySetInnerHTML\\\":{\\\"__html\\\":\\\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\\\"}}],[\\\"$\\\",\\\"h1\\\",null,{\\\"className\\\":\\\"next-error-h1\\\",\\\"style\\\":{\\\"display\\\":\\\"inline-block\\\",\\\"margin\\\":\\\"0 20px 0 0\\\",\\\"padding\\\":\\\"0 23px 0 0\\\",\\\"fontSize\\\":24,\\\"fontWeight\\\":500,\\\"verticalAlign\\\":\\\"top\\\",\\\"lineHeight\\\":\\\"49px\\\"},\\\"children\\\":404}],[\\\"$\\\",\\\"div\\\",null,{\\\"style\\\":{\\\"display\\\":\\\"inline-block\\\"},\\\"children\\\":[\\\"$\\\",\\\"h2\\\",null,{\\\"style\\\":{\\\"fontSize\\\":14,\\\"fontWeight\\\":400,\\\"lineHeight\\\":\\\"49px\\\",\\\"margin\\\":0},\\\"children\\\":\\\"This page could not be found.\\\"}]}]]}]}]],[]],\\\"forbidden\\\":\\\"$undefined\\\",\\\"unauthorized\\\":\\\"$undefined\\\"}]}]}]]}],{\\\"children\\\":[[\\\"$\\\",\\\"$1\\\",\\\"c\\\",{\\\"children\\\":[[\\\"$\\\",\\\"$L4\\\",null,{\\\"Component\\\":\\\"$5\\\",\\\"serverProvidedParams\\\":{\\\"searchParams\\\":{},\\\"params\\\":{},\\\"promises\\\":[\\\"$@6\\\",\\\"$@7\\\"]}}],[[\\\"$\\\",\\\"script\\\",\\\"script-0\\\",{\\\"src\\\":\\\"/_next/static/chunks/796e69ae18b2784c.js\\\",\\\"async\\\":true,\\\"nonce\\\":\\\"$undefined\\\"}],[\\\"$\\\",\\\"script\\\",\\\"script-1\\\",{\\\"src\\\":\\\"/_next/static/chunks/ae46d9bbf2067a83.js\\\",\\\"async\\\":true,\\\"nonce\\\":\\\"$undefined\\\"}]],[\\\"$\\\",\\\"$L8\\\",null,{\\\"children\\\":[\\\"$\\\",\\\"$9\\\",null,{\\\"name\\\":\\\"Next.MetadataOutlet\\\",\\\"children\\\":\\\"$@a\\\"}]}]]}],{},null,false,false]},null,false,false],[\\\"$\\\",\\\"$1\\\",\\\"h\\\",{\\\"children\\\":[null,[\\\"$\\\",\\\"$Lb\\\",null,{\\\"children\\\":\\\"$Lc\\\"}],[\\\"$\\\",\\\"div\\\",null,{\\\"hidden\\\":true,\\\"children\\\":[\\\"$\\\",\\\"$Ld\\\",null,{\\\"children\\\":[\\\"$\\\",\\\"$9\\\",null,{\\\"name\\\":\\\"Next.Metadata\\\",\\\"children\\\":\\\"$Le\\\"}]}]}],[\\\"$\\\",\\\"meta\\\",null,{\\\"name\\\":\\\"next-size-adjust\\\",\\\"content\\\":\\\"\\\"}]]}],false]],\\\"m\\\":\\\"$undefined\\\",\\\"G\\\":[\\\"$f\\\",[]],\\\"S\\\":true}\\n\"])</script><script>self.__next_f.push([1,\"6:{}\\n7:\\\"$0:f:0:1:1:children:0:props:children:0:props:serverProvidedParams:params\\\"\\n\"])</script><script>self.__next_f.push([1,\"c:[[\\\"$\\\",\\\"meta\\\",\\\"0\\\",{\\\"charSet\\\":\\\"utf-8\\\"}],[\\\"$\\\",\\\"meta\\\",\\\"1\\\",{\\\"name\\\":\\\"viewport\\\",\\\"content\\\":\\\"width=device-width, initial-scale=1\\\"}]]\\n\"])</script><script>self.__next_f.push([1,\"10:I[27201,[\\\"/_next/static/chunks/ff1a16fafef87110.js\\\",\\\"/_next/static/chunks/7340adf74ff47ec0.js\\\"],\\\"IconMark\\\"]\\na:null\\ne:[[\\\"$\\\",\\\"title\\\",\\\"0\\\",{\\\"children\\\":\\\"Create Next App\\\"}],[\\\"$\\\",\\\"meta\\\",\\\"1\\\",{\\\"name\\\":\\\"description\\\",\\\"content\\\":\\\"Generated by create next app\\\"}],[\\\"$\\\",\\\"link\\\",\\\"2\\\",{\\\"rel\\\":\\\"icon\\\",\\\"href\\\":\\\"/favicon.ico?favicon.0b3bf435.ico\\\",\\\"sizes\\\":\\\"256x256\\\",\\\"type\\\":\\\"image/x-icon\\\"}],[\\\"$\\\",\\\"$L10\\\",\\\"3\\\",{}]]\\n\"])</script></body></html>",
+      "title": "Create Next App",
+      "lang": "en",
+      "canonical": [],
+      "hreflang": [],
+      "mainCount": 0,
+      "h1": "Stop Renting. Start Owning.",
+      "meta": {
+        "": null,
+        "viewport": "width=device-width, initial-scale=1",
+        "next-size-adjust": "",
+        "description": "Generated by create next app"
+      },
+      "links": [
+        "/",
+        "#features",
+        "#pricing",
+        "#testimonials",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "#",
+        "#",
+        "#",
+        "#features",
+        "#pricing",
+        "#testimonials",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#"
+      ],
+      "scripts": [
+        "/_next/static/chunks/236f7e5abd6f09ff.js",
+        "/_next/static/chunks/cc759f7c2413b7ff.js",
+        "/_next/static/chunks/1f0ec75da032508a.js",
+        "/_next/static/chunks/turbopack-76702810c22c5142.js",
+        "/_next/static/chunks/ff1a16fafef87110.js",
+        "/_next/static/chunks/7340adf74ff47ec0.js",
+        "/_next/static/chunks/796e69ae18b2784c.js",
+        "/_next/static/chunks/ae46d9bbf2067a83.js",
+        "/_next/static/chunks/a6dad97d9634a72d.js",
+        "/_next/static/chunks/4017b7a5f44d71c4.js"
+      ],
+      "schema": [],
+      "textCharacters": 3245,
+      "textSha256": "26549878474c217691d8e35fba3ae0c3727a92deb0e1af61a1df756f78f94d2f"
+    },
+    {
+      "url": "https://letbuy-y.web.app/",
+      "capturedAt": "2026-11-03T02:29:43.802268+00:00",
+      "status": 200,
+      "finalUrl": "https://letbuy-y.web.app/",
+      "redirectChain": [],
+      "bytes": 76437,
+      "seconds": 0.519,
+      "headers": {
+        "Cache-Control": "max-age=3600",
+        "Content-Type": "text/html; charset=utf-8",
+        "Etag": "\"3b17f85c53034678af7d59cfa843dc35895cabf29e2fbf490f96de4372d46d67\"",
+        "Vary": "x-fh-requested-host, accept-encoding"
+      },
+      "sha256": "2d37e0be684b7372a7bb44d444c0e7ec73066d2eeb70988cce5936ed149519d1",
+      "title": "Create Next App",
+      "lang": "en",
+      "canonical": [],
+      "hreflang": [],
+      "mainCount": 0,
+      "h1": "Stop Renting. Start Owning.",
+      "meta": {
+        "": null,
+        "viewport": "width=device-width, initial-scale=1",
+        "next-size-adjust": "",
+        "description": "Generated by create next app"
+      },
+      "links": [
+        "/",
+        "#features",
+        "#pricing",
+        "#testimonials",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "#",
+        "#",
+        "#",
+        "#features",
+        "#pricing",
+        "#testimonials",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#"
+      ],
+      "scripts": [
+        "/_next/static/chunks/236f7e5abd6f09ff.js",
+        "/_next/static/chunks/cc759f7c2413b7ff.js",
+        "/_next/static/chunks/1f0ec75da032508a.js",
+        "/_next/static/chunks/turbopack-76702810c22c5142.js",
+        "/_next/static/chunks/ff1a16fafef87110.js",
+        "/_next/static/chunks/7340adf74ff47ec0.js",
+        "/_next/static/chunks/796e69ae18b2784c.js",
+        "/_next/static/chunks/ae46d9bbf2067a83.js",
+        "/_next/static/chunks/a6dad97d9634a72d.js",
+        "/_next/static/chunks/4017b7a5f44d71c4.js"
+      ],
+      "schema": [],
+      "textCharacters": 3245,
+      "textSha256": "26549878474c217691d8e35fba3ae0c3727a92deb0e1af61a1df756f78f94d2f"
+    },
+    {
+      "url": "https://letbuy-y.web.app/privacy-policy",
+      "capturedAt": "2026-11-03T02:29:44.490434+00:00",
+      "status": 200,
+      "finalUrl": "https://letbuy-y.web.app/privacy-policy",
+      "redirectChain": [],
+      "bytes": 76437,
+      "seconds": 0.636,
+      "headers": {
+        "Cache-Control": "max-age=3600",
+        "Content-Type": "text/html; charset=utf-8",
+        "Etag": "\"3b17f85c53034678af7d59cfa843dc35895cabf29e2fbf490f96de4372d46d67\"",
+        "Vary": "x-fh-requested-host, accept-encoding"
+      },
+      "sha256": "2d37e0be684b7372a7bb44d444c0e7ec73066d2eeb70988cce5936ed149519d1",
+      "title": "Create Next App",
+      "lang": "en",
+      "canonical": [],
+      "hreflang": [],
+      "mainCount": 0,
+      "h1": "Stop Renting. Start Owning.",
+      "meta": {
+        "": null,
+        "viewport": "width=device-width, initial-scale=1",
+        "next-size-adjust": "",
+        "description": "Generated by create next app"
+      },
+      "links": [
+        "/",
+        "#features",
+        "#pricing",
+        "#testimonials",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "/auth/login/",
+        "#",
+        "#",
+        "#",
+        "#features",
+        "#pricing",
+        "#testimonials",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#",
+        "#"
+      ],
+      "scripts": [
+        "/_next/static/chunks/236f7e5abd6f09ff.js",
+        "/_next/static/chunks/cc759f7c2413b7ff.js",
+        "/_next/static/chunks/1f0ec75da032508a.js",
+        "/_next/static/chunks/turbopack-76702810c22c5142.js",
+        "/_next/static/chunks/ff1a16fafef87110.js",
+        "/_next/static/chunks/7340adf74ff47ec0.js",
+        "/_next/static/chunks/796e69ae18b2784c.js",
+        "/_next/static/chunks/ae46d9bbf2067a83.js",
+        "/_next/static/chunks/a6dad97d9634a72d.js",
+        "/_next/static/chunks/4017b7a5f44d71c4.js"
+      ],
+      "schema": [],
+      "textCharacters": 3245,
+      "textSha256": "26549878474c217691d8e35fba3ae0c3727a92deb0e1af61a1df756f78f94d2f"
+    },
+    {
+      "url": "https://play.google.com/store/apps/details?id=com.letbuyy.letbuyy&hl=en",
+      "capturedAt": "2026-11-03T02:29:45.290285+00:00",
+      "status": 200,
+      "finalUrl": "https://play.google.com/store/apps/details?id=com.letbuyy.letbuyy&hl=en",
+      "redirectChain": [],
+      "bytes": 1165167,
+      "seconds": 0.734,
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+        "Content-Security-Policy": "require-trusted-types-for 'script';report-uri /_/PlayStoreUi/cspreport",
+        "Server": "ESF",
+        "Vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site,Accept-Encoding"
+      },
+      "sha256": "78df23c0a8b53c6980355dd3d90c307a92953f7a3120f590021149bb7f8c5053",
+      "title": "LetBuyy - Apps on Google Play",
+      "rawHtmlMinimized": true,
+      "minimizationNote": "Raw source capture hash retained; report HTML is a minimization notice. Personal contacts and unrelated listing details omitted.",
+      "relevantPublicDestinations": [
+        "https://letbuy-y.web.app",
+        "https://letbuy-y.web.app/privacy-policy"
+      ]
+    },
+    {
+      "url": "https://seller.letbuyy.com/",
+      "capturedAt": "2026-11-03T02:29:46.206912+00:00",
+      "status": null,
+      "error": "URLError",
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    },
+    {
+      "url": "https://developer.letbuyy.com/api",
+      "capturedAt": "2026-11-03T02:29:46.448244+00:00",
+      "status": null,
+      "error": "URLError",
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    },
+    {
+      "url": "https://developers.letbuyy.com/",
+      "capturedAt": "2026-11-03T02:29:46.685124+00:00",
+      "status": null,
+      "error": "URLError",
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    }
+  ]
+}

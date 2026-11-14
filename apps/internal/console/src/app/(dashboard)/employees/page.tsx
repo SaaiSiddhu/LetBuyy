@@ -1,3 +1,4 @@
+import { ConsoleActionForm } from '@/components/ConsoleActionForm';
 import { revalidatePath } from 'next/cache';
 import { INTERNAL_PERMISSION_SCOPES } from '@letbuyy/shared-types';
 import { Button, Input, Table, Textarea } from '@letbuyy/ui';
@@ -245,8 +246,8 @@ const columns: Array<ConsoleDataColumn<ConsoleEmployee>> = [
         header: 'Employee',
         cell: (row) => (
             <div>
-                <p className="font-medium text-zinc-100">{row.full_name || row.email || '-'}</p>
-                <p className="mt-1 text-xs text-zinc-500">{row.email || row.id}</p>
+                <p className="font-medium text-default">{row.full_name || row.email || '-'}</p>
+                <p className="mt-1 text-xs text-subdued">{row.email || row.id}</p>
             </div>
         ),
     },
@@ -263,11 +264,11 @@ const columns: Array<ConsoleDataColumn<ConsoleEmployee>> = [
 
             return (
                 <div className="max-w-sm">
-                    <p className="text-xs text-zinc-400">
+                    <p className="text-xs text-subdued">
                         {scopes.length > 0 ? `${scopes.length} explicit scope${scopes.length === 1 ? '' : 's'}` : 'Role defaults only'}
                     </p>
                     {scopes.length > 0 ? (
-                        <p className="mt-1 line-clamp-2 text-xs text-zinc-500">{scopes.join(', ')}</p>
+                        <p className="mt-1 line-clamp-2 text-xs text-subdued">{scopes.join(', ')}</p>
                     ) : null}
                 </div>
             );
@@ -295,15 +296,15 @@ const columns: Array<ConsoleDataColumn<ConsoleEmployee>> = [
             const scopes = permissionScopes(row);
 
             return (
-                <details className="min-w-72 rounded-lg border border-zinc-800 bg-zinc-950/40 p-3">
-                    <summary className="cursor-pointer text-xs font-medium text-zinc-300">Assign scopes</summary>
-                    <form action={updateEmployeeScopes} className="mt-3 space-y-3">
+                <details className="min-w-72 rounded-lg border border-line bg-page p-3">
+                    <summary className="cursor-pointer text-xs font-medium text-default">Assign scopes</summary>
+                    <ConsoleActionForm action={updateEmployeeScopes} className="mt-3 space-y-3">
                         <Input unstyled type="hidden" name="employee_id" value={row.id} />
-                        <select
+                        <select aria-label="Scopes"
                             name="scopes"
                             multiple
                             defaultValue={scopes}
-                            className="h-32 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-2 text-xs text-zinc-100 outline-none focus:border-[var(--lb-color-primary)]"
+                            className="h-32 w-full rounded-lg border border-line bg-surface px-2 py-2 text-xs text-default outline-none focus:border-[var(--lb-color-primary)]"
                         >
                             {INTERNAL_PERMISSION_SCOPES.map((scope) => (
                                 <option key={scope} value={scope}>{scope}</option>
@@ -325,7 +326,7 @@ const columns: Array<ConsoleDataColumn<ConsoleEmployee>> = [
                         >
                             Save scopes
                         </Button>
-                    </form>
+                    </ConsoleActionForm>
                 </details>
             );
         },
@@ -371,14 +372,14 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
         <div className="space-y-6 p-8">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-zinc-50">Employees</h1>
-                    <p className="mt-1 text-sm text-zinc-400">Support, operations, and platform team members.</p>
+                    <h1 className="text-2xl font-bold text-default">Employees</h1>
+                    <p className="mt-1 text-sm text-subdued">Support, operations, and platform team members.</p>
                 </div>
                 <ConsoleSearchForm placeholder="Search employees..." defaultValue={q}>
-                    <select
+                    <select aria-label="Status"
                         name="status"
                         defaultValue={status}
-                        className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors focus:border-[var(--lb-color-primary)]"
+                        className="min-h-11 rounded-lg border border-line bg-surface-subdued px-3 py-2 text-sm text-default outline-none transition-colors focus:border-[var(--lb-color-primary)]"
                     >
                         <option value="">All status</option>
                         <option value="active">Active</option>
@@ -402,11 +403,11 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
             )}
 
             <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-                <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-5">
+                <div className="rounded-xl border border-line bg-page p-5">
                     <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
                         <div>
-                            <h2 className="text-lg font-semibold text-zinc-50">Break-Glass Grants</h2>
-                            <p className="mt-1 text-sm text-zinc-400">Time-boxed scope elevation with reason capture and audit.</p>
+                            <h2 className="text-lg font-semibold text-default">Break-Glass Grants</h2>
+                            <p className="mt-1 text-sm text-subdued">Time-boxed scope elevation with reason capture and audit.</p>
                         </div>
                         <StatusBadge value={`${breakGlassGrants.length} shown`} tone="zinc" />
                     </div>
@@ -417,13 +418,13 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                         </div>
                     ) : null}
 
-                    <form action={grantBreakGlassAccess} className="mt-5 grid gap-3 md:grid-cols-[1fr_1fr_0.5fr]">
-                        <label className="space-y-1 text-xs font-medium text-zinc-400">
+                    <ConsoleActionForm action={grantBreakGlassAccess} className="mt-5 grid gap-3 md:grid-cols-[1fr_1fr_0.5fr]">
+                        <label className="space-y-1 text-xs font-medium text-subdued">
                             Employee
-                            <select
+                            <select aria-label="Employee id"
                                 name="employee_id"
                                 required
-                                className="min-h-11 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors focus:border-[var(--lb-color-primary)]"
+                                className="min-h-11 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-default outline-none transition-colors focus:border-[var(--lb-color-primary)]"
                             >
                                 <option value="">Select employee</option>
                                 {activeEmployees.map((employee) => (
@@ -431,12 +432,12 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                                 ))}
                             </select>
                         </label>
-                        <label className="space-y-1 text-xs font-medium text-zinc-400">
+                        <label className="space-y-1 text-xs font-medium text-subdued">
                             Scope
-                            <select
+                            <select aria-label="Scope"
                                 name="scope"
                                 required
-                                className="min-h-11 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors focus:border-[var(--lb-color-primary)]"
+                                className="min-h-11 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-default outline-none transition-colors focus:border-[var(--lb-color-primary)]"
                             >
                                 <option value="">Select scope</option>
                                 {INTERNAL_PERMISSION_SCOPES.map((scope) => (
@@ -444,12 +445,12 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                                 ))}
                             </select>
                         </label>
-                        <label className="space-y-1 text-xs font-medium text-zinc-400">
+                        <label className="space-y-1 text-xs font-medium text-subdued">
                             Hours
-                            <select
+                            <select aria-label="Duration hours"
                                 name="duration_hours"
                                 defaultValue="4"
-                                className="min-h-11 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors focus:border-[var(--lb-color-primary)]"
+                                className="min-h-11 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-default outline-none transition-colors focus:border-[var(--lb-color-primary)]"
                             >
                                 <option value="1">1</option>
                                 <option value="4">4</option>
@@ -469,15 +470,15 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                         <div className="flex items-end">
                             <Button type="submit" fullWidth>Grant</Button>
                         </div>
-                    </form>
+                    </ConsoleActionForm>
 
                     <div className="mt-5">
                         <Table
-                            className="rounded-lg border-zinc-800 bg-zinc-900 shadow-none"
+                            className="rounded-lg border-line bg-surface shadow-none"
                             containerClassName="overflow-x-auto"
-                            tableClassName="min-w-full divide-y divide-zinc-800 text-sm"
+                            tableClassName="min-w-full divide-y divide-line text-sm"
                         >
-                            <thead className="text-left text-xs uppercase tracking-wide text-zinc-500">
+                            <thead className="text-left text-xs uppercase tracking-wide text-subdued">
                                 <tr>
                                     <th className="px-3 py-2 font-medium">Employee</th>
                                     <th className="px-3 py-2 font-medium">Scope</th>
@@ -486,10 +487,10 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                                     <th className="px-3 py-2 font-medium">Expire</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-zinc-900 text-zinc-300">
+                            <tbody className="divide-y divide-line text-default">
                                 {breakGlassGrants.length === 0 ? (
                                     <tr>
-                                        <td className="px-3 py-4 text-zinc-500" colSpan={5}>No break-glass grants recorded.</td>
+                                        <td className="px-3 py-4 text-subdued" colSpan={5}>No break-glass grants recorded.</td>
                                     </tr>
                                 ) : breakGlassGrants.map((grant) => {
                                     const grantStatus = breakGlassStatus(grant);
@@ -503,7 +504,7 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                                             <td className="px-3 py-3">{formatDateTime(grant.expires_at)}</td>
                                             <td className="px-3 py-3">
                                                 {active ? (
-                                                    <form action={expireBreakGlassAccess} className="flex min-w-64 gap-2">
+                                                    <ConsoleActionForm action={expireBreakGlassAccess} className="flex min-w-64 gap-2">
                                                         <Input unstyled type="hidden" name="grant_id" value={grant.id} />
                                                         <Input
                                                             name="reason"
@@ -513,9 +514,9 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                                                             className="text-xs"
                                                         />
                                                         <Button type="submit" variant="outline" size="sm">Expire</Button>
-                                                    </form>
+                                                    </ConsoleActionForm>
                                                 ) : (
-                                                    <span className="text-xs text-zinc-500">Closed</span>
+                                                    <span className="text-xs text-subdued">Closed</span>
                                                 )}
                                             </td>
                                         </tr>
@@ -526,10 +527,10 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                     </div>
                 </div>
 
-                <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-5">
+                <div className="rounded-xl border border-line bg-page p-5">
                     <div>
-                        <h2 className="text-lg font-semibold text-zinc-50">Access Reviews</h2>
-                        <p className="mt-1 text-sm text-zinc-400">Record periodic RBAC recertification decisions.</p>
+                        <h2 className="text-lg font-semibold text-default">Access Reviews</h2>
+                        <p className="mt-1 text-sm text-subdued">Record periodic RBAC recertification decisions.</p>
                     </div>
 
                     {accessReviewsResult.error ? (
@@ -538,13 +539,13 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                         </div>
                     ) : null}
 
-                    <form action={recordAccessReview} className="mt-5 space-y-3">
-                        <label className="block space-y-1 text-xs font-medium text-zinc-400">
+                    <ConsoleActionForm action={recordAccessReview} className="mt-5 space-y-3">
+                        <label className="block space-y-1 text-xs font-medium text-subdued">
                             Reviewer
-                            <select
+                            <select aria-label="Reviewer id"
                                 name="reviewer_id"
                                 required
-                                className="min-h-11 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors focus:border-[var(--lb-color-primary)]"
+                                className="min-h-11 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-default outline-none transition-colors focus:border-[var(--lb-color-primary)]"
                             >
                                 <option value="">Select reviewer</option>
                                 {activeEmployees.map((employee) => (
@@ -574,23 +575,23 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                             placeholder="Quarterly access review"
                         />
                         <Button type="submit" fullWidth>Record access review</Button>
-                    </form>
+                    </ConsoleActionForm>
 
                     <div className="mt-5 space-y-3">
                         {accessReviews.length === 0 ? (
-                            <p className="rounded-lg border border-zinc-800 px-3 py-4 text-sm text-zinc-500">No access reviews recorded.</p>
+                            <p className="rounded-lg border border-line px-3 py-4 text-sm text-subdued">No access reviews recorded.</p>
                         ) : accessReviews.map((review) => (
-                            <div key={review.id} className="rounded-lg border border-zinc-800 px-3 py-3">
+                            <div key={review.id} className="rounded-lg border border-line px-3 py-3">
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <p className="text-sm font-medium text-zinc-100">{review.period}</p>
-                                        <p className="mt-1 text-xs text-zinc-500">
+                                        <p className="text-sm font-medium text-default">{review.period}</p>
+                                        <p className="mt-1 text-xs text-subdued">
                                             Reviewer {employeeLabel(employeeById.get(review.reviewer_id))} · {formatDateTime(review.completed_at)}
                                         </p>
                                     </div>
                                     <StatusBadge value="recorded" tone="green" />
                                 </div>
-                                <p className="mt-2 text-sm text-zinc-400">{accessReviewSummary(review)}</p>
+                                <p className="mt-2 text-sm text-subdued">{accessReviewSummary(review)}</p>
                             </div>
                         ))}
                     </div>

@@ -56,7 +56,7 @@ test('web editor saves drafts with base_version and requires a clean draft befor
     const saveDraftBlock = sourceBetween(editorPageSource, 'const saveDraft = useCallback', 'const syncPreviewDraft = useCallback');
     const publishBlock = sourceBetween(editorPageSource, 'const handlePublish = useCallback', 'const handleTemplateChange = useCallback');
 
-    assert.match(saveDraftBlock, /client\.save\(draftConfig, reviewedVersion, ensurePreviewDraft\)/);
+    assert.match(saveDraftBlock, /client\.save\(draftConfig, reviewedVersion\)/);
     assert.match(publishBlock, /if \(isDirty && !client.hasPendingPublication\)/);
     assert.match(publishBlock, /client\.publish\(async \(intent\)/);
     assert.match(publishBlock, /JSON\.stringify\(\{ templateKey: selectedTemplateKey, \.\.\.intent, actorId: client\.actorId, storeId: client\.storeId \}\)/);

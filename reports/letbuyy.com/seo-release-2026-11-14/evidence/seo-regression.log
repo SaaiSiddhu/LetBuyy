@@ -1,0 +1,34 @@
+{
+  "build": "VP1u4v87GsIVN_eoyC_V2",
+  "origin": "http://127.0.0.1:9021",
+  "urls": 489,
+  "success": 477,
+  "redirects": 12,
+  "sitemap": 189,
+  "guides": 105,
+  "jsonld": 690,
+  "negative": {
+    "/in/resources/authors/unknown-profile": 404,
+    "/in-hi/resources/tag/not-a-real-topic": 404,
+    "/in-ta/resources/platform/missing-guide": 404
+  },
+  "localeChecks": [
+    {
+      "locale": "in",
+      "rssItems": 35,
+      "directory": "200 noindex/follow and excluded from XML"
+    },
+    {
+      "locale": "in-hi",
+      "rssItems": 35,
+      "directory": "200 noindex/follow and excluded from XML"
+    },
+    {
+      "locale": "in-ta",
+      "rssItems": 35,
+      "directory": "200 noindex/follow and excluded from XML"
+    }
+  ],
+  "errors": []
+}
+Editorial source rows: 202

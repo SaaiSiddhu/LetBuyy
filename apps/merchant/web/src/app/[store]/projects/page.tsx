@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -10,6 +8,7 @@ import { Button, Input,
     Briefcase,
     Card,
     ConfirmDialog,
+    EmptyState,
     ExternalLink,
     FileText,
     Page,
@@ -25,7 +24,6 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface Project {
     id: string
@@ -122,18 +120,15 @@ export default function ProjectsPage() {
     const [projectToDelete, setProjectToDelete] = useState<Project | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadProjects = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/projects`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load projects'))
@@ -141,7 +136,6 @@ export default function ProjectsPage() {
 
             setProjects(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load projects'
             setProjects([])
             setLoadError(message)
@@ -151,9 +145,9 @@ export default function ProjectsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadProjects()
@@ -276,8 +270,7 @@ export default function ProjectsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="content"
-                    recipe="index"
+                <PageHeader
                     title="Projects"
                     description="Add portfolio work and case studies to showcase your results."
                     breadcrumbs={[{ label: 'Portfolio' }, { label: 'Projects' }]}
@@ -293,8 +286,7 @@ export default function ProjectsPage() {
 
     return (
         <Page>
-            <PageHeader identity="content"
-                recipe="index"
+            <PageHeader
                 title="Projects"
                 description="Add portfolio work and case studies to showcase your results."
                 breadcrumbs={[{ label: 'Portfolio' }, { label: 'Projects' }]}
@@ -382,7 +374,7 @@ export default function ProjectsPage() {
             {projects.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Projects">
-                        <EmptyState scene="projects"
+                        <EmptyState
                             icon={<Briefcase className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No projects yet"
                             body="Add case studies, portfolio work, and project links to make your profile easier to evaluate."

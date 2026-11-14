@@ -1,5 +1,4 @@
-import type { PaginatedResponse } from '@letbuyy/shared-types';
-import type { ProductModel, StorefrontDiscoveryQuery } from '@letbuyy/commerce-core';
+import type { ProductModel } from '@letbuyy/commerce-core';
 import type { LiquidThemePackageBundle, SectionModel, ThemeRendererEngine, ThemeSettings } from '@letbuyy/theme-engine';
 import type { StoreModel } from '@letbuyy/tenant-core';
 
@@ -35,8 +34,6 @@ export interface StorefrontRouteContext {
     // T1/W2 — the page request's query string (e.g. ?error=bot_verification after a failed
     // Turnstile challenge), threaded through to the Liquid render context as request.query/error.
     searchParams?: Record<string, string>;
-    /** Validated listing query. Repeated facets stay typed without widening account/CMS context. */
-    discoveryQuery?: StorefrontDiscoveryQuery;
 }
 
 export interface StorefrontTemplate {
@@ -91,7 +88,6 @@ export interface ProductReviewData {
 
 export interface SectionRenderData {
     products?: ProductModel[];
-    pagination?: Pick<PaginatedResponse<ProductModel>, 'total' | 'page' | 'limit' | 'has_more'>;
     product?: ProductModel;
     cart?: Record<string, unknown>;
     collection?: { id: string; title: string; description?: string | null };

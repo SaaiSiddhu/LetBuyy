@@ -1,3 +1,5 @@
+import { z } from 'zod';
+import { consoleCsvCell } from '@/lib/console-csv';
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchConsoleApi, type ConsoleDataResponse } from '@/lib/console-api';
 import { requireConsoleApiSession } from '@/lib/console-api-auth';
@@ -21,9 +23,11 @@ type Alloc = {
 export async function GET(request: NextRequest) {
     const unauthorized = await requireConsoleApiSession(request, { mfa: true });
     if (unauthorized) return unauthorized;
+    const query = z.object({ page: z.coerce.number().int().min(1).max(10000).default(1), q: z.string().trim().max(120).default('') }).safeParse(Object.fromEntries(request.nextUrl.searchParams));
+    if (!query.success) return NextResponse.json({error:'Invalid export page or search.'},{status:400});
     const result = await fetchConsoleApi<ConsoleDataResponse<{ allocations: Alloc[] }>>(
         '/internal/founding/allocations',
-        { query: { limit: 500 }, sessionToken: request.cookies.get(CONSOLE_SESSION_COOKIE)?.value },
+        { query: { limit: 25, page: query.data.page, search: query.data.q }, sessionToken: request.cookies.get(CONSOLE_SESSION_COOKIE)?.value },
     );
     if (result.error) {
         return NextResponse.json({ error: result.error }, { status: 502 });
@@ -40,14 +44,15 @@ export async function GET(request: NextRequest) {
             r.locked_monthly_price,
             r.allocated_at ?? '',
             r.released_at ?? '',
-            String(r.release_reason ?? '').replace(/,/g, ';'),
-        ].join(',')),
+            r.release_reason ?? '',
+        ].map(consoleCsvCell).join(',')),
     ].join('\n');
 
     return new NextResponse(csv, {
         status: 200,
         headers: {
-            'Content-Type': 'text/csv',
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Cache-Control': 'no-store',
             'Content-Disposition': 'attachment; filename="founding-allocations.csv"',
         },
     });

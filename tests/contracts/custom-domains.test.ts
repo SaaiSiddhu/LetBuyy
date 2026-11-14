@@ -38,12 +38,8 @@ test('custom-domain verification requires ownership TXT before active CNAME', ()
   assert.match(source, /_letbuyy-challenge/);
   assert.match(source, /txtMatches\.length < 2/);
   assert.match(source, /TXT_NOT_VERIFIED/);
-  // The shared status writer now preserves additional aliases: only the exact
-  // primary hostname may update the site's primary-domain mirror.
-  assert.match(source, /await updateStatus\('verifying'\)/);
-  assert.match(source, /await updateStatus\('pending'\)/);
-  assert.match(source, /patchSiteDomainStatus\(db, parsed\.data\.site_id, domain, \{ status \}\)/);
-  assert.match(source, /if \(row\.role === 'primary'\) \{\s*const saved = await db\.from\('sites'\)\.update\(\{ custom_domain_status: status \}\)\.eq\('id', parsed\.data\.site_id\)\.eq\('custom_domain', domain\)/);
+  assert.match(source, /custom_domain_status:\s*'verifying'/);
+  assert.match(source, /custom_domain_status:\s*'pending'/);
   assert.match(source, /attachVercelProjectDomain/);
   assert.match(source, /DOMAIN_TAKEN/);
   assert.match(source, /PUBLIC_SUFFIX_LIKE_DOMAINS/);
@@ -87,18 +83,34 @@ test('custom-domain tables remain api-gateway single-writer owned', () => {
 test('custom-domain health exposes DNS, SSL, and renewal state to mobile', () => {
   const sharedTypes = read('packages/shared-types/src/index.ts');
   const route = read('services/api-gateway/src/routes/custom-domains.ts');
-  const stores = read('services/api-gateway/src/routes/stores.ts');
   const mobileService = read('apps/merchant/mobile/lib/services/custom_domains.dart');
   const mobileScreen = read('apps/merchant/mobile/lib/screens/settings/domain_settings_screen.dart');
 
   assert.match(sharedTypes, /CustomDomainHealthSchema/);
   assert.match(route, /readCustomDomainHealth\(c\.env/);
   assert.match(route, /success\(\{ \.\.\.health, (?:provider, )?vercel: health\.vercel, health \}\)/);
-  assert.match(stores, /readCustomDomainHealth\(c\.env/);
-  assert.match(stores, /dns_verified/);
-  assert.match(stores, /renewal_status/);
   assert.match(mobileService, /class DomainHealthSnapshot/);
   assert.match(mobileService, /customDomains\.health/);
   assert.match(mobileScreen, /Domain health/);
   assert.match(mobileScreen, /Renewal/);
+});
+
+test('store readiness reads owned saved domain evidence without running domain verification', () => {
+  const stores = read('services/api-gateway/src/routes/stores.ts');
+  const adapter = read('services/api-gateway/src/execution/store-health.adapter.ts');
+  const start = stores.indexOf("router.get('/:id/health'");
+  const end = stores.indexOf("router.post('/:id/payment-config'", start + 1);
+  assert.ok(start >= 0 && end > start, 'the store readiness boundary must exist');
+  const handler = stores.slice(start, end);
+
+  assert.match(handler, /c\.header\('Cache-Control', 'no-store'\)/);
+  assert.match(handler, /\.eq\('id', storeId\)[\s\S]*ownedByCustomUserFilter\(customUser\.id\)/);
+  assert.match(handler, /new StoreHealthAdapter\(db, Boolean\(c\.env\.PAYMENT_CONFIG_ENCRYPTION_KEY\)\)\.read\(storeId\)/);
+  assert.match(adapter, /StoreHealthSchema\.parse/);
+  assert.match(adapter, /\.from\('site_domains'\)[\s\S]*\.eq\('site_id', siteId\)\.eq\('domain', s\.custom_domain \|\| ''\)/);
+  assert.match(adapter, /\.from\('site_domain_verifications'\)[\s\S]*\.eq\('site_id', siteId\)\.eq\('domain', s\.custom_domain \|\| ''\)/);
+  assert.match(adapter, /checked <= now\.getTime\(\) && now\.getTime\(\) - checked <= DAY/);
+  assert.match(adapter, /v\?\.txt_verified === true && v\.cname_verified === true && v\.ssl_active === true/);
+  assert.match(adapter, /domain_freshness_hours: 24/);
+  assert.doesNotMatch(handler + adapter, /readCustomDomainHealth\(|\bfetch\(|\.(?:insert|update|upsert|delete)\(/);
 });

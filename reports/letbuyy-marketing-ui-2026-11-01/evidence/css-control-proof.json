@@ -1,0 +1,9 @@
+{
+  "method": "Reconstructed unsplit control: recorded task-start source order, with every current selector/declaration/condition retained. New performance rules appended. Same current application code/assets; route stylesheet imports removed only in control. This is a controlled comparison, not an untouched historical release.",
+  "current_rule_count": 3136,
+  "control_rule_count": 3136,
+  "all_fingerprints_equal": true,
+  "current_rules_mapped_to_original_order": 3119,
+  "new_rules_appended": 17,
+  "obsolete_old_rule_count": 0
+}

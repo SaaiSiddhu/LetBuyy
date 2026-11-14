@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -11,6 +9,7 @@ import { Button, Input,
     Calendar,
     Card,
     ConfirmDialog,
+    EmptyState,
     GraduationCap,
     Page,
     PageHeader,
@@ -24,7 +23,6 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface Education {
     id: string
@@ -125,18 +123,15 @@ export default function EducationPage() {
     const [educationToDelete, setEducationToDelete] = useState<Education | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadEducation = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/education`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load education'))
@@ -144,7 +139,6 @@ export default function EducationPage() {
 
             setItems(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load education'
             setItems([])
             setLoadError(message)
@@ -154,9 +148,9 @@ export default function EducationPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadEducation()
@@ -282,8 +276,7 @@ export default function EducationPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="content"
-                    recipe="index"
+                <PageHeader
                     title="Education"
                     description="Add academic history and credentials to strengthen your resume."
                     breadcrumbs={[{ label: 'Resume' }, { label: 'Education' }]}
@@ -299,8 +292,7 @@ export default function EducationPage() {
 
     return (
         <Page>
-            <PageHeader identity="content"
-                recipe="index"
+            <PageHeader
                 title="Education"
                 description="Add academic history and credentials to strengthen your resume."
                 breadcrumbs={[{ label: 'Resume' }, { label: 'Education' }]}
@@ -408,7 +400,7 @@ export default function EducationPage() {
             {items.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Education">
-                        <EmptyState scene="education"
+                        <EmptyState
                             icon={<GraduationCap className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No education yet"
                             body="Add degrees, institutions, dates, grades, and achievements to complete your professional profile."

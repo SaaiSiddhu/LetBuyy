@@ -1,0 +1,13 @@
+- heading "Create Your Site" [level=1]
+- paragraph: Choose your site type and get started in minutes
+- heading "What are you building?" [level=2]
+- button "E-commerce Store Sell products with cart, checkout, and payments":
+  - heading "E-commerce Store" [level=3]
+  - paragraph: Sell products with cart, checkout, and payments
+- button "Landing Page Marketing page with forms and analytics":
+  - heading "Landing Page" [level=3]
+  - paragraph: Marketing page with forms and analytics
+- paragraph:
+  - text: Already have an account?
+  - link "Sign in":
+    - /url: /in/signup

@@ -82,44 +82,22 @@ async function requestVercelJson(
     init: RequestInit = {},
     fetchImpl: FetchLike = fetch,
     retries = 2,
-    deadline = Date.now() + 6000,
 ): Promise<Record<string, unknown>> {
     const { token } = requireVercelEnv(env);
     const headers = new Headers(init.headers);
     headers.set('Authorization', `Bearer ${token}`);
     headers.set('Content-Type', 'application/json');
-    const remaining = deadline - Date.now();
-    if (remaining <= 0) throw new VercelDomainConfigError('Vercel domain request deadline exceeded', 'VERCEL_DEADLINE_EXCEEDED', 503);
-    const controller = new AbortController();
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    let response: Response;
-    let body: unknown;
-    try {
-        const result = await Promise.race([
-            (async () => {
-                const received = await fetchImpl(vercelUrl(path, env), { ...init, redirect: 'manual', headers, signal: controller.signal });
-                const payload: unknown = await received.json().catch(() => null);
-                return { response: received, body: payload };
-            })(),
-            new Promise<never>((_, reject) => {
-                timer = setTimeout(() => {
-                    controller.abort();
-                    reject(new VercelDomainConfigError('Vercel domain request deadline exceeded', 'VERCEL_DEADLINE_EXCEEDED', 503));
-                }, remaining);
-            }),
-        ]);
-        response = result.response;
-        body = result.body;
-    } finally {
-        if (timer !== undefined) clearTimeout(timer);
-    }
-
+    const response = await fetchImpl(vercelUrl(path, env), {
+        ...init,
+        headers,
+    });
+    const body = await response.json().catch(() => null) as unknown;
     const payload = isRecord(body) ? body : {};
 
     if (!response.ok) {
         if ((response.status === 429 || response.status >= 500) && retries > 0) {
-            await delay(Math.min(retryAfterMs(response.headers), Math.max(0, deadline - Date.now())));
-            return requestVercelJson(env, path, init, fetchImpl, retries - 1, deadline);
+            await delay(retryAfterMs(response.headers));
+            return requestVercelJson(env, path, init, fetchImpl, retries - 1);
         }
         const errorRecord = isRecord(payload.error) ? payload.error : null;
         const code = stringField(errorRecord, 'code') || `VERCEL_${response.status}`;
@@ -165,12 +143,6 @@ export async function attachVercelProjectDomain(
     }
 }
 
-/** Exact project-domain removal only; never remove an account domain or its
- * redirects. Callers must prove ownership and drain in-flight capabilities. */
-export async function removeVercelProjectDomain(env: VercelDomainEnv, domain: string, fetchImpl: FetchLike = fetch): Promise<void> {
-    await requestVercelJson(env, `/v9/projects/{projectId}/domains/${encodeURIComponent(domain)}`, { method: 'DELETE' }, fetchImpl, 0);
-}
-
 export async function getVercelDomainConfig(
     env: VercelDomainEnv,
     domain: string,
@@ -190,29 +162,14 @@ export async function getVercelDomainConfig(
     }
 }
 
-/** Recheck only an already attached project domain's provider challenge. */
-export async function verifyVercelProjectDomain(env: VercelDomainEnv, domain: string, fetchImpl: FetchLike = fetch): Promise<Record<string, unknown>> {
-    return requestVercelJson(env, `/v9/projects/{projectId}/domains/${encodeURIComponent(domain)}/verify`, { method: 'POST' }, fetchImpl, 0);
-}
-
-/** Public DNS instructions returned by this exact project's provider response. */
-export function vercelOwnershipRecords(domain: Record<string, unknown> | null): Array<{ type: 'TXT'; name: string; value: string }> {
-    if (!Array.isArray(domain?.verification)) return [];
-    return domain.verification.filter(isRecord).filter(record => record.type === 'TXT'
-        && typeof record.domain === 'string' && record.domain.length <= 253 && /^_vercel\.[a-z0-9.-]+$/.test(record.domain)
-        && typeof record.value === 'string' && record.value.length > 0 && record.value.length <= 1000)
-        .slice(0, 3).map(record => ({ type: 'TXT', name: String(record.domain), value: String(record.value) }));
-}
-
 export async function readVercelDomainStatus(
     env: VercelDomainEnv,
     domain: string,
     fetchImpl: FetchLike = fetch,
-    configDomain: string = domain,
 ): Promise<VercelDomainStatusResult> {
     const [projectDomain, config] = await Promise.all([
         getVercelProjectDomain(env, domain, fetchImpl),
-        getVercelDomainConfig(env, configDomain, fetchImpl),
+        getVercelDomainConfig(env, domain, fetchImpl),
     ]);
     const verified = boolField(projectDomain, 'verified');
     const configuredBy = stringField(config, 'configuredBy');
@@ -234,45 +191,4 @@ export async function readVercelDomainStatus(
         projectDomain,
         config,
     };
-}
-
-/** Register a deterministic first-party host; an uncertain POST is reconciled by same-project GET. */
-export async function ensureVercelProjectDomain(
-    env: VercelDomainEnv,
-    domain: string,
-    fetchImpl: FetchLike = fetch,
-): Promise<VercelDomainStatusResult> {
-    const deadline = Date.now() + 6000;
-    const path = `/v9/projects/{projectId}/domains/${encodeURIComponent(domain)}`;
-    const read = async (): Promise<Record<string, unknown> | null> => {
-        try { return await requestVercelJson(env, path, {}, fetchImpl, 0, deadline); }
-        catch (error) {
-            if (error instanceof VercelDomainConfigError && error.status === 404) return null;
-            throw error;
-        }
-    };
-    let projectDomain = await read();
-    if (!projectDomain) {
-        try {
-            // Reserve time for readback even when the write response is lost.
-            await requestVercelJson(env, '/v10/projects/{projectId}/domains', {
-                method: 'POST', body: JSON.stringify({ name: domain }),
-            }, fetchImpl, 0, Math.min(deadline, Date.now() + 3000));
-        } catch {
-            // A rejected or ambiguous write never proves attachment; only readback can.
-        }
-        projectDomain = await read();
-    }
-    if (!projectDomain || stringField(projectDomain, 'name') !== domain) {
-        return { status: 'pending', verified: false, configuredBy: null, misconfigured: false, projectDomain: null, config: null };
-    }
-    const { projectId } = requireVercelEnv(env);
-    const config = await requestVercelJson(env,
-        `/v6/domains/${encodeURIComponent(domain)}/config?projectIdOrName=${encodeURIComponent(projectId)}`,
-        {}, fetchImpl, 0, deadline);
-    const verified = boolField(projectDomain, 'verified');
-    const configuredBy = stringField(config, 'configuredBy');
-    const misconfigured = boolField(config, 'misconfigured');
-    return { status: verified && configuredBy && !misconfigured ? 'active' : misconfigured ? 'error' : 'verifying',
-        verified, configuredBy, misconfigured, projectDomain, config };
 }

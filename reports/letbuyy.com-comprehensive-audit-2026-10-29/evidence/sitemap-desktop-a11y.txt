@@ -1,0 +1,368 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "Main navigation":
+    - button "Why LetBuyy"
+    - button "Products"
+    - link "Themes":
+      - /url: /in/resources/platform/how-themes-work
+    - link "Apps":
+      - /url: /in/resources/platform/introduction-to-apps
+    - link "Developers":
+      - /url: /in/resources/developers
+    - link "Pricing":
+      - /url: /in/pricing
+  - button "Toggle theme"
+  - link "Log in":
+    - /url: https://accounts.letbuyy.com/lookup
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+- main:
+  - paragraph: THE PUBLIC DIRECTORY
+  - heading "Every page on LetBuyy." [level=1]
+  - paragraph: A complete, crawlable index of the LetBuyy marketing site, guide library and connected platform properties.
+  - term: Directory links
+  - definition: "37"
+  - term: Sections
+  - definition: "4"
+  - term: XML feeds
+  - definition: "4"
+  - link "Explore the directory":
+    - /url: "#directory-sections"
+  - navigation "Jump to a sitemap section":
+    - link "01 Start here 6 links":
+      - /url: "#start-here"
+      - text: "01"
+      - strong: Start here
+      - text: 6 links
+    - link "02 Guides & resources 11 links":
+      - /url: "#guides"
+      - text: "02"
+      - strong: Guides & resources
+      - text: 11 links
+    - link "03 Platform 4 links":
+      - /url: "#platform"
+      - text: "03"
+      - strong: Platform
+      - text: 4 links
+    - link "04 Legal 16 links":
+      - /url: "#legal"
+      - text: "04"
+      - strong: Legal
+      - text: 16 links
+  - region "Start here 6":
+    - text: "01"
+    - heading "Start here 6" [level=2]
+    - paragraph: The essentials, from exploring plans to getting help.
+    - list:
+      - listitem:
+        - link "Home Platform overview":
+          - /url: /in
+          - strong: Home
+          - text: Platform overview
+      - listitem:
+        - link "Pricing Plans and commission":
+          - /url: /in/pricing
+          - strong: Pricing
+          - text: Plans and commission
+      - listitem:
+        - link "Start a store Claim your subdomain":
+          - /url: /in/create
+          - strong: Start a store
+          - text: Claim your subdomain
+      - listitem:
+        - link "Create account Merchant sign-up":
+          - /url: /in/signup
+          - strong: Create account
+          - text: Merchant sign-up
+      - listitem:
+        - link "Contact Support and sales":
+          - /url: /in/contact
+          - strong: Contact
+          - text: Support and sales
+      - listitem:
+        - link "Support centre Guides, contact and ticket lookup":
+          - /url: /in/support
+          - strong: Support centre
+          - text: Guides, contact and ticket lookup
+  - region "Guides & resources 11":
+    - text: "02"
+    - heading "Guides & resources 11" [level=2]
+    - paragraph: Practical reading for every part of running a store.
+    - list:
+      - listitem:
+        - link "All guides Resource library":
+          - /url: /in/resources
+          - strong: All guides
+          - text: Resource library
+      - listitem:
+        - link "Ecommerce 5 guides":
+          - /url: /in/resources/ecommerce
+          - strong: Ecommerce
+          - text: 5 guides
+      - listitem:
+        - link "Growth 5 guides":
+          - /url: /in/resources/growth
+          - strong: Growth
+          - text: 5 guides
+      - listitem:
+        - link "Payments 5 guides":
+          - /url: /in/resources/payments
+          - strong: Payments
+          - text: 5 guides
+      - listitem:
+        - link "Operations 5 guides":
+          - /url: /in/resources/operations
+          - strong: Operations
+          - text: 5 guides
+      - listitem:
+        - link "AI Commerce 5 guides":
+          - /url: /in/resources/ai-commerce
+          - strong: AI Commerce
+          - text: 5 guides
+      - listitem:
+        - link "Developers 5 guides":
+          - /url: /in/resources/developers
+          - strong: Developers
+          - text: 5 guides
+      - listitem:
+        - link "Platform 5 guides":
+          - /url: /in/resources/platform
+          - strong: Platform
+          - text: 5 guides
+      - listitem:
+        - link "Changelog Release history":
+          - /url: /in/resources/changelog
+          - strong: Changelog
+          - text: Release history
+      - listitem:
+        - link "Releases Version notes":
+          - /url: /in/resources/releases
+          - strong: Releases
+          - text: Version notes
+      - listitem:
+        - link "Search Find a guide":
+          - /url: /in/resources/search
+          - strong: Search
+          - text: Find a guide
+  - region "Platform 4":
+    - text: "03"
+    - heading "Platform 4" [level=2]
+    - paragraph: Guides and account entry points across LetBuyy.
+    - list:
+      - listitem:
+        - link "Themes Read how LetBuyy storefront themes work.":
+          - /url: /in/resources/platform/how-themes-work
+          - strong: Themes
+          - text: Read how LetBuyy storefront themes work.
+      - listitem:
+        - link "Apps Learn about planned app integrations and platform capabilities.":
+          - /url: /in/resources/platform/introduction-to-apps
+          - strong: Apps
+          - text: Learn about planned app integrations and platform capabilities.
+      - listitem:
+        - link "Developers Public guides for APIs, webhooks and integrations.":
+          - /url: /in/resources/developers
+          - strong: Developers
+          - text: Public guides for APIs, webhooks and integrations.
+      - listitem:
+        - link "Log in Merchant account lookup and sign-in. Another LetBuyy property":
+          - /url: https://accounts.letbuyy.com/lookup
+          - strong: Log in
+          - text: Merchant account lookup and sign-in.
+          - img "Another LetBuyy property"
+  - region "Legal 16":
+    - text: "04"
+    - heading "Legal 16" [level=2]
+    - paragraph: Policies, responsibilities and trust information.
+    - list:
+      - listitem:
+        - link "Legal library 15 documents":
+          - /url: /in/legal
+          - strong: Legal library
+          - text: 15 documents
+      - listitem:
+        - link "Terms The agreement between you and LetBuyy for using the platform.":
+          - /url: /in/legal/terms
+          - strong: Terms
+          - text: The agreement between you and LetBuyy for using the platform.
+      - listitem:
+        - link "Acceptable use What may and may not be sold or done on LetBuyy.":
+          - /url: /in/legal/acceptable-use
+          - strong: Acceptable use
+          - text: What may and may not be sold or done on LetBuyy.
+      - listitem:
+        - link "API terms Rules for building against the LetBuyy APIs, webhooks, and themes.":
+          - /url: /in/legal/api-terms
+          - strong: API terms
+          - text: Rules for building against the LetBuyy APIs, webhooks, and themes.
+      - listitem:
+        - link "Marketplace Terms for publishing apps and themes to LetBuyy merchants.":
+          - /url: /in/legal/marketplace
+          - strong: Marketplace
+          - text: Terms for publishing apps and themes to LetBuyy merchants.
+      - listitem:
+        - link "Billing What LetBuyy charges you, when, and how tax is handled.":
+          - /url: /in/legal/billing
+          - strong: Billing
+          - text: What LetBuyy charges you, when, and how tax is handled.
+      - listitem:
+        - link "Payouts How money from your sales reaches your bank account.":
+          - /url: /in/legal/payouts
+          - strong: Payouts
+          - text: How money from your sales reaches your bank account.
+      - listitem:
+        - link "Refunds How refunds work on LetBuyy — and who decides them.":
+          - /url: /in/legal/refunds
+          - strong: Refunds
+          - text: How refunds work on LetBuyy — and who decides them.
+      - listitem:
+        - link "Shipping How delivery works, and where responsibility for it sits.":
+          - /url: /in/legal/shipping
+          - strong: Shipping
+          - text: How delivery works, and where responsibility for it sits.
+      - listitem:
+        - link "Privacy What personal data LetBuyy handles, why, and what rights you have.":
+          - /url: /in/legal/privacy
+          - strong: Privacy
+          - text: What personal data LetBuyy handles, why, and what rights you have.
+      - listitem:
+        - link "Cookies What we store in your browser and what you can turn off.":
+          - /url: /in/legal/cookies
+          - strong: Cookies
+          - text: What we store in your browser and what you can turn off.
+      - listitem:
+        - link "DPA The terms under which LetBuyy processes your shoppers' data for you.":
+          - /url: /in/legal/data-processing
+          - strong: DPA
+          - text: The terms under which LetBuyy processes your shoppers' data for you.
+      - listitem:
+        - link "Sub-processors Every third party that touches data on LetBuyy, and what for.":
+          - /url: /in/legal/subprocessors
+          - strong: Sub-processors
+          - text: Every third party that touches data on LetBuyy, and what for.
+      - listitem:
+        - link "Security How LetBuyy protects merchant and shopper data.":
+          - /url: /in/legal/security
+          - strong: Security
+          - text: How LetBuyy protects merchant and shopper data.
+      - listitem:
+        - link "Grievance How to escalate a complaint, and the timelines we hold ourselves to.":
+          - /url: /in/legal/grievance
+          - strong: Grievance
+          - text: How to escalate a complaint, and the timelines we hold ourselves to.
+      - listitem:
+        - link "IP & takedown Reporting infringement, and what happens when someone reports you.":
+          - /url: /in/legal/intellectual-property
+          - strong: IP & takedown
+          - text: Reporting infringement, and what happens when someone reports you.
+  - region "Machine-readable 5":
+    - paragraph: FOR INDEXING TOOLS
+    - heading "Machine-readable 5" [level=2]
+    - paragraph: For crawlers and indexing tools.
+    - list:
+      - listitem:
+        - link "https://www.letbuyy.com/sitemap.xml":
+          - /url: https://www.letbuyy.com/sitemap.xml
+      - listitem:
+        - link "https://themes.letbuyy.com/sitemap.xml":
+          - /url: https://themes.letbuyy.com/sitemap.xml
+      - listitem:
+        - link "https://apps.letbuyy.com/sitemap.xml":
+          - /url: https://apps.letbuyy.com/sitemap.xml
+      - listitem:
+        - link "https://developer.letbuyy.com/sitemap.xml":
+          - /url: https://developer.letbuyy.com/sitemap.xml
+      - listitem:
+        - link "/robots.txt":
+          - /url: /robots.txt
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.
+- alert

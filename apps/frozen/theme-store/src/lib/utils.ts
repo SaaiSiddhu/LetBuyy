@@ -55,10 +55,8 @@ export function themeCompareSingleHref(slug: string) {
     return `/themes/compare?themes=${encodeURIComponent(slug)}`;
 }
 
-export function themeSandboxPreviewHref(slug: string, version?: string) {
-    const query = new URLSearchParams({ theme: slug });
-    if (version) query.set('version', version);
-    return `/preview/${encodeURIComponent(slug)}?${query}`;
+export function themeSandboxPreviewHref(slug: string) {
+    return `/preview/${encodeURIComponent(slug)}?theme=${encodeURIComponent(slug)}`;
 }
 
 export function themeDetailSharePath(slug: string) {

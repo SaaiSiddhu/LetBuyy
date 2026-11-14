@@ -20,3 +20,9 @@ Verification:
 - Inspected a local vector composition preview at desktop/mobile proportions (`/tmp/letbuyy-finale-preview.png`). This is a design rendering, not a browser screenshot.
 
 Limit: live browser layout, keyboard and motion review were not available because Work settings disable local browser use. No deployment. Local development server restarted on port 9006.
+
+## Intro corner seams — 26 October 2026
+
+Owner screenshots showed rectangular background boundaries around the intro/finale. Reproduced in the live 1280×720 browser: the two offset radial gradients on `.cg-closing-title::before` retain nonzero alpha at their rectangular bounds. Added intersecting horizontal/vertical alpha masks that feather only the outer 5% of this decorative glow layer. The central 90% keeps the exact existing gradient. No scene clipping, foreground artwork, type, geometry, clock, globe maps, particles, letter reveals, pause/resume or animation source changed.
+
+Verified the completed finale at 1280×720 in both themes and a temporary same-origin iframe at 390×844 and 768×1024. Mobile/tablet checks retain seven letters and completion state; tablet has zero horizontal overflow. Saved actual browser screenshots `globe-finale-soft-edges-desktop-2026-10-26.jpg` and `globe-finale-soft-edges-phone-2026-10-26.jpg`. These are CSS viewport checks, not physical-device certification. Strict stylesheet lint, existing globe/finale/retained-Lottie unit group (20 tests), production build/TypeScript (497 generated pages), and whitespace validation pass. The retained Lottie tests do not certify the native ending composition. Temporary fixture/tab removed. Preview restarted on port 9006 after finding no running listener. No commit, push or deployment.

@@ -353,7 +353,8 @@ Map<String, dynamic> _customerSegmentJson() => {
 
 Map<String, dynamic> _storeHealthJson() => {
   'store_id': 'store_1',
-  'score': 84,
+  'score': 71,
+  'readiness': const {'status': 'attention', 'complete': 5, 'total': 7, 'unknown': 0},
   'generated_at': '2026-06-01T10:00:00.000Z',
   'pillars': const [
     {

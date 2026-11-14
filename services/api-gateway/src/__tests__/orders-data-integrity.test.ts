@@ -21,16 +21,21 @@ test('storefront order creation derives the tenant from the resolved published s
     assert.doesNotMatch(routeSource, /store_id:\s*body\./);
 });
 
-test('merchant order line-item edits recalculate totals server-side', () => {
+test('placed order line-item changes remain forbidden after tenant and staff authorization', () => {
     const routeSource = source('routes/orders.ts');
+    const start = routeSource.indexOf("router.patch('/:id/line-items'");
+    const end = routeSource.indexOf("router.patch('/:id'", start + 1);
+    assert.ok(start >= 0 && end > start, 'the immutable placed-order boundary must exist');
+    const handler = routeSource.slice(start, end);
 
-    assert.match(routeSource, /router\.patch\('\/:id\/line-items'/);
-    assert.match(routeSource, /UpdateOrderLineItemsSchema/);
-    assert.match(routeSource, /resolveTenantContextForOrder\(c,\s*orderId\)/);
-    assert.match(routeSource, /scope:\s*`orders\.line_items:\$\{orderId\}`/);
-    assert.match(routeSource, /\.from\('order_items'\)[\s\S]+\.select\('total'\)/);
-    assert.match(routeSource, /subtotal\s*=\s*\(\(activeLines \|\| \[\]\)/);
-    assert.doesNotMatch(routeSource, /client_total|body\.total|body\.subtotal/);
+    assert.match(handler, /validate\('json', UpdateOrderLineItemsSchema\)/);
+    assert.match(handler, /resolveTenantContextForOrder\(c,\s*c\.req\.param\('id'\)\)/);
+    assert.match(handler, /assertStaffPermission\(c,\s*tenant\.siteId,\s*tenant\.userId,\s*'orders:write'\)/);
+    assert.match(handler, /if \(staffBlock\) return staffBlock/);
+    assert.match(handler, /throw new AppError\([\s\S]*409,\s*'ORDER_SNAPSHOT_IMMUTABLE'/);
+    assert.ok(handler.indexOf('resolveTenantContextForOrder') < handler.indexOf('assertStaffPermission'));
+    assert.ok(handler.indexOf('assertStaffPermission') < handler.indexOf('throw new AppError'));
+    assert.doesNotMatch(handler, /\.from\(|\.(?:insert|update|upsert|delete)\(|client_total|body\.total|body\.subtotal/);
 });
 
 test('merchant packing slips render from owned order data', () => {

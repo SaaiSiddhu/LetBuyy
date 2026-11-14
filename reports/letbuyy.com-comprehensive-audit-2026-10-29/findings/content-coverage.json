@@ -1,0 +1,56 @@
+[
+  {
+    "route": "content",
+    "applicable": true,
+    "why": "Existing public article library and material commercial/compliance claims",
+    "status": "executed",
+    "evidence_or_output": "findings/content-strategy.md; findings/content-issues.json; evidence/content-analysis.json",
+    "missing_prerequisite": "Real author/customer/claim provenance remains unverified",
+    "next_step": "Editorial owners verify provenance and sources; implement only after approval of factual changes"
+  },
+  {
+    "route": "content-brief",
+    "applicable": true,
+    "why": "Existing launch/pricing/payment/tax pages have concrete correctness/task gaps",
+    "status": "executed",
+    "evidence_or_output": "CONTENT-AND-CLUSTER-PLAN.md: four detailed improve-mode briefs",
+    "missing_prerequisite": "Controlled top5 rankings, competitor word averages and numeric gap scores not measured",
+    "next_step": "Use consistent India query dataset and first-party query/page data when available; no new URL required now"
+  },
+  {
+    "route": "cluster",
+    "applicable": true,
+    "why": "Resource library supports topic architecture and contextual links",
+    "status": "partially executed",
+    "evidence_or_output": "cluster-plan.json; cluster-map.html; internal-link-matrix.csv; CONTENT-AND-CLUSTER-PLAN.md",
+    "missing_prerequisite": "Consistent top10 organic URL datasets and keyword volumes unavailable",
+    "next_step": "Collect EnglishIndia device/location/time-controlled SERPs for36phrases; compute overlap before consolidation"
+  },
+  {
+    "route": "programmatic",
+    "applicable": true,
+    "why": "Tag/category/author/locale templates create scaled page patterns",
+    "status": "partially executed",
+    "evidence_or_output": "CONTENT-AND-CLUSTER-PLAN.md: archive policy; main crawl technical analysis",
+    "missing_prerequisite": "Actual indexing/query data and complete information-gain review unavailable",
+    "next_step": "Review useful landing intents and discovery before changing indexation; do not apply word-count deletion"
+  },
+  {
+    "route": "plan",
+    "applicable": true,
+    "why": "Business-specific prioritization can proceed from observed correctness/IA gaps",
+    "status": "executed",
+    "evidence_or_output": "CONTENT-AND-CLUSTER-PLAN.md; main PRIORITIZED-ACTION-PLAN.md",
+    "missing_prerequisite": "Measured performance/traffic targets and owner capacity unavailable",
+    "next_step": "Use outcome-based correctness batches; set quantitative business targets after baseline analytics access"
+  },
+  {
+    "route": "flow",
+    "applicable": true,
+    "why": "Find/Optimize/Win synthesis fits the observed product and trust/offer gaps",
+    "status": "executed",
+    "evidence_or_output": "CONTENT-AND-CLUSTER-PLAN.md: FLOW synthesis and exact attribution",
+    "missing_prerequisite": "Off-site evidence, first-party conversion data and local-business applicability not established",
+    "next_step": "Apply only supported stages; preserve attribution; no outreach or local-profile changes"
+  }
+]

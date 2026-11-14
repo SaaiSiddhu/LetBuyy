@@ -1,0 +1,81 @@
+{
+  "checked_on": "2026-10-29",
+  "method": "web primary-page opens/search; source-specific limits recorded",
+  "sources": [
+    {
+      "title": "Google canonical guidance",
+      "url": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
+      "supports": "Canonical/redirect/sitemap signals are preferences, not indexing guarantees."
+    },
+    {
+      "title": "Google sitemaps",
+      "url": "https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap",
+      "supports": "Final canonical URLs and accurate significant-change lastmod; no indexing guarantee."
+    },
+    {
+      "title": "Google localized versions",
+      "url": "https://developers.google.com/search/docs/specialty/international/localized-versions",
+      "supports": "Equivalent reciprocal language annotations; avoid cross-language canonical mistakes."
+    },
+    {
+      "title": "Google software application",
+      "url": "https://developers.google.com/search/docs/appearance/structured-data/software-app",
+      "supports": "Feature eligibility differs from parseable Schema.org JSON; genuine review/rating requirement."
+    },
+    {
+      "title": "Google Article",
+      "url": "https://developers.google.com/search/docs/appearance/structured-data/article",
+      "supports": "Accurate article/author/image identity; no fabricated credentials."
+    },
+    {
+      "title": "Google AI features",
+      "url": "https://developers.google.com/search/docs/appearance/ai-features",
+      "supports": "Ordinary SEO, visible text, no required special AI files."
+    },
+    {
+      "title": "Google documentation updates",
+      "url": "https://developers.google.com/search/updates",
+      "supports": "Checked live October29; FAQ rich-result retirement confirmed; update ledger verifiedOct22 and7daysold."
+    },
+    {
+      "title": "Google Search Status",
+      "url": "https://status.search.google.com/",
+      "supports": "Live dashboard showed no incidents when checked; not evidence of site-specific rank changes."
+    },
+    {
+      "title": "Ministry of Finance TCS record",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2087659&lang=2&reg=48",
+      "supports": "2024 record documents reduction of total TCS to0.5%; not a complete current legal review."
+    },
+    {
+      "title": "Notification34/2023",
+      "url": "https://gstcouncil.gov.in/sites/default/files/2024-05/gst-ct-34-2023.pdf",
+      "supports": "Conditional below-threshold single-state ecommerce goods registration exemption; conditions apply."
+    },
+    {
+      "title": "2025 apparel reforms",
+      "url": "https://www.pib.gov.in/FactsheetDetails.aspx?ModuleId=16&NoteId=150293&id=150293&lang=2&reg=48",
+      "supports": "Official Sep17 2025 textile factsheet describes ₹2500 threshold; exact current product classification/notifications need reviewer."
+    },
+    {
+      "title": "2025 reform schedule",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2163555&lang=2&reg=3",
+      "supports": "Primary search excerpts include Sep22 2025 implementation and above₹2500 apparel18%; full tool open exceeded byte cap."
+    },
+    {
+      "title": "GST portal GSTR2A",
+      "url": "https://tutorial.gst.gov.in/userguide/returns/GSTR_2A.htm",
+      "supports": "Official manual supports TCS receipt details in PartC; do not falsely flag that mention alone."
+    },
+    {
+      "title": "Unlighthouse CLI",
+      "url": "https://unlighthouse.dev/integrations/cli",
+      "supports": "Runtime/wrapper attempted; 4-route request timed out240seconds; no scores."
+    },
+    {
+      "title": "Unlighthouse config",
+      "url": "https://unlighthouse.dev/api/config",
+      "supports": "Reviewed actual route-cap/config interface; no production config changed."
+    }
+  ]
+}

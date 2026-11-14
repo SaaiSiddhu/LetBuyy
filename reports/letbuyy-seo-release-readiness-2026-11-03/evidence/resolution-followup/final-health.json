@@ -1,0 +1,33 @@
+{
+  "capturedAt": "2026-11-03T10:37:53.001324+00:00",
+  "rootBuildId": "b2CsFLYIUn25H5EguBjys",
+  "readOnly": true,
+  "rows": [
+    {
+      "url": "http://127.0.0.1:9006/in/pricing",
+      "status": 200,
+      "bytes": 447757
+    },
+    {
+      "url": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "bytes": 315613
+    },
+    {
+      "url": "http://127.0.0.1:9006/api/founding-pricing",
+      "status": 200,
+      "bytes": 76731
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "status": 200,
+      "bytes": 76636
+    },
+    {
+      "url": "http://127.0.0.1:9002/signup",
+      "status": 200,
+      "bytes": 225006
+    }
+  ],
+  "passed": true
+}

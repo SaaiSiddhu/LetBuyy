@@ -6,7 +6,6 @@ import { CartProvider } from '@/context/cart-context';
 import { CustomerAuthProvider } from '@/context/customer-auth-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import ComingSoonRouter from '@/components/coming-soon';
-import StorefrontAccessGate from '@/components/StorefrontAccessGate';
 import type { SiteType } from '@/components/coming-soon';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
@@ -15,14 +14,30 @@ import type { SectionRenderData } from '@/lib/theme-engine/types';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import { buildStoreMetadata, isStorefrontIndexable } from '@/lib/seo';
 // D7: wire experience font hrefs into the store layout head.
-import { buildGoogleFontsHref, fontFamilyWithFallback } from '@letbuyy/theme-engine';
+import { buildGoogleFontsHref } from '@letbuyy/theme-engine';
 import './liquid-theme.css';
 
 export const revalidate = 60;
 
 // ============= THEME FONT MAPPING =============
 // D7: extended with the four missing experience font families.
-const FONT_MAP: Record<string, string> = Object.fromEntries(['Inter', 'Outfit', 'Poppins', 'Lora', 'Space Grotesk', 'Playfair Display', 'Nunito', 'Open Sans', 'DM Sans', 'Montserrat', 'Cormorant Garamond', 'Libre Baskerville', 'Source Sans Pro', 'Lato'].map(family => [family, fontFamilyWithFallback(family)]));
+const FONT_MAP: Record<string, string> = {
+    'Inter': 'var(--font-inter)',
+    'Outfit': 'var(--font-outfit)',
+    'Poppins': 'var(--font-poppins)',
+    'Lora': 'var(--font-lora)',
+    'Space Grotesk': 'var(--font-space-grotesk)',
+    'Playfair Display': 'var(--font-playfair)',
+    'Nunito': 'var(--font-nunito)',
+    'Open Sans': 'var(--font-open-sans)',
+    'DM Sans': 'var(--font-dm-sans)',
+    'Montserrat': 'var(--font-montserrat)',
+    // D7 additions:
+    'Cormorant Garamond': 'var(--font-cormorant)',
+    'Libre Baskerville': 'var(--font-libre-baskerville)',
+    'Source Sans Pro': 'var(--font-source-sans)',
+    'Lato': 'var(--font-lato)',
+};
 
 type Props = {
     children: React.ReactNode;
@@ -71,7 +86,6 @@ export default async function StoreLayout({ children, params }: Props) {
 
     // Show the gated storefront page for draft/suspended stores
     if (!previewStore && store.status !== 'published') {
-        if (store.siteType === 'store') return <StorefrontAccessGate storeName={store.name} message={store.tagline} />;
         return (
             <ComingSoonRouter
                 siteType={(store.siteType as SiteType) || 'store'}
@@ -82,16 +96,10 @@ export default async function StoreLayout({ children, params }: Props) {
         );
     }
 
-    const renderPlan = resolveStorefrontTemplate(store, {
-        type: 'index',
-        path: `/store/${subdomain}`,
-        subdomain,
-    });
-    // Liquid owns its GET search form and body data plan. Only the frozen React
-    // chrome consumes this optional catalog; do not preload it for hidden chrome.
+    // Fetch products for search — only for store-type sites
     const isStoreSite = store.siteType === 'store';
     let products: ProductModel[] = [];
-    if (isStoreSite && renderPlan.rendererEngine !== 'liquid') {
+    if (isStoreSite) {
         try {
             if (store.selectedProductIds && store.selectedProductIds.length > 0) {
                 products = await ProductService.getProductsByIds(store.selectedProductIds, subdomain);
@@ -105,6 +113,11 @@ export default async function StoreLayout({ children, params }: Props) {
 
     // Extract Theme Settings from templateConfig
     const ts = store.templateConfig.themeSettings;
+    const renderPlan = resolveStorefrontTemplate(store, {
+        type: 'index',
+        path: `/store/${subdomain}`,
+        subdomain,
+    });
     const sectionGroupData = new Map<string, SectionRenderData>();
     for (const section of [...renderPlan.sectionGroups.header, ...renderPlan.sectionGroups.footer]) {
         sectionGroupData.set(section.id, { products });
@@ -168,7 +181,6 @@ export default async function StoreLayout({ children, params }: Props) {
           --accent: ${ts.accentColor || ts.primaryColor};
           --background: ${backgroundColor};
           --text: ${textColor};
-          --foreground: ${textColor};
           --radius: ${ts.borderRadius}px;
           --font-main: ${fontCss}, system-ui, sans-serif;
           --font-heading: ${headingFontCss}, system-ui, sans-serif;
@@ -180,7 +192,7 @@ export default async function StoreLayout({ children, params }: Props) {
           --text-hint: ${isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'};
           --text-inverse: ${isDark ? 'rgb(0 0 0)' : 'rgb(255 255 255)'};
           --border-color: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
-          --surface: ${surfaceColor};
+          --surface: ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'};
           --surface-hover: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
           --card-bg: ${isDark ? surfaceColor : 'rgb(255 255 255)'};
           --card-bg-secondary: ${isDark ? 'rgba(255,255,255,0.08)' : surfaceColor};

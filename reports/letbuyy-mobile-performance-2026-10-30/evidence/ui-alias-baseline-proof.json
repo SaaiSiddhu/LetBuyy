@@ -1,0 +1,49 @@
+{
+  "captured_at": "2026-10-29T22:25:34.693694+00:00",
+  "baseline_exit": 1,
+  "identical_violations": true,
+  "violation_count": 18,
+  "violations": [
+    "- dark: new alias for \"#DC2626\" => --lb-component-badge-solid-danger-bg, --lb-component-banner-solid-danger-bg, --lb-component-toast-danger-bg",
+    "- dark: new alias for \"#FFFFFF\" => --lb-component-badge-solid-text, --lb-component-banner-solid-action-text, --lb-component-banner-solid-text, --lb-component-toast-text",
+    "- dark: new duplicate value group \"#0a0912\" => --lb-color-background, --lb-color-background-dark, --lb-color-bg, --lb-color-surface-subdued, --lb-content-bg, --lb-primitive-color-ink-950, --lb-semantic-background-page, --lb-semantic-background-subdued",
+    "- dark: new duplicate value group \"#0d0b15\" => --lb-color-sidebar, --lb-component-sidebar-bg, --lb-primitive-color-ink-900, --lb-semantic-background-sidebar, --lb-sidebar-bg",
+    "- dark: new duplicate value group \"#0d0b16\" => --lb-color-header, --lb-color-surface, --lb-color-surface-dark, --lb-component-button-secondary-bg, --lb-component-input-bg, --lb-component-table-header-bg, --lb-component-table-row-hover-bg, --lb-primitive-color-ink-850, --lb-semantic-background-header, --lb-semantic-background-surface, --lb-semantic-button-secondary-bg",
+    "- dark: new duplicate value group \"#15131f\" => --lb-card-bg, --lb-color-card, --lb-component-button-secondary-hover, --lb-component-card-bg, --lb-component-empty-state-bg, --lb-component-table-bg, --lb-primitive-color-ink-800, --lb-semantic-background-card, --lb-semantic-button-secondary-hover",
+    "- dark: new duplicate value group \"#16A34A\" => --lb-component-badge-solid-success-bg, --lb-component-banner-solid-success-bg, --lb-component-toast-success-bg",
+    "- dark: new duplicate value group \"#1b1827\" => --lb-color-surface-raised, --lb-primitive-color-ink-700, --lb-semantic-background-raised",
+    "- dark: new duplicate value group \"#2563EB\" => --lb-component-badge-solid-info-bg, --lb-component-banner-solid-info-bg, --lb-component-toast-info-bg",
+    "- dark: new duplicate value group \"#D97706\" => --lb-component-badge-solid-warning-bg, --lb-component-banner-solid-warning-bg, --lb-component-toast-warning-bg",
+    "- dark: new duplicate value group \"rgba(139, 92, 246, 0.18)\" => --lb-color-border, --lb-color-border-dark, --lb-component-button-secondary-border, --lb-component-card-border, --lb-component-empty-state-border, --lb-component-input-border, --lb-component-sidebar-border, --lb-component-table-border, --lb-semantic-border-default, --lb-semantic-border-subtle, --lb-semantic-button-secondary-border",
+    "- light: new alias for \"#DC2626\" => --lb-component-badge-solid-danger-bg, --lb-component-banner-solid-danger-bg, --lb-component-toast-danger-bg",
+    "- light: new alias for \"#FFFFFF\" => --lb-component-badge-solid-text, --lb-component-banner-solid-action-text, --lb-component-banner-solid-text, --lb-component-toast-text",
+    "- light: new duplicate value group \"#0a0912\" => --lb-color-background-dark, --lb-primitive-color-ink-950",
+    "- light: new duplicate value group \"#0d0b16\" => --lb-color-surface-dark, --lb-primitive-color-ink-850",
+    "- light: new duplicate value group \"#16A34A\" => --lb-component-badge-solid-success-bg, --lb-component-banner-solid-success-bg, --lb-component-toast-success-bg",
+    "- light: new duplicate value group \"#2563EB\" => --lb-component-badge-solid-info-bg, --lb-component-banner-solid-info-bg, --lb-component-toast-info-bg",
+    "- light: new duplicate value group \"#D97706\" => --lb-component-badge-solid-warning-bg, --lb-component-banner-solid-warning-bg, --lb-component-toast-warning-bg"
+  ],
+  "identical_inputs": [
+    {
+      "path": "packages/typescript/ui/src/tokens.ts",
+      "current_sha256": "8ff2db3531e54247b63d4d897d002c60db6c4abb80516c5f1e9470f672aeaaad",
+      "baseline_sha256": "8ff2db3531e54247b63d4d897d002c60db6c4abb80516c5f1e9470f672aeaaad"
+    },
+    {
+      "path": "packages/typescript/ui/src/fonts.ts",
+      "current_sha256": "c4bf965cbd55365fb79a588632045df09ffb79b84fd1d4ad0a19a51422b38675",
+      "baseline_sha256": "c4bf965cbd55365fb79a588632045df09ffb79b84fd1d4ad0a19a51422b38675"
+    },
+    {
+      "path": "packages/typescript/ui/snapshots/token-aliases.json",
+      "current_sha256": "8460420ad5a4d02f73b8781bffd50e81d91f54c8b48cdc159b14663d2daa2042",
+      "baseline_sha256": "8460420ad5a4d02f73b8781bffd50e81d91f54c8b48cdc159b14663d2daa2042"
+    },
+    {
+      "path": "packages/typescript/ui/tests/validators/ui-no-new-token-alias-validator.mjs",
+      "current_sha256": "a478fe1ce7329b2e7dc07e061a8d5a99c707c637c99c6c9ba73d9b9569f2d88a",
+      "baseline_sha256": "a478fe1ce7329b2e7dc07e061a8d5a99c707c637c99c6c9ba73d9b9569f2d88a"
+    }
+  ],
+  "status": "Confirmed pre-existing shared-UI token alias snapshot drift; no new token or alias introduced by this task. Snapshot and palette not weakened or changed."
+}

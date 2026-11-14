@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "checked_at": "2026-10-29",
+  "checks": [
+    "All saved JSON parses",
+    "23 unique full-field issue records and affected counts/evidence",
+    "Crawl/locale/canonical/article/CSV/coverage counts agree; unavailable scores remain null",
+    "Crawl evidence paths and Markdown links checked",
+    "Representative screenshots exist; custom response header evidence omits credential/cookie header classes"
+  ],
+  "errors": [],
+  "warnings": [],
+  "scope": "artifact integrity and independent count checks; not site or production certification",
+  "source_modified_by_this_audit": false
+}

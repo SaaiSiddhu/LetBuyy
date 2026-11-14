@@ -1,0 +1,65 @@
+{
+  "audit_date": "2026-10-29",
+  "files": [
+    {
+      "path": "EXECUTIVE-SUMMARY.md",
+      "bytes": 5699,
+      "sha256": "005fe2866e7719507f40c18793cd0eabdc828d2f5050afb41d4c1a5a22279251"
+    },
+    {
+      "path": "FULL-SEO-AUDIT.md",
+      "bytes": 66025,
+      "sha256": "922439b3968403aa097b7b3567d8d5ded49bb134736a9787069a15d5e1cb82f3"
+    },
+    {
+      "path": "ISSUE-REGISTER.csv",
+      "bytes": 38998,
+      "sha256": "7abf2cdfd4401b01af5e4da318f1cc53e10f567bc7821157d8337acc1f66136e"
+    },
+    {
+      "path": "URL-INVENTORY.csv",
+      "bytes": 8250734,
+      "sha256": "b4ecf372689a8c1b894b000405965da29a54392fb78522e1e1d138c54697c9a6"
+    },
+    {
+      "path": "PRIORITIZED-ACTION-PLAN.md",
+      "bytes": 11345,
+      "sha256": "93046515442f354fdd3a3ea6806d04985fe523e31d638b724cba83b0b281c566"
+    },
+    {
+      "path": "IMPLEMENTATION-BRIEFS.md",
+      "bytes": 14788,
+      "sha256": "4248cde1d4fdb6c8bb070165e507c915750620e67b7e08c10ca2ac6fcd91e5f7"
+    },
+    {
+      "path": "CONTENT-AND-CLUSTER-PLAN.md",
+      "bytes": 29956,
+      "sha256": "acd5a333fe6da7ddf9f0c033654b08c2b99f4e1ef4df86c547c8258abf18b783"
+    },
+    {
+      "path": "COMPETITOR-AND-AI-VISIBILITY.md",
+      "bytes": 17042,
+      "sha256": "48ff0fb50bc1234459252bb46bf76c6f56782e5172a55384c3dbf14405bfe091"
+    },
+    {
+      "path": "TOOLKIT-COVERAGE.md",
+      "bytes": 15582,
+      "sha256": "1bdeb68917c0c8eaf8120d61f3bcc6ddcf4055c48e1875385caacd8cd7aafd26"
+    },
+    {
+      "path": "audit-data.json",
+      "bytes": 281717,
+      "sha256": "23964ec65715da62075d2551b3378d6a7c47c5442102da6df32f8d65a0f61686"
+    },
+    {
+      "path": "LetBuyy-Live-SEO-Audit-2026-10-29.pdf",
+      "bytes": 688006,
+      "sha256": "c6bc1a6d6685637bb0a1a895262eb95622c0423d31075ecb1bc76dc2de28f9d0"
+    },
+    {
+      "path": "Google-SEO-Report-letbuyy.com-full.html",
+      "bytes": 88718,
+      "sha256": "5b56451971d01e557a132995a787bdef599ec979bb0ea4d775d9464a6427f1ff"
+    }
+  ]
+}

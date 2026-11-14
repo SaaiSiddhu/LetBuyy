@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>LetBuyy வளங்கள்</title>
+    <link>http://localhost:9006/in-ta/resources</link>
+    <description>இந்திய இணைய வணிகத்தைத் தொடங்கி நடத்தி வளர்க்கும் வழிகாட்டிகள். கடை, பணம், செயல்பாடுகளை ஆராயுங்கள்.</description>
+    <language>ta-IN</language>
+    <atom:link href="http://localhost:9006/in-ta/resources/rss.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>http://localhost:9006/icons/letbuyy-logo-512.png?v=3</url>
+      <title>LetBuyy வளங்கள்</title>
+      <link>http://localhost:9006/in-ta/resources</link>
+    </image>
+    <item>
+      <title>வணிகர் கட்டுப்பாட்டு மையம்: உங்கள் வணிக இயங்குதளப் பலகை</title>
+      <link>http://localhost:9006/in-ta/resources/platform/merchant-web-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/merchant-web-guide#ta</guid>
+      <description>LetBuyy வணிகர் கட்டுப்பாட்டு மையத்தின் முழு வழிகாட்டி—வழிசெலுத்தல், பகுதிகள், நிர்வாகப் பலகைகள் மற்றும் மேம்பட்ட வசதிகள்.</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>merchant-dashboard</category>
+      <category>platform</category>
+      <category>getting-started</category>
+      <category>product</category>
+    </item>
+    <item>
+      <title>LetBuyy AI Copilot வழிகாட்டி</title>
+      <link>http://localhost:9006/in-ta/resources/ai-commerce/commerce-copilot-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/commerce-copilot-guide#ta</guid>
+      <description>LetBuyy AI Copilot-ஐப் பயன்படுத்தும் முழு வழிகாட்டி—திறன்கள், பயன்பாடு மற்றும் மேம்பட்ட வணிகர் கோரிக்கைகள்.</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>copilot</category>
+      <category>ai</category>
+      <category>letbuyy</category>
+      <category>product</category>
+    </item>
+    <item>
+      <title>LetBuyy தள அறிமுகம்: அனைத்தும் ஒரே இடத்தில்</title>
+      <link>http://localhost:9006/in-ta/resources/platform/letbuyy-platform-overview</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/letbuyy-platform-overview#ta</guid>
+      <description>LetBuyy தளத்தின் முழு அறிமுகம்—வணிகர் கட்டுப்பாட்டு மையம், கடை இயக்கம், அடையாளம், டெவலப்பர் சூழல் மற்றும் வளர்ச்சித் திட்டம்.</description>
+      <pubDate>Sat, 30 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>platform</category>
+      <category>overview</category>
+      <category>architecture</category>
+      <category>product</category>
+    </item>
+    <item>
+      <title>உங்கள் முதல் LetBuyy கடை: முழு நடைமுறை வழிகாட்டி</title>
+      <link>http://localhost:9006/in-ta/resources/platform/building-first-letbuyy-store</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/building-first-letbuyy-store#ta</guid>
+      <description>LetBuyy கடையைப் புதிதாக உருவாக்குவதற்கான படிப்படியான விளக்கம் — தீம், தயாரிப்பு, பணப்பரிவர்த்தனை, வெளியீடு.</description>
+      <pubDate>Thu, 28 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>getting-started</category>
+      <category>platform</category>
+      <category>store-setup</category>
+      <category>walkthrough</category>
+    </item>
+    <item>
+      <title>AI வணிகம்: உங்கள் கடைக்கு அதன் பொருள் என்ன</title>
+      <link>http://localhost:9006/in-ta/resources/ai-commerce/ai-commerce-explained</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/ai-commerce-explained#ta</guid>
+      <description>இந்திய வணிகர்களுக்கான நடைமுறை AI அறிமுகம்—கடைக்குச் செய்யக்கூடியவை, முடியாதவை மற்றும் தொடங்கும் வழி.</description>
+      <pubDate>Mon, 25 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>ai</category>
+      <category>automation</category>
+      <category>commerce</category>
+      <category>future</category>
+    </item>
+    <item>
+      <title>முதல் LetBuyy செயலியை உருவாக்குதல்</title>
+      <link>http://localhost:9006/in-ta/resources/developers/building-first-letbuyy-app</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/building-first-letbuyy-app#ta</guid>
+      <description>LetBuyy செயலியை உருவாக்கும் படிப்படியான வழிகாட்டி—OAuth 2.0, உள்ளமைந்த UI, வெப்ஹுக்குகள் மற்றும் சந்தைச் சமர்ப்பிப்பு.</description>
+      <pubDate>Fri, 22 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>apps</category>
+      <category>oauth</category>
+      <category>developers</category>
+      <category>marketplace</category>
+    </item>
+    <item>
+      <title>பல கிடங்கு இருப்பு நிர்வாகம்</title>
+      <link>http://localhost:9006/in-ta/resources/operations/multi-warehouse-inventory</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/multi-warehouse-inventory#ta</guid>
+      <description>இந்திய இணையக் கடைக்கான பல கிடங்கு அமைப்பு—பகுதி ஒதுக்கீடு, இருப்பு மாற்றம் மற்றும் நிறைவேற்ற வழிமாற்று.</description>
+      <pubDate>Wed, 20 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>inventory</category>
+      <category>warehouse</category>
+      <category>multi-location</category>
+      <category>operations</category>
+    </item>
+    <item>
+      <title>LetBuyy API-உடன் தொடங்குதல்</title>
+      <link>http://localhost:9006/in-ta/resources/developers/letbuyy-api-getting-started</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/letbuyy-api-getting-started#ta</guid>
+      <description>LetBuyy API டெவலப்பர் வழிகாட்டி—அங்கீகாரம், வேக வரம்புகள், முனைகள் மற்றும் முதல் ஒருங்கிணைப்பு.</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>api</category>
+      <category>developers</category>
+      <category>integration</category>
+      <category>authentication</category>
+    </item>
+    <item>
+      <title>உங்கள் முதல் 100 ஆர்டர்களைப் பெறுவது எப்படி</title>
+      <link>http://localhost:9006/in-ta/resources/growth/first-100-orders-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/first-100-orders-guide#ta</guid>
+      <description>இயற்கை வருகை, WhatsApp, சமூக வழிகளில் புதிய இந்திய மின்வணிகப் பிராண்டின் முதல் 100 ஆர்டர்களைப் பெறும் படிப்படியான வழிகாட்டி.</description>
+      <pubDate>Fri, 15 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>growth</category>
+      <category>beginners</category>
+      <category>organic</category>
+      <category>whatsapp</category>
+    </item>
+    <item>
+      <title>AI மூலம் கடைச் செயல்பாட்டைத் தானியக்குதல்</title>
+      <link>http://localhost:9006/in-ta/resources/ai-commerce/automating-operations-ai</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/automating-operations-ai#ta</guid>
+      <description>AI இணைய வணிகத் தானியக்கத்தின் நடைமுறை வழிகாட்டி—இருப்பு எச்சரிக்கை, வாடிக்கையாளர் ஆதரவு, ஆர்டர் வழிமாற்று மற்றும் பல.</description>
+      <pubDate>Tue, 12 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>automation</category>
+      <category>ai</category>
+      <category>operations</category>
+      <category>efficiency</category>
+    </item>
+    <item>
+      <title>தயாரிப்புப் பக்க மேம்பாடு: முழு வழிகாட்டி</title>
+      <link>http://localhost:9006/in-ta/resources/ecommerce/product-page-optimization</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/product-page-optimization#ta</guid>
+      <description>இந்திய வாங்குபவர்களுக்கான தயாரிப்புப் பக்கங்களை மேம்படுத்தக் கற்றுக்கொள்ளுங்கள் — சிறந்த படங்கள், விளக்கங்கள், மதிப்புரைகள், நம்பிக்கைச் சான்றுகள்.</description>
+      <pubDate>Sun, 10 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>conversion</category>
+      <category>product-pages</category>
+      <category>ux</category>
+      <category>copywriting</category>
+    </item>
+    <item>
+      <title>இந்திய வணிகர்களுக்கான பணிச்சுற்றுத் தானியக்கம்</title>
+      <link>http://localhost:9006/in-ta/resources/ai-commerce/workflow-automation-merchants</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/workflow-automation-merchants#ta</guid>
+      <description>இந்திய வணிகருக்கான இணைய வணிகத் தானியக்க வழிகாட்டி—தூண்டுதல்கள், செயல்கள் மற்றும் நடைமுறை உதாரணங்கள்.</description>
+      <pubDate>Fri, 08 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>automation</category>
+      <category>workflows</category>
+      <category>operations</category>
+      <category>efficiency</category>
+    </item>
+    <item>
+      <title>இந்தியப் பிராண்டுகளுக்கான வாடிக்கையாளர் தக்கவைப்பு உத்திகள்</title>
+      <link>http://localhost:9006/in-ta/resources/growth/retention-strategies-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/retention-strategies-india#ta</guid>
+      <description>இந்திய மின்வணிகத்திற்கான பயனுள்ள வாடிக்கையாளர் தக்கவைப்பு: விசுவாசத் திட்டங்கள், மீள் ஈடுபாடு, வாழ்நாள் மதிப்பு மேம்பாடு.</description>
+      <pubDate>Tue, 05 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>retention</category>
+      <category>loyalty</category>
+      <category>ltv</category>
+      <category>repeat-purchase</category>
+    </item>
+    <item>
+      <title>இந்தியாவில் இணையக் கடையைத் தொடங்குவது எப்படி (2026 வழிகாட்டி)</title>
+      <link>http://localhost:9006/in-ta/resources/ecommerce/how-to-start-an-online-store-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/how-to-start-an-online-store-india#ta</guid>
+      <description>2026இல் இந்தியாவில் இணையக் கடையைத் தொடங்குவதற்கான படிப்படியான வழிகாட்டி: GST, பணப்பரிவர்த்தனை, சரக்குப் போக்குவரத்து மற்றும் சந்தைப்படுத்தல்.</description>
+      <pubDate>Fri, 01 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>store-setup</category>
+      <category>india</category>
+      <category>beginners</category>
+      <category>gst</category>
+    </item>
+    <item>
+      <title>விற்பனையை உயர்த்தும் AI தயாரிப்புப் பரிந்துரைகள்</title>
+      <link>http://localhost:9006/in-ta/resources/ai-commerce/ai-product-recommendations</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/ai-product-recommendations#ta</guid>
+      <description>LetBuyy AI பரிந்துரைகள் செயல்படும் விதம்—கூட்டுப் வடிகட்டல், கூடுதல் மற்றும் இணை விற்பனை, வைக்கும் இடங்கள்.</description>
+      <pubDate>Thu, 30 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>recommendations</category>
+      <category>ai</category>
+      <category>conversion</category>
+      <category>personalization</category>
+    </item>
+    <item>
+      <title>இந்தியாவில் அனுப்புதல்: அஞ்சல் குறியீடுகள், கட்டணங்கள் மற்றும் நிறுவனங்கள்</title>
+      <link>http://localhost:9006/in-ta/resources/operations/shipping-india-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/shipping-india-guide#ta</guid>
+      <description>இந்திய இணைய வணிக அனுப்புதலின் முழு வழிகாட்டி—நிறுவன ஒப்பீடு, கட்டணப் பேச்சுவார்த்தை, சேவைப் பகுதிகள் மற்றும் கடைசிக்கட்ட விநியோகம்.</description>
+      <pubDate>Tue, 28 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>shipping</category>
+      <category>logistics</category>
+      <category>courier</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>LetBuyy-இல் பணம் பெறுதல்: UPI, அட்டைகள் மற்றும் COD</title>
+      <link>http://localhost:9006/in-ta/resources/payments/razorpay-integration-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/razorpay-integration-guide#ta</guid>
+      <description>Razorpay, UPI, COD மற்றும் இந்தியப் பணம் செலுத்தல் முறைகளை LetBuyy கடையில் அமைப்பதற்கான படிப்படியான வழிகாட்டி.</description>
+      <pubDate>Sat, 25 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>payments</category>
+      <category>razorpay</category>
+      <category>upi</category>
+      <category>setup</category>
+    </item>
+    <item>
+      <title>கார்ட்டைக் கைவிடுவதைக் குறைத்தல்: இந்தியக் கடைகளுக்கான 12 உத்திகள்</title>
+      <link>http://localhost:9006/in-ta/resources/ecommerce/reducing-cart-abandonment</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/reducing-cart-abandonment#ta</guid>
+      <description>COD, UPI, WhatsApp மீட்பு மூலம் இந்திய மின்வணிகக் கடைகளில் கைவிடப்பட்ட கார்ட்களைக் குறைப்பதற்கான நடைமுறை வழிகாட்டி.</description>
+      <pubDate>Wed, 22 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>conversion</category>
+      <category>cart</category>
+      <category>recovery</category>
+      <category>whatsapp</category>
+    </item>
+    <item>
+      <title>LetBuyy-இல் தீம்கள் செயல்படும் விதம்</title>
+      <link>http://localhost:9006/in-ta/resources/platform/how-themes-work</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/how-themes-work#ta</guid>
+      <description>LetBuyy தீம்களுக்கான முழு வழிகாட்டி—வகைகள், தனிப்பயனாக்கம், தொகுப்பான் மற்றும் தனிப்பயன் தீம் வெளியீடு.</description>
+      <pubDate>Mon, 20 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>themes</category>
+      <category>storefront</category>
+      <category>customization</category>
+      <category>platform</category>
+    </item>
+    <item>
+      <title>இந்தியச் சமூக வணிகம்: Instagram, WhatsApp மற்றும் அப்பால்</title>
+      <link>http://localhost:9006/in-ta/resources/growth/social-commerce-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/social-commerce-india#ta</guid>
+      <description>இந்தியச் சமூக வணிக வழிகாட்டி — Instagram Shopping, WhatsApp Business, சமூகத்தை மையமாகக் கொண்ட மின்வணிக உத்தி.</description>
+      <pubDate>Sat, 18 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>social-media</category>
+      <category>instagram</category>
+      <category>whatsapp</category>
+      <category>social-commerce</category>
+    </item>
+    <item>
+      <title>வெப்ஹுக்குகள்: உடனடி வணிக நிகழ்வு ஓட்டம்</title>
+      <link>http://localhost:9006/in-ta/resources/developers/webhooks-complete-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/webhooks-complete-guide#ta</guid>
+      <description>LetBuyy வெப்ஹுக்குகளின் முழு டெவலப்பர் வழிகாட்டி—அமைப்பு, கையொப்பச் சரிபார்ப்பு, நிகழ்வுகள் மற்றும் நம்பகத்தன்மை.</description>
+      <pubDate>Wed, 15 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>webhooks</category>
+      <category>api</category>
+      <category>events</category>
+      <category>integration</category>
+    </item>
+    <item>
+      <title>இருப்பு நிர்வாகம்: குழப்பத்திலிருந்து கட்டுப்பாட்டிற்கு</title>
+      <link>http://localhost:9006/in-ta/resources/operations/inventory-management-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/inventory-management-guide#ta</guid>
+      <description>இந்திய இணைய வணிகத்திற்கான இருப்பு வழிகாட்டி—மறுஆர்டர் நிலை, பாதுகாப்பு இருப்பு, ABC ஆய்வு மற்றும் பல இட உத்தி.</description>
+      <pubDate>Sun, 12 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>inventory</category>
+      <category>operations</category>
+      <category>warehouse</category>
+      <category>stock</category>
+    </item>
+    <item>
+      <title>இந்தியாவில் D2C பிராண்டைத் தொடங்குவது எப்படி (படிப்படியாக)</title>
+      <link>http://localhost:9006/in-ta/resources/growth/d2c-brand-launch-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/d2c-brand-launch-guide#ta</guid>
+      <description>இந்தியாவில் நேரடியாக நுகர்வோருக்கு விற்கும் பிராண்டைத் தொடங்க முழு வழிகாட்டி: பொருள், அடையாளம், கடை, சந்தை அணுகுமுறை.</description>
+      <pubDate>Fri, 10 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>d2c</category>
+      <category>brand</category>
+      <category>launch</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>LetBuyy-இல் Liquid தீம்கள் செயல்படும் விதம்</title>
+      <link>http://localhost:9006/in-ta/resources/developers/liquid-theming-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/liquid-theming-guide#ta</guid>
+      <description>LetBuyy Liquid தீம்களுக்கான டெவலப்பர் வழிகாட்டி—தொடரியல், பொருள்கள், வடிகட்டிகள், குறிச்சொற்கள், பிரிவுகள் மற்றும் கட்டமைப்பு.</description>
+      <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>themes</category>
+      <category>liquid</category>
+      <category>developers</category>
+      <category>storefront</category>
+    </item>
+    <item>
+      <title>UPI அல்லது COD: இந்தியக் கடைகளுக்கு எந்தப் பணம் செலுத்தல் முறை சிறந்தது</title>
+      <link>http://localhost:9006/in-ta/resources/payments/upi-vs-cod-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/upi-vs-cod-india#ta</guid>
+      <description>இந்திய இணையக் கடைகளுக்கான UPI மற்றும் பொருள் கிடைத்ததும் பணம் செலுத்தலின் விரிவான ஒப்பீடு—வாங்கும் விகிதம், திருப்பும் விகிதம் மற்றும் வருவாய் தாக்கம்.</description>
+      <pubDate>Sun, 05 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>payments</category>
+      <category>upi</category>
+      <category>cod</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>தயாரிப்பு மதிப்புரைகள் வாங்குபவர்கள் முடிவெடுக்க உதவுவது எப்படி</title>
+      <link>http://localhost:9006/in-ta/resources/ecommerce/how-product-reviews-increase-conversion</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/how-product-reviews-increase-conversion#ta</guid>
+      <description>உண்மையான மதிப்புரைகளைப் பெறவும் வாங்குபவர்களின் கேள்விகளுக்குப் பதிலளிக்கவும் நிலையான உயர்வை உறுதியளிக்காமல் முடிவுகளை அளவிடவும் நடைமுறை வழிகாட்டி.</description>
+      <pubDate>Wed, 01 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>reviews</category>
+      <category>social-proof</category>
+      <category>conversion</category>
+      <category>trust</category>
+    </item>
+    <item>
+      <title>மின்வணிக மின்னஞ்சல் சந்தைப்படுத்தல்: இந்தியாவில் உங்கள் பட்டியலை உருவாக்குதல்</title>
+      <link>http://localhost:9006/in-ta/resources/growth/email-marketing-ecommerce</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/email-marketing-ecommerce#ta</guid>
+      <description>இந்திய மின்வணிகக் கடைக்கான மின்னஞ்சல் பட்டியலை உருவாக்கி வருவாய் பெறுதல் — முகவரி சேகரிப்பிலிருந்து தானியங்கித் தொடர்கள் வரை.</description>
+      <pubDate>Sat, 28 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>email</category>
+      <category>marketing</category>
+      <category>automation</category>
+      <category>list-building</category>
+    </item>
+    <item>
+      <title>ஆர்டர் நிறைவேற்றம்: நாளுக்கு 100 ஆர்டர்களைத் திறம்படச் செயலாக்குதல்</title>
+      <link>http://localhost:9006/in-ta/resources/operations/order-fulfillment-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/order-fulfillment-guide#ta</guid>
+      <description>இந்திய இணையக் கடையின் திறமையான நிறைவேற்றம்—பொதி, லேபிள், அனுப்புதல் ஒருங்கிணைப்பு மற்றும் கண்காணிப்பு.</description>
+      <pubDate>Wed, 25 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>fulfillment</category>
+      <category>orders</category>
+      <category>operations</category>
+      <category>scaling</category>
+    </item>
+    <item>
+      <title>LetBuyy செயலிச் சந்தை அறிமுகம்</title>
+      <link>http://localhost:9006/in-ta/resources/platform/introduction-to-apps</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/introduction-to-apps#ta</guid>
+      <description>LetBuyy செயலிச் சந்தை அறிமுகம்—கிடைக்கும் செயலிகள், நிறுவும் முறை மற்றும் உங்கள் கடைக்கான சரியான தேர்வு.</description>
+      <pubDate>Sun, 22 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>apps</category>
+      <category>marketplace</category>
+      <category>platform</category>
+      <category>integrations</category>
+    </item>
+    <item>
+      <title>இந்தியாவுக்கான வாடிக்கையாளர் நட்பு திருப்பிக் கொள்கை</title>
+      <link>http://localhost:9006/in-ta/resources/payments/refunds-returns-policy-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/refunds-returns-policy-india#ta</guid>
+      <description>இந்திய இணைய வணிகத்திற்காக நம்பிக்கையை வளர்த்து செலவைக் கட்டுப்படுத்தும் பொருள் மற்றும் பணத்திருப்பக் கொள்கையை எழுதிச் செயல்படுத்துதல்.</description>
+      <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>returns</category>
+      <category>refunds</category>
+      <category>policy</category>
+      <category>customer-service</category>
+    </item>
+    <item>
+      <title>LetBuyy-உடன் தனிப்பயன் ஒருங்கிணைப்புகள் உருவாக்குதல்</title>
+      <link>http://localhost:9006/in-ta/resources/developers/custom-integrations-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/custom-integrations-guide#ta</guid>
+      <description>LetBuyy தனிப்பயன் ஒருங்கிணைப்புகளுக்கான வழிகாட்டி—ஒத்திசைவு முறைகள், வரிசைச் செயலாக்கிகள் மற்றும் பொதுவான உதாரணங்கள்.</description>
+      <pubDate>Wed, 18 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>integrations</category>
+      <category>api</category>
+      <category>developers</category>
+      <category>erp</category>
+    </item>
+    <item>
+      <title>இந்திய வணிகர்களுக்கான முழுமையான கடை SEO பட்டியல்</title>
+      <link>http://localhost:9006/in-ta/resources/ecommerce/store-seo-checklist</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/store-seo-checklist#ta</guid>
+      <description>இந்திய மின்வணிகக் கடைகளுக்கான தொழில்நுட்ப SEO, பக்க மேம்பாடு, உள்ளூர் குறியீடுகள் பற்றிய முழுப் பட்டியல்.</description>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>seo</category>
+      <category>technical-seo</category>
+      <category>organic</category>
+      <category>google</category>
+    </item>
+    <item>
+      <title>இந்திய இணைய வணிக நிறைவேற்றத்தைப் புரிந்துகொள்ளுதல்</title>
+      <link>http://localhost:9006/in-ta/resources/operations/understanding-fulfillment</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/understanding-fulfillment#ta</guid>
+      <description>இந்திய பிராண்டுகளின் நிறைவேற்ற மாதிரிகள்—சுய செயலாக்கம், மூன்றாம் தரப்புப் போக்குவரத்து மற்றும் FBA/FBF ஒப்பீடு.</description>
+      <pubDate>Tue, 10 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>fulfillment</category>
+      <category>3pl</category>
+      <category>logistics</category>
+      <category>operations</category>
+    </item>
+    <item>
+      <title>இந்திய இணைய விற்பனையாளர்களுக்கான GST திட்டமிடல்</title>
+      <link>http://localhost:9006/in-ta/resources/payments/gst-for-ecommerce-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/gst-for-ecommerce-india#ta</guid>
+      <description>பொதுவான வரம்புகள் அல்லது பழைய விகித அட்டவணைகளைப் பயன்படுத்தாமல் அதிகாரப்பூர்வ ஆதாரங்களும் தகுதியான ஆலோசகரும் மூலம் உங்கள் இணைய வணிகத்தின் GST கேள்விகளைச் சரிபாருங்கள்.</description>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>gst</category>
+      <category>tax</category>
+      <category>compliance</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>இந்திய இணைய வணிக GST விலைப்பட்டியலில் இடம்பெற வேண்டியவை</title>
+      <link>http://localhost:9006/in-ta/resources/payments/invoicing-india-merchants</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/invoicing-india-merchants#ta</guid>
+      <description>இந்திய இணைய வணிகர்களின் GST விலைப்பட்டியல் தேவைகள்—கட்டாய விவரங்கள், வடிவங்கள் மற்றும் தானியக்கம் பற்றிய முழு வழிகாட்டி.</description>
+      <pubDate>Fri, 20 Feb 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>invoicing</category>
+      <category>gst</category>
+      <category>compliance</category>
+      <category>b2b</category>
+    </item>
+  </channel>
+</rss>

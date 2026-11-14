@@ -24,8 +24,6 @@
     --breakpoint-md: 768px;
     --breakpoint-lg: 1024px;
     --breakpoint-xl: 1280px;
-    /* Named radius utility; preserves the canonical radius without arbitrary values. */
-    --radius-lb-md: var(--lb-radius-md);
 }
 
 /* Resolve aliases where the utility is used so nested surface/brand tokens

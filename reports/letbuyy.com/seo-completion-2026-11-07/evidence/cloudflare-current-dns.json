@@ -1,0 +1,49 @@
+{
+  "captured_at": "2026-11-07T02:58:33.564169+00:00",
+  "method": "Read-only native CUA in the owner current Chrome after owner logged in",
+  "zone": "letbuyy.com",
+  "authenticated": true,
+  "dns_setup": "Full",
+  "record_list_total_displayed": 31,
+  "scope": "Relevant web host rows and whole-zone search results; not a full DNS export. TXT/mail/verification values omitted.",
+  "records": [
+    {
+      "name": "letbuyy.com",
+      "type": "CNAME",
+      "content": "c69d9eec88d448f3.vercel-dns-017.com",
+      "proxy": "DNS only",
+      "ttl_seconds": 600
+    },
+    {
+      "name": "www.letbuyy.com",
+      "type": "CNAME",
+      "content": "c69d9eec88d448f3.vercel-dns-017.com",
+      "proxy": "DNS only",
+      "ttl_seconds": 600
+    },
+    {
+      "name": "accounts.letbuyy.com",
+      "type": "CNAME",
+      "content": "671daaee66e0b650.vercel-dns-017.com",
+      "proxy": "DNS only",
+      "ttl_seconds": 600
+    }
+  ],
+  "searches": [
+    {
+      "query": "seller",
+      "result": "No DNS records"
+    },
+    {
+      "query": "developer",
+      "result": "No DNS records; substring search covers developer and developers"
+    }
+  ],
+  "single_redirects": {
+    "used": 0,
+    "capacity": 10,
+    "empty_state": "There aren't any rules"
+  },
+  "mutations": false,
+  "supersedes": "Earlier current-Chrome sign-in blocker is closed. November3 CLI DNS403 was not retried or reclassified as a success."
+}

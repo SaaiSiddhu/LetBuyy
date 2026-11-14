@@ -1,0 +1,34 @@
+{
+  "captured_at": "2026-11-01T05:42:34.283182+00:00",
+  "ports": {
+    "9006": {
+      "listening": true,
+      "output": "COMMAND   PID        USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME\nnode    12431 saai_mithra   13u  IPv4 0x7702e7ebc69fcef1      0t0  TCP 127.0.0.1:9006 (LISTEN)"
+    },
+    "9010": {
+      "listening": true,
+      "output": "COMMAND  PID        USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME\nworkerd 3797 saai_mithra   14u  IPv4 0xd271e94b51361982      0t0  TCP 127.0.0.1:9010 (LISTEN)\nworkerd 3797 saai_mithra   15u  IPv6 0x8ad775a6ebc63e35      0t0  TCP [::1]:9010 (LISTEN)"
+    },
+    "9002": {
+      "listening": true,
+      "output": "COMMAND  PID        USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME\nnode    7344 saai_mithra   13u  IPv4 0xcc97acca0a8e2a97      0t0  TCP 127.0.0.1:9002 (LISTEN)"
+    },
+    "9046": {
+      "listening": false,
+      "output": ""
+    },
+    "9047": {
+      "listening": false,
+      "output": ""
+    },
+    "9048": {
+      "listening": false,
+      "output": ""
+    },
+    "9049": {
+      "listening": false,
+      "output": ""
+    }
+  },
+  "only_task_owned_review_listeners_stopped": true
+}

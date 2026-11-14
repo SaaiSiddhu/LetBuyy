@@ -9,7 +9,6 @@ import {
     FilterBar,
     Input,
     MetricCard,
-    Page,
     PageContent,
     PageHeader,
     Section,
@@ -66,7 +65,7 @@ export default async function AuditLogsPage({ searchParams }: PageProps) {
     const hasAggregateGap = Boolean(sampleMeta && sampleMeta.total > sampleRows.length);
 
     return (
-        <Page className="max-w-none p-[var(--lb-space-5)] sm:p-[var(--lb-space-6)]">
+        <section className="max-w-none p-[var(--lb-space-5)] sm:p-[var(--lb-space-6)]">
             <PageHeader
                 title="Audit Logs"
                 description="Admin, employee, system, and user actions from the internal audit trail."
@@ -165,7 +164,7 @@ export default async function AuditLogsPage({ searchParams }: PageProps) {
                                         <Input
                                             type="date"
                                             name="date"
-                                            label="Date"
+                                            label="Date (IST)"
                                             defaultValue={date}
                                         />
                                     </div>
@@ -190,7 +189,7 @@ export default async function AuditLogsPage({ searchParams }: PageProps) {
                     </>
                 )}
             </PageContent>
-        </Page>
+        </section>
     );
 }
 

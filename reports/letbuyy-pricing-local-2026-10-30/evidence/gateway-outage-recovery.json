@@ -1,0 +1,18 @@
+{
+  "captured_at": "2026-10-29T20:10:54.611792+00:00",
+  "fault": "Only the task-owned gateway9010 process stopped; preserved database and other services stayed running",
+  "unavailable": {
+    "status": 200,
+    "error_visible": true,
+    "plan_cards": 0,
+    "retry_visible": true,
+    "api_status": 502
+  },
+  "recovered": {
+    "cards": 4,
+    "launch199": true,
+    "growth699": true,
+    "unavailable_message": 0
+  },
+  "passed": true
+}

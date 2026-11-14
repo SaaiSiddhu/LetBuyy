@@ -142,49 +142,28 @@ The main coordinator reviewed and granted these scoped registry edits on 18 Octo
 
 The three merchant routes under `stores/[store]/reels/uploads` (collection, `[intentId]`, and `[intentId]/content`) are reviewed `gateway-proxy` transports, increasing the inventory and lint baseline from 219 to 222. They resolve the current merchant and owned store, bind the captured actor, enforce mutation origin and stable request keys, bound metadata and streamed bytes, and forward through the shared API client. Gateway359 owns reservation, current authority, retry/version checks and custody receipts; the infrastructure adapter owns private provider bytes. The app does not issue credentials, write a database, grant readiness, expose a public object URL or perform live provider activation.
 
+### 21 October 2026 merchant and Console support transport
 
-### Merchant performance export connection — 2026-10-21
+Inventory and lint baseline advance together from 222 to 224 for exactly two
+`gateway-proxy` routes: Merchant `api/v1/stores/[store]/support/[[...segments]]`
+and Console `api/v1/support/[[...segments]]`. Both admit finite ticket, message
+and recovery paths only. Merchant resolves its current owner/session and store;
+Console requires its current MFA session. Both check same-origin mutations and
+forward the original request key. Gateway owns live authorization, public/private
+projection, validation and atomic support commands; existing canonical tables
+and receipts hold the records. Neither proxy imports a database client, mints an
+identity, sends notifications or performs a domain transition locally.
 
-The reviewed route inventory and matching lint baseline advance from 222 to 225 for
-merchant `stores/[store]/exports`, `exports/[jobId]` and
-`exports/[jobId]/download`. These are thin `gateway-proxy` transports under the
-existing route ownership rule: they resolve the signed-in merchant's owned store,
-validate a finite export choice, reject cross-origin creation, forward caller
-cancellation and finite read budgets, and stream the canonical gateway result.
-The download adapter takes only the opaque signature from the returned URL and
-constructs a known gateway path; it never fetches an arbitrary URL. Successful
-metadata and CSV responses are private/no-store. Gateway owns job creation,
-current actor/store scope, expiry, stable paginated source reads and R2 writes.
-No application database writer, generation workflow, issuer or provider SDK is added.
+The owned browser exercises both normal sign-ins and the same ticket through
+these boundaries. Database cases cover changed ownership, foreign stores,
+read-only operators, private-note exclusion, duplicate/recovery behavior and
+audit failure rollback. See `reports/MERCHANT_OPERATIONS_PRIORITIES_2026-10-21.md`
+for exact results and remaining native/release limits.
 
-Actual-function transport checks cover all three export types, store substitution,
-blocked ownership, polling scope, arbitrary URL refusal, unfinished/import jobs,
-stream preservation and unsuccessful-body cancellation. Actual native Worker,
-owned PostgreSQL/PostgREST and local R2 verify a 1,103-product, 7,412,460-byte export,
-CSV content and ownership revocation. Extended order/customer/expiry acceptance also passes (1,103 live rows per dataset);
-the normal-sign-in production browser export/download also passes. User-account
-page-by-page acceptance remains tracked in the merchant performance audit evidence.
+### 22 October 2026 — Console billing record summary (225 routes)
 
-### Verified checkout-host readiness transport — 28 October 2026
+`apps/internal/console/src/app/api/v1/billing/[siteId]/[invoiceId]/route.ts` is a `gateway-proxy`. It requires the existing real Console session/MFA, passes exact site/invoice IDs to the canonical billing investigation handler, and formats its authorized minimal response as an injection-safe CSV. The monolith owns scope, permission, query and mandatory audit. This is a record summary, not a second invoice/payment engine. The inventory ratchet and lint baseline each add this one reviewed route.
 
-Inventory227→228 adds only Merchant `stores/[store]/domains/checkout` as a
-`gateway-proxy`. GET resolves the signed-in merchant's owned store and reads the
-canonical readiness projection. POST first enforces the existing exact Merchant
-origin and request-key guard, then forwards that same key and server-resolved
-site ID through the shared API client. The Gateway owns exact hostname derivation,
-current parent/domain authority, provider assignment, TLS proof, retry and finite
-retirement. The app never supplies a hostname, mutates DNS/database records,
-grants readiness or publishes a store. This implements the existing owner-approved
-branded checkout plan; the API inventory is registered rather than exempted.
+### 22 October 2026 — Merchant account inbox (227 routes)
 
-### 30 October 2026 — shipping profiles and reviewed totals
-
-Inventory228→231 adds three `gateway-proxy` transports: Commerce
-`checkout-quote`, and Merchant `stores/[store]/shipping/profiles` plus
-`shipping/profiles/[profileId]`. Merchant resolves current owned-store identity,
-forwards the profile command with its stable ID or expected revision, and enforces
-its existing mutation-origin/session guard. Commerce resolves the published store
-and forwards only actual product references and the destination. PostgreSQL in
-the Gateway remains the sole authority for prices, GST, eligibility, profile
-mutations and immutable order/invoice facts. No local database or tax writer,
-provider call, account issuer or additional runtime is introduced.
+Two `gateway-proxy` routes add the existing merchant-cookie inbox transport and MFA Console message-authoring transport: `apps/merchant/web/src/app/api/v1/inbox/[[...segments]]/route.ts` and `apps/internal/console/src/app/api/v1/merchant-messages/[[...segments]]/route.ts`. Both admit a finite path/method set and enforce same-origin mutations. Account ownership, admin authority, audience snapshots, publication, audit/receipts and read status remain in Gateway/PostgreSQL. No external channel is dispatched. The route inventory and lint baseline add these same two routes.

@@ -1,0 +1,2625 @@
+{
+  "reason": "editorial tag/cart routes incorrectly excluded as cart actions; one transient legal page retry",
+  "pages": [
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/cart",
+      "final_url": "https://www.letbuyy.com/in/resources/tag/cart",
+      "status": 200,
+      "history": [
+        {
+          "url": "https://www.letbuyy.com/in/resources/tag/cart",
+          "status": 200,
+          "location": null
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-disposition": "inline",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 29 Oct 2026 18:12:09 GMT",
+        "etag": "W/\"513dcd464d416f9201145fd51866ae67\"",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "server": "Vercel",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "x-matched-path": "/in/resources/tag/cart",
+        "x-nextjs-prerender": "1",
+        "x-nextjs-stale-time": "300",
+        "x-vercel-cache": "PRERENDER",
+        "x-vercel-id": "bom1::twdtf-1793297528965-d09a060ba6c1"
+      },
+      "captured_at": "2026-10-29T18:12:08.704878+00:00",
+      "bytes_downloaded": 28959.0,
+      "decoded_bytes": 249496,
+      "fetch_seconds": 0.612143,
+      "evidence_html": "evidence/pages/17dd1b8767a92340.html",
+      "evidence_headers": "evidence/pages/17dd1b8767a92340.headers",
+      "html_lang": "en",
+      "title": "#cart — Resources | LetBuyy Resources",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "next-size-adjust",
+          "content": ""
+        },
+        {
+          "name": "description",
+          "content": "All LetBuyy resource articles tagged with #cart."
+        },
+        {
+          "name": "application-name",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "author",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "keywords",
+          "content": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace"
+        },
+        {
+          "name": "creator",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "publisher",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "robots",
+          "content": "index, follow"
+        },
+        {
+          "name": "googlebot",
+          "content": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+        },
+        {
+          "name": "category",
+          "content": "commerce platform"
+        },
+        {
+          "property": "og:title",
+          "content": "#cart — Resources | LetBuyy Resources"
+        },
+        {
+          "property": "og:description",
+          "content": "All LetBuyy resource articles tagged with #cart."
+        },
+        {
+          "property": "og:site_name",
+          "content": "LetBuyy"
+        },
+        {
+          "property": "og:locale",
+          "content": "en_IN"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "name": "twitter:card",
+          "content": "summary_large_image"
+        },
+        {
+          "name": "twitter:title",
+          "content": "LetBuyy - India-first commerce operating system"
+        },
+        {
+          "name": "twitter:description",
+          "content": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations."
+        },
+        {
+          "name": "twitter:image",
+          "content": "https://www.letbuyy.com/og/letbuyy-default.png"
+        }
+      ],
+      "links": [
+        {
+          "rel": "preload",
+          "href": "/_next/static/media/0336a89fb4e7fc1d-s.p.woff2",
+          "as": "font",
+          "crossorigin": "",
+          "type": "font/woff2"
+        },
+        {
+          "rel": "preload",
+          "href": "/_next/static/media/93f479601ee12b01-s.p.woff2",
+          "as": "font",
+          "crossorigin": "",
+          "type": "font/woff2"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/assets/legal/privacy-choices.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/illustrations/resources/reading-payments-choice-v1.webp"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/93490f2121b4cdc7.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/c18201201a189617.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/79b625f4554cc373.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/26008953488318fa.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "preload",
+          "as": "script",
+          "fetchpriority": "low",
+          "href": "/_next/static/chunks/webpack-ff1b21ecea0c7fe8.js"
+        },
+        {
+          "rel": "canonical",
+          "href": "https://www.letbuyy.com/resources/tag/cart"
+        },
+        {
+          "rel": "shortcut icon",
+          "href": "/icons/letbuyy-mark.svg"
+        },
+        {
+          "rel": "icon",
+          "href": "/favicon.ico?603d046c9a6fdfbb",
+          "type": "image/x-icon",
+          "sizes": "16x16"
+        },
+        {
+          "rel": "icon",
+          "href": "/icons/letbuyy-mark.svg"
+        },
+        {
+          "rel": "apple-touch-icon",
+          "href": "/icons/letbuyy-mark.svg"
+        }
+      ],
+      "anchors": [
+        {
+          "class": "header-logo",
+          "aria-label": "LetBuyy Home",
+          "href": "/in",
+          "text": ""
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in/resources/platform/how-themes-work",
+          "text": "Themes"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in/resources/platform/introduction-to-apps",
+          "text": "Apps"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in/resources/developers",
+          "text": "Developers"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in/pricing",
+          "text": "Pricing"
+        },
+        {
+          "class": "btn btn-ghost",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "Log in"
+        },
+        {
+          "class": "btn btn-primary",
+          "href": "https://accounts.letbuyy.com/signup",
+          "text": "Start for free"
+        },
+        {
+          "class": "mobile-start-link",
+          "href": "https://accounts.letbuyy.com/signup",
+          "text": "Start for free"
+        },
+        {
+          "class": "res-nav-label",
+          "href": "/in/resources",
+          "text": "Resources"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in/resources",
+          "text": "All"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in/resources/ecommerce",
+          "text": "Ecommerce"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in/resources/growth",
+          "text": "Growth"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in/resources/payments",
+          "text": "Payments"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in/resources/operations",
+          "text": "Operations"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in/resources/ai-commerce",
+          "text": "AI Commerce"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in/resources/developers",
+          "text": "Developers"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in/resources/changelog",
+          "text": "Changelog"
+        },
+        {
+          "style": "font-size:13px;color:var(--text-muted);text-decoration:none;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px",
+          "href": "/in/resources",
+          "text": "← Resources"
+        },
+        {
+          "class": "rc-card-v3",
+          "href": "/in/resources/ecommerce/reducing-cart-abandonment",
+          "text": "EcommerceBeginnerReducing Cart Abandonment: 12 Proven Strategies for Indian Stores70% of Indian shoppers abandon their cart. Here's how to get them back.PPriya Sharma8 min read"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/operations",
+          "text": "#operations 6"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/india",
+          "text": "#india 5"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/platform",
+          "text": "#platform 5"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/conversion",
+          "text": "#conversion 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/automation",
+          "text": "#automation 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/ai",
+          "text": "#ai 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/developers",
+          "text": "#developers 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/gst",
+          "text": "#gst 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/whatsapp",
+          "text": "#whatsapp 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/product",
+          "text": "#product 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/api",
+          "text": "#api 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/store-setup",
+          "text": "#store-setup 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/beginners",
+          "text": "#beginners 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/organic",
+          "text": "#organic 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/payments",
+          "text": "#payments 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/upi",
+          "text": "#upi 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/compliance",
+          "text": "#compliance 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/inventory",
+          "text": "#inventory 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/warehouse",
+          "text": "#warehouse 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in/resources/tag/fulfillment",
+          "text": "#fulfillment 2"
+        },
+        {
+          "class": "footer-mark",
+          "aria-label": "LetBuyy home",
+          "href": "/in",
+          "text": ""
+        },
+        {
+          "class": "footer-link",
+          "href": "/in",
+          "text": "What is LetBuyy?"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/pricing",
+          "text": "Pricing"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/create",
+          "text": "Start your store"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/platform/how-themes-work",
+          "text": "Theme guide"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/platform/introduction-to-apps",
+          "text": "App integrations guide"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/developers",
+          "text": "Developer Docs"
+        },
+        {
+          "class": "footer-link",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "Merchant login"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources",
+          "text": "All resources"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/ecommerce",
+          "text": "Ecommerce guides"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/developers",
+          "text": "Developer Docs"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/changelog",
+          "text": "Changelog"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/support",
+          "text": "Support centre"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/contact",
+          "text": "Contact us"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/legal/grievance",
+          "text": "Grievance redressal"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/legal/security",
+          "text": "Security"
+        },
+        {
+          "class": "footer-link",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "Account access"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/legal",
+          "text": "Legal"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/legal/terms",
+          "text": "Terms"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/legal/privacy",
+          "text": "Privacy"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/legal/refunds",
+          "text": "Refunds"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/sitemap",
+          "text": "Sitemap"
+        },
+        {
+          "href": "https://www.facebook.com/share/14tEGNoJSXR/",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "Facebook",
+          "text": ""
+        },
+        {
+          "href": "https://x.com/letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "X",
+          "text": ""
+        },
+        {
+          "href": "https://youtube.com/@letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "YouTube",
+          "text": ""
+        },
+        {
+          "href": "https://www.instagram.com/letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "Instagram",
+          "text": ""
+        }
+      ],
+      "images": [
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-light",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-dark",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "alt": "",
+          "loading": "eager",
+          "width": "1536",
+          "height": "1024",
+          "decoding": "async",
+          "data-nimg": "1",
+          "style": "color:transparent",
+          "src": "/illustrations/resources/reading-payments-choice-v1.webp"
+        },
+        {
+          "alt": "",
+          "loading": "eager",
+          "width": "1536",
+          "height": "1024",
+          "decoding": "async",
+          "data-nimg": "1",
+          "style": "color:transparent",
+          "src": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "loading": "lazy",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-light",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "loading": "lazy",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-dark",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "src": "/assets/legal/privacy-choices.svg",
+          "alt": "",
+          "width": "32",
+          "height": "16",
+          "aria-hidden": "true"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "#cart"
+        },
+        {
+          "tag": "h3",
+          "text": "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores"
+        },
+        {
+          "tag": "h2",
+          "text": "LetBuyy footer"
+        },
+        {
+          "tag": "h3",
+          "text": "LetBuyy"
+        },
+        {
+          "tag": "h3",
+          "text": "Ecosystem"
+        },
+        {
+          "tag": "h3",
+          "text": "Resources"
+        },
+        {
+          "tag": "h3",
+          "text": "Support"
+        }
+      ],
+      "schemas": [
+        "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.letbuyy.com/#organization\",\"name\":\"LetBuyy\",\"legalName\":\"LetBuyy\",\"alternateName\":[\"Let Buyy\",\"Letbuyy\",\"LetBuyy Commerce\"],\"url\":\"https://www.letbuyy.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://www.letbuyy.com/icons/letbuyy-logo-512.png\",\"width\":512,\"height\":512},\"image\":\"https://www.letbuyy.com/og/letbuyy-default.png\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"slogan\":\"India-first commerce operating system\",\"email\":\"support@letbuyy.com\",\"foundingLocation\":{\"@type\":\"Country\",\"name\":\"India\"},\"areaServed\":{\"@type\":\"Country\",\"name\":\"India\"},\"knowsLanguage\":[\"en\",\"hi\",\"ta\"],\"contactPoint\":{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"email\":\"support@letbuyy.com\",\"areaServed\":\"IN\",\"availableLanguage\":[\"en\",\"hi\",\"ta\"]},\"sameAs\":[\"https://www.instagram.com/letbuyyhq\",\"https://x.com/letbuyyhq\",\"https://youtube.com/@letbuyyhq\",\"https://www.facebook.com/share/14tEGNoJSXR/\"]},{\"@type\":\"WebSite\",\"@id\":\"https://www.letbuyy.com/#website\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"inLanguage\":\"en-IN\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"hasPart\":[{\"@type\":\"WebPage\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\"},{\"@type\":\"WebPage\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\"},{\"@type\":\"WebPage\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\"},{\"@type\":\"WebPage\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\"},{\"@type\":\"WebPage\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\"},{\"@type\":\"WebPage\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\"},{\"@type\":\"WebPage\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\"},{\"@type\":\"WebPage\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\"},{\"@type\":\"WebPage\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\"}]},{\"@type\":\"SoftwareApplication\",\"name\":\"LetBuyy\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://www.letbuyy.com\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"INR\",\"description\":\"Free launch tier available with 0% transaction and platform fees.\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}}]}"
+      ],
+      "text": "#cart — Resources | LetBuyy Resources Why LetBuyy Products Themes Apps Developers Pricing Log in Start for free Start for free Resources All Ecommerce Growth Payments Operations AI Commerce Developers Changelog Commerce updates ← Resources Tag # cart 1 article Ecommerce Beginner Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores 70% of Indian shoppers abandon their cart. Here's how to get them back. P Priya Sharma 8 min read Browse tags # operations 6 # india 5 # platform 5 # conversion 4 # automation 4 # ai 4 # developers 4 # gst 3 # whatsapp 3 # product 3 # api 3 # store-setup 2 # beginners 2 # organic 2 # payments 2 # upi 2 # compliance 2 # inventory 2 # warehouse 2 # fulfillment 2 LetBuyy footer LetBuyy What is LetBuyy? Pricing Start your store Ecosystem Theme guide App integrations guide Developer Docs Merchant login Resources All resources Ecommerce guides Developer Docs Changelog Support Support centre Contact us Grievance redressal Security Account access India English Legal Terms Privacy Refunds Sitemap Your Privacy Choices © 2026 LetBuyy. All rights reserved.",
+      "main_text": "← Resources Tag # cart 1 article Ecommerce Beginner Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores 70% of Indian shoppers abandon their cart. Here's how to get them back. P Priya Sharma 8 min read Browse tags # operations 6 # india 5 # platform 5 # conversion 4 # automation 4 # ai 4 # developers 4 # gst 3 # whatsapp 3 # product 3 # api 3 # store-setup 2 # beginners 2 # organic 2 # payments 2 # upi 2 # compliance 2 # inventory 2 # warehouse 2 # fulfillment 2",
+      "word_count": 186,
+      "main_word_count": 99
+    },
+    {
+      "url": "https://www.letbuyy.com/in-ta/resources/tag/cart",
+      "final_url": "https://www.letbuyy.com/in-ta/resources/tag/cart",
+      "status": 200,
+      "history": [
+        {
+          "url": "https://www.letbuyy.com/in-ta/resources/tag/cart",
+          "status": 200,
+          "location": null
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-disposition": "inline",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 29 Oct 2026 18:12:10 GMT",
+        "etag": "W/\"6665105d5bfa4928fb1e47b884f229ea\"",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "server": "Vercel",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "x-matched-path": "/in-ta/resources/tag/cart",
+        "x-nextjs-prerender": "1",
+        "x-nextjs-stale-time": "300",
+        "x-vercel-cache": "PRERENDER",
+        "x-vercel-id": "bom1::f7dw4-1793297530604-0f44162f30e8"
+      },
+      "captured_at": "2026-10-29T18:12:10.409778+00:00",
+      "bytes_downloaded": 29725.0,
+      "decoded_bytes": 252497,
+      "fetch_seconds": 0.629991,
+      "evidence_html": "evidence/pages/c9353df947305760.html",
+      "evidence_headers": "evidence/pages/c9353df947305760.headers",
+      "html_lang": "en",
+      "title": "#cart — வளங்கள் | LetBuyy Resources",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "next-size-adjust",
+          "content": ""
+        },
+        {
+          "name": "description",
+          "content": "#cart குறிச்சொல்லுள்ள அனைத்து LetBuyy வளக் கட்டுரைகளும்."
+        },
+        {
+          "name": "application-name",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "author",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "keywords",
+          "content": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace"
+        },
+        {
+          "name": "creator",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "publisher",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "robots",
+          "content": "index, follow"
+        },
+        {
+          "name": "googlebot",
+          "content": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+        },
+        {
+          "name": "category",
+          "content": "commerce platform"
+        },
+        {
+          "property": "og:title",
+          "content": "#cart — வளங்கள் | LetBuyy Resources"
+        },
+        {
+          "property": "og:description",
+          "content": "#cart குறிச்சொல்லுள்ள அனைத்து LetBuyy வளக் கட்டுரைகளும்."
+        },
+        {
+          "property": "og:site_name",
+          "content": "LetBuyy"
+        },
+        {
+          "property": "og:locale",
+          "content": "en_IN"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "name": "twitter:card",
+          "content": "summary_large_image"
+        },
+        {
+          "name": "twitter:title",
+          "content": "LetBuyy - India-first commerce operating system"
+        },
+        {
+          "name": "twitter:description",
+          "content": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations."
+        },
+        {
+          "name": "twitter:image",
+          "content": "https://www.letbuyy.com/og/letbuyy-default.png"
+        }
+      ],
+      "links": [
+        {
+          "rel": "preload",
+          "href": "/_next/static/media/0336a89fb4e7fc1d-s.p.woff2",
+          "as": "font",
+          "crossorigin": "",
+          "type": "font/woff2"
+        },
+        {
+          "rel": "preload",
+          "href": "/_next/static/media/93f479601ee12b01-s.p.woff2",
+          "as": "font",
+          "crossorigin": "",
+          "type": "font/woff2"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/assets/legal/privacy-choices.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/illustrations/resources/reading-payments-choice-v1.webp"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/93490f2121b4cdc7.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/c18201201a189617.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/79b625f4554cc373.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/26008953488318fa.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "preload",
+          "as": "script",
+          "fetchpriority": "low",
+          "href": "/_next/static/chunks/webpack-ff1b21ecea0c7fe8.js"
+        },
+        {
+          "rel": "canonical",
+          "href": "https://www.letbuyy.com/resources/tag/cart"
+        },
+        {
+          "rel": "shortcut icon",
+          "href": "/icons/letbuyy-mark.svg"
+        },
+        {
+          "rel": "icon",
+          "href": "/favicon.ico?603d046c9a6fdfbb",
+          "type": "image/x-icon",
+          "sizes": "16x16"
+        },
+        {
+          "rel": "icon",
+          "href": "/icons/letbuyy-mark.svg"
+        },
+        {
+          "rel": "apple-touch-icon",
+          "href": "/icons/letbuyy-mark.svg"
+        }
+      ],
+      "anchors": [
+        {
+          "class": "header-logo",
+          "aria-label": "LetBuyy முகப்பு",
+          "href": "/in-ta",
+          "text": ""
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in-ta/resources/platform/how-themes-work",
+          "text": "வடிவமைப்புகள்"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in-ta/resources/platform/introduction-to-apps",
+          "text": "ஆப்ஸ்"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in-ta/resources/developers",
+          "text": "டெவலப்பர்கள்"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in-ta/pricing",
+          "text": "விலை"
+        },
+        {
+          "class": "btn btn-ghost",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "உள்நுழைக"
+        },
+        {
+          "class": "btn btn-primary",
+          "href": "https://accounts.letbuyy.com/signup",
+          "text": "இலவசமாக தொடங்குங்கள்"
+        },
+        {
+          "class": "mobile-start-link",
+          "href": "https://accounts.letbuyy.com/signup",
+          "text": "இலவசமாக தொடங்குங்கள்"
+        },
+        {
+          "class": "res-nav-label",
+          "href": "/in-ta/resources",
+          "text": "வளங்கள்"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-ta/resources",
+          "text": "அனைத்தும்"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-ta/resources/ecommerce",
+          "text": "மின்வணிகம்"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-ta/resources/growth",
+          "text": "வளர்ச்சி"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-ta/resources/payments",
+          "text": "பணப்பரிவர்த்தனை"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-ta/resources/operations",
+          "text": "செயல்பாடுகள்"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-ta/resources/ai-commerce",
+          "text": "AI வணிகம்"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-ta/resources/developers",
+          "text": "உருவாக்குநர்கள்"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-ta/resources/changelog",
+          "text": "மாற்றப் பதிவு"
+        },
+        {
+          "style": "font-size:13px;color:var(--text-muted);text-decoration:none;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px",
+          "href": "/in-ta/resources",
+          "text": "← வளங்கள்"
+        },
+        {
+          "class": "rc-card-v3",
+          "href": "/in-ta/resources/ecommerce/reducing-cart-abandonment",
+          "text": "மின்வணிகம்Beginnerகார்ட்டைக் கைவிடுவதைக் குறைத்தல்: இந்தியக் கடைகளுக்கான 12 உத்திகள்70% இந்திய வாங்குபவர்கள் கார்ட்டைக் கைவிடுகிறார்கள். அவர்களை மீண்டும் அழைப்பது எப்படி?PPriya Sharma8 நிமிட வாசிப்பு"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/operations",
+          "text": "#operations 6"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/india",
+          "text": "#india 5"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/platform",
+          "text": "#platform 5"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/conversion",
+          "text": "#conversion 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/automation",
+          "text": "#automation 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/ai",
+          "text": "#ai 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/developers",
+          "text": "#developers 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/gst",
+          "text": "#gst 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/whatsapp",
+          "text": "#whatsapp 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/product",
+          "text": "#product 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/api",
+          "text": "#api 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/store-setup",
+          "text": "#store-setup 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/beginners",
+          "text": "#beginners 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/organic",
+          "text": "#organic 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/payments",
+          "text": "#payments 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/upi",
+          "text": "#upi 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/compliance",
+          "text": "#compliance 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/inventory",
+          "text": "#inventory 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/warehouse",
+          "text": "#warehouse 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-ta/resources/tag/fulfillment",
+          "text": "#fulfillment 2"
+        },
+        {
+          "class": "footer-mark",
+          "aria-label": "LetBuyy முகப்பு",
+          "href": "/in-ta",
+          "text": ""
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta",
+          "text": "LetBuyy என்றால் என்ன?"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/pricing",
+          "text": "விலை"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/create",
+          "text": "உங்கள் கடையைத் தொடங்குங்கள்"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/resources/platform/how-themes-work",
+          "text": "தீம் வழிகாட்டி"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/resources/platform/introduction-to-apps",
+          "text": "ஆப் ஒருங்கிணைப்பு வழிகாட்டி"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/resources/developers",
+          "text": "டெவலப்பர் ஆவணங்கள்"
+        },
+        {
+          "class": "footer-link",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "வணிகர் உள்நுழைவு"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/resources",
+          "text": "அனைத்து வளங்களும்"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/resources/ecommerce",
+          "text": "இணைய வணிக வழிகாட்டிகள்"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/resources/developers",
+          "text": "டெவலப்பர் ஆவணங்கள்"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/resources/changelog",
+          "text": "மாற்றப் பதிவு"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/support",
+          "text": "உதவி மையம்"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/contact",
+          "text": "எங்களைத் தொடர்பு கொள்ள"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/legal/grievance",
+          "text": "குறைதீர்ப்பு"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-ta/legal/security",
+          "text": "பாதுகாப்பு"
+        },
+        {
+          "class": "footer-link",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "கணக்கு அணுகல்"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-ta/legal",
+          "text": "சட்டம்"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-ta/legal/terms",
+          "text": "விதிமுறைகள்"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-ta/legal/privacy",
+          "text": "தனியுரிமை"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-ta/legal/refunds",
+          "text": "பணத்திரும்பம்"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-ta/sitemap",
+          "text": "தள வரைபடம்"
+        },
+        {
+          "href": "https://www.facebook.com/share/14tEGNoJSXR/",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "Facebook",
+          "text": ""
+        },
+        {
+          "href": "https://x.com/letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "X",
+          "text": ""
+        },
+        {
+          "href": "https://youtube.com/@letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "YouTube",
+          "text": ""
+        },
+        {
+          "href": "https://www.instagram.com/letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "Instagram",
+          "text": ""
+        }
+      ],
+      "images": [
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-light",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-dark",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "alt": "",
+          "loading": "eager",
+          "width": "1536",
+          "height": "1024",
+          "decoding": "async",
+          "data-nimg": "1",
+          "style": "color:transparent",
+          "src": "/illustrations/resources/reading-payments-choice-v1.webp"
+        },
+        {
+          "alt": "",
+          "loading": "eager",
+          "width": "1536",
+          "height": "1024",
+          "decoding": "async",
+          "data-nimg": "1",
+          "style": "color:transparent",
+          "src": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "loading": "lazy",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-light",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "loading": "lazy",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-dark",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "src": "/assets/legal/privacy-choices.svg",
+          "alt": "",
+          "width": "32",
+          "height": "16",
+          "aria-hidden": "true"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "#cart"
+        },
+        {
+          "tag": "h3",
+          "text": "கார்ட்டைக் கைவிடுவதைக் குறைத்தல்: இந்தியக் கடைகளுக்கான 12 உத்திகள்"
+        },
+        {
+          "tag": "h2",
+          "text": "LetBuyy அடிக்குறிப்பு"
+        },
+        {
+          "tag": "h3",
+          "text": "LetBuyy"
+        },
+        {
+          "tag": "h3",
+          "text": "சூழல் அமைப்பு"
+        },
+        {
+          "tag": "h3",
+          "text": "வளங்கள்"
+        },
+        {
+          "tag": "h3",
+          "text": "உதவி"
+        }
+      ],
+      "schemas": [
+        "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.letbuyy.com/#organization\",\"name\":\"LetBuyy\",\"legalName\":\"LetBuyy\",\"alternateName\":[\"Let Buyy\",\"Letbuyy\",\"LetBuyy Commerce\"],\"url\":\"https://www.letbuyy.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://www.letbuyy.com/icons/letbuyy-logo-512.png\",\"width\":512,\"height\":512},\"image\":\"https://www.letbuyy.com/og/letbuyy-default.png\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"slogan\":\"India-first commerce operating system\",\"email\":\"support@letbuyy.com\",\"foundingLocation\":{\"@type\":\"Country\",\"name\":\"India\"},\"areaServed\":{\"@type\":\"Country\",\"name\":\"India\"},\"knowsLanguage\":[\"en\",\"hi\",\"ta\"],\"contactPoint\":{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"email\":\"support@letbuyy.com\",\"areaServed\":\"IN\",\"availableLanguage\":[\"en\",\"hi\",\"ta\"]},\"sameAs\":[\"https://www.instagram.com/letbuyyhq\",\"https://x.com/letbuyyhq\",\"https://youtube.com/@letbuyyhq\",\"https://www.facebook.com/share/14tEGNoJSXR/\"]},{\"@type\":\"WebSite\",\"@id\":\"https://www.letbuyy.com/#website\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"inLanguage\":\"en-IN\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"hasPart\":[{\"@type\":\"WebPage\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\"},{\"@type\":\"WebPage\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\"},{\"@type\":\"WebPage\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\"},{\"@type\":\"WebPage\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\"},{\"@type\":\"WebPage\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\"},{\"@type\":\"WebPage\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\"},{\"@type\":\"WebPage\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\"},{\"@type\":\"WebPage\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\"},{\"@type\":\"WebPage\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\"}]},{\"@type\":\"SoftwareApplication\",\"name\":\"LetBuyy\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://www.letbuyy.com\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"INR\",\"description\":\"Free launch tier available with 0% transaction and platform fees.\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}}]}"
+      ],
+      "text": "#cart — வளங்கள் | LetBuyy Resources ஏன் LetBuyy தயாரிப்புகள் வடிவமைப்புகள் ஆப்ஸ் டெவலப்பர்கள் விலை உள்நுழைக இலவசமாக தொடங்குங்கள் இலவசமாக தொடங்குங்கள் வளங்கள் அனைத்தும் மின்வணிகம் வளர்ச்சி பணப்பரிவர்த்தனை செயல்பாடுகள் AI வணிகம் உருவாக்குநர்கள் மாற்றப் பதிவு வணிகப் புதுப்பிப்புகள் ← வளங்கள் குறிச்சொல் # cart 1 கட்டுரை மின்வணிகம் Beginner கார்ட்டைக் கைவிடுவதைக் குறைத்தல்: இந்தியக் கடைகளுக்கான 12 உத்திகள் 70% இந்திய வாங்குபவர்கள் கார்ட்டைக் கைவிடுகிறார்கள். அவர்களை மீண்டும் அழைப்பது எப்படி? P Priya Sharma 8 நிமிட வாசிப்பு குறிச்சொற்களைப் பார்க்கவும் # operations 6 # india 5 # platform 5 # conversion 4 # automation 4 # ai 4 # developers 4 # gst 3 # whatsapp 3 # product 3 # api 3 # store-setup 2 # beginners 2 # organic 2 # payments 2 # upi 2 # compliance 2 # inventory 2 # warehouse 2 # fulfillment 2 LetBuyy அடிக்குறிப்பு LetBuyy LetBuyy என்றால் என்ன? விலை உங்கள் கடையைத் தொடங்குங்கள் சூழல் அமைப்பு தீம் வழிகாட்டி ஆப் ஒருங்கிணைப்பு வழிகாட்டி டெவலப்பர் ஆவணங்கள் வணிகர் உள்நுழைவு வளங்கள் அனைத்து வளங்களும் இணைய வணிக வழிகாட்டிகள் டெவலப்பர் ஆவணங்கள் மாற்றப் பதிவு உதவி உதவி மையம் எங்களைத் தொடர்பு கொள்ள குறைதீர்ப்பு பாதுகாப்பு கணக்கு அணுகல் இந்தியா தமிழ் சட்டம் விதிமுறைகள் தனியுரிமை பணத்திரும்பம் தள வரைபடம் உங்கள் தனியுரிமை விருப்பங்கள் © 2026 LetBuyy. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
+      "main_text": "← வளங்கள் குறிச்சொல் # cart 1 கட்டுரை மின்வணிகம் Beginner கார்ட்டைக் கைவிடுவதைக் குறைத்தல்: இந்தியக் கடைகளுக்கான 12 உத்திகள் 70% இந்திய வாங்குபவர்கள் கார்ட்டைக் கைவிடுகிறார்கள். அவர்களை மீண்டும் அழைப்பது எப்படி? P Priya Sharma 8 நிமிட வாசிப்பு குறிச்சொற்களைப் பார்க்கவும் # operations 6 # india 5 # platform 5 # conversion 4 # automation 4 # ai 4 # developers 4 # gst 3 # whatsapp 3 # product 3 # api 3 # store-setup 2 # beginners 2 # organic 2 # payments 2 # upi 2 # compliance 2 # inventory 2 # warehouse 2 # fulfillment 2",
+      "word_count": 182,
+      "main_word_count": 93
+    },
+    {
+      "url": "https://www.letbuyy.com/in-hi/resources/tag/cart",
+      "final_url": "https://www.letbuyy.com/in-hi/resources/tag/cart",
+      "status": 200,
+      "history": [
+        {
+          "url": "https://www.letbuyy.com/in-hi/resources/tag/cart",
+          "status": 200,
+          "location": null
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-disposition": "inline",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 29 Oct 2026 18:12:12 GMT",
+        "etag": "W/\"943dad8ef043953544cfb3764d339381\"",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "server": "Vercel",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "x-matched-path": "/in-hi/resources/tag/cart",
+        "x-nextjs-prerender": "1",
+        "x-nextjs-stale-time": "300",
+        "x-vercel-cache": "PRERENDER",
+        "x-vercel-id": "bom1::bn468-1793297532254-6ea8b6ffcbd7"
+      },
+      "captured_at": "2026-10-29T18:12:12.067245+00:00",
+      "bytes_downloaded": 29561.0,
+      "decoded_bytes": 251273,
+      "fetch_seconds": 0.589897,
+      "evidence_html": "evidence/pages/82be756d57d15caf.html",
+      "evidence_headers": "evidence/pages/82be756d57d15caf.headers",
+      "html_lang": "en",
+      "title": "#cart — संसाधन | LetBuyy Resources",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "next-size-adjust",
+          "content": ""
+        },
+        {
+          "name": "description",
+          "content": "#cart टैग वाले सभी LetBuyy संसाधन लेख।"
+        },
+        {
+          "name": "application-name",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "author",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "keywords",
+          "content": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace"
+        },
+        {
+          "name": "creator",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "publisher",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "robots",
+          "content": "index, follow"
+        },
+        {
+          "name": "googlebot",
+          "content": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+        },
+        {
+          "name": "category",
+          "content": "commerce platform"
+        },
+        {
+          "property": "og:title",
+          "content": "#cart — संसाधन | LetBuyy Resources"
+        },
+        {
+          "property": "og:description",
+          "content": "#cart टैग वाले सभी LetBuyy संसाधन लेख।"
+        },
+        {
+          "property": "og:site_name",
+          "content": "LetBuyy"
+        },
+        {
+          "property": "og:locale",
+          "content": "en_IN"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "name": "twitter:card",
+          "content": "summary_large_image"
+        },
+        {
+          "name": "twitter:title",
+          "content": "LetBuyy - India-first commerce operating system"
+        },
+        {
+          "name": "twitter:description",
+          "content": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations."
+        },
+        {
+          "name": "twitter:image",
+          "content": "https://www.letbuyy.com/og/letbuyy-default.png"
+        }
+      ],
+      "links": [
+        {
+          "rel": "preload",
+          "href": "/_next/static/media/0336a89fb4e7fc1d-s.p.woff2",
+          "as": "font",
+          "crossorigin": "",
+          "type": "font/woff2"
+        },
+        {
+          "rel": "preload",
+          "href": "/_next/static/media/93f479601ee12b01-s.p.woff2",
+          "as": "font",
+          "crossorigin": "",
+          "type": "font/woff2"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/assets/legal/privacy-choices.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/illustrations/resources/reading-payments-choice-v1.webp"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/93490f2121b4cdc7.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/c18201201a189617.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/79b625f4554cc373.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/26008953488318fa.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "preload",
+          "as": "script",
+          "fetchpriority": "low",
+          "href": "/_next/static/chunks/webpack-ff1b21ecea0c7fe8.js"
+        },
+        {
+          "rel": "canonical",
+          "href": "https://www.letbuyy.com/resources/tag/cart"
+        },
+        {
+          "rel": "shortcut icon",
+          "href": "/icons/letbuyy-mark.svg"
+        },
+        {
+          "rel": "icon",
+          "href": "/favicon.ico?603d046c9a6fdfbb",
+          "type": "image/x-icon",
+          "sizes": "16x16"
+        },
+        {
+          "rel": "icon",
+          "href": "/icons/letbuyy-mark.svg"
+        },
+        {
+          "rel": "apple-touch-icon",
+          "href": "/icons/letbuyy-mark.svg"
+        }
+      ],
+      "anchors": [
+        {
+          "class": "header-logo",
+          "aria-label": "LetBuyy होम",
+          "href": "/in-hi",
+          "text": ""
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in-hi/resources/platform/how-themes-work",
+          "text": "थीम"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in-hi/resources/platform/introduction-to-apps",
+          "text": "ऐप्स"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in-hi/resources/developers",
+          "text": "डेवलपर"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in-hi/pricing",
+          "text": "कीमत"
+        },
+        {
+          "class": "btn btn-ghost",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "लॉग इन"
+        },
+        {
+          "class": "btn btn-primary",
+          "href": "https://accounts.letbuyy.com/signup",
+          "text": "मुफ़्त शुरू करें"
+        },
+        {
+          "class": "mobile-start-link",
+          "href": "https://accounts.letbuyy.com/signup",
+          "text": "मुफ़्त शुरू करें"
+        },
+        {
+          "class": "res-nav-label",
+          "href": "/in-hi/resources",
+          "text": "संसाधन"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-hi/resources",
+          "text": "सभी"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-hi/resources/ecommerce",
+          "text": "ईकॉमर्स"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-hi/resources/growth",
+          "text": "विकास"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-hi/resources/payments",
+          "text": "भुगतान"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-hi/resources/operations",
+          "text": "संचालन"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-hi/resources/ai-commerce",
+          "text": "AI कॉमर्स"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-hi/resources/developers",
+          "text": "डेवलपर"
+        },
+        {
+          "class": "res-nav-link",
+          "href": "/in-hi/resources/changelog",
+          "text": "बदलाव विवरण"
+        },
+        {
+          "style": "font-size:13px;color:var(--text-muted);text-decoration:none;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px",
+          "href": "/in-hi/resources",
+          "text": "← संसाधन"
+        },
+        {
+          "class": "rc-card-v3",
+          "href": "/in-hi/resources/ecommerce/reducing-cart-abandonment",
+          "text": "ईकॉमर्सBeginnerकार्ट छोड़ने की दर घटाएँ: भारतीय स्टोर के लिए 12 रणनीतियाँ70% भारतीय खरीदार कार्ट छोड़ देते हैं। उन्हें वापस लाने का तरीका जानें।PPriya Sharma8 मिनट का पठन"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/operations",
+          "text": "#operations 6"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/india",
+          "text": "#india 5"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/platform",
+          "text": "#platform 5"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/conversion",
+          "text": "#conversion 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/automation",
+          "text": "#automation 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/ai",
+          "text": "#ai 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/developers",
+          "text": "#developers 4"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/gst",
+          "text": "#gst 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/whatsapp",
+          "text": "#whatsapp 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/product",
+          "text": "#product 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/api",
+          "text": "#api 3"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/store-setup",
+          "text": "#store-setup 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/beginners",
+          "text": "#beginners 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/organic",
+          "text": "#organic 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/payments",
+          "text": "#payments 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/upi",
+          "text": "#upi 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/compliance",
+          "text": "#compliance 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/inventory",
+          "text": "#inventory 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/warehouse",
+          "text": "#warehouse 2"
+        },
+        {
+          "class": "rc-tag",
+          "href": "/in-hi/resources/tag/fulfillment",
+          "text": "#fulfillment 2"
+        },
+        {
+          "class": "footer-mark",
+          "aria-label": "LetBuyy होम",
+          "href": "/in-hi",
+          "text": ""
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi",
+          "text": "LetBuyy क्या है?"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/pricing",
+          "text": "कीमत"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/create",
+          "text": "अपनी दुकान शुरू करें"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/resources/platform/how-themes-work",
+          "text": "थीम मार्गदर्शिका"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/resources/platform/introduction-to-apps",
+          "text": "ऐप एकीकरण मार्गदर्शिका"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/resources/developers",
+          "text": "डेवलपर डॉक्स"
+        },
+        {
+          "class": "footer-link",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "मर्चेंट लॉगिन"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/resources",
+          "text": "सभी संसाधन"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/resources/ecommerce",
+          "text": "ईकॉमर्स गाइड"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/resources/developers",
+          "text": "डेवलपर डॉक्स"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/resources/changelog",
+          "text": "चेंजलॉग"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/support",
+          "text": "सहायता केंद्र"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/contact",
+          "text": "संपर्क करें"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/legal/grievance",
+          "text": "शिकायत निवारण"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in-hi/legal/security",
+          "text": "सुरक्षा"
+        },
+        {
+          "class": "footer-link",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "खाता एक्सेस"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-hi/legal",
+          "text": "क़ानूनी"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-hi/legal/terms",
+          "text": "शर्तें"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-hi/legal/privacy",
+          "text": "प्राइवेसी"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-hi/legal/refunds",
+          "text": "रिफ़ंड"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in-hi/sitemap",
+          "text": "साइटमैप"
+        },
+        {
+          "href": "https://www.facebook.com/share/14tEGNoJSXR/",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "Facebook",
+          "text": ""
+        },
+        {
+          "href": "https://x.com/letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "X",
+          "text": ""
+        },
+        {
+          "href": "https://youtube.com/@letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "YouTube",
+          "text": ""
+        },
+        {
+          "href": "https://www.instagram.com/letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "Instagram",
+          "text": ""
+        }
+      ],
+      "images": [
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-light",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-dark",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "alt": "",
+          "loading": "eager",
+          "width": "1536",
+          "height": "1024",
+          "decoding": "async",
+          "data-nimg": "1",
+          "style": "color:transparent",
+          "src": "/illustrations/resources/reading-payments-choice-v1.webp"
+        },
+        {
+          "alt": "",
+          "loading": "eager",
+          "width": "1536",
+          "height": "1024",
+          "decoding": "async",
+          "data-nimg": "1",
+          "style": "color:transparent",
+          "src": "/illustrations/resources/thumbnails/reading-payments-choice-v1.webp"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "loading": "lazy",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-light",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "loading": "lazy",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-dark",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "src": "/assets/legal/privacy-choices.svg",
+          "alt": "",
+          "width": "32",
+          "height": "16",
+          "aria-hidden": "true"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "#cart"
+        },
+        {
+          "tag": "h3",
+          "text": "कार्ट छोड़ने की दर घटाएँ: भारतीय स्टोर के लिए 12 रणनीतियाँ"
+        },
+        {
+          "tag": "h2",
+          "text": "LetBuyy फ़ुटर"
+        },
+        {
+          "tag": "h3",
+          "text": "LetBuyy"
+        },
+        {
+          "tag": "h3",
+          "text": "इकोसिस्टम"
+        },
+        {
+          "tag": "h3",
+          "text": "संसाधन"
+        },
+        {
+          "tag": "h3",
+          "text": "सहायता"
+        }
+      ],
+      "schemas": [
+        "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.letbuyy.com/#organization\",\"name\":\"LetBuyy\",\"legalName\":\"LetBuyy\",\"alternateName\":[\"Let Buyy\",\"Letbuyy\",\"LetBuyy Commerce\"],\"url\":\"https://www.letbuyy.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://www.letbuyy.com/icons/letbuyy-logo-512.png\",\"width\":512,\"height\":512},\"image\":\"https://www.letbuyy.com/og/letbuyy-default.png\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"slogan\":\"India-first commerce operating system\",\"email\":\"support@letbuyy.com\",\"foundingLocation\":{\"@type\":\"Country\",\"name\":\"India\"},\"areaServed\":{\"@type\":\"Country\",\"name\":\"India\"},\"knowsLanguage\":[\"en\",\"hi\",\"ta\"],\"contactPoint\":{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"email\":\"support@letbuyy.com\",\"areaServed\":\"IN\",\"availableLanguage\":[\"en\",\"hi\",\"ta\"]},\"sameAs\":[\"https://www.instagram.com/letbuyyhq\",\"https://x.com/letbuyyhq\",\"https://youtube.com/@letbuyyhq\",\"https://www.facebook.com/share/14tEGNoJSXR/\"]},{\"@type\":\"WebSite\",\"@id\":\"https://www.letbuyy.com/#website\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"inLanguage\":\"en-IN\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"hasPart\":[{\"@type\":\"WebPage\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\"},{\"@type\":\"WebPage\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\"},{\"@type\":\"WebPage\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\"},{\"@type\":\"WebPage\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\"},{\"@type\":\"WebPage\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\"},{\"@type\":\"WebPage\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\"},{\"@type\":\"WebPage\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\"},{\"@type\":\"WebPage\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\"},{\"@type\":\"WebPage\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\"}]},{\"@type\":\"SoftwareApplication\",\"name\":\"LetBuyy\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://www.letbuyy.com\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"INR\",\"description\":\"Free launch tier available with 0% transaction and platform fees.\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}}]}"
+      ],
+      "text": "#cart — संसाधन | LetBuyy Resources LetBuyy क्यों प्रोडक्ट थीम ऐप्स डेवलपर कीमत लॉग इन मुफ़्त शुरू करें मुफ़्त शुरू करें संसाधन सभी ईकॉमर्स विकास भुगतान संचालन AI कॉमर्स डेवलपर बदलाव विवरण कॉमर्स अपडेट ← संसाधन टैग # cart 1 लेख ईकॉमर्स Beginner कार्ट छोड़ने की दर घटाएँ: भारतीय स्टोर के लिए 12 रणनीतियाँ 70% भारतीय खरीदार कार्ट छोड़ देते हैं। उन्हें वापस लाने का तरीका जानें। P Priya Sharma 8 मिनट का पठन टैग देखें # operations 6 # india 5 # platform 5 # conversion 4 # automation 4 # ai 4 # developers 4 # gst 3 # whatsapp 3 # product 3 # api 3 # store-setup 2 # beginners 2 # organic 2 # payments 2 # upi 2 # compliance 2 # inventory 2 # warehouse 2 # fulfillment 2 LetBuyy फ़ुटर LetBuyy LetBuyy क्या है? कीमत अपनी दुकान शुरू करें इकोसिस्टम थीम मार्गदर्शिका ऐप एकीकरण मार्गदर्शिका डेवलपर डॉक्स मर्चेंट लॉगिन संसाधन सभी संसाधन ईकॉमर्स गाइड डेवलपर डॉक्स चेंजलॉग सहायता सहायता केंद्र संपर्क करें शिकायत निवारण सुरक्षा खाता एक्सेस भारत हिन्दी क़ानूनी शर्तें प्राइवेसी रिफ़ंड साइटमैप आपकी प्राइवेसी पसंद © 2026 LetBuyy. सर्वाधिकार सुरक्षित।",
+      "main_text": "← संसाधन टैग # cart 1 लेख ईकॉमर्स Beginner कार्ट छोड़ने की दर घटाएँ: भारतीय स्टोर के लिए 12 रणनीतियाँ 70% भारतीय खरीदार कार्ट छोड़ देते हैं। उन्हें वापस लाने का तरीका जानें। P Priya Sharma 8 मिनट का पठन टैग देखें # operations 6 # india 5 # platform 5 # conversion 4 # automation 4 # ai 4 # developers 4 # gst 3 # whatsapp 3 # product 3 # api 3 # store-setup 2 # beginners 2 # organic 2 # payments 2 # upi 2 # compliance 2 # inventory 2 # warehouse 2 # fulfillment 2",
+      "word_count": 190,
+      "main_word_count": 102
+    },
+    {
+      "url": "https://www.letbuyy.com/in/legal/grievance",
+      "final_url": "https://www.letbuyy.com/in/legal/grievance",
+      "status": 200,
+      "history": [
+        {
+          "url": "https://www.letbuyy.com/in/legal/grievance",
+          "status": 200,
+          "location": null
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "age": "432",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-disposition": "inline",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 29 Oct 2026 18:12:13 GMT",
+        "etag": "W/\"ad513da7625ef038cab2d6f0fb5ee96a\"",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "server": "Vercel",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "x-matched-path": "/in/legal/grievance",
+        "x-nextjs-prerender": "1",
+        "x-nextjs-stale-time": "300",
+        "x-vercel-cache": "HIT",
+        "x-vercel-id": "bom1::68krm-1793297533907-f78300ed08b8"
+      },
+      "captured_at": "2026-10-29T18:12:13.683890+00:00",
+      "bytes_downloaded": 32251.0,
+      "decoded_bytes": 265363,
+      "fetch_seconds": 0.300909,
+      "evidence_html": "evidence/pages/11f1ec1c62e7babe.html",
+      "evidence_headers": "evidence/pages/11f1ec1c62e7babe.headers",
+      "html_lang": "en",
+      "title": "Grievance Redressal",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "next-size-adjust",
+          "content": ""
+        },
+        {
+          "name": "description",
+          "content": "How to escalate a complaint, and the timelines we hold ourselves to."
+        },
+        {
+          "name": "application-name",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "author",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "keywords",
+          "content": "LetBuyy,online store builder India,commerce platform,blog builder,landing page builder,GST-ready commerce,COD ecommerce,theme marketplace,app marketplace"
+        },
+        {
+          "name": "creator",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "publisher",
+          "content": "LetBuyy"
+        },
+        {
+          "name": "robots",
+          "content": "index, follow"
+        },
+        {
+          "name": "googlebot",
+          "content": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+        },
+        {
+          "name": "category",
+          "content": "commerce platform"
+        },
+        {
+          "property": "og:title",
+          "content": "LetBuyy — India-first commerce operating system"
+        },
+        {
+          "property": "og:description",
+          "content": "Launch an online store in India with UPI, cash on delivery, GST invoices and shipping built in. 0% commission on your sales."
+        },
+        {
+          "property": "og:locale",
+          "content": "en_IN"
+        },
+        {
+          "name": "twitter:card",
+          "content": "summary_large_image"
+        },
+        {
+          "name": "twitter:title",
+          "content": "LetBuyy - India-first commerce operating system"
+        },
+        {
+          "name": "twitter:description",
+          "content": "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations."
+        },
+        {
+          "name": "twitter:image",
+          "content": "https://www.letbuyy.com/og/letbuyy-default.png"
+        }
+      ],
+      "links": [
+        {
+          "rel": "preload",
+          "href": "/_next/static/media/0336a89fb4e7fc1d-s.p.woff2",
+          "as": "font",
+          "crossorigin": "",
+          "type": "font/woff2"
+        },
+        {
+          "rel": "preload",
+          "href": "/_next/static/media/93f479601ee12b01-s.p.woff2",
+          "as": "font",
+          "crossorigin": "",
+          "type": "font/woff2"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/illustrations/support/grievance-care-studio-v1.webp"
+        },
+        {
+          "rel": "preload",
+          "as": "image",
+          "href": "/assets/legal/privacy-choices.svg"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/93490f2121b4cdc7.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/c18201201a189617.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/a40e3bf3e20fcbbe.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/_next/static/css/79b625f4554cc373.css",
+          "data-precedence": "next"
+        },
+        {
+          "rel": "preload",
+          "as": "script",
+          "fetchpriority": "low",
+          "href": "/_next/static/chunks/webpack-ff1b21ecea0c7fe8.js"
+        },
+        {
+          "rel": "canonical",
+          "href": "https://www.letbuyy.com/in/legal/grievance"
+        },
+        {
+          "rel": "alternate",
+          "hreflang": "en-IN",
+          "href": "https://www.letbuyy.com/in/legal/grievance"
+        },
+        {
+          "rel": "alternate",
+          "hreflang": "ta-IN",
+          "href": "https://www.letbuyy.com/in-ta/legal/grievance"
+        },
+        {
+          "rel": "alternate",
+          "hreflang": "hi-IN",
+          "href": "https://www.letbuyy.com/in-hi/legal/grievance"
+        },
+        {
+          "rel": "alternate",
+          "hreflang": "x-default",
+          "href": "https://www.letbuyy.com/in/legal/grievance"
+        },
+        {
+          "rel": "shortcut icon",
+          "href": "/icons/letbuyy-mark.svg"
+        },
+        {
+          "rel": "icon",
+          "href": "/favicon.ico?603d046c9a6fdfbb",
+          "type": "image/x-icon",
+          "sizes": "16x16"
+        },
+        {
+          "rel": "icon",
+          "href": "/icons/letbuyy-mark.svg"
+        },
+        {
+          "rel": "apple-touch-icon",
+          "href": "/icons/letbuyy-mark.svg"
+        }
+      ],
+      "anchors": [
+        {
+          "class": "header-logo",
+          "aria-label": "LetBuyy Home",
+          "href": "/in",
+          "text": ""
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in/resources/platform/how-themes-work",
+          "text": "Themes"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in/resources/platform/introduction-to-apps",
+          "text": "Apps"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in/resources/developers",
+          "text": "Developers"
+        },
+        {
+          "class": "header-nav-link",
+          "href": "/in/pricing",
+          "text": "Pricing"
+        },
+        {
+          "class": "btn btn-ghost",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "Log in"
+        },
+        {
+          "class": "btn btn-primary",
+          "href": "https://accounts.letbuyy.com/signup",
+          "text": "Start for free"
+        },
+        {
+          "class": "mobile-start-link",
+          "href": "https://accounts.letbuyy.com/signup",
+          "text": "Start for free"
+        },
+        {
+          "href": "/in/legal",
+          "text": "Legal"
+        },
+        {
+          "href": "#how",
+          "class": "support-experience_primary__8lpvP",
+          "text": "How to raise a concern"
+        },
+        {
+          "class": "support-experience_textLink__I2iji",
+          "href": "/in/support",
+          "text": "Get support"
+        },
+        {
+          "href": "#first",
+          "class": "lgl-toc-link is-active",
+          "aria-current": "true",
+          "text": "01Start with the store"
+        },
+        {
+          "href": "#escalate",
+          "class": "lgl-toc-link",
+          "text": "02When to escalate to us"
+        },
+        {
+          "href": "#how",
+          "class": "lgl-toc-link",
+          "text": "03How to raise it"
+        },
+        {
+          "href": "#timelines",
+          "class": "lgl-toc-link",
+          "text": "04What happens next"
+        },
+        {
+          "href": "#outcomes",
+          "class": "lgl-toc-link",
+          "text": "05What we can and cannot do"
+        },
+        {
+          "href": "#further",
+          "class": "lgl-toc-link",
+          "text": "06If you are still not satisfied"
+        },
+        {
+          "href": "mailto:grievance@letbuyy.com",
+          "text": "grievance@letbuyy.com"
+        },
+        {
+          "href": "mailto:support@letbuyy.com",
+          "text": "support@letbuyy.com"
+        },
+        {
+          "href": "/in/legal/grievance",
+          "text": "grievance process"
+        },
+        {
+          "class": "lgl-pager-link is-prev",
+          "href": "/in/legal/security",
+          "text": "PreviousSecurity Practices"
+        },
+        {
+          "class": "lgl-pager-link is-next",
+          "href": "/in/legal/intellectual-property",
+          "text": "NextIntellectual Property & Takedown"
+        },
+        {
+          "class": "footer-mark",
+          "aria-label": "LetBuyy home",
+          "href": "/in",
+          "text": ""
+        },
+        {
+          "class": "footer-link",
+          "href": "/in",
+          "text": "What is LetBuyy?"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/pricing",
+          "text": "Pricing"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/create",
+          "text": "Start your store"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/platform/how-themes-work",
+          "text": "Theme guide"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/platform/introduction-to-apps",
+          "text": "App integrations guide"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/developers",
+          "text": "Developer Docs"
+        },
+        {
+          "class": "footer-link",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "Merchant login"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources",
+          "text": "All resources"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/ecommerce",
+          "text": "Ecommerce guides"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/developers",
+          "text": "Developer Docs"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/resources/changelog",
+          "text": "Changelog"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/support",
+          "text": "Support centre"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/contact",
+          "text": "Contact us"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/legal/grievance",
+          "text": "Grievance redressal"
+        },
+        {
+          "class": "footer-link",
+          "href": "/in/legal/security",
+          "text": "Security"
+        },
+        {
+          "class": "footer-link",
+          "href": "https://accounts.letbuyy.com/lookup",
+          "text": "Account access"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/legal",
+          "text": "Legal"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/legal/terms",
+          "text": "Terms"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/legal/privacy",
+          "text": "Privacy"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/legal/refunds",
+          "text": "Refunds"
+        },
+        {
+          "class": "footer-legal-link",
+          "href": "/in/sitemap",
+          "text": "Sitemap"
+        },
+        {
+          "href": "https://www.facebook.com/share/14tEGNoJSXR/",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "Facebook",
+          "text": ""
+        },
+        {
+          "href": "https://x.com/letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "X",
+          "text": ""
+        },
+        {
+          "href": "https://youtube.com/@letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "YouTube",
+          "text": ""
+        },
+        {
+          "href": "https://www.instagram.com/letbuyyhq",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "aria-label": "Instagram",
+          "text": ""
+        }
+      ],
+      "images": [
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-light",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-dark",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "alt": "",
+          "loading": "eager",
+          "width": "1536",
+          "height": "1024",
+          "decoding": "async",
+          "data-nimg": "1",
+          "style": "color:transparent",
+          "src": "/illustrations/support/grievance-care-studio-v1.webp"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "loading": "lazy",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-light",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-light-v3.svg"
+        },
+        {
+          "alt": "",
+          "aria-hidden": "true",
+          "loading": "lazy",
+          "width": "636",
+          "height": "180",
+          "decoding": "async",
+          "data-nimg": "1",
+          "class": "brand-logo-image brand-logo-image-dark",
+          "style": "color:transparent",
+          "src": "/icons/letbuyy-store-logo-dark-v3.svg"
+        },
+        {
+          "src": "/assets/legal/privacy-choices.svg",
+          "alt": "",
+          "width": "32",
+          "height": "16",
+          "aria-hidden": "true"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Grievance Redressal"
+        },
+        {
+          "tag": "h2",
+          "text": "In short"
+        },
+        {
+          "tag": "h2",
+          "text": "Grievance Officer"
+        },
+        {
+          "tag": "h2",
+          "text": "Start with the store"
+        },
+        {
+          "tag": "h2",
+          "text": "When to escalate to us"
+        },
+        {
+          "tag": "h2",
+          "text": "How to raise it"
+        },
+        {
+          "tag": "h2",
+          "text": "What happens next"
+        },
+        {
+          "tag": "h2",
+          "text": "What we can and cannot do"
+        },
+        {
+          "tag": "h2",
+          "text": "If you are still not satisfied"
+        },
+        {
+          "tag": "h2",
+          "text": "Questions about this document"
+        },
+        {
+          "tag": "h2",
+          "text": "LetBuyy footer"
+        },
+        {
+          "tag": "h3",
+          "text": "LetBuyy"
+        },
+        {
+          "tag": "h3",
+          "text": "Ecosystem"
+        },
+        {
+          "tag": "h3",
+          "text": "Resources"
+        },
+        {
+          "tag": "h3",
+          "text": "Support"
+        }
+      ],
+      "schemas": [
+        "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.letbuyy.com/#organization\",\"name\":\"LetBuyy\",\"legalName\":\"LetBuyy\",\"alternateName\":[\"Let Buyy\",\"Letbuyy\",\"LetBuyy Commerce\"],\"url\":\"https://www.letbuyy.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://www.letbuyy.com/icons/letbuyy-logo-512.png\",\"width\":512,\"height\":512},\"image\":\"https://www.letbuyy.com/og/letbuyy-default.png\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"slogan\":\"India-first commerce operating system\",\"email\":\"support@letbuyy.com\",\"foundingLocation\":{\"@type\":\"Country\",\"name\":\"India\"},\"areaServed\":{\"@type\":\"Country\",\"name\":\"India\"},\"knowsLanguage\":[\"en\",\"hi\",\"ta\"],\"contactPoint\":{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"email\":\"support@letbuyy.com\",\"areaServed\":\"IN\",\"availableLanguage\":[\"en\",\"hi\",\"ta\"]},\"sameAs\":[\"https://www.instagram.com/letbuyyhq\",\"https://x.com/letbuyyhq\",\"https://youtube.com/@letbuyyhq\",\"https://www.facebook.com/share/14tEGNoJSXR/\"]},{\"@type\":\"WebSite\",\"@id\":\"https://www.letbuyy.com/#website\",\"name\":\"LetBuyy\",\"url\":\"https://www.letbuyy.com\",\"inLanguage\":\"en-IN\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"hasPart\":[{\"@type\":\"WebPage\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\"},{\"@type\":\"WebPage\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\"},{\"@type\":\"WebPage\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\"},{\"@type\":\"WebPage\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\"},{\"@type\":\"WebPage\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\"},{\"@type\":\"WebPage\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\"},{\"@type\":\"WebPage\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\"},{\"@type\":\"WebPage\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\"},{\"@type\":\"WebPage\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\"}]},{\"@type\":\"SoftwareApplication\",\"name\":\"LetBuyy\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://www.letbuyy.com\",\"description\":\"Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.\",\"publisher\":{\"@id\":\"https://www.letbuyy.com/#organization\"},\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"INR\",\"description\":\"Free launch tier available with 0% transaction and platform fees.\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Pricing\",\"url\":\"https://www.letbuyy.com/pricing\",\"description\":\"Plans for stores, creators, and growing merchant teams.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Themes\",\"url\":\"https://www.letbuyy.com/resources/platform/how-themes-work\",\"description\":\"Read how LetBuyy storefront themes work.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Apps\",\"url\":\"https://www.letbuyy.com/resources/platform/introduction-to-apps\",\"description\":\"Learn about planned app integrations and platform capabilities.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Developers\",\"url\":\"https://www.letbuyy.com/resources/developers\",\"description\":\"Public guides for APIs, webhooks and integrations.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Log in\",\"url\":\"https://accounts.letbuyy.com/lookup\",\"description\":\"Merchant account lookup and sign-in.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Resources\",\"url\":\"https://www.letbuyy.com/resources\",\"description\":\"Guides on selling online in India — payments, GST, shipping, and growth.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Contact\",\"url\":\"https://www.letbuyy.com/contact\",\"description\":\"Reach LetBuyy support, sales, and developer help.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Legal\",\"url\":\"https://www.letbuyy.com/legal\",\"description\":\"Terms, privacy, refunds, shipping, payouts, and grievance redressal.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}},{\"@type\":\"SiteNavigationElement\",\"name\":\"Sign up\",\"url\":\"https://accounts.letbuyy.com/signup\",\"description\":\"Create a LetBuyy merchant account and open a store.\",\"isPartOf\":{\"@id\":\"https://www.letbuyy.com/#website\"}}]}"
+      ],
+      "text": "Grievance Redressal Why LetBuyy Products Themes Apps Developers Pricing Log in Start for free Start for free Legal / Trust & safety / Grievance Grievance Redressal How to escalate a complaint, and the timelines we hold ourselves to. Applies to Everyone Clauses 6 Reading time 2 min Revised 3 August 2026 How to raise a concern Get support These policies are published for review and are not yet in force. LetBuyy has not opened to merchants, so no agreement has been formed with anyone. They take effect on the day the platform launches, and the effective date will be stated here. Last revised 3 August 2026. Contents 6 Contents 01 Start with the store 02 When to escalate to us 03 How to raise it 04 What happens next 05 What we can and cannot do 06 If you are still not satisfied In short If a store on LetBuyy will not resolve your problem, you can escalate it to us. We acknowledge complaints within 48 hours and work to resolve them within one month, as Indian law requires. Start with the store — it can act on your order directly, which is almost always faster. This summary is written to be understood. The clauses below are what actually applies — where the two differ, the clauses govern. Grievance Officer Published under Rule 4(5), Consumer Protection (E-Commerce) Rules 2020 and Rule 3(2), IT (Intermediary Guidelines) Rules 2021. Name To be published at launch Designation To be published at launch Email grievance@letbuyy.com Phone To be published at launch Registered entity To be published at launch LetBuyy has not opened to merchants, so no officer has been appointed yet. Until one is, complaints sent to the address above reach the team directly and are handled on the same timelines. 48 hours to acknowledge your complaint 1 month to resolve it, or explain the delay 01 Start with the store If your complaint is about an order — it has not arrived, it arrived damaged, a refund has not been issued — contact the store you bought from first. Its contact details are in the storefront footer and on your order confirmation email. The store can see your order, refund it, and reship it. We cannot do those things on their behalf, so going to them first genuinely is faster. 02 When to escalate to us Escalate to LetBuyy when a store has not responded within a reasonable time, refuses to honour its own published policy, appears to be operating fraudulently, or is selling something the Acceptable Use Policy prohibits. Also escalate anything about the platform itself: your account, your data, your payouts, or a security concern. 03 How to raise it Write to the grievance officer at the address published on this page. Include the store name, your order number, what you have already tried, and what outcome you are looking for. Attach evidence where you have it — screenshots, tracking references, and the messages you exchanged with the store. A complaint with evidence gets resolved considerably faster than one without. 04 What happens next We acknowledge receipt within 48 hours, and give you a reference to quote. We work to resolve complaints within one month of receipt. If it will take longer, we will tell you why and when to expect an answer. These are the timelines set by the Consumer Protection (E-Commerce) Rules 2020 and the IT Rules 2021. We treat them as deadlines, not targets. 05 What we can and cannot do We can reach a merchant, require them to answer, act against a store that breaks our policies including suspending it, correct anything on the platform side, and give you a clear record of what happened. We cannot compel a merchant to refund you, refund you from our own funds, or reverse a payment your bank has already settled. That boundary follows from the fact that the sale was between you and the merchant. Where it leaves you without a remedy, the consumer forums below can order what we cannot. 06 If you are still not satisfied You can approach the National Consumer Helpline on 1915 or at consumerhelpline.gov.in, or file a complaint with the District, State, or National Consumer Disputes Redressal Commission depending on the value of your claim. For a payment dispute your bank or payment provider has not resolved, the RBI Ombudsman scheme is available after you have given the provider 30 days to respond. For a data-protection complaint, you may approach the Data Protection Board of India after raising it with us first. Questions about this document Write to support@letbuyy.com and quote the clause number. For a complaint rather than a question, use the grievance process . Previous Security Practices Next Intellectual Property & Takedown LetBuyy footer LetBuyy What is LetBuyy? Pricing Start your store Ecosystem Theme guide App integrations guide Developer Docs Merchant login Resources All resources Ecommerce guides Developer Docs Changelog Support Support centre Contact us Grievance redressal Security Account access India English Legal Terms Privacy Refunds Sitemap Your Privacy Choices © 2026 LetBuyy. All rights reserved.",
+      "main_text": "Legal / Trust & safety / Grievance Grievance Redressal How to escalate a complaint, and the timelines we hold ourselves to. Applies to Everyone Clauses 6 Reading time 2 min Revised 3 August 2026 How to raise a concern Get support These policies are published for review and are not yet in force. LetBuyy has not opened to merchants, so no agreement has been formed with anyone. They take effect on the day the platform launches, and the effective date will be stated here. Last revised 3 August 2026. Contents 6 Contents 01 Start with the store 02 When to escalate to us 03 How to raise it 04 What happens next 05 What we can and cannot do 06 If you are still not satisfied In short If a store on LetBuyy will not resolve your problem, you can escalate it to us. We acknowledge complaints within 48 hours and work to resolve them within one month, as Indian law requires. Start with the store — it can act on your order directly, which is almost always faster. This summary is written to be understood. The clauses below are what actually applies — where the two differ, the clauses govern. Grievance Officer Published under Rule 4(5), Consumer Protection (E-Commerce) Rules 2020 and Rule 3(2), IT (Intermediary Guidelines) Rules 2021. Name To be published at launch Designation To be published at launch Email grievance@letbuyy.com Phone To be published at launch Registered entity To be published at launch LetBuyy has not opened to merchants, so no officer has been appointed yet. Until one is, complaints sent to the address above reach the team directly and are handled on the same timelines. 48 hours to acknowledge your complaint 1 month to resolve it, or explain the delay 01 Start with the store If your complaint is about an order — it has not arrived, it arrived damaged, a refund has not been issued — contact the store you bought from first. Its contact details are in the storefront footer and on your order confirmation email. The store can see your order, refund it, and reship it. We cannot do those things on their behalf, so going to them first genuinely is faster. 02 When to escalate to us Escalate to LetBuyy when a store has not responded within a reasonable time, refuses to honour its own published policy, appears to be operating fraudulently, or is selling something the Acceptable Use Policy prohibits. Also escalate anything about the platform itself: your account, your data, your payouts, or a security concern. 03 How to raise it Write to the grievance officer at the address published on this page. Include the store name, your order number, what you have already tried, and what outcome you are looking for. Attach evidence where you have it — screenshots, tracking references, and the messages you exchanged with the store. A complaint with evidence gets resolved considerably faster than one without. 04 What happens next We acknowledge receipt within 48 hours, and give you a reference to quote. We work to resolve complaints within one month of receipt. If it will take longer, we will tell you why and when to expect an answer. These are the timelines set by the Consumer Protection (E-Commerce) Rules 2020 and the IT Rules 2021. We treat them as deadlines, not targets. 05 What we can and cannot do We can reach a merchant, require them to answer, act against a store that breaks our policies including suspending it, correct anything on the platform side, and give you a clear record of what happened. We cannot compel a merchant to refund you, refund you from our own funds, or reverse a payment your bank has already settled. That boundary follows from the fact that the sale was between you and the merchant. Where it leaves you without a remedy, the consumer forums below can order what we cannot. 06 If you are still not satisfied You can approach the National Consumer Helpline on 1915 or at consumerhelpline.gov.in, or file a complaint with the District, State, or National Consumer Disputes Redressal Commission depending on the value of your claim. For a payment dispute your bank or payment provider has not resolved, the RBI Ombudsman scheme is available after you have given the provider 30 days to respond. For a data-protection complaint, you may approach the Data Protection Board of India after raising it with us first. Questions about this document Write to support@letbuyy.com and quote the clause number. For a complaint rather than a question, use the grievance process . Previous Security Practices Next Intellectual Property & Takedown",
+      "word_count": 845,
+      "main_word_count": 774
+    }
+  ]
+}

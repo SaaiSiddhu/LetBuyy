@@ -4,7 +4,11 @@ import { normalizeAppBlockInstances, type AppBlockInstance } from '@letbuyy/shar
 import { DEFAULT_THEME_SETTINGS, LiquidThemePackageBundleSchema, compilePortableToLiquidBundle } from '@letbuyy/theme-engine';
 import type { ThemeSettings, SectionModel, SectionType, BlockModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
-import { resolveStorefrontThemePresentation } from '@letbuyy/theme-engine';
+import {
+    getDefaultStorefrontThemeTemplate,
+    hasRenderableThemeTemplate,
+    localizeThemeTemplateConfig,
+} from '@letbuyy/theme-engine';
 import { getUrbanKicksDemoStore as buildUrbanKicksDemoStore } from './demo/urban-kicks-demo';
 
 interface ThemeReleaseRow {
@@ -13,7 +17,7 @@ interface ThemeReleaseRow {
     theme_instance_id?: string | null;
     theme_package_version_id?: string | null;
     release_version: number;
-    release_config?: Record<string, unknown> | null;
+    release_config: Record<string, unknown> | null;
     release_manifest?: Record<string, unknown> | null;
     template_snapshot?: Record<string, unknown> | null;
     settings_snapshot?: Record<string, unknown> | null;
@@ -66,23 +70,12 @@ export class StorefrontStoreError extends Error {
     }
 }
 
-// Stable module-level React cache wrappers share public mapping only within an RSC
-// request. Route Handlers retain their normal uncached behavior; no module data Map
-// or cross-request permission/publication cache is introduced.
 export const StoreService = {
-    getCatalogThemePreview(templateConfig: Record<string, unknown>, name: string): StoreModel {
-        const demo = buildUrbanKicksDemoStore();
-        const normalized = mapSupabaseToStore({ id: demo.id, name, store_name: demo.subdomain,
-            subdomain: demo.subdomain, site_type: 'store', theme_id: templateConfig.themeId,
-            template_config: templateConfig, currency: 'INR', locale: 'en-IN' });
-        return { ...demo, name, templateConfig: normalized.templateConfig };
-    },
-
     getUrbanKicksDemoStore(): StoreModel {
         return buildUrbanKicksDemoStore();
     },
 
-    getStoreBySubdomain: cache(async (subdomain: string): Promise<StoreModel | null> => {
+    async getStoreBySubdomain(subdomain: string): Promise<StoreModel | null> {
         try {
             const [data, navigation] = await Promise.all([
                 fetchWorkerStore(subdomain, false),
@@ -94,7 +87,7 @@ export const StoreService = {
             console.error('[StoreService] Error fetching store through worker:', error);
             throw new StorefrontStoreError('getStoreBySubdomain', error);
         }
-    }),
+    },
 
     async getPreviewStoreBySubdomain(subdomain: string, previewToken: string): Promise<StoreModel | null> {
         if (!previewToken || previewToken.length > 200) return null;
@@ -111,7 +104,7 @@ export const StoreService = {
         }
     },
 
-    getStoreBySubdomainAnyStatus: cache(async (subdomain: string): Promise<StoreModel | null> => {
+    async getStoreBySubdomainAnyStatus(subdomain: string): Promise<StoreModel | null> {
         try {
             const data = await fetchWorkerStore(subdomain, true);
             if (!data) return null;
@@ -120,15 +113,16 @@ export const StoreService = {
                 return mapStatusOnlyStore(data);
             }
 
-            // Share the same public projection with metadata/page in this render only.
-            // A publication withdrawn after the status read must not fall back to that
-            // older status-only snapshot as though it were a public theme release.
-            return await StoreService.getStoreBySubdomain(subdomain);
+            const publishedData = await fetchWorkerStore(subdomain, false);
+            const storeData = publishedData || data;
+            const navigation = await fetchWorkerNavigationBundle(subdomain);
+
+            return mapSupabaseToStore(storeData, storeData.current_theme_release || null, navigation);
         } catch (error) {
             console.error('[StoreService] Error fetching store status through worker:', error);
             throw new StorefrontStoreError('getStoreBySubdomainAnyStatus', error);
         }
-    }),
+    },
 
     async getStoreById(storeId: string): Promise<StoreModel | null> {
         try {
@@ -459,7 +453,7 @@ const fetchWorkerStore = cache(async (subdomain: string, anyStatus: boolean): Pr
 
     const data = anyStatus
         ? await client.storefront.status(subdomain)
-        : await client.storefront.getRenderStore(subdomain);
+        : await client.storefront.getStore(subdomain);
 
     return (data as WorkerStorePayload | undefined) || null;
 });
@@ -506,7 +500,7 @@ async function fetchWorkerNavigation(subdomain: string, location: string): Promi
     }
 }
 
-const fetchWorkerNavigationBundle = cache(async (subdomain: string): Promise<StoreNavigation> => {
+async function fetchWorkerNavigationBundle(subdomain: string): Promise<StoreNavigation> {
     const [main, footer, policies] = await Promise.all([
         fetchWorkerNavigation(subdomain, 'main'),
         fetchWorkerNavigation(subdomain, 'footer'),
@@ -514,7 +508,7 @@ const fetchWorkerNavigationBundle = cache(async (subdomain: string): Promise<Sto
     ]);
 
     return { main, footer, policies };
-});
+}
 
 function normalizeSiteType(value: unknown): SiteType {
     if (value === 'ecommerce') return 'store';
@@ -573,22 +567,67 @@ function mapSupabaseToStore(
     const releaseManifest = asRecord(release?.release_manifest);
     const legacyTemplateConfig = asRecord(data.template_config);
     const manifestTemplateConfig = asRecord(releaseManifest.templateConfig);
-    if (data.projection != null && data.projection !== 'render-v1') throw new Error('Unsupported public storefront projection');
-    // render-v1 already resolved the same precedence at the canonical API owner.
-    // A legacy response from an older Gateway still follows the original path.
-    const rawTemplateConfig = data.projection === 'render-v1'
-        ? legacyTemplateConfig
-        : Object.keys(releaseConfig).length > 0
-            ? releaseConfig
-            : Object.keys(manifestTemplateConfig).length > 0
-                ? manifestTemplateConfig
-                : legacyTemplateConfig;
+    const rawTemplateConfig = Object.keys(releaseConfig).length > 0
+        ? releaseConfig
+        : Object.keys(manifestTemplateConfig).length > 0
+            ? manifestTemplateConfig
+            : legacyTemplateConfig;
     const themeId = release?.theme_id || (data.theme_id as string) || (rawTemplateConfig.themeId as string) || 'urban-kicks';
     const storeLocale = (data.locale as string) || 'en-IN';
+    const fallbackTemplateConfig = getDefaultStorefrontThemeTemplate(themeId);
+    const resolvedTemplateConfig: Record<string, unknown> = hasRenderableThemeTemplate(rawTemplateConfig)
+        ? {
+            ...rawTemplateConfig,
+            themeId,
+        }
+        : {
+            ...rawTemplateConfig,
+            ...fallbackTemplateConfig,
+            themeSettings: {
+                ...fallbackTemplateConfig.themeSettings,
+                ...asRecord(rawTemplateConfig.themeSettings),
+            },
+            themeId,
+        };
+    const templateConfig = localizeThemeTemplateConfig(resolvedTemplateConfig, storeLocale);
+    const bundleSettingsData = asRecord(asRecord(templateConfig.config).settings_data);
+    // LB-9 — appearance bridge: merge the merchant's appearance settings (sites.site_settings, snake_case)
+    // over the theme defaults so the brand color / font / radius set in the Appearance page reach the
+    // storefront :root tokens (layout.tsx). Merchant appearance wins over the theme bundle.
     const appearanceSettings = asRecord(data.site_settings);
-    const { templateConfig, themeSettings } = resolveStorefrontThemePresentation(rawTemplateConfig, appearanceSettings, themeId, storeLocale);
+    // SUSTAINED-G2 — the merchant's Appearance-page custom CSS, raw/unscoped. Passed through
+    // templateConfig.customCss to LiquidRenderer.render(), which is the single Phase-AA
+    // enforcement point (buildLiquidThemeHeadAssets -> validateAndScopeCustomCss) that
+    // validates, scopes and sanitizes it — never touch or pre-scope it here.
     const customCss = typeof appearanceSettings.custom_css === 'string' && appearanceSettings.custom_css
-        ? appearanceSettings.custom_css : undefined;
+        ? appearanceSettings.custom_css
+        : undefined;
+    const appearanceOverrides: Record<string, unknown> = {};
+    if (typeof appearanceSettings.primary_color === 'string' && appearanceSettings.primary_color) {
+        appearanceOverrides.primaryColor = appearanceSettings.primary_color;
+    }
+    if (typeof appearanceSettings.font_family === 'string' && appearanceSettings.font_family) {
+        appearanceOverrides.fontFamily = appearanceSettings.font_family;
+        appearanceOverrides.headingFontFamily = appearanceSettings.font_family;
+    }
+    if (appearanceSettings.border_radius !== undefined && appearanceSettings.border_radius !== null && appearanceSettings.border_radius !== '') {
+        const radius = Number(appearanceSettings.border_radius);
+        if (Number.isFinite(radius)) appearanceOverrides.borderRadius = radius;
+    }
+    const themeSettingsRecord = {
+        ...asRecord(bundleSettingsData.current),
+        ...asRecord(templateConfig.themeSettings),
+        ...appearanceOverrides,
+    };
+    const themeSettings: ThemeSettings = {
+        ...DEFAULT_THEME_SETTINGS,
+        ...themeSettingsRecord,
+        primaryColor: themeSettingsRecord.primaryColor as string || DEFAULT_THEME_SETTINGS.primaryColor,
+        secondaryColor: themeSettingsRecord.secondaryColor as string || DEFAULT_THEME_SETTINGS.secondaryColor,
+        accentColor: themeSettingsRecord.accentColor as string || DEFAULT_THEME_SETTINGS.accentColor,
+        fontFamily: themeSettingsRecord.fontFamily as string || DEFAULT_THEME_SETTINGS.fontFamily,
+        borderRadius: themeSettingsRecord.borderRadius as number ?? DEFAULT_THEME_SETTINGS.borderRadius,
+    };
 
     // Handle both formats:
     // 1. Editor format (object): { header: {...}, footer: {...}, template: [...] }

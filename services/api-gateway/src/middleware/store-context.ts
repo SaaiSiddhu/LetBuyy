@@ -8,7 +8,6 @@ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { resolveStorefrontHost } from '@letbuyy/tenant-core';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { AppError } from '../lib/errors';
 import { getSupabaseAdmin } from '../lib/supabase';
 import { getRequestId, resolveTenantAccessProfile, type TenantContext } from '../lib/tenant-context';
 
@@ -210,50 +209,42 @@ export async function resolveStorefrontSiteByHost(
     const select = 'id, name, subdomain, custom_domain, custom_domain_status, access_mode, access_message, published, status';
 
     if (parsed.kind === 'subdomain') {
-        const { data, error } = await db
+        const { data } = await db
             .from('sites')
             .select(select)
             .eq('subdomain', parsed.subdomain)
             .is('deleted_at', null)
             .maybeSingle();
-        if (error) throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
         return (data as StorefrontHostSiteContext | null) || null;
     }
 
     if (parsed.kind === 'custom_domain') {
-        const { data, error } = await db
+        const { data } = await db
             .from('sites')
             .select(select)
             .eq('custom_domain', parsed.domain)
             .eq('custom_domain_status', 'active')
             .is('deleted_at', null)
             .maybeSingle();
-        if (error) throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
         if (data) return data as StorefrontHostSiteContext;
 
         // Multi-domain (185): match a connected secondary/redirect domain. supabase-js
-        // reports a missing legacy table as an error. Only that recognized schema
-        // absence is compatible; outages/permission/schema errors are unavailable.
-        const { data: sd, error: aliasError } = await db
+        // returns an error (not a throw) when site_domains is absent, so a missing
+        // table simply yields no match and the legacy behaviour is preserved.
+        const { data: sd } = await db
             .from('site_domains')
             .select('site_id, role, redirect_to, status')
             .eq('domain', parsed.domain)
-            .eq('purpose', 'storefront')
             .eq('status', 'active')
             .is('deleted_at', null)
             .maybeSingle();
-        if (aliasError) {
-            if (['42P01', 'PGRST205'].includes(aliasError.code)) return null;
-            throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
-        }
         if (sd?.site_id) {
-            const { data: site, error: siteError } = await db
+            const { data: site } = await db
                 .from('sites')
                 .select(select)
                 .eq('id', sd.site_id)
                 .is('deleted_at', null)
                 .maybeSingle();
-            if (siteError) throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
             if (site) {
                 return {
                     ...(site as StorefrontHostSiteContext),

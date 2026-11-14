@@ -1,5 +1,0 @@
-Browser tab: 17, Title: "Checkout | Threadline", URL: "http://syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/checkout".
-1 AXWebArea Checkout | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/checkout
-	2 text Taking you to secure checkout…
-
-The focused UI element is 1 AXWebArea Checkout | Threadline, URL: syn-threadline-ui-33be9d94.localhost:62076/store/syn-threadline-ui-33be9d94/checkout

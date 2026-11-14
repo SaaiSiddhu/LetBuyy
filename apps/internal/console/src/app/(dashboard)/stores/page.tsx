@@ -1,3 +1,4 @@
+import { Select } from '@letbuyy/ui';
 import Link from 'next/link';
 import {
     ConsoleWorkspace,
@@ -45,11 +46,12 @@ const columns: Array<ConsoleDataColumn<ConsoleStore>> = [
             <div>
                 <Link
                     href={`/merchants/${row.id}`}
-                    className="font-medium text-zinc-100 underline-offset-4 hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                    className="font-medium text-default underline-offset-4 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                 >
                     {row.store_name || row.name || '-'}
                 </Link>
-                <p className="mt-1 text-xs text-zinc-500">{row.subdomain ? `${row.subdomain}.letbuyy.com` : row.id}</p>
+                <p className="mt-1 text-xs text-subdued">{row.subdomain ? `${row.subdomain}.letbuyy.com` : row.id}</p>
+                <Link href={`/merchants/${row.id}/operations`} className="mt-2 inline-block text-sm underline underline-offset-4">Operations workspace</Link>
             </div>
         ),
     },
@@ -91,20 +93,12 @@ export default async function StoresPage({ searchParams }: PageProps) {
         <ConsoleWorkspace
             eyebrow="Merchant operations"
             title="Merchant Directory"
-            description="Tenant sites remain stored as sites in the database and are presented as stores in platform UI."
+            description="Find a merchant store, review its status, and open its operating profile."
         >
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <ConsoleSearchForm placeholder="Search stores..." defaultValue={q}>
-                    <select
-                        name="status"
-                        defaultValue={status}
-                        className="min-h-11 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm text-[var(--lb-color-text)] outline-none transition-colors focus:border-[var(--lb-color-primary)]"
-                    >
-                        <option value="">All status</option>
-                        <option value="draft">Draft</option>
-                        <option value="published">Published</option>
-                        <option value="suspended">Suspended</option>
-                    </select>
+                    <Select label="Status" name="status" defaultValue={status} options={[{value:'',label:'All statuses'},{value:'draft',label:'Draft'},{value:'published',label:'Published'},{value:'suspended',label:'Suspended'}]}/>
+
                 </ConsoleSearchForm>
             </div>
 

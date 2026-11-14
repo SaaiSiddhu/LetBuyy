@@ -24,32 +24,6 @@ before(async()=>{
 after(async()=>{await closePooledSqlClients();await proxy?.stop();});
 const transaction=<T>(siteId:string,requestId:string,callback:TenantTxCallback<T>)=>withTenantTx(env,{siteId,requestId},callback);
 
-test('Hyperdrive-shaped owned wire prepares unsafe statements in root, transaction, savepoint and reserved scopes while direct mode stays compatible',async()=>{
-    const literal="Synthetic parameter '; SELECT current_user; --";
-    const statement='SELECT $1::text AS protocol_literal';
-    const check=async(client:Pick<PooledSqlClient,'unsafe'>)=>{
-        const explicitUnprepared={prepare:false,simple:true};
-        const query=client.unsafe(statement,[literal],explicitUnprepared);
-        const queryOptions=(query as unknown as {options:{prepare:boolean;simple:boolean}}).options;
-        assert.equal(queryOptions.prepare,true);assert.equal(queryOptions.simple,false);
-        assert.equal((await query)[0].protocol_literal,literal,'parameters remain literal data');
-        const prepared=await client.unsafe('SELECT name FROM pg_prepared_statements WHERE statement=$1',[statement]);
-        assert.ok(prepared.length>0,'server session must contain an actual named prepared statement');
-    };
-    await check(sql);
-    await sql.begin('read write',async tx=>{
-        await check(tx);await tx.savepoint('protocol-check',async inner=>{await check(inner);});
-        await assert.rejects(tx.savepoint(async inner=>{await check(inner);throw new Error('Synthetic savepoint abort');}),/Synthetic savepoint abort/);
-        assert.equal((await tx.unsafe('SELECT 42 AS recovered'))[0].recovered,42);
-    });
-    const reserved=await sql.reserve();try{await check(reserved);}finally{reserved.release();}
-    const direct=getPooledSql({DATABASE_URL:proxy.env().HYPERDRIVE.connectionString},{maxConnections:3,idleTimeoutSeconds:10,connectTimeoutSeconds:5})!;
-    assert.ok(direct!==sql,'target protocol belongs to client identity');
-    const unprepared=direct.unsafe(statement,[literal]);
-    assert.equal((unprepared as unknown as {options:{prepare:boolean}}).options.prepare,false);
-    assert.equal((await unprepared)[0].protocol_literal,literal);
-});
-
 test('real Gateway pooled adapter alternates tenants on one backend and restores base role/context after commit',{timeout:20_000},async()=>{
     const initial=(await sql.unsafe(stateSql).catch(error=>{throw new Error(`${error.code}: ${proxy.lastRelayError()??'no relay stderr'}`);}))[0];
     assert.equal(initial.database,owned.database);assert.equal(initial.login,'authenticator');

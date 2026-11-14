@@ -1,9 +1,0 @@
-{
-  "runId": "20b861608061",
-  "cartId": "ec5aff05-16c2-4b60-94db-a251cb48456b",
-  "preparedAt": "2026-10-24T17:51:46.699Z",
-  "cartStatus": "active",
-  "scope": "API-prepared independent guest cart for provider-secret qualification only; not cart UI certification",
-  "priorPendingCartPreserved": "da7035e3-d961-4123-a70c-0bb980c979ad",
-  "signedByCanonicalGateway": true
-}

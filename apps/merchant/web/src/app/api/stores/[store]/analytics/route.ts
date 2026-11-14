@@ -22,22 +22,13 @@ export async function GET(
 
         const summary = dashboardPayload.summary
         const orderBreakdown = ordersPayload.breakdown
-        if (!summary
-            || !Number.isFinite(summary.orders?.value)
-            || !Number.isFinite(summary.revenue?.value)
-            || !Number.isFinite(summary.products)
-            || !Number.isFinite(summary.avg_order_value)
-            || !orderBreakdown
-            || !Array.isArray(revenuePayload.chart)) {
-            return NextResponse.json({ error: { code: 'UPSTREAM_INCOMPLETE', message: 'Analytics data is temporarily unavailable' } }, { status: 502 })
-        }
 
         // Phase-4.5 — populate the monthly revenue chart from real data instead of a hardcoded [].
         // The gateway returns a daily revenue series (analytics_rollups_daily); aggregate it into
         // monthly buckets. Stays empty (and the page shows its honest empty state) until rollups exist.
         const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         const monthlyRevenue = new Map<string, number>()
-        for (const point of revenuePayload.chart) {
+        for (const point of revenuePayload.chart ?? []) {
             const key = point.date.slice(0, 7) // YYYY-MM
             monthlyRevenue.set(key, (monthlyRevenue.get(key) ?? 0) + point.revenue)
         }
@@ -51,10 +42,10 @@ export async function GET(
 
         return NextResponse.json({
             data: {
-                totalOrders: summary.orders.value,
-                totalRevenue: summary.revenue.value,
-                totalProducts: summary.products,
-                avgOrderValue: summary.avg_order_value,
+                totalOrders: summary.orders?.value || 0,
+                totalRevenue: summary.revenue?.value || 0,
+                totalProducts: summary.products || 0,
+                avgOrderValue: summary.avg_order_value || 0,
                 ordersByStatus: orderBreakdown,
                 revenueByMonth,
             },

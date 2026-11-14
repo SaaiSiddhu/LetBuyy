@@ -27,8 +27,6 @@ export interface PushProviderEnv {
 
 export interface PushNotificationDispatchInput {
   userId: string;
-  siteId?: string | null;
-  category?: string;
   title: string;
   message: string;
   data: JsonObject;
@@ -252,7 +250,6 @@ async function sendFcmPush(
   token: string,
   input: PushNotificationDispatchInput,
   options: Required<PushDispatchOptions>,
-  platform: PushPlatform,
 ): Promise<void> {
   const projectId = requireConfig(env.FCM_PROJECT_ID, 'SKIP_NEEDS_HUMAN_PUSH_FCM_PROJECT_ID');
   const accessToken = await fcmAccessToken(env, options);
@@ -266,9 +263,11 @@ async function sendFcmPush(
     body: JSON.stringify({
       message: {
         token,
-        // Data-only: the app validates the current actor before native display.
-        data: { ...stringifyData(input.data, input.actionUrl), user_id: input.userId, title: input.title, body: input.message },
-        ...(platform === 'android' ? { android: { priority: 'high' } } : { notification: { title: input.title, body: input.message } }),
+        notification: {
+          title: input.title,
+          body: input.message,
+        },
+        data: stringifyData(input.data, input.actionUrl),
       },
     }),
   });
@@ -360,19 +359,6 @@ export async function dispatchPushNotificationToDevices(
     dryRun: isDryRun(env),
     failureDetails: [],
   };
-  // Global and per-store opt-outs must gate provider calls, not merely the UI.
-  let preferenceQuery = db.from('notification_preferences').select('store_id, category, enabled')
-    .eq('user_id', input.userId).eq('channel', 'push')
-    .in('category', [...new Set(['system', input.category || 'system'])]);
-  preferenceQuery = input.siteId
-    ? preferenceQuery.or(`store_id.is.null,store_id.eq.${input.siteId}`)
-    : preferenceQuery.is('store_id', null);
-  const preferences = await preferenceQuery;
-  if (preferences.error) throw new Error('Push preferences are unavailable.');
-  if ((preferences.data || []).some((row: { enabled: boolean }) => row.enabled === false)) {
-    result.skipped = rows.length;
-    return result;
-  }
   const providers = new Set<PushProvider>();
   const dispatchOptions: Required<PushDispatchOptions> = {
     fetcher: options.fetcher || fetch,
@@ -399,7 +385,7 @@ export async function dispatchPushNotificationToDevices(
       if (provider === 'apns') {
         await sendApnsPush(env, token, input, dispatchOptions);
       } else {
-        await sendFcmPush(env, token, input, dispatchOptions, platform);
+        await sendFcmPush(env, token, input, dispatchOptions);
       }
       result.sent += 1;
     } catch (error) {

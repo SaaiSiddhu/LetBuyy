@@ -5,7 +5,7 @@ import {
     defineRuntimeBridge,
 } from '@letbuyy/shared-types';
 import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
-import { AppError, ConflictError, ValidationError } from '../lib/errors';
+import { ConflictError, ValidationError } from '../lib/errors';
 import { redactReplayableSecrets } from '../lib/replayable-secret-redaction';
 import { isMissingSchemaError } from '../lib/supabase';
 
@@ -55,25 +55,6 @@ export class IdempotencyExecutionAdapter {
             throw new ValidationError('Idempotency key must be 8-200 characters');
         }
         return normalized;
-    }
-
-    /** Read an already committed acknowledgement without claiming new work.
-     * Same key/scope/request hashing as begin; callers still supply their own
-     * current recovery authority before using this result. */
-    async readCompleted(params: { siteId: string; key: string; scope: string; requestBody: unknown }): Promise<Extract<IdempotencyClaim, { kind: 'replay' }> | null> {
-        const key = IdempotencyExecutionAdapter.normalizeKey(params.key);
-        const requestHash = await sha256Hex(canonicalizeExecutionPayload(params.requestBody));
-        const { data, error } = await this.db.from('idempotency_keys')
-            .select('request_hash,status,response_body,status_code')
-            .eq('site_id', params.siteId).eq('scope', params.scope).eq('key', key)
-            .is('deleted_at', null).maybeSingle();
-        if (error) throw new AppError('Checkout acknowledgement is temporarily unavailable', 503, 'CHECKOUT_UNAVAILABLE');
-        if (!data) return null;
-        const record = data as IdempotencyRecord;
-        if (record.request_hash !== requestHash) throw new ConflictError('Idempotency key was already used with a different request body');
-        return record.status === 'completed' && record.response_body
-            ? { kind: 'replay', responseBody: record.response_body, statusCode: record.status_code || 200 }
-            : null;
     }
 
     async begin(params: {
@@ -209,7 +190,7 @@ export class IdempotencyExecutionAdapter {
                 status: 'failed',
                 locked_until: null,
             })
-            .eq('id', id).eq('status', 'processing');
+            .eq('id', id);
         const { error } = await (this.currentSiteId ? query.eq('site_id', this.currentSiteId) : query);
         if (error && !isMissingSchemaError(error)) {
             throw new Error(`Idempotency failure update failed: ${error.message}`);

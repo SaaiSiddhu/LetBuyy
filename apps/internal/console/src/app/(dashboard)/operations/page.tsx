@@ -1,3 +1,4 @@
+import { ConsoleActionForm } from '@/components/ConsoleActionForm';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import type {
@@ -75,6 +76,8 @@ type RuntimeCommandRecord=z.infer<typeof RuntimeCommandRecordSchema>;
 
 type OperationsPageData = {
     overview: OperationsOverview;
+    overviewError?: string;
+    postmortemsError?: string;
     commands: RuntimeCommandRecord[];
     commandsError?: string;
     commandsHasNext: boolean;
@@ -305,6 +308,7 @@ async function loadOperationsData(oncallPage: number | undefined, commandsPage: 
 
     return {
         overview: overviewResult.data?.data || {},
+        overviewError: overviewResult.error, postmortemsError: postmortemsResult.error,
         commands: !commandsError&&commands.success?commands.data.data.items:[],
         commandsError,
         commandsHasNext:!commandsError&&commands.success&&commands.data.data.has_next,
@@ -359,7 +363,7 @@ export default async function OperationsDashboardPage({ searchParams }: {searchP
         <ConsoleWorkspace
             eyebrow="Incident command"
             title="Platform Ops"
-            description="Runtime health, incident command, on-call schedules, dry-run paging, postmortems, and audited runtime controls from the operations control plane."
+            description="Monitor platform health, coordinate incidents, and manage on-call coverage and postmortems."
         >
             <p className="sr-only">
                 Operations live data contract: {OPERATIONS_AUTH_CONTRACT}; {OPERATIONS_OVERVIEW_CONTRACT}; {OPERATIONS_CACHE_CONTRACT};
@@ -375,11 +379,11 @@ export default async function OperationsDashboardPage({ searchParams }: {searchP
                 error={recoveryError} page={query.success?query.data.page:1} hasNext={recovery.data?.data.has_next===true}/>
 
             <MetricGrid>
-                <LeadershipMetric label="Healthy runtimes" value={`${health.filter((item) => item.status === 'healthy').length}/${health.length}`} />
-                <LeadershipMetric label="Open incidents" value={String(activeIncidents.length)} tone={activeIncidents.length > 0 ? 'warning' : 'success'} />
-                <LeadershipMetric label="SEV close gates" value={String(sev12WithoutPostmortem)} detail="SEV-1/2 requiring accepted postmortem" tone={sev12WithoutPostmortem > 0 ? 'warning' : 'success'} />
-                <LeadershipMetric label="DLQ messages" value={String(dlqMessages)} tone={dlqMessages > 0 ? 'critical' : 'success'} />
-                <LeadershipMetric label="Firing alerts" value={String(firingAlerts)} tone={firingAlerts > 0 ? 'critical' : 'success'} />
+                <LeadershipMetric label="Healthy runtimes" value={data.overviewError ? 'Unavailable' : `${health.filter((item) => item.status === 'healthy').length}/${health.length}`} />
+                <LeadershipMetric label="Open incidents" value={data.overviewError ? 'Unavailable' : String(activeIncidents.length) } tone={activeIncidents.length > 0 ? 'warning' : 'success'} />
+                <LeadershipMetric label="SEV close gates" value={data.overviewError || data.postmortemsError ? 'Unavailable' : String(sev12WithoutPostmortem)} detail="SEV-1/2 requiring accepted postmortem" tone={sev12WithoutPostmortem > 0 ? 'warning' : 'success'} />
+                <LeadershipMetric label="DLQ messages" value={data.overviewError ? 'Unavailable' : String(dlqMessages) } tone={dlqMessages > 0 ? 'critical' : 'success'} />
+                <LeadershipMetric label="Firing alerts" value={data.overviewError ? 'Unavailable' : String(firingAlerts) } tone={firingAlerts > 0 ? 'critical' : 'success'} />
                 <LeadershipMetric label="Certification" value={latestCertification ? `${latestCertification.live_maturity_score}/10` : 'none'} detail={latestCertification?.status || 'No report returned'} />
             </MetricGrid>
 
@@ -485,12 +489,12 @@ function IncidentCommandPanel({
     return (
         <Panel title="Incident Command" description="Open, mitigate, page, resolve, and close incidents with reason-captured actions. SEV-1/2 closure is blocked until the postmortem is accepted.">
             <div className="grid gap-[var(--lb-space-5)]">
-                <form action={createIncident} className="grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-4)] lg:grid-cols-2">
+                <ConsoleActionForm action={createIncident} className="grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-4)] lg:grid-cols-2">
                     <Input name="incident_id" label="Incident ID" placeholder="INC-2026-0001" required />
                     <Input name="title" label="Title" placeholder="Checkout payment latency" required />
                     <label className="flex flex-col gap-[var(--lb-space-1)] text-sm font-medium">
                         Severity
-                        <select name="severity" defaultValue="sev3" className={inputClassName}>
+                        <select aria-label="Severity" name="severity" defaultValue="sev3" className={inputClassName}>
                             <option value="sev1">SEV-1</option>
                             <option value="sev2">SEV-2</option>
                             <option value="sev3">SEV-3</option>
@@ -506,7 +510,7 @@ function IncidentCommandPanel({
                     <div className="lg:col-span-2">
                         <Button type="submit">Open incident</Button>
                     </div>
-                </form>
+                </ConsoleActionForm>
 
                 {incidents.length === 0 ? (
                     <EmptyDataState message="No incidents returned." />
@@ -537,9 +541,9 @@ function IncidentCommandPanel({
                                     </div>
 
                                     <div className="mt-[var(--lb-space-4)] grid gap-[var(--lb-space-3)] lg:grid-cols-3">
-                                        <form action={updateIncidentStatus} className="grid gap-[var(--lb-space-2)]">
+                                        <ConsoleActionForm action={updateIncidentStatus} className="grid gap-[var(--lb-space-2)]">
                                             <Input unstyled type="hidden" name="incident_id" value={incident.incident_id} />
-                                            <select name="status" defaultValue={incident.status} className={inputClassName}>
+                                            <select aria-label="Status" name="status" defaultValue={incident.status} className={inputClassName}>
                                                 <option value="open">Open</option>
                                                 <option value="mitigating">Mitigating</option>
                                                 <option value="resolved">Resolved</option>
@@ -547,11 +551,11 @@ function IncidentCommandPanel({
                                             </select>
                                             <Input name="summary" placeholder="Reasoned status summary" required />
                                             <Button type="submit" variant="secondary">Update status</Button>
-                                        </form>
+                                        </ConsoleActionForm>
 
-                                        <form action={addIncidentEvent} className="grid gap-[var(--lb-space-2)]">
+                                        <ConsoleActionForm action={addIncidentEvent} className="grid gap-[var(--lb-space-2)]">
                                             <Input unstyled type="hidden" name="incident_id" value={incident.incident_id} />
-                                            <select name="event_type" defaultValue="note" className={inputClassName}>
+                                            <select aria-label="Event type" name="event_type" defaultValue="note" className={inputClassName}>
                                                 <option value="note">Note</option>
                                                 <option value="mitigation">Mitigation</option>
                                                 <option value="escalation">Escalation</option>
@@ -560,16 +564,16 @@ function IncidentCommandPanel({
                                             <Input name="summary" placeholder="Timeline summary" required />
                                             <Input name="reason" placeholder="Reason" required />
                                             <Button type="submit" variant="outline">Add event</Button>
-                                        </form>
+                                        </ConsoleActionForm>
 
-                                        <form action={pageIncident} className="grid gap-[var(--lb-space-2)]">
+                                        <ConsoleActionForm action={pageIncident} className="grid gap-[var(--lb-space-2)]">
                                             <Input unstyled type="hidden" name="incident_id" value={incident.incident_id} />
                                             <Input name="target_team" placeholder="Target team" />
                                             <Input name="escalation_level" type="number" min={1} max={5} defaultValue={1} />
                                             <Input name="summary" placeholder="Page summary" required />
                                             <Input name="reason" placeholder="Reason" required />
                                             <Button type="submit" variant="destructive">Dry-run page</Button>
-                                        </form>
+                                        </ConsoleActionForm>
                                     </div>
                                 </article>
                             );
@@ -641,7 +645,7 @@ function OncallPanel({
                 </p>
             </div>}
 
-            <form action={createOncallSchedule} className="mt-[var(--lb-space-4)] grid gap-[var(--lb-space-3)] md:grid-cols-2">
+            <ConsoleActionForm action={createOncallSchedule} className="mt-[var(--lb-space-4)] grid gap-[var(--lb-space-3)] md:grid-cols-2">
                 <Input name="team_name" label="Team" placeholder="platform" required />
                 <Input name="rotation_name" label="Rotation" placeholder="primary-weekday" required />
                 <Input name="primary_employee_id" label="Primary employee ID" />
@@ -653,7 +657,7 @@ function OncallPanel({
                 <div className="md:col-span-2">
                     <Button type="submit" variant="secondary">Create schedule</Button>
                 </div>
-            </form>
+            </ConsoleActionForm>
 
             <div className="mt-[var(--lb-space-5)] divide-y divide-[var(--lb-color-border)]">
                 {schedulesError ? <div role="alert"><p>On-call schedules unavailable.</p>
@@ -689,10 +693,10 @@ function PostmortemPanel({
 }) {
     return (
         <Panel title="Postmortems" description="Blameless postmortem tracker with close-gate support for SEV-1 and SEV-2 incidents.">
-            <form action={createPostmortem} className="grid gap-[var(--lb-space-3)]">
+            <ConsoleActionForm action={createPostmortem} className="grid gap-[var(--lb-space-3)]">
                 <label className="flex flex-col gap-[var(--lb-space-1)] text-sm font-medium">
                     Incident
-                    <select name="incident_id" className={inputClassName} required>
+                    <select aria-label="Incident id" name="incident_id" className={inputClassName} required>
                         <option value="">Select incident</option>
                         {incidents.map((incident) => (
                             <option key={incident.incident_id} value={incident.incident_id}>{incident.incident_id} | {incident.title}</option>
@@ -701,7 +705,7 @@ function PostmortemPanel({
                 </label>
                 <label className="flex flex-col gap-[var(--lb-space-1)] text-sm font-medium">
                     Status
-                    <select name="status" defaultValue="draft" className={inputClassName}>
+                    <select aria-label="Status" name="status" defaultValue="draft" className={inputClassName}>
                         <option value="draft">Draft</option>
                         <option value="review">Review</option>
                         <option value="accepted">Accepted</option>
@@ -714,7 +718,7 @@ function PostmortemPanel({
                 <Input name="action_items" label="Action items" placeholder="Add synthetic checkout monitor, tighten cache circuit breaker" />
                 <Input name="reason" label="Reason" placeholder="Postmortem created for SEV close gate" required />
                 <Button type="submit" variant="secondary">Save postmortem</Button>
-            </form>
+            </ConsoleActionForm>
 
             <div className="mt-[var(--lb-space-5)] divide-y divide-[var(--lb-color-border)]">
                 {postmortems.length === 0 ? (

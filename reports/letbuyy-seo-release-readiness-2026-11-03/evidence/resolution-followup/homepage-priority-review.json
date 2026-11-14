@@ -1,0 +1,207 @@
+{
+  "capturedAt": "2026-11-03T10:06:59.995780+00:00",
+  "readOnly": true,
+  "rows": [
+    {
+      "locale": "in",
+      "imageCount": 34,
+      "highPriority": [],
+      "imagePreloads": [
+        {
+          "href": "/icons/letbuyy-store-logo-light-v3.svg",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/icons/letbuyy-store-logo-dark-v3.svg",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/storefronts-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/orders-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/inventory-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/payments-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/customers-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/analytics-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/ai-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/b2b-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        }
+      ]
+    },
+    {
+      "locale": "in-hi",
+      "imageCount": 34,
+      "highPriority": [],
+      "imagePreloads": [
+        {
+          "href": "/icons/letbuyy-store-logo-light-v3.svg",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/icons/letbuyy-store-logo-dark-v3.svg",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/storefronts-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/orders-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/inventory-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/payments-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/customers-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/analytics-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/ai-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/b2b-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        }
+      ]
+    },
+    {
+      "locale": "in-ta",
+      "imageCount": 34,
+      "highPriority": [],
+      "imagePreloads": [
+        {
+          "href": "/icons/letbuyy-store-logo-light-v3.svg",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/icons/letbuyy-store-logo-dark-v3.svg",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/storefronts-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/orders-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/inventory-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/payments-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/customers-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/analytics-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/ai-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        },
+        {
+          "href": "/illustrations/capabilities/icons/b2b-v2.webp",
+          "as": "image",
+          "fetchpriority": null,
+          "imagesizes": null
+        }
+      ]
+    }
+  ]
+}

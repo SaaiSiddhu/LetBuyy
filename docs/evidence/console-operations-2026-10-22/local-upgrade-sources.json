@@ -1,0 +1,14 @@
+{
+  "resource": "supabase_db_letbuyy-web-local-20261021",
+  "expectedHead": "369",
+  "targetHead": "371",
+  "sources": {
+    "370_merchant_support_projection.sql": "014341ba06fbf40aa34691fc1ac41e2b5d641c97e66245741c43d332ce546c40",
+    "371_console_support_ownership.sql": "6a9275cabbbc4610a8acfd96e89793d9b854b5a98f2d8ca4dccb9787b65fbb80"
+  },
+  "rollbackFiles": [
+    "database/supabase/rollback/371_console_support_ownership.rollback.sql",
+    "database/supabase/rollback/370_merchant_support_projection.rollback.sql"
+  ],
+  "transaction": "both functions and migration ledger entries atomically; five-second lock timeout; no business-row DML"
+}

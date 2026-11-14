@@ -1,6 +1,0 @@
-Browser tab: 7, Title: "LetBuyy Admin", URL: "http://admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-bloom/editor".
-1 AXWebArea LetBuyy Admin, URL: admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-bloom/editor
-	2 heading Loading theme editor, Value: 1
-		3 text Loading theme editor
-
-The focused UI element is 1 AXWebArea LetBuyy Admin, URL: admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/online-store/themes/letbuyy-bloom/editor

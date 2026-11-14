@@ -1,0 +1,171 @@
+--- a/apps/marketing/web/src/app/[locale]/create/page.tsx
++++ b/apps/marketing/web/src/app/[locale]/create/page.tsx
+@@ -4,7 +4,7 @@
+ 
+ import Copy from '@/components/i18n/Copy'
+ 
+-import { useState } from 'react'
++import { useEffect, useRef, useState } from 'react'
+ import Link from '@/components/i18n/LocaleLink'
+ import { Button, Check, FileText, Input, ArrowRight, Palette, Rocket, Store, X } from '@letbuyy/ui'
+ import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client'
+@@ -36,20 +36,34 @@
+     const [loading, setLoading] = useState(false)
+     const [error, setError] = useState<string | null>(null)
+     const [subdomainAvailable, setSubdomainAvailable] = useState<boolean | null>(null)
++    const [availabilityError, setAvailabilityError] = useState(false)
++    const availabilityRequest = useRef<AbortController | null>(null)
++
++    useEffect(() => () => availabilityRequest.current?.abort(), [])
+ 
+     const handleSubdomainChange = (value: string) => {
++        availabilityRequest.current?.abort()
+         const cleaned = value.toLowerCase().replace(/[^a-z0-9-]/g, '')
+         setSubdomain(cleaned)
+         setSubdomainAvailable(null) // Reset check
++        setAvailabilityError(false)
+     }
+ 
+     const checkSubdomain = async () => {
++        availabilityRequest.current?.abort()
+         if (!subdomain) return
++        const controller = new AbortController()
++        availabilityRequest.current = controller
++        setSubdomainAvailable(null)
++        setAvailabilityError(false)
+         try {
+-            const res = await fetch(`${marketingApiBaseUrl()}/stores/public/${subdomain}`)
+-            setSubdomainAvailable(res.status === 404) // 404 = available
++            const res = await fetch(`${marketingApiBaseUrl()}/stores/public/${subdomain}`, { signal: controller.signal })
++            if (controller.signal.aborted) return
++            if (res.status === 404) setSubdomainAvailable(true)
++            else if (res.ok) setSubdomainAvailable(false)
++            else setAvailabilityError(true)
+         } catch {
+-            setSubdomainAvailable(true) // Assume available on error
++            if (!controller.signal.aborted) setAvailabilityError(true)
+         }
+     }
+ 
+@@ -175,6 +189,11 @@
+                                         <X className="h-3 w-3" aria-hidden="true" />
+                                         <Copy text={"Already taken"} /></p>
+                                 )}
++                                {availabilityError && (
++                                    <p role="status" className="mt-1 text-xs text-subdued">
++                                        <Copy text={"Something went wrong. Please try again."} />
++                                    </p>
++                                )}
+                             </div>
+                         </div>
+ 
+@@ -202,7 +221,7 @@
+                 {/* Login link */}
+                 <p className="text-center text-sm text-muted">
+                     <Copy text={"Already have an account?"} />{' '}
+-                    <Link href="/signup" className="text-[color:var(--lb-color-primary-text)] hover:underline">
++                    <Link href={getAccountsUrl('/lookup')} className="text-[color:var(--lb-color-primary-text)] hover:underline">
+                         <Copy text={"Sign in"} /></Link>
+                 </p>
+             </div>
+--- a/apps/marketing/web/src/app/home.css
++++ b/apps/marketing/web/src/app/home.css
+@@ -1,4 +1,10 @@
+ /* Route-owned styles. Shared/mixed selectors stay in globals.css. */
++/* Inner scroll containers must share the carousel's gesture policy; otherwise
++   the browser cancels horizontal swipes before the card receives pointerup. */
++.cmap-viewport .cmap-carousel .cmap-panel-body,
++.cmap-viewport .cmap-carousel .cmap-panel-visual {
++  touch-action: pan-y pinch-zoom;
++}
+ 
+ 
+ .hero {
+--- a/apps/marketing/web/src/components/Header.tsx
++++ b/apps/marketing/web/src/components/Header.tsx
+@@ -38,6 +38,7 @@
+     ThemeToggleButton,
+     Truck,
+     Users,
++    useFocusTrap,
+     X,
+ } from '@letbuyy/ui'
+ import BrandLogo from './BrandLogo'
+@@ -578,6 +579,9 @@
+        @letbuyy/ui Button does not forward a ref, and adding one there would
+        change a shared component for a layout detail local to this header. */
+     const navRef = useRef<HTMLElement | null>(null)
++    const mobileDrawerRef = useRef<HTMLDivElement | null>(null)
++    const mobileTriggerRef = useRef<HTMLElement | null>(null)
++    useFocusTrap(mobileDrawerRef, { active: mobileMenuOpen, returnFocusRef: mobileTriggerRef })
+     /* Hover only drives the menu where a real pointer exists. On touch the
+        trigger stays a plain toggle, or the panel would open on first tap and
+        the link underneath would never be reachable. */
+@@ -718,6 +722,10 @@
+     useEffect(() => {
+         const handleEscape = (e: KeyboardEvent) => {
+             if (e.key === 'Escape') {
++                clearHoverTimer()
++                if (activeDesktopMenu) {
++                    navRef.current?.querySelector<HTMLElement>(`[data-menu="${activeDesktopMenu}"]`)?.focus()
++                }
+                 setActiveDesktopMenu(null)
+                 setMobileMenuOpen(false)
+                 setMobilePanel(null)
+@@ -725,7 +733,7 @@
+         }
+         window.addEventListener('keydown', handleEscape)
+         return () => window.removeEventListener('keydown', handleEscape)
+-    }, [])
++    }, [activeDesktopMenu, clearHoverTimer])
+ 
+     useEffect(() => {
+         const desktopQuery = window.matchMedia('(min-width: 1120px)')
+@@ -753,7 +761,8 @@
+     const loginUrl = getAccountsUrl('/lookup')
+     const signupUrl = getAccountsUrl('/signup')
+ 
+-    const openMobileMenu = () => {
++    const openMobileMenu = (trigger: HTMLElement) => {
++        mobileTriggerRef.current = trigger
+         setActiveDesktopMenu(null)
+         setMobilePanel(null)
+         setMobileMenuOpen(true)
+@@ -842,7 +851,7 @@
+ 
+                     <Button unstyled
+                         className="mobile-menu-btn"
+-                        onClick={mobileMenuOpen ? closeAllMenus : openMobileMenu}
++                        onClick={event => mobileMenuOpen ? closeAllMenus() : openMobileMenu(event.currentTarget)}
+                         aria-label={mobileMenuOpen ? dict.nav.closeMenu : dict.nav.openMenu}
+                         aria-expanded={mobileMenuOpen}
+                     >
+@@ -887,6 +896,7 @@
+             <AnimatePresence>
+                 {mobileMenuOpen ? (
+                     <motion.div
++                        ref={mobileDrawerRef}
+                         className="mobile-drawer"
+                         initial={{ x: '100%' }}
+                         animate={{ x: 0 }}
+--- a/packages/typescript/ui/snapshots/public-api.json
++++ b/packages/typescript/ui/snapshots/public-api.json
+@@ -370,6 +370,7 @@
+     "Truck",
+     "Twitter",
+     "Upload",
++    "useFocusTrap",
+     "User",
+     "Users",
+     "useTheme",
+--- a/packages/typescript/ui/src/index.ts
++++ b/packages/typescript/ui/src/index.ts
+@@ -92,7 +92,7 @@
+ 
+ // The same reference-counted lock the overlays use, for app chrome (nav drawers,
+ // bottom sheets) that opens outside an <Overlay> and must not fight them.
+-export { acquireScrollLock } from './overlay-hooks';
++export { acquireScrollLock, useFocusTrap } from './overlay-hooks';
+ 
+ export { Checkbox, ChoiceList, Combobox, Radio, Select, Switch, Tabs } from './controls';
+ export type {

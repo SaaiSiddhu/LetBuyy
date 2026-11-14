@@ -32,7 +32,7 @@ function policyName(statement) {
   return statement.match(/CREATE\s+POLICY\s+([^\s]+)\s+/i)?.[1] ?? "";
 }
 
-function classifyPolicy(file, statement) {
+function classifyPolicy(file, statement, source) {
   const normalized = statement.replace(/\s+/g, " ").trim();
   const name = policyName(statement);
   const lowerName = name.toLowerCase();
@@ -40,6 +40,23 @@ function classifyPolicy(file, statement) {
 
   if (file.endsWith("database/supabase/migrations/000_baseline.sql")) {
     return "baseline legacy residue superseded by additive RLS hardening and tenant validator";
+  }
+
+  // These platform-authoring tables are private function custody, not public
+  // tenant reads. Admit only the exact owner-role policies with FORCE RLS and
+  // the corresponding denial of every application role still present.
+  const custodyTables = {
+    platform_message_custody: 'merchant_announcements',
+    platform_message_receipt_custody: 'merchant_announcement_receipts',
+  };
+  const custodyTable = custodyTables[lowerName];
+  if (file === 'database/supabase/migrations/372_merchant_account_messages.sql' && custodyTable) {
+    if (new RegExp(`^CREATE POLICY ${lowerName} ON public\\.${custodyTable} TO postgres USING\\(true\\) WITH CHECK\\(true\\);$`, 'i').test(normalized)
+      && new RegExp(`ALTER TABLE public\\.${custodyTable} FORCE ROW LEVEL SECURITY;`, 'i').test(source)
+      && /REVOKE ALL ON public\.merchant_announcements,public\.merchant_announcement_receipts FROM PUBLIC,anon,authenticated,app_tenant,service_role;/i.test(source)) {
+      return 'exact private postgres custody policy with FORCE RLS and application-role revocation';
+    }
+    return null;
   }
 
   if (
@@ -82,7 +99,7 @@ for (const file of sqlFiles) {
     const statement = match[0];
     if (!truePolicyPattern.test(statement)) continue;
 
-    const classification = classifyPolicy(file, statement);
+    const classification = classifyPolicy(file, statement, source);
     classifiedCount += 1;
     reporter.assert(
       Boolean(classification),

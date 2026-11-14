@@ -1,0 +1,95 @@
+[
+  {
+    "command": "technical",
+    "applicable": true,
+    "why": "All shared inspected responses reviewed for directives, canonical/redirect consistency, raw rendering and graph. Intentional probes separated.",
+    "status": "executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Verify Google-selected canonicals/index coverage with authorized GSC; unavailable private logs are not replaced by guesses.",
+    "exact_next_step": "Verify Google-selected canonicals/index coverage with authorized GSC; unavailable private logs are not replaced by guesses."
+  },
+  {
+    "command": "schema",
+    "applicable": true,
+    "why": "Every captured JSON-LD block parsed; types/entity URL/offer/author semantics examined against primary docs; minimal truthful examples generated.",
+    "status": "partially executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Run actual Schema Markup Validator/Google Rich Results Test on the corrected representative pages; do not infer rich-result display.",
+    "exact_next_step": "Run actual Schema Markup Validator/Google Rich Results Test on the corrected representative pages; do not infer rich-result display."
+  },
+  {
+    "command": "sitemap",
+    "applicable": true,
+    "why": "Live XML parsed; all listed URL quality and published-article coverage checked against shared inventory; lastmod and alternate relationships assessed.",
+    "status": "executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Revalidate final eligible URL inventory after corrections and check sitemap processing in GSC when available.",
+    "exact_next_step": "Revalidate final eligible URL inventory after corrections and check sitemap processing in GSC when available."
+  },
+  {
+    "command": "hreflang",
+    "applicable": true,
+    "why": "All captured locale HTML and XML alternate sets checked for self/reciprocal/canonical agreement; all3languages represented.",
+    "status": "partially executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Native-language editorial QA across all translated content and GSC locale/index behavior remain unverified.",
+    "exact_next_step": "Native-language editorial QA across all translated content and GSC locale/index behavior remain unverified."
+  },
+  {
+    "command": "images",
+    "applicable": true,
+    "why": "Every captured image occurrence inventoried for alt/dimensions/loading/srcset; homepage priority pattern assessed.",
+    "status": "partially executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Complete byte/display-size matching for all distinct image assets and compare real LCP request waterfalls; parent sampled asset/browser outputs supplement.",
+    "exact_next_step": "Complete byte/display-size matching for all distinct image assets and compare real LCP request waterfalls; parent sampled asset/browser outputs supplement."
+  },
+  {
+    "command": "page",
+    "applicable": true,
+    "why": "Homepage,pricing,category,article,tag,author,contact,legal,release/search/create templates reviewed in shared raw HTML; parent browser samples add rendered/mobile evidence.",
+    "status": "partially executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "No claim of exhaustive interaction/accessibility inspection; complete browser testing for untested interactions without unauthorized submissions.",
+    "exact_next_step": "No claim of exhaustive interaction/accessibility inspection; complete browser testing for untested interactions without unauthorized submissions."
+  },
+  {
+    "command": "drift",
+    "applicable": true,
+    "why": "Actual prior same-day production snapshot compared; packaged history and new baseline outputs preserved; portable observed-current baseline created.",
+    "status": "executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json",
+      "findings/drift.md",
+      "evidence/current-seo-baseline.json"
+    ],
+    "missing_prerequisites": "No older period exists in configured history; compare after an authorized release, without claiming historical ranking causation.",
+    "exact_next_step": "No older period exists in configured history; compare after an authorized release, without claiming historical ranking causation."
+  }
+]

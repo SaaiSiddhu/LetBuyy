@@ -1,0 +1,59 @@
+{
+  "rows": [
+    {
+      "check": "marketing-tests",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "test"
+      ],
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:17:36.930605+00:00"
+    },
+    {
+      "check": "marketing-types",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:17:40.404888+00:00"
+    },
+    {
+      "check": "marketing-lint",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "lint"
+      ],
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:17:47.150222+00:00"
+    },
+    {
+      "check": "ui-validation",
+      "command": [
+        "pnpm",
+        "--dir",
+        "packages/typescript/ui",
+        "validate:ui"
+      ],
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:17:54.106612+00:00"
+    },
+    {
+      "check": "ui-types",
+      "command": [
+        "pnpm",
+        "--dir",
+        "packages/typescript/ui",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "completed_at": "2026-11-01T08:17:55.098268+00:00"
+    }
+  ]
+}

@@ -1,0 +1,206 @@
+[
+  {
+    "requested_url": "https://admin.letbuyy.com/",
+    "captured_at": "2026-10-29T18:40:29.136881+00:00",
+    "url": "https://accounts.letbuyy.com/lookup",
+    "status_code": 200,
+    "headers": {
+      "access-control-allow-origin": "*",
+      "age": "3459",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https: https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 18:40:33 GMT",
+      "etag": "W/\"33adb306a7871d3ffef651ab8ee5bd24\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/lookup",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::d8mmh-1793299232349-f9af271fdd70",
+      "transfer-encoding": "chunked"
+    },
+    "redirect_chain": [
+      "https://admin.letbuyy.com/"
+    ],
+    "redirect_details": [
+      {
+        "url": "https://admin.letbuyy.com/",
+        "status_code": 307
+      }
+    ],
+    "too_large": false,
+    "error": null,
+    "title": "LetBuyy - Create Your Online Store",
+    "robots": [
+      {
+        "name": "robots",
+        "content": "noindex, nofollow"
+      }
+    ],
+    "text_excerpt": "LetBuyy - Create Your Online Store Loading..."
+  },
+  {
+    "requested_url": "https://admin.letbuyy.com/auth/login",
+    "captured_at": "2026-10-29T18:40:34.497252+00:00",
+    "url": "https://accounts.letbuyy.com/lookup?return_to=https%3A%2F%2Fadmin.letbuyy.com%2Fauth%2Flogin",
+    "status_code": 200,
+    "headers": {
+      "access-control-allow-origin": "*",
+      "age": "3461",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https: https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 18:40:35 GMT",
+      "etag": "W/\"33adb306a7871d3ffef651ab8ee5bd24\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/lookup",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::bn468-1793299235378-c4e60522d34c",
+      "transfer-encoding": "chunked"
+    },
+    "redirect_chain": [
+      "https://admin.letbuyy.com/auth/login"
+    ],
+    "redirect_details": [
+      {
+        "url": "https://admin.letbuyy.com/auth/login",
+        "status_code": 307
+      }
+    ],
+    "too_large": false,
+    "error": null,
+    "title": "LetBuyy - Create Your Online Store",
+    "robots": [
+      {
+        "name": "robots",
+        "content": "noindex, nofollow"
+      }
+    ],
+    "text_excerpt": "LetBuyy - Create Your Online Store Loading..."
+  },
+  {
+    "requested_url": "https://seller.letbuyy.com/",
+    "captured_at": "2026-10-29T18:40:36.484363+00:00",
+    "url": "https://seller.letbuyy.com/",
+    "status_code": null,
+    "headers": {},
+    "redirect_chain": [],
+    "redirect_details": [],
+    "too_large": false,
+    "error": "url_safety: DNS resolution failed for seller.letbuyy.com: [Errno 8] nodename nor servname provided, or not known"
+  },
+  {
+    "requested_url": "https://developer.letbuyy.com/api",
+    "captured_at": "2026-10-29T18:40:37.565427+00:00",
+    "url": "https://developer.letbuyy.com/api",
+    "status_code": null,
+    "headers": {},
+    "redirect_chain": [],
+    "redirect_details": [],
+    "too_large": false,
+    "error": "url_safety: DNS resolution failed for developer.letbuyy.com: [Errno 8] nodename nor servname provided, or not known"
+  },
+  {
+    "requested_url": "https://accounts.letbuyy.com/lookup",
+    "captured_at": "2026-10-29T18:40:38.573949+00:00",
+    "url": "https://accounts.letbuyy.com/lookup",
+    "status_code": 200,
+    "headers": {
+      "access-control-allow-origin": "*",
+      "age": "3464",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https: https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 18:40:39 GMT",
+      "etag": "W/\"33adb306a7871d3ffef651ab8ee5bd24\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/lookup",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::fch79-1793299238804-abfd734c9ec3",
+      "transfer-encoding": "chunked"
+    },
+    "redirect_chain": [],
+    "redirect_details": [],
+    "too_large": false,
+    "error": null,
+    "title": "LetBuyy - Create Your Online Store",
+    "robots": [
+      {
+        "name": "robots",
+        "content": "noindex, nofollow"
+      }
+    ],
+    "text_excerpt": "LetBuyy - Create Your Online Store Loading..."
+  },
+  {
+    "requested_url": "https://accounts.letbuyy.com/signup",
+    "captured_at": "2026-10-29T18:40:40.095072+00:00",
+    "url": "https://accounts.letbuyy.com/signup",
+    "status_code": 200,
+    "headers": {
+      "access-control-allow-origin": "*",
+      "age": "3142",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https: https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://accounts.letbuyy.com https://admin.letbuyy.com https://api.letbuyy.com https://letbuyy.store; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 18:40:40 GMT",
+      "etag": "W/\"68a08d7d61d013c3539c1b67d3b452c8\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/signup",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::l4xvl-1793299240284-94e6f9a4788c",
+      "transfer-encoding": "chunked"
+    },
+    "redirect_chain": [],
+    "redirect_details": [],
+    "too_large": false,
+    "error": null,
+    "title": "LetBuyy - Create Your Online Store",
+    "robots": [
+      {
+        "name": "robots",
+        "content": "noindex, nofollow"
+      }
+    ],
+    "text_excerpt": "LetBuyy - Create Your Online Store Loading..."
+  }
+]

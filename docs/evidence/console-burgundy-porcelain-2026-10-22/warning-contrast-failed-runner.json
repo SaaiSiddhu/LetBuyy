@@ -1,0 +1,83 @@
+{
+  "runId": "176d0d7c3e04",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-42847-mviiu8os-225e50"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 1,
+  "assertionsPassed": 0,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 72.6,
+  "suiteSeconds": 70.4,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "console-ui-refinement-browser.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/console-ui-refinement-browser.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-42847-mviiu8os-225e50",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 70.4,
+      "firstFailure": "not ok 1 - Console shades, readable states, keyboard recovery and responsive merchant workspace",
+      "failures": [
+        "not ok 1 - Console shades, readable states, keyboard recovery and responsive merchant workspace"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_console_ui_refinement_browser_postgres",
+      "templateSeconds": 24.4,
+      "provisionSeconds": 1.1,
+      "rest": {
+        "container": "letbuyy-exec-176d0d7c3e04-rest-1",
+        "upstreamPort": 51064,
+        "proxyPort": 51065
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 266,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

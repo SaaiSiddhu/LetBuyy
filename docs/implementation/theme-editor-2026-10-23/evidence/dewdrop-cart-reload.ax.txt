@@ -1,3 +1,0 @@
-Browser tab: 5, Title: "Cart | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart".
-There has been no change in the accessibility tree.
-The focused UI element is 1 AXWebArea Cart | Threadline, URL: syn-threadline-ui-d11a8917.localhost:57226/store/syn-threadline-ui-d11a8917/cart

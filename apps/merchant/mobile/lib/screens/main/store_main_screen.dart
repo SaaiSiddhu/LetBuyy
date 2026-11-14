@@ -10,10 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/theme_provider.dart';
-import '../../app/store_context.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../widgets/shared/ai_operator_sheet.dart';
-import '../../widgets/shared/merchant_search_sheet.dart';
 import '../dashboard/home_screen.dart';
 import '../orders/orders_screen.dart';
 import '../products/products_screen.dart';
@@ -53,9 +51,6 @@ class StoreMainScreen extends StatefulWidget {
 class StoreMainScreenState extends State<StoreMainScreen>
     with TickerProviderStateMixin {
   int _currentIndex = 0;
-  Object? _renderedContext;
-  bool _hasSelectedStore = false;
-  int _surfaceGeneration = 0;
 
   late final AnimationController _entryCtrl = AnimationController(
     vsync: this,
@@ -87,11 +82,12 @@ class StoreMainScreenState extends State<StoreMainScreen>
 
   void _openSearch() {
     HapticFeedback.lightImpact();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const MerchantSearchSheet(),
+      builder: (_) => _SearchSheet(isDark: isDark),
     );
   }
 
@@ -100,13 +96,6 @@ class StoreMainScreenState extends State<StoreMainScreen>
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode(context);
     final colors = AppThemeColors.of(context);
-    final storeContext = context.watch<StoreContext>();
-    final selectedContext = storeContext.requestContextKey;
-    if (_hasSelectedStore && _renderedContext != selectedContext) {
-      _surfaceGeneration++;
-    }
-    _renderedContext = selectedContext;
-    _hasSelectedStore = storeContext.selectedStoreId != null;
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -118,7 +107,6 @@ class StoreMainScreenState extends State<StoreMainScreen>
       backgroundColor: isDark ? _kDarkBg : _kLightBg,
       extendBody: true,
       body: IndexedStack(
-        key: ValueKey(_surfaceGeneration),
         index: _currentIndex,
         children: const [
           HomeScreen(),
@@ -457,6 +445,145 @@ class _NavCardItemState extends State<_NavCardItem>
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Search sheet (placeholder)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SearchSheet extends StatefulWidget {
+  const _SearchSheet({required this.isDark});
+  final bool isDark;
+
+  @override
+  State<_SearchSheet> createState() => _SearchSheetState();
+}
+
+class _SearchSheetState extends State<_SearchSheet> {
+  final _ctrl = TextEditingController();
+  final _focus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 120), () {
+      if (mounted) _focus.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppThemeColors.of(context);
+    final isDark = widget.isDark;
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.92,
+      minChildSize: 0.5,
+      maxChildSize: 0.96,
+      builder: (_, scrollCtrl) => Container(
+        decoration: BoxDecoration(
+          color: isDark ? _kDarkNav : _kLightNav,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(
+              color: isDark ? _kDarkBorder : _kLightBorder),
+        ),
+        child: Column(
+          children: [
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 16),
+              width: 38,
+              height: 4,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.15)
+                    : Colors.black.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            // Search field
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.04)
+                      : Colors.black.withValues(alpha: 0.025),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.10)
+                        : Colors.black.withValues(alpha: 0.09),
+                  ),
+                ),
+                child: TextField(
+                  controller: _ctrl,
+                  focusNode: _focus,
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Search orders, products…',
+                    hintStyle: TextStyle(
+                        color: colors.textHint, fontSize: 15),
+                    prefixIcon: Icon(Icons.search_rounded,
+                        color: isDark
+                            ? Colors.white38
+                            : Colors.black38,
+                        size: 20),
+                    border: InputBorder.none,
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Placeholder
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.search_rounded,
+                        size: 48,
+                        color: isDark
+                            ? Colors.white12
+                            : Colors.black12),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Search coming soon',
+                      style: TextStyle(
+                        color: colors.textTertiary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Data
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _NavDef {
   final IconData icon;

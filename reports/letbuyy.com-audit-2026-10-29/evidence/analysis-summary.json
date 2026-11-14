@@ -1,0 +1,898 @@
+{
+  "crawled_requests": 171,
+  "english_pages_200": 163,
+  "english_sitemap_urls": 33,
+  "sitemap_total": 99,
+  "sitemap_missing_english_pages": [
+    "https://www.letbuyy.com/in/demo",
+    "https://www.letbuyy.com/in/resources/ai-commerce/ai-commerce-explained",
+    "https://www.letbuyy.com/in/resources/ai-commerce/ai-product-recommendations",
+    "https://www.letbuyy.com/in/resources/ai-commerce/automating-operations-ai",
+    "https://www.letbuyy.com/in/resources/ai-commerce/commerce-copilot-guide",
+    "https://www.letbuyy.com/in/resources/ai-commerce/workflow-automation-merchants",
+    "https://www.letbuyy.com/in/resources/authors/arjun-developer",
+    "https://www.letbuyy.com/in/resources/authors/letbuyy-team",
+    "https://www.letbuyy.com/in/resources/authors/neha-payments",
+    "https://www.letbuyy.com/in/resources/authors/priya-commerce",
+    "https://www.letbuyy.com/in/resources/authors/ravi-operations",
+    "https://www.letbuyy.com/in/resources/developers/building-first-letbuyy-app",
+    "https://www.letbuyy.com/in/resources/developers/custom-integrations-guide",
+    "https://www.letbuyy.com/in/resources/developers/letbuyy-api-getting-started",
+    "https://www.letbuyy.com/in/resources/developers/liquid-theming-guide",
+    "https://www.letbuyy.com/in/resources/developers/webhooks-complete-guide",
+    "https://www.letbuyy.com/in/resources/ecommerce/how-product-reviews-increase-conversion",
+    "https://www.letbuyy.com/in/resources/ecommerce/how-to-start-an-online-store-india",
+    "https://www.letbuyy.com/in/resources/ecommerce/product-page-optimization",
+    "https://www.letbuyy.com/in/resources/ecommerce/reducing-cart-abandonment",
+    "https://www.letbuyy.com/in/resources/ecommerce/store-seo-checklist",
+    "https://www.letbuyy.com/in/resources/growth/d2c-brand-launch-guide",
+    "https://www.letbuyy.com/in/resources/growth/email-marketing-ecommerce",
+    "https://www.letbuyy.com/in/resources/growth/first-100-orders-guide",
+    "https://www.letbuyy.com/in/resources/growth/retention-strategies-india",
+    "https://www.letbuyy.com/in/resources/growth/social-commerce-india",
+    "https://www.letbuyy.com/in/resources/operations/inventory-management-guide",
+    "https://www.letbuyy.com/in/resources/operations/multi-warehouse-inventory",
+    "https://www.letbuyy.com/in/resources/operations/order-fulfillment-guide",
+    "https://www.letbuyy.com/in/resources/operations/shipping-india-guide",
+    "https://www.letbuyy.com/in/resources/operations/understanding-fulfillment",
+    "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india",
+    "https://www.letbuyy.com/in/resources/payments/invoicing-india-merchants",
+    "https://www.letbuyy.com/in/resources/payments/razorpay-integration-guide",
+    "https://www.letbuyy.com/in/resources/payments/refunds-returns-policy-india",
+    "https://www.letbuyy.com/in/resources/payments/upi-vs-cod-india",
+    "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store",
+    "https://www.letbuyy.com/in/resources/platform/how-themes-work",
+    "https://www.letbuyy.com/in/resources/platform/introduction-to-apps",
+    "https://www.letbuyy.com/in/resources/platform/letbuyy-platform-overview",
+    "https://www.letbuyy.com/in/resources/platform/merchant-web-guide",
+    "https://www.letbuyy.com/in/resources/tag/3pl",
+    "https://www.letbuyy.com/in/resources/tag/ai",
+    "https://www.letbuyy.com/in/resources/tag/api",
+    "https://www.letbuyy.com/in/resources/tag/apps",
+    "https://www.letbuyy.com/in/resources/tag/architecture",
+    "https://www.letbuyy.com/in/resources/tag/authentication",
+    "https://www.letbuyy.com/in/resources/tag/automation",
+    "https://www.letbuyy.com/in/resources/tag/b2b",
+    "https://www.letbuyy.com/in/resources/tag/beginners",
+    "https://www.letbuyy.com/in/resources/tag/brand",
+    "https://www.letbuyy.com/in/resources/tag/cart",
+    "https://www.letbuyy.com/in/resources/tag/cod",
+    "https://www.letbuyy.com/in/resources/tag/commerce",
+    "https://www.letbuyy.com/in/resources/tag/compliance",
+    "https://www.letbuyy.com/in/resources/tag/conversion",
+    "https://www.letbuyy.com/in/resources/tag/copilot",
+    "https://www.letbuyy.com/in/resources/tag/copywriting",
+    "https://www.letbuyy.com/in/resources/tag/courier",
+    "https://www.letbuyy.com/in/resources/tag/customer-service",
+    "https://www.letbuyy.com/in/resources/tag/customization",
+    "https://www.letbuyy.com/in/resources/tag/d2c",
+    "https://www.letbuyy.com/in/resources/tag/developers",
+    "https://www.letbuyy.com/in/resources/tag/efficiency",
+    "https://www.letbuyy.com/in/resources/tag/email",
+    "https://www.letbuyy.com/in/resources/tag/erp",
+    "https://www.letbuyy.com/in/resources/tag/events",
+    "https://www.letbuyy.com/in/resources/tag/fulfillment",
+    "https://www.letbuyy.com/in/resources/tag/future",
+    "https://www.letbuyy.com/in/resources/tag/getting-started",
+    "https://www.letbuyy.com/in/resources/tag/google",
+    "https://www.letbuyy.com/in/resources/tag/growth",
+    "https://www.letbuyy.com/in/resources/tag/gst",
+    "https://www.letbuyy.com/in/resources/tag/india",
+    "https://www.letbuyy.com/in/resources/tag/instagram",
+    "https://www.letbuyy.com/in/resources/tag/integration",
+    "https://www.letbuyy.com/in/resources/tag/integrations",
+    "https://www.letbuyy.com/in/resources/tag/inventory",
+    "https://www.letbuyy.com/in/resources/tag/invoicing",
+    "https://www.letbuyy.com/in/resources/tag/launch",
+    "https://www.letbuyy.com/in/resources/tag/letbuyy",
+    "https://www.letbuyy.com/in/resources/tag/liquid",
+    "https://www.letbuyy.com/in/resources/tag/list-building",
+    "https://www.letbuyy.com/in/resources/tag/logistics",
+    "https://www.letbuyy.com/in/resources/tag/loyalty",
+    "https://www.letbuyy.com/in/resources/tag/ltv",
+    "https://www.letbuyy.com/in/resources/tag/marketing",
+    "https://www.letbuyy.com/in/resources/tag/marketplace",
+    "https://www.letbuyy.com/in/resources/tag/merchant-dashboard",
+    "https://www.letbuyy.com/in/resources/tag/multi-location",
+    "https://www.letbuyy.com/in/resources/tag/oauth",
+    "https://www.letbuyy.com/in/resources/tag/operations",
+    "https://www.letbuyy.com/in/resources/tag/orders",
+    "https://www.letbuyy.com/in/resources/tag/organic",
+    "https://www.letbuyy.com/in/resources/tag/overview",
+    "https://www.letbuyy.com/in/resources/tag/payments",
+    "https://www.letbuyy.com/in/resources/tag/personalization",
+    "https://www.letbuyy.com/in/resources/tag/platform",
+    "https://www.letbuyy.com/in/resources/tag/policy",
+    "https://www.letbuyy.com/in/resources/tag/product",
+    "https://www.letbuyy.com/in/resources/tag/product-pages",
+    "https://www.letbuyy.com/in/resources/tag/razorpay",
+    "https://www.letbuyy.com/in/resources/tag/recommendations",
+    "https://www.letbuyy.com/in/resources/tag/recovery",
+    "https://www.letbuyy.com/in/resources/tag/refunds",
+    "https://www.letbuyy.com/in/resources/tag/repeat-purchase",
+    "https://www.letbuyy.com/in/resources/tag/retention",
+    "https://www.letbuyy.com/in/resources/tag/returns",
+    "https://www.letbuyy.com/in/resources/tag/reviews",
+    "https://www.letbuyy.com/in/resources/tag/scaling",
+    "https://www.letbuyy.com/in/resources/tag/seo",
+    "https://www.letbuyy.com/in/resources/tag/setup",
+    "https://www.letbuyy.com/in/resources/tag/shipping",
+    "https://www.letbuyy.com/in/resources/tag/social-commerce",
+    "https://www.letbuyy.com/in/resources/tag/social-media",
+    "https://www.letbuyy.com/in/resources/tag/social-proof",
+    "https://www.letbuyy.com/in/resources/tag/stock",
+    "https://www.letbuyy.com/in/resources/tag/store-setup",
+    "https://www.letbuyy.com/in/resources/tag/storefront",
+    "https://www.letbuyy.com/in/resources/tag/tax",
+    "https://www.letbuyy.com/in/resources/tag/technical-seo",
+    "https://www.letbuyy.com/in/resources/tag/themes",
+    "https://www.letbuyy.com/in/resources/tag/trust",
+    "https://www.letbuyy.com/in/resources/tag/upi",
+    "https://www.letbuyy.com/in/resources/tag/ux",
+    "https://www.letbuyy.com/in/resources/tag/walkthrough",
+    "https://www.letbuyy.com/in/resources/tag/warehouse",
+    "https://www.letbuyy.com/in/resources/tag/webhooks",
+    "https://www.letbuyy.com/in/resources/tag/whatsapp",
+    "https://www.letbuyy.com/in/resources/tag/workflows"
+  ],
+  "articles": 35,
+  "articles_missing_sitemap": [
+    "https://www.letbuyy.com/in/resources/platform/how-themes-work",
+    "https://www.letbuyy.com/in/resources/platform/introduction-to-apps",
+    "https://www.letbuyy.com/in/resources/operations/order-fulfillment-guide",
+    "https://www.letbuyy.com/in/resources/growth/email-marketing-ecommerce",
+    "https://www.letbuyy.com/in/resources/ecommerce/how-to-start-an-online-store-india",
+    "https://www.letbuyy.com/in/resources/payments/upi-vs-cod-india",
+    "https://www.letbuyy.com/in/resources/growth/first-100-orders-guide",
+    "https://www.letbuyy.com/in/resources/operations/inventory-management-guide",
+    "https://www.letbuyy.com/in/resources/ecommerce/product-page-optimization",
+    "https://www.letbuyy.com/in/resources/ecommerce/store-seo-checklist",
+    "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store",
+    "https://www.letbuyy.com/in/resources/growth/d2c-brand-launch-guide",
+    "https://www.letbuyy.com/in/resources/growth/social-commerce-india",
+    "https://www.letbuyy.com/in/resources/ecommerce/reducing-cart-abandonment",
+    "https://www.letbuyy.com/in/resources/ecommerce/how-product-reviews-increase-conversion",
+    "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india",
+    "https://www.letbuyy.com/in/resources/payments/invoicing-india-merchants",
+    "https://www.letbuyy.com/in/resources/payments/razorpay-integration-guide",
+    "https://www.letbuyy.com/in/resources/payments/refunds-returns-policy-india",
+    "https://www.letbuyy.com/in/resources/operations/shipping-india-guide",
+    "https://www.letbuyy.com/in/resources/operations/multi-warehouse-inventory",
+    "https://www.letbuyy.com/in/resources/operations/understanding-fulfillment",
+    "https://www.letbuyy.com/in/resources/developers/letbuyy-api-getting-started",
+    "https://www.letbuyy.com/in/resources/developers/webhooks-complete-guide",
+    "https://www.letbuyy.com/in/resources/developers/building-first-letbuyy-app",
+    "https://www.letbuyy.com/in/resources/developers/liquid-theming-guide",
+    "https://www.letbuyy.com/in/resources/developers/custom-integrations-guide",
+    "https://www.letbuyy.com/in/resources/platform/merchant-web-guide",
+    "https://www.letbuyy.com/in/resources/ai-commerce/commerce-copilot-guide",
+    "https://www.letbuyy.com/in/resources/platform/letbuyy-platform-overview",
+    "https://www.letbuyy.com/in/resources/growth/retention-strategies-india",
+    "https://www.letbuyy.com/in/resources/ai-commerce/ai-commerce-explained",
+    "https://www.letbuyy.com/in/resources/ai-commerce/automating-operations-ai",
+    "https://www.letbuyy.com/in/resources/ai-commerce/ai-product-recommendations",
+    "https://www.letbuyy.com/in/resources/ai-commerce/workflow-automation-merchants"
+  ],
+  "tag_pages": 89,
+  "tag_main_word_range": [
+    92,
+    232
+  ],
+  "noindex_pages": [
+    "https://www.letbuyy.com/in/demo"
+  ],
+  "missing_description": [],
+  "missing_canonical": [],
+  "canonical_mismatch": [
+    {
+      "url": "https://www.letbuyy.com/in/create",
+      "canonical": [
+        "https://www.letbuyy.com/in"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/ecommerce",
+      "canonical": [
+        "https://www.letbuyy.com/resources/ecommerce"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/growth",
+      "canonical": [
+        "https://www.letbuyy.com/resources/growth"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/payments",
+      "canonical": [
+        "https://www.letbuyy.com/resources/payments"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/operations",
+      "canonical": [
+        "https://www.letbuyy.com/resources/operations"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/ai-commerce",
+      "canonical": [
+        "https://www.letbuyy.com/resources/ai-commerce"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/developers",
+      "canonical": [
+        "https://www.letbuyy.com/resources/developers"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/platform",
+      "canonical": [
+        "https://www.letbuyy.com/resources/platform"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/search",
+      "canonical": [
+        "https://www.letbuyy.com/in"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/upi",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/upi"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/gst",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/gst"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/cod",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/cod"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/inventory",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/inventory"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/store-setup",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/store-setup"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/india",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/india"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/beginners",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/beginners"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/conversion",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/conversion"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/product-pages",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/product-pages"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/ux",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/ux"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/copywriting",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/copywriting"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/growth",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/growth"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/organic",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/organic"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/whatsapp",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/whatsapp"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/d2c",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/d2c"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/brand",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/brand"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/launch",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/launch"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/payments",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/payments"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/tax",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/tax"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/compliance",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/compliance"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/invoicing",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/invoicing"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/operations",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/operations"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/warehouse",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/warehouse"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/stock",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/stock"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/fulfillment",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/fulfillment"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/orders",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/orders"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/scaling",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/scaling"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/shipping",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/shipping"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/ai",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/ai"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/automation",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/automation"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/commerce",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/commerce"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/future",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/future"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/efficiency",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/efficiency"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/copilot",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/copilot"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/letbuyy",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/letbuyy"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/api",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/api"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/developers",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/developers"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/integration",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/integration"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/authentication",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/authentication"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/webhooks",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/webhooks"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/events",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/events"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/apps",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/apps"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/oauth",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/oauth"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/getting-started",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/getting-started"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/platform",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/platform"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/walkthrough",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/walkthrough"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/marketplace",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/marketplace"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/integrations",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/integrations"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/themes",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/themes"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/storefront",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/storefront"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/customization",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/customization"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/authors/letbuyy-team",
+      "canonical": [
+        "https://www.letbuyy.com/resources/authors/letbuyy-team"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/authors/ravi-operations",
+      "canonical": [
+        "https://www.letbuyy.com/resources/authors/ravi-operations"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/email",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/email"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/marketing",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/marketing"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/list-building",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/list-building"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/authors/priya-commerce",
+      "canonical": [
+        "https://www.letbuyy.com/resources/authors/priya-commerce"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/product",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/product"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/authors/neha-payments",
+      "canonical": [
+        "https://www.letbuyy.com/resources/authors/neha-payments"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/seo",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/seo"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/technical-seo",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/technical-seo"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/google",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/google"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/social-media",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/social-media"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/instagram",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/instagram"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/social-commerce",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/social-commerce"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/cart",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/cart"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/recovery",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/recovery"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/reviews",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/reviews"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/social-proof",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/social-proof"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/trust",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/trust"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/b2b",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/b2b"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/razorpay",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/razorpay"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/setup",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/setup"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/returns",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/returns"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/refunds",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/refunds"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/policy",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/policy"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/customer-service",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/customer-service"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/logistics",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/logistics"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/courier",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/courier"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/multi-location",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/multi-location"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/3pl",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/3pl"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/authors/arjun-developer",
+      "canonical": [
+        "https://www.letbuyy.com/resources/authors/arjun-developer"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/liquid",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/liquid"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/erp",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/erp"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/merchant-dashboard",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/merchant-dashboard"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/overview",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/overview"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/architecture",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/architecture"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/retention",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/retention"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/loyalty",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/loyalty"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/ltv",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/ltv"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/repeat-purchase",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/repeat-purchase"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/recommendations",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/recommendations"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/personalization",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/personalization"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/tag/workflows",
+      "canonical": [
+        "https://www.letbuyy.com/resources/tag/workflows"
+      ]
+    }
+  ],
+  "h1_not_one": [
+    {
+      "url": "https://www.letbuyy.com/in/pricing",
+      "h1_count": 0
+    },
+    {
+      "url": "https://www.letbuyy.com/in/resources/search",
+      "h1_count": 0
+    }
+  ],
+  "schema_json_errors": [],
+  "schema_type_counts": {
+    "ContactPoint": 163,
+    "Country": 163,
+    "ImageObject": 163,
+    "Offer": 163,
+    "Organization": 163,
+    "SiteNavigationElement": 163,
+    "SoftwareApplication": 163,
+    "WebPage": 163,
+    "WebSite": 163,
+    "ContactPage": 1,
+    "Article": 35,
+    "BreadcrumbList": 35,
+    "ListItem": 35,
+    "Person": 35
+  },
+  "articles_without_external_editorial_links": [
+    "https://www.letbuyy.com/in/resources/platform/how-themes-work",
+    "https://www.letbuyy.com/in/resources/platform/introduction-to-apps",
+    "https://www.letbuyy.com/in/resources/operations/order-fulfillment-guide",
+    "https://www.letbuyy.com/in/resources/growth/email-marketing-ecommerce",
+    "https://www.letbuyy.com/in/resources/ecommerce/how-to-start-an-online-store-india",
+    "https://www.letbuyy.com/in/resources/payments/upi-vs-cod-india",
+    "https://www.letbuyy.com/in/resources/growth/first-100-orders-guide",
+    "https://www.letbuyy.com/in/resources/operations/inventory-management-guide",
+    "https://www.letbuyy.com/in/resources/ecommerce/product-page-optimization",
+    "https://www.letbuyy.com/in/resources/ecommerce/store-seo-checklist",
+    "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store",
+    "https://www.letbuyy.com/in/resources/growth/d2c-brand-launch-guide",
+    "https://www.letbuyy.com/in/resources/growth/social-commerce-india",
+    "https://www.letbuyy.com/in/resources/ecommerce/reducing-cart-abandonment",
+    "https://www.letbuyy.com/in/resources/ecommerce/how-product-reviews-increase-conversion",
+    "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india",
+    "https://www.letbuyy.com/in/resources/payments/invoicing-india-merchants",
+    "https://www.letbuyy.com/in/resources/payments/razorpay-integration-guide",
+    "https://www.letbuyy.com/in/resources/payments/refunds-returns-policy-india",
+    "https://www.letbuyy.com/in/resources/operations/shipping-india-guide",
+    "https://www.letbuyy.com/in/resources/operations/multi-warehouse-inventory",
+    "https://www.letbuyy.com/in/resources/operations/understanding-fulfillment",
+    "https://www.letbuyy.com/in/resources/developers/letbuyy-api-getting-started",
+    "https://www.letbuyy.com/in/resources/developers/webhooks-complete-guide",
+    "https://www.letbuyy.com/in/resources/developers/building-first-letbuyy-app",
+    "https://www.letbuyy.com/in/resources/developers/liquid-theming-guide",
+    "https://www.letbuyy.com/in/resources/developers/custom-integrations-guide",
+    "https://www.letbuyy.com/in/resources/platform/merchant-web-guide",
+    "https://www.letbuyy.com/in/resources/ai-commerce/commerce-copilot-guide",
+    "https://www.letbuyy.com/in/resources/platform/letbuyy-platform-overview",
+    "https://www.letbuyy.com/in/resources/growth/retention-strategies-india",
+    "https://www.letbuyy.com/in/resources/ai-commerce/ai-commerce-explained",
+    "https://www.letbuyy.com/in/resources/ai-commerce/automating-operations-ai",
+    "https://www.letbuyy.com/in/resources/ai-commerce/ai-product-recommendations",
+    "https://www.letbuyy.com/in/resources/ai-commerce/workflow-automation-merchants"
+  ],
+  "missing_alt_count": 0,
+  "images_count": 1471,
+  "empty_alt_count": 1369,
+  "duplicate_title_groups": [
+    {
+      "value": "LetBuyy — India-first commerce operating system | LetBuyy",
+      "urls": [
+        "https://www.letbuyy.com/in",
+        "https://www.letbuyy.com/in/create"
+      ]
+    },
+    {
+      "value": "Resources — Commerce guides for Indian merchants",
+      "urls": [
+        "https://www.letbuyy.com/in/resources",
+        "https://www.letbuyy.com/in/resources/search"
+      ]
+    }
+  ],
+  "duplicate_description_groups": [
+    {
+      "value": "Launch an online store in India with UPI, cash on delivery, GST invoices and shipping built in. 0% commission on your sales.",
+      "urls": [
+        "https://www.letbuyy.com/in",
+        "https://www.letbuyy.com/in/create"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,398 @@
+[
+  {
+    "suite": "billing-mandate-intent.postgres",
+    "cases": [
+      {
+        "name": "sandbox mandate preserves launch and the canonical founding amount",
+        "passed": true
+      },
+      {
+        "name": "sandbox mandate preserves growth and the canonical founding amount",
+        "passed": true
+      },
+      {
+        "name": "missing, blank, unknown and upcoming plans never substitute Starter or create a mandate",
+        "passed": true
+      },
+      {
+        "name": "a repeated mandate key cannot change its plan, billing period or payment instrument",
+        "passed": true
+      },
+      {
+        "name": "simultaneous retries recover one sandbox mandate without a duplicate or server error",
+        "passed": true
+      },
+      {
+        "name": "another actor cannot create or replay a store mandate",
+        "passed": true
+      }
+    ],
+    "pass": 6,
+    "fail": 0,
+    "raw_log_sha256": "98908293c7330fc70a135d90e8e4eaab245a5efc0a4865a85177787a06416240"
+  },
+  {
+    "suite": "store-creation-idempotency.postgres",
+    "cases": [
+      {
+        "name": "store creation replays by owner and key, rejects changed payload and isolates owners",
+        "passed": true
+      },
+      {
+        "name": "concurrent duplicates create one store and a lost committed response is recovered on retry",
+        "passed": true
+      }
+    ],
+    "pass": 2,
+    "fail": 0,
+    "raw_log_sha256": "ed2de790e17122658f84dbaeda366d002359c5b7a53cedc46873fcad4fe74a2c"
+  },
+  {
+    "suite": "subscription-checkout-browser.postgres",
+    "cases": [
+      {
+        "name": "normal merchant checkout survives lost create response, reload, dismissal and failed activation",
+        "passed": true
+      }
+    ],
+    "pass": 1,
+    "fail": 0,
+    "raw_log_sha256": "8fba038ec17f7319b06287d5b92df7359a367b06136e4e4326aa247e6399c45b"
+  },
+  {
+    "suite": "subscription-payment-ownership.postgres",
+    "cases": [
+      {
+        "name": "private activation supports clean rollback/reapply without deleting records and ordinary roles cannot execute it",
+        "passed": true
+      },
+      {
+        "name": "one captured subscription payment cannot activate a second store of the same verified owner",
+        "passed": true
+      },
+      {
+        "name": "two owned stores racing the same payment yield one activation and one invoice",
+        "passed": true
+      },
+      {
+        "name": "same store payment retry recovers its committed subscription and records no second invoice",
+        "passed": true
+      },
+      {
+        "name": "unknown/other current owner cannot activate or learn a conflicting payment receipt",
+        "passed": true
+      },
+      {
+        "name": "same payment conflicting amount, plan, period or provider order cannot alter the committed entitlement",
+        "passed": true
+      },
+      {
+        "name": "mandatory invoice failure rolls back activation, retirement and store state, and same payment retries",
+        "passed": true
+      },
+      {
+        "name": "mandatory audit failure rolls back activation, retirement and store state, and same payment retries",
+        "passed": true
+      },
+      {
+        "name": "new private transaction clean rollback/reapply is exact and retained captures prevent guard reopening",
+        "passed": true
+      },
+      {
+        "name": "subscription cancellation receipt cannot replay after the current owner changes",
+        "passed": true
+      }
+    ],
+    "pass": 10,
+    "fail": 0,
+    "raw_log_sha256": "f8ed649894d2bb1d0e1757d8957f4b99f07ac14589b6bf8de3ff076b6071c7b5"
+  },
+  {
+    "suite": "subscription-single-activation.postgres",
+    "cases": [
+      {
+        "name": "FREE-347: clean rollback/reapply preserves rows and restores exact forward bodies and privileges",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: same-key retry thirty application-clock days later preserves the original period and all effects",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: actual checkout middleware handoff still denies missing or invalid keys before a canonical claim",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: concurrent same-key checkout produces one durable activation",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: fresh Gateway processes recover one free activation after reply loss and restart",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: saved intent refuses changed plan, cadence, coupon, usage approval or site type without altering its outcome",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: current-owner revocation denies replay before returning saved details",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: reply loss after the activation commit recovers the original invoice, audit and period",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: mandatory invoice failure rolls back all activation effects and same key recovers",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: mandatory audit failure rolls back all activation effects and same key recovers",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: mandatory completion failure rolls back all activation effects and same key recovers",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: retrying an older completed intent never resurrects it or retires the newer entitlement",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: current billing and invoice history read the zero-charge canonical outcome without private quote internals",
+        "passed": true
+      },
+      {
+        "name": "FREE-347: free receipts are private and ordinary database roles cannot invoke or forge the canonical source",
+        "passed": true
+      },
+      {
+        "name": "FREE-347: internal free and positive paid quote contracts cannot be crossed in the actual database",
+        "passed": true
+      },
+      {
+        "name": "FREE-347: retained free intent or activation refuses downgrade without changing function bodies or evidence",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: order and recovery race through two real activation RPCs but share one free outcome",
+        "passed": true
+      },
+      {
+        "name": "FREE-RECEIPT: two same-route requests reach activation together and return one committed source",
+        "passed": true
+      },
+      {
+        "name": "FREE-347: ambiguous legacy HTTP failed receipt cannot create a second free activation after rollout",
+        "passed": true
+      },
+      {
+        "name": "FREE-347: ambiguous legacy HTTP completed receipt cannot create a second free activation after rollout",
+        "passed": true
+      },
+      {
+        "name": "LB-BIL-001: verify, then the webhook \u2014 one payment activates one subscription and is invoiced once",
+        "passed": true
+      },
+      {
+        "name": "LB-BIL-001: the webhook, then verify \u2014 the same, and the webhook subscription is not cancelled",
+        "passed": true
+      },
+      {
+        "name": "LB-BIL-001: verify and the webhook at the same moment \u2014 the database admits one activation",
+        "passed": true
+      },
+      {
+        "name": "a verify request replayed thirty application-clock days later starts no new period",
+        "passed": true
+      },
+      {
+        "name": "a legacy payment with no idempotency key or optional provider fields is read back without another activation",
+        "passed": true
+      },
+      {
+        "name": "a new payment for the same store still replaces the active subscription",
+        "passed": true
+      },
+      {
+        "name": "founding eligibility remains visible from verify when webhook activation landed first; delivery is not claimed",
+        "passed": true
+      },
+      {
+        "name": "LB-BIL-002: one payment cannot also activate a second store the same merchant owns",
+        "passed": true
+      },
+      {
+        "name": "source binding: payment created for store A cannot first activate store B, even when both have the same owner",
+        "passed": true
+      },
+      {
+        "name": "a wrong-store trusted callback cannot be the first activator either",
+        "passed": true
+      },
+      {
+        "name": "exact capture proof rejects wrong currency, amount, returned ID and absent order reference without entitlements",
+        "passed": true
+      },
+      {
+        "name": "same logical checkout returns the same provider object and refuses changed request terms",
+        "passed": true
+      },
+      {
+        "name": "lost provider create response is recovered by exact receipt without a second POST",
+        "passed": true
+      },
+      {
+        "name": "concurrent identical checkouts create at most one provider object",
+        "passed": true
+      },
+      {
+        "name": "activation consumes the saved entitlement terms and finalizes that same pending billing row",
+        "passed": true
+      },
+      {
+        "name": "unbound provider lookup with wrong source metadata stays pending and does not create again",
+        "passed": true
+      },
+      {
+        "name": "retained checkout evidence prevents downgrade and private source controls reject ordinary database roles",
+        "passed": true
+      },
+      {
+        "name": "ordinary database roles cannot forge a financial source, alter its saved quote, or insert a paid subscription receipt",
+        "passed": true
+      },
+      {
+        "name": "store-scoped plan display uses the same founding price as checkout and denies a rival owner",
+        "passed": true
+      },
+      {
+        "name": "founding price lookup outage cannot silently charge catalog price; same intent recovers before any provider create",
+        "passed": true
+      },
+      {
+        "name": "canonical catalog supplies server monthly/yearly charge totals and current billing retains a cancelled paid receipt",
+        "passed": true
+      },
+      {
+        "name": "paid invoice history uses canonical billing receipts, excludes unactivated quotes and survives entitlement cancellation",
+        "passed": true
+      },
+      {
+        "name": "billing product usage reads the saved paid limit and a failed product read never becomes zero usage",
+        "passed": true
+      },
+      {
+        "name": "N7-F02: paid verify replay revalidates current owner before the completed HTTP receipt",
+        "passed": true
+      },
+      {
+        "name": "N7-F01: actual paid quote/capture/invoice witness is retained for tax-basis review only",
+        "passed": true
+      },
+      {
+        "name": "NORMAL-FREE: signed store hint denies the wrong store before effect and the exact owner/site positive succeeds",
+        "passed": true
+      }
+    ],
+    "pass": 46,
+    "fail": 0,
+    "raw_log_sha256": "1c965a1130ad8f649b97d0e3feb8862165735753ce69387197562d74bd354362"
+  },
+  {
+    "suite": "verification-token-redemption.postgres",
+    "cases": [
+      {
+        "name": "REAL POSTGRES: exactly one of many concurrent redemptions of the same row succeeds",
+        "passed": true
+      },
+      {
+        "name": "REAL POSTGRES: sequential redemption of the same row still succeeds exactly once (not just under concurrency)",
+        "passed": true
+      }
+    ],
+    "pass": 2,
+    "fail": 0,
+    "raw_log_sha256": "1d88bb5887fa8ef2a51861a5aaa7aaca8b657a48ef30cec721e0cfb82a6bcc64"
+  },
+  {
+    "suite": "merchant-public-signup-browser.postgres",
+    "cases": [
+      {
+        "name": "public signup selects real catalog plans and reads paid billing through production apps",
+        "passed": true
+      }
+    ],
+    "pass": 1,
+    "fail": 0,
+    "raw_log_sha256": "5b91724f422bdc41c75e92d7d865425168d9d147256f8653830068d5b0276ef7"
+  },
+  {
+    "suite": "subscription-tax-gross-conservation.postgres",
+    "cases": [
+      {
+        "name": "empty360 rollback/reapply preserves the full retained legacy invoice and private RPC execution grants",
+        "passed": true
+      },
+      {
+        "name": "real quote/provider/capture/paid invoice conserve69900 and canonical interstate10663, including concurrent internal notification",
+        "passed": true
+      },
+      {
+        "name": "canonical intrastate allocation5331+5332 conserves gross and blank recipient GSTIN does not select exemption",
+        "passed": true
+      },
+      {
+        "name": "missing, invalid and unsupported supplier or recipient facts refuse before claim/provider/effects",
+        "passed": true
+      },
+      {
+        "name": "free347zero has no profile/provider requirement and remains a single durable receipt",
+        "passed": true
+      },
+      {
+        "name": "saved discounted source prevails across supplier/coupon changes and exact request retry",
+        "passed": true
+      },
+      {
+        "name": "committed activation reply loss recovers one source/invoice without new provider POST",
+        "passed": true
+      },
+      {
+        "name": "current owner transfer and conflicting source terms deny effect and cached paid replay",
+        "passed": true
+      },
+      {
+        "name": "duplicate internal invoice uses original payment source and changed identity/money/period conflicts",
+        "passed": true
+      },
+      {
+        "name": "sandbox paid and failed producers conserve source/components once and keep live refusal",
+        "passed": true
+      },
+      {
+        "name": "configured recurring provider mismatch refuses before quote claim or provider POST with full financial conservation",
+        "passed": true
+      },
+      {
+        "name": "two fixed native cycles retain distinct immutable invoice sources and late first-payment replay ignores current pointer/catalog/profile",
+        "passed": true
+      },
+      {
+        "name": "approved native upfront and later base invoices conserve their own gross across signed first events, renewal and retained replay",
+        "passed": true
+      },
+      {
+        "name": "history API and raw roles preserve legacy values while hiding new private party sources",
+        "passed": true
+      },
+      {
+        "name": "new tax financial rows and populated retirement reject direct changes without clearing evidence",
+        "passed": true
+      }
+    ],
+    "pass": 15,
+    "fail": 0,
+    "raw_log_sha256": "7ea19059513f31fd73204055a8846c58417ac3ebb48e572409135c5ca6f4caf1"
+  }
+]

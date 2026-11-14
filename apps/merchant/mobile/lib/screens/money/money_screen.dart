@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../../app/store_context.dart';
 import '../../services/money_service.dart';
-import '../../services/api_client.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../widgets/shared/provider_mode_badge.dart';
 import 'payout_statement_detail_sheet.dart';
@@ -22,7 +21,6 @@ class _MoneyScreenState extends State<MoneyScreen>
   late final TabController _tabController;
   String? _storeId;
   String? _error;
-  final Map<String, String> _panelErrors = {};
   bool _loading = true;
   final Set<String> _pendingMoneyActions = <String>{};
 
@@ -47,7 +45,6 @@ class _MoneyScreenState extends State<MoneyScreen>
     setState(() {
       _loading = true;
       _error = null;
-      _panelErrors.clear();
     });
     try {
       final store = await context.read<StoreContext>().ensureSelectedStore();
@@ -57,28 +54,7 @@ class _MoneyScreenState extends State<MoneyScreen>
       }
       _storeId = store.id;
       if (!mounted) return;
-      final money = context.read<MoneyService>();
-      Future<void> loadPanel(
-        String panel,
-        Future<Object?> Function() load,
-      ) async {
-        try {
-          await load();
-        } catch (error) {
-          _panelErrors[panel] =
-              error is ApiException &&
-                  error.code == 'LEDGER_RECONCILIATION_REQUIRED'
-              ? 'Wallet balance is unavailable until ledger reconciliation is verified for this store.'
-              : '$panel details are temporarily unavailable.';
-        }
-      }
-
-      await Future.wait([
-        loadPanel('Payouts', () => money.fetchPayouts(store.id)),
-        loadPanel('Wallet', () => money.fetchWallet(store.id)),
-        loadPanel('Commission', () => money.fetchCommission(store.id)),
-        loadPanel('COD', () => money.fetchCodReconciliation(store.id)),
-      ]);
+      await context.read<MoneyService>().refreshMoney(store.id);
     } catch (_) {
       _error = 'Money details are temporarily unavailable.';
     } finally {
@@ -251,63 +227,34 @@ class _MoneyScreenState extends State<MoneyScreen>
                 return TabBarView(
                   controller: _tabController,
                   children: [
-                    if (_panelErrors['Payouts'] != null)
-                      _EmptyState(
-                        message: _panelErrors['Payouts']!,
-                        actionLabel: 'Retry',
-                        onTap: _load,
-                      )
-                    else
-                      _PayoutsTab(
-                        payouts: money.payouts,
-                        summary: money.payoutSummary,
-                        providerMode: providerMode,
-                        pendingActionKeys: _pendingMoneyActions,
-                        onCreate: _createPayout,
-                        onRefresh: _load,
-                        onSettle: _settlePayout,
-                        onDetails: _showPayoutDetails,
+                    _PayoutsTab(
+                      payouts: money.payouts,
+                      summary: money.payoutSummary,
+                      providerMode: providerMode,
+                      pendingActionKeys: _pendingMoneyActions,
+                      onCreate: _createPayout,
+                      onSettle: _settlePayout,
+                      onDetails: _showPayoutDetails,
+                    ),
+                    _WalletTab(
+                      wallet: money.wallet,
+                      providerMode: providerMode,
+                    ),
+                    _CommissionTab(
+                      commission: money.commission,
+                      providerMode: providerMode,
+                      isReconciling: _pendingMoneyActions.contains(
+                        'reconcile-commission',
                       ),
-                    if (_panelErrors['Wallet'] != null)
-                      _EmptyState(
-                        message: _panelErrors['Wallet']!,
-                        actionLabel: 'Retry',
-                        onTap: _load,
-                      )
-                    else
-                      _WalletTab(
-                        wallet: money.wallet,
-                        providerMode: providerMode,
-                      ),
-                    if (_panelErrors['Commission'] != null)
-                      _EmptyState(
-                        message: _panelErrors['Commission']!,
-                        actionLabel: 'Retry',
-                        onTap: _load,
-                      )
-                    else
-                      _CommissionTab(
-                        commission: money.commission,
-                        providerMode: providerMode,
-                        isReconciling: _pendingMoneyActions.contains(
-                          'reconcile-commission',
-                        ),
-                        onReconcile: _reconcileCommission,
-                      ),
-                    if (_panelErrors['COD'] != null)
-                      _EmptyState(
-                        message: _panelErrors['COD']!,
-                        actionLabel: 'Retry',
-                        onTap: _load,
-                      )
-                    else
-                      _CodTab(
-                        cod: money.cod,
-                        providerMode: providerMode,
-                        pendingActionKeys: _pendingMoneyActions,
-                        onCollect: _collectCodOrder,
-                        onReconcile: _reconcileCodEntry,
-                      ),
+                      onReconcile: _reconcileCommission,
+                    ),
+                    _CodTab(
+                      cod: money.cod,
+                      providerMode: providerMode,
+                      pendingActionKeys: _pendingMoneyActions,
+                      onCollect: _collectCodOrder,
+                      onReconcile: _reconcileCodEntry,
+                    ),
                   ],
                 );
               },
@@ -323,7 +270,6 @@ class _PayoutsTab extends StatelessWidget {
     required this.providerMode,
     required this.pendingActionKeys,
     required this.onCreate,
-    required this.onRefresh,
     required this.onSettle,
     required this.onDetails,
   });
@@ -333,7 +279,6 @@ class _PayoutsTab extends StatelessWidget {
   final ProviderMode? providerMode;
   final Set<String> pendingActionKeys;
   final Future<void> Function() onCreate;
-  final Future<void> Function() onRefresh;
   final Future<void> Function(String payoutId) onSettle;
   final Future<void> Function(String payoutId) onDetails;
 
@@ -343,7 +288,7 @@ class _PayoutsTab extends StatelessWidget {
     final nextPayout = next is Map ? Map<String, dynamic>.from(next) : null;
 
     return RefreshIndicator(
-      onRefresh: onRefresh,
+      onRefresh: onCreate,
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -763,7 +708,10 @@ class _MoneyTile extends StatelessWidget {
                   ),
                 ),
               ),
-              if (trailing != null) ...[const SizedBox(width: 8), trailing!],
+              if (trailing != null) ...[
+                const SizedBox(width: 8),
+                trailing!,
+              ],
             ],
           ),
         ),

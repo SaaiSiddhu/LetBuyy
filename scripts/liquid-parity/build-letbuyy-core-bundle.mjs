@@ -6,7 +6,6 @@ import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createLetbuyyCoreLiquidThemeBundleFixture,LETBUYY_CORE_STARTER_ANNOUNCEMENT} from '../../packages/theme-engine/src/theme-bundle-core.ts';
-import {getExperience,buildExperienceSettingsOverlay} from '../../packages/theme-engine/src/theme-presets.ts';
 import {LiquidThemePackageBundleSchema} from '../../packages/theme-engine/src/theme-bundle.ts';
 if(process.argv.slice(2).some(arg=>arg!=='--check'))throw new Error('Supported option: --check');
 const check=process.argv.includes('--check');
@@ -20,15 +19,7 @@ const after=createLetbuyyCoreLiquidThemeBundleFixture();
 const stable=value=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
 const changed=Object.keys(after.sections).filter(key=>stable(before.sections[key])!==stable(after.sections[key]));
 if(changed.length!==13)throw new Error('Core refresh scope changed; prepare a new reviewed forward migration');
-const approvedStarter=getExperience('sense');
-const declaredKeys=new Set(Object.values(after.config.settings_schema.settings).flatMap(group=>Object.keys(group.fields)));
-const approvedPreset=Object.fromEntries(Object.entries(buildExperienceSettingsOverlay(approvedStarter)).filter(([key])=>declaredKeys.has(key)));
-const priorPresets=before.config.settings_data.presets,currentPresets=after.config.settings_data.presets;
-if(!priorPresets.Sense || currentPresets.Sense || stable(currentPresets.Threadline)!==stable(approvedPreset)
- || stable(Object.keys(priorPresets).filter(key=>key!=='Sense'))!==stable(Object.keys(currentPresets).filter(key=>key!=='Threadline')))
- throw new Error('Unexpected starter preset drift');
-const comparable={...after,config:{...after.config,settings_data:{...after.config.settings_data,presets:priorPresets}}};
-if(stable({...before,sections:{}})!==stable({...comparable,sections:{}}))throw new Error('Unexpected non-section Core drift');
+if(stable({...before,sections:{}})!==stable({...after,sections:{}}))throw new Error('Unexpected non-section Core drift');
 const changes=Object.fromEntries(changed.sort().map(key=>[key,{before:before.sections[key],after:after.sections[key]}]));
 function sql(rollback){
  const data=rollback?Object.fromEntries(Object.entries(changes).map(([key,row])=>[key,{before:row.after,after:row.before}])):changes;

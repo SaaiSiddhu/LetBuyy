@@ -1,0 +1,145 @@
+{
+  "capturedAt": "2026-11-03T03:13:20.267390+00:00",
+  "rows": [
+    {
+      "path": "/in/resources/tag/shopify",
+      "status": 404
+    },
+    {
+      "path": "/resources/tag/shopify",
+      "status": 404
+    },
+    {
+      "path": "/in-hi/resources/tag/shopify",
+      "status": 404
+    },
+    {
+      "path": "/in-ta/resources/tag/shopify",
+      "status": 404
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "jsonLdBlocks": 3,
+      "jsonLdSyntaxValid": true,
+      "articles": [
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "@id": "http://localhost:9006/in/resources/platform/building-first-letbuyy-store#article",
+          "url": "http://localhost:9006/in/resources/platform/building-first-letbuyy-store",
+          "inLanguage": "en-IN",
+          "image": "http://localhost:9006/og/letbuyy-default.png?v=3",
+          "headline": "Building Your First LetBuyy Store: A Complete Walkthrough",
+          "description": "Create an email account and draft store, add products, review themes and complete setup before testing publication.",
+          "datePublished": "2026-05-28",
+          "dateModified": "2026-10-30",
+          "author": {
+            "@type": "Organization",
+            "@id": "http://localhost:9006/#organization",
+            "name": "LetBuyy",
+            "url": "http://localhost:9006/in/resources/authors/letbuyy-team"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "@id": "http://localhost:9006/#organization",
+            "name": "LetBuyy",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "http://localhost:9006/icons/letbuyy-logo-512.png?v=3"
+            }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http://localhost:9006/in/resources/platform/building-first-letbuyy-store"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "jsonLdBlocks": 3,
+      "jsonLdSyntaxValid": true,
+      "articles": [
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "@id": "http://localhost:9006/in-hi/resources/platform/building-first-letbuyy-store#article",
+          "url": "http://localhost:9006/in-hi/resources/platform/building-first-letbuyy-store",
+          "inLanguage": "hi-IN",
+          "image": "http://localhost:9006/og/letbuyy-default.png?v=3",
+          "headline": "\u0905\u092a\u0928\u093e \u092a\u0939\u0932\u093e LetBuyy \u0938\u094d\u091f\u094b\u0930 \u092c\u0928\u093e\u090f\u0901: \u092a\u0942\u0930\u093e \u092e\u093e\u0930\u094d\u0917\u0926\u0930\u094d\u0936\u0928",
+          "description": "\u0908\u092e\u0947\u0932 \u0916\u093e\u0924\u093e \u0914\u0930 \u0921\u094d\u0930\u093e\u092b\u094d\u091f \u0938\u094d\u091f\u094b\u0930 \u092c\u0928\u093e\u090f\u0901, \u0909\u0924\u094d\u092a\u093e\u0926 \u091c\u094b\u0921\u093c\u0947\u0902, \u0925\u0940\u092e \u0914\u0930 \u0938\u0947\u091f\u0905\u092a \u091c\u093e\u0901\u091a\u0915\u0930 \u092a\u094d\u0930\u0915\u093e\u0936\u0928 \u0915\u093e \u092a\u0930\u0940\u0915\u094d\u0937\u0923 \u0915\u0930\u0947\u0902\u0964",
+          "datePublished": "2026-05-28",
+          "dateModified": "2026-10-30",
+          "author": {
+            "@type": "Organization",
+            "@id": "http://localhost:9006/#organization",
+            "name": "LetBuyy",
+            "url": "http://localhost:9006/in-hi/resources/authors/letbuyy-team"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "@id": "http://localhost:9006/#organization",
+            "name": "LetBuyy",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "http://localhost:9006/icons/letbuyy-logo-512.png?v=3"
+            }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http://localhost:9006/in-hi/resources/platform/building-first-letbuyy-store"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "jsonLdBlocks": 3,
+      "jsonLdSyntaxValid": true,
+      "articles": [
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "@id": "http://localhost:9006/in-ta/resources/platform/building-first-letbuyy-store#article",
+          "url": "http://localhost:9006/in-ta/resources/platform/building-first-letbuyy-store",
+          "inLanguage": "ta-IN",
+          "image": "http://localhost:9006/og/letbuyy-default.png?v=3",
+          "headline": "\u0b89\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0bae\u0bc1\u0ba4\u0bb2\u0bcd LetBuyy \u0b95\u0b9f\u0bc8: \u0bae\u0bc1\u0bb4\u0bc1 \u0ba8\u0b9f\u0bc8\u0bae\u0bc1\u0bb1\u0bc8 \u0bb5\u0bb4\u0bbf\u0b95\u0bbe\u0b9f\u0bcd\u0b9f\u0bbf",
+          "description": "\u0bae\u0bbf\u0ba9\u0bcd\u0ba9\u0b9e\u0bcd\u0b9a\u0bb2\u0bcd \u0b95\u0ba3\u0b95\u0bcd\u0b95\u0bc1, \u0bb5\u0bb0\u0bc8\u0bb5\u0bc1\u0b95\u0bcd \u0b95\u0b9f\u0bc8 \u0b89\u0bb0\u0bc1\u0bb5\u0bbe\u0b95\u0bcd\u0b95\u0bbf, \u0baa\u0bca\u0bb0\u0bc1\u0b9f\u0bcd\u0b95\u0bb3\u0bcd, \u0ba4\u0bc0\u0bae\u0bcd, \u0b85\u0bae\u0bc8\u0baa\u0bcd\u0baa\u0bc8 \u0bae\u0bc1\u0b9f\u0bbf\u0ba4\u0bcd\u0ba4\u0bc1 \u0bb5\u0bc6\u0bb3\u0bbf\u0baf\u0bc0\u0b9f\u0bcd\u0b9f\u0bc8\u0b9a\u0bcd \u0b9a\u0bcb\u0ba4\u0bbf\u0b95\u0bcd\u0b95\u0bb5\u0bc1\u0bae\u0bcd.",
+          "datePublished": "2026-05-28",
+          "dateModified": "2026-10-30",
+          "author": {
+            "@type": "Organization",
+            "@id": "http://localhost:9006/#organization",
+            "name": "LetBuyy",
+            "url": "http://localhost:9006/in-ta/resources/authors/letbuyy-team"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "@id": "http://localhost:9006/#organization",
+            "name": "LetBuyy",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "http://localhost:9006/icons/letbuyy-logo-512.png?v=3"
+            }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http://localhost:9006/in-ta/resources/platform/building-first-letbuyy-store"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/in/pricing",
+      "status": 200,
+      "jsonLdBlocks": 1,
+      "jsonLdSyntaxValid": true,
+      "articles": []
+    }
+  ]
+}

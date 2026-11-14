@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
-import { ShippingCapabilitiesSchema } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOrder, resolveTenantContextForOwnedSite } from '../lib/tenant-context';
@@ -117,8 +116,7 @@ function liveLogisticsProviderAvailable(): boolean {
 }
 
 function shouldBlockLiveLogistics(c: ShippingLabelContext): boolean {
-    // A sandbox label is a development artifact, never a production waybill.
-    return c.env.ENVIRONMENT === 'production' || (logisticsMode(c) === 'live' && !liveLogisticsProviderAvailable());
+    return logisticsMode(c) === 'live' && !liveLogisticsProviderAvailable();
 }
 
 function carrierSetupError(c: ShippingLabelContext) {
@@ -275,13 +273,6 @@ router.get('/provider-mode', async (c) => {
 
     return c.json(success({
         provider_mode: providerModeFromLogisticsContext(c),
-        capabilities: ShippingCapabilitiesSchema.parse({
-            provider_mode: 'unavailable',
-            manual: true,
-            letbuyy_shipping: 'integration_pending',
-            own_shiprocket_app: 'integration_pending',
-            carrier_booking_available: false,
-        }),
     }));
 });
 
@@ -289,7 +280,6 @@ router.post('/', validate('json', BuyShippingLabelSchema), async (c) => {
     const body = c.get('validatedBody') as BuyShippingLabelInput;
     const db = getSupabaseAdmin(c);
     const { tenant, order } = await loadOwnedOrder(c, body.order_id);
-    if (shouldBlockLiveLogistics(c)) return carrierSetupError(c);
 
     const existing = await db
         .from('shipping_labels')
@@ -359,7 +349,7 @@ router.post('/', validate('json', BuyShippingLabelSchema), async (c) => {
         ? await db
             .from('shipping_labels')
             .update({ label_object_key: stored.key, label_url: stored.url, updated_by: tenant.userId })
-            .eq('id', row.id).eq('site_id', tenant.siteId)
+            .eq('id', row.id)
             .select('*')
             .single()
         : { data: row, error: null };
@@ -374,13 +364,10 @@ router.post('/', validate('json', BuyShippingLabelSchema), async (c) => {
 router.get('/:id/pdf', async (c) => {
     const db = getSupabaseAdmin(c);
     const labelId = c.req.param('id');
-    const siteId = c.get('auth').user.storeId || c.req.header('X-Store-ID');
-    if (!siteId) return c.json({ error: { code: 'VALIDATION', message: 'Select a store before opening a label.' } }, 400);
-    await resolveTenantContextForOwnedSite(c, siteId);
     const { data, error } = await db
         .from('shipping_labels')
         .select('*')
-        .eq('id', labelId).eq('site_id', siteId)
+        .eq('id', labelId)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -410,13 +397,10 @@ router.get('/:id/pdf', async (c) => {
 router.post('/:id/void', async (c) => {
     const db = getSupabaseAdmin(c);
     const labelId = c.req.param('id');
-    const siteId = c.get('auth').user.storeId || c.req.header('X-Store-ID');
-    if (!siteId) return c.json({ error: { code: 'VALIDATION', message: 'Select a store before cancelling a label.' } }, 400);
-    const tenant = await resolveTenantContextForOwnedSite(c, siteId);
     const { data, error } = await db
         .from('shipping_labels')
         .select('*')
-        .eq('id', labelId).eq('site_id', siteId)
+        .eq('id', labelId)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -425,12 +409,11 @@ router.post('/:id/void', async (c) => {
     }
 
     const row = data as ShippingLabelRow;
-    // A database flag does not cancel a real shipment at the carrier.
-    if (!row.test_mode) return c.json({ error: { code: 'CARRIER_CANCELLATION_REQUIRED', message: 'Cancel this shipment with the carrier and reconcile its status before changing the label.' } }, 409);
+    const tenant = await resolveTenantContextForOwnedSite(c, row.site_id);
     const updated = await db
         .from('shipping_labels')
         .update({ status: 'voided', updated_by: tenant.userId })
-        .eq('id', labelId).eq('site_id', siteId)
+        .eq('id', labelId)
         .select('*')
         .single();
 

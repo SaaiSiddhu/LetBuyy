@@ -1,0 +1,76 @@
+{
+  "captured_at": "2026-10-29T19:45:59.374979+00:00",
+  "mode": "Production build; isolated synthetic public pricing gateway, not production financial data",
+  "base": "http://127.0.0.1:9007",
+  "canonical_origin": "http://localhost:9006",
+  "html_pages": 489,
+  "article_pages": 105,
+  "sitemap_entries": 198,
+  "missing_articles": [],
+  "feeds": [
+    {
+      "locale": "in",
+      "kind": "rss.xml",
+      "status": 200,
+      "items": 35,
+      "language": "en-IN",
+      "errors": []
+    },
+    {
+      "locale": "in",
+      "kind": "sitemap.xml",
+      "status": 200,
+      "items": 45,
+      "language": null,
+      "errors": []
+    },
+    {
+      "locale": "in-hi",
+      "kind": "rss.xml",
+      "status": 200,
+      "items": 35,
+      "language": "hi-IN",
+      "errors": []
+    },
+    {
+      "locale": "in-hi",
+      "kind": "sitemap.xml",
+      "status": 200,
+      "items": 45,
+      "language": null,
+      "errors": []
+    },
+    {
+      "locale": "in-ta",
+      "kind": "rss.xml",
+      "status": 200,
+      "items": 35,
+      "language": "ta-IN",
+      "errors": []
+    },
+    {
+      "locale": "in-ta",
+      "kind": "sitemap.xml",
+      "status": 200,
+      "items": 45,
+      "language": null,
+      "errors": []
+    }
+  ],
+  "invalid_tag_probes": [
+    {
+      "path": "/in/resources/tag/seo-audit-nonexistent-20261029",
+      "status": 404
+    },
+    {
+      "path": "/in-hi/resources/tag/seo-audit-nonexistent-20261029",
+      "status": 404
+    },
+    {
+      "path": "/in-ta/resources/tag/seo-audit-nonexistent-20261029",
+      "status": 404
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

@@ -4,7 +4,7 @@ import { useCopy } from '@/components/i18n/useCopy'
 
 import Copy from '@/components/i18n/Copy'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from '@/components/i18n/LocaleLink'
 import { Button, Check, FileText, Input, ArrowRight, Palette, Rocket, Store, X } from '@letbuyy/ui'
 import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client'
@@ -36,20 +36,34 @@ export default function CreateStorePage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [subdomainAvailable, setSubdomainAvailable] = useState<boolean | null>(null)
+    const [availabilityError, setAvailabilityError] = useState(false)
+    const availabilityRequest = useRef<AbortController | null>(null)
+
+    useEffect(() => () => availabilityRequest.current?.abort(), [])
 
     const handleSubdomainChange = (value: string) => {
+        availabilityRequest.current?.abort()
         const cleaned = value.toLowerCase().replace(/[^a-z0-9-]/g, '')
         setSubdomain(cleaned)
         setSubdomainAvailable(null) // Reset check
+        setAvailabilityError(false)
     }
 
     const checkSubdomain = async () => {
+        availabilityRequest.current?.abort()
         if (!subdomain) return
+        const controller = new AbortController()
+        availabilityRequest.current = controller
+        setSubdomainAvailable(null)
+        setAvailabilityError(false)
         try {
-            const res = await fetch(`${marketingApiBaseUrl()}/stores/public/${subdomain}`)
-            setSubdomainAvailable(res.status === 404) // 404 = available
+            const res = await fetch(`${marketingApiBaseUrl()}/stores/public/${subdomain}`, { signal: controller.signal })
+            if (controller.signal.aborted) return
+            if (res.status === 404) setSubdomainAvailable(true)
+            else if (res.ok) setSubdomainAvailable(false)
+            else setAvailabilityError(true)
         } catch {
-            setSubdomainAvailable(true) // Assume available on error
+            if (!controller.signal.aborted) setAvailabilityError(true)
         }
     }
 
@@ -69,7 +83,7 @@ export default function CreateStorePage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-page p-4">
+        <main className="flex min-h-screen items-center justify-center bg-page p-4">
             <div className="w-full max-w-2xl space-y-8 rounded-2xl border border-line bg-surface p-8 shadow-sm">
                 {/* Header */}
                 <div className="text-center">
@@ -175,6 +189,11 @@ export default function CreateStorePage() {
                                         <X className="h-3 w-3" aria-hidden="true" />
                                         <Copy text={"Already taken"} /></p>
                                 )}
+                                {availabilityError && (
+                                    <p role="status" className="mt-1 text-xs text-subdued">
+                                        <Copy text={"Something went wrong. Please try again."} />
+                                    </p>
+                                )}
                             </div>
                         </div>
 
@@ -202,10 +221,10 @@ export default function CreateStorePage() {
                 {/* Login link */}
                 <p className="text-center text-sm text-muted">
                     <Copy text={"Already have an account?"} />{' '}
-                    <Link href="/signup" className="text-[color:var(--lb-color-primary-text)] hover:underline">
+                    <Link href={getAccountsUrl('/lookup')} className="text-[color:var(--lb-color-primary-text)] hover:underline">
                         <Copy text={"Sign in"} /></Link>
                 </p>
             </div>
-        </div>
+        </main>
     )
 }

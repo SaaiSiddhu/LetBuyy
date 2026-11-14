@@ -1,0 +1,18 @@
+{
+  "capturedAt": "2026-11-07T02:48:41.855232+00:00",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "rootBuildId": "b2CsFLYIUn25H5EguBjys",
+  "finalIsolatedBuildId": "Nr2bD-AZ_XyFXsUJdc2FD",
+  "finalIsolatedOrigin": "http://127.0.0.1:9016",
+  "productionCanonicalOrigin": "https://www.letbuyy.com",
+  "apiAndAccountsLoopback": true,
+  "frozenNextVersion": "16.1.6",
+  "sourceFiles": 1289,
+  "packageRoots": 15,
+  "sourceDifferences": [],
+  "rootApplicationSourceChanged": false,
+  "archive": "../../letbuyy-seo-release-readiness-2026-11-03/MARKETING-RELEASE-SOURCE.tar.gz",
+  "archiveSHA256": "9a0145e2fbf5396660526e9fe1d64004fc598fd1e0df6403cd6fd13ce2d02dbe",
+  "deployableBuildOutput": false,
+  "reason": "Local API and Accounts origins; no deployment authorized; acceptance remains open."
+}

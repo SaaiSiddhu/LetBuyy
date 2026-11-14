@@ -31,17 +31,15 @@ export function directTenantQueries(sourceFile,checker,registry) {
       const table=literal(node.arguments[0]);
       if(ts.isCallExpression(base) && ts.isIdentifier(base.expression) && base.expression.text==='getSupabaseAdmin' && registry.has(table)) {
         const entry=registry.get(table),columns=entry.scopeColumns;
-        let current=node,readScoped=false,rootReadScoped=false,hasMutation=false,writeScoped;
+        let current=node,readScoped=false,writeScoped;
         while(ts.isPropertyAccessExpression(current.parent) && current.parent.expression===current
           && ts.isCallExpression(current.parent.parent) && current.parent.parent.expression===current.parent) {
           current=current.parent.parent;
           const name=method(current),args=current.arguments;
           if((name==='eq'||name==='in') && columns.includes(literal(args[0])))readScoped=true;
-          if(table==='sites' && name==='eq' && literal(args[0])==='id')rootReadScoped=true;
-          if(['insert','upsert','update','delete'].includes(name))hasMutation=true;
           if(name==='insert'||name==='upsert')writeScoped=writeHasScope(args[0],checker,columns);
         }
-        queries.push({table,scoped:writeScoped ?? (readScoped || (rootReadScoped && !hasMutation)),start:node.getStart(sourceFile),expression:current.getText(sourceFile)});
+        queries.push({table,scoped:writeScoped ?? readScoped,start:node.getStart(sourceFile),expression:current.getText(sourceFile)});
       }
     }
     ts.forEachChild(node,visit);

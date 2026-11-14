@@ -43,7 +43,7 @@ const SENDERS: Record<string, { guards: RegExp[]; why: string }> = {
         why: 'reset link to an existing account',
     },
     'api/auth/reset-password/route.ts': {
-        guards: [/validateCsrf\(request\)/, /checkRateLimit\('reset-password'/, /MerchantPasswordResetSchema\.safeParse/, /purpose: 'password_reset'/, /!passwordResponse\.ok \|\| !payload\?\.data/],
+        guards: [/validateCsrf\(request\)/, /checkRateLimit\('reset-password'/, /validateToken\(/],
         why: 'password-changed notice to the account whose single-use reset token was just redeemed',
     },
     'api/auth/create-store/route.ts': {

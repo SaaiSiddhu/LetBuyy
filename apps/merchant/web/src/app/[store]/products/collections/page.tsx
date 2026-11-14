@@ -1,13 +1,16 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { CollectionMembershipSnapshotSchema, CollectionMembershipProductSchema, ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput, CollectionSummarySchema, CollectionListPageSchema, type CollectionSummary } from '@letbuyy/shared-types'
+import { CollectionMembershipSnapshotSchema, CollectionMembershipProductSchema, ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput, type Collection as SharedCollection } from '@letbuyy/shared-types'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
-import { Button, Input, Table, Avatar, Badge, Banner, Card, Checkbox, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, Checkbox, EmptyState, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
 
-type CollectionRow = CollectionSummary
+type CollectionRow = Pick<SharedCollection, 'id' | 'title' | 'description' | 'image_url' | 'created_at'> & {
+    is_active: boolean
+    product_count?: number
+}
 
 interface CollectionFormState {
     title: string
@@ -69,7 +72,17 @@ function formsEqual(a: CollectionFormState, b: CollectionFormState) {
     return a.title === b.title && a.description === b.description
 }
 
-function normalizeCollection(row: Record<string, unknown>): CollectionRow { return CollectionSummarySchema.parse(row) }
+function normalizeCollection(row: Record<string, unknown>): CollectionRow {
+    return {
+        id: String(row.id || ''),
+        title: String(row.title || 'Untitled collection'),
+        description: typeof row.description === 'string' ? row.description : null,
+        image_url: typeof row.image_url === 'string' ? row.image_url : null,
+        created_at: typeof row.created_at === 'string' ? row.created_at : '',
+        is_active: row.is_active !== false,
+        product_count: typeof row.product_count === 'number' ? row.product_count : 0,
+    }
+}
 
 const emptyManageState: ManageProductsState = {
     collectionId: '',
@@ -85,10 +98,10 @@ const emptyManageState: ManageProductsState = {
 function normalizeProduct(row: Record<string, unknown>): ProductRow {
     return {
         id: String(row.id || ''),
-        name: typeof row.name === 'string' && row.name.trim() ? row.name : 'Product name unavailable',
+        name: String(row.name || 'Unnamed product'),
         thumbnail_url: typeof row.thumbnail_url === 'string' ? row.thumbnail_url : null,
-        price: typeof row.price === 'number' && Number.isFinite(row.price) ? row.price : undefined,
-        is_active: typeof row.is_active === 'boolean' ? row.is_active : undefined,
+        price: typeof row.price === 'number' ? row.price : Number(row.price) || 0,
+        is_active: row.is_active !== false,
     }
 }
 
@@ -125,26 +138,23 @@ export default function CollectionsPage() {
     const [collections, setCollections] = useState<CollectionRow[]>([])
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
-    const [listContext, setListContext] = useState<string | null>(null)
-    const listPage = useRef(1)
-    const [listMeta, setListMeta] = useState({page:1,total:0,has_next:false,has_prev:false})
     const [showCreate, setShowCreate] = useState(false)
     const [form, setForm] = useState<CollectionFormState>(emptyForm)
     const [creating, setCreating] = useState(false)
     const [manage, setManage] = useState<ManageProductsState>(emptyManageState)
     useEffect(() => {
-        generation.current++; inFlight.current = null; setManage(emptyManageState); listPage.current=1; setListMeta({page:1,total:0,has_next:false,has_prev:false})
+        generation.current++; inFlight.current = null; setManage(emptyManageState)
         return () => { generation.current++; listGeneration.current++; inFlight.current = null }
     }, [context])
 
-    const loadCollections = useCallback(async (requestedPage = listPage.current) => {
+    const loadCollections = useCallback(async () => {
         const captured = context, epoch = ++listGeneration.current
         setLoading(true)
         setLoadError(null)
 
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/collections?page=${requestedPage}&limit=20`, {
-                cache: 'no-store', signal: AbortSignal.timeout(15_000),
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/collections`, {
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
 
@@ -153,17 +163,14 @@ export default function CollectionsPage() {
             }
 
             if (captured !== currentContext.current || epoch !== listGeneration.current) return
-            const confirmed = CollectionListPageSchema.parse(payload)
-            if(confirmed.meta.page !== requestedPage || confirmed.meta.per_page !== 20) throw new Error('Collection page could not be confirmed.')
-            listPage.current = confirmed.meta.page
-            setListMeta(confirmed.meta)
-            setCollections(confirmed.data.map(normalizeCollection))
-            setListContext(captured)
+            const nextCollections = Array.isArray(payload?.data)
+                ? payload.data.map((row: Record<string, unknown>) => normalizeCollection(row)).filter((row: CollectionRow) => row.id)
+                : []
+            setCollections(nextCollections)
         } catch (error) {
             if (captured !== currentContext.current || epoch !== listGeneration.current) return
             const message = error instanceof Error ? error.message : 'Unable to load collections'
             setCollections([])
-            setListContext(captured)
             setLoadError(message)
             notify({
                 title: 'Collections could not load',
@@ -241,7 +248,7 @@ export default function CollectionsPage() {
     }, [creating, form.description, form.title, loadCollections, notify, store])
 
     const requestHeaders = useCallback(() => ({ 'X-LetBuyy-Merchant-Context': actorId }), [actorId])
-    const openManageProducts = useCallback(async (collection: Pick<CollectionSummary, 'id' | 'title'>) => {
+    const openManageProducts = useCallback(async (collection: CollectionRow) => {
         const epoch = ++generation.current, captured = context
         let pending: PendingMembership | null = null, corruptRecovery = false
         try {
@@ -252,8 +259,8 @@ export default function CollectionsPage() {
             open: true, loading: true, pending, corruptRecovery, saveError: pending ? 'This save could not be confirmed. Retry the same save before changing this selection.' : null, assignedIds: new Set(pending?.command.product_ids || []) })
         try {
             const [productsRes, assignedRes] = await Promise.all([
-                fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100&page=1&view=summary`, { cache: 'no-store', signal: AbortSignal.timeout(15_000), headers: requestHeaders() }),
-                fetch(`/api/stores/${encodeURIComponent(store)}/collections/${encodeURIComponent(collection.id)}/products`, { cache: 'no-store', signal: AbortSignal.timeout(15_000), headers: requestHeaders() }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100&page=1`, { cache: 'no-store', headers: requestHeaders() }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/collections/${encodeURIComponent(collection.id)}/products`, { cache: 'no-store', headers: requestHeaders() }),
             ])
             const [productsPayload, assignedPayload] = await Promise.all([productsRes.json().catch(() => null), assignedRes.json().catch(() => null)])
             if (!productsRes.ok || !assignedRes.ok) throw new Error('Collection products are unavailable. Retry the read before changing this collection.')
@@ -281,7 +288,7 @@ export default function CollectionsPage() {
         const epoch = generation.current, captured = context, page = manage.page + 1
         setManage(prev => ({ ...prev, loadingMore: true }))
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100&page=${page}&view=summary`, { cache: 'no-store', signal: AbortSignal.timeout(15_000), headers: requestHeaders() })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100&page=${page}`, { cache: 'no-store', headers: requestHeaders() })
             const payload = await response.json().catch(() => null)
             if (!response.ok) throw new Error('Unable to load more products. Retry this page.')
             const choices = CollectionMembershipProductSchema.array().max(100).parse(payload?.data), meta = payload?.meta
@@ -349,7 +356,7 @@ export default function CollectionsPage() {
         // loads the server version. A new key is never manufactured by a retry.
         try { if (manage.pending) forgetMembershipRecovery(manage.pending); else window.sessionStorage.removeItem(recoveryKey(actorId, store, manage.collectionId)) }
         catch { setManage(prev => ({ ...prev, corruptRecovery: true })); return }
-        void openManageProducts({ id: manage.collectionId, title: manage.collectionTitle })
+        void openManageProducts({ id: manage.collectionId, title: manage.collectionTitle, is_active: true, created_at: '' })
     }, [actorId, manage.collectionId, manage.collectionTitle, manage.pending, openManageProducts, store])
 
     const filteredManageProducts = useMemo(() => {
@@ -381,7 +388,7 @@ export default function CollectionsPage() {
         {
             key: 'product_count',
             header: 'Products',
-            render: (row: CollectionRow) => `${row.product_count} ${row.product_count === 1 ? 'product' : 'products'}`,
+            render: (row: CollectionRow) => `${row.product_count ?? 0} products`,
         },
         {
             key: 'is_active',
@@ -409,11 +416,10 @@ export default function CollectionsPage() {
         },
     ], [openManageProducts])
 
-    if (loading || listContext !== context) {
+    if (loading) {
         return (
             <Page>
-                <PageHeader identity="products"
-                    recipe="index"
+                <PageHeader
                     title="Collections"
                     description="Group products into merchandising sets for storefront browsing."
                     breadcrumbs={[{ label: 'Products' }, { label: 'Collections' }]}
@@ -429,8 +435,7 @@ export default function CollectionsPage() {
 
     return (
         <Page>
-            <PageHeader identity="products"
-                recipe="index"
+            <PageHeader
                 title="Collections"
                 description="Group products into merchandising sets for storefront browsing."
                 breadcrumbs={[{ label: 'Products' }, { label: 'Collections' }]}
@@ -505,18 +510,22 @@ export default function CollectionsPage() {
                 <Section
                     title="Collection list"
                     description="Review product groupings and their active storefront status."
-                    action={<Badge label={loadError ? 'Count unavailable' : `${listMeta.total} total`} variant="info" />}
+                    action={<Badge label={`${collections.length} total`} variant="info" />}
                 >
-                    <nav className="mb-[var(--lb-space-3)] flex items-center gap-[var(--lb-space-2)]" aria-label="Collection pagination">
-                        <Button variant="secondary" disabled={loading || Boolean(loadError) || !listMeta.has_prev} onClick={() => void loadCollections(listMeta.page-1)}>Previous collections</Button>
-                        <span>Page {listMeta.page} · {listMeta.total} collections</span>
-                        <Button variant="secondary" disabled={loading || Boolean(loadError) || !listMeta.has_next} onClick={() => void loadCollections(listMeta.page+1)}>Next collections</Button>
-                    </nav>
-                    {loadError ? <p role="status">Collection counts are unavailable. Retry the read before changing this collection.</p> : collections.length === 0 ? (
-                        <EmptyState scene="collections"
-                            title={listMeta.total === 0 ? "No collections yet" : "No collections on this page"}
-                            body={listMeta.total === 0 ? "Organize products into collections so shoppers can browse by theme, season, category, or campaign." : "Use the previous-page control to return to your collections."}
-                            primaryAction={!showCreate && listMeta.total === 0 ? (
+                    {collections.length === 0 ? (
+                        <EmptyState
+                            illustration={
+                                <Image
+                                    src="/Emptystate Illustration/Collections Emptystatae.png"
+                                    alt=""
+                                    width={200}
+                                    height={200}
+                                    aria-hidden="true"
+                                />
+                            }
+                            title="No collections yet"
+                            body="Organize products into collections so shoppers can browse by theme, season, category, or campaign."
+                            primaryAction={!showCreate ? (
                                 <Button type="button" onClick={() => setShowCreate(true)}>
                                     <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                     Create collection
@@ -528,7 +537,7 @@ export default function CollectionsPage() {
                             rows={collections}
                             columns={columns}
                             emptyState={(
-                                <EmptyState scene="collections"
+                                <EmptyState
                                     icon={<Package className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                                     title="No collections found"
                                     body="Create a collection to organize products for storefront browsing."
@@ -573,7 +582,7 @@ export default function CollectionsPage() {
                         }
                     >
                         {manage.loadError && <Banner variant="critical" title="Could not load collection products"
-                            action={<Button variant="secondary" onClick={() => void openManageProducts({ id: manage.collectionId, title: manage.collectionTitle })}>Retry products</Button>}>{manage.loadError}</Banner>}
+                            action={<Button variant="secondary" onClick={() => void openManageProducts({ id: manage.collectionId, title: manage.collectionTitle, is_active: true, created_at: '' })}>Retry products</Button>}>{manage.loadError}</Banner>}
                         {manage.corruptRecovery && <Banner variant="critical" title="Could not recover collection save"
                             action={<Button variant="secondary" onClick={reloadCurrentProducts}>Discard saved recovery</Button>}>The saved request could not be read. Check the current collection before starting another save.</Banner>}
                         {manage.saveError && <Banner variant="critical" title={manage.conflict ? 'Collection membership changed' : 'Collection save could not be confirmed'}
@@ -594,7 +603,7 @@ export default function CollectionsPage() {
                                 {manage.pageError && <Banner variant="critical" title="More products could not load">{manage.pageError}</Banner>}
                                 {manage.hasNext && <Button variant="secondary" onClick={() => void loadMoreProducts()} disabled={manage.loadingMore}>Load more products</Button>}
                                 {filteredManageProducts.length === 0 ? (
-                                    <EmptyState scene="collections"
+                                    <EmptyState
                                         icon={<Package className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
                                         title="No products found"
                                         body="Add products to this store to assign them to collections."

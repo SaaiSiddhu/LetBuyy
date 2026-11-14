@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { validateToken } from '@/lib/auth/tokens'
 import { validatePasswordStrength } from '@/lib/auth/password'
-import { MerchantPasswordResetSchema } from '@letbuyy/auth-core'
-import { clearSessionCookie } from '@/lib/auth/cookies'
+import { createSession, destroyAllUserSessions } from '@/lib/auth/session'
+import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
+import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
 import { validateCsrf } from '@/lib/auth/csrf'
 import { sendPasswordChangedEmail } from '@/lib/email/resend'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
  * POST /api/auth/reset-password
  * Reset password using a valid reset token.
- * Requires normal Merchant sign-in and enrolled MFA after password reset.
+ * Creates a fresh session after password reset.
  */
 export async function POST(request: NextRequest) {
     try {
@@ -30,40 +33,94 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
-        const parsed = MerchantPasswordResetSchema.safeParse(await request.json().catch(() => null))
-        if (!parsed.success) {
-            return NextResponse.json({ error: 'Use the newest reset link and a password meeting every requirement.' }, { status: 400 })
+        const { token, password } = await request.json()
+
+        if (!token || !password) {
+            return NextResponse.json({ error: 'Token and password are required' }, { status: 400 })
         }
-        const strength = validatePasswordStrength(parsed.data.password)
+
+        // Validate password strength
+        const strength = validatePasswordStrength(password)
         if (!strength.isValid) {
             return NextResponse.json({ error: 'Password does not meet requirements', rules: strength.rules }, { status: 400 })
         }
 
-        // One canonical transaction binds the token's user and current email, changes
-        // the hash, consumes reset links and revokes sessions. Failures commit nothing.
+        // Validate reset token
+        const result = await validateToken(token, 'password_reset')
+        if (!result) {
+            return NextResponse.json({ error: 'Invalid or expired reset link' }, { status: 400 })
+        }
+
+        // Get user
+        const userResponse = await identityApiRequest('/auth/custom/users/by-email', {
+            method: 'POST',
+            body: JSON.stringify({ email: result.email }),
+        })
+        const userPayload = await userResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+                email: string
+                full_name: string | null
+                avatar_url: string | null
+            } | null
+        } | null
+        const user = userPayload?.data || null
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 })
+        }
+
         const passwordResponse = await identityApiRequest('/auth/custom/users/set-password', {
             method: 'POST',
-            body: JSON.stringify({ ...parsed.data, purpose: 'password_reset' }),
+            body: JSON.stringify({
+                user_id: user.id,
+                email: user.email,
+                password,
+            }),
         })
-        const payload = await passwordResponse.json().catch(() => null) as {
-            data?: { id: string; email: string } | null
-        } | null
-        if (!passwordResponse.ok || !payload?.data) {
-            return NextResponse.json({ error: passwordResponse.status >= 500
-                ? 'Unable to reset your password right now. Please try again.'
-                : 'Invalid or expired reset link' }, { status: passwordResponse.status >= 500 ? 503 : 400 })
+        if (!passwordResponse.ok) {
+            return NextResponse.json({ error: 'Failed to update password' }, { status: 500 })
         }
-        const user = payload.data
 
-        // Recovery proves the email address, not the Merchant's enrolled MFA.
-        // Require normal password + MFA sign-in before granting any Merchant session.
-        await clearSessionCookie()
-        sendPasswordChangedEmail(user.email).catch(() => {})
-        const redirectTo = '/login'
+        // Invalidate all existing sessions (security: force re-login everywhere)
+        await destroyAllUserSessions(user.id)
+
+        // Create new session on this device
+        const fingerprint = generateDeviceFingerprint(request.headers, ip)
+        const userAgent = request.headers.get('user-agent') || ''
+        const { deviceId } = await getOrCreateDevice(user.id, fingerprint, userAgent)
+        const sessionToken = await createSession(user.id, deviceId)
+
+        // Set cookies
+        await setSessionCookie(sessionToken)
+        await addAccount({
+            email: user.email,
+            name: user.full_name,
+            avatar: user.avatar_url,
+            lastLogin: new Date().toISOString(),
+        })
+
+        // Security alert: password changed (fire-and-forget)
+        sendPasswordChangedEmail(user.email).catch(() => { })
+
+        // Check if user has a store → redirect appropriately
+        const storesResponse = await identityApiRequest('/stores?limit=1', {
+            method: 'GET',
+            requireSession: true,
+            sessionToken,
+        })
+        const storesPayload = await storesResponse.json().catch(() => null) as {
+            data?: Array<{ subdomain: string }>
+        } | null
+        const store = storesResponse.ok ? storesPayload?.data?.[0] : null
+
+        const redirectTo = store?.subdomain
+            ? getAdminDashboardUrl(store.subdomain)
+            : '/onboarding'
 
         return NextResponse.json({ success: true, redirectTo })
-    } catch {
-        console.error(JSON.stringify({level:'error',service:'accounts',reason:'password_reset_unavailable'}))
+    } catch (error) {
+        console.error('Reset password error:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

@@ -1,0 +1,72 @@
+{
+  "captured_at": "2026-10-29T19:29:58.134966+00:00",
+  "method": "Raw initial HTML, synthetic public gateway fixtures. Not actual commercial prices.",
+  "rows": [
+    {
+      "mode": "ready",
+      "status": 200,
+      "seconds": 0.085,
+      "heading": "Simple, transparent pricing",
+      "cards": 2,
+      "fixture_plan_in_initial_html": true,
+      "founding_price_in_initial_html": true,
+      "regular_price_in_initial_html": true,
+      "unavailable": false,
+      "text": "Pricing Simple, transparent pricing Compare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales. 🏆 Founding Merchant Program — 4 / 10 slots remaining Lock the founding price for life. Lifetime price lock, founding badge, priority access, and early features. Most popular SEO fixture Launch Synthetic test catalogue ₹ 31.25 /month Regular ₹ 37.25 · Save ₹ 6 /mo for life Review signup terms Fixture feature Coming soon SEO fixture Upcoming Synthetic test catalogue Coming soon Coming soon Fixture feature Compare all plans Only differences SEO fixture Launch Most popular SEO fixture Upcoming Fixture comparison Products — + See all features",
+      "passed": true
+    },
+    {
+      "mode": "counter_error",
+      "status": 200,
+      "seconds": 0.022,
+      "heading": "Simple, transparent pricing",
+      "cards": 2,
+      "fixture_plan_in_initial_html": true,
+      "founding_price_in_initial_html": true,
+      "regular_price_in_initial_html": true,
+      "unavailable": false,
+      "text": "Pricing Simple, transparent pricing Compare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales. 🏆 Founding Merchant Program — 4 / 10 slots remaining Lock the founding price for life. Lifetime price lock, founding badge, priority access, and early features. Most popular SEO fixture Launch Synthetic test catalogue ₹ 31.25 /month Regular ₹ 37.25 · Save ₹ 6 /mo for life Review signup terms Fixture feature Coming soon SEO fixture Upcoming Synthetic test catalogue Coming soon Coming soon Fixture feature Compare all plans Only differences SEO fixture Launch Most popular SEO fixture Upcoming Fixture comparison Products — + See all features",
+      "passed": true
+    },
+    {
+      "mode": "empty",
+      "status": 200,
+      "seconds": 0.02,
+      "heading": "Simple, transparent pricing",
+      "cards": 0,
+      "fixture_plan_in_initial_html": false,
+      "founding_price_in_initial_html": false,
+      "regular_price_in_initial_html": false,
+      "unavailable": false,
+      "text": "Pricing Simple, transparent pricing Compare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales. 🏆 Founding Merchant Program — 4 / 10 slots remaining Lock the founding price for life. Lifetime price lock, founding badge, priority access, and early features. Plans are being finalized. Sign up to get early access. Review signup terms",
+      "passed": true
+    },
+    {
+      "mode": "pricing_error",
+      "status": 200,
+      "seconds": 0.019,
+      "heading": "Simple, transparent pricing",
+      "cards": 0,
+      "fixture_plan_in_initial_html": false,
+      "founding_price_in_initial_html": false,
+      "regular_price_in_initial_html": false,
+      "unavailable": true,
+      "text": "Pricing Simple, transparent pricing Compare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales. Pricing is temporarily unavailable. Try again Review signup terms",
+      "passed": true
+    },
+    {
+      "mode": "timeout",
+      "status": 200,
+      "seconds": 6.02,
+      "heading": "Simple, transparent pricing",
+      "cards": 0,
+      "fixture_plan_in_initial_html": false,
+      "founding_price_in_initial_html": false,
+      "regular_price_in_initial_html": false,
+      "unavailable": true,
+      "text": "Pricing Simple, transparent pricing Compare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales. Pricing is temporarily unavailable. Try again Review signup terms",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

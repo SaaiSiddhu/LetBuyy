@@ -301,7 +301,7 @@ export default async function DeveloperOperationsPage({
                     placeholder="Search by name, email, slug…"
                     defaultValue={currentQ}
                 >
-                    <select name="status" defaultValue={currentStatus} className={inputClassName}>
+                    <select aria-label="Status" name="status" defaultValue={currentStatus} className={inputClassName}>
                         <option value="all">All statuses</option>
                         <option value="pending">Pending</option>
                         <option value="approved">Approved</option>
@@ -655,7 +655,7 @@ function ModerationPanel({
 
                 <label className="flex flex-col gap-[var(--lb-space-1)] text-sm font-medium text-[var(--lb-color-text)]">
                     Action
-                    <select name="action" defaultValue="verify" className={inputClassName}>
+                    <select aria-label="Action" name="action" defaultValue="verify" className={inputClassName}>
                         <option value="verify">Verify (approve)</option>
                         <option value="reject">Reject</option>
                         <option value="suspend">Suspend</option>

@@ -1,0 +1,116 @@
+{
+  "gateway_units": {
+    "summaries": [
+      {
+        "tests": 1609,
+        "pass": 1609,
+        "fail": 0
+      }
+    ],
+    "sha256": "807bab97d4a47b7078e811632ca05769c98fb6dc325d5bd530f54981e2c7e6db",
+    "passed": true
+  },
+  "root_contracts": {
+    "summaries": [
+      {
+        "tests": 339,
+        "pass": 339,
+        "fail": 0
+      }
+    ],
+    "sha256": "77d3aa356c1a78d1615751f613d8f9867af4b79270786dc32dd8df43877e1d72",
+    "passed": true
+  },
+  "merchant": {
+    "summaries": [
+      {
+        "tests": 119,
+        "pass": 119,
+        "fail": 0
+      },
+      {
+        "tests": 806,
+        "pass": 806,
+        "fail": 0
+      }
+    ],
+    "sha256": "38c26608281a7edd0377198e6fbd1c64727ee8159f870ba22b39c51f1dfac41b",
+    "passed": true
+  },
+  "identity": {
+    "summaries": [
+      {
+        "tests": 50,
+        "pass": 50,
+        "fail": 0
+      },
+      {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0
+      }
+    ],
+    "sha256": "6f5765c86632bd1f6789ca78af47be2d69958e5b0cc5fb046e5ed2d58ecef252",
+    "passed": true
+  },
+  "marketing": {
+    "summaries": [
+      {
+        "tests": 4,
+        "pass": 4,
+        "fail": 0
+      },
+      {
+        "tests": 186,
+        "pass": 186,
+        "fail": 0
+      }
+    ],
+    "sha256": "9079f5e6f63060f17bc0aceb9e8be9cbe78ade0458f9fba2b42bea6eb787fd3c",
+    "passed": true
+  },
+  "billing_core": {
+    "summaries": [
+      {
+        "tests": 40,
+        "pass": 40,
+        "fail": 0
+      }
+    ],
+    "sha256": "f5df208ce46570ee4e85b15c802834790bfefa815310cf5c2d78e1cb67b49188",
+    "passed": true
+  },
+  "session_validator_mutations": {
+    "summaries": [
+      {
+        "tests": 61,
+        "pass": 61,
+        "fail": 0
+      }
+    ],
+    "sha256": "fe012e893a56fb878607571b63e87c9796ad5d78a0a39098dd8cbc389bcb4f91",
+    "passed": true
+  },
+  "ownership_validator_mutations": {
+    "summaries": [
+      {
+        "tests": 52,
+        "pass": 52,
+        "fail": 0
+      }
+    ],
+    "sha256": "42cac5a65a46b859c1b2866eb827ce4b458b4bdde3573735389a91cc82ec753e",
+    "passed": true
+  },
+  "policy_composition_secrets": {
+    "summaries": [
+      {
+        "tests": 22,
+        "pass": 22,
+        "fail": 0
+      }
+    ],
+    "sha256": "546d6285169c7374ed39bfad6049e718a8b8ebe6cd9d47b0639e90bceb36fac7",
+    "passed": true
+  }
+}

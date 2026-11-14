@@ -1,0 +1,205 @@
+{
+  "capturedAt": "2026-11-03T10:37:50.576Z",
+  "sourceStyles": [
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/category-illustrated.module.css",
+      "beforeSha256": "ca816eef758333ef5a529a0d27cb5cc9de5678394c7088f019428c180db4a14f",
+      "currentSha256": "ca816eef758333ef5a529a0d27cb5cc9de5678394c7088f019428c180db4a14f",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/resources-home.module.css",
+      "beforeSha256": "a6801d9e2a3d46f6a9e9e0e852378a0ad52ebc9e1aab0c3e111679571b1bfb67",
+      "currentSha256": "a6801d9e2a3d46f6a9e9e0e852378a0ad52ebc9e1aab0c3e111679571b1bfb67",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/sitemap/sitemap.module.css",
+      "beforeSha256": "34c0c5a781784798f994df1308778d9429c1fc32ed8025acf3022f01d95bca7d",
+      "currentSha256": "34c0c5a781784798f994df1308778d9429c1fc32ed8025acf3022f01d95bca7d",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "beforeSha256": "e2de7c6c61df5b89c47df3a2f3dcd5999f6e6b5d686b41f308342c590663cd50",
+      "currentSha256": "e2de7c6c61df5b89c47df3a2f3dcd5999f6e6b5d686b41f308342c590663cd50",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "beforeSha256": "77923e1c6b5cb17abb707eb143ba69cae3d44b26ab892eff3c396345fab0bfd4",
+      "currentSha256": "77923e1c6b5cb17abb707eb143ba69cae3d44b26ab892eff3c396345fab0bfd4",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/how-it-works.css",
+      "beforeSha256": "62e25060f9823f77deda7b647b471109ccefc006982769bf92125d67af3e54ae",
+      "currentSha256": "62e25060f9823f77deda7b647b471109ccefc006982769bf92125d67af3e54ae",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/locale-typography.css",
+      "beforeSha256": "8e8ec11eee5e768d79b8862f40cb66098cde149bf8dade236bc09b85c440196e",
+      "currentSha256": "8e8ec11eee5e768d79b8862f40cb66098cde149bf8dade236bc09b85c440196e",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "beforeSha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+      "currentSha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/final-cta.module.css",
+      "beforeSha256": "47c08d2facb86e49838074e6c0ffb18687bb6c238b623607a044f47c4c68e214",
+      "currentSha256": "47c08d2facb86e49838074e6c0ffb18687bb6c238b623607a044f47c4c68e214",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/header-featured-art.module.css",
+      "beforeSha256": "a74befaf9288acc46ca456995ad8710a966dc7184e8b9df450140fdbaedcbcbe",
+      "currentSha256": "a74befaf9288acc46ca456995ad8710a966dc7184e8b9df450140fdbaedcbcbe",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/legal/legal-layout.module.css",
+      "beforeSha256": "c35704c40c2d09b41e834ee42a35ccb39bdab85549a53bd09ccd55e8b1a921ef",
+      "currentSha256": "c35704c40c2d09b41e834ee42a35ccb39bdab85549a53bd09ccd55e8b1a921ef",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/platform-surfaces.module.css",
+      "beforeSha256": "11b8532b9d0386f3488eb416e3c8d8fbeed1ada784c6de63a09a66f553b68d76",
+      "currentSha256": "11b8532b9d0386f3488eb416e3c8d8fbeed1ada784c6de63a09a66f553b68d76",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-section-visual.module.css",
+      "beforeSha256": "04b0b33213bd47a92c10eed18a146863f85aca079835898294e489b2d02e8d63",
+      "currentSha256": "04b0b33213bd47a92c10eed18a146863f85aca079835898294e489b2d02e8d63",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-visual-overview.module.css",
+      "beforeSha256": "bceaa87f9cbc4331d30d776bb1b20e2e91d45d0e4b72441c0c4bd4e2d96f7d7a",
+      "currentSha256": "bceaa87f9cbc4331d30d776bb1b20e2e91d45d0e4b72441c0c4bd4e2d96f7d7a",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/changelog.module.css",
+      "beforeSha256": "e202bec9ec797f384f648dec7cc760656f0ac938ec8b13b9f343c370b0c3d180",
+      "currentSha256": "e202bec9ec797f384f648dec7cc760656f0ac938ec8b13b9f343c370b0c3d180",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/liquid-guide.module.css",
+      "beforeSha256": "3073a7695d31802bea7c6158f859067208a28bca600eaafbf747e9456bfbcc73",
+      "currentSha256": "3073a7695d31802bea7c6158f859067208a28bca600eaafbf747e9456bfbcc73",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-artwork.module.css",
+      "beforeSha256": "8c13b6c30c8c50471deb40dfe5b20e22869d6b2be6ea563d4c759d0caa73417a",
+      "currentSha256": "8c13b6c30c8c50471deb40dfe5b20e22869d6b2be6ea563d4c759d0caa73417a",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-list-visuals.module.css",
+      "beforeSha256": "e6d3ac5a62e59dfb803f1b01e5ee376573a3899f01f87a72a37cf593bf5d5054",
+      "currentSha256": "e6d3ac5a62e59dfb803f1b01e5ee376573a3899f01f87a72a37cf593bf5d5054",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/theme-guide.module.css",
+      "beforeSha256": "7eb8b3bdcfbd18194cf77fb8b96b4073bdc86518e154639ab51ec6aafc5464d8",
+      "currentSha256": "7eb8b3bdcfbd18194cf77fb8b96b4073bdc86518e154639ab51ec6aafc5464d8",
+      "identical": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/support/support-experience.module.css",
+      "beforeSha256": "ac9506f560a259809f723887b0ee6cb75e9a9f8abe04b28b7ffc51043d4ee644",
+      "currentSha256": "ac9506f560a259809f723887b0ee6cb75e9a9f8abe04b28b7ffc51043d4ee644",
+      "identical": true
+    }
+  ],
+  "all20MarketingCssSourcesUnchanged": true,
+  "compiledStyles": [
+    {
+      "root": "223e4c04bc96cd06.css",
+      "candidate": "223e4c04bc96cd06.css",
+      "byteIdentical": true,
+      "declarationCount": 261,
+      "allDeclarationContextsIdentical": true,
+      "nonModuleDeclarationOrderIdentical": true
+    },
+    {
+      "root": "49f839c2f9f50a3d.css",
+      "candidate": "49f839c2f9f50a3d.css",
+      "byteIdentical": true,
+      "declarationCount": 9095,
+      "allDeclarationContextsIdentical": true,
+      "nonModuleDeclarationOrderIdentical": true
+    },
+    {
+      "root": "5e091d18c8bd4f7d.css",
+      "candidate": "5e091d18c8bd4f7d.css",
+      "byteIdentical": true,
+      "declarationCount": 227,
+      "allDeclarationContextsIdentical": true,
+      "nonModuleDeclarationOrderIdentical": true
+    },
+    {
+      "root": "6c3b207c7c338cb8.css",
+      "candidate": "6c3b207c7c338cb8.css",
+      "byteIdentical": true,
+      "declarationCount": 480,
+      "allDeclarationContextsIdentical": true,
+      "nonModuleDeclarationOrderIdentical": true
+    },
+    {
+      "root": "868d0113999f35d2.css",
+      "candidate": "868d0113999f35d2.css",
+      "byteIdentical": true,
+      "declarationCount": 3260,
+      "allDeclarationContextsIdentical": true,
+      "nonModuleDeclarationOrderIdentical": true
+    },
+    {
+      "root": "b34001e7444fd720.css",
+      "candidate": "b34001e7444fd720.css",
+      "byteIdentical": true,
+      "declarationCount": 367,
+      "allDeclarationContextsIdentical": true,
+      "nonModuleDeclarationOrderIdentical": true
+    },
+    {
+      "root": "bd4dcf7ca3c6945b.css",
+      "candidate": "bd4dcf7ca3c6945b.css",
+      "byteIdentical": true,
+      "declarationCount": 171,
+      "allDeclarationContextsIdentical": true,
+      "nonModuleDeclarationOrderIdentical": true
+    },
+    {
+      "root": "d2795489a1dd9230.css",
+      "candidate": "d2795489a1dd9230.css",
+      "byteIdentical": true,
+      "declarationCount": 594,
+      "allDeclarationContextsIdentical": true,
+      "nonModuleDeclarationOrderIdentical": true
+    },
+    {
+      "root": "df1eb0875247ce7a.css",
+      "candidate": "df1eb0875247ce7a.css",
+      "byteIdentical": true,
+      "declarationCount": 2277,
+      "allDeclarationContextsIdentical": true,
+      "nonModuleDeclarationOrderIdentical": true
+    }
+  ],
+  "allCompiledDeclarationsPreserved": true,
+  "nonModuleDeclarationOrderIdentical": true,
+  "note": "All20sourceCSSfiles match the November3baseline; compiled declaration contexts/shared order match between current builds. Byte equality is reported per file. No browser/device visual pass inferred.",
+  "rootBuildId": "b2CsFLYIUn25H5EguBjys",
+  "candidateBuildId": "fiI7E7RIv4e4VqtSPl2DG"
+}

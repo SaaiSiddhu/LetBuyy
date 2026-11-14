@@ -1,6 +1,16 @@
-import { redirect } from 'next/navigation'
+'use client'
 
-export default async function OnlineStoreRedirect({ params }: { params: Promise<{ store: string }> }) {
-    const { store } = await params
-    redirect(`/${encodeURIComponent(store)}/online-store/themes`)
+import { useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+
+export default function OnlineStoreRedirect() {
+    const params = useParams()
+    const router = useRouter()
+    const store = params.store as string
+
+    useEffect(() => {
+        router.replace(`/${store}/online-store/themes`)
+    }, [store, router])
+
+    return null
 }

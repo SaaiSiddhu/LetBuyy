@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams } from 'next/navigation'
-import { useReadRequest } from '@/lib/api/use-read-request'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
 import { Button,
     Badge,
     Banner,
     BarChart3,
     Card,
+    EmptyState,
     IndianRupee,
     MaterialIcon,
     MetricCard,
@@ -19,7 +19,6 @@ import { Button,
     Select,
     Skeleton,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface AnalyticsData {
     totalOrders: number
@@ -52,20 +51,16 @@ export default function AnalyticsPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [period, setPeriod] = useState<AnalyticsPeriod>('30d')
-    const beginRead = useReadRequest(JSON.stringify([store, period]))
 
     const loadAnalytics = useCallback(async () => {
-        const request = beginRead()
         setLoading(true)
         setError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/analytics?period=${period}`, {
                 cache: 'no-store',
-                signal: request.signal,
             })
             const payload = await response.json()
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 const message = typeof payload?.error === 'string'
@@ -76,13 +71,12 @@ export default function AnalyticsPage() {
 
             setData(payload.data)
         } catch (err) {
-            if (!request.isCurrent()) return
             setData(null)
             setError(err instanceof Error ? err.message : 'Unable to load analytics')
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [period, store, beginRead])
+    }, [period, store])
 
     useEffect(() => {
         void loadAnalytics()
@@ -99,8 +93,7 @@ export default function AnalyticsPage() {
 
     return (
         <Page>
-            <PageHeader identity="analytics"
-                recipe="index"
+            <PageHeader
                 title="Analytics"
                 description={`Track ${store}'s sales, orders, and catalog performance from one workspace.`}
                 breadcrumbs={[{ label: 'Home', href: `/${store}/dashboard` }, { label: 'Analytics' }]}
@@ -169,7 +162,7 @@ export default function AnalyticsPage() {
                         <MetricCard
                             label="Average order value"
                             value={formatInrCurrency(data.avgOrderValue, { maximumFractionDigits: 0 }) || '₹0'}
-                            delta="Paid revenue divided by orders in this period"
+                            delta="Calculated from settled order data"
                             deltaTone="neutral"
                         />
                         <MetricCard
@@ -181,12 +174,12 @@ export default function AnalyticsPage() {
                     </div>
 
                     {!hasBusinessActivity && (
-                        <EmptyState scene="analytics"
+                        <EmptyState
                             icon={<BarChart3 className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" />}
                             title="Analytics will appear after your first activity"
                             body="Add products, receive orders, and LetBuyy will summarize the performance signals here."
-                            primaryAction={<Button as="a" href={`/${store}/products/new`}>Add product</Button>}
-                            secondaryAction={<Button as="a" variant="secondary" href={`/${store}/online-store/themes`}>Customize storefront</Button>}
+                            primaryAction={<Button type="button" onClick={() => { window.location.href = `/${store}/products/new` }}>Add product</Button>}
+                            secondaryAction={<Button type="button" variant="secondary" onClick={() => { window.location.href = `/${store}/online-store/themes` }}>Customize storefront</Button>}
                         />
                     )}
 
@@ -251,7 +244,7 @@ export default function AnalyticsPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <EmptyState scene="analytics"
+                                <EmptyState
                                     icon={<MaterialIcon name="receipt_long" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" />}
                                     title="Monthly revenue is not available yet"
                                     body="The current analytics endpoint returns summary totals and order status counts. Monthly revenue buckets can be shown here when that field is populated."

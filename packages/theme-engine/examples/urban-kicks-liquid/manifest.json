@@ -9,8 +9,8 @@
     },
     {
       "path": "config/settings_data.json",
-      "checksum": "d9decba01cf018adc371b283166903365c347ad0cc09bf62f86f4c0e22c12789",
-      "sizeBytes": 3607
+      "checksum": "6a8a33dda19890f1a1a46ce57ac552ce75789700fb170785782e5077fd60a0ed",
+      "sizeBytes": 3602
     },
     {
       "path": "config/settings_schema.json",
@@ -375,7 +375,7 @@
   ],
   "checksums": {
     "blocks/badge.liquid": "b6df6b7c33c20125bf7146488bf554c22e03ab06e338933fc66add551033e805",
-    "config/settings_data.json": "d9decba01cf018adc371b283166903365c347ad0cc09bf62f86f4c0e22c12789",
+    "config/settings_data.json": "6a8a33dda19890f1a1a46ce57ac552ce75789700fb170785782e5077fd60a0ed",
     "config/settings_schema.json": "e339a5ae2c019d3dc3c5b6723ae95225f636402405d1d451ce617948dcfc6930",
     "layout/theme.liquid": "b7a08493cc34c92b3ba0e442eec42b30231f2928270ef66f06f15be1f4e8b734",
     "letbuyy-theme.json": "c8ff5bc4ceb9a12e4d24ac0d788367b39e275434cb05b7211e05577d20a1bafd",
@@ -449,5 +449,5 @@
     "templates/product.json": "0782536d9e51e4bebdf6d8acda7947d12dd2bfe15c0c108253143aaf55098552",
     "templates/search.json": "1c2f3c312a09bdcebae0450874494f0dc07614a1f33f1c0264ec569a8c3d9385"
   },
-  "contentHash": "63e5fc7c1107e88681b1fba1bc1b954f8838016091932581927cac429b5d80ca"
+  "contentHash": "35c67e2c6d7352e477b69ba5161f9151dd278c5baff1da50a808c2687ccd605b"
 }

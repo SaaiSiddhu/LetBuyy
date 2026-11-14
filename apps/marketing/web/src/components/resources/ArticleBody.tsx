@@ -1,3 +1,4 @@
+import Link from '@/components/i18n/LocaleLink'
 
 import Copy from '@/components/i18n/Copy'
 import { Fragment, type ReactElement } from 'react'
@@ -53,7 +54,12 @@ export default function ArticleBody({ body, id = 'article-body', visuals = {} }:
 
           case 'p': {
             const isLead = i === firstPIndex
-            return <p key={i} className={isLead ? 'arc-body-p-lead' : 'arc-body-p'}>{block.text}</p>
+            return <Fragment key={i}>
+              <p className={isLead ? 'arc-body-p-lead' : 'arc-body-p'}>{block.text}</p>
+              {block.references?.length ? <ul className="arc-body-ul" aria-label="References">
+                {block.references.filter(reference => /^(https:\/\/|\/(?!\/))/.test(reference.href)).map(reference => <li key={reference.href}><Link href={reference.href}>{reference.label}</Link></li>)}
+              </ul> : null}
+            </Fragment>
           }
 
           case 'h2': {

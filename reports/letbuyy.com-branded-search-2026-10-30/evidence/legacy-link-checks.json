@@ -1,0 +1,32 @@
+[
+  {
+    "captured_at": "2026-10-29T18:55:14.195937+00:00",
+    "label": "Help Center",
+    "href": "#",
+    "final_url": "https://letbuy-y.web.app/#",
+    "body_before_sha256": "f961f258bb5209c556fc78efd2bd46e94f4de23537fcd8245291c28875c065ee",
+    "body_after_sha256": "f961f258bb5209c556fc78efd2bd46e94f4de23537fcd8245291c28875c065ee",
+    "same_body": true,
+    "title": "Create Next App"
+  },
+  {
+    "captured_at": "2026-10-29T18:55:14.633483+00:00",
+    "label": "Contact Us",
+    "href": "#",
+    "final_url": "https://letbuy-y.web.app/#",
+    "body_before_sha256": "f961f258bb5209c556fc78efd2bd46e94f4de23537fcd8245291c28875c065ee",
+    "body_after_sha256": "f961f258bb5209c556fc78efd2bd46e94f4de23537fcd8245291c28875c065ee",
+    "same_body": true,
+    "title": "Create Next App"
+  },
+  {
+    "captured_at": "2026-10-29T18:55:15.083853+00:00",
+    "label": "Terms of Service",
+    "href": "#",
+    "final_url": "https://letbuy-y.web.app/#",
+    "body_before_sha256": "f961f258bb5209c556fc78efd2bd46e94f4de23537fcd8245291c28875c065ee",
+    "body_after_sha256": "f961f258bb5209c556fc78efd2bd46e94f4de23537fcd8245291c28875c065ee",
+    "same_body": true,
+    "title": "Create Next App"
+  }
+]

@@ -165,7 +165,7 @@ function LoginContent() {
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     password,

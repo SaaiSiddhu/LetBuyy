@@ -1,0 +1,71 @@
+{
+  "method": "HTTP GET without Accept-Encoding; gzip size computed locally as a payload estimate, not a measured browser transfer",
+  "rows": [
+    {
+      "path": "/_next/static/chunks/fee3e60c-ab77e3797c935082.js",
+      "raw_body_bytes": 198487,
+      "computed_gzip_bytes": 62325,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/6030-2150524a4ae3ac75.js",
+      "raw_body_bytes": 188161,
+      "computed_gzip_bytes": 51382,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/main-app-43b3f61f46eaada8.js",
+      "raw_body_bytes": 516,
+      "computed_gzip_bytes": 226,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/marketing-common-client-abe761e5ad0e5024.js",
+      "raw_body_bytes": 235139,
+      "computed_gzip_bytes": 70787,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/8410-561985607ff5b966.js",
+      "raw_body_bytes": 35722,
+      "computed_gzip_bytes": 13720,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/app/layout-a311a98a0cdcdb4c.js",
+      "raw_body_bytes": 601,
+      "computed_gzip_bytes": 325,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/app/%5Blocale%5D/layout-80c0c1cd9680c43c.js",
+      "raw_body_bytes": 491,
+      "computed_gzip_bytes": 318,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/445-0a3212e4ce42d52a.js",
+      "raw_body_bytes": 17108,
+      "computed_gzip_bytes": 5705,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/app/%5Blocale%5D/pricing/page-0892601d572c9750.js",
+      "raw_body_bytes": 475,
+      "computed_gzip_bytes": 213,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "raw_body_bytes": 112594,
+      "computed_gzip_bytes": 39373,
+      "encoding": null
+    },
+    {
+      "path": "/_next/static/chunks/webpack-6d225133579c43e1.js",
+      "raw_body_bytes": 3488,
+      "computed_gzip_bytes": 1792,
+      "encoding": null
+    }
+  ]
+}

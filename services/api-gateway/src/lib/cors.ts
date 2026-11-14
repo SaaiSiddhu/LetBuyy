@@ -21,6 +21,8 @@ export const DEFAULT_CREDENTIAL_ORIGIN = 'https://letbuyy.com';
  * config change rather than a code change.
  */
 export const PLATFORM_CREDENTIAL_SUBDOMAINS = [
+    // The canonical public marketing host is www, while the apex redirects.
+    'www',
     'accounts',
     'merchant',
     'storefront',

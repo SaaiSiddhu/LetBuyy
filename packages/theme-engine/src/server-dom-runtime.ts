@@ -3,9 +3,7 @@
 export async function loadThemeServerDom() {
   const [{ default: createDOMPurify }, { JSDOM }] = await Promise.all([
     import('dompurify'),
-    // Let the Node bundler externalize and trace this dependency. An ignored
-    // native ESM import cannot use the serverless external-module resolution.
-    import('jsdom'),
+    import(/* webpackIgnore: true */ 'jsdom'),
   ]);
   return { createDOMPurify, JSDOM };
 }

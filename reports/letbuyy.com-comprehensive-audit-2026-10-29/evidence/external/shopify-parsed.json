@@ -1,0 +1,3358 @@
+{
+  "title": "Shopify Pricing: Find the Right Plan for Your Business - Shopify India",
+  "meta_description": "Get detailed information on Shopify pricing and features. Find the right plan for you and start your business in seconds.",
+  "meta_robots": null,
+  "canonical": "https://www.shopify.com/in/pricing",
+  "h1": [
+    "You've got plans. Us too."
+  ],
+  "h2": [
+    "Always included",
+    "World's best checkout",
+    "Stunning store design",
+    "Built-in assistant",
+    "24/7 support",
+    "Every channel, one platform",
+    "World's best checkout",
+    "Stunning store design",
+    "Built-in assistant",
+    "24/7 support",
+    "Every channel, one platform",
+    "But wait, there\u2019s more",
+    "Word on the street",
+    "Compare all features",
+    "FAQs",
+    "Turn plans into progress",
+    "Choose a region & language"
+  ],
+  "h3": [
+    "Level up your stores with:",
+    "What is Shopify and how does it work?",
+    "How much does Shopify cost?",
+    "Can I cancel or change my subscription anytime?",
+    "Are there any additional fees?",
+    "In what countries can I use Shopify?",
+    "Is Shopify PCI Compliant or PCI Certified?",
+    "Can I use my own domain name with Shopify?",
+    "Do I get web hosting with Shopify?",
+    "Shopify",
+    "Ecosystem",
+    "Resources",
+    "Support"
+  ],
+  "images": [
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d9340911ca8c679b148dd4a205ad2ffa.svg",
+      "alt": "Shopify",
+      "width": null,
+      "height": null,
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/35d24a52160348807e95f1d335e9e295.png?width=421",
+      "alt": "Get started fast",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/b4995abc3f73dd8442f579e10023a4df.png?width=421",
+      "alt": "Switch to Shopify",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/91fd2e27323b7a94d9fdb2a7973e668e.png?width=421",
+      "alt": "Trusted by enterprise brands",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ecabe88f01662a8048799d22f2c6aa99.svg",
+      "alt": "World's best checkout",
+      "width": null,
+      "height": null,
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/bed4594e2c394553b2f03d9da43cb685.png?width=80",
+      "alt": "Sidekick",
+      "width": null,
+      "height": null,
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/b92011e8f994db7276899016b2850cb4.png?originalWidth=36&originalHeight=36&width=18&height=18",
+      "alt": "",
+      "width": "18",
+      "height": "18",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/75a798084bc083a97ac57de1973192ad.png?originalWidth=632&originalHeight=948",
+      "alt": "",
+      "width": "632",
+      "height": "948",
+      "loading": "eager",
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/2096e960331b872fb1c202c62387fc9e.png?originalWidth=632&originalHeight=948",
+      "alt": "",
+      "width": "632",
+      "height": "948",
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/f7b24fc19cde5db0635f9820de525a69.png?originalWidth=632&originalHeight=948",
+      "alt": "",
+      "width": "632",
+      "height": "948",
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/f4118ab5316b34e3dfb2a23b6a889fe8.png?originalWidth=632&originalHeight=948",
+      "alt": "",
+      "width": "632",
+      "height": "948",
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/e6682a57da8a69be8d3609fab7ae78e1.webp",
+      "alt": "Checkout animation",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/4dd1cce5beb0f5dbb46115e31e300f80.webp",
+      "alt": "Store themes animation",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/e7593bf7fc4953261b419b40413c1ae2.webp",
+      "alt": "A design illustrating Shopify support being available in multiple languages. At the center, there is an icon of a headset, symbolizing customer support. Surrounding it are circular icons featuring flags representing different countries: France, the United States, Germany, Japan, and Spain, indicating the availability of support in their respective languages.",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/e6b77d9e6ba141eec4c7201c73aae616.webp?originalWidth=1026&originalHeight=768",
+      "alt": "Multichannel integration animation",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/e6682a57da8a69be8d3609fab7ae78e1.webp",
+      "alt": "Checkout animation",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/4dd1cce5beb0f5dbb46115e31e300f80.webp",
+      "alt": "Store themes animation",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/e7593bf7fc4953261b419b40413c1ae2.webp",
+      "alt": "A design illustrating Shopify support being available in multiple languages. At the center, there is an icon of a headset, symbolizing customer support. Surrounding it are circular icons featuring flags representing different countries: France, the United States, Germany, Japan, and Spain, indicating the availability of support in their respective languages.",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/e6b77d9e6ba141eec4c7201c73aae616.webp?originalWidth=1026&originalHeight=768",
+      "alt": "Multichannel integration animation",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/7250c0a762e4d772d36be752fc2635bf.jpg?originalWidth=876&originalHeight=906",
+      "alt": "Shopify merchants using POS system in physical retail store",
+      "width": null,
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/7d64c2fcbf74eacfa17d7a880884a111.jpg?originalWidth=5160&originalHeight=3064&width=1200",
+      "alt": "Smiling store owner at a retail counter",
+      "width": "1200",
+      "height": null,
+      "loading": "lazy",
+      "lazy_method": "native"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/ebd043fb0a9786b18570f40dc92e1679.svg",
+      "alt": "Not included",
+      "width": "12",
+      "height": "2",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/d096679e7e44ee5b164b092b6a9a0712.svg",
+      "alt": "Included",
+      "width": "20",
+      "height": "20",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/59bf00341c2cb8fb957882677948b9a6.svg",
+      "alt": "",
+      "width": "30",
+      "height": "30",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/59bf00341c2cb8fb957882677948b9a6.svg",
+      "alt": "",
+      "width": "30",
+      "height": "30",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/8029544212c0a596c004ae07cc06360b.png?originalWidth=104&originalHeight=56",
+      "alt": "Melio",
+      "width": "52",
+      "height": "28",
+      "loading": null,
+      "lazy_method": "none"
+    },
+    {
+      "src": "https://cdn.shopify.com/b/shopify-brochure2-assets/8051dee1dd72e78a9528a16c062cff66.svg",
+      "alt": "California Consumer Privacy Act (CCPA) Opt-Out Icon",
+      "width": "30",
+      "height": "14",
+      "loading": "lazy",
+      "lazy_method": "native"
+    }
+  ],
+  "links": {
+    "internal": [
+      {
+        "href": "https://www.shopify.com/in",
+        "text": "",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/start",
+        "text": "Get started fastYou could be selling by tomorrow.",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/sell",
+        "text": "Switch to ShopifyGet more customers. Make more sales.",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/enterprise",
+        "text": "Trusted by enterprise brandsNo matter your size, complexity, or ambition.",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/checkout",
+        "text": "World's best checkoutProven to convert better.",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/sidekick",
+        "text": "SidekickYour commerce-obsessed AI assistant.",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/website/builder",
+        "text": "Website Builder",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/domains",
+        "text": "Domains",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/customer-accounts",
+        "text": "Customer Accounts",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/sidekick",
+        "text": "Sidekick",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/online",
+        "text": "Online",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/agentic-storefronts",
+        "text": "AI Chats",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/pos",
+        "text": "Point of Sale",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/shop",
+        "text": "Shop App",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/channels",
+        "text": "Social & Marketplaces",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/international",
+        "text": "Global",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/solutions/b2b/enterprise",
+        "text": "B2B",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/markets",
+        "text": "Across Markets",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/marketing",
+        "text": "Advertising & Campaigns",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/marketing-automation-tools",
+        "text": "Email & Customer Chat",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/discounts",
+        "text": "Discounts",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/analytics",
+        "text": "Analytics",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/test-and-launch",
+        "text": "Test & Launch",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/orders",
+        "text": "Orders & Inventory",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/shipping",
+        "text": "Shipping",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/flow",
+        "text": "Workflow Automation",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/mobile",
+        "text": "Mobile",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/checkout",
+        "text": "Checkout",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/payments",
+        "text": "Payments",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/ucp",
+        "text": "Commerce for AgentsBuild with our agent tools",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/editions/fall2026",
+        "text": "Shopify Editions150+ updates to Shopify, twice a year.",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/editions/fall2026?utm_source=homepage&utm_medium=content&utm_campaign=fall-26-edition_rkerbz&utm_content=dotcom-nav-fraud-prevention-with-shopify-protect-v1#fraud-prevention-with-shopify-protect",
+        "text": "Shopify Protect",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/editions/fall2026?utm_source=homepage&utm_medium=content&utm_campaign=fall-26-edition_rkerbz&utm_content=dotcom-nav-shop-dev-for-builders-v1#shop-dev-for-builders",
+        "text": "Shop.dev",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/editions/fall2026?utm_source=homepage&utm_medium=content&utm_campaign=fall-26-edition_rkerbz&utm_content=dotcom-nav-online-store-canvas-v1#online-store-canvas",
+        "text": "Canvas",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/pricing",
+        "text": "Pricing",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/enterprise",
+        "text": "Enterprise",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/editions/fall2026",
+        "text": "Fall '26 Edition",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/login?ui_locales=en-IN",
+        "text": "Log in",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/login?ui_locales=en-IN",
+        "text": "Log in",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/pos/pricing",
+        "text": "Learn more",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/legal/shopify-credit-issuing-bank-terms",
+        "text": "Issuing Bank Terms",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/legal/shopify-credit-program-terms",
+        "text": "Program Terms",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/legal/shopify-credit-program-terms",
+        "text": "Program Terms",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/blog/what-is-shopify",
+        "text": "What is Shopify?",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/editions",
+        "text": "Shopify Editions",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/careers",
+        "text": "Careers",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/investors",
+        "text": "Investors",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/news",
+        "text": "Newsroom",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/climate",
+        "text": "Sustainability",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/partners",
+        "text": "Partners",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/affiliates",
+        "text": "Affiliates",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/blog",
+        "text": "Blog",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/compare",
+        "text": "Compare Shopify",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/blog/topics/guides",
+        "text": "Guides",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/tools",
+        "text": "Free Tools",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/partners/directory",
+        "text": "Hire a Partner",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/pricing?country=in&lang=en",
+        "text": "Confirm",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ar/precios?country=ar&lang=es",
+        "text": "Argentina|Espa\u00f1ol",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/au/pricing?country=au&lang=en",
+        "text": "Australia|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/at/preise?country=at&lang=de",
+        "text": "Austria|Deutsch",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/bd/pricing?country=bd&lang=bn",
+        "text": "Bangladesh|\u09ac\u09be\u0982\u09b2\u09be",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/by/pricing?country=by&lang=ru",
+        "text": "Belarus|Russian",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/be/prijzen?country=be&lang=nl",
+        "text": "Belgium|Nederlands",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/be-de/preise?country=be&lang=de",
+        "text": "Belgium|German",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/be-fr/tarifs?country=be&lang=fr",
+        "text": "Belgium|Fran\u00e7ais",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/br/precos?country=br&lang=pt",
+        "text": "Brazil|Portugu\u00eas",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/bg/pricing?country=bg&lang=bg",
+        "text": "Bulgaria|Bulgarian",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ca/pricing?country=ca&lang=en",
+        "text": "Canada|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ca-fr/tarifs?country=ca&lang=fr",
+        "text": "Canada|Fran\u00e7ais",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/cl/precios?country=cl&lang=es",
+        "text": "Chile|Espa\u00f1ol",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/co/precios?country=co&lang=es",
+        "text": "Colombia|Espa\u00f1ol",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/hr/pricing?country=hr&lang=hr",
+        "text": "Croatia|Hrvatski",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/cz/pricing?country=cz&lang=cs",
+        "text": "Czech Republic|\u010ce\u0161tina",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/dk/priser?country=dk&lang=da",
+        "text": "Denmark|Dansk",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/eg/pricing?country=eg&lang=ar",
+        "text": "Egypt|\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ee/pricing?country=ee&lang=et",
+        "text": "Estonia|Eesti",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/fi/pricing?country=fi&lang=fi",
+        "text": "Finland|Suomi",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/fr/tarifs?country=fr&lang=fr",
+        "text": "France|Fran\u00e7ais",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ge/pricing?country=ge&lang=ka",
+        "text": "Georgia|\u10e5\u10d0\u10e0\u10d7\u10e3\u10da\u10d8",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/de/preise?country=de&lang=de",
+        "text": "Germany|Deutsch",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/gr/pricing?country=gr&lang=el",
+        "text": "Greece|Greek",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/hk/pricing?country=hk&lang=zh",
+        "text": "Hong Kong SAR|\u7e41\u9ad4\u4e2d\u6587",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/hk-en/pricing?country=hk&lang=en",
+        "text": "Hong Kong SAR|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/hu/pricing?country=hu&lang=hu",
+        "text": "Hungary|Hungarian",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in-hi/pricing?country=in&lang=hi",
+        "text": "India|Hindi",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/pricing?country=in&lang=en",
+        "text": "India|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in-bn/pricing?country=in&lang=bn",
+        "text": "India|\u09ac\u09be\u0982\u09b2\u09be",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in-gu/pricing?country=in&lang=gu",
+        "text": "India|\u0a97\u0ac1\u0a9c\u0ab0\u0abe\u0aa4\u0ac0",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in-mr/pricing?country=in&lang=mr",
+        "text": "India|\u092e\u0930\u093e\u0920\u0940",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in-ta/pricing?country=in&lang=ta",
+        "text": "India|\u0ba4\u0bae\u0bbf\u0bb4\u0bcd",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in-te/pricing?country=in&lang=te",
+        "text": "India|\u0c24\u0c46\u0c32\u0c41\u0c17\u0c41",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/id-id/pricing?country=id&lang=id",
+        "text": "Indonesia|Indonesian",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/id/pricing?country=id&lang=en",
+        "text": "Indonesia|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ie/pricing?country=ie&lang=en",
+        "text": "Ireland|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/il/pricing?country=il&lang=en",
+        "text": "Israel|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/il-he/pricing?country=il&lang=he",
+        "text": "Israel|\u05e2\u05d1\u05e8\u05d9\u05ea",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/it/prezzi?country=it&lang=it",
+        "text": "Italy|Italiano",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/jp/pricing?country=jp&lang=ja",
+        "text": "Japan|\u65e5\u672c\u8a9e",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/kr/pricing?country=kr&lang=ko",
+        "text": "Korea|\ud55c\uad6d\uc5b4",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/lv/pricing?country=lv&lang=lv",
+        "text": "Latvia|Latvie\u0161u",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/lt/pricing?country=lt&lang=lt",
+        "text": "Lithuania|Lithuanian",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/my/pricing?country=my&lang=en",
+        "text": "Malaysia|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/my-ms/pricing?country=my&lang=ms",
+        "text": "Malaysia|Bahasa Melayu",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/mx/precios?country=mx&lang=es",
+        "text": "Mexico|Espa\u00f1ol",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/nl/prijzen?country=nl&lang=nl",
+        "text": "Netherlands|Nederlands",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/nz/pricing?country=nz&lang=en",
+        "text": "New Zealand|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ng/pricing?country=ng&lang=en",
+        "text": "Nigeria|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/no/pricing?country=no&lang=nb",
+        "text": "Norway|Norge",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/no-en/pricing?country=no&lang=en",
+        "text": "Norway|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/pk/pricing?country=pk&lang=en",
+        "text": "Pakistan|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/pk-ur/pricing?country=pk&lang=ur",
+        "text": "Pakistan|\u0627\u0631\u062f\u0648",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/pe/precios?country=pe&lang=es",
+        "text": "Peru|Espa\u00f1ol",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ph/pricing?country=ph&lang=en",
+        "text": "Philippines|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/pl/pricing?country=pl&lang=pl",
+        "text": "Poland|Polski",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/pt/precos?country=pt&lang=pt",
+        "text": "Portugal|Portugu\u00eas",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ro/pricing?country=ro&lang=ro",
+        "text": "Romania|Romanian",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/sa/pricing?country=sa&lang=ar",
+        "text": "Saudi Arabia|\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/rs/pricing?country=rs&lang=sr",
+        "text": "Serbia|Srpski (latinica)",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/sg/pricing?country=sg&lang=en",
+        "text": "Singapore|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/sk/pricing?country=sk&lang=sk",
+        "text": "Slovakia|Sloven\u010dina",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/si/pricing?country=si&lang=sl",
+        "text": "Slovenia|Sloven\u0161\u010dina",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/za/pricing?country=za&lang=en",
+        "text": "South Africa|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/es-es/precios?country=es&lang=es",
+        "text": "Spain|Espa\u00f1ol",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/es-eu/pricing?country=es&lang=eu",
+        "text": "Spain|Euskara",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/es-ca/pricing?country=es&lang=ca",
+        "text": "Spain|Catal\u00e0",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/es-gl/pricing?country=es&lang=gl",
+        "text": "Spain|Galego",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/se/priser?country=se&lang=sv",
+        "text": "Sweden|Svenska",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ch/preise?country=ch&lang=de",
+        "text": "Switzerland|Deutsch",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ch-fr/tarifs?country=ch&lang=fr",
+        "text": "Switzerland|Fran\u00e7ais",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ch-it/prezzi?country=ch&lang=it",
+        "text": "Switzerland|Italiano",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/tw/pricing?country=tw&lang=zh",
+        "text": "Taiwan|\u7e41\u9ad4\u4e2d\u6587",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/th/pricing?country=th&lang=th",
+        "text": "Thailand|\u0e44\u0e17\u0e22",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/tr/pricing?country=tr&lang=tr",
+        "text": "T\u00fcrkiye|T\u00fcrk\u00e7e",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ae/pricing?country=ae&lang=en",
+        "text": "UAE|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ae-ar/pricing?country=ae&lang=ar",
+        "text": "UAE|\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/uk/pricing?country=gb&lang=en",
+        "text": "UK|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/ua/pricing?country=ua&lang=uk",
+        "text": "Ukraine|\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/pricing?country=us&lang=en",
+        "text": "USA|English",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/es/precios?country=us&lang=es",
+        "text": "USA|Espa\u00f1ol (Intl.)",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/zh/pricing?country=us&lang=zh",
+        "text": "USA|\u7b80\u4f53\u4e2d\u6587",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/vn/pricing?country=vn&lang=vi",
+        "text": "Vietnam|Ti\u1ebfng Vi\u1ec7t",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/legal/terms",
+        "text": "Terms of Service",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/legal",
+        "text": "Legal",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/legal/privacy",
+        "text": "Privacy Policy",
+        "rel": []
+      },
+      {
+        "href": "https://www.shopify.com/in/sitemap",
+        "text": "Sitemap",
+        "rel": []
+      }
+    ],
+    "external": [
+      {
+        "href": "https://themes.shopify.com/",
+        "text": "Themes",
+        "rel": []
+      },
+      {
+        "href": "https://apps.shopify.com/",
+        "text": "Shopify App StoreLargest commerce ecosystem",
+        "rel": []
+      },
+      {
+        "href": "https://shopify.dev",
+        "text": "Shopify.devDev docs, CLI, and more",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": [
+          "noopener",
+          "noreferrer"
+        ]
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=plus_signup",
+        "text": "Try Plus",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=paid_trial_experience",
+        "text": "Start for free",
+        "rel": []
+      },
+      {
+        "href": "https://admin.shopify.com/signup?locale=en-IN&language=en&signup_page=https%3A%2F%2Fwww.shopify.com%2Fin%2Fpricing&signup_types%5B%5D=plus_signup",
+        "text": "Try Plus",
+        "rel": []
+      },
+      {
+        "href": "https://stripe.com/",
+        "text": "Stripe Payments Company",
+        "rel": []
+      },
+      {
+        "href": "https://help.shopify.com/en/manual/finance/shopify-balance/rewards/earning-rewards",
+        "text": "Reward Terms",
+        "rel": []
+      },
+      {
+        "href": "https://shopify.dev/docs",
+        "text": "Developer Docs",
+        "rel": []
+      },
+      {
+        "href": "https://themes.shopify.com/",
+        "text": "Theme Store",
+        "rel": []
+      },
+      {
+        "href": "https://apps.shopify.com/",
+        "text": "App Store",
+        "rel": []
+      },
+      {
+        "href": "https://changelog.shopify.com",
+        "text": "Changelog",
+        "rel": []
+      },
+      {
+        "href": "https://help.shopify.com/en",
+        "text": "Shopify Help Center",
+        "rel": []
+      },
+      {
+        "href": "https://community.shopify.com/",
+        "text": "Community Forum",
+        "rel": []
+      },
+      {
+        "href": "https://shopifystatus.com",
+        "text": "Service Status",
+        "rel": []
+      },
+      {
+        "href": "https://privacy.shopify.com/en",
+        "text": "Your Privacy Choices",
+        "rel": []
+      },
+      {
+        "href": "https://www.facebook.com/shopify",
+        "text": "",
+        "rel": [
+          "me",
+          "nofollow",
+          "noopener",
+          "noreferrer"
+        ]
+      },
+      {
+        "href": "https://twitter.com/shopify",
+        "text": "",
+        "rel": [
+          "me",
+          "nofollow",
+          "noopener",
+          "noreferrer"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/shopify",
+        "text": "",
+        "rel": [
+          "me",
+          "nofollow",
+          "noopener",
+          "noreferrer"
+        ]
+      },
+      {
+        "href": "https://www.instagram.com/shopify/",
+        "text": "",
+        "rel": [
+          "me",
+          "nofollow",
+          "noopener",
+          "noreferrer"
+        ]
+      },
+      {
+        "href": "https://www.tiktok.com/@shopify",
+        "text": "",
+        "rel": [
+          "me",
+          "nofollow",
+          "noopener",
+          "noreferrer"
+        ]
+      },
+      {
+        "href": "https://www.linkedin.com/company/shopify",
+        "text": "",
+        "rel": [
+          "me",
+          "nofollow",
+          "noopener",
+          "noreferrer"
+        ]
+      },
+      {
+        "href": "https://www.pinterest.com/shopify/",
+        "text": "",
+        "rel": [
+          "me",
+          "nofollow",
+          "noopener",
+          "noreferrer"
+        ]
+      }
+    ]
+  },
+  "schema": [],
+  "open_graph": {
+    "og:type": "website",
+    "og:site_name": "Shopify",
+    "og:title": "Shopify Pricing: Find the Right Plan for Your Business",
+    "og:description": "Get detailed information on Shopify pricing and features. Find the right plan for you and start your business in seconds.",
+    "og:image": "https://cdn.shopify.com/b/shopify-brochure2-assets/ad99387e77223a56caca1c7b18e31970.png",
+    "og:url": "https://www.shopify.com/in/pricing"
+  },
+  "twitter_card": {
+    "twitter:image": "https://cdn.shopify.com/b/shopify-brochure2-assets/ad99387e77223a56caca1c7b18e31970.png",
+    "twitter:card": "summary_large_image",
+    "twitter:site": "Shopify",
+    "twitter:account_id": "17136315",
+    "twitter:title": "Shopify Pricing: Find the Right Plan for Your Business",
+    "twitter:description": "Get detailed information on Shopify pricing and features. Find the right plan for you and start your business in seconds."
+  },
+  "word_count": 2183,
+  "hreflang": [
+    {
+      "lang": "x-default",
+      "href": "https://www.shopify.com/pricing"
+    },
+    {
+      "lang": "en-US",
+      "href": "https://www.shopify.com/pricing"
+    },
+    {
+      "lang": "es-AR",
+      "href": "https://www.shopify.com/ar/precios"
+    },
+    {
+      "lang": "en-AU",
+      "href": "https://www.shopify.com/au/pricing"
+    },
+    {
+      "lang": "de-AT",
+      "href": "https://www.shopify.com/at/preise"
+    },
+    {
+      "lang": "bn-BD",
+      "href": "https://www.shopify.com/bd/pricing"
+    },
+    {
+      "lang": "ru",
+      "href": "https://www.shopify.com/by/pricing"
+    },
+    {
+      "lang": "nl-BE",
+      "href": "https://www.shopify.com/be/prijzen"
+    },
+    {
+      "lang": "de-BE",
+      "href": "https://www.shopify.com/be-de/preise"
+    },
+    {
+      "lang": "fr-BE",
+      "href": "https://www.shopify.com/be-fr/tarifs"
+    },
+    {
+      "lang": "pt-BR",
+      "href": "https://www.shopify.com/br/precos"
+    },
+    {
+      "lang": "bg",
+      "href": "https://www.shopify.com/bg/pricing"
+    },
+    {
+      "lang": "en-CA",
+      "href": "https://www.shopify.com/ca/pricing"
+    },
+    {
+      "lang": "fr-CA",
+      "href": "https://www.shopify.com/ca-fr/tarifs"
+    },
+    {
+      "lang": "es-CL",
+      "href": "https://www.shopify.com/cl/precios"
+    },
+    {
+      "lang": "es-CO",
+      "href": "https://www.shopify.com/co/precios"
+    },
+    {
+      "lang": "hr",
+      "href": "https://www.shopify.com/hr/pricing"
+    },
+    {
+      "lang": "cs",
+      "href": "https://www.shopify.com/cz/pricing"
+    },
+    {
+      "lang": "da",
+      "href": "https://www.shopify.com/dk/priser"
+    },
+    {
+      "lang": "ar-EG",
+      "href": "https://www.shopify.com/eg/pricing"
+    },
+    {
+      "lang": "et-EE",
+      "href": "https://www.shopify.com/ee/pricing"
+    },
+    {
+      "lang": "fi",
+      "href": "https://www.shopify.com/fi/pricing"
+    },
+    {
+      "lang": "fr",
+      "href": "https://www.shopify.com/fr/tarifs"
+    },
+    {
+      "lang": "ka-GE",
+      "href": "https://www.shopify.com/ge/pricing"
+    },
+    {
+      "lang": "de",
+      "href": "https://www.shopify.com/de/preise"
+    },
+    {
+      "lang": "el",
+      "href": "https://www.shopify.com/gr/pricing"
+    },
+    {
+      "lang": "zh-HK",
+      "href": "https://www.shopify.com/hk/pricing"
+    },
+    {
+      "lang": "en-HK",
+      "href": "https://www.shopify.com/hk-en/pricing"
+    },
+    {
+      "lang": "hu",
+      "href": "https://www.shopify.com/hu/pricing"
+    },
+    {
+      "lang": "hi",
+      "href": "https://www.shopify.com/in-hi/pricing"
+    },
+    {
+      "lang": "en-IN",
+      "href": "https://www.shopify.com/in/pricing"
+    },
+    {
+      "lang": "bn-IN",
+      "href": "https://www.shopify.com/in-bn/pricing"
+    },
+    {
+      "lang": "gu-IN",
+      "href": "https://www.shopify.com/in-gu/pricing"
+    },
+    {
+      "lang": "mr-IN",
+      "href": "https://www.shopify.com/in-mr/pricing"
+    },
+    {
+      "lang": "ta-IN",
+      "href": "https://www.shopify.com/in-ta/pricing"
+    },
+    {
+      "lang": "te-IN",
+      "href": "https://www.shopify.com/in-te/pricing"
+    },
+    {
+      "lang": "id",
+      "href": "https://www.shopify.com/id-id/pricing"
+    },
+    {
+      "lang": "en-ID",
+      "href": "https://www.shopify.com/id/pricing"
+    },
+    {
+      "lang": "en-IE",
+      "href": "https://www.shopify.com/ie/pricing"
+    },
+    {
+      "lang": "en-IL",
+      "href": "https://www.shopify.com/il/pricing"
+    },
+    {
+      "lang": "he",
+      "href": "https://www.shopify.com/il-he/pricing"
+    },
+    {
+      "lang": "it",
+      "href": "https://www.shopify.com/it/prezzi"
+    },
+    {
+      "lang": "ja-JP",
+      "href": "https://www.shopify.com/jp/pricing"
+    },
+    {
+      "lang": "ko",
+      "href": "https://www.shopify.com/kr/pricing"
+    },
+    {
+      "lang": "lv-LV",
+      "href": "https://www.shopify.com/lv/pricing"
+    },
+    {
+      "lang": "lt",
+      "href": "https://www.shopify.com/lt/pricing"
+    },
+    {
+      "lang": "en-MY",
+      "href": "https://www.shopify.com/my/pricing"
+    },
+    {
+      "lang": "ms",
+      "href": "https://www.shopify.com/my-ms/pricing"
+    },
+    {
+      "lang": "es-MX",
+      "href": "https://www.shopify.com/mx/precios"
+    },
+    {
+      "lang": "nl",
+      "href": "https://www.shopify.com/nl/prijzen"
+    },
+    {
+      "lang": "en-NZ",
+      "href": "https://www.shopify.com/nz/pricing"
+    },
+    {
+      "lang": "en-NG",
+      "href": "https://www.shopify.com/ng/pricing"
+    },
+    {
+      "lang": "nb",
+      "href": "https://www.shopify.com/no/pricing"
+    },
+    {
+      "lang": "en-NO",
+      "href": "https://www.shopify.com/no-en/pricing"
+    },
+    {
+      "lang": "en-PK",
+      "href": "https://www.shopify.com/pk/pricing"
+    },
+    {
+      "lang": "ur",
+      "href": "https://www.shopify.com/pk-ur/pricing"
+    },
+    {
+      "lang": "es-PE",
+      "href": "https://www.shopify.com/pe/precios"
+    },
+    {
+      "lang": "en-PH",
+      "href": "https://www.shopify.com/ph/pricing"
+    },
+    {
+      "lang": "pl",
+      "href": "https://www.shopify.com/pl/pricing"
+    },
+    {
+      "lang": "pt-PT",
+      "href": "https://www.shopify.com/pt/precos"
+    },
+    {
+      "lang": "ro",
+      "href": "https://www.shopify.com/ro/pricing"
+    },
+    {
+      "lang": "ar-SA",
+      "href": "https://www.shopify.com/sa/pricing"
+    },
+    {
+      "lang": "sr-Latn-RS",
+      "href": "https://www.shopify.com/rs/pricing"
+    },
+    {
+      "lang": "en-SG",
+      "href": "https://www.shopify.com/sg/pricing"
+    },
+    {
+      "lang": "sk",
+      "href": "https://www.shopify.com/sk/pricing"
+    },
+    {
+      "lang": "sl",
+      "href": "https://www.shopify.com/si/pricing"
+    },
+    {
+      "lang": "en-ZA",
+      "href": "https://www.shopify.com/za/pricing"
+    },
+    {
+      "lang": "es-ES",
+      "href": "https://www.shopify.com/es-es/precios"
+    },
+    {
+      "lang": "eu-ES",
+      "href": "https://www.shopify.com/es-eu/pricing"
+    },
+    {
+      "lang": "ca-ES",
+      "href": "https://www.shopify.com/es-ca/pricing"
+    },
+    {
+      "lang": "gl-ES",
+      "href": "https://www.shopify.com/es-gl/pricing"
+    },
+    {
+      "lang": "sv",
+      "href": "https://www.shopify.com/se/priser"
+    },
+    {
+      "lang": "de-CH",
+      "href": "https://www.shopify.com/ch/preise"
+    },
+    {
+      "lang": "fr-CH",
+      "href": "https://www.shopify.com/ch-fr/tarifs"
+    },
+    {
+      "lang": "it-CH",
+      "href": "https://www.shopify.com/ch-it/prezzi"
+    },
+    {
+      "lang": "zh-Hant-TW",
+      "href": "https://www.shopify.com/tw/pricing"
+    },
+    {
+      "lang": "th",
+      "href": "https://www.shopify.com/th/pricing"
+    },
+    {
+      "lang": "tr",
+      "href": "https://www.shopify.com/tr/pricing"
+    },
+    {
+      "lang": "en-AE",
+      "href": "https://www.shopify.com/ae/pricing"
+    },
+    {
+      "lang": "ar-AE",
+      "href": "https://www.shopify.com/ae-ar/pricing"
+    },
+    {
+      "lang": "en-GB",
+      "href": "https://www.shopify.com/uk/pricing"
+    },
+    {
+      "lang": "uk-UA",
+      "href": "https://www.shopify.com/ua/pricing"
+    },
+    {
+      "lang": "es",
+      "href": "https://www.shopify.com/es/precios"
+    },
+    {
+      "lang": "zh-Hans",
+      "href": "https://www.shopify.com/zh/pricing"
+    },
+    {
+      "lang": "vi",
+      "href": "https://www.shopify.com/vn/pricing"
+    }
+  ]
+}

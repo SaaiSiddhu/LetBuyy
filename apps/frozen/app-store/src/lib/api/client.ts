@@ -35,6 +35,7 @@ export async function createAppMarketplaceApiClient(
 ): Promise<LetbuyyApiClient> {
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value;
+    const headers = new Headers();
 
     if (options.requireSession && !sessionToken) {
         throw new LetbuyyApiError({
@@ -44,34 +45,30 @@ export async function createAppMarketplaceApiClient(
         });
     }
 
-    const getHeaders = async () => {
-        const headers = new Headers();
-        if (sessionToken) {
-            const headerPlan = await createLetbuyyInternalSessionHeaders(
-                sessionToken,
-                getLetbuyyInternalAuthSecret({
-                    INTERNAL_API_SECRET: process.env.INTERNAL_API_SECRET,
-                    LETBUYY_INTERNAL_API_SECRET: process.env.LETBUYY_INTERNAL_API_SECRET,
-                }),
-            );
+    if (sessionToken) {
+        const headerPlan = await createLetbuyyInternalSessionHeaders(
+            sessionToken,
+            getLetbuyyInternalAuthSecret({
+                INTERNAL_API_SECRET: process.env.INTERNAL_API_SECRET,
+                LETBUYY_INTERNAL_API_SECRET: process.env.LETBUYY_INTERNAL_API_SECRET,
+            }),
+        );
 
-            if (!headerPlan.ok || !headerPlan.headers) {
-                throw new LetbuyyApiError({
-                    status: headerPlan.status === 'misconfigured' ? 500 : 401,
-                    code: headerPlan.status === 'misconfigured' ? 'SERVER_MISCONFIGURED' : 'UNAUTHORIZED',
-                    message: headerPlan.reason || 'Authentication required',
-                });
-            }
-
-            Object.entries(headerPlan.headers).forEach(([key, value]) => headers.set(key, value));
+        if (!headerPlan.ok || !headerPlan.headers) {
+            throw new LetbuyyApiError({
+                status: headerPlan.status === 'misconfigured' ? 500 : 401,
+                code: headerPlan.status === 'misconfigured' ? 'SERVER_MISCONFIGURED' : 'UNAUTHORIZED',
+                message: headerPlan.reason || 'Authentication required',
+            });
         }
-        return headers;
-    };
+
+        Object.entries(headerPlan.headers).forEach(([key, value]) => headers.set(key, value));
+    }
 
     return createLetbuyyApiClient({
         baseUrl: appMarketplaceApiBaseUrl(),
         apiVersionPath: '/v1',
-        getHeaders,
+        headers,
     });
 }
 

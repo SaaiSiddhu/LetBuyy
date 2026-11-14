@@ -22,8 +22,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-email": "^5.2.8",
-    "zod": "^4.3.6",
-    "@letbuyy/notification-core": "workspace:*"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

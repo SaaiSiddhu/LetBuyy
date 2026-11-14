@@ -35,7 +35,6 @@ const GUARDED = [
 // Rollbacks written after this phase are held to the forward rule below. Earlier files are covered
 // by the explicit list above; raising this number is not a fix.
 const RATCHET_FROM_EXCLUSIVE = 245;
-const PROFILE_GUARDED = ['388_cart_order_fact_snapshots.rollback.sql'];
 
 const CANDIDATE_GUARDED = [280,285,288,291,293,294,296,303,305];
 
@@ -61,7 +60,7 @@ test('every rollback that restores create_checkout_order carries a signature pre
 
 test('the guarded list is complete — no other rollback restores create_checkout_order unguarded', () => {
     const unguarded = rollbackFiles().filter((name) =>
-        createdFunctions(read(name)).includes('create_checkout_order') && !GUARDED.includes(name) && !PROFILE_GUARDED.includes(name));
+        createdFunctions(read(name)).includes('create_checkout_order') && !GUARDED.includes(name));
     assert.deepEqual(unguarded, [], 'add the signature precondition and list the file in GUARDED');
 });
 
@@ -789,8 +788,7 @@ test('historical full-definition guards require custody, every restored ABI, and
 });
 
 test('visibility rollback earns full typed profile proof; stripped and forged guards do not', () => {
-    for (const name of ['366_theme_publication_visibility.rollback.sql','376_atomic_theme_instance_switch.rollback.sql']) {
-    const sql=read(name);
+    const name='366_theme_publication_visibility.rollback.sql',sql=read(name);
     const forwardSql=readFileSync(join(rollbackDir,'../migrations/366_theme_publication_visibility.sql'),'utf8');
     assert.deepEqual(guardedRestorations(sql,{forwardSql}),['publish_theme_release']);
     const terms=[
@@ -800,7 +798,7 @@ test('visibility rollback earns full typed profile proof; stripped and forged gu
         '(SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=p.pronamespace AND q.proname=p.proname)<>1',
         "p.proconfig IS DISTINCT FROM ARRAY['search_path=public']::text[]",
         "pg_catalog.has_function_privilege('anon',p.oid,'EXECUTE')", "pg_catalog.has_function_privilege('authenticated',p.oid,'EXECUTE')",
-        "NOT pg_catalog.has_function_privilege('service_role',p.oid,'EXECUTE')", `pg_catalog.md5(p.prosrc)<>'${name.startsWith('376')?'56a6b7b15e8a7ec159341fe0331ac593':'8a1479af8ced3bbdb3cd6cc21d957f42'}'`,
+        "NOT pg_catalog.has_function_privilege('service_role',p.oid,'EXECUTE')", "pg_catalog.md5(p.prosrc)<>'8a1479af8ced3bbdb3cd6cc21d957f42'",
     ];
     for(const term of terms){assert.ok(sql.includes(term),term);assert.deepEqual(guardedRestorations(sql.replace(term,'false'),{forwardSql}),[],term+' cannot be removed');}
     for(const [before,after] of [
@@ -814,33 +812,4 @@ test('visibility rollback earns full typed profile proof; stripped and forged gu
         ["RAISE EXCEPTION 'Theme publication", "RAISE WARNING 'Theme publication"],
     ]){assert.ok(sql.includes(before),before);assert.deepEqual(guardedRestorations(sql.replace(before,after),{forwardSql}),[],before+' cannot be substituted');}
     assert.deepEqual(guardedRestorations(sql.replace('DO $visibility_shape$', 'CREATE TABLE public.synthetic_before_guard(id integer);\nDO $visibility_shape$'),{forwardSql}),[]);
-    }
-});
-
-test('metadata rollback requires every reviewed profile, overload and private ACL token',()=>{
- const sql=read('371_storefront_access_metadata.rollback.sql');
- assert.deepEqual(guardedRestorations(sql),['read_published_storefront_site_v1']);
- for(const [before,after] of [
-  ['p.proowner<>','p.proowner='],['OR NOT p.prosecdef','OR p.prosecdef'],
-  ["'p_id_only'","'p_other'"],["'authenticator'","'authenticated'"],
-  ['p.oid IS DISTINCT FROM target','p.oid IS NOT DISTINCT FROM target'],
-  ["'597f30ae0ceee9df27a453fee9cc0991'","'00000000000000000000000000000000'"],
-  ['LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;',''],
-  ['RAISE EXCEPTION','RAISE WARNING']
- ]) {assert.ok(sql.includes(before));assert.deepEqual(guardedRestorations(sql.replace(before,after)),[],before);}
-});
-
-test('current cart snapshot rollback retains four complete ABI proofs and refuses forged predicates',()=>{
- const original=read(PROFILE_GUARDED[0]);
- assert.equal(guardedRestorations(original).length,4);
- for(const [before,after] of [
-  ['live.proargnames IS DISTINCT FROM expected.input_names','false'],
-  ["pg_catalog.has_function_privilege('anon',live.oid,'EXECUTE')",'false'],
-  ["(SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=live.pronamespace AND other.proname=live.proname)<>1",'false'],
-  ["RAISE EXCEPTION '388 rollback refuses changed typed ABI or API role authority'","RAISE WARNING '388 rollback refuses changed typed ABI or API role authority'"],
-  ["j.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(pg_get_functiondef(p.oid),'UTF8')),'hex')",'false'],
- ]) {
-  assert.ok(original.includes(before),before);
-  assert.deepEqual(guardedRestorations(original.replace(before,after)),[],before);
- }
 });

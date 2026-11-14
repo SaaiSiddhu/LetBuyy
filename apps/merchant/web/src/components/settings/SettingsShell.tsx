@@ -2,11 +2,10 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { getStorefrontRootDomain } from '@/lib/public-urls'
-import { MerchantNavigationLink as Link } from '../MerchantNavigationLink'
-import { ArrowLeft, Input, ScrollThumb, Search } from '@letbuyy/ui'
+import Link from 'next/link'
+import { Input, LayoutDashboard, ScrollThumb, Search, X } from '@letbuyy/ui'
 import {
-    getSettingsNavigationGroups,
+    SETTINGS_NAV_GROUPS,
     getSettingsItemByPath,
 } from './settings-navigation'
 
@@ -16,7 +15,6 @@ interface SettingsShellProps {
     subdomain: string
     userName: string
     userEmail: string
-    appPlatformEnabled: boolean
     children: React.ReactNode
 }
 
@@ -47,7 +45,6 @@ export function SettingsShell({
     subdomain,
     userName,
     userEmail,
-    appPlatformEnabled,
     children,
 }: SettingsShellProps) {
     const pathname = usePathname()
@@ -56,25 +53,35 @@ export function SettingsShell({
     const activeItem = getSettingsItemByPath(pathname, store)
     const desktopNavRef = useRef<HTMLElement>(null)
 
-    const filteredGroups = useMemo(() => getSettingsNavigationGroups(appPlatformEnabled).map(group => ({
+    const filteredGroups = useMemo(() => SETTINGS_NAV_GROUPS.map(group => ({
         ...group,
         items: group.items.filter(item => itemMatches(normalizedQuery, group.title, [
             item.label,
             item.description,
             ...item.keywords,
         ])),
-    })), [appPlatformEnabled, normalizedQuery])
-    const hasSearchResults = filteredGroups.some(group => group.items.length > 0)
+    })), [normalizedQuery])
 
     const storeInitials = getInitials(storeName || subdomain)
     const userInitials = getInitials(userName || userEmail)
     const settingsHomeHref = `/${store}/settings`
+    const homeActive = pathname === settingsHomeHref
 
     function renderNav() {
         return (
             <>
+                <Link
+                    href={settingsHomeHref}
+                    aria-current={homeActive ? 'page' : undefined}
+                    className={`settings-nav-item${homeActive ? ' active' : ''}`}
+                >
+                    <LayoutDashboard className="letbuyy-icon" aria-hidden="true" />
+                    <span className="settings-nav-label">Dashboard</span>
+                </Link>
+
                 {filteredGroups.map(group => group.items.length > 0 && (
-                    <div key={group.title} role="group" aria-label={group.title}>
+                    <div key={group.title}>
+                        <div className="settings-nav-group-label">{group.title}</div>
                         {group.items.map(item => {
                             const href = `/${store}/settings/${item.href}`
                             const active = pathname === href || !!pathname?.startsWith(`${href}/`)
@@ -105,15 +112,28 @@ export function SettingsShell({
 
     return (
         <>
-            {/* Tablet and desktop keep settings navigation beside the content.
-                Phones use the shared header drawer for settings navigation. */}
+            {/* Desktop shell — sidebar + content grid.
+                Below 1024px this rail is display:none and settings navigation is
+                served by the shared header-hamburger drawer in AdminShell, so
+                there is no mobile topbar or "Index" button here any more. */}
             <div className="settings-shell">
                 <aside className="settings-sidebar">
-                    <div className="settings-sidebar-heading">
-                        <Link href={`/${store}/dashboard`} className="settings-sidebar-back" aria-label="Back to main navigation">
-                            <ArrowLeft className="letbuyy-icon" aria-hidden="true" />
+                    {/* Store header */}
+                    <div className="settings-sidebar-store">
+                        <span className="settings-sidebar-store-icon" aria-hidden="true">
+                            {storeInitials}
+                        </span>
+                        <span className="settings-sidebar-store-info">
+                            <span className="settings-sidebar-store-name">{storeName}</span>
+                            <span className="settings-sidebar-store-domain">{subdomain}.letbuyy.com</span>
+                        </span>
+                        <Link
+                            href={`/${store}/dashboard`}
+                            className="settings-sidebar-close"
+                            aria-label="Close settings"
+                        >
+                            <X className="letbuyy-icon" aria-hidden="true" />
                         </Link>
-                        <Link href={settingsHomeHref} className="settings-sidebar-title">Settings</Link>
                     </div>
 
                     {/* Search */}
@@ -130,20 +150,10 @@ export function SettingsShell({
                         />
                     </div>
 
-                    <div className="settings-sidebar-store">
-                        <span className="settings-sidebar-store-info">
-                            <span className="settings-sidebar-store-name">{storeName}</span>
-                            <span className="settings-sidebar-store-domain">{subdomain}.{getStorefrontRootDomain()}</span>
-                        </span>
-                        <span className="settings-sidebar-store-icon" aria-hidden="true">{storeInitials}</span>
-                    </div>
-
                     {/* Nav */}
                     <div className="settings-sidebar-nav-track">
                         <nav ref={desktopNavRef} className="settings-sidebar-nav" aria-label="Settings">
-                            {hasSearchResults ? renderNav() : (
-                                <p className="settings-sidebar-no-results" role="status">No settings match “{query.trim()}”.</p>
-                            )}
+                            {renderNav()}
                         </nav>
                         <ScrollThumb scrollRef={desktopNavRef} />
                     </div>

@@ -27,7 +27,7 @@ export default function CopyLinkButton() {
       type="button"
       onClick={copy}
       className="rc-copy-link-btn"
-      aria-label={t("Copy article link")}
+      aria-label={t(copied ? 'Copied!' : 'Copy link')}
     >
       {copied ? (
         <>

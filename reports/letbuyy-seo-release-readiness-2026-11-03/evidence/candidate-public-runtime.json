@@ -1,0 +1,10 @@
+{
+  "NEXT_PUBLIC_MARKETING_URL": "http://localhost:9006",
+  "NEXT_PUBLIC_API_URL": "http://localhost:9010",
+  "LETBUYY_API_URL": "http://127.0.0.1:9010",
+  "NEXT_PUBLIC_ACCOUNTS_URL": "http://localhost:9002",
+  "NEXT_PUBLIC_THEME_MARKETPLACE_URL": "https://themes.letbuyy.com",
+  "NEXT_PUBLIC_APP_MARKETPLACE_URL": "https://apps.letbuyy.com",
+  "NEXT_PUBLIC_DEVELOPER_PORTAL_URL": "https://developers.letbuyy.com",
+  "NEXT_TELEMETRY_DISABLED": "1"
+}

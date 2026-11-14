@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -12,6 +10,7 @@ import { Button, Input,
     Calendar,
     Card,
     ConfirmDialog,
+    EmptyState,
     ExternalLink,
     Page,
     PageHeader,
@@ -25,7 +24,6 @@ import { Button, Input,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 interface Certification {
     id: string
@@ -131,18 +129,15 @@ export default function CertificationsPage() {
     const [certificationToDelete, setCertificationToDelete] = useState<Certification | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadCertifications = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/certifications`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load certifications'))
@@ -150,7 +145,6 @@ export default function CertificationsPage() {
 
             setItems(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load certifications'
             setItems([])
             setLoadError(message)
@@ -160,9 +154,9 @@ export default function CertificationsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadCertifications()
@@ -287,8 +281,7 @@ export default function CertificationsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="content"
-                    recipe="index"
+                <PageHeader
                     title="Certifications"
                     description="Show verified credentials and professional certificates on your resume."
                     breadcrumbs={[{ label: 'Resume' }, { label: 'Certifications' }]}
@@ -304,8 +297,7 @@ export default function CertificationsPage() {
 
     return (
         <Page>
-            <PageHeader identity="content"
-                recipe="index"
+            <PageHeader
                 title="Certifications"
                 description="Show verified credentials and professional certificates on your resume."
                 breadcrumbs={[{ label: 'Resume' }, { label: 'Certifications' }]}
@@ -404,7 +396,7 @@ export default function CertificationsPage() {
             {items.length === 0 && !showForm ? (
                 <Card>
                     <Section title="Certifications">
-                        <EmptyState scene="certifications"
+                        <EmptyState
                             icon={<Award className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No certifications yet"
                             body="Add certificates, issuers, IDs, and verification links to make your resume more credible."

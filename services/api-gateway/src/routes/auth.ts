@@ -1,4 +1,3 @@
-import { registerMerchantBuyerConnectionRoutes } from './merchant-buyer-connection';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
@@ -27,7 +26,6 @@ import {
     type AuthTokenType,
 } from '../schemas/auth.schema';
 import { validateSubdomainFormat } from '@letbuyy/tenant-core';
-import { MerchantPasswordResetCommitSchema } from '@letbuyy/auth-core';
 
 const auth = new Hono<{ Bindings: import('../index').Env }>();
 const MERCHANT_PASSWORD_HASH_COLUMN = 'password_hash';
@@ -966,21 +964,6 @@ auth.post('/custom/users/set-password', async (c) => {
     if (unauthorized) return unauthorized;
 
     const body = await c.req.json();
-    if (body.purpose === 'password_reset') {
-        const parsedReset = MerchantPasswordResetCommitSchema.safeParse(body);
-        if (!parsedReset.success) return c.json(errorBody('VALIDATION', 'Invalid reset request'), 400);
-        const { data, error } = await getSupabaseAdmin(c).rpc('complete_merchant_password_reset', {
-            p_token: parsedReset.data.token,
-            p_password_hash: await hashMerchantPassword(parsedReset.data.password),
-        });
-        if (error) return c.json(dbErrorBody(), 503);
-        const result = data as { outcome?: string; user?: { id: string; email: string } } | null;
-        if (result?.outcome !== 'reset' || !result.user) {
-            return c.json(errorBody('VALIDATION', 'Invalid or expired reset link'), 400);
-        }
-        c.header('Cache-Control', 'no-store');
-        return c.json({ data: result.user });
-    }
     const userId = String(body.user_id || '');
     const email = normalizeAuthEmail(body.email);
     const password = typeof body.password === 'string' ? body.password : '';
@@ -1414,7 +1397,5 @@ auth.post('/custom/tokens/validate', async (c) => {
 
     return c.json({ data: { email: data.email, user_id: data.user_id } });
 });
-
-registerMerchantBuyerConnectionRoutes(auth,requireAccountsInternal);
 
 export default auth;

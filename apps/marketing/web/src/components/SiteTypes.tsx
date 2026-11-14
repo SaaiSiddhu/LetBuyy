@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import * as motion from 'framer-motion/m'
 import { CheckCircle2 } from '@letbuyy/ui'
 
 // Feature data with benefits (max 3)

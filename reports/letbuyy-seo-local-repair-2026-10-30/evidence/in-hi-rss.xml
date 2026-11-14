@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>LetBuyy संसाधन</title>
+    <link>http://localhost:9006/in-hi/resources</link>
+    <description>भारत में ऑनलाइन व्यवसाय शुरू करने, चलाने और बढ़ाने की मार्गदर्शिकाएँ। स्टोर, भुगतान और संचालन जानें।</description>
+    <language>hi-IN</language>
+    <atom:link href="http://localhost:9006/in-hi/resources/rss.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>http://localhost:9006/icons/letbuyy-logo-512.png?v=3</url>
+      <title>LetBuyy संसाधन</title>
+      <link>http://localhost:9006/in-hi/resources</link>
+    </image>
+    <item>
+      <title>व्यापारी नियंत्रण केंद्र: आपका वाणिज्य OS डैशबोर्ड</title>
+      <link>http://localhost:9006/in-hi/resources/platform/merchant-web-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/merchant-web-guide#hi</guid>
+      <description>LetBuyy व्यापारी नियंत्रण केंद्र की पूरी मार्गदर्शिका—नेविगेशन, मॉड्यूल, डैशबोर्ड और उन्नत सुविधाएँ।</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>merchant-dashboard</category>
+      <category>platform</category>
+      <category>getting-started</category>
+      <category>product</category>
+    </item>
+    <item>
+      <title>LetBuyy AI Copilot मार्गदर्शिका</title>
+      <link>http://localhost:9006/in-hi/resources/ai-commerce/commerce-copilot-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/commerce-copilot-guide#hi</guid>
+      <description>LetBuyy AI Copilot की पूरी मार्गदर्शिका—क्षमताएँ, उपयोग और व्यापारियों के लिए उन्नत प्रॉम्प्ट।</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>copilot</category>
+      <category>ai</category>
+      <category>letbuyy</category>
+      <category>product</category>
+    </item>
+    <item>
+      <title>LetBuyy प्लेटफ़ॉर्म परिचय: सब कुछ एक जगह</title>
+      <link>http://localhost:9006/in-hi/resources/platform/letbuyy-platform-overview</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/letbuyy-platform-overview#hi</guid>
+      <description>LetBuyy का पूरा परिचय—व्यापारी नियंत्रण केंद्र, स्टोरफ्रंट रनटाइम, पहचान, डेवलपर व्यवस्था और कार्ययोजना।</description>
+      <pubDate>Sat, 30 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>platform</category>
+      <category>overview</category>
+      <category>architecture</category>
+      <category>product</category>
+    </item>
+    <item>
+      <title>अपना पहला LetBuyy स्टोर बनाएँ: पूरा मार्गदर्शन</title>
+      <link>http://localhost:9006/in-hi/resources/platform/building-first-letbuyy-store</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/building-first-letbuyy-store#hi</guid>
+      <description>LetBuyy स्टोर शून्य से बनाने की चरणबद्ध प्रक्रिया — थीम, उत्पाद, भुगतान और लॉन्च।</description>
+      <pubDate>Thu, 28 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>getting-started</category>
+      <category>platform</category>
+      <category>store-setup</category>
+      <category>walkthrough</category>
+    </item>
+    <item>
+      <title>AI वाणिज्य समझें: आपकी दुकान के लिए इसका अर्थ</title>
+      <link>http://localhost:9006/in-hi/resources/ai-commerce/ai-commerce-explained</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/ai-commerce-explained#hi</guid>
+      <description>भारतीय व्यापारियों के लिए व्यावहारिक AI परिचय—यह क्या कर सकता है, क्या नहीं और कहाँ से शुरू करें।</description>
+      <pubDate>Mon, 25 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>ai</category>
+      <category>automation</category>
+      <category>commerce</category>
+      <category>future</category>
+    </item>
+    <item>
+      <title>अपना पहला LetBuyy ऐप बनाना</title>
+      <link>http://localhost:9006/in-hi/resources/developers/building-first-letbuyy-app</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/building-first-letbuyy-app#hi</guid>
+      <description>LetBuyy ऐप बनाने की चरणबद्ध मार्गदर्शिका—OAuth 2.0, एम्बेडेड UI, वेबहुक और ऐप मार्केटप्लेस में प्रस्तुति।</description>
+      <pubDate>Fri, 22 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>apps</category>
+      <category>oauth</category>
+      <category>developers</category>
+      <category>marketplace</category>
+    </item>
+    <item>
+      <title>कई गोदामों की इन्वेंटरी का प्रबंधन</title>
+      <link>http://localhost:9006/in-hi/resources/operations/multi-warehouse-inventory</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/multi-warehouse-inventory#hi</guid>
+      <description>भारतीय ईकॉमर्स के लिए कई गोदाम सेट करना—क्षेत्र आवंटन, स्टॉक हस्तांतरण और पूर्ति रूटिंग।</description>
+      <pubDate>Wed, 20 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>inventory</category>
+      <category>warehouse</category>
+      <category>multi-location</category>
+      <category>operations</category>
+    </item>
+    <item>
+      <title>LetBuyy API के साथ शुरुआत</title>
+      <link>http://localhost:9006/in-hi/resources/developers/letbuyy-api-getting-started</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/letbuyy-api-getting-started#hi</guid>
+      <description>LetBuyy API डेवलपर मार्गदर्शिका—प्रमाणीकरण, दर सीमाएँ, एंडपॉइंट और पहला एकीकरण।</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>api</category>
+      <category>developers</category>
+      <category>integration</category>
+      <category>authentication</category>
+    </item>
+    <item>
+      <title>अपने पहले 100 ऑर्डर कैसे पाएँ</title>
+      <link>http://localhost:9006/in-hi/resources/growth/first-100-orders-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/first-100-orders-guide#hi</guid>
+      <description>ऑर्गेनिक, WhatsApp और सामुदायिक माध्यमों से नए भारतीय ईकॉमर्स ब्रांड के पहले 100 ऑर्डर पाने की चरणबद्ध मार्गदर्शिका।</description>
+      <pubDate>Fri, 15 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>growth</category>
+      <category>beginners</category>
+      <category>organic</category>
+      <category>whatsapp</category>
+    </item>
+    <item>
+      <title>AI से दुकान के संचालन को स्वचालित करना</title>
+      <link>http://localhost:9006/in-hi/resources/ai-commerce/automating-operations-ai</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/automating-operations-ai#hi</guid>
+      <description>AI से ईकॉमर्स संचालन स्वचालित करने की मार्गदर्शिका—स्टॉक चेतावनी, सहायता, ऑर्डर रूटिंग और अन्य काम।</description>
+      <pubDate>Tue, 12 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>automation</category>
+      <category>ai</category>
+      <category>operations</category>
+      <category>efficiency</category>
+    </item>
+    <item>
+      <title>उत्पाद पेज का अनुकूलन: पूरी मार्गदर्शिका</title>
+      <link>http://localhost:9006/in-hi/resources/ecommerce/product-page-optimization</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/product-page-optimization#hi</guid>
+      <description>भारतीय खरीदारों के लिए उत्पाद पेज बेहतर बनाना सीखें — प्रभावी चित्र, विवरण, समीक्षाएँ और भरोसे के संकेत।</description>
+      <pubDate>Sun, 10 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>conversion</category>
+      <category>product-pages</category>
+      <category>ux</category>
+      <category>copywriting</category>
+    </item>
+    <item>
+      <title>भारतीय व्यापारियों के लिए कार्यप्रवाह स्वचालन</title>
+      <link>http://localhost:9006/in-hi/resources/ai-commerce/workflow-automation-merchants</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/workflow-automation-merchants#hi</guid>
+      <description>भारतीय ईकॉमर्स कार्यप्रवाह बनाने की मार्गदर्शिका—ट्रिगर, कार्रवाई और व्यावहारिक उदाहरण।</description>
+      <pubDate>Fri, 08 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>automation</category>
+      <category>workflows</category>
+      <category>operations</category>
+      <category>efficiency</category>
+    </item>
+    <item>
+      <title>भारतीय ब्रांड के लिए प्रभावी ग्राहक बनाए रखने की रणनीतियाँ</title>
+      <link>http://localhost:9006/in-hi/resources/growth/retention-strategies-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/retention-strategies-india#hi</guid>
+      <description>भारतीय ईकॉमर्स के लिए प्रभावी रणनीतियाँ — वफ़ादारी कार्यक्रम, दोबारा जुड़ाव और जीवनकाल मूल्य बढ़ाना।</description>
+      <pubDate>Tue, 05 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>retention</category>
+      <category>loyalty</category>
+      <category>ltv</category>
+      <category>repeat-purchase</category>
+    </item>
+    <item>
+      <title>भारत में ऑनलाइन स्टोर कैसे शुरू करें (2026 मार्गदर्शिका)</title>
+      <link>http://localhost:9006/in-hi/resources/ecommerce/how-to-start-an-online-store-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/how-to-start-an-online-store-india#hi</guid>
+      <description>2026 में भारत में ऑनलाइन स्टोर शुरू करने की पूरी चरणबद्ध मार्गदर्शिका: GST, भुगतान, लॉजिस्टिक्स और मार्केटिंग।</description>
+      <pubDate>Fri, 01 May 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>store-setup</category>
+      <category>india</category>
+      <category>beginners</category>
+      <category>gst</category>
+    </item>
+    <item>
+      <title>AI उत्पाद सुझाव जो वास्तव में बिक्री बढ़ाएँ</title>
+      <link>http://localhost:9006/in-hi/resources/ai-commerce/ai-product-recommendations</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ai-commerce/ai-product-recommendations#hi</guid>
+      <description>LetBuyy में AI उत्पाद सुझाव कैसे काम करते हैं—सहयोगी फ़िल्टरिंग, अपसेल, क्रॉस-सेल और सुझाव रखने की रणनीति।</description>
+      <pubDate>Thu, 30 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>AI Commerce</category>
+      <category>recommendations</category>
+      <category>ai</category>
+      <category>conversion</category>
+      <category>personalization</category>
+    </item>
+    <item>
+      <title>भारत में शिपिंग: पिनकोड कवरेज, दरें और कूरियर</title>
+      <link>http://localhost:9006/in-hi/resources/operations/shipping-india-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/shipping-india-guide#hi</guid>
+      <description>भारत में ईकॉमर्स शिपिंग की पूरी मार्गदर्शिका—कूरियर तुलना, दरों पर बातचीत, पिनकोड और अंतिम चरण की डिलीवरी।</description>
+      <pubDate>Tue, 28 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>shipping</category>
+      <category>logistics</category>
+      <category>courier</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>LetBuyy पर भुगतान स्वीकार करना: UPI, कार्ड और COD</title>
+      <link>http://localhost:9006/in-hi/resources/payments/razorpay-integration-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/razorpay-integration-guide#hi</guid>
+      <description>LetBuyy दुकान पर Razorpay, UPI, COD और भारतीय भुगतान तरीके शुरू करने की चरणबद्ध मार्गदर्शिका।</description>
+      <pubDate>Sat, 25 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>payments</category>
+      <category>razorpay</category>
+      <category>upi</category>
+      <category>setup</category>
+    </item>
+    <item>
+      <title>कार्ट छोड़ने की दर घटाएँ: भारतीय स्टोर के लिए 12 रणनीतियाँ</title>
+      <link>http://localhost:9006/in-hi/resources/ecommerce/reducing-cart-abandonment</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/reducing-cart-abandonment#hi</guid>
+      <description>COD, UPI और WhatsApp रिकवरी के साथ भारतीय ईकॉमर्स स्टोर में छोड़ी गई कार्ट घटाने की व्यावहारिक मार्गदर्शिका।</description>
+      <pubDate>Wed, 22 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>conversion</category>
+      <category>cart</category>
+      <category>recovery</category>
+      <category>whatsapp</category>
+    </item>
+    <item>
+      <title>LetBuyy पर थीम कैसे काम करती हैं</title>
+      <link>http://localhost:9006/in-hi/resources/platform/how-themes-work</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/how-themes-work#hi</guid>
+      <description>LetBuyy थीम की पूरी मार्गदर्शिका—प्रकार, अनुकूलन, संपादक और कस्टम थीम प्रकाशित करना।</description>
+      <pubDate>Mon, 20 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>themes</category>
+      <category>storefront</category>
+      <category>customization</category>
+      <category>platform</category>
+    </item>
+    <item>
+      <title>भारत में सोशल कॉमर्स: Instagram, WhatsApp और आगे</title>
+      <link>http://localhost:9006/in-hi/resources/growth/social-commerce-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/social-commerce-india#hi</guid>
+      <description>भारत में सोशल कॉमर्स की मार्गदर्शिका — Instagram Shopping, WhatsApp Business और सोशल-केंद्रित ईकॉमर्स रणनीति।</description>
+      <pubDate>Sat, 18 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>social-media</category>
+      <category>instagram</category>
+      <category>whatsapp</category>
+      <category>social-commerce</category>
+    </item>
+    <item>
+      <title>वेबहुक: वाणिज्य घटनाओं की तुरंत सूचना</title>
+      <link>http://localhost:9006/in-hi/resources/developers/webhooks-complete-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/webhooks-complete-guide#hi</guid>
+      <description>LetBuyy वेबहुक की पूरी डेवलपर मार्गदर्शिका—सेटअप, हस्ताक्षर सत्यापन, घटना प्रकार और विश्वसनीयता।</description>
+      <pubDate>Wed, 15 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>webhooks</category>
+      <category>api</category>
+      <category>events</category>
+      <category>integration</category>
+    </item>
+    <item>
+      <title>इन्वेंटरी प्रबंधन: अव्यवस्था से नियंत्रण तक</title>
+      <link>http://localhost:9006/in-hi/resources/operations/inventory-management-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/inventory-management-guide#hi</guid>
+      <description>भारतीय ईकॉमर्स के लिए व्यावहारिक इन्वेंटरी मार्गदर्शिका—दोबारा ऑर्डर सीमा, सुरक्षा स्टॉक, ABC विश्लेषण और कई स्थानों की रणनीति।</description>
+      <pubDate>Sun, 12 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>inventory</category>
+      <category>operations</category>
+      <category>warehouse</category>
+      <category>stock</category>
+    </item>
+    <item>
+      <title>भारत में D2C ब्रांड कैसे शुरू करें (चरणबद्ध)</title>
+      <link>http://localhost:9006/in-hi/resources/growth/d2c-brand-launch-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/d2c-brand-launch-guide#hi</guid>
+      <description>भारत में सीधे ग्राहक को बेचने वाला ब्रांड शुरू करने की पूरी मार्गदर्शिका: उत्पाद, पहचान, स्टोर और बाज़ार तक पहुँच।</description>
+      <pubDate>Fri, 10 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>d2c</category>
+      <category>brand</category>
+      <category>launch</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>LetBuyy पर Liquid थीम कैसे काम करती हैं</title>
+      <link>http://localhost:9006/in-hi/resources/developers/liquid-theming-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/liquid-theming-guide#hi</guid>
+      <description>LetBuyy Liquid थीम डेवलपर मार्गदर्शिका—सिंटैक्स, ऑब्जेक्ट, फ़िल्टर, टैग, अनुभाग और संरचना।</description>
+      <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>themes</category>
+      <category>liquid</category>
+      <category>developers</category>
+      <category>storefront</category>
+    </item>
+    <item>
+      <title>UPI बनाम COD: भारतीय दुकानों के लिए कौन-सा भुगतान तरीका बेहतर है</title>
+      <link>http://localhost:9006/in-hi/resources/payments/upi-vs-cod-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/upi-vs-cod-india#hi</guid>
+      <description>भारतीय ईकॉमर्स दुकानों के लिए UPI और कैश ऑन डिलीवरी की विस्तृत तुलना—खरीद दर, वापसी दर और आय पर प्रभाव।</description>
+      <pubDate>Sun, 05 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>payments</category>
+      <category>upi</category>
+      <category>cod</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>उत्पाद समीक्षाएँ ग्राहकों को निर्णय लेने में कैसे मदद करती हैं</title>
+      <link>http://localhost:9006/in-hi/resources/ecommerce/how-product-reviews-increase-conversion</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/how-product-reviews-increase-conversion#hi</guid>
+      <description>असली समीक्षाएँ एकत्र करने, ग्राहकों के सवालों का जवाब देने और निश्चित लाभ का वादा किए बिना परिणाम मापने की गाइड।</description>
+      <pubDate>Wed, 01 Apr 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>reviews</category>
+      <category>social-proof</category>
+      <category>conversion</category>
+      <category>trust</category>
+    </item>
+    <item>
+      <title>ईकॉमर्स ईमेल मार्केटिंग: भारत में अपनी सूची बनाएँ</title>
+      <link>http://localhost:9006/in-hi/resources/growth/email-marketing-ecommerce</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/growth/email-marketing-ecommerce#hi</guid>
+      <description>अपने भारतीय ईकॉमर्स स्टोर के लिए ईमेल सूची बनाने और उससे आय पाने का तरीका — पते जुटाने से स्वचालित संदेश क्रम तक।</description>
+      <pubDate>Sat, 28 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Growth</category>
+      <category>email</category>
+      <category>marketing</category>
+      <category>automation</category>
+      <category>list-building</category>
+    </item>
+    <item>
+      <title>ऑर्डर पूर्ति: रोज 100 ऑर्डर कुशलता से संसाधित करें</title>
+      <link>http://localhost:9006/in-hi/resources/operations/order-fulfillment-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/order-fulfillment-guide#hi</guid>
+      <description>भारतीय ईकॉमर्स दुकान की कुशल ऑर्डर पूर्ति—पैकिंग, लेबल, कूरियर एकीकरण और ट्रैकिंग।</description>
+      <pubDate>Wed, 25 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>fulfillment</category>
+      <category>orders</category>
+      <category>operations</category>
+      <category>scaling</category>
+    </item>
+    <item>
+      <title>LetBuyy ऐप मार्केटप्लेस का परिचय</title>
+      <link>http://localhost:9006/in-hi/resources/platform/introduction-to-apps</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/platform/introduction-to-apps#hi</guid>
+      <description>LetBuyy ऐप मार्केटप्लेस का परिचय—उपलब्ध ऐप, उन्हें स्थापित करना और अपनी दुकान के लिए सही ऐप चुनना।</description>
+      <pubDate>Sun, 22 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>LetBuyy Team</dc:creator>
+      <category>Platform</category>
+      <category>apps</category>
+      <category>marketplace</category>
+      <category>platform</category>
+      <category>integrations</category>
+    </item>
+    <item>
+      <title>भारत के लिए ग्राहक-अनुकूल वापसी नीति बनाना</title>
+      <link>http://localhost:9006/in-hi/resources/payments/refunds-returns-policy-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/refunds-returns-policy-india#hi</guid>
+      <description>भारतीय ईकॉमर्स के लिए भरोसा बढ़ाने और लागत संभालने वाली वापसी व रिफंड नीति लिखने और लागू करने का तरीका।</description>
+      <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>returns</category>
+      <category>refunds</category>
+      <category>policy</category>
+      <category>customer-service</category>
+    </item>
+    <item>
+      <title>LetBuyy के साथ कस्टम एकीकरण बनाना</title>
+      <link>http://localhost:9006/in-hi/resources/developers/custom-integrations-guide</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/developers/custom-integrations-guide#hi</guid>
+      <description>LetBuyy कस्टम एकीकरण की डेवलपर मार्गदर्शिका—सिंक पैटर्न, क्यू वर्कर और आम उदाहरण।</description>
+      <pubDate>Wed, 18 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Arjun Mehta</dc:creator>
+      <category>Developers</category>
+      <category>integrations</category>
+      <category>api</category>
+      <category>developers</category>
+      <category>erp</category>
+    </item>
+    <item>
+      <title>भारतीय व्यापारियों के लिए स्टोर SEO की पूरी जाँच सूची</title>
+      <link>http://localhost:9006/in-hi/resources/ecommerce/store-seo-checklist</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/ecommerce/store-seo-checklist#hi</guid>
+      <description>भारतीय ईकॉमर्स स्टोर के लिए तकनीकी SEO, पेज अनुकूलन और स्थानीय संकेतों की विस्तृत जाँच सूची।</description>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Priya Sharma</dc:creator>
+      <category>Ecommerce</category>
+      <category>seo</category>
+      <category>technical-seo</category>
+      <category>organic</category>
+      <category>google</category>
+    </item>
+    <item>
+      <title>भारत में ईकॉमर्स ऑर्डर पूर्ति समझना</title>
+      <link>http://localhost:9006/in-hi/resources/operations/understanding-fulfillment</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/operations/understanding-fulfillment#hi</guid>
+      <description>भारतीय ब्रांडों के पूर्ति मॉडल—स्वयं पूर्ति, तृतीय-पक्ष लॉजिस्टिक्स (3PL) और FBA/FBF की तुलना।</description>
+      <pubDate>Tue, 10 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Ravi Krishnan</dc:creator>
+      <category>Operations</category>
+      <category>fulfillment</category>
+      <category>3pl</category>
+      <category>logistics</category>
+      <category>operations</category>
+    </item>
+    <item>
+      <title>भारत में ईकॉमर्स विक्रेताओं के लिए GST योजना</title>
+      <link>http://localhost:9006/in-hi/resources/payments/gst-for-ecommerce-india</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/gst-for-ecommerce-india#hi</guid>
+      <description>आधिकारिक स्रोत और योग्य सलाहकार से अपने ऑनलाइन व्यवसाय के GST सवाल जाँचें; एक जैसी सीमा या पुरानी दर तालिका लागू न करें।</description>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>gst</category>
+      <category>tax</category>
+      <category>compliance</category>
+      <category>india</category>
+    </item>
+    <item>
+      <title>भारतीय ईकॉमर्स के GST चालान में क्या होना चाहिए</title>
+      <link>http://localhost:9006/in-hi/resources/payments/invoicing-india-merchants</link>
+      <guid isPermaLink="false">http://localhost:9006/resources/payments/invoicing-india-merchants#hi</guid>
+      <description>भारतीय ईकॉमर्स व्यापारियों के लिए GST चालान की जरूरी जानकारी, प्रारूप और स्वचालन की पूरी मार्गदर्शिका।</description>
+      <pubDate>Fri, 20 Feb 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Neha Gupta</dc:creator>
+      <category>Payments</category>
+      <category>invoicing</category>
+      <category>gst</category>
+      <category>compliance</category>
+      <category>b2b</category>
+    </item>
+  </channel>
+</rss>

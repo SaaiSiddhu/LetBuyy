@@ -1,0 +1,83 @@
+{
+  "database": "postgres",
+  "server_version": "17.11",
+  "plans": [
+    {
+      "slug": "launch",
+      "name": "Launch",
+      "tagline": "Everything you need to start selling",
+      "site_type": "store",
+      "price_monthly_inr": 29900,
+      "price_yearly_inr": 24900,
+      "founding_price_inr": 19900,
+      "status": "available",
+      "purchasable": true,
+      "is_active": true,
+      "display_order": 1,
+      "is_popular": false,
+      "features_sha256": "9383ff7c845b5e03a7c17015863f8a5213f1c5d0a3eaa2a04b6f3e21340983f3",
+      "compare_features_sha256": "33b5f76465d38501c65c56878f3c824215b24d46f773efb1defe89aa46bbfb06"
+    },
+    {
+      "slug": "growth",
+      "name": "Growth",
+      "tagline": "Scale your store with advanced tools",
+      "site_type": "store",
+      "price_monthly_inr": 99900,
+      "price_yearly_inr": 79900,
+      "founding_price_inr": 69900,
+      "status": "available",
+      "purchasable": true,
+      "is_active": true,
+      "display_order": 2,
+      "is_popular": true,
+      "features_sha256": "7beb34d1956e4ba6af060c1a049dd9177ff8e583eb74a487219bad8636a614f6",
+      "compare_features_sha256": "33b5f76465d38501c65c56878f3c824215b24d46f773efb1defe89aa46bbfb06"
+    },
+    {
+      "slug": "scale",
+      "name": "Scale",
+      "tagline": "For scaling, multi-channel businesses",
+      "site_type": "store",
+      "price_monthly_inr": 249900,
+      "price_yearly_inr": 199900,
+      "founding_price_inr": 0,
+      "status": "coming_soon",
+      "purchasable": false,
+      "is_active": true,
+      "display_order": 3,
+      "is_popular": false,
+      "features_sha256": "ad1eef15994418d776b5489b5952952eb35cc61e16cf0f096ef2fae1126009bf",
+      "compare_features_sha256": "33b5f76465d38501c65c56878f3c824215b24d46f773efb1defe89aa46bbfb06"
+    },
+    {
+      "slug": "commerce_os",
+      "name": "Commerce OS",
+      "tagline": "Your commerce operating system",
+      "site_type": "store",
+      "price_monthly_inr": 599900,
+      "price_yearly_inr": 479900,
+      "founding_price_inr": 0,
+      "status": "coming_soon",
+      "purchasable": false,
+      "is_active": true,
+      "display_order": 4,
+      "is_popular": false,
+      "features_sha256": "52e6b6fd0271016a86f99ecf0510b82a53e4fefda5d981e1504627cdea22964a",
+      "compare_features_sha256": "33b5f76465d38501c65c56878f3c824215b24d46f773efb1defe89aa46bbfb06"
+    }
+  ],
+  "program": {
+    "active": true,
+    "paused": false,
+    "available": true,
+    "used_slots": 0,
+    "total_slots": 100,
+    "growth_price": 69900,
+    "launch_price": 19900,
+    "remaining_slots": 100,
+    "public_remaining": 70,
+    "invited_remaining": 20,
+    "partner_remaining": 10
+  }
+}

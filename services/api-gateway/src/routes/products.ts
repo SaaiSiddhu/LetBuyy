@@ -1,6 +1,5 @@
-import {CollectionListQuerySchema,type CollectionListQuery} from '@letbuyy/commerce-core';
-import { resolveOwnedStoreScope, resolveMerchantResourceStoreIds } from '../lib/tenant-context';
-import { readCollectionMembership, replaceCollectionMembership, readOwnedCollectionList } from '../execution/collection-membership.adapter';
+import { resolveOwnedStoreScope } from '../lib/tenant-context';
+import { readCollectionMembership, replaceCollectionMembership } from '../execution/collection-membership.adapter';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -81,10 +80,6 @@ const PRODUCT_LIST_COLUMN_NAMES = [
     'version',
 ] as const;
 const PRODUCT_LIST_COLUMNS = PRODUCT_LIST_COLUMN_NAMES.join(',');
-const PRODUCT_SUMMARY_COLUMN_NAMES = [
-    'id', 'name', 'status', 'stock', 'price', 'compare_price', 'images', 'category',
-    'product_type', 'vendor', 'is_active', 'created_at', 'display_order', 'version',
-] as const;
 const PRODUCT_LIST_COLUMNS_RELATIONAL = PRODUCT_LIST_COLUMN_NAMES
     .filter((column) => column !== 'variants')
     .join(',');
@@ -165,9 +160,8 @@ function productVariantRelationalReadsEnabled(env: Pick<Env, 'PRODUCT_VARIANTS_R
     return (env.PRODUCT_VARIANTS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
 }
 
-function productListColumns(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>, omittedColumns: Set<string>, summary = false): string {
-    const columns: readonly string[] = summary ? PRODUCT_SUMMARY_COLUMN_NAMES : PRODUCT_LIST_COLUMN_NAMES;
-    return columns
+function productListColumns(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>, omittedColumns: Set<string>): string {
+    return PRODUCT_LIST_COLUMN_NAMES
         .filter((column) => !omittedColumns.has(column))
         .filter((column) => productVariantRelationalReadsEnabled(env) ? column !== 'variants' : true)
         .join(',');
@@ -223,30 +217,21 @@ async function hydrateProductVariants(
 
     if (productIds.length === 0) return products;
 
+    const { data, error } = await db
+        .from('product_variants')
+        .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
+        .in('product_id', Array.from(new Set(productIds)))
+        .order('position', { ascending: true });
+
+    if (isMissingTableError(error, 'product_variants')) return products;
+    if (error) throw new Error(`Product variant hydration failed: ${error.message}`);
+
     const variantsByProduct = new Map<string, Record<string, unknown>[]>();
-    // A 100-product page can exceed PostgREST's row cap. Page the relation instead
-    // of silently returning an incomplete variant selector. The write contract
-    // permits 100 variants per product; refuse oversized legacy data explicitly.
-    const pageSize = 500, maximumRows = productIds.length * 100;
-    for (let offset = 0; offset <= maximumRows; offset += pageSize) {
-        const { data, error } = await db
-            .from('product_variants')
-            .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
-            .in('product_id', Array.from(new Set(productIds)))
-            .order('product_id', { ascending: true })
-            .order('position', { ascending: true })
-            .order('id', { ascending: true })
-            .range(offset, offset + pageSize - 1);
-        if (isMissingTableError(error, 'product_variants')) return products;
-        if (error) throw new Error(`Product variant hydration failed: ${error.message}`);
-        const rows = (data || []) as ProductVariantRelationRow[];
-        if (offset + rows.length > maximumRows) throw new Error('Product variant read exceeded its bounded row budget');
-        for (const row of rows) {
-            let variants = variantsByProduct.get(row.product_id);
-            if (!variants) { variants = []; variantsByProduct.set(row.product_id, variants); }
-            variants.push(productVariantView(row));
-        }
-        if (rows.length < pageSize) break;
+    for (const row of (data || []) as ProductVariantRelationRow[]) {
+        variantsByProduct.set(row.product_id, [
+            ...(variantsByProduct.get(row.product_id) || []),
+            productVariantView(row),
+        ]);
     }
 
     return products.map((product) => {
@@ -492,7 +477,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('products')
-            .select(productListColumns(c.env, omittedColumns, query.view === 'summary'), query.withCount ? { count: 'exact' } : undefined)
+            .select(productListColumns(c.env, omittedColumns), query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
@@ -544,7 +529,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const nextCursor = rows.length > query.limit
         ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, query.sort)
         : null;
-    const responseRows = query.view !== 'summary' && productVariantRelationalReadsEnabled(c.env)
+    const responseRows = productVariantRelationalReadsEnabled(c.env)
         ? await hydrateProductVariants(db, pageRows)
         : pageRows;
 
@@ -605,10 +590,45 @@ router.get('/barcode/lookup', validate('query', ProductBarcodeLookupQuery), asyn
 });
 
 // GET /products/collections — List collections for a store
-router.get('/collections', validate('query', CollectionListQuerySchema), async (c) => {
-    const query = c.get('validatedQuery') as CollectionListQuery;
-    const scope = await resolveOwnedStoreScope(c, query.store_id);
-    return c.json(await readOwnedCollectionList(c.env, scope, {page: query.page, limit: query.limit}));
+router.get('/collections', validate('query', StoreScopedQuerySchema), async (c) => {
+    const auth = c.get('auth');
+    const query = c.get('validatedQuery') as StoreScopedQueryInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const ownsStore = await verifyStoreOwnership(db, query.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const buildCollectionsQuery = (includeDeletedAtFilter: boolean) => {
+        let dbQuery = db
+            .from('collections')
+            .select('*')
+            .eq('store_id', query.store_id);
+
+        if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
+        return dbQuery.order('created_at', { ascending: false });
+    };
+
+    let { data, error } = await buildCollectionsQuery(true);
+
+    if (isMissingDeletedAtError(error)) {
+        ({ data, error } = await buildCollectionsQuery(false));
+    }
+
+    if (error) {
+        if (isMissingTableError(error, 'collections')) {
+            return c.json(success([]));
+        }
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success(data || []));
 });
 
 // POST /products/collections — Create a collection
@@ -670,7 +690,6 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
     const collectionId = c.req.param('id');
     const body = c.get('validatedBody') as UpdateCollectionInput;
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) {
@@ -681,7 +700,7 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
         let request = db
             .from('collections')
             .select('id, store_id')
-            .eq('id', collectionId).in('store_id', storeIds);
+            .eq('id', collectionId);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.maybeSingle();
@@ -715,7 +734,7 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
         return db
             .from('collections')
             .update(payload)
-            .eq('id', collectionId).in('store_id', storeIds)
+            .eq('id', collectionId)
             .select()
             .single();
     };
@@ -755,7 +774,6 @@ router.delete('/collections/:id', async (c) => {
     const auth = c.get('auth');
     const collectionId = c.req.param('id');
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) {
@@ -766,7 +784,7 @@ router.delete('/collections/:id', async (c) => {
         let request = db
             .from('collections')
             .select('id, store_id')
-            .eq('id', collectionId).in('store_id', storeIds);
+            .eq('id', collectionId);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.maybeSingle();
@@ -795,7 +813,7 @@ router.delete('/collections/:id', async (c) => {
         return db
             .from('collections')
             .update(payload)
-            .eq('id', collectionId).in('store_id', storeIds);
+            .eq('id', collectionId);
     };
 
     let { error } = await softDeleteCollection(true);
@@ -806,7 +824,7 @@ router.delete('/collections/:id', async (c) => {
         ({ error } = await db
             .from('collections')
             .delete()
-            .eq('id', collectionId).in('store_id', storeIds));
+            .eq('id', collectionId));
     }
 
     if (error) {

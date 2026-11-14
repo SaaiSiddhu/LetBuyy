@@ -747,15 +747,6 @@ class StorePaymentConfigApi {
     '/stores/${_encodePathSegment(id)}/payment-config',
     options: _mergeOptions(options, method: HttpMethod.post, body: input),
   );
-
-  Future<JsonMap> updateMethods(
-    String id,
-    JsonMap input, {
-    ApiRequestOptions? options,
-  }) => _client.requestJson(
-    '/stores/${_encodePathSegment(id)}/payment-config',
-    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
-  );
 }
 
 class CustomDomainsApi {
@@ -1664,15 +1655,6 @@ class ExportsApi {
     '/export/customers',
     options: _mergeOptions(options, query: {'store_id': storeId}),
   );
-
-  Future<String> download(String id, {required String token, ApiRequestOptions? options}) async {
-    final data = await _client.request('/export/jobs/${_encodePathSegment(id)}/download',
-      options: _mergeOptions(options, query: {'token': token}));
-    if (data is! String) {
-      throw const ApiException(message: 'Export download is unavailable.', statusCode: 502, code: 'INVALID_EXPORT_DOWNLOAD');
-    }
-    return data;
-  }
 
   Future<JsonMap> job(String id, {ApiRequestOptions? options}) => _client
       .requestJson('/export/jobs/${_encodePathSegment(id)}', options: options);

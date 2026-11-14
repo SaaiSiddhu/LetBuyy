@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+Disallow: /signup
+
+Sitemap: https://www.letbuyy.com/sitemap.xml

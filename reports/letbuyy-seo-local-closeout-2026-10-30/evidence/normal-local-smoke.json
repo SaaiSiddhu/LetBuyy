@@ -1,0 +1,42 @@
+{
+  "captured_at": "2026-10-29T21:55:49.662482+00:00",
+  "base": "http://127.0.0.1:9006",
+  "method": "Read-only GET smoke of normal development service after final accepted-source checks",
+  "rows": [
+    {
+      "path": "/in",
+      "status": 200,
+      "lang": "en"
+    },
+    {
+      "path": "/in/pricing",
+      "status": 200,
+      "real_catalog_prices_present": true
+    },
+    {
+      "path": "/in-hi",
+      "status": 200,
+      "lang": "hi"
+    },
+    {
+      "path": "/in-ta",
+      "status": 200,
+      "lang": "ta"
+    },
+    {
+      "path": "/in/resources/authors/letbuyy-team",
+      "status": 200
+    },
+    {
+      "path": "/in/resources/authors/priya-commerce",
+      "status": 308,
+      "location": "/in/resources/authors/letbuyy-team"
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "entries": 192
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,21 @@
+check,status,coverage,evidence
+HTTP inventory,PASS,489 URLs:477 HTML 200+12 expected308; 192 sitemap URLs;3 negative404,html-results.json
+All-public-page browser layouts,PASS,573 cases:every477 HTMLURL at one alternating viewport/theme plus 96 breakpoint cases,site-browser.json
+Final configured template views,PASS,48 light/dark desktop/mobile cases after the final touch repair,final-templates.json
+CSS split visual/control comparisons,PASS,96 retained base comparisons +10 support +10 post-fix home comparisons,visual-accepted.json
+Natural scrolling,PASS,"28 section comparisons, no containment override",scroll-visual.json
+Client navigation and stylesheet lifetime,PASS,10 comparisons in preserved documents,spa-cascade.json
+Globe/scroll/locale/pricing animations,PASS,7 modes including failed-worker fallback and reduced motion,animation-and-navigation.json
+Capability previews,PASS,"8 modules at 2 widths, keyboard wrap and resize",capability-acceptance.json
+Real touch input,PASS,"Light/dark coarse-pointer CDP gestures, card swipes and vertical scrolling",touch.json
+Normal carousel motion,PASS,"Autoplay advances, hover pauses, leaving hover resumes",carousel-motion.json
+Header/contact/demo controls,PASS,6 desktop/mobile cases; validation/back and focus wrap/return,interactions.json
+Availability errors and race,PASS,"2 widths;network/503 unknown,404 available,200 occupied,late response ignored",create-after.json
+Pricing fault and real recovery,PASS,"Synthetic transport fault;real four-plan local catalogue,110 comparison rows",pricing-recovery.json
+Account handoffs,PASS,4 local landing cases;no account/email form submission,handoff.json
+Marketing unit/boundary,PASS,205 tests,tests-final.log
+Shared UI units/API/types,PASS,53 tests;380 protected exports;typecheck,ui-api.log
+Types/build/lint/stylelint,PASS with existing warnings,"Final production build and types pass;0lint errors,5 existing warnings",build-touch-final.log
+Shared UI alias gate,PRE-EXISTING FAILURE,Same18 recorded violations and unchanged inputs;no waiver,ui-aliases-baseline-confirmation.json
+Physical mobile/Safari/Firefox/AT,NOT MEASURED,Only installed Chromium;physical devices and assistive technology untested,
+Field CWV and performance backlog,NOT MEASURED,No new Lighthouse/CrUX run or performance-completion claim,

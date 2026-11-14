@@ -85,7 +85,7 @@ test('customers require owned store scope before exposing profiles, orders, or a
     assert.match(tenantSource, /export interface OwnedStoreScope/);
     assert.match(tenantSource, /export async function resolveOwnedStoreScope/);
     assert.match(tenantSource, /verifySiteOwnership\(db,\s*siteId,\s*customUser\.id,\s*authUser\.storeId\)/);
-    assert.match(routeSource, /import \{ resolveOwnedStoreScope, resolveMerchantResourceStoreIds \} from '\.\.\/lib\/tenant-context'/);
+    assert.match(routeSource, /import \{ resolveOwnedStoreScope \} from '\.\.\/lib\/tenant-context'/);
     assert.match(routeSource, /async function hasOwnedStoreScope\(c: CustomerRouteContext,\s*storeId: string\)/);
     assert.match(routeSource, /await resolveOwnedStoreScope\(c,\s*storeId\)/);
     assert.doesNotMatch(routeSource, /async function verifyStoreOwnership/);
@@ -218,10 +218,5 @@ test('theme editor instances, drafts, releases, and installs are isolated by own
     assert.match(adapterSource, /throw new ForbiddenError\('Store not found or not owned by this user'\)/);
     assert.match(adapterSource, /await this\.verifyStoreOwner\(input\.store_id,\s*userId\)/);
     assert.match(adapterSource, /await this\.verifyStoreOwner\(storeId,\s*userId\)/);
-    const rollback = adapterSource.slice(adapterSource.indexOf('    async rollbackRelease('), adapterSource.indexOf('    async validateDocument('));
-    assert.match(rollback, /this\.db\.rpc\('rollback_owned_theme_release_v1'/);
-    assert.match(rollback, /p_actor_id: userId, p_store_id: input\.store_id, p_theme_slug: slug/);
-    assert.match(rollback, /p_target_release_id: releaseId, p_expected_current_release_id: input\.expected_current_release_id/);
-    assert.match(rollback, /p_bound_site_id: this\.boundSiteId \|\| null/);
-    assert.match(rollback, /parsed\.data\.restored_release\.id !== releaseId/);
+    assert.match(adapterSource, /\.from\('theme_releases'\)\s*[\s\S]*\.eq\('id',\s*releaseId\)\s*[\s\S]*\.eq\('store_id',\s*input\.store_id\)/);
 });

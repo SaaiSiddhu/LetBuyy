@@ -1,0 +1,101 @@
+{
+  "before_signatures": 3142,
+  "after_signatures": 3149,
+  "missing": [],
+  "added": [
+    [
+      [],
+      "@font-face",
+      "",
+      [
+        "font-family: 'LetBuyy Tamil Fallback'",
+        "src: local('TamilSangamMN')",
+        "font-style: normal",
+        "font-weight: normal",
+        "font-display: swap",
+        "unicode-range: U+0B80-0BFF"
+      ]
+    ],
+    [
+      [],
+      "@font-face",
+      "",
+      [
+        "font-family: 'LetBuyy Tamil Fallback'",
+        "src: local('TamilSangamMN-Bold')",
+        "font-style: normal",
+        "font-weight: 500",
+        "font-display: swap",
+        "unicode-range: U+0B80-0BFF"
+      ]
+    ],
+    [
+      [],
+      "@font-face",
+      "",
+      [
+        "font-family: 'LetBuyy Tamil Fallback'",
+        "src: local('TamilSangamMN-Bold')",
+        "font-style: normal",
+        "font-weight: bold",
+        "font-display: swap",
+        "unicode-range: U+0B80-0BFF"
+      ]
+    ],
+    [
+      [
+        [
+          "supports",
+          "(content-visibility: auto)"
+        ]
+      ],
+      ".select-plan-compare-section,\n  .marketing-site main > .faq",
+      [
+        "content-visibility: auto"
+      ]
+    ],
+    [
+      [
+        [
+          "supports",
+          "(content-visibility: auto)"
+        ]
+      ],
+      ".select-plan-compare-section",
+      [
+        "contain-intrinsic-block-size: auto 570px"
+      ]
+    ],
+    [
+      [
+        [
+          "supports",
+          "(content-visibility: auto)"
+        ]
+      ],
+      ".marketing-site main > .faq",
+      [
+        "contain-intrinsic-block-size: auto 1100px"
+      ]
+    ],
+    [
+      [
+        [
+          "supports",
+          "(content-visibility: auto)"
+        ],
+        [
+          "media",
+          "(max-width: 767px)"
+        ]
+      ],
+      ".marketing-site main > .faq",
+      [
+        "contain-intrinsic-block-size: auto 1600px"
+      ]
+    ]
+  ],
+  "all_existing_rules_declarations_conditions_keyframes_preserved": true,
+  "token_source_unchanged": true,
+  "font_file_changes": false
+}

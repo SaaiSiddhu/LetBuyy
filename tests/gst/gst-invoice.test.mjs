@@ -3,8 +3,6 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
-import { createRequire } from 'node:module';
-const { z } = createRequire(new URL('../../packages/checkout-core/package.json',import.meta.url))('zod');
 
 const CHECKOUT_CORE_SOURCE = 'packages/checkout-core/src/index.ts';
 
@@ -81,7 +79,7 @@ function loadCheckoutCore() {
     module,
     exports: module.exports,
     require(specifier) {
-      if (specifier === 'zod') return { z };
+      if (specifier === 'zod') return createZodStub();
       if (specifier === '@letbuyy/shared-types') {
         return {
           calculateGstAmounts: amounts.exports.calculateGstAmounts,
@@ -100,10 +98,6 @@ function loadCheckoutCore() {
           IndianStateCodeSchema: createRegexSchema(/^(0[1-9]|[12][0-9]|3[0-8]|97)$/, (value) => String(value).trim().padStart(2, '0')),
         };
       }
-      if (specifier === '@letbuyy/commerce-core') return {
-        PersonalizationCartDraftSchema: generic,
-        readProductFactSnapshot() { throw new Error('Order snapshot execution is outside this GST arithmetic unit.'); },
-      };
       throw new Error(`Unexpected test require from ${CHECKOUT_CORE_SOURCE}: ${specifier}`);
     },
     Date,

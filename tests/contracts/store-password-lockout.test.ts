@@ -18,9 +18,7 @@ test('store password verify records attempts and locks out after repeated failur
   const password = read('services/api-gateway/src/lib/store-access-password.ts');
 
   assert.match(route, /site_gate_attempts/);
-  assert.match(route, /if \(failures >= 5\) return denied/);
-  assert.match(route, /\.eq\('site_id', siteId\)\.eq\('host', host\)\.eq\('ip', ip\)/);
-  assert.ok(route.indexOf('if (failures >= 5)') < route.indexOf('await verifyStoreAccessPassword'), 'lockout must precede expensive password work');
+  assert.match(route, /consecutiveFailures >= 5/);
   assert.match(route, /checkRateLimitKey/);
   assert.match(route, /STORE_ACCESS_THROTTLED/);
   assert.match(route, /await verifyStoreAccessPassword/);

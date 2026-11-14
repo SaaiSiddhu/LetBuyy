@@ -90,7 +90,7 @@ export default async function ConsoleAnalyticsPage({ searchParams }: PageProps) 
         <ConsoleWorkspace
             eyebrow="Analytics"
             title="Executive Analytics"
-            description="Leadership metrics from versioned rollups with stale-state handling and audited drill-through."
+            description="Track business growth, conversion, and company health. Check when each report was last updated."
         >
             {counterResult.error ? <ConsoleApiErrorPanel title="Live counters unavailable" message={counterResult.error} /> : null}
             {mrrResult.error ? <ConsoleApiErrorPanel title="MRR rollups unavailable" message={mrrResult.error} /> : null}
@@ -102,13 +102,13 @@ export default async function ConsoleAnalyticsPage({ searchParams }: PageProps) 
             <MetricGrid>
                 <LeadershipMetric
                     label="MRR"
-                    value={formatMoneyFromPaise(latest?.mrr_paise || 0)}
-                    detail={`${freshnessLabel(mrr?.freshness.stale)} · ${latest?.period_date || 'no rollup'}`}
-                    tone={freshnessTone(mrr?.freshness.stale)}
+                    value={(latest ? formatMoneyFromPaise(latest.mrr_paise) : 'Unavailable')}
+                    detail={`${latest ? freshnessLabel(mrr?.freshness.stale) : 'Unavailable'} · ${latest?.period_date || 'no rollup'}`}
+                    tone={latest ? freshnessTone(mrr?.freshness.stale) : 'warning'}
                 />
-                <LeadershipMetric label="ARR" value={formatMoneyFromPaise(latest?.arr_paise || 0)} />
-                <LeadershipMetric label="Net new MRR" value={formatMoneyFromPaise(latest?.new_mrr_paise || 0)} />
-                <LeadershipMetric label="Churned MRR" value={formatMoneyFromPaise(latest?.churned_mrr_paise || 0)} tone="warning" />
+                <LeadershipMetric label="ARR" value={(latest ? formatMoneyFromPaise(latest.arr_paise) : 'Unavailable')} />
+                <LeadershipMetric label="Net new MRR" value={(latest ? formatMoneyFromPaise(latest.new_mrr_paise) : 'Unavailable')} />
+                <LeadershipMetric label="Churned MRR" value={(latest ? formatMoneyFromPaise(latest.churned_mrr_paise) : 'Unavailable')} tone="warning" />
             </MetricGrid>
 
             {mrr?.freshness.stale ? (
@@ -119,10 +119,10 @@ export default async function ConsoleAnalyticsPage({ searchParams }: PageProps) 
 
             <Panel title="Company Health" description="Operating load and trust signals from support, risk, T&S, incident, and telemetry rollups.">
                 <MetricGrid>
-                    <LeadershipMetric label="Open support" value={String(healthMetric('support.open_tickets')?.value || 0)} />
-                    <LeadershipMetric label="SLA breaches" value={String(healthMetric('support.sla_breaches')?.value || 0)} tone="warning" />
-                    <LeadershipMetric label="High risk" value={String(healthMetric('risk.high_scores')?.value || 0)} tone="warning" />
-                    <LeadershipMetric label="Open incidents" value={String(healthMetric('incidents.open')?.value || 0)} tone="critical" />
+                    <LeadershipMetric label="Open support" value={String(healthMetric('support.open_tickets')?.value ?? 'Unavailable')} />
+                    <LeadershipMetric label="SLA breaches" value={String(healthMetric('support.sla_breaches')?.value ?? 'Unavailable')} tone="warning" />
+                    <LeadershipMetric label="High risk" value={String(healthMetric('risk.high_scores')?.value ?? 'Unavailable')} tone="warning" />
+                    <LeadershipMetric label="Open incidents" value={String(healthMetric('incidents.open')?.value ?? 'Unavailable')} tone="critical" />
                 </MetricGrid>
             </Panel>
 
@@ -146,10 +146,10 @@ export default async function ConsoleAnalyticsPage({ searchParams }: PageProps) 
 
             <Panel title="Revenue Mix" description="Subscription, app marketplace, theme marketplace, and partner payout liability from rollups.">
                 <MetricGrid>
-                    <LeadershipMetric label="Subscription" value={formatMoneyFromPaise(latest?.subscription_revenue_paise || 0)} />
-                    <LeadershipMetric label="App revenue" value={formatMoneyFromPaise(latest?.app_revenue_paise || 0)} />
-                    <LeadershipMetric label="Theme revenue" value={formatMoneyFromPaise(latest?.theme_revenue_paise || 0)} />
-                    <LeadershipMetric label="Payout liability" value={formatMoneyFromPaise(latest?.partner_payout_liability_paise || 0)} tone="warning" />
+                    <LeadershipMetric label="Subscription" value={(latest ? formatMoneyFromPaise(latest.subscription_revenue_paise) : 'Unavailable')} />
+                    <LeadershipMetric label="App revenue" value={(latest ? formatMoneyFromPaise(latest.app_revenue_paise) : 'Unavailable')} />
+                    <LeadershipMetric label="Theme revenue" value={(latest ? formatMoneyFromPaise(latest.theme_revenue_paise) : 'Unavailable')} />
+                    <LeadershipMetric label="Payout liability" value={(latest ? formatMoneyFromPaise(latest.partner_payout_liability_paise) : 'Unavailable')} tone="warning" />
                 </MetricGrid>
             </Panel>
 
@@ -223,10 +223,10 @@ export default async function ConsoleAnalyticsPage({ searchParams }: PageProps) 
 
             <Panel title="Live Launch Counters" description={`Last ${counters?.period_days || 30} days, retained for launch-pulse context beside rollups.`}>
                 <MetricGrid>
-                    <LeadershipMetric label="New signups" value={String(counters?.new_signups || 0)} />
-                    <LeadershipMetric label="Stores created" value={String(counters?.stores_created || 0)} />
-                    <LeadershipMetric label="New subscriptions" value={String(counters?.subscriptions_created || 0)} />
-                    <LeadershipMetric label="Signup to store" value={`${counters?.signup_to_store_conversion_percent || 0}%`} />
+                    <LeadershipMetric label="New signups" value={String(counters?.new_signups ?? 'Unavailable')} />
+                    <LeadershipMetric label="Stores created" value={String(counters?.stores_created ?? 'Unavailable')} />
+                    <LeadershipMetric label="New subscriptions" value={String(counters?.subscriptions_created ?? 'Unavailable')} />
+                    <LeadershipMetric label="Signup to store" value={counters ? `${counters.signup_to_store_conversion_percent}%` : 'Unavailable'} />
                 </MetricGrid>
             </Panel>
         </ConsoleWorkspace>

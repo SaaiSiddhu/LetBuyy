@@ -133,15 +133,6 @@ function buildDatabase() {
   }
   psql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE); CREATE DATABASE "${databaseName}";`, 'postgres');
   psql(SUPABASE_FAITHFUL_BOOTSTRAP_SQL);
-  // Match the gateway fixture's PostgREST transport roles before migrations
-  // 370+ freeze reader ACLs. Missing transport roles must not cancel the RLS
-  // assertions before any positive control runs.
-  psql(`DO $role$ BEGIN
-    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticator') THEN
-      CREATE ROLE authenticator LOGIN NOINHERIT;
-    END IF;
-  END $role$;
-  GRANT anon, authenticated, service_role TO authenticator;`);
   for (const name of listMigrations()) {
     try {
       psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8')));

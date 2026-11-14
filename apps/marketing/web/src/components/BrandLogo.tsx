@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import type { CSSProperties } from 'react'
+import { BRAND_ASSETS } from '@/lib/brand-assets'
 
 type BrandLogoProps = {
     className?: string
@@ -24,7 +25,7 @@ export default function BrandLogo({
     return (
         <span className={`brand-logo ${className}`.trim()} role="img" aria-label={label} style={style}>
             <Image
-                src="/icons/letbuyy-store-logo-light-v3.svg"
+                src={BRAND_ASSETS.light}
                 alt=""
                 width={636}
                 height={180}
@@ -34,7 +35,7 @@ export default function BrandLogo({
                 aria-hidden="true"
             />
             <Image
-                src="/icons/letbuyy-store-logo-dark-v3.svg"
+                src={BRAND_ASSETS.dark}
                 alt=""
                 width={636}
                 height={180}

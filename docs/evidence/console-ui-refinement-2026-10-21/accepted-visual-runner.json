@@ -1,0 +1,81 @@
+{
+  "runId": "d324d60a899b",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-28754-mvig6ztp-0f92a2"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 0,
+  "tests": 1,
+  "assertionsPassed": 1,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 69.7,
+  "suiteSeconds": 67.3,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "console-ui-refinement-browser.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/console-ui-refinement-browser.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-28754-mvig6ztp-0f92a2",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 67.3,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_console_ui_refinement_browser_postgres",
+      "templateSeconds": 24.7,
+      "provisionSeconds": 1.4,
+      "rest": {
+        "container": "letbuyy-exec-d324d60a899b-rest-1",
+        "upstreamPort": 62913,
+        "proxyPort": 62914
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 233,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

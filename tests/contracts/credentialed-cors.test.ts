@@ -22,6 +22,16 @@ function read(path: string): string {
     return readFileSync(path, 'utf8');
 }
 
+test('canonical www marketing origins receive exact CORS reflection without admitting sibling hosts', () => {
+    assert.equal(resolveCredentialedCorsOrigin('https://www.letbuyy.com', {}), 'https://www.letbuyy.com');
+    assert.equal(resolveCredentialedCorsOrigin('https://www.example.invalid', {
+        LETBUYY_PLATFORM_DOMAIN: 'example.invalid',
+    }), 'https://www.example.invalid');
+    for (const origin of ['https://www.letbuyy.com.evil.invalid', 'https://random-store.letbuyy.com', 'http://www.letbuyy.com', 'https://user:password@www.letbuyy.com']) {
+        assert.equal(resolveCredentialedCorsOrigin(origin, {}), DEFAULT_CREDENTIAL_ORIGIN);
+    }
+});
+
 test('credentialed CORS reflects only exact platform or configured tenant origins', () => {
     assert.equal(
         resolveCredentialedCorsOrigin('https://accounts.letbuyy.com', {}),

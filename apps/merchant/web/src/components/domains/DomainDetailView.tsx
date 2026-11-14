@@ -1,11 +1,7 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useState } from 'react'
 import {
-    Section,
-    Card,
     AlertTriangle,
     ArrowLeft,
     Badge,
@@ -40,7 +36,7 @@ import {
 } from '@/lib/domains/domain-model'
 import { diagnoseDomain, domainConfidence, type IssueSeverity } from '@/lib/domains/troubleshooting'
 import { providerDnsUrl } from '@/lib/domains/providers'
-import { CustomerVerificationNotice, DnsRecordRow, SslBadge, DomainStatusBadge, type RecordState } from './parts'
+import { DnsRecordRow, SslBadge, DomainStatusBadge, type RecordState } from './parts'
 
 interface DomainDetailViewProps {
     store: string
@@ -73,26 +69,22 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
     const [working, setWorking] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
 
-    const beginRead = useReadRequest(JSON.stringify([store, domain]))
     const load = useCallback(async (opts?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!opts?.quiet) setLoading(true)
         try {
             const [h, hist] = await Promise.all([
-                domainsClient.health(store, domain, request.signal),
-                domainsClient.history(store, domain, request.signal).catch(() => ({ domain, connected: false, events: [] })),
+                domainsClient.health(store, domain),
+                domainsClient.history(store, domain).catch(() => ({ domain, connected: false, events: [] })),
             ])
-            if (!request.isCurrent()) return
             setHealth(h)
             setEvents(hist.events || [])
             setHistoryConnected(hist.connected)
         } catch (error) {
-            if (!request.isCurrent()) return
             notify({ title: 'Could not load domain', description: error instanceof Error ? error.message : 'Unable to load domain health', variant: 'critical' })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, domain, notify, store])
+    }, [domain, notify, store])
 
     useEffect(() => { void load() }, [load])
 
@@ -139,10 +131,10 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
                 <Button unstyled type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</Button>
                 <div className="settings-general-stack">
                     {[1, 2, 3].map((i) => (
-                        <Card key={i}>
-                            <Section><Skeleton variant="text" lines={1} /></Section>
+                        <div key={i} className="settings-home-card">
+                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
                             <div className="settings-form-body"><Skeleton variant="text" lines={3} /></div>
-                        </Card>
+                        </div>
                     ))}
                 </div>
             </Page>
@@ -153,9 +145,9 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
         return (
             <Page>
                 <Button unstyled type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</Button>
-                <Card ><div className="settings-form-body">
+                <div className="settings-home-card"><div className="settings-form-body">
                     <div className="domains-note domains-note--warn"><AlertTriangle className="letbuyy-icon" aria-hidden="true" /><span>Could not load this domain. <Button unstyled type="button" className="settings-business-link" onClick={() => void load()}>Retry</Button>.</span></div>
-                </div></Card>
+                </div></div>
             </Page>
         )
     }
@@ -237,8 +229,9 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
             </Banner>
 
             {/* Setup checklist */}
-            <Section variant="grouped" title="Setup" >
-
+            <div className="settings-home-card">
+                <div className="settings-home-section-label">Setup</div>
+                <div className="settings-form-body">
                     <ol className="domains-checklist">
                         {steps.map((s) => (
                             <li key={s.label} className={`domains-checklist-item domains-checklist-item--${s.done ? 'done' : s.active ? 'active' : 'todo'}`}>
@@ -247,13 +240,14 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
                             </li>
                         ))}
                     </ol>
-
-            </Section>
+                </div>
+            </div>
 
             {/* Troubleshooting — shown before raw DNS when there are issues */}
             {issues.length > 0 && (
-                <Section variant="grouped" title="What to fix" >
-
+                <div className="settings-home-card">
+                    <div className="settings-home-section-label">What to fix</div>
+                    <div className="settings-form-body">
                         {issues.map((issue) => (
                             <div key={issue.id} className={`domains-issue domains-issue--${issue.severity}`}>
                                 <div className="domains-issue-head">
@@ -265,13 +259,14 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
                                 <p className="domains-issue-eta"><Clock className="letbuyy-icon" aria-hidden="true" /> Typically {issue.estimatedResolutionTime}</p>
                             </div>
                         ))}
-
-                </Section>
+                    </div>
+                </div>
             )}
 
             {/* DNS health */}
-            <Section variant="grouped" title="DNS records" >
-
+            <div className="settings-home-card">
+                <div className="settings-home-section-label">DNS records</div>
+                <div className="settings-form-body">
                     <div className="settings-general-hint">These are the records at your DNS provider and whether they&apos;re visible to us right now.</div>
                     {livingProvider && (
                         <div className="domains-provider-banner">
@@ -298,12 +293,13 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
                             message={record.message}
                         />
                     ))}
-
-            </Section>
+                </div>
+            </div>
 
             {/* SSL health */}
-            <Section variant="grouped" title="Security (SSL / HTTPS)" >
-
+            <div className="settings-home-card">
+                <div className="settings-home-section-label">Security (SSL / HTTPS)</div>
+                <div className="settings-form-body">
                     <div className="domains-ssl-row">
                         <span className="domains-ssl-icon">{health.ssl_active ? <Lock className="letbuyy-icon" aria-hidden="true" /> : <ShieldAlert className="letbuyy-icon" aria-hidden="true" />}</span>
                         <div className="domains-ssl-meta">
@@ -321,21 +317,20 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
                     {health.renewal_date && (
                         <div className="domains-note"><Info className="letbuyy-icon" aria-hidden="true" /><span>Certificate renewal: {formatIndiaDate(health.renewal_date, { emptyValue: 'Managed automatically' })}.</span></div>
                     )}
-
-            </Section>
+                </div>
+            </div>
 
             {/* Traffic / redirect behavior */}
-            {health.customer_verification && <Section variant="grouped" title="Customer verification"><CustomerVerificationNotice verification={health.customer_verification} /></Section>}
-
-            <Section variant="grouped" title="Traffic" >
-
+            <div className="settings-home-card">
+                <div className="settings-home-section-label">Traffic</div>
+                <div className="settings-form-body">
                     {isPrimary ? (
                         <div className="domains-note"><Crown className="letbuyy-icon" aria-hidden="true" /><span>This is your <strong>primary</strong> domain — shoppers see this address and other connected domains redirect here.</span></div>
                     ) : (
                         <div className="domains-note"><Globe className="letbuyy-icon" aria-hidden="true" /><span>This is a <strong>redirect</strong> domain. Visitors are 301-redirected to {redirectTo ? <strong>{redirectTo}</strong> : 'your primary domain'}. Use <em>Make primary</em> to serve the store here instead.</span></div>
                     )}
-
-            </Section>
+                </div>
+            </div>
 
             {/* Activity timeline — collapsed by default. A live domain accrues one
                 "Health checked" entry per probe, which reads as noise sitting

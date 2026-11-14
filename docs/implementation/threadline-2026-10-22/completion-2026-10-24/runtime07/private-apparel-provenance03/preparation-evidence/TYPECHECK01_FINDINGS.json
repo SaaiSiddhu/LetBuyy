@@ -1,6 +1,0 @@
-{
-  "recordedAt": "2026-10-25T00:14:43.344903+00:00",
-  "ownedMetadataError": "ImportDeclaration lacks isTypeOnly; changed metadata AST traversal to the actual TS union discriminant. Native leaf has zero diagnostics.",
-  "comparisonLimitation": "The candidate-only baseline lacked the metadata helper ambient compiler context; not accepted as a like-for-like differential. Retained0candidate/5private diagnostic count. Next differential uses a read-only compiler-host substitution of sealed02 native leaf with identical private support/metadata roots. No source file is modified for that baseline.",
-  "appNativeDbExecuted": false
-}

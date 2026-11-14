@@ -1,0 +1,62 @@
+{
+  "captured_at": "2026-11-01T03:10:20.017Z",
+  "base": "http://127.0.0.1:9044",
+  "rows": [
+    {
+      "mode": "worker",
+      "renderer": "dotted-canvas-worker",
+      "hover_pauses": true,
+      "resumes_to_world": true,
+      "one_time_finale_holds": true,
+      "page_errors": []
+    },
+    {
+      "mode": "unsupported-fallback",
+      "renderer": "dotted-canvas",
+      "hover_pauses": true,
+      "resumes_to_world": true,
+      "one_time_finale_holds": true,
+      "page_errors": []
+    },
+    {
+      "mode": "failed-worker-fallback",
+      "renderer": "dotted-canvas",
+      "hover_pauses": true,
+      "resumes_to_world": true,
+      "one_time_finale_holds": true,
+      "page_errors": []
+    },
+    {
+      "mode": "reduced-motion",
+      "direct_finale": true
+    },
+    {
+      "mode": "client-navigation-and-offscreen-content",
+      "locale_sequence": [
+        "en",
+        "hi",
+        "ta",
+        "en"
+      ],
+      "comparison_rows": 110,
+      "difference_rows": 61,
+      "compare_expansion_and_keyboard": true,
+      "real_pricing_reveals": true,
+      "keyboard_preserved": true,
+      "deep_link_top": 88.125
+    },
+    {
+      "mode": "fine-pointer-scroll",
+      "driver": "lenis",
+      "wheel_scrolls": true
+    },
+    {
+      "mode": "coarse-pointer-scroll",
+      "driver": "native",
+      "scrolls": true
+    }
+  ],
+  "worker_script": "/_next/static/chunks/485.de8c343f7f29327a.js",
+  "passed": true,
+  "provider_and_database_mutations": false
+}

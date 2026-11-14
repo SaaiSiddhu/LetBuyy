@@ -1,0 +1,75 @@
+{
+  "captured_at": "2026-11-02T16:22:06.619273+00:00",
+  "rows": [
+    {
+      "name": "marketing-tests",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.66,
+      "source": "including article landmark repair"
+    },
+    {
+      "name": "marketing-types",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "seconds": 1.02,
+      "source": "including article landmark repair"
+    },
+    {
+      "name": "marketing-lint",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "lint"
+      ],
+      "exit_code": 0,
+      "seconds": 4.48,
+      "source": "including article landmark repair"
+    },
+    {
+      "name": "ui-validation",
+      "command": [
+        "pnpm",
+        "--dir",
+        "packages/typescript/ui",
+        "validate:ui"
+      ],
+      "exit_code": 0,
+      "seconds": 4.7
+    },
+    {
+      "name": "ui-types",
+      "command": [
+        "pnpm",
+        "--dir",
+        "packages/typescript/ui",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "seconds": 0.66
+    },
+    {
+      "name": "marketing-build",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "build"
+      ],
+      "exit_code": 0,
+      "seconds": 12.15,
+      "source": "including article landmark repair"
+    }
+  ]
+}

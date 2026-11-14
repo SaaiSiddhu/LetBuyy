@@ -1,0 +1,292 @@
+{
+  "capturedAt": "2026-11-03T10:37:52.925799+00:00",
+  "rootBuildId": "b2CsFLYIUn25H5EguBjys",
+  "rows": [
+    {
+      "locale": "in",
+      "imagePreloads": [
+        "/icons/letbuyy-store-logo-light-v3.svg",
+        "/icons/letbuyy-store-logo-dark-v3.svg"
+      ],
+      "iconCount": 9,
+      "icons": [
+        {
+          "src": "/illustrations/capabilities/icons/storefronts-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/orders-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/inventory-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/payments-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/customers-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/analytics-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/ai-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/b2b-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/storefronts-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        }
+      ],
+      "explicitStoreBuildingPromiseVisible": true,
+      "passed": true,
+      "uniqueIconAssets": 8
+    },
+    {
+      "locale": "in-hi",
+      "imagePreloads": [
+        "/icons/letbuyy-store-logo-light-v3.svg",
+        "/icons/letbuyy-store-logo-dark-v3.svg"
+      ],
+      "iconCount": 9,
+      "icons": [
+        {
+          "src": "/illustrations/capabilities/icons/storefronts-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/orders-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/inventory-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/payments-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/customers-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/analytics-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/ai-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/b2b-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/storefronts-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        }
+      ],
+      "explicitStoreBuildingPromiseVisible": true,
+      "passed": true,
+      "uniqueIconAssets": 8
+    },
+    {
+      "locale": "in-ta",
+      "imagePreloads": [
+        "/icons/letbuyy-store-logo-light-v3.svg",
+        "/icons/letbuyy-store-logo-dark-v3.svg"
+      ],
+      "iconCount": 9,
+      "icons": [
+        {
+          "src": "/illustrations/capabilities/icons/storefronts-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/orders-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/inventory-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/payments-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/customers-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/analytics-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/ai-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/b2b-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        },
+        {
+          "src": "/illustrations/capabilities/icons/storefronts-v2.webp",
+          "width": "256",
+          "height": "256",
+          "loading": "eager",
+          "fetchpriority": "low",
+          "alt": "",
+          "aria-hidden": "true"
+        }
+      ],
+      "explicitStoreBuildingPromiseVisible": true,
+      "passed": true,
+      "uniqueIconAssets": 8
+    }
+  ],
+  "sourceIdenticalExceptReactImportAndPriority": true,
+  "noCssOrAnimationSourceChange": true,
+  "passed": true,
+  "checkerCorrection": "The capability preview renders9image nodes using8unique icon assets. The earlier assertion incorrectly equated unique assets with image nodes. No source change was needed."
+}

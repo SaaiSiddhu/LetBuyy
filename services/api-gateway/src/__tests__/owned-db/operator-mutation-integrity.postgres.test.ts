@@ -3,7 +3,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test, { before } from 'node:test';
-import {setTimeout as pause} from 'node:timers/promises';
 import { LetbuyyApiClient } from '@letbuyy/api-client';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, queryJson, tapRest, newBarrier, restJson } from './gateway-harness';
 import { requireOwnedDatabase } from './owned-db-support';
@@ -20,18 +19,9 @@ before(async () => {
     gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys()));
 });
 async function send(path: string, body: unknown, key = crypto.randomUUID(), method = 'POST') {
-    // Real limiter: a 15-point mutation consumes 750ms at its 20-point/s refill.
-    await pause(800);
     const response = await gateway.request(`${OPS}${path}`, { method, headers: { ...await signedIdentityHeaders(actor.id, actor.email), 'Idempotency-Key': key }, body: JSON.stringify(body) });
     await gateway.settle();
     return response;
-}
-async function reserveMutationBatch(parties: number) {
-    // These are independent DB-concurrency controls, not a rate-limit bypass.
-    // Parallel send() calls share one 800ms wait, so they must first replenish
-    // their aggregate 15-point cost at the real 20-point/s policy. Keep both
-    // limiter middleware and every request on the same verified actor intact.
-    await pause(parties * 800);
 }
 function count(table: string, predicate = 'true') { return Number(psql(`SELECT count(*) FROM ${table} WHERE ${predicate}`)); }
 const input = () => ({ subject: `Synthetic mutation ${crypto.randomUUID()}`, body: 'A synthetic question', reason });
@@ -90,7 +80,6 @@ test('all seven actions replay exactly once, including internal notes, survey to
 });
 
 test('four concurrent duplicate creates commit one response; JSON object key order does not change payload identity', async () => {
-    await reserveMutationBatch(4);
     const body = input(); const key = crypto.randomUUID(); const barrier = newBarrier(4);
     const tap = tapRest(owned.restUrl, async (call, forward) => {
         if (call.resource === 'rpc/execute_operator_support_mutation') await barrier.arrive();
@@ -99,7 +88,7 @@ test('four concurrent duplicate creates commit one response; JSON object key ord
     let responses;
     try { responses = await Promise.all(Array.from({ length: 4 }, () => send('/tickets', body, key))); }
     finally { tap.restore(); }
-    for (const response of responses) { assert.equal(response.headers.get('X-RateLimit-Cost'),'15');assert.equal(response.status, 201); assert.deepEqual(response.json, responses[0].json); }
+    for (const response of responses) { assert.equal(response.status, 201); assert.deepEqual(response.json, responses[0].json); }
     const reordered = { reason: body.reason, body: body.body, subject: body.subject };
     assert.deepEqual((await send('/tickets', reordered, key)).json, responses[0].json);
     assert.equal(count('support_tickets', `subject='${body.subject}'`), 1);
@@ -140,7 +129,6 @@ test('fresh permission precedes cached replay; one actor never receives another 
 });
 
 test('missing, short, oversized or contradictory keys refuse before any mutation; legacy client header works', async () => {
-    await reserveMutationBatch(6);
     const body = input();
     const invalidKeys: Record<string, string>[] = [{}, { 'Idempotency-Key': 'short' }, { 'Idempotency-Key': 'x'.repeat(201) }, { 'Idempotency-Key': crypto.randomUUID(), 'X-Idempotency-Key': crypto.randomUUID() }];
     for (const headers of invalidKeys) {
@@ -217,7 +205,6 @@ test('concurrent duplicates of every existing-ticket action and macro creation r
         ['/macros', { name: `Synthetic concurrent ${crypto.randomUUID()}`, body: 'Synthetic concurrent answer', reason }, 'POST'],
     ];
     for (const [path, body, method] of steps) {
-        await reserveMutationBatch(3);
         const barrier = newBarrier(3); const key = crypto.randomUUID();
         const tap = tapRest(owned.restUrl, async (call, forward) => {
             if (call.resource === 'rpc/execute_operator_support_mutation') await barrier.arrive();
@@ -227,7 +214,6 @@ test('concurrent duplicates of every existing-ticket action and macro creation r
         try { responses = await Promise.all(Array.from({ length: 3 }, () => send(path, body, key, method))); }
         finally { tap.restore(); }
         for (const response of responses) {
-            assert.equal(response.headers.get('X-RateLimit-Cost'),'15');
             assert.ok(response.status === 200 || response.status === 201, response.text);
             assert.deepEqual(response.json, responses[0].json, path);
         }
@@ -240,7 +226,6 @@ test('concurrent duplicates of every existing-ticket action and macro creation r
 test('typed support client preserves a logical action key with fresh signed identity on each retry', async () => {
     // The client transport drives the real worker rather than returning a fabricated API response.
     const client = new LetbuyyApiClient({ baseUrl: 'https://gateway.test', fetch: async (url, init) => {
-        await pause(800);
         const response = await gateway.request(new URL(String(url)).pathname, init);
         return new Response(response.text, { status: response.status, headers: response.headers });
     } });

@@ -30,7 +30,7 @@ const STORE_ID = tenant.siteId;
 const LOCATION_ID = tenant.locationId;
 
 before(() => {
-    seedSyntheticTenant(psql, tenant, { gst: true, taxRates: true });
+    seedSyntheticTenant(psql, tenant, { gst: true });
 });
 
 test('a committed razorpay reservation past its grace period is released automatically, with no explicit cancel call, while a COD reservation on the same product is not touched', () => {
@@ -53,7 +53,7 @@ test('a committed razorpay reservation past its grace period is released automat
     const razorpayOrderId = psql(`
         SELECT create_checkout_order(
             '${STORE_ID}'::uuid, 'Autotest', 't12-autotest-razorpay-${suffix}@example.invalid', '9000000000',
-            '{"line1":"Test","city":"Bengaluru","state":"Karnataka","state_code":"29","country":"IN","zip":"560001"}'::jsonb,
+            '{"line1":"Test","city":"Test","state":"KA"}'::jsonb,
             '[{"product_id":"${productId}","quantity":1}]'::jsonb,
             'razorpay', NULL, NULL, NULL, 'standard',
             't12-autotest-razorpay-idem-${suffix}', NULL, 't12-autotest-razorpay-req-${suffix}'
@@ -64,7 +64,7 @@ test('a committed razorpay reservation past its grace period is released automat
     const codOrderId = psql(`
         SELECT create_checkout_order(
             '${STORE_ID}'::uuid, 'Autotest', 't12-autotest-cod-${suffix}@example.invalid', '9000000001',
-            '{"line1":"Test","city":"Bengaluru","state":"Karnataka","state_code":"29","country":"IN","zip":"560001"}'::jsonb,
+            '{"line1":"Test","city":"Test","state":"KA"}'::jsonb,
             '[{"product_id":"${productId}","quantity":1}]'::jsonb,
             'cod', NULL, NULL, NULL, 'standard',
             't12-autotest-cod-idem-${suffix}', NULL, 't12-autotest-cod-req-${suffix}'

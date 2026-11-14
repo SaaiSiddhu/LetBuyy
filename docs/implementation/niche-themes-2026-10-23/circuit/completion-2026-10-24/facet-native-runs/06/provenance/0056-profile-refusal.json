@@ -1,8 +1,0 @@
-{
-  "runId": "786c7515c57a",
-  "operation": "profile-refusal",
-  "value": {
-    "signature": "public.storefront_discovery_flat_v1(jsonb,jsonb,boolean,jsonb,jsonb)",
-    "error": "ERROR:  Migration386 discovery function profile changed: storefront_discovery_flat_v1\nCONTEXT:  PL/pgSQL function inline_code_block line 18 at RAISE"
-  }
-}

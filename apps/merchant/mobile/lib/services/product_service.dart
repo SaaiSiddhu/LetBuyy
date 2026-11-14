@@ -20,8 +20,6 @@ class ProductService extends ChangeNotifier {
   // ── Cached state ─────────────────────────────────────────
 
   List<ProductContract> _productContracts = [];
-  String? _productsStoreId;
-  Object? _productsContext;
   List<ProductContract> get productContracts =>
       List.unmodifiable(_productContracts);
 
@@ -46,18 +44,6 @@ class ProductService extends ChangeNotifier {
     int limit = 20,
     String? cursor,
   }) async {
-    final capturedContext = _api.captureRequestContext();
-    if (_productsStoreId != storeId || _productsContext != capturedContext) {
-      _products = [];
-      _productContracts = [];
-      _productsNextCursor = null;
-    }
-    _productsStoreId = storeId;
-    _productsContext = capturedContext;
-    bool current() =>
-        _api.captureRequestContext() == capturedContext &&
-        _productsContext == capturedContext &&
-        _productsStoreId == storeId;
     _isLoading = true;
     final normalizedCursor = cursor?.trim();
     final cacheKey = CacheService.productsKey(
@@ -87,12 +73,6 @@ class ProductService extends ChangeNotifier {
             'cursor': normalizedCursor,
         },
       );
-      if (!current())
-        throw const ApiException(
-          message: 'Store access changed. Reload products.',
-          statusCode: 409,
-          code: 'SESSION_CONTEXT_CHANGED',
-        );
       _productsNextCursor = pageResult.nextCursor;
       _productContracts = pageResult.data
           .map(ProductContract.fromJson)
@@ -101,9 +81,7 @@ class ProductService extends ChangeNotifier {
           .map((product) => product.toJson())
           .toList(growable: false);
       await _cache?.writeJson(cacheKey, _products);
-      if (!current()) throw const ApiException(message: 'Store access changed. Reload products.', statusCode: 409, code: 'SESSION_CONTEXT_CHANGED');
       for (final product in _products) {
-        if (!current()) throw const ApiException(message: 'Store access changed. Reload products.', statusCode: 409, code: 'SESSION_CONTEXT_CHANGED');
         final id = product['id']?.toString();
         if (id != null && id.isNotEmpty) {
           await _cache?.writeJson(CacheService.productDetailKey(id), product);
@@ -112,22 +90,16 @@ class ProductService extends ChangeNotifier {
       return _products;
     } catch (e) {
       debugPrint('❌ fetchProducts error: $e');
-      if (current() &&
-          !(e is ApiException && e.statusCode >= 400 && e.statusCode < 500) &&
-          _products.isNotEmpty)
-        return _products;
+      if (_products.isNotEmpty) return _products;
       rethrow;
     } finally {
-      if (current()) {
-        _isLoading = false;
-        notifyListeners();
-      }
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   /// Get a single product by ID.
   Future<Map<String, dynamic>> fetchProduct(String id) async {
-    final capturedContext = _api.captureRequestContext();
     try {
       final product = ProductContract.fromJson(await _api.products.get(id));
       final payload = product.toJson();
@@ -135,8 +107,6 @@ class ProductService extends ChangeNotifier {
       return payload;
     } catch (e) {
       debugPrint('❌ fetchProduct error: $e');
-      if (_api.captureRequestContext() != capturedContext ||
-          (e is ApiException && e.statusCode >= 400 && e.statusCode < 500)) rethrow;
       final cached = _cache?.readJsonMap(CacheService.productDetailKey(id));
       if (cached != null) return cached;
       rethrow;
@@ -300,7 +270,7 @@ class ProductService extends ChangeNotifier {
     _productContracts = _productContracts
         .where((product) => product.id != id)
         .toList(growable: false);
-    _products = _products.where((p) => p['id'] != id).toList(growable: false);
+    _products.removeWhere((p) => p['id'] == id);
     await _cache?.remove(CacheService.productDetailKey(id));
     notifyListeners();
   }

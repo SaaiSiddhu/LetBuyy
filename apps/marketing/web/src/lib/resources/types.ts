@@ -1,5 +1,5 @@
 export type ContentBlock =
-  | { type: 'p'; text: string }
+  | { type: 'p'; text: string; references?: Array<{ label: string; href: string }> }
   | { type: 'h2'; text: string; id?: string }
   | { type: 'h3'; text: string; id?: string }
   | { type: 'ul'; items: string[] }

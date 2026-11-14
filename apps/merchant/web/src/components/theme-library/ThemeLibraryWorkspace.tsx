@@ -1,10 +1,6 @@
 'use client'
 
-import { ThemeLibraryAllowanceSchema, type ThemeLibraryAllowance } from '@letbuyy/theme-engine'
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import {
     Banner,
     Button,
@@ -22,11 +18,10 @@ interface ThemeLibraryWorkspaceProps {
     store: string
     /** Resolved storeId (UUID). When null the workspace is not yet ready to load. */
     storeId: string | null
-    onChanged?: () => void
 }
 
 interface LibraryApiResponse {
-    data?: SiteThemeRecord[] | { themes?: SiteThemeRecord[]; allowance?: ThemeLibraryAllowance }
+    data?: SiteThemeRecord[]
     themes?: SiteThemeRecord[]
     success?: boolean
 }
@@ -56,7 +51,6 @@ interface CreateDialogState {
 
 function readThemeList(payload: LibraryApiResponse): SiteThemeRecord[] {
     if (Array.isArray(payload.data)) return payload.data
-    if (payload.data && Array.isArray(payload.data.themes)) return payload.data.themes
     if (Array.isArray(payload.themes)) return payload.themes
     return []
 }
@@ -90,7 +84,7 @@ function friendlyGatewayError(payload: unknown, fallback: string): string {
             const limit = typeof errObj?.limit === 'number' ? errObj.limit : null
             return limit !== null
                 ? `Your plan allows up to ${limit} theme${limit === 1 ? '' : 's'}. Upgrade or archive an existing theme to add more.`
-                : 'Custom-theme limit reached. Included built-in themes do not use custom slots.'
+                : 'Theme limit reached on your current plan.'
         }
         if (msg) return msg
     }
@@ -114,16 +108,11 @@ function friendlyGatewayError(payload: unknown, fallback: string): string {
  * Mobile-first layout: stack at 360 px, cards wrap responsively at larger sizes.
  * Dates use en-IN locale; commerce amounts use INR (not applicable here).
  */
-export function ThemeLibraryWorkspace({ store, storeId, onChanged }: ThemeLibraryWorkspaceProps) {
-    const router = useRouter()
+export function ThemeLibraryWorkspace({ store, storeId }: ThemeLibraryWorkspaceProps) {
     const { notify } = useToast()
 
     // ── Library data ──────────────────────────────────────────────────────────
-    const [publishDialog, setPublishDialog] = useState<string | null>(null)
-    const [publishError, setPublishError] = useState<string | null>(null)
-    const publishIntent = useRef<{ slug: string; body: Record<string, unknown> } | null>(null)
     const [loading, setLoading] = useState(false)
-    const [allowance, setAllowance] = useState<ThemeLibraryAllowance | null>(null)
     const [themes, setThemes] = useState<SiteThemeRecord[]>([])
     const [fetchError, setFetchError] = useState<string | null>(null)
     const [busySlug, setBusySlug] = useState<string | null>(null)
@@ -144,73 +133,58 @@ export function ThemeLibraryWorkspace({ store, storeId, onChanged }: ThemeLibrar
     const createInputRef = useRef<HTMLInputElement>(null)
 
     // ── Fetch ─────────────────────────────────────────────────────────────────
-    const beginRead = useReadRequest(store)
     const fetchLibrary = useCallback(async () => {
         if (!store) return
-        const request = beginRead()
         setLoading(true)
-        setAllowance(null)
         setFetchError(null)
         try {
-            const res = await fetch(`/api/themes/library?store_name=${encodeURIComponent(store)}`, { cache: 'no-store', signal: request.signal })
+            const res = await fetch(`/api/themes/library?store_name=${encodeURIComponent(store)}`)
             const payload = await res.json().catch(() => null) as LibraryApiResponse | null
-            if (!request.isCurrent()) return
             if (!res.ok || !payload) {
                 const msg = friendlyGatewayError(payload, 'Could not load your theme library. Try refreshing.')
                 setFetchError(msg)
                 return
             }
-            const rawAllowance = payload.data && !Array.isArray(payload.data) ? payload.data.allowance : undefined
-            const confirmed = ThemeLibraryAllowanceSchema.safeParse(rawAllowance)
-            setAllowance(confirmed.success ? confirmed.data : null)
             setThemes(sortThemes(readThemeList(payload)))
         } catch {
-            if (!request.isCurrent()) return
             setFetchError('Could not load your theme library. Check your connection and try again.')
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [store, beginRead])
+    }, [store])
 
     useEffect(() => {
-        void fetchLibrary()
-    }, [fetchLibrary])
+        if (storeId) void fetchLibrary()
+    }, [fetchLibrary, storeId])
 
     // ── Publish ───────────────────────────────────────────────────────────────
-    const handlePublish = useCallback((slug: string) => { publishIntent.current = null; setPublishError(null); setPublishDialog(slug) }, [])
-    const performPublish = async () => {
-        const slug = publishDialog
-        if (!slug || busySlug) return
+    const handlePublish = useCallback(async (slug: string) => {
+        if (busySlug) return
         setBusySlug(slug)
-        setPublishError(null)
-        const url = `/api/themes/${encodeURIComponent(slug)}/editor?store_name=${encodeURIComponent(store)}`
         try {
-            if (!publishIntent.current) {
-                const loadedResponse = await fetch(url, { cache: 'no-store' })
-                const loaded = await loadedResponse.json()
-                if (!loadedResponse.ok) throw new Error(friendlyGatewayError(loaded, 'The saved theme could not load.'))
-                let version = loaded.version
-                if (!loaded.draftConfig) {
-                    const savedResponse = await fetch(`/api/themes/${encodeURIComponent(slug)}/editor/draft?store_name=${encodeURIComponent(store)}`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ actorId: loaded.actorId, storeId, templateKey: 'index', draftConfig: loaded.templateConfig,
-                            baseVersion: version, idempotencyKey: crypto.randomUUID() }),
-                    })
-                    const saved = await savedResponse.json()
-                    if (!savedResponse.ok) throw new Error(friendlyGatewayError(saved, 'Theme save was not confirmed. Retry.'))
-                    version = saved.version
-                }
-                publishIntent.current = { slug, body: { actorId: loaded.actorId, storeId, baseVersion: version, templateKey: 'index', idempotencyKey: crypto.randomUUID() } }
+            // The proxy reads store_name from the query string (not the request body),
+            // matching the convention established in /api/themes/[themeId]/editor/route.ts.
+            const res = await fetch(`/api/themes/${encodeURIComponent(slug)}/editor?store_name=${encodeURIComponent(store)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ make_store_live: true }),
+            })
+            const data = await res.json().catch(() => null) as Record<string, unknown> | null
+            if (!res.ok) {
+                throw new Error(friendlyGatewayError(data, 'Theme publish failed. Try again.'))
             }
-            const res = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(publishIntent.current.body) })
-            const payload = await res.json()
-            if (!res.ok) throw new Error(friendlyGatewayError(payload, 'Publication was not confirmed. Retry to recover it.'))
-            setPublishDialog(null); publishIntent.current = null
-            notify({ title: 'Theme published', description: 'Your saved design is now live.', variant: 'success' })
-            await fetchLibrary(); onChanged?.(); router.refresh()
-        } catch (error) { const message = error instanceof Error ? error.message : 'Retry publication.'; setPublishError(message); notify({ title: 'Publication not confirmed', description: message, variant: 'critical' }) }
-        finally { setBusySlug(null) }
-    }
+            notify({ title: 'Theme published', variant: 'success' })
+            await fetchLibrary()
+        } catch (err) {
+            notify({
+                title: 'Publish failed',
+                description: err instanceof Error ? err.message : 'Theme publish failed.',
+                variant: 'critical',
+            })
+        } finally {
+            setBusySlug(null)
+        }
+    }, [busySlug, store, notify, fetchLibrary])
 
     // ── Duplicate ─────────────────────────────────────────────────────────────
     const handleDuplicate = useCallback(async (slug: string) => {
@@ -357,8 +331,8 @@ export function ThemeLibraryWorkspace({ store, storeId, onChanged }: ThemeLibrar
 
     // ── Rollback navigation ───────────────────────────────────────────────────
     const handleRollback = useCallback((slug: string) => {
-        router.push(`/${store}/online-store/themes/${slug}/editor?tab=releases`)
-    }, [router, store])
+        window.location.href = `/${store}/online-store/themes/${slug}/editor?tab=releases`
+    }, [store])
 
     // ── Render ────────────────────────────────────────────────────────────────
     const confirmTitle = confirmAction.action === 'archive'
@@ -403,10 +377,6 @@ export function ThemeLibraryWorkspace({ store, storeId, onChanged }: ThemeLibrar
                     </Button>
                 </div>
             </div>
-
-            {allowance && <p className="m-0 text-[color:var(--lb-color-text-secondary)]" role="status">
-                {allowance.included_themes.length} built-in themes included on every plan. Custom designs: {allowance.custom_used} / {allowance.custom_limit ?? 'unlimited'} ({allowance.plan_name}). Adding a theme keeps your live design unchanged until you publish.
-            </p>}
 
             {/* Error banner */}
             {fetchError && !loading && (
@@ -480,9 +450,6 @@ export function ThemeLibraryWorkspace({ store, storeId, onChanged }: ThemeLibrar
                 </div>
             )}
 
-            <Modal open={Boolean(publishDialog)} title="Publish this theme?" description="Your saved theme will replace the current storefront design. Storefront visibility and password protection stay as configured." onClose={() => { if (!busySlug) setPublishDialog(null) }} footer={<><Button variant="secondary" disabled={Boolean(busySlug)} onClick={() => setPublishDialog(null)}>Cancel</Button><Button disabled={Boolean(busySlug)} onClick={() => void performPublish()}>{busySlug ? 'Publishing…' : publishError ? 'Retry publication' : 'Publish'}</Button></>}>
-                {publishError ? <Banner variant="critical" title="Publication not confirmed">{publishError}</Banner> : <p>{busySlug ? 'Saving and publishing your selected design…' : 'You can continue customizing this design after publication.'}</p>}
-            </Modal>
             {/* ── Rename modal ─────────────────────────────────────────────── */}
             <Modal
                 open={renameDialog.open}

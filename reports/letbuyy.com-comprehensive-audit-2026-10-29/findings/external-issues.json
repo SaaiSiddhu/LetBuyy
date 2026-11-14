@@ -1,0 +1,29 @@
+[
+  {
+    "issue_id": "EXT-01",
+    "category": "Search experience and intent",
+    "title": "Pair Commerce OS positioning with explicit store-builder language near the primary promise",
+    "severity": "Medium",
+    "confidence": "Medium",
+    "finding_state": "Opportunity",
+    "affected_url_count": 1,
+    "representative_urls": [
+      "https://www.letbuyy.com/in"
+    ],
+    "template_or_page": "Homepage opportunity; counted English page only, translations require localized editorial review",
+    "evidence": "Fresh crawl homepage H1 is More than a store. Your Commerce OS.; plain online store wording appears deeper in the journey. Actual English query samples returned software/category pages; five primary competitor samples show product category, workflow, or price/fee distinctions. evidence/crawl.json; evidence/external/*-parsed.json; evidence/external/search-and-source-log.json",
+    "business_impact": "An unfamiliar seller needs to recognize the product category and the next step. This is a clarity hypothesis; no measured ranking or conversion loss is established.",
+    "recommended_fix": "Keep the Commerce OS identity and add a concise plain-language explanation near the main promise, connecting verified supported India commerce needs and truthful trial terms to pricing/setup/demo. Avoid launching duplicate keyword landing pages.",
+    "implementation_example": "Candidate explanatory copy for editorial review: Build and manage your online store in India. Product/payment/trial qualifications must come from approved availability and commercial facts.",
+    "owner_role": "Product marketing with SEO and frontend owner",
+    "effort": "0.5–1 working day for copy, localized review and metadata/browser verification; assumes offer decisions are settled, excludes deployment and experimentation observation.",
+    "dependencies": [
+      "Approved commercial and feature-availability facts",
+      "Existing metadata/canonical consistency repairs",
+      "Available conversion baseline before claiming uplift"
+    ],
+    "validation_steps": "Inspect initial and rendered HTML at desktop/mobile widths in each supported language; confirm clear category/action and no conflicting promise; compare qualified signup/demo starts and relevant non-brand CTR when sufficiently observed.",
+    "success_indicator": "Approved category/offer description is visible near the primary action and consistent across locales. Any CTR or conversion change remains a measured outcome, not a promised percentage.",
+    "failure_check": "More clicks but fewer qualified starts, loss of brand clarity, contradictory translated promises or unsupported product availability would invalidate the proposed copy."
+  }
+]

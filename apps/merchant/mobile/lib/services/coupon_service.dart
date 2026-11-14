@@ -84,7 +84,7 @@ class CouponService extends ChangeNotifier {
     return _api.coupons.validate({
       'store_id': storeId,
       'code': code.trim(),
-      'order_total': subtotal ?? 0,
+      if (subtotal != null) 'subtotal': subtotal,
     });
   }
 }

@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Repeat shopping locally verified: application28bcc71d; full actual native/three-app browsera50768272742 passes original26900paise COD, distinct Small21900paise repeat purchase, first cart/receipt preservation and second cart retirement, plus Core/signup/accounts/private visitor controls. Backend68/native10/UI19/Gateway1620/Commerce1273/types/actual Wrangler/canonical114 pass with overlapping coverage and retained transport/startup/type-fixture failures. Later source remains local; completed GitHub handoff9c4ae605 unchanged. Next reproduce and repair current catalogue authority against stale SQL metadata; broader marketplace/transaction/token/performance/operator/provider/hosted gates remain open. Week1 and launch are not complete.",
+  "currentFocus": "Core collection pagination, flat Liquid filter/pagination placement, mobile address controls and actual Liquid preview viewports are locally verified. Owner requested develop merge/GitHub source sync for new machine. Continue Core full visual/section acceptance and measured useful-page performance, then remaining commerce/operator/provider/hosted gates.",
   "weeks": [
     {
       "week": 1,
@@ -57,7 +57,7 @@
     }
   ],
   "standingBoundaries": [
-    "Prior source handoff commit/merge/push completed at develop9c4ae605. Subsequent engineering stays local; new merge/push/deploy, staging/main promotion and hosted cutover require renewed authorization.",
+    "No push/merge/deploy or hosted cutover under current instruction",
     "No real customer messages or transactions",
     "Mobile app UI handled by friend;preserve shared contracts"
   ],
@@ -72,11 +72,8 @@
   "week2BillingReceipt": "84cbe1e9 source;72 owned acceptance cases pass;919 merchant and1249 commerce package tests pass; canonical114/114. Raw pre-cleanup sweep method red retained. Actual supplier profile, Razorpay sandbox and hosted launch are not verified.",
   "week2PublicSignupReceipt": "b619ad5f final source/config; runtime6fb6ef12 unchanged. Five owned cases pass, Identity56 baseline regressions and canonical114/114 pass. Raw stale-artifact method red retained. No real email, hosted or Razorpay acceptance.",
   "week2CoreReceipt": "ff6dcc78 final source; browser c4c121da runtime inputs and publisher body unchanged. Core6 + CAS35 + full native browser1 =42 selected passing cases; canonical114/114, governance799/799. Raw gate1 solely pre-cleanup stale-artifact method red; attribution and owned cleanup pass. No provider or hosted release.",
-  "week1Closure": "OPEN: cumulative source and local Core/SQL/media/access repair receipts are scoped evidence. Full current storefront lifecycle, resource admission and cart/order channel authority, remaining theme/editor/media/useful-page performance and broader launch/provider/hosted gates remain required. Earlier closure summaries describe historical narrower checkpoints.",
+  "week1Closure": "Named foundation, Core catalog/search/account and bounded real collection discovery repairs locally verified. Full Week1 remains open for collection pagination, theme visual/action/filter/preview parity and measured useful-page performance. Hosted/provider acceptance is separate.",
   "week1CoreCopyReceipt": "20b10aff source; owned8/8 including normal private/public browser and charged COD; theme1890/1890; canonical114/114; cleanup verified. Earlier editor mismatch and build-only dependency failure retained. Existing snapshots untouched; no deployment.",
   "week1CoreCatalogReceipt": "336d508e9857033437ad606dcd91771aaee4027c source; selected owned14, theme1891, Gateway1608, queue75, Commerce1261, governance802 and canonical114 pass; cleanup verified. Scope and runtime-compatible receipts in core-catalog/acceptance.json. No provider/hosted release.",
-  "week1CoreDiscoveryReceipt": "dcd9b9f47325adaff75fe6208ede19f131956110; backend3 plus production-built native browser1 across compatible receipts, Commerce1261, reviewed inventory14, types and canonical114 pass. core-discovery/acceptance.json records bounded scope, retained failures, cleanup and limitations; no deployment.",
-  "week1StorefrontAccessReceipt": "storefront-access/acceptance.json \u2014 local scoped read/visitor lifecycle verified; broader writes/resource/provider/hosted and full Week1 remain open.",
-  "week1SessionCartPrivacyReceipt": "session-cart-privacy/acceptance.json \u2014 required checkout capability and terminal cart clear guard locally verified; full token lifetime, opposite mutation ordering, repeat shopping, marketplace and managed freshness remain open.",
-  "week1RepeatShoppingReceipt": "repeat-shopping/acceptance.json \u2014 distinct normal second purchase and converted-cart preservation locally verified; full token/transaction/multi-tab/hosted/provider scope remains open."
+  "week1CoreDiscoveryReceipt": "dcd9b9f47325adaff75fe6208ede19f131956110; backend3 plus production-built native browser1 across compatible receipts, Commerce1261, reviewed inventory14, types and canonical114 pass. core-discovery/acceptance.json records bounded scope, retained failures, cleanup and limitations; no deployment."
 }

@@ -1,7 +1,5 @@
 # Shopify Polaris Analysis
 
-**Historical snapshot — 2 June 2026.** For the refreshed authenticated admin's measured colors, geometry and action treatment, see [22 October 2026 current admin visual reference](identity-onboarding-2026-10-22/07_CURRENT_ADMIN_VISUAL_REFERENCE.md). In particular, the current sidebar trial area has a promotional glow and current primary actions use more rounded, dimensional pills. The observations below keep their original date.
-
 - Research date: 2026-06-02
 - Scope: Merchant-facing Shopify Admin product intelligence for LetBuyy.
 - Privacy: Store, user, email, account, domain, token, and merchant-specific values are redacted.

@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+Disallow: /signup
+
+Sitemap: http://localhost:9006/sitemap.xml

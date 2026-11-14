@@ -1,0 +1,29 @@
+{
+  "capturedAt": "2026-11-03T09:00:54.381030+00:00",
+  "name": "on-demand-motion",
+  "method": "Default mobile Lighthouse simulation; diagnostics cannot close acceptance",
+  "rows": [
+    {
+      "page": "pricing",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "lcpMs": 2928.042625,
+      "tbtMs": 10.499999999999773,
+      "cls": 0,
+      "scriptBytes": 209704,
+      "scriptRequests": 9,
+      "lighthouseVersion": "13.6.0"
+    },
+    {
+      "page": "guide",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "lcpMs": 3208.5449999999996,
+      "tbtMs": 1.5,
+      "cls": 0,
+      "scriptBytes": 215820,
+      "scriptRequests": 9,
+      "lighthouseVersion": "13.6.0"
+    }
+  ]
+}

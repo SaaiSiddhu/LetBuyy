@@ -1,0 +1,83 @@
+{
+  "captured_at": "2026-11-07T03:00:32.609697+00:00",
+  "read_only": true,
+  "checks": [
+    {
+      "domain": "seller.letbuyy.com",
+      "method": "GET",
+      "exit_code": 0,
+      "configuredBy": null,
+      "misconfigured": true,
+      "acceptedChallenges": [],
+      "recommendedCNAME": [
+        {
+          "rank": 1,
+          "value": "cname.vercel-dns.com."
+        }
+      ],
+      "recommendedIPv4": [
+        {
+          "rank": 1,
+          "value": [
+            "76.76.21.21"
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "developer.letbuyy.com",
+      "method": "GET",
+      "exit_code": 0,
+      "configuredBy": null,
+      "misconfigured": true,
+      "acceptedChallenges": [],
+      "recommendedCNAME": [
+        {
+          "rank": 1,
+          "value": "56c6f6b7962b9b74.vercel-dns-017.com."
+        },
+        {
+          "rank": 2,
+          "value": "cname.vercel-dns.com."
+        }
+      ],
+      "recommendedIPv4": [
+        {
+          "rank": 1,
+          "value": [
+            "216.198.79.1",
+            "64.29.17.1"
+          ]
+        },
+        {
+          "rank": 2,
+          "value": [
+            "76.76.21.21"
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "developers.letbuyy.com",
+      "method": "GET",
+      "exit_code": 0,
+      "configuredBy": null,
+      "misconfigured": true,
+      "acceptedChallenges": [],
+      "recommendedCNAME": [
+        {
+          "rank": 1,
+          "value": "cname.vercel-dns.com."
+        }
+      ],
+      "recommendedIPv4": [
+        {
+          "rank": 1,
+          "value": [
+            "76.76.21.21"
+          ]
+        }
+      ]
+    }
+  ]
+}

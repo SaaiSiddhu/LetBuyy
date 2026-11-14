@@ -17,7 +17,8 @@
 .heroArtwork { min-width: 0; margin: var(--lb-space-7) 0 0; }
 .heroArtCanvas { position: relative; isolation: isolate; padding: var(--lb-space-6) 0 var(--lb-space-4); border-radius: var(--lb-radius-xl); background: radial-gradient(ellipse at center, color-mix(in srgb, var(--lb-color-primary) 12%, transparent), transparent 70%); }
 .artIndex { display: block; color: var(--lb-color-text-subdued); font-size: calc(var(--lb-font-size-caption) * .8); letter-spacing: .13em; text-align: center; }
-.heroImage { display: block; width: 100%; height: auto; object-fit: contain; }
+/* Retain the source canvas ratio when responsive encoders round its height. */
+.heroImage { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: contain; }
 .artNote { position: absolute; left: 0; bottom: 18%; display: flex; align-items: center; gap: var(--lb-space-3); padding: var(--lb-space-3) var(--lb-space-4); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-md); background: var(--lb-color-surface); color: var(--lb-color-primary-text); box-shadow: 0 8px 32px color-mix(in srgb, var(--lb-color-text) 8%, transparent); font-size: var(--lb-font-size-caption); line-height: 1.5; }
 .artNote strong { color: var(--lb-color-text); font-weight: var(--lb-font-weight-medium); }
 .artSwatches { display: flex; justify-content: center; gap: var(--lb-space-2); }

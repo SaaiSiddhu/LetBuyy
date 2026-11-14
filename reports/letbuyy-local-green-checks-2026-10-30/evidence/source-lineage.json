@@ -1,0 +1,73 @@
+{
+  "shared_head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "branch": "codex/local-work-preserved-20261025",
+  "initial_source_files": 8585,
+  "changes": [
+    {
+      "path": "apps/marketing/web/src/components/CapabilityMap.tsx",
+      "before_sha256": "458b0be2ec7cd8e04a788679b1f593bb60064d5d1542527232589bfd1103a8e4",
+      "after_sha256": "c15b54b83fcb0b417c7a4f1139fcc45d61a5302b83a472c36392a091d97ecf31"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy-catalog.ts",
+      "before_sha256": "b1f42e06bd93fc12a039647d90c6ed63f4ba67897c820f9ace90d88bfb822abc",
+      "after_sha256": "14a9bf83c76790c4cc3426c46fab82bd92e472be61dca263407112042a0e6c83"
+    },
+    {
+      "path": "config/governance/secret-scan-exceptions.json",
+      "before_sha256": "8d9f6f9803a365659c1d21fdcc1acd05128c9e5a34e0604b2878b101fa94507a",
+      "after_sha256": "7a72bcf2dfaafc3fce08d3bdef5f43f3e44ff1d8cfd9ed063370b49393f5c9f7"
+    },
+    {
+      "path": "scripts/validators/foundation-sql-policy-residue-validator.mjs",
+      "before_sha256": "88ff80a1a9f06916b81829f17348bd9480a475f5f73720b3df169244ae6005e8",
+      "after_sha256": "e6aa894f267030286613d0b717711fa1d70ef4b6d22a78a74e0c6803c1d42cc5"
+    },
+    {
+      "path": "scripts/validators/marketing-dead-twin-validator.mjs",
+      "before_sha256": "b586c423fe496044db04b69e669b53f5d82580bfecbf1736421b492275b5f5dc",
+      "after_sha256": "0b5dcefe370b46995c68f2cea1e4175f2ccbf6572cb7b30d9993a1d862cf79b4"
+    },
+    {
+      "path": "scripts/validators/route-ownership-validator.mjs",
+      "before_sha256": "dddb71ec485c7040c6019404f4baad003972df0da131c118442f25f4810f10fc",
+      "after_sha256": "6bbe8c3d209f3796a7362e6b056c4900d3c06ed093a4cdd6796c5514697858e2"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/orders-data-integrity.test.ts",
+      "before_sha256": "c47992f553088ab1acbcac499510732f70b119c987547e75f4e67f861a4cb851",
+      "after_sha256": "7e9da7313c3568346ebf8f4e36430b0f90badee44247fc09d5a33ae0f3092352"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/console-page-authority.postgres.test.ts",
+      "before_sha256": "b2141866f421fc3252248383df6dd08d59d193d50725bfcf7fa287847e73511f",
+      "after_sha256": "e8094cfecfb7c9202370db570c5931db82a681300f710c8a1dc66019ecee6980"
+    },
+    {
+      "path": "tests/contracts/custom-domains.test.ts",
+      "before_sha256": "184e42fecd9c7df1721f03d1ef919b2258cc5c279e96bce98e1ca55743355277",
+      "after_sha256": "bcad11c84c15e5fdde0894d49ce1bb61c20c3d287f85ae997e0e3c5d2b389bf0"
+    },
+    {
+      "path": "tests/contracts/ops-plane-auth-hardening.test.ts",
+      "before_sha256": "89be22a1553585223f70c67698c24bfdc7753b77d40b2146861b111f2cbbe10e",
+      "after_sha256": "3ebd510953e2253e6925cad1e0aa76719c6b04d14b08e04a093245701ccf6285"
+    },
+    {
+      "path": "tests/governance/current-source-guard-contracts.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "a8b72b6605e18f02667e7e43c0643e6b9016ce656c85f83a525c6dc6f308bada"
+    },
+    {
+      "path": "tests/governance/governance-source-traversal.test.mjs",
+      "before_sha256": "286b43bb8d09ebf94ed1b22ada46ed8ac13d0a92a3d2451a7e6d0d99dd517dd7",
+      "after_sha256": "a8a419ccb015d971021cbaaf30b46a0c341b0a41852b4a62fcea1f3bc94a1e19"
+    }
+  ],
+  "other_initial_source_files_unchanged": 8574,
+  "governance_snapshot": "fdb58f5e65e8c1ce720d6579a4b729443f71ef10",
+  "governance_runtime_validator_config_test_source_matches_shared_checkout": true,
+  "shared_checkout_committed": false,
+  "isolation": "Governance source snapshot has isolated frozen/offline installed dependencies and generated-artifact cleanup. Snapshots only under /tmp; no user Git index or branch reset.",
+  "additional_document_changes": "Historical signup/billing review patch redacts a duplicated synthetic password; dated follow-up notices and execution ledger added separately."
+}

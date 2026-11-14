@@ -1,0 +1,77 @@
+{
+  "gateway": {
+    "SUPABASE_URL": {
+      "host": "localhost",
+      "port": 54321,
+      "path": ""
+    },
+    "NEXT_PUBLIC_ADMIN_URL": {
+      "host": "admin-staging.letbuyy.com",
+      "port": null,
+      "path": ""
+    },
+    "LETBUYY_SUBSCRIPTION_TAX_PROFILE_present": false,
+    "RESEND_API_KEY_present": true,
+    "TURNSTILE_SECRET_KEY_present": true,
+    "RAZORPAY_KEY_SECRET_present": true,
+    "razorpay_key_class": "test"
+  },
+  "identity": {
+    "LETBUYY_API_URL": {
+      "host": "localhost",
+      "port": 9010,
+      "path": "/v1"
+    },
+    "LETBUYY_API_BASE_URL": {
+      "host": "localhost",
+      "port": 9010,
+      "path": "/v1"
+    },
+    "NEXT_PUBLIC_ADMIN_URL": {
+      "host": "localhost",
+      "port": 9001,
+      "path": ""
+    },
+    "NEXT_PUBLIC_ACCOUNTS_URL": {
+      "host": "localhost",
+      "port": 9002,
+      "path": ""
+    },
+    "LETBUYY_SUBSCRIPTION_TAX_PROFILE_present": false,
+    "RESEND_API_KEY_present": true,
+    "TURNSTILE_SECRET_KEY_present": true,
+    "RAZORPAY_KEY_SECRET_present": false,
+    "razorpay_key_class": "unconfigured-or-local-placeholder",
+    "LETBUYY_ENABLE_DEV_AUTH_BYPASS": "true",
+    "NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS": "true"
+  },
+  "merchant": {
+    "LETBUYY_API_URL": {
+      "host": "localhost",
+      "port": 9010,
+      "path": "/v1"
+    },
+    "LETBUYY_API_BASE_URL": {
+      "host": "localhost",
+      "port": 9010,
+      "path": "/v1"
+    },
+    "NEXT_PUBLIC_ADMIN_URL": {
+      "host": "localhost",
+      "port": 9001,
+      "path": ""
+    },
+    "NEXT_PUBLIC_ACCOUNTS_URL": {
+      "host": "localhost",
+      "port": 9002,
+      "path": ""
+    },
+    "LETBUYY_SUBSCRIPTION_TAX_PROFILE_present": false,
+    "RESEND_API_KEY_present": true,
+    "TURNSTILE_SECRET_KEY_present": true,
+    "RAZORPAY_KEY_SECRET_present": false,
+    "razorpay_key_class": "unconfigured-or-local-placeholder",
+    "LETBUYY_ENABLE_DEV_AUTH_BYPASS": "true",
+    "NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS": "true"
+  }
+}

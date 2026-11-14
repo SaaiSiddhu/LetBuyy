@@ -1,0 +1,969 @@
+{
+  "captured_at": "2026-10-29T22:21:52.363Z",
+  "method": "Canvas2D command traces from the frozen original renderer and extracted canonical renderer at identical geometry, palette, clock, dimensions and DPR; does not substitute for browser behavior tests",
+  "source_sha256": "5d0abfdb92e49ec00b1cebe61fd350b99433563308383fbad4b4ba0447716619",
+  "cases": 60,
+  "all_equal": true,
+  "rows": [
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 0,
+      "baseline": {
+        "hash": "2037f48faff58bcd4bb429cd750b5d275bf3b7dcce2e88a65d9ac22a4965b1e7",
+        "operations": 581
+      },
+      "current": {
+        "hash": "2037f48faff58bcd4bb429cd750b5d275bf3b7dcce2e88a65d9ac22a4965b1e7",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 650,
+      "baseline": {
+        "hash": "2037f48faff58bcd4bb429cd750b5d275bf3b7dcce2e88a65d9ac22a4965b1e7",
+        "operations": 581
+      },
+      "current": {
+        "hash": "2037f48faff58bcd4bb429cd750b5d275bf3b7dcce2e88a65d9ac22a4965b1e7",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 1700,
+      "baseline": {
+        "hash": "9d2c5515b7731c6aae52da341fd4e263dfe8915ab622b1ca8dadfccde770f2e9",
+        "operations": 7465
+      },
+      "current": {
+        "hash": "9d2c5515b7731c6aae52da341fd4e263dfe8915ab622b1ca8dadfccde770f2e9",
+        "operations": 7465
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 3000,
+      "baseline": {
+        "hash": "52e4ee83fe2ef7590a25e73a0cd128ad501e46e29cac8158af5c577b2360e7a6",
+        "operations": 10138
+      },
+      "current": {
+        "hash": "52e4ee83fe2ef7590a25e73a0cd128ad501e46e29cac8158af5c577b2360e7a6",
+        "operations": 10138
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 6000,
+      "baseline": {
+        "hash": "c0c6f76283c32e217ee9ad2caad9d7d61be325ba701eb3649c57ada3efa691d1",
+        "operations": 8293
+      },
+      "current": {
+        "hash": "c0c6f76283c32e217ee9ad2caad9d7d61be325ba701eb3649c57ada3efa691d1",
+        "operations": 8293
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 9000,
+      "baseline": {
+        "hash": "324411beae399d04a97ed203eba577578b48c9f7346629928b856a5a1f0935bd",
+        "operations": 8352
+      },
+      "current": {
+        "hash": "324411beae399d04a97ed203eba577578b48c9f7346629928b856a5a1f0935bd",
+        "operations": 8352
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 9300,
+      "baseline": {
+        "hash": "ee490716bbc1caac2004e7f85b30a53c0325111988653d542e1fcd9c4219d32f",
+        "operations": 14928
+      },
+      "current": {
+        "hash": "ee490716bbc1caac2004e7f85b30a53c0325111988653d542e1fcd9c4219d32f",
+        "operations": 14928
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 9800,
+      "baseline": {
+        "hash": "0d2b4ec41e03c3798295c4b5b97cf93e89e5216bd55e8c0768094853c71ceca1",
+        "operations": 1181
+      },
+      "current": {
+        "hash": "0d2b4ec41e03c3798295c4b5b97cf93e89e5216bd55e8c0768094853c71ceca1",
+        "operations": 1181
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 10500,
+      "baseline": {
+        "hash": "25f036a5fc98f368041c685a64a75f584d547bc8d09159e67eeffb5fb13ed7be",
+        "operations": 401
+      },
+      "current": {
+        "hash": "25f036a5fc98f368041c685a64a75f584d547bc8d09159e67eeffb5fb13ed7be",
+        "operations": 401
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": false,
+      "ms": 11600,
+      "baseline": {
+        "hash": "a081bfcd116985e0fa9314ddb4645b6fe9d8ed049e16deadc76379d733ea64e6",
+        "operations": 9
+      },
+      "current": {
+        "hash": "a081bfcd116985e0fa9314ddb4645b6fe9d8ed049e16deadc76379d733ea64e6",
+        "operations": 9
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 0,
+      "baseline": {
+        "hash": "f383816470d4d271da38d0d53192d608d1ecbaa9617089bf80b5c10ef3c1f040",
+        "operations": 581
+      },
+      "current": {
+        "hash": "f383816470d4d271da38d0d53192d608d1ecbaa9617089bf80b5c10ef3c1f040",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 650,
+      "baseline": {
+        "hash": "f383816470d4d271da38d0d53192d608d1ecbaa9617089bf80b5c10ef3c1f040",
+        "operations": 581
+      },
+      "current": {
+        "hash": "f383816470d4d271da38d0d53192d608d1ecbaa9617089bf80b5c10ef3c1f040",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 1700,
+      "baseline": {
+        "hash": "3375d2797d095105e48f17ba6825e94d72dceee3887e5d0aea565683fc72f967",
+        "operations": 7465
+      },
+      "current": {
+        "hash": "3375d2797d095105e48f17ba6825e94d72dceee3887e5d0aea565683fc72f967",
+        "operations": 7465
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 3000,
+      "baseline": {
+        "hash": "550d6b3b1674eca51c93d4df58f917afe873e8d30bfc196e24e1399731d9afb3",
+        "operations": 16630
+      },
+      "current": {
+        "hash": "550d6b3b1674eca51c93d4df58f917afe873e8d30bfc196e24e1399731d9afb3",
+        "operations": 16630
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 6000,
+      "baseline": {
+        "hash": "40c9e150a10c0cdef735f70f2df619cad4649ec43b5afedca88bd55322414634",
+        "operations": 9043
+      },
+      "current": {
+        "hash": "40c9e150a10c0cdef735f70f2df619cad4649ec43b5afedca88bd55322414634",
+        "operations": 9043
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 9000,
+      "baseline": {
+        "hash": "e589e927fcdd94acf3b88865819b77988da3485cd81ce2050f531ed775b55aa4",
+        "operations": 9228
+      },
+      "current": {
+        "hash": "e589e927fcdd94acf3b88865819b77988da3485cd81ce2050f531ed775b55aa4",
+        "operations": 9228
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 9300,
+      "baseline": {
+        "hash": "0a9192d89b3ae24ca018869da92229cb2949087bcfa0e76e6c8e4514a0729c54",
+        "operations": 17762
+      },
+      "current": {
+        "hash": "0a9192d89b3ae24ca018869da92229cb2949087bcfa0e76e6c8e4514a0729c54",
+        "operations": 17762
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 9800,
+      "baseline": {
+        "hash": "770c723a55091cbadccb58aef508a7dd2b679108f8861e6df8eb3187ad9172e7",
+        "operations": 3875
+      },
+      "current": {
+        "hash": "770c723a55091cbadccb58aef508a7dd2b679108f8861e6df8eb3187ad9172e7",
+        "operations": 3875
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 10500,
+      "baseline": {
+        "hash": "5d50100114339ff22d0e54980e260ef1791fa00b13a88e067345c38dc113e673",
+        "operations": 639
+      },
+      "current": {
+        "hash": "5d50100114339ff22d0e54980e260ef1791fa00b13a88e067345c38dc113e673",
+        "operations": 639
+      },
+      "equal": true
+    },
+    {
+      "width": 375,
+      "height": 280,
+      "pixelRatio": 1.75,
+      "opaque": true,
+      "ms": 11600,
+      "baseline": {
+        "hash": "a081bfcd116985e0fa9314ddb4645b6fe9d8ed049e16deadc76379d733ea64e6",
+        "operations": 9
+      },
+      "current": {
+        "hash": "a081bfcd116985e0fa9314ddb4645b6fe9d8ed049e16deadc76379d733ea64e6",
+        "operations": 9
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 0,
+      "baseline": {
+        "hash": "be5c8ab8ba83846a352f53a5c692923e6da52c96ff30b9735f9ea6d0b2ccbd11",
+        "operations": 581
+      },
+      "current": {
+        "hash": "be5c8ab8ba83846a352f53a5c692923e6da52c96ff30b9735f9ea6d0b2ccbd11",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 650,
+      "baseline": {
+        "hash": "be5c8ab8ba83846a352f53a5c692923e6da52c96ff30b9735f9ea6d0b2ccbd11",
+        "operations": 581
+      },
+      "current": {
+        "hash": "be5c8ab8ba83846a352f53a5c692923e6da52c96ff30b9735f9ea6d0b2ccbd11",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 1700,
+      "baseline": {
+        "hash": "3af8423a8b8cdc1af5dcf2a337bbb3a3fd8a370b5b3e6ded16dc7e9bc0ee7c0a",
+        "operations": 7465
+      },
+      "current": {
+        "hash": "3af8423a8b8cdc1af5dcf2a337bbb3a3fd8a370b5b3e6ded16dc7e9bc0ee7c0a",
+        "operations": 7465
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 3000,
+      "baseline": {
+        "hash": "48305a71565837ec53bce34e97275fda991679a290c9ff1ebdb17d270307b67b",
+        "operations": 10244
+      },
+      "current": {
+        "hash": "48305a71565837ec53bce34e97275fda991679a290c9ff1ebdb17d270307b67b",
+        "operations": 10244
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 6000,
+      "baseline": {
+        "hash": "9d2b8650e64f6a7d1fc74146d4ec2528b5d6c6800a9ee2efe7e8bf1b061a6771",
+        "operations": 8117
+      },
+      "current": {
+        "hash": "9d2b8650e64f6a7d1fc74146d4ec2528b5d6c6800a9ee2efe7e8bf1b061a6771",
+        "operations": 8117
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 9000,
+      "baseline": {
+        "hash": "69afa529ad422e395e6a86746d52082465e3d99775db08fe59cb1630a2a92ee0",
+        "operations": 8156
+      },
+      "current": {
+        "hash": "69afa529ad422e395e6a86746d52082465e3d99775db08fe59cb1630a2a92ee0",
+        "operations": 8156
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 9300,
+      "baseline": {
+        "hash": "45b808e2952469f7ef86513ea7464118fa21d0b90c4f1421a81adbf546aecc2a",
+        "operations": 14714
+      },
+      "current": {
+        "hash": "45b808e2952469f7ef86513ea7464118fa21d0b90c4f1421a81adbf546aecc2a",
+        "operations": 14714
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 9800,
+      "baseline": {
+        "hash": "5bfbf61b1f9b6ba06f7abc84de3c30580feee6d7a5d269db0db59647c0e6b466",
+        "operations": 1423
+      },
+      "current": {
+        "hash": "5bfbf61b1f9b6ba06f7abc84de3c30580feee6d7a5d269db0db59647c0e6b466",
+        "operations": 1423
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 10500,
+      "baseline": {
+        "hash": "272aeddf6045fe8fdd81c5a89dea9d62d49141bcba100f31148768b35c3399be",
+        "operations": 397
+      },
+      "current": {
+        "hash": "272aeddf6045fe8fdd81c5a89dea9d62d49141bcba100f31148768b35c3399be",
+        "operations": 397
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": false,
+      "ms": 11600,
+      "baseline": {
+        "hash": "9b2462ef26ac71e41e01144b5e0b9926a294fd893c7930a1889f379d16a492a7",
+        "operations": 9
+      },
+      "current": {
+        "hash": "9b2462ef26ac71e41e01144b5e0b9926a294fd893c7930a1889f379d16a492a7",
+        "operations": 9
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 0,
+      "baseline": {
+        "hash": "621ae6c34a01ed908180cd37571771316c47ba706ad9ef03c7106b6a2e50980a",
+        "operations": 581
+      },
+      "current": {
+        "hash": "621ae6c34a01ed908180cd37571771316c47ba706ad9ef03c7106b6a2e50980a",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 650,
+      "baseline": {
+        "hash": "621ae6c34a01ed908180cd37571771316c47ba706ad9ef03c7106b6a2e50980a",
+        "operations": 581
+      },
+      "current": {
+        "hash": "621ae6c34a01ed908180cd37571771316c47ba706ad9ef03c7106b6a2e50980a",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 1700,
+      "baseline": {
+        "hash": "93bb1730882218389c3e72bb834c69e0cad312f216da4060b46ea6131d694cfa",
+        "operations": 7465
+      },
+      "current": {
+        "hash": "93bb1730882218389c3e72bb834c69e0cad312f216da4060b46ea6131d694cfa",
+        "operations": 7465
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 3000,
+      "baseline": {
+        "hash": "eaa36a3d22784fa92650715dc791cd7216cf09dd7f3e3e4d53cf339b6bc9e43e",
+        "operations": 16630
+      },
+      "current": {
+        "hash": "eaa36a3d22784fa92650715dc791cd7216cf09dd7f3e3e4d53cf339b6bc9e43e",
+        "operations": 16630
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 6000,
+      "baseline": {
+        "hash": "71d2111e6cc483cae8f4d61cd18b21733d8989401fb9d8a94077b28a05ee92d7",
+        "operations": 9043
+      },
+      "current": {
+        "hash": "71d2111e6cc483cae8f4d61cd18b21733d8989401fb9d8a94077b28a05ee92d7",
+        "operations": 9043
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 9000,
+      "baseline": {
+        "hash": "642f3260aec8c28e0206159d015f21b9d6e753cad9f6cdb9f6b4e8fc56983c02",
+        "operations": 9228
+      },
+      "current": {
+        "hash": "642f3260aec8c28e0206159d015f21b9d6e753cad9f6cdb9f6b4e8fc56983c02",
+        "operations": 9228
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 9300,
+      "baseline": {
+        "hash": "958cd272376f45c8931a4a0b5b6c31171fe5172bae2b4809e908bdf5b26276bf",
+        "operations": 17678
+      },
+      "current": {
+        "hash": "958cd272376f45c8931a4a0b5b6c31171fe5172bae2b4809e908bdf5b26276bf",
+        "operations": 17678
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 9800,
+      "baseline": {
+        "hash": "86d2a09ecbc2d1461fccc8b6117d4ec45b057a7ce7d55ded95128415ab2c1300",
+        "operations": 4485
+      },
+      "current": {
+        "hash": "86d2a09ecbc2d1461fccc8b6117d4ec45b057a7ce7d55ded95128415ab2c1300",
+        "operations": 4485
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 10500,
+      "baseline": {
+        "hash": "a3709d0fb3b7870faf02325376301a1c2f7e74b1a9bb8e2fcf4f22c75ede5412",
+        "operations": 773
+      },
+      "current": {
+        "hash": "a3709d0fb3b7870faf02325376301a1c2f7e74b1a9bb8e2fcf4f22c75ede5412",
+        "operations": 773
+      },
+      "equal": true
+    },
+    {
+      "width": 640,
+      "height": 420,
+      "pixelRatio": 2,
+      "opaque": true,
+      "ms": 11600,
+      "baseline": {
+        "hash": "9b2462ef26ac71e41e01144b5e0b9926a294fd893c7930a1889f379d16a492a7",
+        "operations": 9
+      },
+      "current": {
+        "hash": "9b2462ef26ac71e41e01144b5e0b9926a294fd893c7930a1889f379d16a492a7",
+        "operations": 9
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 0,
+      "baseline": {
+        "hash": "87a52234c2c717dd0bf4eb1e3e6fc09b92889f7d78834b8a3e8563c7c1b90b0b",
+        "operations": 581
+      },
+      "current": {
+        "hash": "87a52234c2c717dd0bf4eb1e3e6fc09b92889f7d78834b8a3e8563c7c1b90b0b",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 650,
+      "baseline": {
+        "hash": "87a52234c2c717dd0bf4eb1e3e6fc09b92889f7d78834b8a3e8563c7c1b90b0b",
+        "operations": 581
+      },
+      "current": {
+        "hash": "87a52234c2c717dd0bf4eb1e3e6fc09b92889f7d78834b8a3e8563c7c1b90b0b",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 1700,
+      "baseline": {
+        "hash": "87f1cc1dac611cc1cd51935582cce93ec4ddafeb584bd1e83d791b22fb56e18b",
+        "operations": 7465
+      },
+      "current": {
+        "hash": "87f1cc1dac611cc1cd51935582cce93ec4ddafeb584bd1e83d791b22fb56e18b",
+        "operations": 7465
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 3000,
+      "baseline": {
+        "hash": "375598d0f8625a64d0588e240104896200ddb73851209acc2fb88a42411ce35b",
+        "operations": 10396
+      },
+      "current": {
+        "hash": "375598d0f8625a64d0588e240104896200ddb73851209acc2fb88a42411ce35b",
+        "operations": 10396
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 6000,
+      "baseline": {
+        "hash": "724de166fc895cef8168199617945a056ee1308dc5ecb52e8308bf672f7391d3",
+        "operations": 8893
+      },
+      "current": {
+        "hash": "724de166fc895cef8168199617945a056ee1308dc5ecb52e8308bf672f7391d3",
+        "operations": 8893
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 9000,
+      "baseline": {
+        "hash": "f6eaa01f9ae712ab6b040b84ca9233e8bd31ba46d9702f85cdf7d13f44366f22",
+        "operations": 8834
+      },
+      "current": {
+        "hash": "f6eaa01f9ae712ab6b040b84ca9233e8bd31ba46d9702f85cdf7d13f44366f22",
+        "operations": 8834
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 9300,
+      "baseline": {
+        "hash": "702508a7c3dac833bc86d161f1d89676b10a04ce131f8ef43e4ba300db262ff2",
+        "operations": 16064
+      },
+      "current": {
+        "hash": "702508a7c3dac833bc86d161f1d89676b10a04ce131f8ef43e4ba300db262ff2",
+        "operations": 16064
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 9800,
+      "baseline": {
+        "hash": "4d7742cdcfa064e0d6ea84c03f8946e3c988953a29a474a3cc781ed552f3749f",
+        "operations": 1395
+      },
+      "current": {
+        "hash": "4d7742cdcfa064e0d6ea84c03f8946e3c988953a29a474a3cc781ed552f3749f",
+        "operations": 1395
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 10500,
+      "baseline": {
+        "hash": "c223aa0ef608b12c2ada094c23e3f77252f03d5afb9df97d58a292a49f1cb631",
+        "operations": 403
+      },
+      "current": {
+        "hash": "c223aa0ef608b12c2ada094c23e3f77252f03d5afb9df97d58a292a49f1cb631",
+        "operations": 403
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": false,
+      "ms": 11600,
+      "baseline": {
+        "hash": "4439470fe1eb3c15e5d0167cf9f3bdeac3d6ee234bd37f26ad2fe03c7192b038",
+        "operations": 9
+      },
+      "current": {
+        "hash": "4439470fe1eb3c15e5d0167cf9f3bdeac3d6ee234bd37f26ad2fe03c7192b038",
+        "operations": 9
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 0,
+      "baseline": {
+        "hash": "1e90919f8ea6bddf630e600825216789e4bfa3c6f705a303258e31558eeeabdd",
+        "operations": 581
+      },
+      "current": {
+        "hash": "1e90919f8ea6bddf630e600825216789e4bfa3c6f705a303258e31558eeeabdd",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 650,
+      "baseline": {
+        "hash": "1e90919f8ea6bddf630e600825216789e4bfa3c6f705a303258e31558eeeabdd",
+        "operations": 581
+      },
+      "current": {
+        "hash": "1e90919f8ea6bddf630e600825216789e4bfa3c6f705a303258e31558eeeabdd",
+        "operations": 581
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 1700,
+      "baseline": {
+        "hash": "ec950ca458646818a32e54ec14ceab07b2fc899cef29dc3c60322e5e90aef261",
+        "operations": 7465
+      },
+      "current": {
+        "hash": "ec950ca458646818a32e54ec14ceab07b2fc899cef29dc3c60322e5e90aef261",
+        "operations": 7465
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 3000,
+      "baseline": {
+        "hash": "18a7106ef127641ed60aadaf30d0c782386a330820b1d64f54468eeecb79e61f",
+        "operations": 16630
+      },
+      "current": {
+        "hash": "18a7106ef127641ed60aadaf30d0c782386a330820b1d64f54468eeecb79e61f",
+        "operations": 16630
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 6000,
+      "baseline": {
+        "hash": "5bc513ca7e4089dda7f597d16ff75dc2f1631d6f886c5fa5bdfcf454a0603416",
+        "operations": 9043
+      },
+      "current": {
+        "hash": "5bc513ca7e4089dda7f597d16ff75dc2f1631d6f886c5fa5bdfcf454a0603416",
+        "operations": 9043
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 9000,
+      "baseline": {
+        "hash": "6312062e4ea216e0ebaad3341dca38fb2187fb8bc867d21da632ea06928950f0",
+        "operations": 9228
+      },
+      "current": {
+        "hash": "6312062e4ea216e0ebaad3341dca38fb2187fb8bc867d21da632ea06928950f0",
+        "operations": 9228
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 9300,
+      "baseline": {
+        "hash": "f5ed196563e001cfebc7cbab2881e58448abca8af463613f61262fd6c3cf25cf",
+        "operations": 17604
+      },
+      "current": {
+        "hash": "f5ed196563e001cfebc7cbab2881e58448abca8af463613f61262fd6c3cf25cf",
+        "operations": 17604
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 9800,
+      "baseline": {
+        "hash": "a2705414fee37e6a820bcc91c3447d00eaa1f47067c230260e3b07e4401b6754",
+        "operations": 2657
+      },
+      "current": {
+        "hash": "a2705414fee37e6a820bcc91c3447d00eaa1f47067c230260e3b07e4401b6754",
+        "operations": 2657
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 10500,
+      "baseline": {
+        "hash": "b28d5bfe730c7662cdf47c873b6dd9883089066295b8f98de6cca4fbbaa6836f",
+        "operations": 491
+      },
+      "current": {
+        "hash": "b28d5bfe730c7662cdf47c873b6dd9883089066295b8f98de6cca4fbbaa6836f",
+        "operations": 491
+      },
+      "equal": true
+    },
+    {
+      "width": 600,
+      "height": 520,
+      "pixelRatio": 1,
+      "opaque": true,
+      "ms": 11600,
+      "baseline": {
+        "hash": "4439470fe1eb3c15e5d0167cf9f3bdeac3d6ee234bd37f26ad2fe03c7192b038",
+        "operations": 9
+      },
+      "current": {
+        "hash": "4439470fe1eb3c15e5d0167cf9f3bdeac3d6ee234bd37f26ad2fe03c7192b038",
+        "operations": 9
+      },
+      "equal": true
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "base_head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "initial_source_files": 8583,
+  "owned_candidate_source_files": 8585,
+  "runtime_source_matches_final_candidate": true,
+  "post_candidate_test_only_change": "tests/contracts/marketing-dead-twins.test.ts retargeted to real SSR/client composition; separately verified",
+  "changes": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/access_account/checkout/select-plan/SelectPlanClient.tsx",
+      "before_sha256": "bdc3193c6107503062e2de94fe4becb834af51f9eb40e416404dd074cfc3b455",
+      "after_sha256": "925c96598ac20ed414ee0089ffc8051298e860ef978f21b7ad3bf1295c078e2a"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/billing/page.tsx",
+      "before_sha256": "3e6011f7a9d8d0d7eb48c3f5449d86e27f140b6f50f2d6fb6465b2031607d509",
+      "after_sha256": "b9b3c4a085799deb93c76209bc3e995bc08d78b10dce33dcefbbafb28a233552"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/billing/profile/page.tsx",
+      "before_sha256": "576b822ca6b4e1c984dac7b07e923d768b46616e4baffee8463ee81356601633",
+      "after_sha256": "b96e03c045b84c44fac4a77ad7193515fe135747c2c8f547f51a15c027432799"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/billing/route.ts",
+      "before_sha256": "01340140a91cc698bbf3ffa4d1dbc6f149617047fb2637f066c7a6734ac22fd5",
+      "after_sha256": "5fe5bd5edb749c1516365c202b40dee229ee37fba1f0d9841dc509801abdc98e"
+    },
+    {
+      "path": "apps/merchant/web/src/components/billing/BillingPaymentMethods.tsx",
+      "before_sha256": "a1aca88e9dbd1839ffffee5bbd6490425755e862b84866e9767d8138e971cc55",
+      "after_sha256": "b0fa9b73d0f16633323908524ac9a9a04b0f93323feb741dfe10331cb46d330a"
+    },
+    {
+      "path": "apps/merchant/web/tests/billing-entry.test.tsx",
+      "before_sha256": "72adf82d1c7847bbd1238847d984727391db19ba7e61d2291c2db0592ea37a61",
+      "after_sha256": "145b2ac384c50e37575d4f4565bc84bd9fb8990d9d703ed806bd5b7c29e45106"
+    },
+    {
+      "path": "packages/billing-core/src/index.ts",
+      "before_sha256": "76fcb615ef5a4f4f2de882eaede2d548091f6b7a0dee12684da746bc7a0cd5c3",
+      "after_sha256": "4cbe614be2abb075ca38c33e52455a53d403525fd9713332231d464a47a3601d"
+    },
+    {
+      "path": "packages/billing-core/test/billing-core.test.ts",
+      "before_sha256": "904060a1a98223b9f6701cbe33d6b42f5197c438b09ea316c9b72daa4e4a063d",
+      "after_sha256": "eb4c3a1e751bf398526ef20b7c2d17c66acb4df4386e8ca013eb680b41654a54"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "before_sha256": "f60325c24994faa15c817b33b3ac77db9eafb44f82c23dd2bd96e0e7efcf9e61",
+      "after_sha256": "d18fd0cd9d19f99da69502e1ac99ead70552073f4563649ce9bbd5ef30b81c7d"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/billing-mandate-intent.postgres.test.ts",
+      "before_sha256": null,
+      "after_sha256": "63a84aa190e57ee3dc4ec302c3324d2fc0c213e797c60f6f438cc8a6615494e7"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts",
+      "before_sha256": "18078d8014da0cbd41cae25cef06933f7aa95bee49c382853f76ca8f0d590b55",
+      "after_sha256": "3ce945569427778b2f958578e3e30008193da622537ad217a61c123f909ea6bd"
+    },
+    {
+      "path": "services/api-gateway/src/routes/billing.ts",
+      "before_sha256": "d8d8e2f8f8cbde2a5df510fbf2859112f4e471c1153444f53bfcdf36c50b38b1",
+      "after_sha256": "6cb283a25d7f023451850cc0e802d40ada194f513f24e5112e62adc2a01b5be9"
+    },
+    {
+      "path": "tests/contracts/marketing-dead-twins.test.ts",
+      "before_sha256": "8c085e3fbb0139ecca0bf9cbbc6578dd24b3c44e85ef85d25af3af9f25fa5e22",
+      "after_sha256": "38a34816a3a7eb613f4a384f9b0d13b0e0cc9083ab82ed907729afd447d36078"
+    },
+    {
+      "path": "tests/fixtures/public-store-pricing-2026-10-30.json",
+      "before_sha256": null,
+      "after_sha256": "41d0976e9ada798e076331bfbc9c67c32b8680ba005297f9918308c7dc135b27"
+    },
+    {
+      "path": "tests/owned-db/merchant-public-signup-browser.postgres.test.ts",
+      "before_sha256": "8d68772170e1c989329653e14006f1c8923c130406fe65b11d1dc1f90d8611bb",
+      "after_sha256": "150f637204cf828966eb1db53cbaef024264835b5870bc7ec04800d22d1c963e"
+    }
+  ],
+  "other_initial_source_files_byte_preserved": 8570,
+  "excluded": "environment files, dependencies/generated builds, reports, archived documents and prior evidence; installed dependency links reused, no package version changes"
+}

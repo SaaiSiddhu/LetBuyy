@@ -1,0 +1,23 @@
+{
+  "capturedAt": "2026-11-07T02:48:41.855232+00:00",
+  "adoptedCandidates": [],
+  "candidates": [
+    {
+      "name": "privacy-dialog split",
+      "hypothesis": "Move the existing closed dialog and its controls out of initial client JavaScript; preserve markup/components/styles",
+      "outcome": "Both single diagnostic simulations above 2500ms; no candidate source accepted",
+      "data": "privacy-split-performance/summary.json",
+      "functionalAcceptance": "Not completed; never a release candidate"
+    },
+    {
+      "name": "Next.js 16.4.5",
+      "hypothesis": "Official newer framework advertises smaller production bundles; test unchanged application on exact-version update",
+      "scope": "Disposable copy only; root Next16.1.6 and lockfile untouched",
+      "installPrerequisite": "Source archive omits unrelated @letbuyy/infrastructure root dev dependency. Trial omitted that one root dev dependency to resolve packages; final original manifest/lock restored exactly and frozen install/build passed. Shared UI peer remains exactly16.1.6, so upgrade compatibility was not accepted or silently broadened.",
+      "outcome": "Pricing2928.614625ms and guide3907.488ms; fails both targets; no dependency update accepted",
+      "data": "framework-performance/summary.json",
+      "primarySource": "https://nextjs.org/blog/next-16-4"
+    }
+  ],
+  "priorCandidates": "Earlier24+5 failed/diagnostic variants retained in Nov2/Nov3 packets; not repeated as new work."
+}

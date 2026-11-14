@@ -1,0 +1,33 @@
+{
+  "captured_at": "2026-10-31T02:39:34.932578+00:00",
+  "files": [
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "bytes": 356415,
+      "lines": 10574,
+      "sha256": "0e4351d9b2bdc2657ef9d33331986b9f270b7096c92d12300f4319d4e3fda2fe",
+      "matches_previously_verified_source": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "bytes": 98238,
+      "lines": 2991,
+      "sha256": "da66f4b9abdaa1a9c9e82ecc9ff38c3d9d040cddfbcf705e413f28d1c2e881cb",
+      "matches_previously_verified_source": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "bytes": 88430,
+      "lines": 1405,
+      "sha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+      "matches_previously_verified_source": true
+    }
+  ],
+  "combined_bytes": 543083,
+  "original_task_start_global_bytes": 540347,
+  "homepage_import_present": true,
+  "resource_layout_import_present": true,
+  "prior_css_split_rule_fingerprints_preserved": 3136,
+  "prior_proof": "reports/letbuyy-mobile-performance-2026-10-30/evidence/css-strict-proof.json",
+  "note": "Current source hashes and imports rechecked today. Rule fingerprint and 36/28/10 visual/navigation comparisons are dated prior evidence, not rerun as part of this page-opening check."
+}

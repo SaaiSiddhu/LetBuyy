@@ -1,0 +1,128 @@
+[
+  {
+    "url": "https://www.letbuyy.com/in",
+    "device": "mobile",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "last_lcp_candidate_ms": 572,
+    "lcp_element": "P",
+    "layout_shift_entry_count": 86,
+    "layout_shift_sum_diagnostic_only": 0.0029579943102175416,
+    "longtasks_count": 1,
+    "navigation": [
+      {
+        "responseStart": 248.7999999988824,
+        "domContentLoadedEventEnd": 560.0999999996275,
+        "loadEventEnd": 994.5,
+        "transferSize": 33688,
+        "encodedBodySize": 33388,
+        "decodedBodySize": 339643
+      }
+    ],
+    "field_inp": null
+  },
+  {
+    "url": "https://www.letbuyy.com/in",
+    "device": "desktop",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "last_lcp_candidate_ms": 1052,
+    "lcp_element": "SPAN",
+    "layout_shift_entry_count": 197,
+    "layout_shift_sum_diagnostic_only": 0.0031089326010891763,
+    "longtasks_count": 1,
+    "navigation": [
+      {
+        "responseStart": 625.7999999988824,
+        "domContentLoadedEventEnd": 1030.0999999996275,
+        "loadEventEnd": 1298.8999999985099,
+        "transferSize": 33688,
+        "encodedBodySize": 33388,
+        "decodedBodySize": 339643
+      }
+    ],
+    "field_inp": null
+  },
+  {
+    "url": "https://www.letbuyy.com/in/pricing",
+    "device": "mobile",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "last_lcp_candidate_ms": 692,
+    "lcp_element": "IMG",
+    "layout_shift_entry_count": 0,
+    "layout_shift_sum_diagnostic_only": 0,
+    "longtasks_count": 1,
+    "navigation": [
+      {
+        "responseStart": 195.09999999962747,
+        "domContentLoadedEventEnd": 561.5999999996275,
+        "loadEventEnd": 733.9000000003725,
+        "transferSize": 21597,
+        "encodedBodySize": 21297,
+        "decodedBodySize": 249099
+      }
+    ],
+    "field_inp": null
+  },
+  {
+    "url": "https://www.letbuyy.com/in/pricing",
+    "device": "desktop",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "last_lcp_candidate_ms": 636,
+    "lcp_element": "IMG",
+    "layout_shift_entry_count": 1,
+    "layout_shift_sum_diagnostic_only": 0.02855919656635803,
+    "longtasks_count": 1,
+    "navigation": [
+      {
+        "responseStart": 198.7999999988824,
+        "domContentLoadedEventEnd": 473.7999999988824,
+        "loadEventEnd": 874.5,
+        "transferSize": 21597,
+        "encodedBodySize": 21297,
+        "decodedBodySize": 249099
+      }
+    ],
+    "field_inp": null
+  },
+  {
+    "url": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india",
+    "device": "mobile",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "last_lcp_candidate_ms": 580,
+    "lcp_element": "IMG",
+    "layout_shift_entry_count": 0,
+    "layout_shift_sum_diagnostic_only": 0,
+    "longtasks_count": 0,
+    "navigation": [
+      {
+        "responseStart": 190.90000000037253,
+        "domContentLoadedEventEnd": 493.59999999962747,
+        "loadEventEnd": 1229.7000000011176,
+        "transferSize": 35479,
+        "encodedBodySize": 35179,
+        "decodedBodySize": 319445
+      }
+    ],
+    "field_inp": null
+  },
+  {
+    "url": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india",
+    "device": "desktop",
+    "method": "headless Chromium, unthrottled network/CPU, cold context, six-second observation; diagnostic lab sample, not Lighthouse/CrUX/field CWV",
+    "last_lcp_candidate_ms": 552,
+    "lcp_element": "IMG",
+    "layout_shift_entry_count": 1,
+    "layout_shift_sum_diagnostic_only": 0.0001839849108367627,
+    "longtasks_count": 1,
+    "navigation": [
+      {
+        "responseStart": 208.69999999925494,
+        "domContentLoadedEventEnd": 432.90000000037253,
+        "loadEventEnd": 844.4000000003725,
+        "transferSize": 35479,
+        "encodedBodySize": 35179,
+        "decodedBodySize": 319445
+      }
+    ],
+    "field_inp": null
+  }
+]

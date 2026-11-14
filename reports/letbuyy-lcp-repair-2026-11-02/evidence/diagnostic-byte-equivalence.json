@@ -1,0 +1,227 @@
+{
+  "captured_at": "2026-11-02T16:23:53.170132+00:00",
+  "role": "diagnostic_only_never_acceptance",
+  "all_script_bytes_equal": true,
+  "rows": [
+    {
+      "path": "/_next/static/chunks/a5cb4e8f-445b28e35251d062.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "29efb7eba979e34a4d5eb41a934183762d6212c4ae219b42820bbe9b6e347b05",
+          "decoded_bytes": 198487,
+          "seconds": 0.001069500000000001
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "29efb7eba979e34a4d5eb41a934183762d6212c4ae219b42820bbe9b6e347b05",
+          "decoded_bytes": 198487,
+          "seconds": 0.255963875
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/9270-6c16b0501f251426.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "456430f48935d3ea865551f9acc8c14ffab71bc3776d672a94818d324b619291",
+          "decoded_bytes": 188174,
+          "seconds": 0.0033465829999999586
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "456430f48935d3ea865551f9acc8c14ffab71bc3776d672a94818d324b619291",
+          "decoded_bytes": 188174,
+          "seconds": 0.255508
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/main-app-35b83acb5746a20b.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "59ba6c86b4d17d1782e71f8b1a20043d6d66fa8abaf4a08b5956f166c07f2187",
+          "decoded_bytes": 516,
+          "seconds": 0.0011423749999999178
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "59ba6c86b4d17d1782e71f8b1a20043d6d66fa8abaf4a08b5956f166c07f2187",
+          "decoded_bytes": 516,
+          "seconds": 0.252395334
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/marketing-common-client-41e59951b79ea992.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "15552ca5d01d0f716ce14f1102165b928f8e88a76b22eab6f0c86cf131bf06ba",
+          "decoded_bytes": 235137,
+          "seconds": 0.0015643340000000006
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "15552ca5d01d0f716ce14f1102165b928f8e88a76b22eab6f0c86cf131bf06ba",
+          "decoded_bytes": 235137,
+          "seconds": 0.254420584
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/2188-287b3815070cb15a.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "05ccce1ec6828125388493016b9c09fd33f63877f76b8e8e8134491498575632",
+          "decoded_bytes": 35725,
+          "seconds": 0.001139417000000087
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "05ccce1ec6828125388493016b9c09fd33f63877f76b8e8e8134491498575632",
+          "decoded_bytes": 35725,
+          "seconds": 0.25440941699999997
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/app/layout-9bfc7bbeddc21043.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "d8a62ccb2303d68cdf5b0af3aee2c745228a9a971d5a12e99dfa6b899404e707",
+          "decoded_bytes": 601,
+          "seconds": 0.002794666000000001
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "d8a62ccb2303d68cdf5b0af3aee2c745228a9a971d5a12e99dfa6b899404e707",
+          "decoded_bytes": 601,
+          "seconds": 0.25602241700000006
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/app/%5Blocale%5D/layout-216d7b4d3d93144d.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "bc33e057c0b5a657fe7e7418be004c8264bb04ea59208bfa12f057ef4fe29ba7",
+          "decoded_bytes": 491,
+          "seconds": 0.0030142079999999627
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "bc33e057c0b5a657fe7e7418be004c8264bb04ea59208bfa12f057ef4fe29ba7",
+          "decoded_bytes": 491,
+          "seconds": 0.25520104199999993
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/7666-04716cfc1ab4dd62.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "68127e97936eb7cfc107cbc27b723e96f6edbcda1701e5ce3665fabc695fed5d",
+          "decoded_bytes": 17107,
+          "seconds": 0.0017265829999999482
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "68127e97936eb7cfc107cbc27b723e96f6edbcda1701e5ce3665fabc695fed5d",
+          "decoded_bytes": 17107,
+          "seconds": 0.25380908300000016
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/app/%5Blocale%5D/pricing/page-23f2f4eb666749a3.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "4bb445621c93d2478c582eb3360967f465cb89660fd7bfdc8aac4b9c52ef160d",
+          "decoded_bytes": 476,
+          "seconds": 0.00123950000000006
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "4bb445621c93d2478c582eb3360967f465cb89660fd7bfdc8aac4b9c52ef160d",
+          "decoded_bytes": 476,
+          "seconds": 0.2543307910000001
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683",
+          "decoded_bytes": 112594,
+          "seconds": 0.00335474999999974
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683",
+          "decoded_bytes": 112594,
+          "seconds": 0.25438529099999974
+        }
+      ],
+      "equal": true
+    },
+    {
+      "path": "/_next/static/chunks/webpack-3f579b24014698f4.js",
+      "requests": [
+        {
+          "port": 9049,
+          "status": 200,
+          "sha256": "f992ca07b78aef1e1ccc81e00eb9b161c476cbb88e56f366da89c91c4e68a9e3",
+          "decoded_bytes": 3489,
+          "seconds": 0.0009180829999997364
+        },
+        {
+          "port": 9047,
+          "status": 200,
+          "sha256": "f992ca07b78aef1e1ccc81e00eb9b161c476cbb88e56f366da89c91c4e68a9e3",
+          "decoded_bytes": 3489,
+          "seconds": 0.25336583300000015
+        }
+      ],
+      "equal": true
+    }
+  ]
+}

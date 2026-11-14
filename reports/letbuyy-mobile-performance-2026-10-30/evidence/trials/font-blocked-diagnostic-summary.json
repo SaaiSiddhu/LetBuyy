@@ -1,0 +1,12 @@
+{
+  "captured_at": "2026-10-29T23:50:07.106224+00:00",
+  "diagnostic_only": true,
+  "accepted_design": false,
+  "font_intentionally_blocked": [
+    "*538502f3c2a1a39b*"
+  ],
+  "purpose": "Distinguish a custom-font swap from native first-layout cost. This is not a proposed font removal or an accepted performance run.",
+  "lcp_ms": 1912.394,
+  "tbt_ms": 121.57300000000032,
+  "cls": 0
+}

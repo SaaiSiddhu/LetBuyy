@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -116,18 +114,15 @@ export default function AppearancePage() {
     const [form, setForm] = useState<AppearanceFormState>(defaultForm)
     const [initialForm, setInitialForm] = useState<AppearanceFormState>(defaultForm)
 
-    const beginRead = useReadRequest(store)
     const loadAppearance = useCallback(async () => {
-        const request = beginRead()
         setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load appearance settings'))
@@ -138,7 +133,6 @@ export default function AppearancePage() {
             setForm(nextForm)
             setInitialForm(nextForm)
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load appearance settings'
             setForm(defaultForm)
             setInitialForm(defaultForm)
@@ -149,9 +143,9 @@ export default function AppearancePage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadAppearance()
@@ -233,8 +227,7 @@ export default function AppearancePage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="themes"
-                    recipe="index"
+                <PageHeader
                     title="Appearance"
                     description="Control the storefront brand color, typography, logo assets, and custom CSS."
                     breadcrumbs={[{ label: 'Online Store' }, { label: 'Appearance' }]}
@@ -250,8 +243,7 @@ export default function AppearancePage() {
 
     return (
         <Page>
-            <PageHeader identity="themes"
-                recipe="index"
+            <PageHeader
                 title="Appearance"
                 description="Control the storefront brand color, typography, logo assets, and custom CSS."
                 breadcrumbs={[{ label: 'Online Store' }, { label: 'Appearance' }]}

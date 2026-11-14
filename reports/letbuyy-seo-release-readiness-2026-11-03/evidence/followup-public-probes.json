@@ -1,0 +1,292 @@
+[
+  {
+    "url": "https://pixlnova.com/",
+    "capturedAt": "2026-11-03T03:09:07.045273+00:00",
+    "status": 200,
+    "finalUrl": "https://www.pixlnova.com/",
+    "redirectChain": [
+      {
+        "status": 307,
+        "from": "https://pixlnova.com/",
+        "to": "https://www.pixlnova.com/"
+      }
+    ],
+    "headers": {
+      "Age": "9146",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Content-Type": "text/html; charset=utf-8",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+    },
+    "title": "PixlNova \u2014 Global App & Web Development Studio",
+    "h1": "We turn bold ideas into digital products.",
+    "letbuyyLinks": [
+      "https://letbuyy.com"
+    ],
+    "linksExamined": 86
+  },
+  {
+    "url": "https://www.letbuyy.store/pricing",
+    "capturedAt": "2026-11-03T03:09:10.184385+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.store/in/pricing",
+    "redirectChain": [
+      {
+        "status": 307,
+        "from": "https://www.letbuyy.store/pricing",
+        "to": "https://www.letbuyy.store/in/pricing"
+      }
+    ],
+    "headers": {
+      "Age": "31017",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Content-Type": "text/html; charset=utf-8",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+    },
+    "title": "Pricing",
+    "h1": "",
+    "letbuyyLinks": [
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/lookup"
+    ],
+    "linksExamined": 36
+  },
+  {
+    "url": "https://www.letbuyy.store/resources/tag/commerce",
+    "capturedAt": "2026-11-03T03:09:12.374188+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.store/in/resources/tag/commerce",
+    "redirectChain": [
+      {
+        "status": 307,
+        "from": "https://www.letbuyy.store/resources/tag/commerce",
+        "to": "https://www.letbuyy.store/in/resources/tag/commerce"
+      }
+    ],
+    "headers": {
+      "Age": "0",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Content-Type": "text/html; charset=utf-8",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+    },
+    "title": "#commerce \u2014 Resources | LetBuyy Resources",
+    "h1": "# commerce",
+    "letbuyyLinks": [
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/lookup"
+    ],
+    "linksExamined": 65
+  },
+  {
+    "url": "https://www.letbuyy.com/in/resources/tag/shopify",
+    "capturedAt": "2026-11-03T03:09:13.974774+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.com/in/resources/tag/shopify",
+    "redirectChain": [],
+    "headers": {
+      "Age": "51759",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Content-Type": "text/html; charset=utf-8",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+    },
+    "title": "#shopify \u2014 Resources | LetBuyy Resources",
+    "h1": "# shopify",
+    "letbuyyLinks": [
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/lookup"
+    ],
+    "linksExamined": 64
+  },
+  {
+    "url": "https://www.letbuyy.com/resources/tag/shopify",
+    "capturedAt": "2026-11-03T03:09:14.715849+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.com/in/resources/tag/shopify",
+    "redirectChain": [
+      {
+        "status": 307,
+        "from": "https://www.letbuyy.com/resources/tag/shopify",
+        "to": "https://www.letbuyy.com/in/resources/tag/shopify"
+      }
+    ],
+    "headers": {
+      "Age": "51760",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Content-Type": "text/html; charset=utf-8",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+    },
+    "title": "#shopify \u2014 Resources | LetBuyy Resources",
+    "h1": "# shopify",
+    "letbuyyLinks": [
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/lookup"
+    ],
+    "linksExamined": 64
+  },
+  {
+    "url": "http://letbuyy.com/in",
+    "capturedAt": "2026-11-03T03:09:16.040465+00:00",
+    "status": 308,
+    "error": "HTTPError",
+    "redirectChain": []
+  },
+  {
+    "url": "https://letbuyy.com/in",
+    "capturedAt": "2026-11-03T03:09:16.482377+00:00",
+    "status": 308,
+    "error": "HTTPError",
+    "redirectChain": []
+  },
+  {
+    "url": "https://www.letbuyy.com/pricing",
+    "capturedAt": "2026-11-03T03:09:16.968736+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.com/in/pricing",
+    "redirectChain": [
+      {
+        "status": 307,
+        "from": "https://www.letbuyy.com/pricing",
+        "to": "https://www.letbuyy.com/in/pricing"
+      }
+    ],
+    "headers": {
+      "Age": "134042",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Content-Type": "text/html; charset=utf-8",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+    },
+    "title": "Pricing",
+    "h1": "",
+    "letbuyyLinks": [
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/lookup"
+    ],
+    "linksExamined": 36
+  },
+  {
+    "url": "https://accounts.letbuyy.com/lookup",
+    "capturedAt": "2026-11-03T03:09:18.331938+00:00",
+    "status": 200,
+    "finalUrl": "https://accounts.letbuyy.com/lookup",
+    "redirectChain": [],
+    "headers": {
+      "Age": "151537",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Content-Type": "text/html; charset=utf-8",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+    },
+    "title": "LetBuyy - Create Your Online Store",
+    "h1": "",
+    "letbuyyLinks": [],
+    "linksExamined": 0
+  },
+  {
+    "url": "https://www.letbuyy.com/in/resources/developers",
+    "capturedAt": "2026-11-03T03:09:20.261639+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.com/in/resources/developers",
+    "redirectChain": [],
+    "headers": {
+      "Age": "134045",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Content-Type": "text/html; charset=utf-8",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+    },
+    "title": "Developers \u2014 LetBuyy Resources | LetBuyy Resources",
+    "h1": "Developers",
+    "letbuyyLinks": [
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/lookup"
+    ],
+    "linksExamined": 62
+  },
+  {
+    "url": "https://www.letbuyy.com/in/resources/developers/letbuyy-api-getting-started",
+    "capturedAt": "2026-11-03T03:09:21.036767+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.com/in/resources/developers/letbuyy-api-getting-started",
+    "redirectChain": [],
+    "headers": {
+      "Age": "146519",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Content-Type": "text/html; charset=utf-8",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+    },
+    "title": "Getting Started with the LetBuyy API | LetBuyy Resources",
+    "h1": "Getting Started with the LetBuyy API",
+    "letbuyyLinks": [
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/signup",
+      "https://accounts.letbuyy.com/lookup",
+      "https://accounts.letbuyy.com/lookup"
+    ],
+    "linksExamined": 71
+  },
+  {
+    "url": "https://upminutes.com/",
+    "capturedAt": "2026-11-03T03:09:22.002355+00:00",
+    "status": 200,
+    "finalUrl": "https://upminutes.com/",
+    "redirectChain": [],
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "public, max-age=300",
+      "vary": "Accept-Encoding"
+    },
+    "title": "UpMinutes: online store builder with UPI, COD and GST",
+    "h1": "Your  saree shop bakery salon sweet shop brand online,  in minutes.",
+    "letbuyyLinks": [],
+    "linksExamined": 132
+  },
+  {
+    "url": "https://www.zsite.in/",
+    "capturedAt": "2026-11-03T03:09:23.465524+00:00",
+    "status": 200,
+    "finalUrl": "https://www.zsite.in/",
+    "redirectChain": [],
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=60"
+    },
+    "title": "Online Store Builder for Indian Businesses | ZSite",
+    "h1": "Launch your  online store  in under 10  minutes.",
+    "letbuyyLinks": [],
+    "linksExamined": 40
+  },
+  {
+    "url": "https://cartwhizz.com/online-store-builder-india",
+    "capturedAt": "2026-11-03T03:09:24.254728+00:00",
+    "status": 200,
+    "finalUrl": "https://cartwhizz.com/online-store-builder-india",
+    "redirectChain": [],
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "public, max-age=0, s-maxage=300, stale-while-revalidate=3600",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding"
+    },
+    "title": "Online Store Builder for India | CartWhizz",
+    "h1": "Online store builder for Indian businesses",
+    "letbuyyLinks": [],
+    "linksExamined": 93
+  }
+]

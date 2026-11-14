@@ -56,7 +56,7 @@ test('the dedicated minute cron recovers a missing wakeup without running unrela
  owned.psql(`INSERT INTO platform_queue_jobs(id,site_id,event_id,queue_name,job_type,payload,idempotency_key)
  VALUES('${frozen}','${j.tenant.siteId}','${crypto.randomUUID()}','payment-events','app.charge.activated','{}','syn-invite-frozen-${frozen}');`);
  const tasks:Promise<unknown>[]=[];
- await queueWorker.scheduled!({cron:'* * * * *',scheduledTime:Date.UTC(2026,9,27,12,1),noRetry(){}} as never,j.env as never,
+ await queueWorker.scheduled!({cron:'* * * * *',scheduledTime:Date.now(),noRetry(){}} as never,j.env as never,
   {waitUntil(task:Promise<unknown>){tasks.push(task);},passThroughOnException(){}} as never);
  assert.equal(tasks.length,2,'the minute tick dispatches notification recovery and canonical loyalty refunds only');
  await Promise.all(tasks);

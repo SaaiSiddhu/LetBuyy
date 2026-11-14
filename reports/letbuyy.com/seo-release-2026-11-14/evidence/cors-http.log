@@ -1,0 +1,58 @@
+https://api.letbuyy.com https://www.letbuyy.com
+HTTP/2 200 
+access-control-allow-origin: https://letbuyy.com
+vary: X-LetBuyy-API-Version, LetBuyy-API-Version, Origin
+HTTP/2 204 
+access-control-allow-origin: https://letbuyy.com
+vary: Origin, Access-Control-Request-Headers
+http://127.0.0.1:9010 https://www.letbuyy.com
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://www.letbuyy.com
+Vary: X-LetBuyy-API-Version, LetBuyy-API-Version, Origin
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: https://www.letbuyy.com
+Vary: Origin, Access-Control-Request-Headers
+https://api.letbuyy.com https://letbuyy.com
+HTTP/2 200 
+access-control-allow-origin: https://letbuyy.com
+vary: X-LetBuyy-API-Version, LetBuyy-API-Version, Origin
+HTTP/2 204 
+access-control-allow-origin: https://letbuyy.com
+vary: Origin, Access-Control-Request-Headers
+http://127.0.0.1:9010 https://letbuyy.com
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://letbuyy.com
+Vary: X-LetBuyy-API-Version, LetBuyy-API-Version, Origin
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: https://letbuyy.com
+Vary: Origin, Access-Control-Request-Headers
+https://api.letbuyy.com https://www.letbuyy.com.evil.invalid
+HTTP/2 200 
+access-control-allow-origin: https://letbuyy.com
+vary: X-LetBuyy-API-Version, LetBuyy-API-Version, Origin
+HTTP/2 204 
+access-control-allow-origin: https://letbuyy.com
+vary: Origin, Access-Control-Request-Headers
+http://127.0.0.1:9010 https://www.letbuyy.com.evil.invalid
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://letbuyy.com
+Vary: X-LetBuyy-API-Version, LetBuyy-API-Version, Origin
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: https://letbuyy.com
+Vary: Origin, Access-Control-Request-Headers
+https://api.letbuyy.com https://unconfigured.letbuyy.com
+HTTP/2 200 
+access-control-allow-origin: https://letbuyy.com
+vary: X-LetBuyy-API-Version, LetBuyy-API-Version, Origin
+HTTP/2 204 
+access-control-allow-origin: https://letbuyy.com
+vary: Origin, Access-Control-Request-Headers
+http://127.0.0.1:9010 https://unconfigured.letbuyy.com
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://letbuyy.com
+Vary: X-LetBuyy-API-Version, LetBuyy-API-Version, Origin
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: https://letbuyy.com
+Vary: Origin, Access-Control-Request-Headers
+401 https://api.letbuyy.com/v1/orders
+401 http://127.0.0.1:9010/v1/orders

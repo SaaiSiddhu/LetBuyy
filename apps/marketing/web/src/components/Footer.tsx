@@ -3,6 +3,7 @@
 import { useCopy } from '@/components/i18n/useCopy'
 
 import { useRef, useState } from 'react'
+import Image from 'next/image'
 import Link from '@/components/i18n/LocaleLink'
 import {
     Button,
@@ -17,11 +18,7 @@ import {
 import BrandLogo from './BrandLogo'
 import { XMark } from './BrandGlyphs'
 import LanguageSwitcher from './i18n/LanguageSwitcher'
-import { getDictionaryForSegment } from '@/lib/i18n'
-import { localeFromPathname } from '@/lib/i18n/routing'
-import Copy from '@/components/i18n/Copy'
-import { usePathname } from 'next/navigation'
-import { BRAND_PROFILES } from '@letbuyy/shared-types'
+import { BRAND_PROFILES } from '@letbuyy/shared-types/brand'
 import { getPlatformNavigationLinks } from '@/lib/platform-links'
 
 const platformLinks = getPlatformNavigationLinks()
@@ -92,11 +89,9 @@ const socialLinks = [
 const privacyChoicesIconUrl = '/assets/legal/privacy-choices.svg'
 
 export default function Footer() {
-    const { t } = useCopy()
+    const { t, dictionary: dict } = useCopy()
     /* The footer is already a client component, so it reads the locale from
        the pathname rather than threading a prop through every page. */
-    const pathname = usePathname()
-    const dict = getDictionaryForSegment(localeFromPathname(pathname).segment)
     const [privacyPanelOpen, setPrivacyPanelOpen] = useState(false)
     const [analyticsEnabled, setAnalyticsEnabled] = useState(false)
     const [personalizationEnabled, setPersonalizationEnabled] = useState(false)
@@ -190,7 +185,7 @@ export default function Footer() {
                             onClick={openPrivacyChoices}
                         >
                             <span>{dict.footer.privacyChoices}</span>
-                            <img src={privacyChoicesIconUrl} alt="" width="32" height="16" aria-hidden="true" />
+                            <Image src={privacyChoicesIconUrl} alt="" width={32} height={16} loading="lazy" unoptimized aria-hidden="true" />
                         </Button>
                     </nav>
 
@@ -213,8 +208,8 @@ export default function Footer() {
 
             <Modal className="marketing-dialog" open={privacyPanelOpen} onClose={() => setPrivacyPanelOpen(false)} title={dict.footer.privacyChoices} returnFocusRef={privacyReturnRef}>
                     <div>
-                        <img className="footer-privacy-icon" src={privacyChoicesIconUrl} alt="" width="48" height="24" aria-hidden="true" />
-                        {privacyError && <p role="alert"><Copy text={privacyError} /></p>}
+                        <Image className="footer-privacy-icon" src={privacyChoicesIconUrl} alt="" width={48} height={24} unoptimized aria-hidden="true" />
+                        {privacyError && <p role="alert">{t((privacyError) ?? '')}</p>}
                         <p>
                             {dict.footer.privacyIntro}
                         </p>

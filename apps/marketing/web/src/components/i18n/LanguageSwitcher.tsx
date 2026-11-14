@@ -74,16 +74,15 @@ export default function LanguageSwitcher({ dict }: { dict: Dictionary }) {
                 unstyled
                 type="button"
                 className="footer-region-button"
-                aria-label={dict.languageSwitcher.title}
                 aria-expanded={open}
                 aria-haspopup="dialog"
                 aria-controls={open ? panelId : undefined}
                 onClick={() => setOpen(value => !value)}
             >
                 <Globe width={19} height={19} aria-hidden="true" />
-                <span>{dict.legal.india}</span>
+                <span>{dict.legal.india}</span>{' '}
                 <span className="footer-region-divider" aria-hidden="true" />
-                <span>{current.language.label}</span>
+                {' '}<span>{current.language.label}</span>
                 <ChevronDown width={18} height={18} aria-hidden="true" />
             </Button>
 

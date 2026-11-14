@@ -1,0 +1,14 @@
+{
+  "capturedAt": "2026-11-03T10:39:56.686412+00:00",
+  "sourceFileCount": 1289,
+  "sourceHashMismatches": [],
+  "sourceSymlinks": 0,
+  "rootBuildId": "b2CsFLYIUn25H5EguBjys",
+  "candidateBuildId": "fiI7E7RIv4e4VqtSPl2DG",
+  "all20MarketingCssSourcesUnchanged": true,
+  "allCompiledDeclarationsPreserved": true,
+  "nonModuleDeclarationOrderIdentical": true,
+  "compiledCssNote": "All20sourceCSSfiles match the November3baseline; compiled declaration contexts/shared order match between current builds. Byte equality is reported per file. No browser/device visual pass inferred.",
+  "gatewaySeparatePatch": "GATEWAY-CORS-REPAIR.patch",
+  "allNineCompiledStylesByteIdentical": true
+}

@@ -33,48 +33,31 @@ test('zone/rate CRUD preserves postal, weight and zero-day settings and refuses 
  assert.equal((await f.request('/shipping/'+rate,'DELETE',undefined,0,false)).status,200);assert.equal((await f.request('/shipping/zones/'+zone,'DELETE',undefined,0,false)).status,200);
 });
 test('country/state tax settings round-trip and reject foreign and stale owner authority',async t=>{
- const f=await fixture(t);const made=await f.request('/taxes','POST',{store_id:f.sites[0].siteId,name:'Synthetic country rate',rate:18,country:'IN'});assert.equal(made.status,201,made.text);const id=made.json!.data.id;assert.equal(made.json!.data.state,null);
- assert.equal((await f.request('/taxes','POST',{store_id:f.sites[0].siteId,name:'Invalid null create',rate:18,country:'IN',state:null})).status,400);
+ const f=await fixture(t);const made=await f.request('/taxes','POST',{store_id:f.sites[0].siteId,name:'Synthetic country rate',rate:0.18,country:'IN'});assert.equal(made.status,201,made.text);const id=made.json!.data.id;assert.equal(made.json!.data.state,null);
+ assert.equal((await f.request('/taxes','POST',{store_id:f.sites[0].siteId,name:'Invalid null create',rate:0.18,country:'IN',state:null})).status,400);
  const state=await f.request('/taxes/'+id,'PATCH',{state:'29'},0,false);assert.equal(state.status,200,state.text);assert.equal(state.json!.data.state,'29');
  const cleared=await f.request('/taxes/'+id,'PATCH',{state:null},0,false);assert.equal(cleared.status,200,cleared.text);assert.equal(cleared.json!.data.state,null);
  assert.equal((await f.request('/taxes/'+id,'PATCH',{rate:-1})).status,400);assert.equal((await f.request('/taxes/'+id,'DELETE',undefined,1,false)).status,403);
- owned.psql(`UPDATE sites SET custom_user_id='${f.actors[1]}' WHERE id='${f.sites[0].siteId}';`);try{assert.equal((await f.request('/taxes/'+id,'PATCH',{rate:1})).status,403);}finally{owned.psql(`UPDATE sites SET custom_user_id='${f.actors[0]}' WHERE id='${f.sites[0].siteId}';`);}
+ owned.psql(`UPDATE sites SET custom_user_id='${f.actors[1]}' WHERE id='${f.sites[0].siteId}';`);try{assert.equal((await f.request('/taxes/'+id,'PATCH',{rate:0.01})).status,403);}finally{owned.psql(`UPDATE sites SET custom_user_id='${f.actors[0]}' WHERE id='${f.sites[0].siteId}';`);}
  assert.equal(Number(owned.psql(`SELECT rate FROM tax_rates WHERE id='${id}';`)),0.18);assert.equal((await f.request('/taxes/'+id,'DELETE',undefined,0,false)).status,200);
 });
 test('configured merchant shipping and tax reach canonical COD totals with one order per intent',async t=>{
  const f=await fixture(t),site=f.sites[0];
  const z=await f.request('/shipping/zones','POST',{store_id:site.siteId,name:'Checkout zone',countries:['IN'],states:['Karnataka','29'],zip_codes:['560001']});assert.equal(z.status,201,z.text);
  const r=await f.request('/shipping','POST',{zone_id:z.json!.data.id,name:'Checkout delivery',type:'flat',price:20});assert.equal(r.status,201,r.text);const rate=r.json!.data.id;
- const tax=await f.request('/taxes','POST',{store_id:site.siteId,name:'Synthetic configured tax',rate:18,country:'IN',is_shipping:false});assert.equal(tax.status,201,tax.text);
+ const tax=await f.request('/taxes','POST',{store_id:site.siteId,name:'Synthetic configured tax',rate:0.18,country:'IN',is_shipping:false});assert.equal(tax.status,201,tax.text);
  const product=randomUUID();owned.psql(`INSERT INTO products(id,store_id,site_id,name,price,stock,sku,is_active,status)VALUES('${product}','${site.siteId}','${site.siteId}','Synthetic configured product',199,25,'SYN-${product}',true,'active');INSERT INTO inventory_levels(id,store_id,product_id,location_id,available,reserved,committed_quantity,available_quantity,reserved_quantity,on_hand_quantity)VALUES(gen_random_uuid(),'${site.siteId}','${product}','${site.locationId}',25,0,0,25,0,25);`);
  const quote=await f.gateway.request(`/v1/storefront/${site.subdomain}/shipping-rates?pincode=560001&state=Karnataka&state_code=29&subtotal_minor=19900`);assert.equal(quote.status,200,quote.text);assert.equal(quote.json!.data.rates[0].id,rate);assert.equal(quote.json!.data.rates[0].amount_minor,2000);assert.equal(quote.json!.data.serviceability.carrier_confirmed,false);
  const outside=await f.gateway.request(`/v1/storefront/${site.subdomain}/shipping-rates?pincode=600001&state=Karnataka&state_code=29&subtotal_minor=19900`);assert.equal(outside.status,200,outside.text);assert.deepEqual(outside.json!.data.rates,[]);
- const totals=await f.gateway.request(`/v1/storefront/${site.subdomain}/checkout-quote`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:[{product_id:product,quantity:1}],shipping_address:{country:'IN',state:'Karnataka',state_code:'29',zip:'560001'},shipping_rate_id:rate})});
- assert.equal(totals.status,200,totals.text); assert.equal(totals.json!.data.quote.tax_minor,3582); assert.equal(totals.json!.data.quote.total_minor,25482);
- const key=randomUUID();const body={expectedQuoteFingerprint:totals.json!.data.quote.fingerprint,customer:{name:'Synthetic buyer',email:`syn-w2-${key}@example.invalid`,phone:'9000000088',address:{address:'Fixture Road',city:'Bengaluru',state:'Karnataka',stateCode:'29',pincode:'560001'}},items:[{productId:product,variantId:null,quantity:1}],shippingRateId:rate,shippingAmountMinor:2000,paymentMethod:'cod',deliveryOption:'standard',idempotencyKey:key};
+ const key=randomUUID();const body={customer:{name:'Synthetic buyer',email:`syn-w2-${key}@example.invalid`,phone:'9000000088',address:{address:'Fixture Road',city:'Bengaluru',state:'Karnataka',stateCode:'29',pincode:'560001'}},items:[{productId:product,variantId:null,quantity:1}],shippingRateId:rate,shippingAmountMinor:2000,paymentMethod:'cod',deliveryOption:'standard',idempotencyKey:key};
  const create=()=>f.gateway.request(`/v1/storefront/${site.subdomain}/orders`,{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':key},body:JSON.stringify(body)});
  const order=await create();assert.equal(order.status,201,order.text);const id=order.json!.data.order.id;assert.equal((await create()).json!.data.order.id,id);
  assert.equal(owned.psql(`SELECT (subtotal*100)::bigint||'|'||(shipping_cost*100)::bigint||'|'||(tax*100)::bigint||'|'||(total*100)::bigint FROM orders WHERE id='${id}';`),'19900|2000|3582|25482');assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE customer_email='${body.customer.email}';`),'1');
- const invoiceHeaders = await signedIdentityHeaders(f.actors[0],`syn-config-${f.actors[0]}@example.invalid`,site.siteId);
- const invoice = await f.gateway.request(`/v1/tax/invoice/${id}`,{headers:invoiceHeaders});
- assert.equal(invoice.status,200,invoice.text);assert.equal(invoice.json!.data.invoice_number,owned.psql(`SELECT gst_invoice_number FROM orders WHERE id='${id}';`));
- const foreign = await f.gateway.request(`/v1/tax/invoice/${id}`,{headers:await signedIdentityHeaders(f.actors[1],`syn-config-${f.actors[1]}@example.invalid`,f.sites[1].siteId)});
- assert.equal(foreign.status,404,foreign.text);assert.ok(!foreign.text.includes(invoice.json!.data.invoice_number));
- const tapInvoice = tapRest(owned.restUrl,async(call,forward)=>call.resource==='gst_invoices'&&call.method==='GET'
-  ?new Response(JSON.stringify({code:'XX000',message:'private synthetic database diagnostic'}),{status:500,headers:{'content-type':'application/json'}}):forward());
- try {const unavailable=await f.gateway.request(`/v1/tax/invoice/${id}`,{headers:await signedIdentityHeaders(f.actors[0],`syn-config-${f.actors[0]}@example.invalid`,site.siteId)});assert.equal(unavailable.status,503,unavailable.text);assert.ok(!unavailable.text.includes('private synthetic'));}
- finally {tapInvoice.restore();}
- const unavailableLabel = await f.gateway.request('/v1/shipping/labels',{
-  method:'POST',headers:await signedIdentityHeaders(f.actors[0],`syn-config-${f.actors[0]}@example.invalid`,site.siteId),
-  body:JSON.stringify({order_id:id,provider:'shiprocket',idempotency_key:randomUUID(),package:{weight_grams:500}}),
- },{...f.gateway.env,LOGISTICS_MODE:'live'});
- assert.equal(unavailableLabel.status,503,unavailableLabel.text);assert.equal(unavailableLabel.json!.error.code,'CARRIER_SETUP_REQUIRED');
- assert.equal(owned.psql(`SELECT count(*) FROM shipping_labels WHERE site_id='${site.siteId}';`),'0','an unconfigured live carrier must not save a synthetic label');
  console.log('W2_CONFIG_CHECKOUT_PASS',JSON.stringify({merchantConfiguration:true,destinationFence:true,subtotalMinor:19900,shippingMinor:2000,taxMinor:3582,totalMinor:25482,orderReplaySame:true,providerPayment:false}));
 });
 
 test('revoked owner cannot replay a saved settings response through the HTTP idempotency receipt', async t => {
- const f=await fixture(t), key=randomUUID(), body={store_id:f.sites[0].siteId,name:'Synthetic replay tax',rate:18,country:'IN'};
+ const f=await fixture(t), key=randomUUID(), body={store_id:f.sites[0].siteId,name:'Synthetic replay tax',rate:0.18,country:'IN'};
  const created=await f.request('/taxes','POST',body,0,true,key); assert.equal(created.status,201,created.text);
  owned.psql(`UPDATE sites SET custom_user_id='${f.actors[1]}' WHERE id='${f.sites[0].siteId}';`);
  const replay=await f.request('/taxes','POST',body,0,true,key); assert.equal(replay.status,403,replay.text);

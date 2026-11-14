@@ -1,0 +1,126 @@
+{
+  "captured_at": "2026-11-01T03:19:42.433Z",
+  "method": "Reconstructed unsplit-CSS control9038 versus current split-CSS candidate9045; identical application code and assets, every CSS rule/declaration/condition equal; control preserves recorded pre-split order; fixed reduced-motion light/dark viewports; all art explicitly decoded and all sections fully revealed for visual capture; pixel differences from responsive codec changes retained separately from structural equality; only the measured display:none legacy accordion subtree is excluded from element counts; progressive previews revealed by real scrolling",
+  "rows": [
+    {
+      "path": "/in",
+      "width": 320,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 16,
+      "pixel_fraction": 0.000003356831151393085,
+      "mean_channel_difference": 0.0000389707116482041,
+      "before_sha256": "98a14b366c72e9680907303b3c69658f06262746904de9a059fcdb02833c061e",
+      "after_sha256": "b45a105a6f62c73f8d9098141f6bac94a988307d4a494967d0f31e6077470bbd"
+    },
+    {
+      "path": "/in",
+      "width": 320,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 26,
+      "pixel_fraction": 0.000005454850621013763,
+      "mean_channel_difference": 0.00003739719704598859,
+      "before_sha256": "42d737e7b165c248b807edbe428817fd0b9396fa17d6c54ab25a272182c15c35",
+      "after_sha256": "6213ec58a0d9d088df06f5d9b84b0097f92572a5cd9a88e60ee1a24afac0a383"
+    },
+    {
+      "path": "/in",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 16,
+      "pixel_fraction": 0.000002985144243102684,
+      "mean_channel_difference": 0.00002532708318757434,
+      "before_sha256": "447e1998e6866b1f6174a7661ab5cf19dce2c272418f8d73117e43796e032a44",
+      "after_sha256": "7448b91a78ac5bc36a513498d97c5d8d8e47f8a543e1a8d3bb408dfa7a3aa5db"
+    },
+    {
+      "path": "/in",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 28,
+      "pixel_fraction": 0.000005224002425429697,
+      "mean_channel_difference": 0.0000333496583409128,
+      "before_sha256": "c4e275ae95271e46566e695242ae35c09a0b2be528239785c3b29b9734618d87",
+      "after_sha256": "c23add63c416b7cc5c9698741775057753d6ca6c418effb0d4bf12070388ccd9"
+    },
+    {
+      "path": "/in",
+      "width": 768,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 31,
+      "pixel_fraction": 0.0000034752116515999426,
+      "mean_channel_difference": 0.000029931661644425312,
+      "before_sha256": "aec8101f597088f6864624ef426c7636004b323eafe11f0e95ea91cf5b6022bc",
+      "after_sha256": "6f3aa65a26c461522db305767699a8a600d92c451b5f0b53f98fbd8b4646a418"
+    },
+    {
+      "path": "/in",
+      "width": 768,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 52,
+      "pixel_fraction": 0.0000058293872865547425,
+      "mean_channel_difference": 0.00006891568912326015,
+      "before_sha256": "e744e517a6bd347fba14b8b62505c2453edc2e664b400b3cae03c908284c0708",
+      "after_sha256": "d1b1530b8ebab1c51e505f8fe56bdd8d25986ae31f43f0cd36bd8527fb3f674d"
+    },
+    {
+      "path": "/in",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 25,
+      "pixel_fraction": 0.00000178848925454194,
+      "mean_channel_difference": 0.000017133727058511785,
+      "before_sha256": "36cc96fb63bdc0b75701caf9445dc385ff6eef573cbae52789d06c0f1335ff3b",
+      "after_sha256": "def8461066df006a3c0fbab6bf43647130576ba69811d725bfac0e1f49b60bac"
+    },
+    {
+      "path": "/in",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 48,
+      "pixel_fraction": 0.000003433899368720525,
+      "mean_channel_difference": 0.00002140821637686702,
+      "before_sha256": "ec518890503156a600e6d2719fa8a26bf3f20af974ed371f6a379698fdd67f60",
+      "after_sha256": "28879df5fbbb86cb26a0d20407fe070372ad708d977f04a7b7fda68130d334c4"
+    },
+    {
+      "path": "/in",
+      "width": 1920,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 44,
+      "pixel_fraction": 0.0000022473930240920534,
+      "mean_channel_difference": 0.000021707773528161877,
+      "before_sha256": "3eebd3f277ff4bd08369551e2dc88e5df45dfdd6295a96ad8a0e706fd77d1f6e",
+      "after_sha256": "b6afe1234a33c83052ff847abaf01b492f380c88a476d3aa48d43b9de7a25864"
+    },
+    {
+      "path": "/in",
+      "width": 1920,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 170,
+      "pixel_fraction": 0.000008683109411264751,
+      "mean_channel_difference": 0.00004134692393187539,
+      "before_sha256": "92c1cc7f056017e092d9702e7fa3440c56fd8e18f4c496125a43e45190936701",
+      "after_sha256": "d09e69d0e15e826f95d4babe6eb86eae4fa5b6e1ac4f57477dcfcc68da69bbde"
+    }
+  ]
+}

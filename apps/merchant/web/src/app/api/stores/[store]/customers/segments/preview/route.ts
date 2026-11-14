@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { CustomerSegmentRules } from '@letbuyy/shared-types'
-import { createMerchantApiClient, merchantApiErrorResponse, merchantApiReadSignal } from '@/lib/api/client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 type RouteParams = { params: Promise<{ store: string }> }
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         const preview = await createMerchantApiClient().customers.segments.preview({
             store_id: resolved.storeId,
             rules: (body.rules as CustomerSegmentRules) ?? { tags_any: [] },
-        }, { signal: merchantApiReadSignal(request.signal) })
+        })
         return NextResponse.json({ data: preview })
     } catch (err) {
         return merchantApiErrorResponse(err, 'Unable to preview customer segment')

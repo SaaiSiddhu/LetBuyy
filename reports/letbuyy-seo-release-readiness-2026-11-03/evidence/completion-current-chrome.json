@@ -1,0 +1,40 @@
+{
+  "capturedAt": "2026-11-03T04:09:57.823988+00:00",
+  "browser": "Current signed-in Chrome profile, native CUA controls",
+  "rootBuildId": "2wAGk3mazD7eVypUwMZ5-",
+  "checks": [
+    {
+      "page": "/in/pricing",
+      "mode": "Desktop",
+      "observed": "Launch199/299 andGrowth699/999; Scale andCommerceOScomingsoon; four-column cards fit; WhyLetBuyy menu opens andEscape closes",
+      "status": "passed"
+    },
+    {
+      "page": "/in/pricing",
+      "mode": "Chrome iPhone16 emulation393x852, no throttling",
+      "observed": "Header, hero, founding notice and stacked plan card visible; no observed horizontal page overflow",
+      "status": "passed"
+    },
+    {
+      "page": "/in/resources/platform/building-first-letbuyy-store",
+      "mode": "Desktop",
+      "observed": "Headings1..5, actualNov3update displayed, publisher and artwork visible",
+      "status": "passed"
+    },
+    {
+      "page": "/in/resources/platform/building-first-letbuyy-store",
+      "mode": "Chrome iPhone16 emulation393x852, no throttling",
+      "observed": "Navigation,H1,metadata,actions,tags and artwork fit the emulated viewport",
+      "status": "passed"
+    }
+  ],
+  "isPhysicalDevice": false,
+  "isSafariEngine": false,
+  "newScreenshotsSavedToDisk": false,
+  "screenshotsInspectedInline": true,
+  "mobileContentsInteractionReverified": false,
+  "formsOrAccountsSubmitted": false,
+  "trackingOrBrowserPermissionsChanged": false,
+  "devtoolsClosedAfterInspection": true,
+  "navigationCorrection": "A DevTools-focus race briefly searched the public local URL; corrected navigation and verified the actual local guide. That SERP is not used as SEO evidence."
+}

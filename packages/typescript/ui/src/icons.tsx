@@ -478,7 +478,9 @@ export type LooseMaterialIconName = string & {};
 
 export type MaterialIconName = StrictMaterialIconName | LooseMaterialIconName;
 
-export const materialIconNames = Object.freeze(Object.keys(materialIconMap)) as readonly StrictMaterialIconName[];
+// These operations only derive and freeze a new array. Mark both calls so
+// named-icon consumers can omit the unused compatibility name list.
+export const materialIconNames = /*#__PURE__*/ Object.freeze(/*#__PURE__*/ Object.keys(materialIconMap)) as readonly StrictMaterialIconName[];
 
 export function isMaterialIconName(name: string): name is StrictMaterialIconName {
     return Object.prototype.hasOwnProperty.call(materialIconMap, name);

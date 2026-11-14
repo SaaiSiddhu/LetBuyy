@@ -1,0 +1,42 @@
+name,command,exitCode,evidence
+marketing-tests,pnpm --dir apps/marketing/web test,0,evidence/marketing-tests.log
+marketing-typecheck,pnpm --dir apps/marketing/web typecheck,0,evidence/marketing-typecheck.log
+marketing-lint,pnpm --dir apps/marketing/web lint,0,evidence/marketing-lint.log
+final-root-production-build,pnpm --dir apps/marketing/web build,0,evidence/root-production-build.log
+ui-validation,pnpm --dir packages/typescript/ui validate:ui,0,evidence/ui-validation.log
+marketing-final-tests,pnpm --dir apps/marketing/web test,0,evidence/marketing-final-tests.log
+marketing-final-lint,pnpm --dir apps/marketing/web lint,0,evidence/marketing-final-lint.log
+marketing-final-root-build,pnpm --dir apps/marketing/web build,0,evidence/root-final-build.log
+exact-isolated-release-build,pnpm exec turbo run build --filter=@letbuyy/marketing-site,0,evidence/release-final-build.log
+gateway-unit,pnpm --dir services/api-gateway test:unit,0,evidence/gateway-final-unit.log
+gateway-typecheck,pnpm --dir services/api-gateway typecheck,0,evidence/gateway-final-typecheck.log
+api-and-header-contracts,node --import tsx --test tests/contracts/api-client*.test.ts tests/contracts/security-headers.test.ts,0,evidence/contract-final.log
+cors-contracts,node --import tsx --test tests/contracts/credentialed-cors.test.ts,0,evidence/cors-after.log
+api-origin-validator,node scripts/validators/api-client-runtime-base-validator.mjs,0,evidence/api-origin-validator-final.log
+guide-sequence-http,read-only three-locale rendered heading/anchor check,0,evidence/guide-sequence-http.json
+final-url-inventory,bounded489-URL check plus XML/404 controls,0,evidence/release-final-url-inventory.json
+performance-original-budget,standard three-repeat simulate+devtools runner,1,evidence/completion-final-performance/summary.json
+package-export,node scripts/validators/package-export-validator.mjs,0,evidence/package-export.log
+dependency-manifest,node scripts/validators/dependency-manifest-validator.mjs,0,evidence/dependency-manifest.log
+undeclared-import,node scripts/validators/undeclared-import-validator.mjs,0,evidence/undeclared-import.log
+platform-domain,node scripts/validators/platform-domain-literal-validator.mjs,0,evidence/platform-domain.log
+marketing-final-typecheck,pnpm --dir apps/marketing/web typecheck,0,evidence/marketing-final-typecheck.log
+proxy-marketing-tests,pnpm --dir apps/marketing/web test,0,evidence/proxy-followup/final-tests.log
+proxy-types,pnpm --dir apps/marketing/web typecheck,0,evidence/proxy-followup/final-types.log
+proxy-lint,pnpm --dir apps/marketing/web lint,0,evidence/proxy-followup/final-lint.log
+proxy-root-build,pnpm --dir apps/marketing/web build,0,evidence/proxy-followup/root-build.log
+proxy-exact-release-build,Existing Vercel filtered Turbo build in owned source closure,0,evidence/proxy-followup/release-build.log
+proxy-root-url-inventory,Read-only489URL/XML/404 verification; configured local canonical,0,evidence/proxy-followup/root-public-urls.json
+proxy-routing-before-after,12read-onlyHTTP comparison cases,0,evidence/proxy-followup/proxy-routing-parity.json
+proxy-negative-mutation,Remove language-header replacement in isolated source; behavioral failure expected,1,evidence/proxy-followup/locale-mutation.json
+proxy-original-performance-acceptance,Three repeats x two pages x simulate/devtools; unchanged budgets,1,evidence/proxy-final-performance/summary.json
+resolution-marketing-tests,Scoped final-source acceptance; exact output recorded,0,evidence/resolution-followup/final-tests.log
+resolution-types,Scoped final-source acceptance; exact output recorded,0,evidence/resolution-followup/final-types.log
+resolution-lint,Scoped final-source acceptance; exact output recorded,0,evidence/resolution-followup/final-lint.log
+resolution-root-build,Scoped final-source acceptance; exact output recorded,0,evidence/resolution-followup/root-final-build.log
+resolution-release-build,Scoped final-source acceptance; exact output recorded,0,evidence/resolution-followup/release-final-build.log
+resolution-urls,Scoped final-source acceptance; exact output recorded,0,evidence/resolution-followup/root-public-urls.json
+resolution-content,Scoped final-source acceptance; exact output recorded,0,evidence/resolution-followup/content-http-verification.json
+resolution-signals,Scoped final-source acceptance; exact output recorded,0,evidence/resolution-followup/seo-signal-verification.json
+resolution-image-priority-mutation,Scoped local acceptance; negative mutation deliberately expects failure,1,evidence/resolution-followup/artwork-mutation.log
+resolution-performance,12samples;unchanged budgets;all required lanes must pass,1,evidence/resolution-final-performance/summary.json

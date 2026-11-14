@@ -1,0 +1,25 @@
+{
+  "captured_at": "2026-11-07T02:58:00.838603+00:00",
+  "checks": [
+    {
+      "domain": "letbuyy.com",
+      "exit_code": 1,
+      "message": "\nError: You don't have access to the domain letbuyy.com under letbuyy-store-s-projects.\n> Run `vercel domains ls` to see your domains.\n"
+    },
+    {
+      "domain": "seller.letbuyy.com",
+      "exit_code": 1,
+      "message": "\nError: You don't have access to the domain seller.letbuyy.com under letbuyy-store-s-projects.\n> Run `vercel domains ls` to see your domains.\n"
+    },
+    {
+      "domain": "developer.letbuyy.com",
+      "exit_code": 1,
+      "message": "\nError: You don't have access to the domain developer.letbuyy.com under letbuyy-store-s-projects.\n> Run `vercel domains ls` to see your domains.\n"
+    },
+    {
+      "domain": "developers.letbuyy.com",
+      "exit_code": 1,
+      "message": "\nError: You don't have access to the domain developers.letbuyy.com under letbuyy-store-s-projects.\n> Run `vercel domains ls` to see your domains.\n"
+    }
+  ]
+}

@@ -1,9 +1,7 @@
 import { notFound, redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { getSessionUser, getStoreForUser, getUserStores } from "@/lib/auth/session";
+import { getSessionUser, getStoreForUser, getUserStores, isQueryCostRateLimited } from "@/lib/auth/session";
 import AdminShell from "@/components/AdminShell";
-import { getMerchantSignInUrl, MERCHANT_RETURN_PATH_HEADER } from "@/lib/public-urls";
-import { isAppPlatformEnabled } from "@/lib/app-platform-flag";
+import { getAccountsUrl } from "@/lib/public-urls";
 
 interface StoreLayoutProps {
     children: React.ReactNode;
@@ -17,29 +15,26 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
         notFound();
     }
 
-    // Both endpoints independently authenticate the current cookie. Start them
-    // together; neither response can make an unauthorized workspace render.
-    const userPromise = getSessionUser();
-    const currentStorePromise = getStoreForUser(store);
-    const userStoresPromise = userPromise.then(user => user ? getUserStores(user.id) : []).then(
-        stores => ({ stores, unavailable: false }),
-        () => ({ stores: [], unavailable: true }),
-    );
-    const [user, storeData] = await Promise.all([userPromise, currentStorePromise]);
+    // Validate session
+    const user = await getSessionUser();
     if (!user) {
-        const requestHeaders = await headers();
-        redirect(getMerchantSignInUrl(requestHeaders.get(MERCHANT_RETURN_PATH_HEADER), `/${encodeURIComponent(store)}/dashboard`));
+        redirect(getAccountsUrl('/lookup'));
     }
+
+    // Verify store ownership
+    const storeData = await getStoreForUser(store, user.id);
     if (!storeData) {
         notFound();
     }
 
     // The switcher list is useful but not required for the current store page.
     // If the shared query-cost bucket is draining, keep the merchant workflow open.
-    // Current-store authorization remains mandatory. Stream the optional list
-    // independently so it cannot hold the whole workspace blank. Raw errors
-    // remain server-side; the switcher gets an explicit unavailable state.
-    const userStores = [{
+    const userStores = await getUserStores(user.id).catch((error) => {
+        if (!isQueryCostRateLimited(error)) {
+            throw error;
+        }
+
+        return [{
             id: storeData.id,
             name: storeData.name,
             store_name: storeData.store_name,
@@ -47,6 +42,7 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
             site_type: storeData.site_type,
             status: storeData.status,
         }];
+    });
 
     return (
         <AdminShell
@@ -54,8 +50,6 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
             storeData={storeData}
             user={user}
             userStores={userStores}
-            userStoresPromise={userStoresPromise}
-            appPlatformEnabled={isAppPlatformEnabled()}
         >
             {children}
         </AdminShell>

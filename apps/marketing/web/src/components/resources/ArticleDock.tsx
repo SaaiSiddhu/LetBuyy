@@ -129,6 +129,7 @@ export default function ArticleDock({
             unstyled
             type="button"
             className={`adock-contents${open ? ' is-open' : ''}`}
+            aria-label={t('Contents')}
             onClick={() => setOpen(o => !o)}
             aria-expanded={open}
           >

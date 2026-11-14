@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button,
@@ -115,20 +113,16 @@ export default function PoliciesSettingsPage() {
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
     const completedCount = useMemo(() => policies.filter((policy) => policy.value.trim().length > 0).length, [policies])
 
-    const beginLoad = useReadRequest(store)
     const loadData = useCallback(async (signal?: AbortSignal) => {
-        const request = beginLoad()
-        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/policies?status=all`, {
                 cache: 'no-store',
-                signal: readSignal,
+                signal,
             })
             const payload = (await response.json().catch(() => null)) as ApiPayload | null
-            if (signal?.aborted || !request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getPayloadError(payload, 'Unable to load policies'))
@@ -149,7 +143,7 @@ export default function PoliciesSettingsPage() {
             setInitialPolicies(nextPolicies)
             setSaveState('saved')
         } catch (error) {
-            if (signal?.aborted || !request.isCurrent()) return
+            if (signal?.aborted || (error instanceof DOMException && error.name === 'AbortError')) return
 
             const message = error instanceof Error ? error.message : 'Unable to load policies'
             setLoadError(message)
@@ -159,9 +153,9 @@ export default function PoliciesSettingsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (!signal?.aborted && request.isCurrent()) setLoading(false)
+            if (!signal?.aborted) setLoading(false)
         }
-    }, [beginLoad, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         const controller = new AbortController()
@@ -250,7 +244,6 @@ export default function PoliciesSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
-                navigationKey="policies"
                 title="Policies"
                 description="Manage storefront and checkout policies that help customers buy with confidence."
                 store={store}
@@ -267,7 +260,6 @@ export default function PoliciesSettingsPage() {
 
     return (
         <SettingsPane
-                navigationKey="policies"
             title="Policies"
             description="Manage storefront and checkout policies that help customers buy with confidence."
             store={store}

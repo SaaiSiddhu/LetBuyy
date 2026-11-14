@@ -1,0 +1,21 @@
+name,command,exit_code,result,evidence
+marketing-tests,pnpm --dir apps/marketing/web test,0,224marketing+4auth-boundary pass,evidence/marketing-tests.log
+marketing-types,pnpm --dir apps/marketing/web typecheck,0,pass,evidence/marketing-types.log
+marketing-lint,pnpm --dir apps/marketing/web lint,0,ESLint+stylelint pass,evidence/marketing-lint.log
+api-origin-validator,node scripts/validators/api-client-runtime-base-validator.mjs,0,pass,evidence/api-origin-validator.log
+package-export-validator,node scripts/validators/package-export-validator.mjs,0,pass,evidence/package-export-validator.log
+dependency-manifest-validator,node scripts/validators/dependency-manifest-validator.mjs,0,pass,evidence/dependency-manifest-validator.log
+undeclared-import-validator,node scripts/validators/undeclared-import-validator.mjs,0,pass,evidence/undeclared-import-validator.log
+token-alias-validator,pnpm --dir packages/typescript/ui validate:aliases,0,138protected groups; no failures,evidence/token-alias-validator.log
+final-release-build,pnpm exec turbo run build --filter=@letbuyy/marketing-site,0,"owned source closure;29/29fresh,0cached",evidence/final-release-build.log
+local-url-verification,python3 audit-local.py,0,"489knownURLs;477HTML,12redirects;3expected404controls",evidence/local-url-verification.log
+production-canonical-verification,python3 audit-candidate.py,0,same489URLs with www production canonical origin,evidence/production-canonical-verification.log
+browser-matrix,node verify-browser.cjs,0,48page+8interaction cases;zero mutations,evidence/browser-matrix.log
+next-upgrade-install-first,isolated pnpm add next@16.4.5,1,"setup failed: archive omits unrelated root @letbuyy/infrastructure dev dependency; retained error,not a product failure",evidence/next-upgrade-install-first.log
+final-frozen-install,isolated original pnpm install --offline --frozen-lockfile --ignore-scripts --filter @letbuyy/marketing-site...,0,original constraints restored; source hashes match,evidence/final-frozen-install.log
+final-performance,node scripts/marketing/verify-performance.mjs --origin http://127.0.0.1:9016 ...,1,"12 samples; 0/6 simulated LCP pass; applied,TBT,CLS pass",evidence/final-performance/run-LyAU2I/summary.json
+article-body-links,read-only body references verifier,0,"105 pages,180 expected internal references all present",evidence/article-body-link-verification.json
+redirect-targets,"12 local redirect captures, exact source-derived publisher target",0,initial checker used wrong slug; same observed redirects verified against actual handler,evidence/redirect-targets.json
+gateway-cors-auth,five read-only loopback HTTP cases,0,canonical origins and protected-route denial pass,evidence/local-cors-auth-probe.json
+dns-access-current-chrome,native CUA read-only,n/a,authenticated .com records and 0/10 Single Redirects verified,evidence/cloudflare-current-dns.json
+vercel-project-domains,vercel api /v9/projects/marketing-site/domains --method GET,0,six verified bindings; three legacy hosts absent,evidence/vercel-project-domains-readonly.json

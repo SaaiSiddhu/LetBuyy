@@ -1,11 +1,8 @@
-import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 // ============================================================
 // INVENTORY — Locations, levels, adjustments (Doc 05 + Doc 08 § 6)
 // ============================================================
 
 import { Hono } from 'hono';
-import { z } from 'zod';
-import { PaginationQuery, UuidSchema } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
@@ -45,8 +42,6 @@ import {
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
-const ReceiptPageQuery=PaginationQuery.pick({page:true,limit:true}).extend({store_id:UuidSchema.optional(),po_id:UuidSchema.optional(),transfer_id:UuidSchema.optional()})
-    .refine(q=>!q.po_id || !q.transfer_id,{message:'Choose a purchase order or a transfer filter'});
 
 type ProductOwnerRow = {
     id: string;
@@ -55,7 +50,6 @@ type ProductOwnerRow = {
 };
 
 type DatabaseErrorLike = {
-    code?: string;
     message?: string;
     details?: string;
     hint?: string;
@@ -108,14 +102,14 @@ async function listProductStockInventoryRows(
 ) {
     const offset = (page - 1) * limit;
 
-    const buildQuery = (includeDeletedAtFilter: boolean, includeTrackInventoryColumn: boolean, head = false) => {
+    const buildQuery = (includeDeletedAtFilter: boolean, includeTrackInventoryColumn: boolean) => {
         let query = db
             .from('products')
             .select(
                 includeTrackInventoryColumn
                     ? 'id,name,sku,images,stock,track_inventory,updated_at'
                     : 'id,name,sku,images,stock,updated_at',
-                { count: 'exact', head }
+                { count: 'exact' }
             )
             .in('store_id', ownedStoreIds);
 
@@ -124,27 +118,22 @@ async function listProductStockInventoryRows(
         if (productId) query = query.eq('id', productId);
         if (lowStockOnly) query = query.lte('stock', 10);
 
-        query = query.order('name', { ascending: true }).order('id', { ascending: true });
-        return head ? query : query.range(offset, offset + limit - 1);
+        return query
+            .order('name', { ascending: true })
+            .range(offset, offset + limit - 1);
     };
 
-    let includeDeletedAt = true, includeTrackInventory = true;
-    let { data, error, count } = await buildQuery(includeDeletedAt, includeTrackInventory);
+    let { data, error, count } = await buildQuery(true, true);
+
     if (isMissingDeletedAtError(error)) {
-        includeDeletedAt = false;
-        ({ data, error, count } = await buildQuery(includeDeletedAt, includeTrackInventory));
+        ({ data, error, count } = await buildQuery(false, true));
     }
+
     if (isMissingColumnError(error, 'track_inventory')) {
-        includeTrackInventory = false;
-        ({ data, error, count } = await buildQuery(includeDeletedAt, includeTrackInventory));
+        ({ data, error, count } = await buildQuery(true, false));
         if (isMissingDeletedAtError(error)) {
-            includeDeletedAt = false;
-            ({ data, error, count } = await buildQuery(includeDeletedAt, includeTrackInventory));
+            ({ data, error, count } = await buildQuery(false, false));
         }
-    }
-    if (error?.code === 'PGRST103' && offset > 0) {
-        const total = await buildQuery(includeDeletedAt, includeTrackInventory, true);
-        return { data: [], count: total.count ?? 0, error: total.error };
     }
 
     if (error) {
@@ -289,9 +278,7 @@ router.post('/locations', validate('json', CreateLocationSchema), async (c) => {
 
     const { data, error } = await db
         .from('inventory_locations')
-        .insert({ store_id: body.store_id, name: body.name, is_default: body.is_default,
-            address: { address: body.address || '', city: body.city || '', state: body.state || '', country: body.country },
-            created_by: customUser.id, updated_by: customUser.id })
+        .insert(body)
         .select()
         .single();
 
@@ -309,7 +296,7 @@ router.post('/locations', validate('json', CreateLocationSchema), async (c) => {
         return c.json(dbFailureBody(), 500);
     }
 
-    return c.json(success({ ...data, address: body.address || '', city: body.city || '', state: body.state || '', country: body.country }), 201);
+    return c.json(success(data), 201);
 });
 
 // GET /inventory/suppliers — List suppliers
@@ -463,7 +450,7 @@ router.post('/purchase-orders/:id/receive', validate('json', ReceivePurchaseOrde
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    const siteId = await loadPurchaseOrderSiteId(db, purchaseOrderId, await resolveMerchantResourceStoreIds(c));
+    const siteId = await loadPurchaseOrderSiteId(db, purchaseOrderId);
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Purchase order not found' } }, 404);
     }
@@ -579,7 +566,7 @@ router.post('/transfers/:id/ship', validate('json', ShipTransferSchema), async (
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    const siteId = await loadTransferSiteId(db, transferId, await resolveMerchantResourceStoreIds(c));
+    const siteId = await loadTransferSiteId(db, transferId);
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Transfer not found' } }, 404);
     }
@@ -604,7 +591,7 @@ router.post('/transfers/:id/receive', validate('json', ReceiveTransferSchema), a
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    const siteId = await loadTransferSiteId(db, transferId, await resolveMerchantResourceStoreIds(c));
+    const siteId = await loadTransferSiteId(db, transferId);
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Transfer not found' } }, 404);
     }
@@ -772,13 +759,9 @@ router.get('/levels', async (c) => {
     const storeId = c.req.query('store_id');
     const productId = c.req.query('product_id');
     const lowStockOnly = c.req.query('low_stock') === 'true';
-    const page = Number(c.req.query('page') || '1');
-    const requestedLimit = Number(c.req.query('limit') || '50');
-    const limit = Math.min(requestedLimit, 100);
+    const page = parseInt(c.req.query('page') || '1');
+    const limit = Math.min(parseInt(c.req.query('limit') || '50'), 100);
     const offset = (page - 1) * limit;
-    if (!Number.isSafeInteger(page) || page < 1 || !Number.isSafeInteger(requestedLimit) || requestedLimit < 1 || !Number.isSafeInteger(offset)) {
-        return c.json(failureBody('BAD_REQUEST', 'page and limit must be positive whole numbers'), 400);
-    }
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -800,7 +783,7 @@ router.get('/levels', async (c) => {
         return c.json(paginated([], 0, page, limit));
     }
 
-    const buildLevelsQuery = (includeProductDeletedAtFilter: boolean, head = false) => {
+    const buildLevelsQuery = (includeProductDeletedAtFilter: boolean) => {
         let query = db
             .from('inventory_levels')
             .select(`
@@ -815,7 +798,7 @@ router.get('/levels', async (c) => {
                 products!inner(id,name,sku,images,store_id,track_inventory${includeProductDeletedAtFilter ? ',deleted_at' : ''}),
                 product_variants(id,title,sku),
                 inventory_locations(id,name,is_default,status)
-            `, { count: 'exact', head })
+            `, { count: 'exact' })
             .in('store_id', ownedStoreIds)
             .in('products.store_id', ownedStoreIds);
 
@@ -823,24 +806,15 @@ router.get('/levels', async (c) => {
         if (productId) query = query.eq('product_id', productId);
         if (lowStockOnly) query = query.lte('available', 10);
 
-        query = query.order('available', { ascending: true }).order('id', { ascending: true });
-        return head ? query : query.range(offset, offset + limit - 1);
+        return query
+            .order('available', { ascending: true })
+            .range(offset, offset + limit - 1);
     };
 
-    let includeProductDeletedAt = true;
-    let { data, error, count } = await buildLevelsQuery(includeProductDeletedAt);
+    let { data, error, count } = await buildLevelsQuery(true);
 
     if (isMissingDeletedAtError(error)) {
-        includeProductDeletedAt = false;
-        ({ data, error, count } = await buildLevelsQuery(includeProductDeletedAt));
-    }
-
-    // A stale/past-end offset is an empty page, not an outage or a new population.
-    // Only this recovery path needs a separate count request.
-    if (error?.code === 'PGRST103' && offset > 0) {
-        const total = await buildLevelsQuery(includeProductDeletedAt, true);
-        if (total.error) return c.json(dbFailureBody(), 500);
-        return c.json(paginated([], total.count ?? 0, page, limit));
+        ({ data, error, count } = await buildLevelsQuery(false));
     }
 
     if (isInventorySchemaMissingError(error)) {
@@ -858,7 +832,7 @@ router.get('/levels', async (c) => {
 
     const rows = ((data || []) as unknown as InventoryLevelSourceRow[]).map(mapInventoryLevelRecord);
 
-    if (rows.length === 0 && (count ?? 0) === 0) {
+    if (rows.length === 0) {
         const fallback = await listProductStockInventoryRows(db, ownedStoreIds, productId, lowStockOnly, page, limit);
         if (fallback.error) {
             return c.json(dbFailureBody(), 500);
@@ -1012,10 +986,14 @@ router.get('/reservations', async (c) => {
 });
 
 // GET /inventory/receipts — List PO receipts and transfer receipts (read-only, ownership-checked)
-router.get('/receipts', validate('query', ReceiptPageQuery), async (c) => {
+router.get('/receipts', async (c) => {
     const auth = c.get('auth');
-    const q=c.get('validatedQuery') as z.infer<typeof ReceiptPageQuery>;
-    const {store_id:storeId,page,limit}=q;
+    const storeId = c.req.query('store_id');
+    const poIdFilter = c.req.query('po_id');
+    const transferIdFilter = c.req.query('transfer_id');
+    const page = parseInt(c.req.query('page') || '1');
+    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+    const offset = (page - 1) * limit;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -1035,11 +1013,76 @@ router.get('/receipts', validate('query', ReceiptPageQuery), async (c) => {
         return c.json(paginated([], 0, page, limit));
     }
 
-    const {data,error}=await db.rpc('read_merchant_inventory_receipts',{
-        p_site_ids:ownedStoreIds,p_page:page,p_limit:limit,p_po_id:q.po_id ?? null,p_transfer_id:q.transfer_id ?? null,
+    // Fetch PO receipts (joined to purchase_orders for site_id ownership)
+    let poReceiptsData: unknown[] = [];
+    let poReceiptsCount = 0;
+
+    if (!transferIdFilter) {
+        let poQuery = db
+            .from('purchase_order_receipts')
+            .select(
+                'id, purchase_order_id, quantity_received, notes, received_at, created_at, purchase_orders!inner(id, site_id)',
+                { count: 'exact' }
+            )
+            .in('site_id', ownedStoreIds)
+            .in('purchase_orders.site_id', ownedStoreIds);
+
+        if (poIdFilter) poQuery = poQuery.eq('purchase_order_id', poIdFilter);
+
+        const { data: poData, error: poError, count: poCount } = await poQuery
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+
+        if (poError && !isMissingTableError(poError, 'purchase_order_receipts')) {
+            return c.json(dbFailureBody(), 500);
+        }
+
+        poReceiptsData = (poData || []).map((r: Record<string, unknown>) => ({
+            ...(r as Record<string, unknown>),
+            receipt_type: 'purchase_order',
+        }));
+        poReceiptsCount = poCount || 0;
+    }
+
+    // Fetch transfer receipts (joined to inventory_transfers for site_id ownership)
+    let transferReceiptsData: unknown[] = [];
+    let transferReceiptsCount = 0;
+
+    if (!poIdFilter) {
+        let trQuery = db
+            .from('inventory_transfer_receipts')
+            .select(
+                'id, transfer_id, quantity_received, notes, received_at, created_at, inventory_transfers!inner(id, site_id)',
+                { count: 'exact' }
+            )
+            .in('site_id', ownedStoreIds)
+            .in('inventory_transfers.site_id', ownedStoreIds);
+
+        if (transferIdFilter) trQuery = trQuery.eq('transfer_id', transferIdFilter);
+
+        const { data: trData, error: trError, count: trCount } = await trQuery
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+
+        if (trError && !isMissingTableError(trError, 'inventory_transfer_receipts')) {
+            return c.json(dbFailureBody(), 500);
+        }
+
+        transferReceiptsData = (trData || []).map((r: Record<string, unknown>) => ({
+            ...(r as Record<string, unknown>),
+            receipt_type: 'transfer',
+        }));
+        transferReceiptsCount = trCount || 0;
+    }
+
+    const combined = [...poReceiptsData, ...transferReceiptsData].sort((a, b) => {
+        const aDate = String((a as Record<string, unknown>).created_at ?? '');
+        const bDate = String((b as Record<string, unknown>).created_at ?? '');
+        return bDate.localeCompare(aDate);
     });
-    if(error || !data || !Array.isArray(data.rows) || !Number.isSafeInteger(data.total)) return c.json(dbFailureBody(),500);
-    return c.json(paginated(data.rows,data.total,page,limit));
+
+    const totalCount = poReceiptsCount + transferReceiptsCount;
+    return c.json(paginated(combined, totalCount, page, limit));
 });
 
 // GET /inventory/analytics — Real aggregations over existing tables (no fabricated data)
@@ -1209,13 +1252,12 @@ function requestId(c: { res: { headers: Headers }; req: { header: (name: string)
 
 async function loadPurchaseOrderSiteId(
     db: ReturnType<typeof getSupabaseAdmin>,
-    purchaseOrderId: string,
-    storeIds: string[]
+    purchaseOrderId: string
 ) {
     const { data, error } = await db
         .from('purchase_orders')
         .select('site_id')
-        .eq('id', purchaseOrderId).in('site_id', storeIds)
+        .eq('id', purchaseOrderId)
         .is('deleted_at', null)
         .single();
 
@@ -1226,13 +1268,12 @@ async function loadPurchaseOrderSiteId(
 
 async function loadTransferSiteId(
     db: ReturnType<typeof getSupabaseAdmin>,
-    transferId: string,
-    storeIds: string[]
+    transferId: string
 ) {
     const { data, error } = await db
         .from('inventory_transfers')
         .select('site_id')
-        .eq('id', transferId).in('site_id', storeIds)
+        .eq('id', transferId)
         .is('deleted_at', null)
         .single();
 

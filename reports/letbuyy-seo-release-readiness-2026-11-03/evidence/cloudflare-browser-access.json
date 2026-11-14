@@ -1,0 +1,9 @@
+{
+  "capturedAt": "2026-11-03T03:23:14.616415+00:00",
+  "source": "Current Chrome profile via native UI",
+  "observed": "Cloudflare sign-in screen; no record table read",
+  "loginCompleted": false,
+  "newScopesApproved": false,
+  "challengeOrOAuthUrlsSaved": false,
+  "nextStep": "Existing-account sign-in by owner or read-only record export; API record queries403 remains the established limit."
+}

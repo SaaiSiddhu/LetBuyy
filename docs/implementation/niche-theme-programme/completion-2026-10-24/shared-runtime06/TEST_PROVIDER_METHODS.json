@@ -1,9 +1,0 @@
-{
-  "recordedAt": "2026-10-24T19:07:36.339221+00:00",
-  "officialSource": "https://razorpay.com/docs/payments/server-integration/python/integration-steps",
-  "documentedDomesticVisa": "Dummy Test card selected from current official documentation; no genuine card used",
-  "cardSaved": false,
-  "firstNetbankingAttempt": "payment_cancelled; providerRead confirms failed/capturedfalse; signedfailedcallback200",
-  "retry": "Same providerorder; provider supports retry; awaiting actual outcome",
-  "browserMethod": "Frame-scoped Playwright controls; native AX actions sometimes selected without activating third-party form"
-}

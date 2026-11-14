@@ -1,23 +1,19 @@
+import { BRAND_SOCIAL_IMAGE } from '@/lib/brand-assets'
 import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ResourcesNav from '@/components/resources/ResourcesNav'
 import ResourcesScrollRestoration from '@/components/resources/ResourcesScrollRestoration'
 import NewsletterModalHost from '@/components/resources/NewsletterModal'
-import { getMarketingSiteUrl } from '@/lib/public-urls'
+import { localizeMetadata } from '@/lib/i18n/metadata'
+import '../../resources.css'
 
-export const metadata: Metadata = {
-  title: {
-    default: 'Resources — Commerce guides for Indian merchants',
-    template: '%s | LetBuyy Resources',
-  },
-  description: 'Guides, tutorials, API docs, and platform updates for Indian ecommerce merchants and developers.',
-  metadataBase: new URL(getMarketingSiteUrl()),
-  openGraph: {
-    type: 'website',
-    siteName: 'LetBuyy',
-    locale: 'en_IN',
-  },
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  return localizeMetadata({
+    title: 'Resources — Commerce guides for Indian merchants',
+    description: 'Guides, tutorials, API docs, and platform updates for Indian ecommerce merchants and developers.',
+    openGraph: { type: 'website', images: [BRAND_SOCIAL_IMAGE] },
+  }, (await params).locale, '/resources')
 }
 
 export default function ResourcesLayout({ children }: { children: React.ReactNode }) {

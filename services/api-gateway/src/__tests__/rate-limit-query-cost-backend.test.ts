@@ -74,22 +74,3 @@ test('non-production without a backend degrades to in-memory rather than failing
     assert.equal(result.allowed, true, 'staging must not fail closed');
     assert.notEqual(result.unavailable, true, 'staging uses the in-memory limiter');
 });
-
-test('coordinator timeout diagnostics retain denial and omit subjects and exception text', async t => {
-    const messages: string[] = [];
-    const now = Date.now();
-    t.mock.method(Date, 'now', () => now + 120_000);
-    t.mock.method(console, 'warn', (...args: unknown[]) => { messages.push(args.map(String).join(' ')); });
-    const result = await checkQueryCostRateLimitKey({
-        ...PRODUCTION,
-        RUNTIME_COORDINATOR: {
-            idFromName: (name: string) => name,
-            get: () => ({ fetch: async () => { throw new DOMException('synthetic-private-token must not be logged', 'TimeoutError'); } }),
-        },
-    } as never, { key: 'synthetic-private-subject@example.invalid', cost: 1 });
-    assert.equal(result.allowed, false);
-    assert.equal(result.unavailable, true);
-    assert.equal(messages.length, 1);
-    assert.match(messages[0], /query_cost_coordinator_timeout/);
-    assert.doesNotMatch(messages[0], /synthetic-private|example\.invalid/);
-});

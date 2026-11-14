@@ -15,7 +15,6 @@ const letbuyyDisplay = localFont({
   src: "../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2",
   variable: "--font-letbuyy-display",
   display: "swap",
-  preload: false,
   weight: "100 900",
 });
 
@@ -23,7 +22,6 @@ const letbuyyMono = localFont({
   src: "../../../../../packages/typescript/ui/assets/fonts/geist-mono-latin.woff2",
   variable: "--font-letbuyy-mono",
   display: "swap",
-  preload: false,
   weight: "100 900",
 });
 

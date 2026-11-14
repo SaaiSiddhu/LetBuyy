@@ -1,0 +1,118 @@
+{
+  "captured_at": "2026-11-07T02:50:58.185659+00:00",
+  "checks": [
+    {
+      "source": "/in-hi/resources/authors/arjun-developer",
+      "status": 308,
+      "location": "/in-hi/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in-hi/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in-hi/resources/authors/neha-payments",
+      "status": 308,
+      "location": "/in-hi/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in-hi/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in-hi/resources/authors/priya-commerce",
+      "status": 308,
+      "location": "/in-hi/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in-hi/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in-hi/resources/authors/ravi-operations",
+      "status": 308,
+      "location": "/in-hi/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in-hi/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in-ta/resources/authors/arjun-developer",
+      "status": 308,
+      "location": "/in-ta/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in-ta/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in-ta/resources/authors/neha-payments",
+      "status": 308,
+      "location": "/in-ta/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in-ta/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in-ta/resources/authors/priya-commerce",
+      "status": 308,
+      "location": "/in-ta/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in-ta/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in-ta/resources/authors/ravi-operations",
+      "status": 308,
+      "location": "/in-ta/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in-ta/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in/resources/authors/arjun-developer",
+      "status": 308,
+      "location": "/in/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in/resources/authors/neha-payments",
+      "status": 308,
+      "location": "/in/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in/resources/authors/priya-commerce",
+      "status": 308,
+      "location": "/in/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in/resources/authors/letbuyy-team"
+    },
+    {
+      "source": "/in/resources/authors/ravi-operations",
+      "status": 308,
+      "location": "/in/resources/authors/letbuyy-team",
+      "final_status": 200,
+      "expected_publisher": true,
+      "passed": true,
+      "expected_target_from_canonical_handler": "/in/resources/authors/letbuyy-team"
+    }
+  ],
+  "summary": {
+    "checks": 12,
+    "all_passed": true,
+    "correction": "Initial scratch checker expected /authors/letbuyy; canonical handler and existing provenance tests explicitly use /authors/letbuyy-team. Corrected only this expectation and re-evaluated the same captured HTTP observations. Initial invalid checker record preserved; no product/source change."
+  }
+}

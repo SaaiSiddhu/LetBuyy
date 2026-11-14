@@ -651,13 +651,3 @@ html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .
    liquid-theme.css is the sole owner of Liquid layout, LIQUID_THEME_BASE_CSS remains the sole owner
    of the portable/exported-theme copy. */
 
-
-.catalog-preview-notice { padding: var(--lb-space-3) var(--lb-space-4); background: var(--lb-color-surface); color: var(--lb-color-text); border-bottom: 1px solid var(--lb-color-border); font-size: var(--lb-font-size-caption); text-align: center; }
-.catalog-preview-pages { display: flex; justify-content: center; gap: var(--lb-space-4); padding: var(--lb-space-3); border-bottom: 1px solid var(--lb-color-border); background: var(--lb-color-surface); font-size: var(--lb-font-size-body); }
-.catalog-preview-pages a { color: var(--lb-color-text); text-decoration: underline; text-underline-offset: var(--lb-space-1); }
-.catalog-preview-storefront header { position: sticky; top: 0; }
-.storefront-liquid-editor-section { cursor: pointer; outline-offset: -2px; }
-.storefront-liquid-editor-section:hover, .storefront-liquid-editor-section:focus-visible, .storefront-liquid-editor-section--selected { outline: 2px solid var(--lb-color-focus-ring); }
-
-/* Catalog controls belong to platform chrome; the iframe renders the portable theme. */
-.catalog-preview-frame{padding:var(--lb-space-4,1rem);background:var(--lb-color-surface-subdued,#f6f6f6);min-height:100vh}.catalog-preview-frame h1{font-size:var(--lb-font-size-xl,1.5rem)}.catalog-preview-frame nav,.catalog-preview-frame [role="group"]{display:flex;gap:var(--lb-space-3,.75rem);margin-block:var(--lb-space-3,.75rem);flex-wrap:wrap}.catalog-preview-frame button{min-height:44px;padding:var(--lb-space-3,.75rem);border:1px solid var(--lb-color-border,#ccc);border-radius:var(--lb-radius-md,.5rem);text-transform:capitalize}.catalog-preview-frame button[aria-pressed="true"]{background:var(--lb-color-primary);color:var(--lb-color-on-primary)}.catalog-preview-frame__scroll{overflow:auto}.catalog-preview-frame iframe{display:block;max-width:none;border:1px solid var(--lb-color-border,#ccc);margin-inline:auto;background:var(--lb-color-surface,#fff)}

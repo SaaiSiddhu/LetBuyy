@@ -1,0 +1,203 @@
+• turbo 2.8.9
+• Packages in scope: @letbuyy/marketing-site
+• Running build in 1 packages
+• Remote caching disabled
+@letbuyy/shared-types:typecheck: cache miss, executing 3850e81eaa44fb53
+@letbuyy/shared-types:build: cache miss, executing c27ab5aa31339c79
+@letbuyy/ui:build: cache miss, executing 3fbc040fd1a69231
+@letbuyy/ui:typecheck: cache miss, executing a2f7f7f08eb39e5d
+@letbuyy/ui:typecheck: 
+@letbuyy/ui:typecheck: > @letbuyy/ui@1.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/typescript/ui
+@letbuyy/ui:typecheck: > tsc --noEmit
+@letbuyy/ui:typecheck: 
+@letbuyy/shared-types:typecheck: 
+@letbuyy/shared-types:typecheck: > @letbuyy/shared-types@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/shared-types
+@letbuyy/shared-types:typecheck: > tsc --noEmit
+@letbuyy/shared-types:typecheck: 
+@letbuyy/shared-types:build: 
+@letbuyy/shared-types:build: > @letbuyy/shared-types@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/shared-types
+@letbuyy/shared-types:build: > tsc -b
+@letbuyy/shared-types:build: 
+@letbuyy/ui:build: 
+@letbuyy/ui:build: > @letbuyy/ui@1.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/typescript/ui
+@letbuyy/ui:build: > tsc -b && tsc -p tsconfig.dist.json
+@letbuyy/ui:build: 
+@letbuyy/commerce-core:build: cache miss, executing adc6e3bf7e1c4ad3
+@letbuyy/auth-core:build: cache miss, executing ea75fe0e4c578ca9
+@letbuyy/payments:build: cache miss, executing f887723eae38670e
+@letbuyy/cms-core:build: cache miss, executing 84a8333b5245a267
+@letbuyy/api-client:typecheck: cache miss, executing e07766a3f8eb2b38
+@letbuyy/api-client:build: cache miss, executing f621737b3d9e39aa
+@letbuyy/event-core:build: cache miss, executing e5e4eebf63d97b1b
+@letbuyy/theme-engine:build: cache miss, executing a5f1c417280c1297
+@letbuyy/api-client:build: 
+@letbuyy/api-client:build: > @letbuyy/api-client@0.0.1 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/typescript/api-client
+@letbuyy/api-client:build: > tsc -b
+@letbuyy/api-client:build: 
+@letbuyy/cms-core:build: 
+@letbuyy/cms-core:build: > @letbuyy/cms-core@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/cms-core
+@letbuyy/cms-core:build: > tsc -b
+@letbuyy/cms-core:build: 
+@letbuyy/commerce-core:build: 
+@letbuyy/commerce-core:build: > @letbuyy/commerce-core@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/commerce-core
+@letbuyy/commerce-core:build: > tsc -b
+@letbuyy/commerce-core:build: 
+@letbuyy/api-client:typecheck: 
+@letbuyy/api-client:typecheck: > @letbuyy/api-client@0.0.1 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/typescript/api-client
+@letbuyy/api-client:typecheck: > tsc --noEmit
+@letbuyy/api-client:typecheck: 
+@letbuyy/auth-core:build: 
+@letbuyy/auth-core:build: > @letbuyy/auth-core@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/auth-core
+@letbuyy/auth-core:build: > tsc -b
+@letbuyy/auth-core:build: 
+@letbuyy/event-core:build: 
+@letbuyy/event-core:build: > @letbuyy/event-core@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/event-core
+@letbuyy/event-core:build: > tsc -b
+@letbuyy/event-core:build: 
+@letbuyy/theme-engine:build: 
+@letbuyy/theme-engine:build: > @letbuyy/theme-engine@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/theme-engine
+@letbuyy/theme-engine:build: > tsc -b
+@letbuyy/theme-engine:build: 
+@letbuyy/payments:build: 
+@letbuyy/payments:build: > @letbuyy/payments@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/payments
+@letbuyy/payments:build: > tsc -b
+@letbuyy/payments:build: 
+@letbuyy/commerce-core:typecheck: cache miss, executing d996794d06514c30
+@letbuyy/cms-core:typecheck: cache miss, executing f4b849f2656a4d28
+@letbuyy/commerce-core:typecheck: 
+@letbuyy/commerce-core:typecheck: > @letbuyy/commerce-core@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/commerce-core
+@letbuyy/commerce-core:typecheck: > tsc --noEmit
+@letbuyy/commerce-core:typecheck: 
+@letbuyy/auth-core:typecheck: cache miss, executing 55fbef8902cda126
+@letbuyy/cms-core:typecheck: 
+@letbuyy/cms-core:typecheck: > @letbuyy/cms-core@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/cms-core
+@letbuyy/cms-core:typecheck: > tsc --noEmit
+@letbuyy/cms-core:typecheck: 
+@letbuyy/payments:typecheck: cache miss, executing d5c04c3aa89febb3
+@letbuyy/auth-core:typecheck: 
+@letbuyy/auth-core:typecheck: > @letbuyy/auth-core@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/auth-core
+@letbuyy/auth-core:typecheck: > tsc --noEmit
+@letbuyy/auth-core:typecheck: 
+@letbuyy/payments:typecheck: 
+@letbuyy/payments:typecheck: > @letbuyy/payments@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/payments
+@letbuyy/payments:typecheck: > tsc --noEmit
+@letbuyy/payments:typecheck: 
+@letbuyy/theme-engine:typecheck: cache miss, executing 7e60b566b7a6793c
+@letbuyy/event-core:typecheck: cache miss, executing cebfeeeef12be466
+@letbuyy/theme-engine:typecheck: 
+@letbuyy/theme-engine:typecheck: > @letbuyy/theme-engine@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/theme-engine
+@letbuyy/theme-engine:typecheck: > tsc --noEmit
+@letbuyy/theme-engine:typecheck: 
+@letbuyy/event-core:typecheck: 
+@letbuyy/event-core:typecheck: > @letbuyy/event-core@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/event-core
+@letbuyy/event-core:typecheck: > tsc --noEmit
+@letbuyy/event-core:typecheck: 
+@letbuyy/notification-core:typecheck: cache miss, executing 3911e540d7a7d12a
+@letbuyy/billing-core:typecheck: cache miss, executing 9fa637b87e513837
+@letbuyy/checkout-core:typecheck: cache miss, executing 17a9dab0df9e9802
+@letbuyy/billing-core:typecheck: 
+@letbuyy/billing-core:typecheck: > @letbuyy/billing-core@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/billing-core
+@letbuyy/billing-core:typecheck: > tsc --noEmit
+@letbuyy/billing-core:typecheck: 
+@letbuyy/checkout-core:typecheck: 
+@letbuyy/checkout-core:typecheck: > @letbuyy/checkout-core@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/checkout-core
+@letbuyy/checkout-core:typecheck: > tsc --noEmit
+@letbuyy/checkout-core:typecheck: 
+@letbuyy/notification-core:typecheck: 
+@letbuyy/notification-core:typecheck: > @letbuyy/notification-core@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/notification-core
+@letbuyy/notification-core:typecheck: > tsc --noEmit
+@letbuyy/notification-core:typecheck: 
+@letbuyy/notification-core:build: cache miss, executing 7e56c72a27be79f0
+@letbuyy/billing-core:build: cache miss, executing 07803c84ecde4e14
+@letbuyy/notification-core:build: 
+@letbuyy/notification-core:build: > @letbuyy/notification-core@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/notification-core
+@letbuyy/notification-core:build: > tsc -b
+@letbuyy/notification-core:build: 
+@letbuyy/billing-core:build: 
+@letbuyy/billing-core:build: > @letbuyy/billing-core@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/billing-core
+@letbuyy/billing-core:build: > tsc -b
+@letbuyy/billing-core:build: 
+@letbuyy/checkout-core:build: cache miss, executing bb17f248554ae639
+@letbuyy/checkout-core:build: 
+@letbuyy/checkout-core:build: > @letbuyy/checkout-core@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/checkout-core
+@letbuyy/checkout-core:build: > tsc -b
+@letbuyy/checkout-core:build: 
+@letbuyy/tenant-core:typecheck: cache miss, executing aa26c967c738abf5
+@letbuyy/tenant-core:typecheck: 
+@letbuyy/tenant-core:typecheck: > @letbuyy/tenant-core@0.0.0 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/tenant-core
+@letbuyy/tenant-core:typecheck: > tsc --noEmit
+@letbuyy/tenant-core:typecheck: 
+@letbuyy/tenant-core:build: cache miss, executing 5d489f81ced2696d
+@letbuyy/tenant-core:build: 
+@letbuyy/tenant-core:build: > @letbuyy/tenant-core@0.0.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/tenant-core
+@letbuyy/tenant-core:build: > tsc -b
+@letbuyy/tenant-core:build: 
+@letbuyy/api-types:build: cache miss, executing 8cfb98d9f5f3af9e
+@letbuyy/api-types:typecheck: cache miss, executing ea77749a92f040ec
+@letbuyy/api-types:typecheck: 
+@letbuyy/api-types:typecheck: > @letbuyy/api-types@0.0.1 typecheck /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/typescript/api-types
+@letbuyy/api-types:typecheck: > tsc --noEmit
+@letbuyy/api-types:typecheck: 
+@letbuyy/api-types:build: 
+@letbuyy/api-types:build: > @letbuyy/api-types@0.0.1 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/packages/typescript/api-types
+@letbuyy/api-types:build: > tsc -b
+@letbuyy/api-types:build: 
+@letbuyy/marketing-site:build: cache miss, executing d308620fe5d6a266
+@letbuyy/marketing-site:build: 
+@letbuyy/marketing-site:build: > @letbuyy/marketing-site@0.1.0 build /private/tmp/letbuyy-marketing-nov13.VCJg4w/release-source/apps/marketing/web
+@letbuyy/marketing-site:build: > next build --webpack
+@letbuyy/marketing-site:build: 
+@letbuyy/marketing-site:build: ▲ Next.js 16.1.6 (webpack)
+@letbuyy/marketing-site:build: - Experiments (use with caution):
+@letbuyy/marketing-site:build:   ⨯ cssChunking
+@letbuyy/marketing-site:build:   · optimizePackageImports
+@letbuyy/marketing-site:build: 
+@letbuyy/marketing-site:build:   Creating an optimized production build ...
+@letbuyy/marketing-site:build: ✓ Compiled successfully in 10.6s
+@letbuyy/marketing-site:build:   Running TypeScript ...
+@letbuyy/marketing-site:build:   Collecting page data using 11 workers ...
+@letbuyy/marketing-site:build:   Generating static pages using 11 workers (0/485) ...
+@letbuyy/marketing-site:build:   Generating static pages using 11 workers (121/485) 
+@letbuyy/marketing-site:build:   Generating static pages using 11 workers (242/485) 
+@letbuyy/marketing-site:build:   Generating static pages using 11 workers (363/485) 
+@letbuyy/marketing-site:build: ✓ Generating static pages using 11 workers (485/485) in 914.1ms
+@letbuyy/marketing-site:build:   Finalizing page optimization ...
+@letbuyy/marketing-site:build:   Collecting build traces ...
+@letbuyy/marketing-site:build: 
+@letbuyy/marketing-site:build: Route (app)
+@letbuyy/marketing-site:build: ┌ ƒ /_not-found
+@letbuyy/marketing-site:build: ├ ƒ /[locale]
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/contact
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/create
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/demo
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/legal
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/legal/[slug]
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/pricing
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/resources
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/resources/[category]
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/resources/[category]/[slug]
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/resources/authors/[slug]
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/resources/changelog
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/resources/releases
+@letbuyy/marketing-site:build: ├ ○ /[locale]/resources/rss.xml
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/resources/search
+@letbuyy/marketing-site:build: ├ ○ /[locale]/resources/sitemap.xml
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/resources/tag/[tag]
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/signup
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/sitemap
+@letbuyy/marketing-site:build: ├ ƒ /[locale]/support
+@letbuyy/marketing-site:build: ├ ƒ /api/founding-pricing
+@letbuyy/marketing-site:build: ├ ○ /robots.txt
+@letbuyy/marketing-site:build: └ ○ /sitemap.xml
+@letbuyy/marketing-site:build: 
+@letbuyy/marketing-site:build: 
+@letbuyy/marketing-site:build: ƒ Proxy (Middleware)
+@letbuyy/marketing-site:build: 
+@letbuyy/marketing-site:build: ○  (Static)   prerendered as static content
+@letbuyy/marketing-site:build: ƒ  (Dynamic)  server-rendered on demand
+@letbuyy/marketing-site:build: 
+
+ Tasks:    29 successful, 29 total
+Cached:    0 cached, 29 total
+  Time:    47.527s 
+

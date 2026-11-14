@@ -1,12 +1,10 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { REVIEW_MODERATION_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { Avatar, Badge, BadgeCheck, Banner, Button, Card, CheckCircle2, ConfirmDialog, MessageSquare, Page, PageHeader, RefreshCw, Section, ShieldCheck, Skeleton, Star, StatusPresentationBadge, Table, Trash2, useToast, XCircle, type TableColumn } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
+import { Avatar, Badge, BadgeCheck, Banner, Button, Card, CheckCircle2, ConfirmDialog, EmptyState, MessageSquare, Page, PageHeader, RefreshCw, Section, ShieldCheck, Skeleton, Star, StatusPresentationBadge, Table, Trash2, useToast, XCircle, type TableColumn } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 interface Review {
@@ -76,9 +74,7 @@ export default function ReviewsPage() {
     const [actionError, setActionError] = useState<string | null>(null)
     const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null)
 
-    const beginRead = useReadRequest(JSON.stringify([store, filter]))
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
         setActionError(null)
@@ -86,10 +82,9 @@ export default function ReviewsPage() {
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/reviews?status=${encodeURIComponent(filter)}&limit=100`,
-                { cache: 'no-store', signal: request.signal },
+                { cache: 'no-store' },
             )
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load reviews'))
@@ -97,15 +92,14 @@ export default function ReviewsPage() {
 
             setReviews(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load reviews'
             setReviews([])
             setLoadError(message)
             notify({ title: 'Reviews could not load', description: message, variant: 'critical' })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, filter, notify, store])
+    }, [filter, notify, store])
 
     useEffect(() => {
         void loadData()
@@ -324,7 +318,16 @@ export default function ReviewsPage() {
 
     const isMainEmpty = !loadError && filter === 'all'
     const emptyState = (
-        <EmptyState scene="reviews"
+        <EmptyState
+            illustration={isMainEmpty ? (
+                <Image
+                    src="/Emptystate Illustration/Product-Review.png"
+                    alt=""
+                    width={200}
+                    height={200}
+                    aria-hidden="true"
+                />
+            ) : undefined}
             icon={!isMainEmpty ? (
                 <MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
             ) : undefined}
@@ -343,8 +346,7 @@ export default function ReviewsPage() {
 
     return (
         <Page>
-            <PageHeader identity="content"
-                recipe="index"
+            <PageHeader
                 title="Product reviews"
                 description={visibleCounts.pending > 0
                     ? `${visibleCounts.pending} review${visibleCounts.pending > 1 ? 's' : ''} awaiting moderation.`

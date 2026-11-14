@@ -1,12 +1,15 @@
 import type { MetadataRoute } from 'next'
-import { getMarketingSiteUrl } from '@/lib/public-urls'
-import { CATEGORIES } from '@/lib/resources/categories'
-import { LEGAL_DOCUMENTS } from '@/lib/legal/documents'
-import { DEFAULT_LOCALE, LOCALES } from '@/lib/i18n/locales'
-import { localePath } from '@/lib/i18n/routing'
+import type { Article } from '@/lib/resources/types'
+import { getMarketingSiteUrl } from '../lib/public-urls'
+import { getAllArticlesForSitemap } from '../lib/resources/utils'
+import { localizeArticleContent } from '../lib/i18n/article-content'
+import { CHANGELOG } from '../lib/resources/changelog'
+import { CATEGORIES } from '../lib/resources/categories'
+import { LEGAL_DOCUMENTS } from '../lib/legal/documents'
+import { DEFAULT_LOCALE, LOCALES } from '../lib/i18n/locales'
+import { localePath } from '../lib/i18n/routing'
 
 const baseUrl = getMarketingSiteUrl()
-const lastModified = new Date('2026-06-04T00:00:00.000Z')
 
 /**
  * Locale-free paths, each with the priority it carries in every locale.
@@ -20,9 +23,8 @@ const PATHS: Array<{ path: string; priority: number; changeFrequency: MetadataRo
     { path: '/resources', priority: 0.9, changeFrequency: 'daily' },
     { path: '/contact', priority: 0.8, changeFrequency: 'monthly' },
     { path: '/support', priority: 0.8, changeFrequency: 'monthly' },
-    { path: '/resources/changelog', priority: 0.8, changeFrequency: 'weekly' },
-    { path: '/create', priority: 0.7, changeFrequency: 'monthly' },
-    { path: '/resources/releases', priority: 0.7, changeFrequency: 'weekly' },
+    ...(CHANGELOG.length ? [{ path: '/resources/changelog', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/resources/releases', priority: 0.7, changeFrequency: 'weekly' as const }] : []),
     ...CATEGORIES.map(category => ({
         path: `/resources/${category.slug}`,
         priority: 0.7,
@@ -34,29 +36,33 @@ const PATHS: Array<{ path: string; priority: number; changeFrequency: MetadataRo
         priority: 0.5,
         changeFrequency: 'monthly' as const,
     })),
-    { path: '/sitemap', priority: 0.6, changeFrequency: 'weekly' },
-    { path: '/resources/search', priority: 0.4, changeFrequency: 'monthly' },
+    // The visitor-facing HTML directory is noindex; it stays linked in the
+    // footer, but the XML inventory advertises indexable landing pages only.
 ]
 
-/**
- * Every path × every locale, each entry carrying the full alternates set.
- *
- * The alternates matter more than the extra rows: without them Google sees
- * three near-identical Indian-English-adjacent pages and picks one, which is
- * how translated sites end up with only their default locale indexed.
- */
+/** Canonical public pages and actual translated articles; no build-time dates. */
 export default function sitemap(): MetadataRoute.Sitemap {
-    return PATHS.flatMap(({ path, priority, changeFrequency }) => {
-        const languages = Object.fromEntries(
-            LOCALES.map(locale => [locale.hreflang, `${baseUrl}${localePath(locale, path)}`]),
-        )
-        languages['x-default'] = `${baseUrl}${localePath(DEFAULT_LOCALE, path)}`
-
-        return LOCALES.map(locale => ({
-            url: `${baseUrl}${localePath(locale, path)}`,
-            lastModified,
-            changeFrequency,
-            priority,
+    const paths: Array<(typeof PATHS)[number] & { article?: Article }> = [
+        ...PATHS,
+        ...getAllArticlesForSitemap().map(article => ({
+            path: `/resources/${article.category}/${article.slug}`,
+            priority: 0.7,
+            changeFrequency: 'monthly' as const,
+            article,
+        })),
+    ]
+    return paths.flatMap(entry => {
+        const article = entry.article
+        const locales = article !== undefined
+            ? LOCALES.filter(locale => locale.language.code === 'en' || localizeArticleContent(article, locale.language.code).translated)
+            : LOCALES
+        const languages = Object.fromEntries(locales.map(locale => [locale.hreflang, `${baseUrl}${localePath(locale, entry.path)}`]))
+        languages['x-default'] = `${baseUrl}${localePath(DEFAULT_LOCALE, entry.path)}`
+        return locales.map(locale => ({
+            url: `${baseUrl}${localePath(locale, entry.path)}`,
+            ...(article !== undefined ? { lastModified: new Date(article.updatedAt) } : {}),
+            changeFrequency: entry.changeFrequency,
+            priority: entry.priority,
             alternates: { languages },
         }))
     })

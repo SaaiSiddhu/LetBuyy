@@ -1,0 +1,112 @@
+{
+  "capturedAt": "2026-11-03T04:09:57.571314+00:00",
+  "readOnly": true,
+  "rows": [
+    {
+      "url": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "headings": [
+        {
+          "id": "1-create-your-account",
+          "text": "1. Create Your Account"
+        },
+        {
+          "id": "4-add-your-first-product",
+          "text": "2. Add Your First Product"
+        },
+        {
+          "id": "3-select-a-theme",
+          "text": "3. Select a Theme"
+        },
+        {
+          "id": "5-configure-payments",
+          "text": "4. Configure Payments"
+        },
+        {
+          "id": "8-publish-and-test",
+          "text": "5. Publish and Test"
+        }
+      ],
+      "numbers": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "oldAnchorsPreserved": true,
+      "passed": true
+    },
+    {
+      "url": "http://127.0.0.1:9006/in-hi/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "headings": [
+        {
+          "id": "1-create-your-account",
+          "text": "1. अपना खाता बनाएँ"
+        },
+        {
+          "id": "4-add-your-first-product",
+          "text": "2. पहला उत्पाद जोड़ें"
+        },
+        {
+          "id": "3-select-a-theme",
+          "text": "3. थीम चुनें"
+        },
+        {
+          "id": "5-configure-payments",
+          "text": "4. भुगतान सेट करें"
+        },
+        {
+          "id": "8-publish-and-test",
+          "text": "5. प्रकाशित करें और जाँचें"
+        }
+      ],
+      "numbers": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "oldAnchorsPreserved": true,
+      "passed": true
+    },
+    {
+      "url": "http://127.0.0.1:9006/in-ta/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "headings": [
+        {
+          "id": "1-create-your-account",
+          "text": "1. கணக்கை உருவாக்கவும்"
+        },
+        {
+          "id": "4-add-your-first-product",
+          "text": "2. முதல் தயாரிப்பைச் சேர்க்கவும்"
+        },
+        {
+          "id": "3-select-a-theme",
+          "text": "3. தீமைத் தேர்ந்தெடுக்கவும்"
+        },
+        {
+          "id": "5-configure-payments",
+          "text": "4. பணப்பரிவர்த்தனையை அமைக்கவும்"
+        },
+        {
+          "id": "8-publish-and-test",
+          "text": "5. வெளியிட்டு சோதிக்கவும்"
+        }
+      ],
+      "numbers": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "oldAnchorsPreserved": true,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

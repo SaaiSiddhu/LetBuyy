@@ -1,0 +1,59 @@
+{
+  "capturedAt": "2026-11-03T08:28:40.986639+00:00",
+  "rows": [
+    {
+      "port": 9006,
+      "path": "/in",
+      "bytes": 519410,
+      "gzippedBytes": 52809,
+      "inlineStyleCount": 1,
+      "stylesheetLinks": 2,
+      "status": 200
+    },
+    {
+      "port": 9006,
+      "path": "/in/pricing",
+      "bytes": 447757,
+      "gzippedBytes": 43395,
+      "inlineStyleCount": 1,
+      "stylesheetLinks": 1,
+      "status": 200
+    },
+    {
+      "port": 9006,
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "bytes": 315613,
+      "gzippedBytes": 40838,
+      "inlineStyleCount": 1,
+      "stylesheetLinks": 2,
+      "status": 200
+    },
+    {
+      "port": 9048,
+      "path": "/in",
+      "bytes": 1460569,
+      "gzippedBytes": 181071,
+      "inlineStyleCount": 2,
+      "stylesheetLinks": 0,
+      "status": 200
+    },
+    {
+      "port": 9048,
+      "path": "/in/pricing",
+      "bytes": 1216142,
+      "gzippedBytes": 149695,
+      "inlineStyleCount": 2,
+      "stylesheetLinks": 0,
+      "status": 200
+    },
+    {
+      "port": 9048,
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "bytes": 1327622,
+      "gzippedBytes": 176913,
+      "inlineStyleCount": 2,
+      "stylesheetLinks": 0,
+      "status": 200
+    }
+  ]
+}

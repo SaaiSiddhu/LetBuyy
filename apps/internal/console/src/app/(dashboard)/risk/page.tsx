@@ -27,10 +27,10 @@ export default async function RiskPage() {
             {result.error ? <ConsoleApiErrorPanel title="Risk API unavailable" message={result.error} /> : null}
 
             <MetricGrid>
-                <LeadershipMetric label="High today" value={String(counts?.high_today || 0)} tone={(counts?.high_today || 0) > 0 ? 'critical' : 'success'} />
-                <LeadershipMetric label="High sampled" value={String(counts?.by_band?.high || 0)} tone={(counts?.by_band?.high || 0) > 0 ? 'critical' : 'success'} />
-                <LeadershipMetric label="Medium sampled" value={String(counts?.by_band?.medium || 0)} tone={(counts?.by_band?.medium || 0) > 0 ? 'warning' : 'success'} />
-                <LeadershipMetric label="Restricted" value={String(counts?.restricted || 0)} tone={(counts?.restricted || 0) > 0 ? 'critical' : 'success'} />
+                <LeadershipMetric label="High today" value={(counts?.high_today === undefined ? 'Unavailable' : String(counts?.high_today))} tone={counts?.high_today === undefined ? 'warning' : counts?.high_today > 0 ? 'critical' : 'success'} />
+                <LeadershipMetric label="High sampled" value={(counts?.by_band?.high === undefined ? 'Unavailable' : String(counts?.by_band?.high))} tone={counts?.by_band?.high === undefined ? 'warning' : counts?.by_band?.high > 0 ? 'critical' : 'success'} />
+                <LeadershipMetric label="Medium sampled" value={(counts?.by_band?.medium === undefined ? 'Unavailable' : String(counts?.by_band?.medium))} tone={counts?.by_band?.medium === undefined ? 'warning' : counts?.by_band?.medium > 0 ? 'warning' : 'success'} />
+                <LeadershipMetric label="Restricted" value={(counts?.restricted === undefined ? 'Unavailable' : String(counts?.restricted))} tone={counts?.restricted === undefined ? 'warning' : counts?.restricted > 0 ? 'critical' : 'success'} />
             </MetricGrid>
 
             <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-[1.2fr_0.8fr]">

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
 import { useSearchParams } from 'next/navigation'
-import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
+import TurnstileWidget from '@/components/TurnstileWidget'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
@@ -179,8 +179,6 @@ function SignupContent() {
     const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
         || process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true'
 
-    const turnstileRef = useRef<TurnstileHandle>(null)
-
     // OTP state
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
     const [resendTimer, setResendTimer] = useState(60)
@@ -261,7 +259,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/signup', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken,
@@ -300,7 +298,6 @@ function SignupContent() {
         } catch {
             setError('Something went wrong. Please try again.')
         } finally {
-            turnstileRef.current?.reset()
             setLoading(false)
         }
     }
@@ -364,7 +361,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/verify-otp', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     otp: otpCode,
@@ -404,7 +401,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/signup', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken,
@@ -425,9 +422,7 @@ function SignupContent() {
                 }, 300)
             }
         } catch {
-            setError('Unable to resend verification code. Please try again.')
-        } finally {
-            turnstileRef.current?.reset()
+            // silent
         }
     }
 
@@ -442,7 +437,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/set-password', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     password,
                     userId,
@@ -558,7 +553,7 @@ function SignupContent() {
                             {t.terms} <a href="#">{t.termsLink}</a> {t.and} <a href="#">{t.privacyLink}</a>
                         </p>
 
-                        <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
+                        <TurnstileWidget onVerify={handleTurnstileVerify} />
                     </div>
                 )}
 
@@ -606,12 +601,11 @@ function SignupContent() {
                             {loading ? '...' : t.otpVerify}
                         </Button>
 
-                        {canResend && <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />}
                         <div className="auth-otp-actions">
                             <Button unstyled
                                 className="auth-btn-text"
                                 onClick={handleResendOtp}
-                                disabled={!canResend || (turnstileEnabled && !turnstileToken)}
+                                disabled={!canResend}
                             >
                                 {canResend
                                     ? t.otpResend

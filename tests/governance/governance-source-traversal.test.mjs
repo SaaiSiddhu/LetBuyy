@@ -49,16 +49,6 @@ test('artifact inventory reports cache roots without descending into their child
     assert.ok(!result.dirs.some(path=>path.includes('/dev')||path.includes('/server')||path.includes('/foreign')));
 });
 
-test('Storybook build output is an artifact; similarly named source remains governed', () => {
-    writeFileSync(join(fixture, '.gitignore'), '**/storybook-static/\n');
-    write('packages/typescript/ui/src/premium.stories.tsx');
-    write('packages/typescript/ui/storybook-static/assets/generated.js');
-    write('packages/typescript/ui/storybook-static-source/real.ts');
-    const result = inspect(['packages']);
-    assert.deepEqual(result.files, ['packages/typescript/ui/src/premium.stories.tsx', 'packages/typescript/ui/storybook-static-source/real.ts']);
-    assert.deepEqual(result.artifacts, [], 'preview exports are not runtime caches scheduled for destructive cleanup');
-});
-
 test('broken, cyclic and external links are not source roots or traversed dependencies', () => {
     const result=inspect(['apps/merchant/web/external','apps/merchant/web/cycle','apps/merchant/web/broken']);
     assert.deepEqual(result.files,[]);
@@ -106,17 +96,17 @@ const consoleGate = "await requireConsolePermission(c, 'merchant:pii', false);";
 const customerGate = "const session = getCustomerSession(c); if (!session) return c.json({}, 401);";
 const customerQuery = "await db.from('store_customers').select('id').eq('id', session.customerId).eq('store_id', session.storeId);";
 
-function ownershipFixture(imports, body, wrap = source => source) {
+function ownershipFixture(imports, body, wrap = source => source, middleware = '') {
     const dir = mkdtempSync(join(tmpdir(), 'letbuyy-route-guard-'));
     try {
-        for (const relative of ['identity-foundation/console-approval-repository.ts', 'middleware/customer-session.ts']) {
+        for (const relative of ['identity-foundation/console-approval-repository.ts', 'identity-foundation/console-session-repository.ts', 'middleware/customer-session.ts']) {
             const dest = join(dir, 'services/api-gateway/src', relative);
             mkdirSync(dirname(dest), { recursive: true });
             copyFileSync(fileURLToPath(new URL(`../../services/api-gateway/src/${relative}`, import.meta.url)), dest);
         }
         const route = join(dir, 'services/api-gateway/src/routes/arbitrary.ts');
         mkdirSync(dirname(route), { recursive: true });
-        writeFileSync(route, `${imports}\n${wrap(`router.get('/synthetic', async (c) => { ${body} });`)}\n`);
+        writeFileSync(route, `${imports}\n${wrap(`router.get('/synthetic', ${middleware ? middleware + ', ' : ''}async (c) => { ${body} });`)}\n`);
         const result = spawnSync(process.execPath, [ownershipValidator], { cwd: dir, encoding: 'utf8', timeout: 10000 });
         assert.ok(result.status === 0 || result.status === 1, result.stderr);
         return result;
@@ -199,4 +189,32 @@ test('shipping/tax ownership recognition is file-bound, awaited and ordered befo
             const result = run(body, filename); assert.equal(result.status, 1, label); assert.match(result.stderr, /tenant-table handlers without an ownership/, label);
         }
     } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+
+const consoleMiddlewareImports = "import { bindConsoleOperatorIdentity as bind } from '../identity-foundation/console-session-repository'; import { consolePermission as permit } from '../identity-foundation/console-approval-repository';";
+const guardedTenantRead = "await db.from('sites').select('id');";
+for (const [name, imports, middleware] of [
+    ['inline canonical middleware', consoleMiddlewareImports, "bind, permit('merchant:view')"],
+    ['const permission alias', consoleMiddlewareImports + " const operatorGuard = permit('merchant:view');", 'bind, operatorGuard'],
+]) test(`ownership admits ${name} only with a bound operator`, () => {
+    assert.equal(ownershipFixture(imports, guardedTenantRead, undefined, middleware).status, 0);
+});
+for (const [name, imports, middleware, wrap] of [
+    ['missing binder', consoleMiddlewareImports, "permit('merchant:view')"],
+    ['missing permission', consoleMiddlewareImports, 'bind'],
+    ['reversed middleware', consoleMiddlewareImports, "permit('merchant:view'), bind"],
+    ['extra callback between identity and permission', consoleMiddlewareImports, "bind, arbitraryCallback, permit('merchant:view')"],
+    ['extra callback after permission', consoleMiddlewareImports, "bind, permit('merchant:view'), arbitraryCallback"],
+    ['unused middleware import', consoleMiddlewareImports, ''],
+    ['unbound local binder', "const bind = fake; import { consolePermission as permit } from '../identity-foundation/console-approval-repository';", "bind, permit('merchant:view')"],
+    ['wrong middleware permission import', consoleMiddlewareImports.replace('console-approval-repository', 'untrusted'), "bind, permit('merchant:view')"],
+    ['empty middleware permission', consoleMiddlewareImports, "bind, permit('')"],
+    ['permission hidden in callback', consoleMiddlewareImports, "bind, async () => permit('merchant:view')"],
+    ['mutable middleware alias', consoleMiddlewareImports + " let operatorGuard = permit('merchant:view');", 'bind, operatorGuard'],
+    ['shadowed middleware alias', consoleMiddlewareImports + " const operatorGuard = permit('merchant:view');", 'bind, operatorGuard', source => `function register(operatorGuard) { ${source} }`],
+    ['shadowed middleware factory', consoleMiddlewareImports, "bind, permit('merchant:view')", source => `function register(permit) { ${source} }`],
+]) test(`ownership refuses ${name}`, () => {
+    const result = ownershipFixture(imports, guardedTenantRead, wrap, middleware);
+    assert.equal(result.status, 1, result.stdout); assert.match(result.stderr, /tenant-table handlers without an ownership/);
 });

@@ -1,8 +1,0 @@
-{
-  "policy": "Omit .env*, *.env*, and environment example/template declarations; names/hashes only and no parsed/exposed values. Refuse an excluded runtime dependency.",
-  "private02DeclaredEnvironmentFiles": [],
-  "private03CopiedEnvironmentFiles": [],
-  "vendorOmissions": [],
-  "count": 0,
-  "scope": "Isolated02 source had no env declarations to copy; no Main or running-process environment values read."
-}

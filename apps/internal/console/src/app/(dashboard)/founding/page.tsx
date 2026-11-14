@@ -15,6 +15,7 @@ import {
     formatDateTime,
     formatMoneyFromPaise,
     readSearchParam,
+    readPageParam,
     type ConsoleDataResponse,
 } from '@/lib/console-api';
 import { FoundingAdminControls } from '@/components/founding/FoundingAdminControls';
@@ -103,18 +104,23 @@ const columns: Array<ConsoleDataColumn<FoundingAllocation>> = [
 export default async function FoundingPage({ searchParams }: PageProps) {
     const params = searchParams ? await searchParams : undefined;
     const q = readSearchParam(params, 'q');
+    const page = readPageParam(params);
 
     const overview = await fetchConsoleApi<ConsoleDataResponse<{ program: FoundingProgram | null; reconcile: ReconcileResult | null }>>(
         '/internal/founding/overview',
     );
-    const allocationsResult = await fetchConsoleApi<ConsoleDataResponse<{ allocations: FoundingAllocation[] }>>(
+    const allocationsResult = await fetchConsoleApi<ConsoleDataResponse<{ allocations: FoundingAllocation[]; page: number; per_page: number; total: number }>>(
         '/internal/founding/allocations',
-        { search: q || '', limit: 200 },
+        { search: q || '', limit: 25, page },
     );
 
     const program = overview.data?.data?.program ?? null;
     const reconcile = overview.data?.data?.reconcile ?? null;
-    const rows = allocationsResult.data?.data?.allocations ?? [];
+    const allocationPage = allocationsResult.data?.data;
+    const rows = allocationPage?.allocations ?? [];
+    const meta = allocationPage ? { page: allocationPage.page, per_page: allocationPage.per_page, total: allocationPage.total,
+        total_pages: Math.ceil(allocationPage.total / allocationPage.per_page), has_prev: allocationPage.page > 1,
+        has_next: allocationPage.page * allocationPage.per_page < allocationPage.total } : undefined;
 
     const remaining = program?.remaining_slots ?? 0;
     const total = program?.total_slots ?? 100;
@@ -125,8 +131,8 @@ export default async function FoundingPage({ searchParams }: PageProps) {
             title="Founding Merchant Administration"
             description="Slots overview, allocations, recovery operations, and program controls. Live counts come from the founding program (no manual numbers)."
         >
-            {overview.error ? (
-                <ConsoleApiErrorPanel title="Founding API unavailable" message={overview.error} />
+            {overview.error || !program ? (
+                <ConsoleApiErrorPanel title="Founding API unavailable" message={overview.error || 'The founding programme has not been configured.'} />
             ) : (
                 <>
                     <MetricGrid>
@@ -157,6 +163,7 @@ export default async function FoundingPage({ searchParams }: PageProps) {
                         <ConsoleDataTable
                             columns={columns}
                             rows={rows}
+                            meta={meta}
                             basePath="/founding"
                             query={{ q }}
                             emptyLabel="No founding allocations yet."
@@ -165,10 +172,10 @@ export default async function FoundingPage({ searchParams }: PageProps) {
                     )}
 
                     <a
-                        href="/api/founding/export"
+                        href={'/api/founding/export?' + new URLSearchParams({q,page:String(page)}).toString()}
                         className="inline-flex min-h-11 w-fit items-center gap-[var(--lb-space-2)] rounded-lg border border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)]"
                     >
-                        Export allocations (CSV)
+                        Export current page (CSV)
                     </a>
                 </>
             )}

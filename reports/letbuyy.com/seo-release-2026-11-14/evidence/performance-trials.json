@@ -1,0 +1,50 @@
+{
+  "inline-diagnostic/pricing-inline": {
+    "lcpMs": 3448.9359999999992,
+    "tbtMs": 25,
+    "cls": 0,
+    "DocumentBytes": 155659,
+    "StylesheetBytes": 0,
+    "ScriptBytes": 223492
+  },
+  "inline-diagnostic/guide-inline": {
+    "lcpMs": 3213.9040000000005,
+    "tbtMs": 29.500000000000227,
+    "cls": 0,
+    "DocumentBytes": 187464,
+    "StylesheetBytes": 0,
+    "ScriptBytes": 229771
+  },
+  "inline-diagnostic/pricing-base": {
+    "lcpMs": 3474.014,
+    "tbtMs": 40.7517499999999,
+    "cls": 0,
+    "DocumentBytes": 48094,
+    "StylesheetBytes": 55023,
+    "ScriptBytes": 223494
+  },
+  "inline-diagnostic/guide-base": {
+    "lcpMs": 3699.004,
+    "tbtMs": 43.99999999999977,
+    "cls": 0,
+    "DocumentBytes": 48910,
+    "StylesheetBytes": 72257,
+    "ScriptBytes": 229776
+  },
+  "token-diagnostic/pricing": {
+    "lcpMs": 2905.4882499999994,
+    "tbtMs": 33,
+    "cls": 0,
+    "DocumentBytes": 27494,
+    "StylesheetBytes": 55023,
+    "ScriptBytes": 223581
+  },
+  "token-diagnostic/guide": {
+    "lcpMs": 3681.428,
+    "tbtMs": 25,
+    "cls": 0,
+    "DocumentBytes": 39784,
+    "StylesheetBytes": 72254,
+    "ScriptBytes": 229860
+  }
+}

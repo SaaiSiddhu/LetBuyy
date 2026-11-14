@@ -24,9 +24,6 @@ export interface DomainConfidence {
 /** The single "will my store work?" answer, shown before any DNS detail. */
 export function domainConfidence(health: CustomDomainHealth): DomainConfidence {
     if (health.status === 'active' && health.ssl_active) {
-        if (health.customer_verification && health.customer_verification.status !== 'ready') {
-            return { headline: 'Your store is reachable. Customer verification needs attention.', tone: 'warning' }
-        }
         return { headline: 'Your store is live and secure on this domain.', tone: 'success' }
     }
     if (health.status === 'error' || health.misconfigured) {

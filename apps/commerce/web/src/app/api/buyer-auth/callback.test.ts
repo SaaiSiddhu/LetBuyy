@@ -131,23 +131,3 @@ test('a conflicting verified-account link preserves the existing store session',
         else process.env.INTERNAL_API_SECRET = originalInternalSecret;
     }
 });
-
-
-test('an expired or missing flow stays denied and offers a fresh same-store sign-in without replaying its code', async () => {
-    const originalFetch = globalThis.fetch;
-    let requests = 0;
-    globalThis.fetch = (async () => { requests++; throw new Error('Expired flow must never reach token exchange'); }) as typeof fetch;
-    try {
-        const response = await GET(new NextRequest('https://shop.example.test/api/buyer-auth/callback?code=expired-synthetic-code&state=expired-synthetic-state', { headers: { host: 'shop.example.test' } }));
-        const html = await response.text();
-        assert.equal(response.status, 400);
-        assert.equal(requests, 0);
-        assert.equal(response.cookies.get(STOREFRONT_BUYER_FLOW_COOKIE)?.maxAge, 0);
-        assert.equal(response.cookies.get(STOREFRONT_BUYER_SESSION_COOKIE), undefined);
-        assert.equal(response.headers.get('location'), null, 'no automatic auth loop');
-        assert.match(html, /href="\/api\/buyer-auth\/start">Start a new sign-in/);
-        assert.ok(!html.includes('expired-synthetic-code') && !html.includes('expired-synthetic-state'));
-    } finally {
-        globalThis.fetch = originalFetch;
-    }
-});

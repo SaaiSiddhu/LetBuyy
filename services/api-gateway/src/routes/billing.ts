@@ -33,17 +33,20 @@ const router = new Hono<{ Bindings: Env }>();
 type JsonRecord = Record<string, unknown>;
 type BillingEventType = 'billing.charged' | 'billing.failed' | 'billing.plan_changed';
 
+function configured(value: string | undefined): boolean {
+    return Boolean(value && !value.startsWith('SKIP_NEEDS_HUMAN_') && !value.includes('replace-with'));
+}
+
 function autopayMode(env: Env): 'sandbox' | 'live' {
     return env.LETBUYY_AUTOPAY_MODE === 'live' ? 'live' : 'sandbox';
 }
 
 function assertAutopayReady(env: Env, providerMode: 'sandbox' | 'live') {
     if (providerMode !== 'live' && autopayMode(env) !== 'live') return;
-    // [HUMAN-REQUIRED] HR-AUTOPAY-LIVE: provider production activation and a
-    // verified mandate flow are required before live billing can be enabled.
-    // The route only records a synthetic mandate. Credentials alone cannot
-    // prove a provider-created or verified live mandate.
-    throw new HumanRequiredError('Live AutoPay mandates require a verified provider flow.');
+    if (configured(env.RAZORPAY_KEY_ID) && configured(env.RAZORPAY_KEY_SECRET)) return;
+
+    // [HUMAN-REQUIRED] HR-AUTOPAY-LIVE: live UPI AutoPay/NPCI mandate activation requires provider production activation and live credentials.
+    throw new HumanRequiredError('Live AutoPay setup is required before live billing mandates can be enabled.');
 }
 
 function autopaySetupError(c: import('hono').Context<{ Bindings: Env }>) {
@@ -53,6 +56,14 @@ function autopaySetupError(c: import('hono').Context<{ Bindings: Env }>) {
             message: 'Billing mandate provider setup is not enabled for this environment.',
         },
     }, 503);
+}
+
+function assertMandateIntent(mandate: Record<string, unknown>, body: BillingMandateInput) {
+    const instrument = body.upi_vpa ? `sandbox-hash:${body.upi_vpa.trim().toLowerCase()}` : null;
+    if (mandate.plan_slug !== body.plan_slug || mandate.billing_period !== body.billing_period
+        || mandate.provider_mode !== body.provider_mode || (mandate.upi_vpa_hash ?? null) !== instrument) {
+        throw new AppError('This payment-method request is already bound to different details.', 409, 'IDEMPOTENCY_CONFLICT');
+    }
 }
 
 async function loadPlan(
@@ -150,23 +161,19 @@ router.post('/mandate', validate('json', BillingMandateSchema), async (c) => {
 
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
-    const mandateConflict = () => c.json({ error: {
-        code: 'BILLING_MANDATE_INTENT_CONFLICT',
-        message: 'This mandate request belongs to different details. Review the existing mandate before trying again.',
-    } }, 409);
-    const replayMandate = (record: Record<string, unknown>) => {
-        if (record.deleted_at || record.plan_slug !== body.plan_slug || record.billing_period !== body.billing_period
-            || record.provider_mode !== body.provider_mode || record.upi_vpa_hash) return mandateConflict();
-        return c.json(success({ mandate: record, replayed: true }));
-    };
-    const existing = await db
+    const findExisting = () => db
         .from('billing_mandates')
         .select('*')
         .eq('site_id', tenant.siteId)
         .eq('idempotency_key', body.idempotency_key)
+        .is('deleted_at', null)
         .maybeSingle();
+    const existing = await findExisting();
     if (existing.error) throw new Error(`Billing mandate idempotency lookup failed: ${existing.error.message}`);
-    if (existing.data) return replayMandate(existing.data);
+    if (existing.data) {
+        assertMandateIntent(existing.data, body);
+        return c.json(success({ mandate: existing.data, replayed: true }));
+    }
 
     const siteType = await loadStoreSiteType(db, tenant.siteId);
     const plan = await loadPlan(db, siteType, body.plan_slug);
@@ -192,7 +199,7 @@ router.post('/mandate', validate('json', BillingMandateSchema), async (c) => {
             currency: 'INR',
             amount_minor: mandate.amount_minor,
             external_mandate_id: mandate.external_mandate_id,
-            upi_vpa_hash: null,
+            upi_vpa_hash: body.upi_vpa ? `sandbox-hash:${body.upi_vpa.trim().toLowerCase()}` : null,
             idempotency_key: body.idempotency_key,
             metadata: { ...body.metadata, sandbox: mandate.sandbox },
             created_by: tenant.userId,
@@ -202,15 +209,13 @@ router.post('/mandate', validate('json', BillingMandateSchema), async (c) => {
         .single();
 
     if (error?.code === '23505') {
-        // The unique (site_id, idempotency_key) constraint arbitrates races.
-        // Recover its committed winner only when the same intent won.
-        const winner = await db.from('billing_mandates').select('*')
-            .eq('site_id', tenant.siteId).eq('idempotency_key', body.idempotency_key).maybeSingle();
-        if (winner.error) throw new Error(`Billing mandate retry lookup failed: ${winner.error.message}`);
-        if (winner.data) return replayMandate(winner.data);
-        return mandateConflict();
+        const concurrent = await findExisting();
+        if (!concurrent.error && concurrent.data) {
+            assertMandateIntent(concurrent.data, body);
+            return c.json(success({ mandate: concurrent.data, replayed: true }));
+        }
     }
-    if (error || !data) throw new Error(`Billing mandate create failed: ${error?.message || 'unknown error'}`);
+    if (error || !data) throw new AppError('Payment method setup is temporarily unavailable. Retry the same request.', 503, 'BILLING_MANDATE_UNAVAILABLE');
     return c.json(success({ mandate: data }), 201);
 });
 
@@ -228,8 +233,8 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
     // So live mode REFUSES rather than fabricating. What it should do instead -- an orders row for a
     // platform charge, a second verification path, or a real autopay mandate -- is OWNER DECISION
     // D-PLATFORM-CHARGE, and picking one here would be answering it by implementation. Note that
-    // The /mandate guard does not cover this separate /subscribe route. Keep
-    // this refusal before any database or synthetic-payment work.
+    // assertAutopayReady is NOT sufficient on its own: it passes once Razorpay credentials exist, and
+    // this path would then fabricate a reference with credentials present, which is worse.
     if (autopayMode(c.env) === 'live') {
         return c.json({
             error: {

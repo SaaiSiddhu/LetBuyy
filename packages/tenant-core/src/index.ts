@@ -5,12 +5,10 @@ import {
   GstinSchema,
   IndianStateCodeSchema,
   DEFAULT_STOREFRONT_DOMAIN,
-  DEFAULT_STOREFRONT_THEME_SLUG,
   DEFAULT_PLATFORM_DOMAIN,
   SeoSchema,
   StoreAccessModeSchema,
   UuidSchema,
-  SaveStorePaymentConfigSchema,
 } from '@letbuyy/shared-types';
 import type { StoreTemplateConfig } from '@letbuyy/theme-engine';
 
@@ -51,9 +49,6 @@ export const RESERVED_STOREFRONT_LABELS = [
   // preview/staging CHECKOUT_ORIGIN host, reserved for the same reason.
   'checkout',
   'checkout-staging',
-  // Existing platform preview hosts cannot be claimed as merchant handles.
-  'storefront',
-  'storefront-staging',
 ] as const;
 
 export const RESERVED_SUBDOMAINS = [
@@ -62,7 +57,7 @@ export const RESERVED_SUBDOMAINS = [
   'seller', 'buyer', 'customer', 'support', 'help', 'contact',
   'about', 'terms', 'privacy', 'policy', 'faq', 'blog', 'press',
   'careers', 'investors', 'partners', 'affiliates', 'legal',
-  'store', 'stores', 'shop', 'app', 'dashboard', 'billing',
+  'store', 'stores', 'shop', 'app', 'dashboard', 'billing', 'inbox',
   'auth', 'login', 'signup', 'register', 'onboarding',
   'static', 'assets', 'cdn', 'media', 'images', 'files',
   'status', 'docs', 'dev',
@@ -108,7 +103,6 @@ export function normalizeRequestHost(host: string | null | undefined): string | 
 export function buildTenantStorefrontUrl(subdomain: string, options: {
   rootDomain?: string | null;
   baseUrl?: string | null;
-  rootDomainAliases?: readonly string[] | string | null;
 } = {}): string {
   const root = normalizeStoreRootDomain(options.rootDomain);
   if (!validateSubdomainFormat(subdomain).valid) throw new Error('Invalid storefront subdomain');
@@ -117,42 +111,13 @@ export function buildTenantStorefrontUrl(subdomain: string, options: {
     if (!['http:', 'https:'].includes(base.protocol) || base.username || base.password || base.search || base.hash) {
       throw new Error('Invalid storefront base URL');
     }
-    if (base.pathname === '/' && root !== 'localhost'
-        && (base.hostname === root || normalizeRootDomainAliases(options.rootDomainAliases).includes(base.hostname))) {
+    if (base.hostname === root && base.pathname === '/' && root !== 'localhost') {
       base.hostname = `${subdomain}.${root}`;
       return base.origin;
     }
     return `${base.href.replace(/\/+$/, '')}/store/${encodeURIComponent(subdomain)}`;
   }
   return `https://${subdomain}.${root}`;
-}
-
-/** Derivation only: callers must separately verify exact ownership, site binding and TLS.
- * Display names, URLs, ports, IPs, suffix matches and reserved handles are never accepted. */
-export function buildStoreCheckoutHostname(input: {
-  subdomain: string;
-  storeRootDomain: string;
-  connectedHost?: string | null;
-}): string | null {
-  const handle = input.subdomain;
-  if (handle !== handle.trim().toLowerCase() || !validateSubdomainFormat(handle).valid) return null;
-  const base = input.connectedHost ?? input.storeRootDomain;
-  if (base !== base.trim().toLowerCase() || base.length > 253 || /[\s/:@?#\\]/.test(base)) return null;
-  const labels = base.split('.');
-  if (labels.length < 2 || /^\d+$/.test(labels.at(-1) || '')
-      || labels.some(label => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label))) return null;
-  // Owner revision 29Oct2026: a connected hostname already identifies its
-  // storefront. Only platform addresses include the store handle separately.
-  const host = input.connectedHost ? `checkout.${base}` : `checkout.${handle}.${base}`;
-  return host.length <= 253 ? host : null;
-}
-
-/** Recognizes structure only; this never grants access to a checkout. */
-export function platformCheckoutStoreHandle(hostname: string, storeRootDomain: string): string | null {
-  const suffix = `.${storeRootDomain}`;
-  if (!hostname.startsWith('checkout.') || !hostname.endsWith(suffix)) return null;
-  const handle = hostname.slice('checkout.'.length, -suffix.length);
-  return buildStoreCheckoutHostname({ subdomain: handle, storeRootDomain }) === hostname ? handle : null;
 }
 
 /** Hosted checkout belongs to the platform origin, independently of the tenant root. */
@@ -303,7 +268,7 @@ export const CreateStoreSchema = z.object({
   site_type: SiteTypeSchema.default('store'),
   tagline: z.string().max(200).optional(),
   locale: z.string().min(2).max(16).default('en-IN'),
-  theme_id: z.string().max(50).default(DEFAULT_STOREFRONT_THEME_SLUG),
+  theme_id: z.string().max(50).default('modern'),
   template_config: z.record(z.string(), z.unknown()).default({}),
   ...SeoSchema.shape,
 });
@@ -345,7 +310,15 @@ export const UpdateStoreSchema = z.object({
   online_payment_enabled: z.boolean().optional(),
 });
 
-export const PaymentConfigSchema = SaveStorePaymentConfigSchema;
+export const PaymentConfigSchema = z.object({
+  key_id: z
+    .string()
+    .min(8)
+    .max(128)
+    .regex(/^rzp_(test|live)_/, 'Razorpay key id must start with rzp_test_ or rzp_live_'),
+  key_secret: z.string().min(10).max(256),
+  test_mode: z.boolean().default(false),
+});
 
 export const StartOnboardingSchema = z.object({
   site_type: SiteTypeSchema,
@@ -613,71 +586,6 @@ export function mapPublicStorePayload(
   };
 }
 
-/** Web render representation; the default public/mobile payload remains unchanged. */
-export type PublicStorefrontRenderRelease = Pick<PublicStorefrontThemeRelease,
-  'id' | 'theme_id' | 'theme_instance_id' | 'theme_package_version_id' | 'release_version'
-  | 'release_manifest' | 'schema_manifest_version' | 'engine_version' | 'published_at'>;
-export type PublicStorefrontRenderPayload = Omit<PublicStorefrontPayload, 'current_theme_release' | 'template_config'> & {
-  projection: 'render-v1';
-  template_config: Record<string, unknown>;
-  current_theme_release: PublicStorefrontRenderRelease | null;
-};
-
-function publicThemeRecord(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
-}
-
-// JSONB object key order is not meaningful. Arrays remain ordered. A conservative
-// depth cap only declines deduplication; it never deletes an uncertain fallback.
-function samePublicThemeJson(left: unknown, right: unknown, depth = 0): boolean {
-  if (left === right) return true;
-  if (depth > 64 || left === null || right === null || typeof left !== 'object' || typeof right !== 'object') return false;
-  if (Array.isArray(left) || Array.isArray(right)) {
-    return Array.isArray(left) && Array.isArray(right) && left.length === right.length
-      && left.every((value, index) => samePublicThemeJson(value, right[index], depth + 1));
-  }
-  const keys = Object.keys(left);
-  return keys.length === Object.keys(right).length && keys.every(key =>
-    Object.prototype.hasOwnProperty.call(right, key)
-    && samePublicThemeJson((left as Record<string, unknown>)[key], (right as Record<string, unknown>)[key], depth + 1));
-}
-
-export function mapPublicStoreRenderPayload(store: StorefrontSiteRecord, release?: StorefrontThemeReleaseRecord | null): PublicStorefrontRenderPayload {
-  // Exactly the existing web mapper precedence, before its localization/defaults.
-  const snapshot = publicThemeRecord(release?.template_snapshot || release?.release_config);
-  const manifest = { ...publicThemeRecord(release?.release_manifest) };
-  const manifestConfig = publicThemeRecord(manifest.templateConfig);
-  const config = Object.keys(snapshot).length ? snapshot
-    : Object.keys(manifestConfig).length ? manifestConfig : publicThemeRecord(store.template_config);
-  if (samePublicThemeJson(manifest.templateConfig, config)) delete manifest.templateConfig;
-  const earlierBundles: unknown[] = [];
-  if (config.liquidBundle) earlierBundles.push(config.liquidBundle);
-  for (const key of ['liquidBundle', 'themeBundle', 'bundle']) {
-    const candidate = manifest[key];
-    if (!candidate) continue;
-    if (earlierBundles.some(earlier => samePublicThemeJson(earlier, candidate))) delete manifest[key];
-    else earlierBundles.push(candidate);
-  }
-  return {
-    ...store,
-    name: store.name || store.store_name,
-    subdomain: store.subdomain || store.store_name,
-    projection: 'render-v1',
-    template_config: config,
-    current_theme_release: release ? {
-      id: release.id,
-      theme_id: release.theme_id,
-      theme_instance_id: release.theme_instance_id || null,
-      theme_package_version_id: release.theme_package_version_id || null,
-      release_version: release.release_version,
-      release_manifest: manifest,
-      schema_manifest_version: release.schema_manifest_version || '1.0.0',
-      engine_version: release.engine_version || 'legacy',
-      published_at: release.published_at,
-    } : null,
-  };
-}
-
 export interface TenantContext {
   site_id: string;
   subdomain?: string;
@@ -786,10 +694,3 @@ export function tenantRlsPolicyTemplate(table: string): TenantRlsPolicyTemplate 
     ].join(' '),
   };
 }
-
-/** Checkout display data after verified handoff; never an auth or pricing grant. */
-export type CheckoutStorePresentation = Pick<StoreModel,'id'|'sellerId'|'name'|'subdomain'|'codEnabled'|'onlinePaymentEnabled'> & {
-  themeSettings: StoreTemplateConfig['themeSettings'];
-  themeId?: string;
-  paymentMode?: 'sandbox' | 'unavailable';
-};

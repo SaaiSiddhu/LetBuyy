@@ -1,7 +1,0 @@
-{
-  "humanReply": "Approve temporary diagnosis (Recommended)",
-  "scope": "Same exact public Test webhook path, temporary port51705 -> canonical55883 unchanged-byte pass-through, restore within10minutes",
-  "originalExpiry": "2026-10-24T17:25:32.880Z",
-  "noCredentialOrPayloadLogging": true,
-  "signaturesNeverRewrittenOrBypassed": true
-}

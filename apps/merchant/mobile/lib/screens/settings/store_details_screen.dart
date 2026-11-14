@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../services/store_service.dart';
 import '../../widgets/shared/image_source_sheet.dart';
-import '../../widgets/shared/merchant_media_picker.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
 
 import '../../models/store_model.dart';
@@ -407,37 +406,32 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     return Center(
       child: Column(
         children: [
-          Semantics(
-            label: 'Change store logo',
-            button: true,
-            child: GestureDetector(
-              key: const ValueKey('store-details-logo-picker'),
-              onTap: _pickLogo,
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    width: 2,
-                  ),
-                  image: _store?.logoUrl != null
-                      ? DecorationImage(
-                          image: cachedMerchantImageProvider(_store!.logoUrl!),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
+          GestureDetector(
+            onTap: _pickLogo,
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                  width: 2,
                 ),
-                child: _store?.logoUrl == null
-                    ? Icon(
-                        Icons.add_a_photo_rounded,
-                        color: AppColors.primary,
-                        size: 32,
+                image: _store?.logoUrl != null
+                    ? DecorationImage(
+                        image: cachedMerchantImageProvider(_store!.logoUrl!),
+                        fit: BoxFit.cover,
                       )
                     : null,
               ),
+              child: _store?.logoUrl == null
+                  ? Icon(
+                      Icons.add_a_photo_rounded,
+                      color: AppColors.primary,
+                      size: 32,
+                    )
+                  : null,
             ),
           ),
           const SizedBox(height: 8),
@@ -511,15 +505,11 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
     final source = await showImageSourceSheet(context, title: 'Logo source');
     if (source == null) return;
 
-    if (!mounted) return;
+    final image = await picker.pickImage(source: source, maxWidth: 1024);
+    if (image == null) return;
+
     setState(() => _isSaving = true);
     try {
-      final image = await pickMerchantMedia(
-        context,
-        source: source,
-        pick: () => picker.pickImage(source: source, maxWidth: 1024),
-      );
-      if (!mounted || image == null) return;
       final storeService = context.read<StoreService>();
       final logoUrl = await storeService.uploadStoreAsset(
         File(image.path),

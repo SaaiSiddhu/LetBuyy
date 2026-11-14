@@ -1,0 +1,114 @@
+{
+  "captured_at": "2026-10-29T23:32:52.436Z",
+  "method": "Actual local production candidate, Tamil page; desktop/mobile/short landscape positive control of the active carousel and measured zero-sized hidden legacy accordion",
+  "rows": [
+    {
+      "width": 320,
+      "height": 900,
+      "legacy_display": "none",
+      "legacy_dimensions": [
+        0,
+        0
+      ],
+      "legacy_nodes": 188,
+      "live_display": "grid",
+      "live_width": 280
+    },
+    {
+      "width": 375,
+      "height": 900,
+      "legacy_display": "none",
+      "legacy_dimensions": [
+        0,
+        0
+      ],
+      "legacy_nodes": 188,
+      "live_display": "grid",
+      "live_width": 335
+    },
+    {
+      "width": 412,
+      "height": 823,
+      "legacy_display": "none",
+      "legacy_dimensions": [
+        0,
+        0
+      ],
+      "legacy_nodes": 188,
+      "live_display": "grid",
+      "live_width": 372
+    },
+    {
+      "width": 600,
+      "height": 420,
+      "legacy_display": "none",
+      "legacy_dimensions": [
+        0,
+        0
+      ],
+      "legacy_nodes": 188,
+      "live_display": "grid",
+      "live_width": 552
+    },
+    {
+      "width": 768,
+      "height": 900,
+      "legacy_display": "none",
+      "legacy_dimensions": [
+        0,
+        0
+      ],
+      "legacy_nodes": 188,
+      "live_display": "grid",
+      "live_width": 294.859375
+    },
+    {
+      "width": 959,
+      "height": 900,
+      "legacy_display": "none",
+      "legacy_dimensions": [
+        0,
+        0
+      ],
+      "legacy_nodes": 188,
+      "live_display": "grid",
+      "live_width": 376.71875
+    },
+    {
+      "width": 960,
+      "height": 900,
+      "legacy_display": "none",
+      "legacy_dimensions": [
+        0,
+        0
+      ],
+      "legacy_nodes": 188,
+      "live_display": "grid",
+      "live_width": 377.15625
+    },
+    {
+      "width": 1366,
+      "height": 900,
+      "legacy_display": "none",
+      "legacy_dimensions": [
+        0,
+        0
+      ],
+      "legacy_nodes": 188,
+      "live_display": "grid",
+      "live_width": 516.859375
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "legacy_display": "none",
+      "legacy_dimensions": [
+        0,
+        0
+      ],
+      "legacy_nodes": 188,
+      "live_display": "grid",
+      "live_width": 531.4375
+    }
+  ]
+}

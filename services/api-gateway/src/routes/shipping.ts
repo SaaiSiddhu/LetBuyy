@@ -3,8 +3,6 @@ import type { Context } from 'hono';
 import { z } from 'zod';
 import {
     ShippingServiceabilityQuerySchema,
-    StorefrontDeliveryOptionsSchema,
-    type StorefrontDeliveryOptionsInput,
     planShippingServiceability,
     type ShippingServiceabilityRule,
 } from '@letbuyy/checkout-core';
@@ -16,16 +14,15 @@ import {
     type LogisticsProviderOptions,
 } from '@letbuyy/infrastructure/logistics-adapter';
 import type { Env } from '../index';
-import { AppError, HumanRequiredError } from '../lib/errors';
-import { listStorefrontShippingRates } from '../lib/storefront-shipping';
+import { HumanRequiredError } from '../lib/errors';
 import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 
 const router = new Hono<{ Bindings: Env }>();
 
-const ShippingRatesSchema = StorefrontDeliveryOptionsSchema.extend({
-    store_id: z.string().uuid(),
+const ShippingRatesSchema = ShippingServiceabilityQuerySchema.extend({
+    subtotal_minor: z.number().int().min(0).default(0),
 }).strict();
 
 function logisticsMode(env: Env): LogisticsMode {
@@ -101,41 +98,48 @@ router.get('/serviceability/:pincode', async (c) => {
 });
 
 router.post('/rates', validate('json', ShippingRatesSchema), async (c) => {
-    const body = c.get('validatedBody') as StorefrontDeliveryOptionsInput & { store_id: string };
-    const access = await assertStoreAccess(c, body.store_id, c.get('auth').user);
+    const body = c.get('validatedBody') as z.infer<typeof ShippingRatesSchema>;
+    const auth = c.get('auth');
+    const access = await assertStoreAccess(c, body.store_id, auth.user);
     if (!access.authorized) return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    const address = body.shipping_address;
-    try {
-        const rates = await listStorefrontShippingRates(access.db, body.store_id, {
-            country: address.country, state: address.state, stateCode: address.state_code,
-            pincode: address.zip,
-        }, 0, body.items);
-        return c.json(success({
-            serviceability: { serviceable: rates.length > 0, carrier_confirmed: false,
-                source: 'seller_zone_configuration', cod_available: rates.some(rate => rate.cod_available) },
-            rates,
-        }));
-    } catch (error) {
-        if (error instanceof AppError) throw error;
-        throw new AppError('Delivery configuration could not be verified. Please retry.', 503, 'SHIPPING_CONFIGURATION_UNAVAILABLE');
+
+    const rules = await loadRules(access.db, body.store_id, body.pincode);
+    if (!rules) return c.json({ error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Shipping coverage could not be verified. Please retry.' } }, 503);
+    const serviceability = planShippingServiceability(body, rules);
+    if (!serviceability.serviceable) {
+        return c.json(success({ serviceability, rates: [] }));
     }
+
+    const { data, error } = await access.db
+        .from('shipping_rates')
+        .select('id, name, type, price, estimated_days_min, estimated_days_max')
+        .eq('site_id', body.store_id)
+        .eq('is_active', true)
+        .is('deleted_at', null)
+        .limit(10);
+    if (error) return c.json({ error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Shipping rates could not be verified. Please retry.' } }, 503);
+
+    const rates = (data || []).map((rate) => ({
+        id: String(rate.id),
+        name: String(rate.name || 'Standard shipping'),
+        type: String(rate.type || 'flat'),
+        currency: 'INR',
+        amount_minor: Math.round(Number(rate.price || 0) * 100),
+        estimated_days_min: Number(rate.estimated_days_min || serviceability.estimated_days_min),
+        estimated_days_max: Number(rate.estimated_days_max || serviceability.estimated_days_max),
+        provider: serviceability.provider,
+        cod_available: serviceability.cod_available,
+    }));
+
+    return c.json(success({
+        serviceability,
+        rates,
+    }));
 });
 
 router.get('/track/:trackingNumber', async (c) => {
     const trackingNumber = c.req.param('trackingNumber');
     const providerName = (c.req.query('provider') || 'shiprocket') as LogisticsProviderName;
-    if (!['shiprocket', 'delhivery', 'pickrr'].includes(providerName)) {
-        return c.json({ error: { code: 'VALIDATION', message: 'Unsupported carrier.' } }, 400);
-    }
-    const siteId = c.get('auth').user.storeId || c.req.header('X-Store-ID');
-    if (!siteId) return c.json({ error: { code: 'VALIDATION', message: 'Select a store before tracking a shipment.' } }, 400);
-    const access = await assertStoreAccess(c, siteId, c.get('auth').user);
-    if (!access.authorized) return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    const linked = await access.db.from('shipments').select('id').eq('site_id', siteId)
-        .eq('provider', providerName).eq('tracking_number', trackingNumber).is('deleted_at', null).limit(1).maybeSingle();
-    if (linked.error) throw new AppError('Shipment tracking is unavailable.', 503, 'SHIPPING_TRACKING_UNAVAILABLE');
-    if (!linked.data) return c.json({ error: { code: 'NOT_FOUND', message: 'Shipment not found.' } }, 404);
-    if (c.env.ENVIRONMENT === 'production') return carrierSetupError(c);
     try {
         const provider = createLogisticsProvider(providerName, logisticsOptions(c.env, providerName));
         return c.json(success(await provider.getTracking({ trackingNumber })));

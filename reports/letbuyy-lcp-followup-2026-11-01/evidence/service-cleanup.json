@@ -1,0 +1,41 @@
+{
+  "captured_at": "2026-11-01T09:11:56.227206+00:00",
+  "listeners": {
+    "9006": true,
+    "9010": true,
+    "9002": true,
+    "9048": false,
+    "9049": false,
+    "9050": false,
+    "9051": false
+  },
+  "health": [
+    {
+      "url": "http://127.0.0.1:9006/in/pricing",
+      "final_url": "http://127.0.0.1:9006/in/pricing",
+      "status": 200,
+      "bytes": 492213
+    },
+    {
+      "url": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+      "final_url": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "bytes": 399346
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "final_url": "http://127.0.0.1:9010/v1/pricing",
+      "status": 200,
+      "bytes": 76636
+    },
+    {
+      "url": "http://127.0.0.1:9002/login",
+      "final_url": "http://127.0.0.1:9002/login",
+      "status": 200,
+      "bytes": 224659
+    }
+  ],
+  "review_listeners_stopped": true,
+  "normal_stack_left_running": true,
+  "no_deployment": true
+}

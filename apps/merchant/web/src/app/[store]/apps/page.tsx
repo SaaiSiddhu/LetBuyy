@@ -4,8 +4,7 @@ import type { InstalledApp } from '@letbuyy/shared-types'
 import { createMerchantApiClient } from '@/lib/api/client'
 import { isAppPlatformEnabled } from '@/lib/app-platform-flag'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import { Badge, Button, Card, MaterialIcon, Page, PageHeader, Section } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
+import { Badge, Button, Card, EmptyState, MaterialIcon, Page, PageHeader, Section } from '@letbuyy/ui'
 
 interface AppsPageProps {
     params: Promise<{ store: string }>
@@ -34,8 +33,7 @@ export default async function AppsPage({ params }: AppsPageProps) {
 
     return (
         <Page>
-            <PageHeader identity="apps"
-                recipe="index"
+            <PageHeader
                 breadcrumbs={[
                     { label: 'Home', href: `/${store}/dashboard` },
                     { label: 'Apps' },
@@ -81,7 +79,7 @@ export default async function AppsPage({ params }: AppsPageProps) {
                             ))}
                         </div>
                     ) : (
-                        <EmptyState scene="apps"
+                        <EmptyState
                             icon={<MaterialIcon name="extension_off" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)]" />}
                             title="No apps installed"
                             body="Install apps from the marketplace to add embedded workflows to this admin."

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { MerchantLoyaltySnapshot } from '@letbuyy/api-client'
 import { Banner, Button, Card, Checkbox, Input, Section, Skeleton } from '@letbuyy/ui'
 import { SettingsPane } from './SettingsPane'
-import { useReadRequest } from '@/lib/api/use-read-request'
 import { bpsToPercentage, completeLoyaltySave, formatLoyaltyPaise, isLoyaltySnapshot, loyaltyPendingName, percentageToBps,
     prepareLoyaltySave, readPendingLoyaltySave, validPointValue, type PendingLoyaltySave } from '@/lib/loyalty/pending-save'
 
@@ -33,8 +32,6 @@ export function LoyaltySettings({ store, actorId }: { store: string; actorId: st
     const [conflict, setConflict] = useState(false), [blocked, setBlocked] = useState(false), [storageFailed, setStorageFailed] = useState(false)
     const generation = useRef(0), busy = useRef(false), mounted = useRef(true)
     const context = `${actorId}:${store}`, currentContext = useRef(context)
-    const beginSnapshotRead = useReadRequest(context)
-    const beginAccessRead = useReadRequest(context)
     currentContext.current = context
     const endpoint = `/api/stores/${encodeURIComponent(store)}/loyalty`
     const headers = useCallback(() => ({ 'X-LetBuyy-Merchant-Context': actorId }), [actorId])
@@ -42,14 +39,13 @@ export function LoyaltySettings({ store, actorId }: { store: string; actorId: st
     const invalidate = useCallback(() => { generation.current++; setBlocked(true); setSnapshot(null); setPending(null); setNotice(''); setError('The account or store access changed. Reload this page before continuing.') }, [])
 
     const load = useCallback(async (discardPending = false) => {
-        const request = beginSnapshotRead()
         const token = ++generation.current, captured = `${actorId}:${store}`
         let capturedPending: string | null = null
         try { capturedPending = localStorage.getItem(loyaltyPendingName(actorId, store)) } catch { /* storage failure is rendered after the read */ }
         setLoading(true); setError(''); setNotice(''); setSnapshot(null); setConflict(false); setStorageFailed(false)
         try {
-            const data = await readReply(await fetch(endpoint, { headers: headers(), cache: 'no-store', signal: request.signal }))
-            if (!request.isCurrent() || generation.current !== token || currentContext.current !== captured) return
+            const data = await readReply(await fetch(endpoint, { headers: headers(), cache: 'no-store' }))
+            if (generation.current !== token || currentContext.current !== captured) return
             if (!isLoyaltySnapshot(data)) throw new Error('Loyalty settings returned an incomplete response. Retry loading.')
             setSnapshot(data); setDraft(draftFor(data))
             try {
@@ -58,11 +54,11 @@ export function LoyaltySettings({ store, actorId }: { store: string; actorId: st
                 setPending(readPendingLoyaltySave(actorId, store))
             } catch (failure) { setStorageFailed(true); setError(failure instanceof Error ? failure.message : 'Browser storage is unavailable. Enable storage before saving.') }
         } catch (failure) {
-            if (!request.isCurrent() || generation.current !== token || currentContext.current !== captured) return
+            if (generation.current !== token || currentContext.current !== captured) return
             if (failure instanceof LoyaltyRequestError && (failure.code === 'SESSION_CONTEXT_CHANGED' || [401,403,404].includes(failure.status))) setBlocked(true)
             setError(failure instanceof Error ? failure.message : 'Unable to load loyalty settings.')
-        } finally { if (request.isCurrent() && generation.current === token && currentContext.current === captured) setLoading(false) }
-    }, [actorId, store, endpoint, headers, beginSnapshotRead])
+        } finally { if (generation.current === token && currentContext.current === captured) setLoading(false) }
+    }, [actorId, store, endpoint, headers])
     useEffect(() => {
         const lifetime = mounted, counter = generation
         lifetime.current = true
@@ -73,16 +69,15 @@ export function LoyaltySettings({ store, actorId }: { store: string; actorId: st
         // A tab returning after another account signed in must not send its old
         // form under the replacement cookie. The server checks the same binding.
         const check = async () => {
-            const request = beginAccessRead()
             try {
-                const response = await fetch(endpoint, { headers: headers(), cache: 'no-store', signal: request.signal })
+                const response = await fetch(endpoint, { headers: headers(), cache: 'no-store' })
                 const payload = await response.json().catch(() => null)
-                if (request.isCurrent() && mounted.current && currentContext.current === context && (payload?.error?.code === 'SESSION_CONTEXT_CHANGED' || [401,403,404].includes(response.status))) invalidate()
+                if (mounted.current && currentContext.current === context && (payload?.error?.code === 'SESSION_CONTEXT_CHANGED' || [401,403,404].includes(response.status))) invalidate()
             } catch { /* A network failure grants no new authority; save remains server fenced. */ }
         }
         window.addEventListener('focus', check)
         return () => window.removeEventListener('focus', check)
-    }, [context, endpoint, headers, invalidate, beginAccessRead])
+    }, [context, endpoint, headers, invalidate])
 
     const earn = percentageToBps(draft.earn), cap = percentageToBps(draft.cap), valueValid = validPointValue(draft.value)
     const decrease = Boolean(snapshot?.program && valueValid && !snapshot.value_decrease_allowed && BigInt(draft.value) < BigInt(snapshot.program.point_value_minor))

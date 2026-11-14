@@ -1,0 +1,1421 @@
+{
+  "audit_target": "https://www.letbuyy.com/in",
+  "scope": "27 focused branded/host/locale/legacy identity queries",
+  "captured_on_local": "2026-10-30",
+  "timezone": "Asia/Kolkata",
+  "results_are_search_snapshots_not_live_page_status": true,
+  "limitations": [
+    "Search result snippets may be stale; crawl age is tool-supplied not independent freshness verification",
+    "An empty site: sample does not prove non-indexing",
+    "Multiple site: queries returned inconsistent filtered results, including /in for an /in-ta query; don't use this as Google coverage or locale failure proof",
+    "UI screenshot exact destination links and locale settings were not available to this specialist",
+    "Public personal contact details in result bodies omitted as unnecessary"
+  ],
+  "queries": [
+    {
+      "query": "LetBuyy",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "Every stage of growth is already built into LetBuyy.",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Every stage of growth is already built into LetBuyy."
+        },
+        {
+          "title": "Terms of Service",
+          "url": "https://www.letbuyy.com/in/legal/terms",
+          "snippet": "The agreement between you and LetBuyy for using the platform.",
+          "crawl_age": "3 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 3 weeks ago; The agreement between you and LetBuyy for using the platform."
+        },
+        {
+          "title": "LetBuyy - Online Shopping Marketplace",
+          "url": "https://seller.letbuyy.com/",
+          "snippet": "LetBuyy Seller",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; LetBuyy Seller"
+        },
+        {
+          "title": "Shipping & Delivery",
+          "url": "https://www.letbuyy.com/in/legal/shipping",
+          "snippet": "* Every store on LetBuyy sets its own shipping rates, zones, and delivery timelines.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month;   * Every store on LetBuyy sets its own shipping rates, zones, and delivery timelines."
+        },
+        {
+          "title": "Support centre — LetBuyy",
+          "url": "https://www.letbuyy.com/in/support",
+          "snippet": "LETBUYY SUPPORT",
+          "crawl_age": "2 days ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 2 days ago; LETBUYY SUPPORT"
+        },
+        {
+          "title": "〖樂買Letubuy〗質感家電首選 | 新會員現折購物金！24H現貨滿千免運！",
+          "url": "https://www.letubuy.com.tw/",
+          "snippet": "客服信箱｜letubuy2020@gmail.com",
+          "crawl_age": "today",
+          "published_age": null,
+          "metadata_line": "Crawled: today; 客服信箱｜letubuy2020@gmail.com"
+        },
+        {
+          "title": "Lets Buy Today – Let's Buy",
+          "url": "https://www.letsbuy.today/",
+          "snippet": "Image: Let's Buy",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; Image: Let's Buy"
+        },
+        {
+          "title": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in-ta/contact",
+          "snippet": "LetBuyy is made in India, for Indian sellers.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; LetBuyy is made in India, for Indian sellers."
+        },
+        {
+          "title": "letbuy.com - This website is for sale! - let buy Resources and Information.",
+          "url": "https://letbuy.com/",
+          "snippet": null,
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; "
+        },
+        {
+          "title": "Letbuybuy | Products, Reviews & Information | OnBuy",
+          "url": "https://www.onbuy.com/gb/shop/letbuybuy",
+          "snippet": "# Letbuybuy",
+          "crawl_age": "last week",
+          "published_age": null,
+          "metadata_line": "Crawled: last week; # Letbuybuy"
+        },
+        {
+          "title": "LetBuyy Stats, Downloads & Safety Check | Chrome-Stats",
+          "url": "https://chrome-stats.com/d/com.letbuyy.letbuyy",
+          "snippet": "# LetBuyy",
+          "crawl_age": "3 months ago",
+          "published_age": "8 months ago",
+          "metadata_line": "Published: 8 months ago; Crawled: 3 months ago; # LetBuyy"
+        },
+        {
+          "title": "LetBuyy - אפליקציות ב-Google Play",
+          "url": "https://play.google.com/store/apps/details?hl=he&id=com.letbuyy.letbuyy",
+          "snippet": "# LetBuyy",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; # LetBuyy"
+        },
+        {
+          "title": "Biography of Board of Directors and Managements",
+          "url": "https://s3.ap-southeast-1.amazonaws.com/805b090nn4feahswht1pymgba89854h4/easybuy/annualreport/2022-040000001_AnnualReport_2021.pdf?t=638825597966792624",
+          "snippet": "- 2020 – Present  Data Protection Officer - EASY BUY Public Co., Ltd.",
+          "crawl_age": null,
+          "published_age": "4.5 years ago",
+          "metadata_line": "Published: 4.5 years ago; - 2020 – Present  Data Protection Officer - EASY BUY Public Co., Ltd."
+        },
+        {
+          "title": "L.E.T.S. Lebanon",
+          "url": "https://www.soils-permaculture-lebanon.com/uploads/2/5/9/8/25986192/lets_lebanon_-_issue_16.pdf",
+          "snippet": "LET’S FOCUS ... Ziad Dagher was bitten by the Do-It-Yourself upcycling bug since the ... behind the LibanPost offices in Sassine Square, Ashrafieh. ... Instagram: http://instagram.com/bayrutexpress",
+          "crawl_age": null,
+          "published_age": "1.4 years ago",
+          "metadata_line": "Published: 1.4 years ago; LET’S FOCUS ... Ziad Dagher was bitten by the Do-It-Yourself upcycling bug since the ... behind the LibanPost offices in Sassine Square, Ashrafieh. ... Instagram: http://instagram.com/bayrutexpress"
+        }
+      ]
+    },
+    {
+      "query": "letbuyy pricing",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "Pricing",
+          "url": "https://www.letbuyy.com/in/pricing",
+          "snippet": "Lock the founding price for life. ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Lock the founding price for life. ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms."
+        },
+        {
+          "title": "Terms of Service",
+          "url": "https://www.letbuyy.com/in/legal/terms",
+          "snippet": "The agreement between you and LetBuyy for using the platform. ... When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you.",
+          "crawl_age": "3 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 3 weeks ago; The agreement between you and LetBuyy for using the platform. ... When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you."
+        },
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "Sport Tee price sensitivity Pricing ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Sport Tee price sensitivity Pricing ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms."
+        },
+        {
+          "title": "Shipping & Delivery",
+          "url": "https://www.letbuyy.com/in/legal/shipping",
+          "snippet": "LetBuyy has not opened to merchants, so no agreement has been formed with anyone.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; LetBuyy has not opened to merchants, so no agreement has been formed with anyone."
+        },
+        {
+          "title": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in-ta/contact",
+          "snippet": "LetBuyy is made in India, for Indian sellers. ... support@letbuyy.com",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; LetBuyy is made in India, for Indian sellers. ... support@letbuyy.com"
+        },
+        {
+          "title": "LetBuyy — भारत के लिए बना कॉमर्स ऑपरेटिंग सिस्टम | LetBuyy",
+          "url": "https://www.letbuyy.com/in-hi",
+          "snippet": "merchant.letbuyy.com / orders ... 09:23 AI: price sensitivity on Sport Tee ... Pricing",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; merchant.letbuyy.com / orders ... 09:23 AI: price sensitivity on Sport Tee ... Pricing"
+        },
+        {
+          "title": "Support centre — LetBuyy",
+          "url": "https://www.letbuyy.com/in/support",
+          "snippet": "LETBUYY SUPPORT",
+          "crawl_age": "2 days ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 2 days ago; LETBUYY SUPPORT"
+        },
+        {
+          "title": "LetBuyy - Online Shopping Marketplace",
+          "url": "https://seller.letbuyy.com/",
+          "snippet": "LetBuyy Seller",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; LetBuyy Seller"
+        },
+        {
+          "title": "LetsBuyIt.io — Secure checkout for high-value transactions",
+          "url": "https://www.letsbuyit.io/",
+          "snippet": "Enter the purchase value and transaction details in LetsBuyIt. ... Create an escrow-protected transaction in seconds with agreed terms and pricing.",
+          "crawl_age": "today",
+          "published_age": null,
+          "metadata_line": "Crawled: today; Enter the purchase value and transaction details in LetsBuyIt. ... Create an escrow-protected transaction in seconds with agreed terms and pricing."
+        },
+        {
+          "title": "LetBuyy Stats, Downloads & Safety Check | Chrome-Stats",
+          "url": "https://chrome-stats.com/d/com.letbuyy.letbuyy",
+          "snippet": "# LetBuyy",
+          "crawl_age": "3 months ago",
+          "published_age": "8 months ago",
+          "metadata_line": "Published: 8 months ago; Crawled: 3 months ago; # LetBuyy"
+        },
+        {
+          "title": "Litbuy Spreadsheet FAQ 2026 | How to Order, Shipping, QC & Agent Guide",
+          "url": "https://litbuyspreadsheet.net/FAQ/",
+          "snippet": "Each platform has its own pricing structure. 1688 is typically the factory/wholesale price (cheapest). ... Click any item to open the detailed product page — check price, specs, photos, and available size/color options. ... Choose your buying agent — Superbuy, Pandabuy, Kakobuy, Acbuy, Loongbuy, or others. ... Read the How to Use Litbuy guide first — it covers account setup, currency top-up, and first-order tips.",
+          "crawl_age": "yesterday",
+          "published_age": null,
+          "metadata_line": "Crawled: yesterday; Each platform has its own pricing structure. 1688 is typically the factory/wholesale price (cheapest). ... Click any item to open the detailed product page — check price, specs, photos, and available size/color options. ... Choose your buying agent — Superbuy, Pandabuy, Kakobuy, Acbuy, Loongbuy, or others. ... Read the How to Use Litbuy guide first — it covers account setup, currency top-up, and first-order tips."
+        },
+        {
+          "title": "Lemmebuyit Pricing, Plans & Alternatives | Agentery",
+          "url": "https://www.agentery.com/agents/lemmebuyit",
+          "snippet": "API calls, MCP server requests, product search queries, GTIN/UPC/EAN/ASIN identifiers → product catalog data, pricing information, availability data, ASIN mappings, price history, profitability analysis, inventory reports ... Local median $49.99/mo (entry prices of 15 priced of 50 nearest products, any tier or billing unit) — Lemmebuyit is 0% at it. ...               \"price\": \"CUSTOM PRICING\",",
+          "crawl_age": "today",
+          "published_age": null,
+          "metadata_line": "Crawled: today; API calls, MCP server requests, product search queries, GTIN/UPC/EAN/ASIN identifiers → product catalog data, pricing information, availability data, ASIN mappings, price history, profitability analysis, inventory reports ... Local median $49.99/mo (entry prices of 15 priced of 50 nearest products, any tier or billing unit) — Lemmebuyit is 0% at it. ...               \"price\": \"CUSTOM PRICING\","
+        },
+        {
+          "title": "LAY-BUY PRICE",
+          "url": "https://t.kwikweb.co.za/tombfu/photos/PRICELIST_2021_Laybuy.pdf",
+          "snippet": "LAY-BUY PRICE",
+          "crawl_age": null,
+          "published_age": "5.5 years ago",
+          "metadata_line": "Published: 5.5 years ago; LAY-BUY PRICE"
+        },
+        {
+          "title": "Prom 2025",
+          "url": "https://styledbylayo.com/wp-content/uploads/2025/01/SBL-PRICE-GUIDE-2025.pdf",
+          "snippet": "PRICING- The Final price is dependent on the final design and fabric concluded on during your consultation with our creative team. ... We only have starting prices and final price can only be determined by the creative director during consultation.",
+          "crawl_age": null,
+          "published_age": "1.8 years ago",
+          "metadata_line": "Published: 1.8 years ago; PRICING- The Final price is dependent on the final design and fabric concluded on during your consultation with our creative team. ... We only have starting prices and final price can only be determined by the creative director during consultation."
+        },
+        {
+          "title": "Foreign Products and Services Pricing",
+          "url": "https://www.looksee.co.za/static_file/ghana/Downloadable%20Files/Pricing%20Guides/Foreign%20Products%20and%20Services%20Pricing.pdf",
+          "snippet": "Stanbic Bank 2025 pricing / Foreign Products & Services ... - Data — Buy your 4G and 5G Data on any of our digital channels.",
+          "crawl_age": null,
+          "published_age": "9 months ago",
+          "metadata_line": "Published: 9 months ago; Stanbic Bank 2025 pricing / Foreign Products & Services ... - Data — Buy your 4G and 5G Data on any of our digital channels."
+        },
+        {
+          "title": "Start accepting payments",
+          "url": "https://pay.letknow.org/assets/pdf/binance-presentation.pdf",
+          "snippet": "account of LetKnow Pay",
+          "crawl_age": null,
+          "published_age": "2.2 years ago",
+          "metadata_line": "Published: 2.2 years ago; account of LetKnow Pay"
+        },
+        {
+          "title": "Low implementation costs from the get-go",
+          "url": "https://media.bitpipe.com/io_17x/io_175775/item_2795836/Lets%20Get%20Phygital.pdf",
+          "snippet": "Left column titled “8x8 SMS API” with text about pay-per-use pricing and “Going as low as €0.0055,” plus a note to get started for free and “send your first SMS” with complimentary credits on “8x8 Connect.”",
+          "crawl_age": "11 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 11 months ago; Left column titled “8x8 SMS API” with text about pay-per-use pricing and “Going as low as €0.0055,” plus a note to get started for free and “send your first SMS” with complimentary credits on “8x8 Connect.”"
+        }
+      ]
+    },
+    {
+      "query": "letbuyy support",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "Support centre — LetBuyy",
+          "url": "https://www.letbuyy.com/in/support",
+          "snippet": "LETBUYY SUPPORT",
+          "crawl_age": "2 days ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 2 days ago; LETBUYY SUPPORT"
+        },
+        {
+          "title": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in-ta/contact",
+          "snippet": "support@letbuyy.com",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; support@letbuyy.com"
+        },
+        {
+          "title": "〖樂買Letubuy〗質感家電首選 | 新會員現折購物金！24H現貨滿千免運！",
+          "url": "https://www.letubuy.com.tw/",
+          "snippet": "客服信箱｜letubuy2020@gmail.com",
+          "crawl_age": "today",
+          "published_age": null,
+          "metadata_line": "Crawled: today; 客服信箱｜letubuy2020@gmail.com"
+        },
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "Which payment methods does LetBuyy support?",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Which payment methods does LetBuyy support?"
+        },
+        {
+          "title": "Grievance Redressal",
+          "url": "https://www.letbuyy.com/in/legal/grievance",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last month",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: last month; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "服務與版權說明",
+          "url": "https://www.letubuy.com.tw/pages/%E6%9C%8D%E5%8B%99%E8%88%87%E7%89%88%E6%AC%8A%E8%AA%AA%E6%98%8E",
+          "snippet": "歡迎您使用LetUbuy樂買官方網站！",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; 歡迎您使用LetUbuy樂買官方網站！"
+        },
+        {
+          "title": "Help Center - litbuy",
+          "url": "https://litbuy.com/help",
+          "snippet": "How to Use LITBUY?",
+          "crawl_age": "today",
+          "published_age": null,
+          "metadata_line": "Crawled: today; How to Use LITBUY?"
+        },
+        {
+          "title": "LetBuyy - אפליקציות ב-Google Play",
+          "url": "https://play.google.com/store/apps/details?hl=he&id=com.letbuyy.letbuyy",
+          "snippet": "# LetBuyy",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; # LetBuyy"
+        },
+        {
+          "title": "Shipping & Delivery",
+          "url": "https://www.letbuyy.com/in/legal/shipping",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "購物常見問題",
+          "url": "https://www.letubuy.com.tw/pages/%E8%B3%BC%E7%89%A9%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C",
+          "snippet": "客服信箱｜letubuy2020@gmail.com",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; 客服信箱｜letubuy2020@gmail.com"
+        },
+        {
+          "title": "LetBuyy Stats, Downloads & Safety Check | Chrome-Stats",
+          "url": "https://chrome-stats.com/d/com.letbuyy.letbuyy",
+          "snippet": "Image: LetBuyy screenshot 1 Image: LetBuyy screenshot 2 Image: LetBuyy screenshot 3 Image: LetBuyy screenshot 4 Image: LetBuyy screenshot 5 Image: LetBuyy screenshot 6 ... For support: Contact us through the app",
+          "crawl_age": "3 months ago",
+          "published_age": "8 months ago",
+          "metadata_line": "Published: 8 months ago; Crawled: 3 months ago; Image: LetBuyy screenshot 1 Image: LetBuyy screenshot 2 Image: LetBuyy screenshot 3 Image: LetBuyy screenshot 4 Image: LetBuyy screenshot 5 Image: LetBuyy screenshot 6 ... For support: Contact us through the app"
+        },
+        {
+          "title": "Lucky Child - SG301 - Liberty Bay - Manual",
+          "url": "https://agalease-baby.co.il/wp-content/uploads/2023/10/Lucky-Child-SG301-Liberty-Bay-Manual.pdf",
+          "snippet": "Twigy ... Line drawing of a baby swing product: a hanging infant seat with tray, overhead motor unit with three dangling star toys, and a curved support frame.",
+          "crawl_age": null,
+          "published_age": "3.3 years ago",
+          "metadata_line": "Published: 3.3 years ago; Twigy ... Line drawing of a baby swing product: a hanging infant seat with tray, overhead motor unit with three dangling star toys, and a curved support frame."
+        },
+        {
+          "title": "Product Manual",
+          "url": "https://fcc.report/FCC-ID/2AG6CLE-LEBO/2939679.pdf",
+          "snippet": "Tech-support：135-5111- 4041",
+          "crawl_age": null,
+          "published_age": "1.4 years ago",
+          "metadata_line": "Published: 1.4 years ago; Tech-support：135-5111- 4041"
+        },
+        {
+          "title": "7. Warranty & Support",
+          "url": "https://ae-pic-a1.aliexpress-media.com/kf/Sadaf3c5c0cce4f15b8fccc94707168ffI.pdf",
+          "snippet": "For technical assistance or compatibility questions, please contact our support team at support@vehlive.com.",
+          "crawl_age": null,
+          "published_age": "9 months ago",
+          "metadata_line": "Published: 9 months ago; For technical assistance or compatibility questions, please contact our support team at support@vehlive.com."
+        }
+      ]
+    },
+    {
+      "query": "site:www.letbuyy.com",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "\"LetBuyy\" pricing",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "Pricing",
+          "url": "https://www.letbuyy.com/in/pricing",
+          "snippet": "Lock the founding price for life. ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Lock the founding price for life. ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms."
+        },
+        {
+          "title": "Terms of Service",
+          "url": "https://www.letbuyy.com/in/legal/terms",
+          "snippet": "When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you. ... Subscription pricing, where it applies, is shown on the pricing page before you subscribe.",
+          "crawl_age": "3 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 3 weeks ago; When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you. ... Subscription pricing, where it applies, is shown on the pricing page before you subscribe."
+        },
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "Sport Tee price sensitivity Pricing ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Sport Tee price sensitivity Pricing ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms."
+        },
+        {
+          "title": "Shipping & Delivery",
+          "url": "https://www.letbuyy.com/in/legal/shipping",
+          "snippet": "LetBuyy provides the software that calculates a rate at checkout and records fulfilment; it does not warehouse goods, pack them, or hand them to a courier.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; LetBuyy provides the software that calculates a rate at checkout and records fulfilment; it does not warehouse goods, pack them, or hand them to a courier."
+        },
+        {
+          "title": "LetBuyy — भारत के लिए बना कॉमर्स ऑपरेटिंग सिस्टम | LetBuyy",
+          "url": "https://www.letbuyy.com/in-hi",
+          "snippet": "merchant.letbuyy.com / orders ... 09:23 AI: price sensitivity on Sport Tee ... Pricing",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; merchant.letbuyy.com / orders ... 09:23 AI: price sensitivity on Sport Tee ... Pricing"
+        },
+        {
+          "title": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in-ta/contact",
+          "snippet": "* Sales & pricing 4h ... [Button: I am exploring LetBuyy][Button: I already sell on LetBuyy][Button: I am a developer or partner][Button: I run an agency][Button: I bought from a LetBuyy store][Button: Something else]",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month;   * Sales & pricing 4h ... [Button: I am exploring LetBuyy][Button: I already sell on LetBuyy][Button: I am a developer or partner][Button: I run an agency][Button: I bought from a LetBuyy store][Button: Something else]"
+        },
+        {
+          "title": "Support centre — LetBuyy",
+          "url": "https://www.letbuyy.com/in/support",
+          "snippet": "LETBUYY SUPPORT",
+          "crawl_age": "2 days ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 2 days ago; LETBUYY SUPPORT"
+        },
+        {
+          "title": "LetBuyy - Online Shopping Marketplace",
+          "url": "https://seller.letbuyy.com/",
+          "snippet": "LetBuyy Seller",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; LetBuyy Seller"
+        },
+        {
+          "title": "LetBuyy Stats, Downloads & Safety Check | Chrome-Stats",
+          "url": "https://chrome-stats.com/d/com.letbuyy.letbuyy",
+          "snippet": "By: LetBuyy • App",
+          "crawl_age": "3 months ago",
+          "published_age": "8 months ago",
+          "metadata_line": "Published: 8 months ago; Crawled: 3 months ago; By: LetBuyy • App"
+        },
+        {
+          "title": "LetBuyy - אפליקציות ב-Google Play",
+          "url": "https://play.google.com/store/apps/details?hl=he&id=com.letbuyy.letbuyy",
+          "snippet": "מדיניות פרטיות: https://letbuy-y.web.app/privacy-policy",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; מדיניות פרטיות: https://letbuy-y.web.app/privacy-policy"
+        },
+        {
+          "title": "LetBuyy Admin",
+          "url": "https://admin.letbuyy.com/",
+          "snippet": "# LetBuyy Admin",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; # LetBuyy Admin"
+        },
+        {
+          "title": "LetBuyy Developers",
+          "url": "https://developer.letbuyy.com/api",
+          "snippet": "LetBuyy Developers Accurate to the tracked gateway, webhook-service, auth-core, app-platform shared contract, and theme-engine sources.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; LetBuyy Developers Accurate to the tracked gateway, webhook-service, auth-core, app-platform shared contract, and theme-engine sources."
+        }
+      ]
+    },
+    {
+      "query": "\"LetBuyy\" support",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "Support centre — LetBuyy",
+          "url": "https://www.letbuyy.com/in/support",
+          "snippet": "LETBUYY SUPPORT",
+          "crawl_age": "2 days ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 2 days ago; LETBUYY SUPPORT"
+        },
+        {
+          "title": "Grievance Redressal",
+          "url": "https://www.letbuyy.com/in/legal/grievance",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last month",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: last month; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Terms of Service",
+          "url": "https://www.letbuyy.com/in/legal/terms",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "3 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 3 weeks ago; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in-ta/contact",
+          "snippet": "support@letbuyy.com",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; support@letbuyy.com"
+        },
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "Which payment methods does LetBuyy support?",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Which payment methods does LetBuyy support?"
+        },
+        {
+          "title": "LetBuyy - אפליקציות ב-Google Play",
+          "url": "https://play.google.com/store/apps/details?hl=he&id=com.letbuyy.letbuyy",
+          "snippet": "# LetBuyy",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; # LetBuyy"
+        },
+        {
+          "title": "Shipping & Delivery",
+          "url": "https://www.letbuyy.com/in/legal/shipping",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "LetBuyy Admin",
+          "url": "https://admin.letbuyy.com/",
+          "snippet": "# LetBuyy Admin",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; # LetBuyy Admin"
+        },
+        {
+          "title": "LetBuyy Admin",
+          "url": "https://admin.letbuyy.com/auth/login",
+          "snippet": "Image: LetBuyy",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; Image: LetBuyy"
+        },
+        {
+          "title": "LetBuyy Stats, Downloads & Safety Check | Chrome-Stats",
+          "url": "https://chrome-stats.com/d/com.letbuyy.letbuyy",
+          "snippet": "# LetBuyy ... - 24/7 customer support",
+          "crawl_age": "3 months ago",
+          "published_age": "8 months ago",
+          "metadata_line": "Published: 8 months ago; Crawled: 3 months ago; # LetBuyy ... - 24/7 customer support"
+        },
+        {
+          "title": "LetBuyy Developers",
+          "url": "https://developer.letbuyy.com/api",
+          "snippet": "Documentation for the LetBuyy platform: the versioned `/v1` gateway, app OAuth, lifecycle webhooks, and JSON-contract themes.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; Documentation for the LetBuyy platform: the versioned `/v1` gateway, app OAuth, lifecycle webhooks, and JSON-contract themes."
+        },
+        {
+          "title": "LetBuyy - Online Shopping Marketplace",
+          "url": "https://seller.letbuyy.com/",
+          "snippet": "LetBuyy Seller",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; LetBuyy Seller"
+        }
+      ]
+    },
+    {
+      "query": "site:letbuyy.com",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "site:www.letbuyy.com/in",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "* Free .letbuyy.com domain & hosting",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago;   * Free .letbuyy.com domain & hosting"
+        },
+        {
+          "title": "Terms of Service",
+          "url": "https://www.letbuyy.com/in/legal/terms",
+          "snippet": "When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you.",
+          "crawl_age": "3 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 3 weeks ago; When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you."
+        },
+        {
+          "title": "Developer & API Terms",
+          "url": "https://www.letbuyy.com/in/legal/api-terms",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "yesterday",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: yesterday; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Support centre — LetBuyy",
+          "url": "https://www.letbuyy.com/in/support",
+          "snippet": "(support@letbuyy.com)Find your account",
+          "crawl_age": "2 days ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 2 days ago; (support@letbuyy.com)Find your account"
+        },
+        {
+          "title": "Shipping & Delivery",
+          "url": "https://www.letbuyy.com/in/legal/shipping",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Acceptable Use Policy",
+          "url": "https://www.letbuyy.com/in/legal/acceptable-use",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "yesterday",
+          "published_age": null,
+          "metadata_line": "Crawled: yesterday; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Privacy Policy",
+          "url": "https://www.letbuyy.com/in/legal/privacy",
+          "snippet": "Note If you are not sure which applies: did you sign up at letbuyy.com, or buy something from a store?",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Note If you are not sure which applies: did you sign up at letbuyy.com, or buy something from a store?"
+        },
+        {
+          "title": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in-ta/contact",
+          "snippet": "LetBuyy is made in India, for Indian sellers.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; LetBuyy is made in India, for Indian sellers."
+        },
+        {
+          "title": "Grievance Redressal",
+          "url": "https://www.letbuyy.com/in/legal/grievance",
+          "snippet": "grievance@letbuyy.com",
+          "crawl_age": "last month",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: last month;     grievance@letbuyy.com"
+        },
+        {
+          "title": "LetBuyy — भारत के लिए बना कॉमर्स ऑपरेटिंग सिस्टम | LetBuyy",
+          "url": "https://www.letbuyy.com/in-hi",
+          "snippet": "merchant.letbuyy.com / orders",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; merchant.letbuyy.com / orders"
+        },
+        {
+          "title": "Refunds & Cancellations",
+          "url": "https://www.letbuyy.com/in/legal/refunds",
+          "snippet": "* If you bought something from a store built on LetBuyy, your refund is decided by that store under its own policy — not by us.",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago;   * If you bought something from a store built on LetBuyy, your refund is decided by that store under its own policy — not by us."
+        },
+        {
+          "title": "Payouts & Settlements",
+          "url": "https://www.letbuyy.com/in-hi/legal/payouts",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last week",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: last week; Write to support@letbuyy.com and quote the clause number."
+        }
+      ]
+    },
+    {
+      "query": "site:letbuyy.com \"sitemap\"",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "\"LetBuyy\" \"online shopping\"",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy - Online Shopping Marketplace",
+          "url": "https://seller.letbuyy.com/",
+          "snippet": "LetBuyy Seller",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; LetBuyy Seller"
+        },
+        {
+          "title": "LetBuyy Stats, Downloads & Safety Check | Chrome-Stats",
+          "url": "https://chrome-stats.com/d/com.letbuyy.letbuyy",
+          "snippet": "Shop smart with LetBuyy! ... 🛒 Welcome to LetBuyy - Your Ultimate Online Shopping Destination!",
+          "crawl_age": "3 months ago",
+          "published_age": "8 months ago",
+          "metadata_line": "Published: 8 months ago; Crawled: 3 months ago; Shop smart with LetBuyy! ... 🛒 Welcome to LetBuyy - Your Ultimate Online Shopping Destination!"
+        },
+        {
+          "title": "BuyBye Smart - Smart Shopping & Delivery 🛒",
+          "url": "https://chrome-stats.com/d/com.buybyesmart",
+          "snippet": "Buy Smart - Buy Grocery Online Adwest 722 0.00 (0) SMARTBUY Libromi 264 0.00 (0) BuySmart Mortar Cloud 135 0.00 (0) SmartBuy CCTV & Design Solution LLC 49 0.00 (0) ByeBuyy Inzamamul 16 0.00 (0) Smarts MyRentPe 61 0.00 (0) LetBuyy LetBuyy 25 0.00 (0) Buy Smart Mohit Dubey 3K 0.00 (0) Smart Bikry Babo Services Pvt. ... 5 0.00 (0) HiBuy samz creation 177 0.00 (0) BiggyBox BiggyBox 18 0.00 (0) 4Buyn Online Shopping App 4buyn LLC 315 0.00 (0)",
+          "crawl_age": "4 months ago",
+          "published_age": "6 months ago",
+          "metadata_line": "Published: 6 months ago; Crawled: 4 months ago; Buy Smart - Buy Grocery Online Adwest 722 0.00 (0) SMARTBUY Libromi 264 0.00 (0) BuySmart Mortar Cloud 135 0.00 (0) SmartBuy CCTV & Design Solution LLC 49 0.00 (0) ByeBuyy Inzamamul 16 0.00 (0) Smarts MyRentPe 61 0.00 (0) LetBuyy LetBuyy 25 0.00 (0) Buy Smart Mohit Dubey 3K 0.00 (0) Smart Bikry Babo Services Pvt. ... 5 0.00 (0) HiBuy samz creation 177 0.00 (0) BiggyBox BiggyBox 18 0.00 (0) 4Buyn Online Shopping App 4buyn LLC 315 0.00 (0)"
+        },
+        {
+          "title": "BuyBye Smart Estatísticas, Downloads e Verificação de Segurança | Chrome-Stats",
+          "url": "https://chrome-stats.com/d/com.buybyesmart?hl=pt",
+          "snippet": "Buy Smart - Buy Grocery Online Adwest 722 0.00 (0) SMARTBUY Libromi 254 0.00 (0) BuySmart Mortar Cloud 135 0.00 (0) SmartBuy CCTV & Design Solution LLC 46 0.00 (0) ByeBuyy Inzamamul 16 0.00 (0) Smarts MyRentPe 61 0.00 (0) LetBuyy LetBuyy 25 0.00 (0) Buy Smart Mohit Dubey 3K 0.00 (0) Smart Bikry Babo Services Pvt. ... 4 0.00 (0) HiBuy samz creation 177 0.00 (0) BiggyBox BiggyBox 18 0.00 (0) 4Buyn Online Shopping App 4buyn LLC 314 0.00 (0)",
+          "crawl_age": "4 months ago",
+          "published_age": "5 months ago",
+          "metadata_line": "Published: 5 months ago; Crawled: 4 months ago; Buy Smart - Buy Grocery Online Adwest 722 0.00 (0) SMARTBUY Libromi 254 0.00 (0) BuySmart Mortar Cloud 135 0.00 (0) SmartBuy CCTV & Design Solution LLC 46 0.00 (0) ByeBuyy Inzamamul 16 0.00 (0) Smarts MyRentPe 61 0.00 (0) LetBuyy LetBuyy 25 0.00 (0) Buy Smart Mohit Dubey 3K 0.00 (0) Smart Bikry Babo Services Pvt. ... 4 0.00 (0) HiBuy samz creation 177 0.00 (0) BiggyBox BiggyBox 18 0.00 (0) 4Buyn Online Shopping App 4buyn LLC 314 0.00 (0)"
+        }
+      ]
+    },
+    {
+      "query": "\"LetBuyy\" \"Sitemap\"",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "\"LetBuyy\" \"Pricing\" \"LetBuyy\"",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "Pricing",
+          "url": "https://www.letbuyy.com/in/pricing",
+          "snippet": "Lock the founding price for life. ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Lock the founding price for life. ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms."
+        },
+        {
+          "title": "Terms of Service",
+          "url": "https://www.letbuyy.com/in/legal/terms",
+          "snippet": "When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you. ... Subscription pricing, where it applies, is shown on the pricing page before you subscribe.",
+          "crawl_age": "3 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 3 weeks ago; When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you. ... Subscription pricing, where it applies, is shown on the pricing page before you subscribe."
+        },
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "Sport Tee price sensitivity Pricing ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Sport Tee price sensitivity Pricing ... Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms."
+        },
+        {
+          "title": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in-ta/contact",
+          "snippet": "* Sales & pricing 4h ... [Button: I am exploring LetBuyy][Button: I already sell on LetBuyy][Button: I am a developer or partner][Button: I run an agency][Button: I bought from a LetBuyy store][Button: Something else]",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month;   * Sales & pricing 4h ... [Button: I am exploring LetBuyy][Button: I already sell on LetBuyy][Button: I am a developer or partner][Button: I run an agency][Button: I bought from a LetBuyy store][Button: Something else]"
+        },
+        {
+          "title": "LetBuyy — भारत के लिए बना कॉमर्स ऑपरेटिंग सिस्टम | LetBuyy",
+          "url": "https://www.letbuyy.com/in-hi",
+          "snippet": "merchant.letbuyy.com / orders ... 09:23 AI: price sensitivity on Sport Tee ... Pricing",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; merchant.letbuyy.com / orders ... 09:23 AI: price sensitivity on Sport Tee ... Pricing"
+        },
+        {
+          "title": "How To Start an Online Store in India (2026 Guide) | LetBuyy Resources",
+          "url": "https://www.letbuyy.com/in-hi/resources/ecommerce/how-to-start-an-online-store-india",
+          "snippet": "On LetBuyy, the onboarding flow walks you through every critical step: store name and domain, theme selection, product upload, payment setup, shipping zones, and GST configuration — in one connected flow. ... Add title, description, price, variants (size/color), and inventory count. ...   * Delhivery: Strong for Tier 2/3 coverage, enterprise pricing starts lower",
+          "crawl_age": "last month",
+          "published_age": "6 months ago",
+          "metadata_line": "Published: 6 months ago; Crawled: last month; On LetBuyy, the onboarding flow walks you through every critical step: store name and domain, theme selection, product upload, payment setup, shipping zones, and GST configuration — in one connected flow. ... Add title, description, price, variants (size/color), and inventory count. ...   * Delhivery: Strong for Tier 2/3 coverage, enterprise pricing starts lower"
+        },
+        {
+          "title": "Resources — Commerce guides for Indian merchants",
+          "url": "https://www.letbuyy.com/in-ta/resources",
+          "snippet": "Build on LetBuyy — APIs, webhooks, apps, Liquid themes, and custom integrations. ... Store setup, product catalogs, pricing strategies, and conversion optimization for Indian merchants.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; Build on LetBuyy — APIs, webhooks, apps, Liquid themes, and custom integrations. ... Store setup, product catalogs, pricing strategies, and conversion optimization for Indian merchants."
+        }
+      ]
+    },
+    {
+      "query": "site:www.letbuyy.com/in-hi",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy — भारत के लिए बना कॉमर्स ऑपरेटिंग सिस्टम | LetBuyy",
+          "url": "https://www.letbuyy.com/in-hi",
+          "snippet": "merchant.letbuyy.com / orders",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; merchant.letbuyy.com / orders"
+        },
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "Every stage of growth is already built into LetBuyy. ...   * Free .letbuyy.com domain & hosting",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Every stage of growth is already built into LetBuyy. ...   * Free .letbuyy.com domain & hosting"
+        },
+        {
+          "title": "Payouts & Settlements",
+          "url": "https://www.letbuyy.com/in-hi/legal/payouts",
+          "snippet": "Closing a LetBuyy store does not close your payment provider account, and does not stop settlements already in flight.",
+          "crawl_age": "last week",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: last week; Closing a LetBuyy store does not close your payment provider account, and does not stop settlements already in flight."
+        },
+        {
+          "title": "Terms of Service",
+          "url": "https://www.letbuyy.com/in/legal/terms",
+          "snippet": "When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you. ... Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "3 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 3 weeks ago; When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you. ... Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Refunds & Cancellations",
+          "url": "https://www.letbuyy.com/in-hi/legal/refunds",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last week",
+          "published_age": null,
+          "metadata_line": "Crawled: last week; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Intellectual Property & Takedown",
+          "url": "https://www.letbuyy.com/in-hi/legal/intellectual-property",
+          "snippet": "You may refer to LetBuyy accurately — \"built on LetBuyy\" is fine — but may not use our marks in a way that suggests we endorse, sponsor, or operate your business.",
+          "crawl_age": "3 weeks ago",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: 3 weeks ago; You may refer to LetBuyy accurately — \"built on LetBuyy\" is fine — but may not use our marks in a way that suggests we endorse, sponsor, or operate your business."
+        },
+        {
+          "title": "Support centre — LetBuyy",
+          "url": "https://www.letbuyy.com/in/support",
+          "snippet": "LETBUYY SUPPORT",
+          "crawl_age": "2 days ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 2 days ago; LETBUYY SUPPORT"
+        },
+        {
+          "title": "Developer & API Terms",
+          "url": "https://www.letbuyy.com/in/legal/api-terms",
+          "snippet": "Every record on LetBuyy belongs to exactly one store, and that boundary is enforced in the database, not just in application code.",
+          "crawl_age": "yesterday",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: yesterday; Every record on LetBuyy belongs to exactly one store, and that boundary is enforced in the database, not just in application code."
+        },
+        {
+          "title": "Acceptable Use Policy",
+          "url": "https://www.letbuyy.com/in/legal/acceptable-use",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "yesterday",
+          "published_age": null,
+          "metadata_line": "Crawled: yesterday; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Shipping & Delivery",
+          "url": "https://www.letbuyy.com/in/legal/shipping",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "स्वीकार्य उपयोग नीति",
+          "url": "https://www.letbuyy.com/in-hi/legal/acceptable-use",
+          "snippet": "LetBuyy पर क्या बेचा या किया जा सकता है और क्या नहीं।",
+          "crawl_age": "yesterday",
+          "published_age": null,
+          "metadata_line": "Crawled: yesterday; LetBuyy पर क्या बेचा या किया जा सकता है और क्या नहीं।"
+        },
+        {
+          "title": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in-ta/contact",
+          "snippet": "LetBuyy is made in India, for Indian sellers.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; LetBuyy is made in India, for Indian sellers."
+        }
+      ]
+    },
+    {
+      "query": "site:www.letbuyy.com/in-ta",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "* Free .letbuyy.com domain & hosting",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago;   * Free .letbuyy.com domain & hosting"
+        },
+        {
+          "title": "Contact LetBuyy",
+          "url": "https://www.letbuyy.com/in-ta/contact",
+          "snippet": "LetBuyy is made in India, for Indian sellers.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; LetBuyy is made in India, for Indian sellers."
+        },
+        {
+          "title": "Security Practices",
+          "url": "https://www.letbuyy.com/in-ta/legal/security",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last month",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: last month; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Terms of Service",
+          "url": "https://www.letbuyy.com/in/legal/terms",
+          "snippet": "When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you.",
+          "crawl_age": "3 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 3 weeks ago; When a shopper buys from a store built on LetBuyy, the contract of sale is between that shopper and you."
+        },
+        {
+          "title": "Getting Started with the LetBuyy API | LetBuyy Resources",
+          "url": "https://www.letbuyy.com/in-ta/resources/developers/letbuyy-api-getting-started",
+          "snippet": "https://api.letbuyy.com/v1/products \\",
+          "crawl_age": "last month",
+          "published_age": "5 months ago",
+          "metadata_line": "Published: 5 months ago; Crawled: last month;       https://api.letbuyy.com/v1/products \\"
+        },
+        {
+          "title": "Resources — Commerce guides for Indian merchants",
+          "url": "https://www.letbuyy.com/in-ta/resources",
+          "snippet": "Build on LetBuyy — APIs, webhooks, apps, Liquid themes, and custom integrations.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; Build on LetBuyy — APIs, webhooks, apps, Liquid themes, and custom integrations."
+        },
+        {
+          "title": "Intellectual Property & Takedown",
+          "url": "https://www.letbuyy.com/in-ta/legal/intellectual-property",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last month",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: last month; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Developer & API Terms",
+          "url": "https://www.letbuyy.com/in/legal/api-terms",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "yesterday",
+          "published_age": "2 months ago",
+          "metadata_line": "Published: 2 months ago; Crawled: yesterday; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Support centre — LetBuyy",
+          "url": "https://www.letbuyy.com/in/support",
+          "snippet": "(support@letbuyy.com)Find your account",
+          "crawl_age": "2 days ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 2 days ago; (support@letbuyy.com)Find your account"
+        },
+        {
+          "title": "Accepting Payments on LetBuyy: UPI, Cards, and COD | LetBuyy Resources",
+          "url": "https://www.letbuyy.com/in-ta/resources/payments/razorpay-integration-guide",
+          "snippet": "LetBuyy's payment system is built for India from the ground up — UPI, COD, Razorpay, EMI, and wallet support are all native, not third-party plugins.",
+          "crawl_age": "last month",
+          "published_age": "6 months ago",
+          "metadata_line": "Published: 6 months ago; Crawled: last month; LetBuyy's payment system is built for India from the ground up — UPI, COD, Razorpay, EMI, and wallet support are all native, not third-party plugins."
+        },
+        {
+          "title": "Acceptable Use Policy",
+          "url": "https://www.letbuyy.com/in/legal/acceptable-use",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "yesterday",
+          "published_age": null,
+          "metadata_line": "Crawled: yesterday; Write to support@letbuyy.com and quote the clause number."
+        },
+        {
+          "title": "Shipping & Delivery",
+          "url": "https://www.letbuyy.com/in/legal/shipping",
+          "snippet": "Write to support@letbuyy.com and quote the clause number.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; Write to support@letbuyy.com and quote the clause number."
+        }
+      ]
+    },
+    {
+      "query": "site:merchant.letbuyy.com",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "site:accounts.letbuyy.com",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "site:admin.letbuyy.com",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "site:seller.letbuyy.com",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "site:developer.letbuyy.com",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "site:themes.letbuyy.com",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "site:apps.letbuyy.com",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "\"LetBuyy\" \"letbuy-y.web.app\"",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy - אפליקציות ב-Google Play",
+          "url": "https://play.google.com/store/apps/details?hl=he&id=com.letbuyy.letbuyy",
+          "snippet": "מדיניות פרטיות: https://letbuy-y.web.app/privacy-policy",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; מדיניות פרטיות: https://letbuy-y.web.app/privacy-policy"
+        }
+      ]
+    },
+    {
+      "query": "\"LetBuyy\" \"India-first\"",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "Payments India-first, zero friction Live ... Every stage of growth is already built into LetBuyy.",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Payments India-first, zero friction Live ... Every stage of growth is already built into LetBuyy."
+        },
+        {
+          "title": "Accepting Payments on LetBuyy: UPI, Cards, and COD | LetBuyy Resources",
+          "url": "https://www.letbuyy.com/in/resources/payments/razorpay-integration-guide",
+          "snippet": "LetBuyy's payment system is built for India from the ground up — UPI, COD, Razorpay, EMI, and wallet support are all native, not third-party plugins. ... GST consultant and payments specialist focused on making India-first commerce frictionless for merchants of all sizes.",
+          "crawl_age": "last month",
+          "published_age": "6 months ago",
+          "metadata_line": "Published: 6 months ago; Crawled: last month; LetBuyy's payment system is built for India from the ground up — UPI, COD, Razorpay, EMI, and wallet support are all native, not third-party plugins. ... GST consultant and payments specialist focused on making India-first commerce frictionless for merchants of all sizes."
+        },
+        {
+          "title": "How To Start an Online Store in India (2026 Guide) | LetBuyy Resources",
+          "url": "https://www.letbuyy.com/in-hi/resources/ecommerce/how-to-start-an-online-store-india",
+          "snippet": "LetBuyy  | India-first brands of all sizes  | ✓ Native UPI + COD + Razorpay  | ✓ Auto-generated",
+          "crawl_age": "last month",
+          "published_age": "6 months ago",
+          "metadata_line": "Published: 6 months ago; Crawled: last month; LetBuyy  | India-first brands of all sizes  | ✓ Native UPI + COD + Razorpay  | ✓ Auto-generated"
+        },
+        {
+          "title": "LetBuyy — भारत के लिए बना कॉमर्स ऑपरेटिंग सिस्टम | LetBuyy",
+          "url": "https://www.letbuyy.com/in-hi",
+          "snippet": "merchant.letbuyy.com / orders ... 09:29 New customer Sunita Patel — first order",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; merchant.letbuyy.com / orders ... 09:29 New customer Sunita Patel — first order"
+        },
+        {
+          "title": "GST for Ecommerce in India: The Complete 2026 Guide | LetBuyy Resources",
+          "url": "https://www.letbuyy.com/in/resources/payments/gst-for-ecommerce-india",
+          "snippet": "GST consultant and payments specialist focused on making India-first commerce frictionless for merchants of all sizes.",
+          "crawl_age": "3 weeks ago",
+          "published_age": "8 months ago",
+          "metadata_line": "Published: 8 months ago; Crawled: 3 weeks ago; GST consultant and payments specialist focused on making India-first commerce frictionless for merchants of all sizes."
+        }
+      ]
+    },
+    {
+      "query": "\"LetBuyy\" \"Sitemap\" \"Pricing\"",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": true,
+      "results": []
+    },
+    {
+      "query": "\"LetBuyy\" \"LetBuyy Admin\"",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy Admin",
+          "url": "https://admin.letbuyy.com/",
+          "snippet": "# LetBuyy Admin",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; # LetBuyy Admin"
+        },
+        {
+          "title": "LetBuyy Admin",
+          "url": "https://admin.letbuyy.com/auth/login",
+          "snippet": "Email Address[Input: admin@letbuyy.com]",
+          "crawl_age": "4 months ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 months ago; Email Address[Input: admin@letbuyy.com]"
+        },
+        {
+          "title": "LetBuyy Developers",
+          "url": "https://developer.letbuyy.com/api",
+          "snippet": "`GET|POST /v1/admin/graphql` ... Documentation for the LetBuyy platform: the versioned `/v1` gateway, app OAuth, lifecycle webhooks, and JSON-contract themes.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; `GET|POST /v1/admin/graphql` ... Documentation for the LetBuyy platform: the versioned `/v1` gateway, app OAuth, lifecycle webhooks, and JSON-contract themes."
+        },
+        {
+          "title": "Getting Started with the LetBuyy API | LetBuyy Resources",
+          "url": "https://www.letbuyy.com/in-ta/resources/developers/letbuyy-api-getting-started",
+          "snippet": "Keys are scoped: read-only, read-write, or admin. ...       https://api.letbuyy.com/v1/products \\",
+          "crawl_age": "last month",
+          "published_age": "5 months ago",
+          "metadata_line": "Published: 5 months ago; Crawled: last month; Keys are scoped: read-only, read-write, or admin. ...       https://api.letbuyy.com/v1/products \\"
+        }
+      ]
+    },
+    {
+      "query": "\"LetBuyy\" \"Developers\"",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy Developers",
+          "url": "https://developer.letbuyy.com/api",
+          "snippet": "App marketplace APIs include catalog, reviews, installation, extension/function lifecycle registry, app bridge fetch, OAuth authorization code, token exchange, developer profile, developer app submissions, and partner dashboard aggregates. ... Documentation for the LetBuyy platform: the versioned `/v1` gateway, app OAuth, lifecycle webhooks, and JSON-contract themes. ... LetBuyy Developers Accurate to the tracked gateway, webhook-service, auth-core, app-platform shared contract, and theme-engine sources.",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; App marketplace APIs include catalog, reviews, installation, extension/function lifecycle registry, app bridge fetch, OAuth authorization code, token exchange, developer profile, developer app submissions, and partner dashboard aggregates. ... Documentation for the LetBuyy platform: the versioned `/v1` gateway, app OAuth, lifecycle webhooks, and JSON-contract themes. ... LetBuyy Developers Accurate to the tracked gateway, webhook-service, auth-core, app-platform shared contract, and theme-engine sources."
+        },
+        {
+          "title": "LetBuyy — India-first commerce operating system | LetBuyy",
+          "url": "https://www.letbuyy.com/in",
+          "snippet": "Every stage of growth is already built into LetBuyy. ... Everything merchants, developers, operators, and partners need to run commerce from one connected ecosystem. ... DevelopersAPIs, Webhooks, OAuth, SDKsLive",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; Every stage of growth is already built into LetBuyy. ... Everything merchants, developers, operators, and partners need to run commerce from one connected ecosystem. ... DevelopersAPIs, Webhooks, OAuth, SDKsLive"
+        },
+        {
+          "title": "How Themes Work on LetBuyy | LetBuyy Resources",
+          "url": "https://www.letbuyy.com/in/resources/platform/how-themes-work",
+          "snippet": "Marketplace Themes: Built by third-party developers, reviewed by LetBuyy, paid or free",
+          "crawl_age": "2 days ago",
+          "published_age": "4 months ago",
+          "metadata_line": "Published: 4 months ago; Crawled: 2 days ago; Marketplace Themes: Built by third-party developers, reviewed by LetBuyy, paid or free"
+        },
+        {
+          "title": "LetBuyy Stats, Downloads & Safety Check | Chrome-Stats",
+          "url": "https://chrome-stats.com/d/com.letbuyy.letbuyy",
+          "snippet": "# LetBuyy ... ### For Developers ... ## Contact the developer",
+          "crawl_age": "3 months ago",
+          "published_age": "8 months ago",
+          "metadata_line": "Published: 8 months ago; Crawled: 3 months ago; # LetBuyy ... ### For Developers ... ## Contact the developer"
+        },
+        {
+          "title": "Creating Custom Integrations with LetBuyy | LetBuyy Resources",
+          "url": "https://www.letbuyy.com/in-ta/resources/developers/custom-integrations-guide",
+          "snippet": "#integrations#api#developers#erp ... Builds developer tools and writes about APIs, webhooks, and extending the LetBuyy platform.",
+          "crawl_age": "last month",
+          "published_age": "7 months ago",
+          "metadata_line": "Published: 7 months ago; Crawled: last month; #integrations#api#developers#erp ... Builds developer tools and writes about APIs, webhooks, and extending the LetBuyy platform."
+        },
+        {
+          "title": "LetBuyy — भारत के लिए बना कॉमर्स ऑपरेटिंग सिस्टम | LetBuyy",
+          "url": "https://www.letbuyy.com/in-hi",
+          "snippet": "merchant.letbuyy.com / orders",
+          "crawl_age": "4 weeks ago",
+          "published_age": null,
+          "metadata_line": "Crawled: 4 weeks ago; merchant.letbuyy.com / orders"
+        }
+      ]
+    },
+    {
+      "query": "\"LetBuyy\" site:play.google.com/store/apps/details",
+      "requested_language": "English query text",
+      "query_date_local": "2026-10-30",
+      "engine": "web search tool; underlying engine not disclosed",
+      "location": "unknown; no country/city configured",
+      "device": "unknown",
+      "personalization": "unknown",
+      "result_order": "Tool-returned sequence only; not a verified Google ranking",
+      "empty_search": false,
+      "results": [
+        {
+          "title": "LetBuyy - אפליקציות ב-Google Play",
+          "url": "https://play.google.com/store/apps/details?hl=he&id=com.letbuyy.letbuyy",
+          "snippet": "מדיניות פרטיות: https://letbuy-y.web.app/privacy-policy",
+          "crawl_age": "last month",
+          "published_age": null,
+          "metadata_line": "Crawled: last month; מדיניות פרטיות: https://letbuy-y.web.app/privacy-policy"
+        }
+      ]
+    }
+  ],
+  "capture_session_checked_at_utc": "2026-10-29T18:41:47Z",
+  "timestamp_precision": "Actual local date recorded for each query; exact per-call wall-clock timestamps were not separately captured. All queries preceded the session timestamp check."
+}

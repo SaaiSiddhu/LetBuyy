@@ -1,0 +1,114 @@
+{
+  "inputs": [
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "ctc-name",
+      "labels": [
+        "Full name *"
+      ],
+      "aria": null,
+      "required": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "email",
+      "name": "",
+      "id": "ctc-email",
+      "labels": [
+        "Email *"
+      ],
+      "aria": null,
+      "required": false
+    },
+    {
+      "tag": "SELECT",
+      "type": "select-one",
+      "name": "",
+      "id": "_R_qil75fiv9flb_",
+      "labels": [],
+      "aria": "Country dialling code",
+      "required": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "tel",
+      "name": "",
+      "id": "ctc-phone",
+      "labels": [
+        "Phone *"
+      ],
+      "aria": null,
+      "required": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "ctc-company",
+      "labels": [
+        "Business or brand name"
+      ],
+      "aria": null,
+      "required": false
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "ctc-website",
+      "labels": [
+        "Website or social page"
+      ],
+      "aria": null,
+      "required": false
+    }
+  ],
+  "buttons": [
+    {
+      "text": "1\nAbout you\nWho we are talking to",
+      "disabled": false
+    },
+    {
+      "text": "2\nYour enquiry\nWhat you need from us",
+      "disabled": true
+    },
+    {
+      "text": "3\nContext\nHelps us answer properly",
+      "disabled": true
+    },
+    {
+      "text": "4\nSend\nHow to reach you back",
+      "disabled": true
+    },
+    {
+      "text": "I am exploring LetBuyy",
+      "disabled": false
+    },
+    {
+      "text": "I already sell on LetBuyy",
+      "disabled": false
+    },
+    {
+      "text": "I am a developer or partner",
+      "disabled": false
+    },
+    {
+      "text": "I run an agency",
+      "disabled": false
+    },
+    {
+      "text": "I bought from a LetBuyy store",
+      "disabled": false
+    },
+    {
+      "text": "Something else",
+      "disabled": false
+    },
+    {
+      "text": "Continue",
+      "disabled": false
+    }
+  ]
+}

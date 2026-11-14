@@ -1,5 +1,0 @@
-{
-  "status": "FAILED_METADATA_COLLECTION_ONLY",
-  "reason": "Plain Node require.resolve cannot resolve extensionless TypeScript. Retry with the existing pinned tsx discovery tool; no application module evaluated.",
-  "sourceOrNativeChanged": false
-}

@@ -6,19 +6,14 @@ import {
     CheckoutDeliverySchema,
     CheckoutPaymentIntentSchema,
     CheckoutConfirmSchema,
-    CheckoutQuoteSchema,
-    LETBUYY_CHECKOUT_ORIGIN_HEADER,
 } from '@letbuyy/checkout-core';
-import { CheckoutTotalsQuoteSchema } from '@letbuyy/shared-types';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { isSameOriginRequest } from '@/lib/buyer-auth/flow';
-import { checkoutRequestBinding } from '@/lib/checkout-host';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const HANDOFF_KEYS = ['site_id', 'cart_token', 'expires_at', 'cart_digest', 'signature', 'channel'] as const;
 const STEP_SCHEMAS = {
-    quote: CheckoutQuoteSchema,
     contact: CheckoutContactSchema,
     delivery: CheckoutDeliverySchema,
     'payment-intent': CheckoutPaymentIntentSchema,
@@ -31,19 +26,11 @@ export async function GET(request: NextRequest, context: { params: Promise<{ car
     const { cartId, step } = await context.params;
     if (!UUID.test(cartId) || step !== 'delivery-options') return jsonError(404, 'CHECKOUT_STEP_NOT_FOUND', 'Checkout step was not found.');
     const query = new URL(request.url).searchParams;
-    const actualOrigin = checkoutRequestBinding(request.headers, query.get('checkout_origin'), request.url);
-    if (!actualOrigin || query.getAll('checkout_origin').length > 1) return jsonError(403, 'ORIGIN_DENIED', 'This checkout link belongs to a different address.');
     const handoff = new URLSearchParams();
-    if (query.has('checkout_origin')) handoff.set('checkout_origin', actualOrigin);
     for (const key of HANDOFF_KEYS) {
         const value = query.get(key);
         if (!value || value.length > 2048) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
         handoff.set(key, value);
-    }
-    const buyerBinding = query.get('buyer_binding');
-    if (buyerBinding !== null) {
-        if (!/^[a-f0-9]{64}$/.test(buyerBinding)) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
-        handoff.set('buyer_binding', buyerBinding);
     }
     if (!UUID.test(handoff.get('site_id') || '')) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
     const country = query.get('country') || '';
@@ -58,7 +45,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ car
     if (stateCode) destination.set('state_code', stateCode);
     let upstream: Response;
     try {
-        upstream = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/delivery-options?${handoff.toString()}&${destination.toString()}`, { cache: 'no-store', headers: { [LETBUYY_CHECKOUT_ORIGIN_HEADER]: actualOrigin } });
+        upstream = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/delivery-options?${handoff.toString()}&${destination.toString()}`, { cache: 'no-store' });
     } catch {
         return jsonError(503, 'CHECKOUT_UNAVAILABLE', 'Delivery options are temporarily unavailable. Please retry.');
     }
@@ -100,10 +87,6 @@ function projectSuccess(step: CheckoutStep, payload: unknown): unknown | null {
     const data = (payload as { data?: unknown }).data;
     if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
     const record = data as Record<string, unknown>;
-    if (step === 'quote') {
-        const quote = CheckoutTotalsQuoteSchema.safeParse(record.quote);
-        return quote.success ? { success: true, data: { quote: quote.data } } : null;
-    }
     const checkout = record.checkout;
     if (!checkout || typeof checkout !== 'object' || Array.isArray(checkout)) return null;
     const session = checkout as Record<string, unknown>;
@@ -144,6 +127,7 @@ function projectSuccess(step: CheckoutStep, payload: unknown): unknown | null {
 }
 
 function projectFailure(status: number, payload: unknown) {
+    if (status >= 500) return jsonError(503, 'CHECKOUT_UNAVAILABLE', 'Checkout is temporarily unavailable. Please try again.');
     const error = payload && typeof payload === 'object' ? (payload as { error?: unknown }).error : null;
     const detail = error && typeof error === 'object' ? error as { code?: unknown; message?: unknown } : null;
     const code = typeof detail?.code === 'string' && /^[A-Z0-9_]{1,64}$/.test(detail.code) ? detail.code : 'CHECKOUT_REQUEST_FAILED';
@@ -152,19 +136,12 @@ function projectFailure(status: number, payload: unknown) {
         CHECKOUT_SETUP_REQUIRED: 'Secure checkout is not available in this environment.',
         INSUFFICIENT_INVENTORY: 'Some items are no longer available in that quantity. Review your cart and try again.',
         PAYMENT_SETUP_REQUIRED: 'Payment setup is required for this store.',
-        CHECKOUT_PAYMENT_CONFIGURATION_CHANGED: 'Payment settings changed. Contact the store before retrying this payment.',
         CHECKOUT_STATE_CONFLICT: 'Checkout details changed. Refresh checkout and try again.',
-        CHECKOUT_PRODUCT_CHANGED: 'Some products changed. Review the current items in your cart before checking out again.',
-        CHECKOUT_DISCOUNT_INVALID: 'This coupon is no longer eligible. Remove it or choose another code.',
-        CHECKOUT_DISCOUNT_CHANGED: 'The coupon discount changed. Review it again before paying.',
         CHECKOUT_SHIPPING_CHANGED: 'The delivery price changed. Review the updated delivery option and try again.',
-        CHECKOUT_QUOTE_CHANGED: 'The order total changed. Review the current total before paying.',
-        CHECKOUT_TAX_SETUP_REQUIRED: 'Tax setup for this order needs attention. Please contact the store before paying.',
         CHECKOUT_PROVIDER_PAYMENT_REQUIRED: 'Payment confirmation is required to complete checkout.',
         CHECKOUT_PROVIDER_SIGNATURE_INVALID: 'Payment could not be verified. Please try again or contact support.',
         CHECKOUT_PROVIDER_PAYMENT_REPLAYED: 'This payment cannot be used for this checkout.',
     };
-    if (status >= 500 && (status !== 503 || !['PAYMENT_SETUP_REQUIRED', 'CHECKOUT_TAX_SETUP_REQUIRED'].includes(code))) return jsonError(503, 'CHECKOUT_UNAVAILABLE', 'Checkout is temporarily unavailable. Please try again.');
     const message = safeMessages[code] || 'Checkout could not continue.';
     return jsonError(status, code, message);
 }
@@ -181,19 +158,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ca
     const step = rawStep as CheckoutStep;
 
     const query = new URL(request.url).searchParams;
-    const actualOrigin = checkoutRequestBinding(request.headers, query.get('checkout_origin'), request.url);
-    if (!actualOrigin || query.getAll('checkout_origin').length > 1) return jsonError(403, 'ORIGIN_DENIED', 'This checkout link belongs to a different address.');
     const handoff = new URLSearchParams();
-    if (query.has('checkout_origin')) handoff.set('checkout_origin', actualOrigin);
     for (const key of HANDOFF_KEYS) {
         const value = query.get(key);
         if (!value || value.length > 2048) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
         handoff.set(key, value);
-    }
-    const buyerBinding = query.get('buyer_binding');
-    if (buyerBinding !== null) {
-        if (!/^[a-f0-9]{64}$/.test(buyerBinding)) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
-        handoff.set('buyer_binding', buyerBinding);
     }
     if (!UUID.test(handoff.get('site_id') || '')) return jsonError(400, 'CHECKOUT_HANDOFF_REQUIRED', 'Checkout handoff is incomplete.');
 
@@ -207,7 +176,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ca
     try {
         upstream = await storefrontApiFetch(`/checkout/${encodeURIComponent(cartId)}/${step}?${handoff.toString()}`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', [LETBUYY_CHECKOUT_ORIGIN_HEADER]: actualOrigin },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(parsed.data),
             cache: 'no-store',
         });

@@ -1,0 +1,404 @@
+{
+  "date": "2026-10-21",
+  "checkout": "/Users/saai_mithra/Projects/Start_Up/LetBuyy",
+  "branch": "develop",
+  "base_head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "state": "uncommitted; local web/Gateway verified; native source only; no migration outside disposable databases; no deployment",
+  "tests": [
+    {
+      "check": "owned-priorities",
+      "exit_code": 0,
+      "counts": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "owned_run_id": "90aa10d64d2f",
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/db-history-final/merchant-operations-priorities.postgres.log",
+      "sha256": "93500ff801df169433bffab21fd2390144fad9363e27b4b651073cd989301192",
+      "command": "node scripts/governance/run-executable-suites.mjs --gateway-db --suite services/api-gateway/src/__tests__/owned-db/merchant-operations-priorities.postgres.test.ts --jobs 1 --timeout 240 --prepared-transactions 2 --log-dir /private/tmp/letbuyy-merchant-priorities-20261021/db-history-final",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "owned-browser-final-layout",
+      "exit_code": 0,
+      "counts": {
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "owned_run_id": "88cad89d7845",
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/browser-layout-final/merchant-console-support-browser.postgres.log",
+      "sha256": "efb7af714bc492ad4011b0c29b5e00aac1426eccb54abdce18c287522072a227",
+      "command": "LETBUYY_SUPPORT_BROWSER_ARTIFACT_DIR=/private/tmp/letbuyy-merchant-priorities-20261021/screenshots-final node scripts/governance/run-executable-suites.mjs --gateway-db --suite services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts --jobs 1 --timeout 1000 --prepared-transactions 2 --log-dir /private/tmp/letbuyy-merchant-priorities-20261021/browser-layout-final",
+      "cwd": "/private/tmp/letbuyy-merchant-priorities-20261021/candidate"
+    },
+    {
+      "check": "focused-unit-regression",
+      "exit_code": 0,
+      "counts": {
+        "tests": 32,
+        "pass": 32,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "owned_run_id": null,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/unit-final.log",
+      "sha256": "ddc51178f8d4bb3d59b8ff04690c9bb17dcadf97077b441d5fb744d75421eb2d",
+      "command": "pnpm exec tsx --test packages/billing-core/test/payment-status.test.ts packages/billing-core/test/billing-core.test.ts services/api-gateway/src/__tests__/orders-v1.test.ts services/api-gateway/src/__tests__/internal-os-support.test.ts services/api-gateway/src/__tests__/internal-os-merchant-360.test.ts services/api-gateway/src/__tests__/operator-moderation-auth-chain.test.ts",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "session-validator-controls",
+      "exit_code": 0,
+      "counts": {
+        "tests": 61,
+        "pass": 61,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "owned_run_id": null,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/session-guard-tests.log",
+      "sha256": "f11a7731279b4f848b79f69a861451e678799faa3abc8e90f22144df7a972b9a",
+      "command": "node --test tests/governance/session-security-validator.test.mjs",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "route-ownership-contracts",
+      "exit_code": 0,
+      "counts": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "owned_run_id": null,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/route-ownership-tests.log",
+      "sha256": "260c21951fc9e9467f0596a8e3198aeaa547c7d621155e332d8b4c115b14783d",
+      "command": "node --test tests/federation/app-api-route-ownership.test.mjs",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    }
+  ],
+  "checks": [
+    {
+      "check": "gateway-types",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/gateway-types-final.log",
+      "sha256": "b6e70f1bff58ec529692e68bb1e9fff97cfa6c1380dce4a5a48e35294b1059f2",
+      "command": "pnpm --filter @letbuyy/api-gateway typecheck",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "merchant-types",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/merchant-types-final.log",
+      "sha256": "53eb28e41c8f2ce4f4cc01ece70fdc3f9294b0126398b3c0848a1082369cd849",
+      "command": "pnpm --filter @letbuyy/merchant-web typecheck",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "console-types",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/console-types-final.log",
+      "sha256": "f9d2c7d268e12cc62785ca86c0bfc7b07ee90bd256dd92596dd0cdffb17d3f19",
+      "command": "pnpm --filter @letbuyy/admin-web typecheck",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "shared-types",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/shared-types-final.log",
+      "sha256": "d382e9969816172c7c542d667f5d274cf6ba6e7c3883323555001f2a02c05803",
+      "command": "pnpm --filter @letbuyy/shared-types typecheck",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "merchant-eslint",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/merchant-lint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command": "pnpm exec eslint 'src/app/[store]/settings/support/page.tsx' 'src/app/api/v1/stores/[store]/support/[[...segments]]/route.ts' 'src/app/[store]/settings/billing/page.tsx' src/components/merchantNavigation.ts src/components/settings/settings-navigation.ts",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/merchant/web"
+    },
+    {
+      "check": "console-eslint",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/console-lint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command": "pnpm exec eslint 'src/app/(dashboard)/support/page.tsx' 'src/app/(dashboard)/support/support-desk.tsx' 'src/app/api/v1/support/[[...segments]]/route.ts' src/lib/console-api.ts src/proxy.ts",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/internal/console"
+    },
+    {
+      "check": "console-production-build",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/console-build-final.log",
+      "sha256": "c929c26fdcce2f592bf0d17c6ba0001658df6232c35abff53739ee5885f6e708",
+      "command": "pnpm --filter @letbuyy/admin-web build",
+      "cwd": "/private/tmp/letbuyy-merchant-priorities-20261021/candidate"
+    },
+    {
+      "check": "migration-safety",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/migrations.log",
+      "sha256": "e9152c45556a0930cc1e0b20a46226c8c09431476acc238c946bd82f703c6d2d",
+      "command": "node scripts/validators/migration-safety-validator.mjs",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "tenant-isolation",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/tenant-lint.log",
+      "sha256": "70f509fbf59e3071871e6ea4a1fda7e2d64103cc3ad61d05380d39395004c44b",
+      "command": "node scripts/validators/tenant-isolation-validator.mjs",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "domain-boundary",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/domain-lint.log",
+      "sha256": "d354f63dcff51aaf76d81cd86a7f4f9c5dfa156e7b91a442caaf721158d85cc6",
+      "command": "node scripts/validators/domain-boundary-validator.mjs",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "session-security",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/session-lint-final.log",
+      "sha256": "55b88cf5aa890f1b6f30af7620f99960dc561006d639bc27adbaa00efcebd0bc",
+      "command": "node scripts/validators/session-security-validator.mjs",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "dependency-imports",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/import-lint.log",
+      "sha256": "6acec28334fba7b749d6b50bd41d27edf99f2243c80e52b961b3debda61ebced",
+      "command": "node scripts/validators/undeclared-import-validator.mjs",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    },
+    {
+      "check": "design-system",
+      "exit_code": 0,
+      "log": "/private/tmp/letbuyy-merchant-priorities-20261021/design-system-final.log",
+      "sha256": "d31a53a8fcede1ec6ed833278dd3a7bdd7674dc68b8081af56e093a9d81d585a",
+      "command": "node scripts/validators/validate-design-system.mjs",
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy"
+    }
+  ],
+  "preservation": {
+    "original_dirty_files": 69,
+    "original_dirty_unchanged": 64,
+    "intentional_overlaps": [
+      "apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx",
+      "apps/internal/console/src/lib/console-api.ts",
+      "services/api-gateway/src/routes/internal-console.ts",
+      "apps/internal/console/src/components/ConsoleShell.tsx",
+      "services/api-gateway/src/routes/internal-console/operator-workspaces.ts"
+    ],
+    "missing": []
+  },
+  "task_files": [
+    {
+      "path": "EXECUTION_LEDGER.md",
+      "sha256": "5e5081a0bd2d3394383ac4860095908038ab3c011b189bba6a945255392b33f3"
+    },
+    {
+      "path": "apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx",
+      "sha256": "cc1eb8e7c4a0c4cd4dedc004023caae6fff0c671c4e1ca41e986ccc450bfac48"
+    },
+    {
+      "path": "apps/internal/console/src/app/(dashboard)/support/page.tsx",
+      "sha256": "9d7ee4b43ed5b276ec52a3e40520ffe5ef8c3ef5190d18ea8b4836edffc9851c"
+    },
+    {
+      "path": "apps/internal/console/src/app/(dashboard)/support/support-desk.tsx",
+      "sha256": "ac2f40842bd411cd04ff345aaeba3d45190e66289c3a6269b30d971fb381ba7f"
+    },
+    {
+      "path": "apps/internal/console/src/app/api/v1/support/[[...segments]]/route.ts",
+      "sha256": "d66ea8a4f0b7874e053865916ef02f1eb8b87f79c270b2f9e7ef0d0d991ee93f"
+    },
+    {
+      "path": "apps/internal/console/src/components/ConsoleShell.tsx",
+      "sha256": "e1d0bf88a4c38857b10eef6c6e76dcd361d52fd813aa3d2fbdfae51a31f1a9c5"
+    },
+    {
+      "path": "apps/internal/console/src/lib/console-api.ts",
+      "sha256": "499c0d92ee72d57ae34536d6e839405f5bd060941f3c0639789431ab1f7e632f"
+    },
+    {
+      "path": "apps/internal/console/src/proxy.ts",
+      "sha256": "e4774a39b91cddcfe658d2574ea131922c0b368012af99278bde910cc4bf2efd"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/settings/help_screen.dart",
+      "sha256": "e1f5f9ba8e012e80d42ce13cd32c16a06ae642ae7bc1224a38c76877f6fcea93"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/screens/settings/merchant_support_screen.dart",
+      "sha256": "063665161d99ab854c2594f3b8c45f5beecc5760661b9059adaf3fb471154a09"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/billing/page.tsx",
+      "sha256": "3e6011f7a9d8d0d7eb48c3f5449d86e27f140b6f50f2d6fb6465b2031607d509"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/support/page.tsx",
+      "sha256": "e0db50d32efa724e4f83b9bf9cb97e3739700cbf3321f47f8f9dc02aad7c1677"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/v1/stores/[store]/support/[[...segments]]/route.ts",
+      "sha256": "ec0c39aa0684bd304da0e8721c6767b6a76858185ac6d37235396e99732f845f"
+    },
+    {
+      "path": "apps/merchant/web/src/components/merchantNavigation.ts",
+      "sha256": "94031ad6874ed2513dd12388f8140189c2d5e253dc60f2d3819531b140c71a67"
+    },
+    {
+      "path": "apps/merchant/web/src/components/settings/settings-navigation.ts",
+      "sha256": "de1ffb0ac81a0936b7b22a70124a815c387a05fa5ee702504e8cc7f123761173"
+    },
+    {
+      "path": "config/eslint/boundary-baseline.json",
+      "sha256": "d046ae0badd7048e87194dd414e51d2387b915150bfdee064f8330a0aaf4238b"
+    },
+    {
+      "path": "database/supabase/migrations/370_merchant_support_projection.sql",
+      "sha256": "014341ba06fbf40aa34691fc1ac41e2b5d641c97e66245741c43d332ce546c40"
+    },
+    {
+      "path": "database/supabase/rollback/370_merchant_support_projection.rollback.sql",
+      "sha256": "793c19323f1b374dfc45c820370a2537cc0e880da241e3f0473cbe6e285e7b35"
+    },
+    {
+      "path": "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md",
+      "sha256": "a6c390622820076375f07d6a748b9377decdcca6b65134ab49315d28336de3c9"
+    },
+    {
+      "path": "docs/governance/app-api-route-ownership.md",
+      "sha256": "cd81faaffdca76ccdcf4ce9eb2552564065064872b01d257e0b25dd96ef66869"
+    },
+    {
+      "path": "packages/billing-core/src/index.ts",
+      "sha256": "76fcb615ef5a4f4f2de882eaede2d548091f6b7a0dee12684da746bc7a0cd5c3"
+    },
+    {
+      "path": "packages/billing-core/test/payment-status.test.ts",
+      "sha256": "707c327ebc53da5ee22d919b65696fe3150c7842c0e6f52cdb8c1bc6be09e87a"
+    },
+    {
+      "path": "packages/shared-types/src/index.ts",
+      "sha256": "5873767c086e45d76addc16433fec963ec068d6ff1479c079f80a7e47448fb85"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "sha256": "32cbe0396ab1a8f81529fd55c8af164f17b4afca39f27b142f08df1022c84e85"
+    },
+    {
+      "path": "reports/MERCHANT_OPERATIONS_PRIORITIES_2026-10-21.md",
+      "sha256": "90c76e982281d73e62eeb440b4b83fbb61a247e01a5080e3ad375bb33b85d593"
+    },
+    {
+      "path": "scripts/validators/app-api-route-inventory.mjs",
+      "sha256": "53d4a302db43b6f68ab93eaa4b34b924a6d79a48c9e0c431d93bd54f60292c0d"
+    },
+    {
+      "path": "scripts/validators/session-security-validator.mjs",
+      "sha256": "180fc2c5845288d35c302e63ef7cc3f0e08a65062228a94d18fc8f6576acd68f"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts",
+      "sha256": "b011bbff7be7cf59f1936496fcebb150be3dd8d6e79ae156b328921667f648c8"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-operations-priorities.postgres.test.ts",
+      "sha256": "02d7831852f3cc961ceb05b5dcdb2518a980088823d095cd2cf8d324e96b95ee"
+    },
+    {
+      "path": "services/api-gateway/src/execution/merchant-support.adapter.ts",
+      "sha256": "a09aeb072ebc5443c49916787d7df3d41cd470bd1e8510ce24825825162cf2ef"
+    },
+    {
+      "path": "services/api-gateway/src/index.ts",
+      "sha256": "1956e04760c58129627918593e8c120e640a908d947d80707570b8040b5b3ad4"
+    },
+    {
+      "path": "services/api-gateway/src/routes/internal-console.ts",
+      "sha256": "b29b32d08cf1546e33d71b6a1b6bdaded7298de6b2bf61b4d5e1a67099029d8c"
+    },
+    {
+      "path": "services/api-gateway/src/routes/internal-console/operator-workspaces.ts",
+      "sha256": "d4619ee6849bc89522488c13b3f518747b1071c56cfde906d78032dcae53b516"
+    },
+    {
+      "path": "services/api-gateway/src/routes/merchant-support.ts",
+      "sha256": "9006aab9953f5d7f16c4f97a3737007435e883cbacd9d42e800a3711ba5591d1"
+    },
+    {
+      "path": "services/api-gateway/src/routes/operations/support.ts",
+      "sha256": "37e08e2574191f0f636c29057be59f511836be20e6175d7b542263cd8e3815e0"
+    },
+    {
+      "path": "services/api-gateway/src/routes/orders.ts",
+      "sha256": "cc09e682e840bada89e967520fc2177607d99ac8af9739d32cfa763ba08b8dc2"
+    },
+    {
+      "path": "tests/governance/session-security-validator.test.mjs",
+      "sha256": "9e8edc4b5e26182b38baba447366f0bcae36d2e57934701a9bd380b532e26bd6"
+    }
+  ],
+  "browser_candidate": {
+    "path": "/private/tmp/letbuyy-merchant-priorities-20261021/candidate",
+    "fingerprints": "/private/tmp/letbuyy-merchant-priorities-20261021/candidate-source-hashes-final.json",
+    "sha256": "6604c298686bc580a5e2a434203cb00da2e35533cccafdf062eef4523d4f1070",
+    "source_files": 9959,
+    "environment_files_excluded": true,
+    "limitation": "Browser/build snapshot precedes removal of two decorative radius classes; final historical-order response and catalog preservation assertions separately passed against primary source."
+  },
+  "screenshots": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-priorities-20261021/screenshots-final/console-390px.png",
+      "sha256": "e7717ea23683fe5ecb8a59c33d4e2e2a0b35fd23917b6ddb97e4ed0c5ecb9187"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-priorities-20261021/screenshots-final/console-desktop.png",
+      "sha256": "804c2167626ea93d00fc45ae525c266dac3d05c46ad0330baaaf5939a111d55b"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-priorities-20261021/screenshots-final/merchant-390px.png",
+      "sha256": "d806d86c7b6db691aed96eef695cd838d5a5d162d15dd8d23c4a22529faa6e6b"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-priorities-20261021/screenshots-final/merchant-desktop.png",
+      "sha256": "a4e7ea521c97417c48e5a1ae80e3a13baa6f9cfa7ae83caba8b7f1b779ed61c8"
+    }
+  ],
+  "owned_cleanup": "Both final owned runs exited 0; runner fails on cleanup errors or remaining run-labelled containers/networks/volumes.",
+  "unverified": [
+    "Flutter analysis/build/widget/device/restart workflow",
+    "applying migration370 outside owned ephemeral databases",
+    "web full-tab-restart intent persistence",
+    "hosted/provider/release acceptance"
+  ],
+  "not_performed": [
+    "merge",
+    "push",
+    "deploy",
+    "developer/hosted database migration",
+    "real merchant changes",
+    "external message",
+    "provider transaction"
+  ]
+}

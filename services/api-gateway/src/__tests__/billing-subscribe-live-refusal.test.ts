@@ -39,7 +39,7 @@ function app(env: Record<string, unknown>) {
 
 const body = {
     store_id: STORE,
-    plan_slug: 'growth',
+    plan_slug: 'business',
     billing_period: 'monthly',
     idempotency_key: 'bill1-test-key-0001',
 };
@@ -55,8 +55,9 @@ test('live mode refuses, and does so before touching the database', async () => 
 });
 
 test('live mode refuses even with Razorpay credentials present', async () => {
-    // Credentials do not prove a captured subscription payment. This separate
-    // subscribe path must refuse before it can fabricate a paid reference.
+    // assertAutopayReady passes once credentials exist. That is exactly why it is not sufficient on
+    // its own here: with credentials configured, the old path would have fabricated a reference —
+    // strictly worse, because the deployment looks production-ready.
     const res = await app({
         LETBUYY_AUTOPAY_MODE: 'live',
         RAZORPAY_KEY_ID: 'rzp_test_id',

@@ -1,0 +1,25 @@
+{
+  "captured_at": "2026-10-29T21:56:01.398040+00:00",
+  "stopped": [
+    {
+      "port": 9037,
+      "pid": 64856,
+      "cwd": "/private/tmp/letbuyy-green-checks-20261030/candidate/apps/marketing/web",
+      "signal": "SIGTERM",
+      "owned_task_server": true
+    },
+    {
+      "port": 9038,
+      "pid": 67444,
+      "cwd": "/private/tmp/letbuyy-seo-closeout-20261030/candidate/apps/marketing/web",
+      "signal": "SIGTERM",
+      "owned_task_server": true
+    }
+  ],
+  "normal_services_listening": {
+    "9001": true,
+    "9002": true,
+    "9006": true,
+    "9010": true
+  }
+}

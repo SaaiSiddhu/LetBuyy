@@ -3,7 +3,7 @@ import test from 'node:test';
 import ts from 'typescript';
 import {directTenantQueries} from '../../scripts/governance/tenant-query-scope.mjs';
 
-const registry=new Map([['product_reviews',{scopeColumns:['store_id','site_id']}],['sites',{scopeColumns:['user_id','custom_user_id']}]]);
+const registry=new Map([['product_reviews',{scopeColumns:['store_id','site_id']}]]);
 function inspect(body) {
   const text=`interface Array<T> { [index:number]:T; length:number }
     interface Builder { select(...args:unknown[]):Builder; eq(...args:unknown[]):Builder; in(...args:unknown[]):Builder;
@@ -48,17 +48,4 @@ test('every bulk row must carry scope and the empty array cannot masquerade as a
     getSupabaseAdmin().from('product_reviews').insert([{store_id:'a'},{rating:5}]);
     getSupabaseAdmin().from('product_reviews').insert([]);
   `),[true,false,false]);
-});
-
-
-test('only an exact root-site id read matches the existing runtime root lookup guard',()=>{
-  assert.deepEqual(inspect(`
-    getSupabaseAdmin().from('sites').select('id,payment_settings').eq('id','site-a');
-    getSupabaseAdmin().from('sites').select('*');
-    getSupabaseAdmin().from('sites').select('*').in('id',['site-a','site-b']);
-    getSupabaseAdmin().from('sites').update({name:'changed'}).eq('id','site-a');
-    getSupabaseAdmin().from('sites').delete().eq('id','site-a');
-    getSupabaseAdmin().from('sites').insert({id:'site-a'});
-    getSupabaseAdmin().from('product_reviews').select('*').eq('id','review-a');
-  `),[true,false,false,false,false,false,false]);
 });

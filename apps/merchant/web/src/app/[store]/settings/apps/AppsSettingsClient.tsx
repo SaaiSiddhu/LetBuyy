@@ -8,12 +8,12 @@ import { Button,
     Banner,
     Card,
     ConfirmDialog,
+    EmptyState,
     ExternalLink,
     Section,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
@@ -136,7 +136,6 @@ export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSe
 
     return (
         <SettingsPane
-                navigationKey="apps"
             store={store}
             title="Apps and sales channels"
             description="Review installed apps and sales channel access for this store."
@@ -184,7 +183,7 @@ export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSe
                     description="Apps listed here are installed through the existing app-store gateway installation contract."
                 >
                     {apps.length === 0 ? (
-                        <EmptyState scene="installed-apps"
+                        <EmptyState
                             icon={<AppWindow className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No apps installed"
                             body="Install apps from the marketplace when you are ready to add channels, automations, or embedded merchant tools."

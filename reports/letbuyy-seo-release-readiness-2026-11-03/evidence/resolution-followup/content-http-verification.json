@@ -1,0 +1,797 @@
+{
+  "summary": {
+    "capturedAt": "2026-11-03T10:37:18.159787+00:00",
+    "readOnly": true,
+    "articles": 105,
+    "internalReferencesExpected": 180,
+    "errors": [],
+    "directories": [
+      {
+        "path": "/in/sitemap",
+        "status": 200,
+        "robots": [
+          {
+            "name": "robots",
+            "content": "noindex, follow"
+          },
+          {
+            "name": "googlebot",
+            "content": "noindex, follow"
+          }
+        ],
+        "resourceLinkPreserved": true,
+        "passed": true
+      },
+      {
+        "path": "/in-hi/sitemap",
+        "status": 200,
+        "robots": [
+          {
+            "name": "robots",
+            "content": "noindex, follow"
+          },
+          {
+            "name": "googlebot",
+            "content": "noindex, follow"
+          }
+        ],
+        "resourceLinkPreserved": true,
+        "passed": true
+      },
+      {
+        "path": "/in-ta/sitemap",
+        "status": 200,
+        "robots": [
+          {
+            "name": "robots",
+            "content": "noindex, follow"
+          },
+          {
+            "name": "googlebot",
+            "content": "noindex, follow"
+          }
+        ],
+        "resourceLinkPreserved": true,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "rows": [
+    {
+      "path": "/in/resources/ecommerce/how-to-start-an-online-store-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/how-to-start-an-online-store-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/how-to-start-an-online-store-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce/product-page-optimization",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/product-page-optimization",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/product-page-optimization",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce/reducing-cart-abandonment",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/reducing-cart-abandonment",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/reducing-cart-abandonment",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce/store-seo-checklist",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 3,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/store-seo-checklist",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 3,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/store-seo-checklist",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 3,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce/how-product-reviews-increase-conversion",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/how-product-reviews-increase-conversion",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/how-product-reviews-increase-conversion",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/first-100-orders-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/first-100-orders-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/first-100-orders-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/d2c-brand-launch-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/d2c-brand-launch-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/d2c-brand-launch-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/email-marketing-ecommerce",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/email-marketing-ecommerce",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/email-marketing-ecommerce",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/social-commerce-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/social-commerce-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/social-commerce-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/retention-strategies-india",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/retention-strategies-india",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/retention-strategies-india",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/upi-vs-cod-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 3,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/upi-vs-cod-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 3,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/upi-vs-cod-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 3,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/gst-for-ecommerce-india",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 5,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/gst-for-ecommerce-india",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 5,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/gst-for-ecommerce-india",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 5,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/invoicing-india-merchants",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/invoicing-india-merchants",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/invoicing-india-merchants",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/refunds-returns-policy-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/refunds-returns-policy-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/refunds-returns-policy-india",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/razorpay-integration-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/razorpay-integration-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/razorpay-integration-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/inventory-management-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/inventory-management-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/inventory-management-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/order-fulfillment-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/order-fulfillment-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/order-fulfillment-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/shipping-india-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/shipping-india-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/shipping-india-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/multi-warehouse-inventory",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/multi-warehouse-inventory",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/multi-warehouse-inventory",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/understanding-fulfillment",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/understanding-fulfillment",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/understanding-fulfillment",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/ai-commerce-explained",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/ai-commerce-explained",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/ai-commerce-explained",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/automating-operations-ai",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/automating-operations-ai",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/automating-operations-ai",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/commerce-copilot-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/commerce-copilot-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/commerce-copilot-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/ai-product-recommendations",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/ai-product-recommendations",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/ai-product-recommendations",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/workflow-automation-merchants",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/workflow-automation-merchants",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/workflow-automation-merchants",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/letbuyy-api-getting-started",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/letbuyy-api-getting-started",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/letbuyy-api-getting-started",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/webhooks-complete-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/webhooks-complete-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/webhooks-complete-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/building-first-letbuyy-app",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/building-first-letbuyy-app",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/building-first-letbuyy-app",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/custom-integrations-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/custom-integrations-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/custom-integrations-guide",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/introduction-to-apps",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/introduction-to-apps",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/introduction-to-apps",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/how-themes-work",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/how-themes-work",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/how-themes-work",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/letbuyy-platform-overview",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/letbuyy-platform-overview",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/letbuyy-platform-overview",
+      "status": 200,
+      "expectedInternalReferences": 2,
+      "observedReferenceLinks": 2,
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/merchant-web-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/merchant-web-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/merchant-web-guide",
+      "status": 200,
+      "expectedInternalReferences": 1,
+      "observedReferenceLinks": 1,
+      "errors": []
+    }
+  ]
+}

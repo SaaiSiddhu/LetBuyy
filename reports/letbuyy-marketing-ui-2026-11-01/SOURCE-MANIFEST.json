@@ -1,0 +1,30 @@
+{
+  "basis": "Task-start dirty-tree files, not HEAD; preserve all other user work",
+  "changes": [
+    {
+      "path": "apps/marketing/web/src/app/[locale]/create/page.tsx",
+      "before_sha256": "9b364777534a77aad7b8619e4818bb7e1384275f763667b2fb9c65a9c6b2ad2f",
+      "after_sha256": "506467f132a29d3193a847e79530be8136eaf48830cb8080ebfe4bab233c749e"
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "before_sha256": "da66f4b9abdaa1a9c9e82ecc9ff38c3d9d040cddfbcf705e413f28d1c2e881cb",
+      "after_sha256": "77923e1c6b5cb17abb707eb143ba69cae3d44b26ab892eff3c396345fab0bfd4"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Header.tsx",
+      "before_sha256": "5ed0e2210eaf470d8b84e76c91d6a925b494bb0e1b94639fa1f62e7f90111685",
+      "after_sha256": "abb595eb9b131d192e760151e806eb7b3a09aca15a777da0ca08d0668bc11914"
+    },
+    {
+      "path": "packages/typescript/ui/snapshots/public-api.json",
+      "before_sha256": "643c938509bbb9b896adbccf59b251954af001c0853c78b3844f849f9847c384",
+      "after_sha256": "67e6cf37e67c8a6bc136efbebe135575602439d993d4b8e0318624c86a4afac7"
+    },
+    {
+      "path": "packages/typescript/ui/src/index.ts",
+      "before_sha256": "1adcd9e8567737098736ae5fc84f2b11616129ef58e122c95638c70c5e0871cf",
+      "after_sha256": "2b9034ddb6b23ed392ef4aa0d4b88214393b3523cf873a2f81702ee6960f3e32"
+    }
+  ]
+}

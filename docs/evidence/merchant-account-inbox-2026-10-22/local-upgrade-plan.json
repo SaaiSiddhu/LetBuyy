@@ -1,0 +1,11 @@
+{
+  "resource": "supabase_db_letbuyy-web-local-20261021",
+  "expectedHead": "371",
+  "targetHead": "372",
+  "source": "database/supabase/migrations/372_merchant_account_messages.sql",
+  "sha256": "c7b6d0f51304b4f7c96981d11a906f625a6e64d830e54e4151ef03c743c1f44d",
+  "transaction": "schema and ledger atomically; original migration-owner privileges restored before commit; every guard stays enabled",
+  "businessRowDML": false,
+  "publishesMessages": false,
+  "rollback": "database/supabase/rollback/372_merchant_account_messages.rollback.sql; refuses to erase used message history"
+}

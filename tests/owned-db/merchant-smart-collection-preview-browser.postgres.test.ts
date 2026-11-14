@@ -136,7 +136,7 @@ const bffListPath='/api/stores/'+site.subdomain+'/smart-collections';
 async function openSaved(saved:Saved){
     const page=await owner.newPage();
     try{
-        const[listed]=await Promise.all([page.waitForResponse(response=>new URL(response.url()).pathname===bffListPath&&response.request().method()==='GET',{timeout:90000}),
+        const[listed]=await Promise.all([page.waitForResponse(response=>new URL(response.url()).pathname===bffListPath&&response.request().method()==='GET'),
             page.goto(merchantOrigin+'/'+site.subdomain+'/products/smart-collections')]);
         assert.equal(listed.status(),200);
         const row=page.getByRole('row').filter({has:page.getByText(saved.name,{exact:true})});

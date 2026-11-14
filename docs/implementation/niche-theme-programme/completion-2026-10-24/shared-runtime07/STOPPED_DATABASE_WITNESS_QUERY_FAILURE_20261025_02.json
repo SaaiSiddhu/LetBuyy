@@ -1,9 +1,0 @@
-{
-  "recordedAt": "2026-10-25T01:27:52.160128+00:00",
-  "status": "METADATA_QUERY_DIAGNOSTIC_NOT_ACCEPTANCE",
-  "exitCode": 3,
-  "errorSummary": "ERROR:  operator is not unique: text || \"char\" at character 3399\n",
-  "querySha256": "8adbf1bc607995e91ae7461499c3535ef641eaf391f595b8b562032838b1a465",
-  "databaseMutations": 0,
-  "correctedPythonQuoteDelimiter": true
-}

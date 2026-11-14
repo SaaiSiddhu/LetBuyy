@@ -1,0 +1,231 @@
+{
+  "captured_at": "2026-11-01T02:59:21.721Z",
+  "method": "Natural content-visibility, sequential real scrolling and viewport captures; no CSS containment override; fixed reduced motion and decoded images; frozen original versus candidate",
+  "rows": [
+    {
+      "selector": "#capabilities",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0.000047407407407407407,
+      "mean_channel_difference": 0.0004022222222222222
+    },
+    {
+      "selector": "#merchant-journey",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0.0000688888888888889
+    },
+    {
+      "selector": "#features",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#pricing",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#faq",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#ecosystem",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": ".final-cta",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#capabilities",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0.00008296296296296296,
+      "mean_channel_difference": 0.0005296296296296297
+    },
+    {
+      "selector": "#merchant-journey",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0.00004148148148148148,
+      "mean_channel_difference": 0.00016814814814814814
+    },
+    {
+      "selector": "#features",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#pricing",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#faq",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#ecosystem",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": ".final-cta",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#capabilities",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0.000017894908085244836,
+      "mean_channel_difference": 0.00016695135838620465
+    },
+    {
+      "selector": "#merchant-journey",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#features",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#pricing",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#faq",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#ecosystem",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": ".final-cta",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#capabilities",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0.000023588742476004556,
+      "mean_channel_difference": 0.00017488205628761997
+    },
+    {
+      "selector": "#merchant-journey",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#features",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#pricing",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#faq",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": "#ecosystem",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    },
+    {
+      "selector": ".final-cta",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0
+    }
+  ],
+  "faq_expands_and_collapses": true
+}

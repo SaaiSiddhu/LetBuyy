@@ -1,4 +1,3 @@
-import assert from 'node:assert/strict';
 // Synthetic tenants for the gateway database suites.
 //
 // The suites used to lean on a merchant that already existed in the developer's restored stack (a fixed store id, a fixed
@@ -45,7 +44,6 @@ export function seedSyntheticTenant(psql: Psql, tenant: SyntheticTenant, options
         VALUES ('${tenant.siteId}', 'Synthetic ${tenant.tag}', 'Synthetic ${tenant.tag}', 'store', '${tenant.subdomain}', 'published', true, 'INR', 'en-IN',
                 ${gst ? "'29AAAAA0000A1Z5'" : 'NULL'}, ${gst ? "'29'" : 'NULL'}, 'Synthetic Test Tenant Pvt Ltd', now(), now());
     `);
-    if (gst) psql(`UPDATE sites SET invoice_address='{"line1":"Synthetic supplier road","city":"Bengaluru","state_code":"29","postal_code":"560001","country":"IN"}'::jsonb WHERE id='${tenant.siteId}';`);
     psql(`
         INSERT INTO inventory_locations (id, store_id, name, is_default, status, created_at)
         VALUES ('${tenant.locationId}', '${tenant.siteId}', 'Synthetic Default Warehouse', true, 'active', now());
@@ -76,22 +74,11 @@ export function seedSyntheticOrder(psql: Psql, tenant: SyntheticTenant): { produ
     const orderId = psql(`
         SELECT create_checkout_order(
             '${tenant.siteId}'::uuid, 'Synthetic Seed Buyer', 'syn-seed-buyer-${tenant.subdomain}@example.invalid', '9000000099',
-            '{"line1":"Fixture","city":"Bengaluru","state":"Karnataka","state_code":"29","zip":"560001","country":"IN"}'::jsonb,
+            '{"line1":"Fixture","city":"Bengaluru","state":"Karnataka","state_code":"29"}'::jsonb,
             '[{"product_id":"${productId}","quantity":1}]'::jsonb,
             'cod', NULL, NULL, NULL, 'standard',
             'syn-seed-order-idem-${productId}', NULL, 'syn-seed-order-req-${productId}'
         ) ->> 'id';
     `);
     return { productId, orderId };
-}
-
-
-/** Establish canonical stock for focused cart fixtures; product.stock alone is
- * historical cache and never authorizes current cart availability. */
-export function seedSyntheticProductInventory(psql:(sql:string)=>string,storeId:string):void {
-    assert.match(storeId,/^[a-f0-9-]{36}$/i);
-    psql(`INSERT INTO inventory_levels(id,store_id,product_id,location_id,available,reserved,committed_quantity,available_quantity,reserved_quantity,on_hand_quantity)
-      SELECT gen_random_uuid(),p.store_id,p.id,l.id,p.stock,0,0,p.stock,0,p.stock
-      FROM products p JOIN inventory_locations l ON l.store_id=p.store_id AND l.is_default=true AND l.deleted_at IS NULL
-      WHERE p.store_id='${storeId}' AND NOT EXISTS(SELECT 1 FROM inventory_levels i WHERE i.store_id=p.store_id AND i.product_id=p.id AND i.variant_id IS NULL AND i.deleted_at IS NULL);`);
 }

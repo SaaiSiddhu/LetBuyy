@@ -14,7 +14,7 @@ const STOREFRONTS = Object.values(THEME_ARTWORK)
 function StorefrontStudy({ variant = 0 }: { variant?: number }) {
   return (
     <div className={styles.study} aria-hidden="true">
-      <Image src={STOREFRONTS[variant % STOREFRONTS.length]} alt="" width={1536} height={1024} sizes="(max-width: 699px) 90vw, 480px" loading="eager" unoptimized />
+      <Image src={STOREFRONTS[variant % STOREFRONTS.length]} alt="" width={1536} height={1024} style={{ aspectRatio: '3 / 2' }} sizes="(max-width: 699px) 90vw, 480px" loading="lazy" fetchPriority="low" />
     </div>
   )
 }
@@ -24,7 +24,7 @@ export function ThemeGuideHero() {
     <figure className={styles.heroArtwork}>
       <div className={styles.heroArtCanvas} aria-hidden="true">
         <span className={styles.artIndex}><Copy text={"THE STOREFRONT DESIGN STUDIO"} /></span>
-        <Image src={THEME_ARTWORK.custom} alt="" width={1536} height={1024} sizes="(max-width: 700px) 90vw, 520px" priority unoptimized className={styles.heroImage} />
+        <Image src={THEME_ARTWORK.custom} alt="" width={1536} height={1024} sizes="(max-width: 700px) 90vw, 520px" priority className={styles.heroImage} />
         <div className={styles.artNote}><Palette size={16} /><span><Copy text={"Your brand."} /><br /><strong><Copy text={"Every detail."} /></strong></span></div>
         <div className={styles.artSwatches}><i /><i /><i /><i /><i /></div>
       </div>
@@ -52,7 +52,7 @@ function SectionIllustration() {
   return (
     <div className={styles.sectionIllustration} aria-hidden="true">
       {SECTION_ARTWORK.map(({ label, src }, index) => (
-        <div className={styles.sectionTile} key={label}><span>{String(index + 1).padStart(2, '0')}<LayoutGrid size={15} /></span><div className={styles.sectionArtwork}><Image src={src} alt="" width={1536} height={1024} sizes="(max-width: 699px) 45vw, 260px" loading="eager" unoptimized /></div><b><Copy text={label} /></b></div>
+        <div className={styles.sectionTile} key={label}><span>{String(index + 1).padStart(2, '0')}<LayoutGrid size={15} /></span><div className={styles.sectionArtwork}><Image src={src} alt="" width={1536} height={1024} style={{ aspectRatio: '3 / 2' }} sizes="(max-width: 699px) 45vw, 260px" loading="lazy" fetchPriority="low" /></div><b><Copy text={label} /></b></div>
       ))}
     </div>
   )

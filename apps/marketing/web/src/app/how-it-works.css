@@ -74,6 +74,23 @@
   .how-stories { gap: var(--lb-space-5); }
 }
 @media (max-width: 767px) {
+  .how-sale { --sale-inset: var(--lb-space-3); }
+  .how-sale-hero { gap: var(--lb-space-2); }
+  .how-example-label { margin-bottom: var(--lb-space-2); }
+  .marketing-site #order-example .how-sale-intro h3 { font-size: var(--lb-font-size-h3); line-height: 1.2; }
+  .how-sale-context { font-size: var(--lb-font-size-secondary); line-height: 1.45; }
+  .how-sale-steps { gap: var(--lb-space-2) var(--lb-space-3); }
+  .how-sale-step { padding-top: var(--lb-space-2); gap: var(--lb-space-3); }
+  .how-sale-step-marker { gap: calc(var(--lb-space-1) * .5); margin-bottom: var(--lb-space-2); }
+  .how-sale-art { width: 44px; height: 44px; }
+  .how-sale-step-number { line-height: 1.2; }
+  .how-sale-step-copy { padding-top: 0; }
+  .marketing-site #order-example .how-sale-steps h4 { font-size: var(--lb-font-size-body); line-height: 1.3; margin-bottom: var(--lb-space-1); }
+  .how-sale-steps p { font-size: var(--lb-font-size-secondary); line-height: 1.4; }
+  @container sale-flow (max-width: 560px) {
+    .how-sale-step { grid-template-columns: 44px minmax(0, 1fr); }
+    .how-sale-step-marker { margin-bottom: 0; }
+  }
   .how-header { margin-bottom: var(--lb-space-8); }
   .how-stories { grid-template-columns: minmax(0, 1fr); gap: var(--lb-space-8); }
   .how-story { padding-top: var(--lb-space-5); }

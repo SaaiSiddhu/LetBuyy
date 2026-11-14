@@ -38,18 +38,6 @@ class PushDeviceRegistration {
   };
 }
 
-class PushPermissionDenied implements Exception {
-  const PushPermissionDenied();
-}
-
-enum PushRegistrationState {
-  unavailable,
-  permissionDenied,
-  registering,
-  registered,
-  failed,
-}
-
 class PushService extends ChangeNotifier {
   PushService({required ApiClient api, PushTokenProvider? tokenProvider})
     : _api = api,
@@ -58,10 +46,6 @@ class PushService extends ChangeNotifier {
   final ApiClient _api;
   final PushTokenProvider? _tokenProvider;
 
-  PushRegistrationState _registrationState = PushRegistrationState.unavailable;
-  PushRegistrationState get registrationState => _registrationState;
-
-  final Set<String> _staleTokens = {};
   PushDeviceRegistration? _lastAttempt;
   PushDeviceRegistration? get lastAttempt => _lastAttempt;
   bool _lastCurrentDeviceRegistrationSkipped = false;
@@ -81,63 +65,33 @@ class PushService extends ChangeNotifier {
       throw ArgumentError.value(token, 'token', 'Push token cannot be empty');
     }
 
-    final previousToken = _lastAttempt?.token;
     _lastAttempt = PushDeviceRegistration(
       token: normalizedToken,
       platform: platform ?? currentPlatform(),
       deviceName: deviceName,
     );
-    _registrationState = PushRegistrationState.registering;
     notifyListeners();
-    try {
-      await _api.notifications.registerDeviceToken(_lastAttempt!.toJson());
-      if (previousToken != null && previousToken != normalizedToken)
-        _staleTokens.add(previousToken);
-      for (final stale in _staleTokens.toList()) {
-        await _api.notifications.unregisterDeviceToken(stale);
-        _staleTokens.remove(stale);
-      }
-      _registrationState = PushRegistrationState.registered;
-    } catch (_) {
-      _registrationState = PushRegistrationState.failed;
-      rethrow;
-    } finally {
-      notifyListeners();
-    }
+
+    await _api.notifications.registerDeviceToken(_lastAttempt!.toJson());
   }
 
   Future<void> unregisterDeviceToken(String token) async {
     if (token.trim().isEmpty) return;
 
     await _api.notifications.unregisterDeviceToken(token.trim());
-    if (_lastAttempt?.token == token.trim()) {
-      _registrationState = PushRegistrationState.unavailable;
-      notifyListeners();
-    }
   }
 
   Future<bool> registerCurrentDeviceToken({String? deviceName}) async {
-    try {
-      final token = (await _tokenProvider?.call())?.trim();
-      if (token == null || token.isEmpty) {
-        _lastCurrentDeviceRegistrationSkipped = true;
-        _registrationState = PushRegistrationState.unavailable;
-        notifyListeners();
-        return false;
-      }
-      _lastCurrentDeviceRegistrationSkipped = false;
-      await registerDeviceToken(token: token, deviceName: deviceName);
-      return true;
-    } on PushPermissionDenied {
-      _registrationState = PushRegistrationState.permissionDenied;
-      notifyListeners();
-      return false;
-    } catch (_) {
-      // Background registration must never become an uncaught sign-in error.
-      _registrationState = PushRegistrationState.failed;
+    final token = (await _tokenProvider?.call())?.trim();
+    if (token == null || token.isEmpty) {
+      _lastCurrentDeviceRegistrationSkipped = true;
       notifyListeners();
       return false;
     }
+
+    _lastCurrentDeviceRegistrationSkipped = false;
+    await registerDeviceToken(token: token, deviceName: deviceName);
+    return true;
   }
 
   PushDevicePlatform currentPlatform() {

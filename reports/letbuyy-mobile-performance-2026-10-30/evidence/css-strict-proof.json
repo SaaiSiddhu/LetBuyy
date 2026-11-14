@@ -1,0 +1,4547 @@
+{
+  "original_bytes": 542495,
+  "shared_bytes": 356415,
+  "route_bytes": {
+    "home": 98167,
+    "resources": 88359
+  },
+  "rule_count": 3136,
+  "protected_shared_classes": [
+    "adock-next",
+    "adock-ring",
+    "adock-sheet-list",
+    "arc-author-facts",
+    "arc-body",
+    "arc-body-ol",
+    "arc-body-ul",
+    "arc-breadcrumb",
+    "arc-code-block",
+    "arc-table",
+    "cat-crumb",
+    "cat-curriculum",
+    "cat-docs",
+    "cat-ledger-list",
+    "cat-mag-list",
+    "cat-show-card",
+    "cat-show-cta",
+    "cg-map-status",
+    "cg-store-label",
+    "clg-fact",
+    "cmap-acc-icon",
+    "cmap-acc-label",
+    "cmap-acc-tagline",
+    "cmap-accordion-item",
+    "cmap-accordion-trigger",
+    "cmap-b2b-thead",
+    "cmap-capability-scene",
+    "cmap-catalog-thumb",
+    "cmap-cust-thead",
+    "cmap-graph-node-g",
+    "cmap-headline",
+    "cmap-headline-accent",
+    "cmap-inv-thead",
+    "cmap-kicker",
+    "cmap-lead",
+    "cmap-mock-analytics-kpi",
+    "cmap-mock-pay-kpi",
+    "cmap-mock-pay-kpi-main",
+    "cmap-mock-pay-method",
+    "cmap-nav-desc",
+    "cmap-nav-icon",
+    "cmap-nav-label",
+    "cmap-nav-tagline",
+    "cmap-order-thead",
+    "cmap-panel-features",
+    "cmap-panel-tagline",
+    "cmap-panel-visual",
+    "cmap-preview-source",
+    "cmap-preview-source--storefront",
+    "cmap-preview-spacer",
+    "cmap-sf-browser",
+    "cmap-sf-hero-art",
+    "cmap-sf-nav-links",
+    "cmap-size-probe",
+    "cmap-viewport",
+    "cop-auto-hd",
+    "cop-auto-title",
+    "cop-graph-svg",
+    "cop-header",
+    "cop-ws-dots",
+    "ecos-rail-item",
+    "ecos-rail-label",
+    "ecos-rail-tagline",
+    "ecosystem",
+    "ecosystem-eyebrow",
+    "ecosystem-headline",
+    "ecosystem-headline-accent",
+    "ecosystem-subhead",
+    "hero-commerce-metric",
+    "hero-cta",
+    "hero-eyebrow",
+    "hero-network-svg",
+    "hero-title-os",
+    "hero-trust-item",
+    "mgj",
+    "mgj-chapter-art",
+    "mgj-chapter-copy",
+    "mgj-chapter-nav-button",
+    "mgj-chapter-tasks",
+    "mgj-explorer-header",
+    "mgj-headline",
+    "mgj-headline-accent",
+    "mgj-kicker",
+    "mgj-step-desc",
+    "mgj-step-metric",
+    "mgj-step-title",
+    "mgj-subtitle",
+    "rc-article-breadcrumb",
+    "rc-blockquote",
+    "rc-body-ol",
+    "rc-body-ul",
+    "rc-card-compact",
+    "rc-card-compact-title",
+    "rc-card-featured",
+    "rc-card-featured-subtitle",
+    "rc-card-featured-title",
+    "rc-card-subtitle",
+    "rc-card-v3",
+    "rc-card-v3-subtitle",
+    "rc-card-v3-title",
+    "rc-cl-content",
+    "rc-code-block",
+    "rc-newsletter",
+    "rc-table"
+  ],
+  "rule_declaration_and_conditions_equal": true,
+  "method": "Move only rules where EVERY comma-separated selector has a positive route-specific SUBJECT class and NO functional pseudo selector; all :is/:where/:has/:not and mixed shared rules AND every rule touching their route classes stay in original global order. Visual and SPA route-order validation is also required.",
+  "moves": [
+    {
+      "route": "home",
+      "selector": ".hero"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-bg,\n.hero-overlay"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-bg"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-overlay"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-shell"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-copy"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-title"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-subtitle"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-cta-play"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-cta-play::before"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-trust-strip"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-trust-pill"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-trust-pill:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-trust-pill-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-commerce-metrics"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-visual"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-network-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-network-icon"
+    },
+    {
+      "route": "home",
+      "selector": ".hero"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-network-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-visual"
+    },
+    {
+      "route": "home",
+      "selector": ".hero"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-shell"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-copy"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-visual"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-network-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-commerce-metrics"
+    },
+    {
+      "route": "home",
+      "selector": ".hero"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-title"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-subtitle"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-visual"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-network-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-commerce-metrics"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-section"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-section::before"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-hd"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-wrap::before,\n.cop-metrics-wrap::after"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-wrap[data-scroll-left]::before"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-wrap[data-scroll-right]::after"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-wrap::before"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-wrap::after"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-arrow"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-arrow:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-arrow-l"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics-arrow-r"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-metrics::-webkit-scrollbar"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-met"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-met:last-child"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-met-val"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-met-lbl"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-unified"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-unified-chrome"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-unified-brand"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-unified-brand-label"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-unified-brand-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-unified-chip"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-unified-chip-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-unified-panels"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-unified-panels"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-uni-l"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-uni-l .cop-graph-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-uni-l .cop-graph-canvas"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-uni-r"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-uni-r .cop-ws"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-uni-r .cop-ws-body::after"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-uni-r"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live-hd"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live-title"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live-count"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live-scroll"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live-scroll::after"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live-list"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live-list:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live-list"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-live-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-graph-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-graph-canvas"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-gnode-icon"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-graph-legend"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-gleg-pill"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-gleg-pill:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-gleg-pill-act"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-gleg-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-hd"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-title"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-pulse"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-scroll"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-scroll::after"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-list"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-list:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-list"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-time"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-pip"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-feed-txt"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-ws"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-ws-chrome"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-ws-url"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-ws-body"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-ws-body::after"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-sub"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-flow"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-flow"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-evt"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-evtlbl"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-tabs"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-tab"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-tab:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-tab-act"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-tab-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-evtname"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-arrow"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-arrow"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-steps"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-step"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-check"
+    },
+    {
+      "route": "home",
+      "selector": ".cop-auto-txt"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-header"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-metrics"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-metrics"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-metric"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-metric-val"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-metric-lbl"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-grid"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-grid"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-grid"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship::after"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-badge-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-badge-text"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-body"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-top"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-icon"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-kicker"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-desc"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-chips"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-chip"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-chip:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-cta"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-flagship-cta:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-topbar"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-topbar-left"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-topbar-logo"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-topbar-domain"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-live"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-live-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-body"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-sidebar"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-mod"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-mod.is-active"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-mod-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-mod-label"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-mod.is-active .ecos-os-mod-label"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-main"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-kpis"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-kpi"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-kpi-v"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-kpi-l"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-chart"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-bar"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-feed"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-feed-row"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-feed-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-feed-dot--success"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-feed-dot--ai"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-feed-dot--pay"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-rail"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-rail"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-rail-label"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-rail-items"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-rail-foot"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-rail-icon"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-rail-text"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-rail-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-rail-arrow"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-sidebar"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-rail"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-rail-label"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-rail-items"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-rail-item-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-rail-foot"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-metric-val"
+    },
+    {
+      "route": "home",
+      "selector": ".ecosystem-metric"
+    },
+    {
+      "route": "home",
+      "selector": ".ecos-os-kpis"
+    },
+    {
+      "route": "home",
+      "selector": ".hero-trust"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap::before"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-section-header"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-section-header"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-graph-container"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-graph-container"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-graph-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-graph-svg"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-node-artwork"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-desktop-panel .cmap-panel-body:focus-visible"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-body"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-body"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-body"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-left"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-left"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-right"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-right"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-desktop-panel"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-desktop-panel"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-desktop-panel .cmap-panel-body"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-desktop-panel .cmap-panel-body::-webkit-scrollbar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-desktop-panel .cmap-panel-body::-webkit-scrollbar-thumb"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mobile-accordion"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mobile-accordion"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-item"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-item:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-item.is-active"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-item:focus-visible"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-text"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-badge-live"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-badge-beta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-badge-enterprise"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-item.is-active .cmap-nav-badge-live"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-item.is-active .cmap-nav-badge-beta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-nav-item.is-active .cmap-nav-badge-enterprise"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-header"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-icon"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-header-meta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-module-name"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-tagline-text"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-badge-live"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-badge-beta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-badge-enterprise"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-body"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-body::-webkit-scrollbar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-info"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-info--illustrated"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-copy"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-info--illustrated"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-panel-desc"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-content"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-connected"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-connected-label"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-connected-chips"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-connected-chip"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-connected-chip:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-connected-chip:focus-visible"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-acc-info"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-acc-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-acc-badge-live"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-acc-badge-beta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-acc-badge-enterprise"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-acc-chevron"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-accordion-body"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-carousel:focus-visible"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-carousel-help"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site .cmap-panel-icon .cmap-shortcut-artwork"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-preview-frame"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site #capabilities .cmap-panel-icon .cmap-shortcut-artwork"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-storefronts"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-orders,\n.cmap-mock-inventory,\n.cmap-mock-customers,\n.cmap-mock-b2b"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-orders::-webkit-scrollbar,\n.cmap-mock-inventory::-webkit-scrollbar,\n.cmap-mock-customers::-webkit-scrollbar,\n.cmap-mock-b2b::-webkit-scrollbar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-heading"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-header-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-pill"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-pill-info"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-pill-success"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-pill-warning"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-pill-primary"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-bar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-url"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-live"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-content"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-content::-webkit-scrollbar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-nav"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-nav-brand"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-nav-logo"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-nav-name"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-nav-actions"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-nav-icon"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-nav-hamburger"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-nav-hamburger"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-hero"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-hero-content"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-hero-tag"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-hero-title"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-hero-sub"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-hero-cta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-art-word"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-art-caption"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-hero"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-art-caption"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-hero-title"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-collections"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-section-label"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-collections-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-collections-row::-webkit-scrollbar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-chip"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-chip-active"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-products"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-products"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-products"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-card"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-img"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-img"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-art"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-art--0"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-art--1"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-art--2"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-art--3"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-info"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-name"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-product-price"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-footer"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-footer-brand"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-footer-link"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-sf-footer-sep"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-perf-strip"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-perf-item"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-perf-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-perf-divider"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-header"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-title"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-count"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-row:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-thumb"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-thumb,\n.cmap-inv-thumb,\n.cmap-b2b-thumb"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-id"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-product"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-qty"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-amount"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-badge-success"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-badge-info"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-badge-primary"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-badge-warning"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-badge-muted"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-header"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-title"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-alert"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-row:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-thumb"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-meta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-name"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-sku"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-bar-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-bar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-fill"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-fill-warn"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-qty"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-qty-warn"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-badge-success"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-badge-warning"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-badge-danger"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-actions"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-btn"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-pay-kpis"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-pay-methods"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-pay-bar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-pay-fill"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-header"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-title"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-count"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-row:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-avatar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-avatar-0"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-avatar-1"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-avatar-2"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-avatar-3"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-avatar-4"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-meta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-name"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-since"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-orders"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-ltv"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-badge-vip"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-badge-regular"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-cust-badge-new"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-analytics-kpis"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-analytics-trend"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-analytics-chart"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-chart-bars"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-bar"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-chart-label"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-ai-header"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-ai-card"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-ai-card-alert"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-ai-card-nudge"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-mock-ai-card-copy"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-header"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-header-left"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-order-id"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-account"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-header-right"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-tag-wholesale"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-tag-status"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-row:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-thumb"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-meta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-name"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-sku"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-unit"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-qty"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-sub"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-disc"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-disc-none"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-total"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-total-left"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-total-label"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-total-items"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-total-right"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-total-amount"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-total-saved"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-thumb"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-id"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-product"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-qty"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-amount"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-order-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-thumb"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-meta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-qty"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-bar-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-badge"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-inv-actions"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-row"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-thumb"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-meta"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-sub"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-unit"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-qty"
+    },
+    {
+      "route": "home",
+      "selector": ".cmap-b2b-disc"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-explorer-workspace"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-tabs"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-tab"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-tab:first-child"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-tab:last-child"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-tab[aria-selected=\"true\"]"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-tab:hover"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-number"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-tab[aria-selected=\"true\"] .mgj-stage-number"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-name"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-short"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-tab:focus-visible, .mgj-chapter:focus-visible"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapters"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter[inert]"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-intro"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-tools"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-description"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-nav"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-position"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-explorer-note"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-explorer-workspace"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-tab"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-name"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-stage-short"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-intro"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-tools"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-description"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-nav"
+    },
+    {
+      "route": "home",
+      "selector": ".mgj-chapter-intro"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-title"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-subtitle"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-trust-pill"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-trust-pill-dot"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site .cmap-sf-bar"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site .cmap-sf-dots"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site .cmap-sf-url"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site .cmap-sf-nav-name"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site .cmap-sf-nav-actions"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site .cmap-sf-live"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site .cmap-shortcut-artwork"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .cop-auto-sub"
+    },
+    {
+      "route": "home",
+      "selector": ".commerce-globe"
+    },
+    {
+      "route": "home",
+      "selector": "[data-theme='light'] .commerce-globe"
+    },
+    {
+      "route": "home",
+      "selector": "[data-theme='light'] .commerce-globe .cg-surface,\n[data-theme='light'] .commerce-globe .cg-connections"
+    },
+    {
+      "route": "home",
+      "selector": "[data-theme='light'] .commerce-globe .cg-store-symbol"
+    },
+    {
+      "route": "home",
+      "selector": "[data-theme='light'] .cg-store-pin--origin .cg-store-symbol"
+    },
+    {
+      "route": "home",
+      "selector": "[data-theme='dark'] .commerce-globe"
+    },
+    {
+      "route": "home",
+      "selector": ".commerce-globe:focus-visible"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-accessible-caption"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-scene"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-canvas"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-surface"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-connections"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-stores"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-globe-layers"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-particles"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-title"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-title::before"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-lockup"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-mark"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-brand"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-letter"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-letter--accent"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-letter--accent"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-message"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-rule"
+    },
+    {
+      "route": "home",
+      "selector": "[data-theme='light'] .cg-closing-title"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-particles"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-lockup, .cg-closing-message, .cg-closing-letter"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-title::before, .cg-closing-rule"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-closing-title .cg-closing-letter"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-store-pin"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-store-symbol"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-store-pin--origin .cg-store-symbol"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-store-pin--origin .cg-store-symbol::before"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-site .final-cta .hero-network-wrap"
+    },
+    {
+      "route": "home",
+      "selector": ".commerce-globe--hero"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-store-symbol"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-shell"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-visual"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .commerce-globe--hero"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .commerce-globe--hero .cg-scene"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-title"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-copy"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-subtitle"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-shell"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-visual"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-copy"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .commerce-globe--hero"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .commerce-globe--hero .cg-scene"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-title"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-subtitle"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-trust-strip"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-trust-pill"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-shell"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-shell"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-visual"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-title"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-subtitle"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-trust-strip"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-trust-pill"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-commerce-metrics"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-subtitle"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-commerce-metrics"
+    },
+    {
+      "route": "home",
+      "selector": ".cg-store-pin"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-shell"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-visual"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-copy"
+    },
+    {
+      "route": "home",
+      "selector": ".marketing-home .hero-shell"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cat-nav"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cat-nav::-webkit-scrollbar"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cat-pill"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cat-pill:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cat-pill.active"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-chip"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-badge"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-meta-dot"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card.compact"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card.compact .rc-card-content"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card.compact .rc-card-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-progress"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-progress-bar"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-toc"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-toc::-webkit-scrollbar"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-toc-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-toc-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-toc-item:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-toc-item.active"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-toc-item.h3"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-body-p"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-body-h2"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-body-h3"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-callout"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-callout-tip"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-callout-warning"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-callout-info"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-callout-success"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-callout-icon"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-callout-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-callout-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-table-wrap"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-newsletter-form"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-newsletter-input"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-newsletter-input:focus"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-newsletter-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-newsletter-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-newsletter-success"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-layout"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-layout"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-toc-col"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-toc-col"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-header"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-subtitle"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-author"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-author-name"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-author-role"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-info"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-info-dot"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-tags"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-tag"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-tag:hover, .rc-tag.active"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-tags-cloud"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-entry"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-entry"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-version"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-date"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-tag"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-tag-feature"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-tag-fix"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-tag-improvement"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-tag-security"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-tag-breaking"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-items"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-item-dot"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-item-dot-feature"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-item-dot-fix"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-cl-item-dot-improvement"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-search-input"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-search-input:focus"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-search-input::placeholder"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-search-count"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-layout-v2"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-layout-v2"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-toc-col-v2"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-toc-col-v2"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-sidebar-col"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-sidebar-col"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-actions"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-copy-link-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-copy-link-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-sidebar"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-sidebar-card"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-sidebar-label"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-card"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-avatar"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-avatar.rc-author-avatar-sm"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-name"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-role"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-bio"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-links"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-social"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-social:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-all-link"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-all-link:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-share-buttons"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-share-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-share-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-sidebar-newsletter"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-sidebar-newsletter-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-sidebar-newsletter-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-sidebar-newsletter-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-sidebar-newsletter-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-facts-sep"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-soc"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-soc:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-page"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-hero"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-hero-main"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-hero-icon"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-hero-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-hero-desc"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-hero-count"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-hero-tags"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-hero-tag"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-hero-tag:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-body"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-section-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-cur-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-cur-item:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-cur-num"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-cur-body"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-cur-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-cur-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-cur-time"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-magazine"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-magazine"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-mag-lead"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-mag-kicker"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-mag-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-mag-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-mag-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-mag-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-mag-item:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-mag-item-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-mag-item-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-head,\n.cat-ledger-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-head"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-row:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-level"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-time"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-head"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-level"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-ledger-time"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipeline"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-stage"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-marker"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-dot"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-line"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-card"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-card:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-step"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-pipe-time"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-showcase"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-showcase"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-show-glow"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-show-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-show-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-docs-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-docs-row:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-docs-idx"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-docs-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-docs-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-more"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-more-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-more-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-more-item:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-more-label"
+    },
+    {
+      "route": "resources",
+      "selector": ".cat-more-count"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-page"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-head"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-back"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-back:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-summary"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-facts"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-fact-mono"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-rss"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-rss:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-list"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-entry"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-entry"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-entry:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-entry::before"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-entry.is-latest"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-tag-feature"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-tag-fix"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-tag-improvement"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-tag-security"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-tag-breaking"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-stamp"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-stamp"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-version"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-date"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-tag"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-latest"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-entry-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-items"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-sign"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-item-feature .clg-sign"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-item-improvement .clg-sign"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-item-fix .clg-sign"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-item-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-foot"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-entry"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-summary"
+    },
+    {
+      "route": "resources",
+      "selector": ".clg-item-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-bar"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-contents"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-contents:hover,\n.adock-contents.is-open"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-ring-track"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-ring-fill"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-ring-pct"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-divider"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-icon"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-icon:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-next-label"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-next-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-sheet"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-sheet-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-sheet-link"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-sheet-link:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-sheet-num"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-contents-label"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-contents"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-next-label"
+    },
+    {
+      "route": "resources",
+      "selector": ".adock-bar"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-author-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-author-name"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-author-avatar.rc-author-avatar-xs"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-v3-top-bar"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-v3-body"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-v3-chips"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-v3-footer"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-featured-accent"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-featured-body"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-featured-top"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-featured-footer"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-compact-color"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-compact-body"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-compact-cat"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-card-compact-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-badge-diff"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-badge-beginner"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-badge-intermediate"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-badge-advanced"
+    },
+    {
+      "route": "resources",
+      "selector": "[data-theme=\"dark\"] .rc-badge-beginner"
+    },
+    {
+      "route": "resources",
+      "selector": "[data-theme=\"dark\"] .rc-badge-intermediate"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-nav"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-header"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-label"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-progress-bar"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-progress-fill"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-list"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-item:last-child"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-item.current"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-item.done"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-step"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-item.current .rc-series-step"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-item.done .rc-series-step"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-current-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-link"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-link:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-series-link-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-prev-next"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-prev-next-inner"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-prev-next-inner"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-prev-next-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-prev-next-item:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-next-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-prev-next-dir"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-next-item .rc-prev-next-dir"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-prev-next-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-action-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-action-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-action-btn.active"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-prev-next-inner"
+    },
+    {
+      "route": "resources",
+      "selector": ".rc-article-layout-v2"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-container"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-layout"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-layout"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-left"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-left"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc::-webkit-scrollbar"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-label"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-item:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-item.active"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-item.h3"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-item.h3.active"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-num"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-item.active .arc-toc-num"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-divider"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-prog-wrap"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-prog-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-prog-track"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-prog-fill"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-prog-label"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-meta-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-meta-icon"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-actions-divider"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-actions"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-action-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-action-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-action-icon"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-back"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-toc-back:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-center"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-header"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-eyebrow"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-flag"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-breadcrumb-sep"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-lead"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-byline"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-avatar-lg"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-byline-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-byline-primary"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-byline-role"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-byline-secondary"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-byline-sep"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-tags-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-tag"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-tag:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-actions-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-action-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-action-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-action-btn.active"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-body-p"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-body-p-lead"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-body-h2"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-body-h3"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-heading-anchor"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-body-h2:hover .arc-heading-anchor,\n.arc-body-h3:hover .arc-heading-anchor"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-heading-anchor:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-blockquote"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-blockquote-mark"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-blockquote-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-blockquote-cite"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-tip"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-warning"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-info"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-success"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-icon-wrap"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-icon-tip"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-icon-warning"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-icon-info"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-icon-success"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-callout-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-insight-block"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-insight-eyebrow"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-insight-line"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-insight-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-insight-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-checklist-block"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-checklist-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-checklist-items"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-checklist-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-checklist-check"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-checklist-check.done"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-checklist-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-metric-block"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-metric-card"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-metric-label"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-metric-value"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-metric-change"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-metric-change.pos"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-metric-change.neg"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-block"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-item:last-child"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-item::before"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-item:last-child::before"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-dot"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-content"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-step"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-timeline-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-commerce-block"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-commerce-eyebrow"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-commerce-scenario"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-commerce-result"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-commerce-metric"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-ai-block"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-ai-eyebrow"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-ai-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-ai-items"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-ai-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-ai-dot"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-table-wrap"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-banner"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-left"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-icon"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-badge"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-cta"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-cta:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-right"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-right"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-sidebar"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-sidebar::-webkit-scrollbar"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-sidebar-block"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-top"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-avatar-xl"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-nm"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-rl"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-bio"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-stats-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-stat-cell"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-stat-cell:last-child"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-stat-n"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-stat-l"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-topics-row"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-topic"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-links"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-soc"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-soc:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-all"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-author-all:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-card"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-badge"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-sub-count"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-features"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-feat"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-check"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-input"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-input:focus"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-success"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-nl-hint"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-related-hd"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rel-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rel-item:last-child"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rel-item:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rel-cat"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rel-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rel-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-progress"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-progress-fill"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mobile-toc"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mobile-toc"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mob-toc-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mob-toc-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mob-toc-list"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mob-toc-list.open"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mob-toc-a"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mob-toc-a:last-child"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mob-toc-a:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-mob-toc-a.h3"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-zone"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-container"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-section"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-grid"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-grid"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-card"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-card:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-dir"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-next-card"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-next-card .arc-pn-dir"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-cat"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-meta"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-section"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-eyebrow"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-heading"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-grid"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-grid"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-grid"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-card"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-card:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-card:first-child .arc-rec-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-top"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-cat"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-desc"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-footer"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-time"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-arrow"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-card:hover .arc-rec-arrow"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-section"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-inner"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-badge"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-trust"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-trust-item"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-form"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-form"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-input"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-input:focus"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-btn"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-btn:hover"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-hint"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-ok"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-right"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-sidebar"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-container"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-container"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-center"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-header"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-title"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-lead"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-body-p"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-body-p-lead"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-body-h2"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-body-h3"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-blockquote"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-blockquote-text"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-insight-block"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-metric-block"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-banner"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-left"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-completion-cta"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-pn-section"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-section"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-rec-heading"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-section"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-sub"
+    },
+    {
+      "route": "resources",
+      "selector": ".arc-post-nl-title"
+    }
+  ]
+}

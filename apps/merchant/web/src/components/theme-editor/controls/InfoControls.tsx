@@ -10,9 +10,8 @@
  * RISK-DUAL-N01: no schema/definition mutation.
  */
 
-import { Info } from 'lucide-react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
-
+import { MaterialIcon } from '@letbuyy/ui'
 import styles from './controls.module.css'
 
 interface InfoHeaderProps {
@@ -47,7 +46,7 @@ export function FieldParagraph({ field }: InfoParagraphProps) {
     const text = field.info || field.description || field.label
     return (
         <p className={styles.infoParagraph}>
-            <Info size={12} aria-hidden />
+            <MaterialIcon name="info" size={12} aria-hidden />
             {' '}
             {text}
         </p>

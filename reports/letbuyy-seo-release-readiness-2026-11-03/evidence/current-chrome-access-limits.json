@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-11-03T09:20:59.233016+00:00",
+  "requestedProfile": "Current Chrome profile",
+  "nativeWindowObserved": "Open ChatGPT? application-opening dialog",
+  "dialogChoiceMade": false,
+  "directBrowserInventoryResult": "Local browser use is disabled in Work settings.",
+  "settingsChanged": false,
+  "alternativeProfileUsed": false,
+  "authenticatedBrowserReadsRepeatedThisFollowup": false,
+  "ownerQuestionStatus": "Pending: finish/dismiss dialog; no response received during this follow-up",
+  "effect": "Fresh account/browser interaction acceptance is blocked. Earlier dated GSC/Firebase/GA4 observations remain historical evidence, not a fresh access success.",
+  "separateLabScope": "Controlled headless Lighthouse runs are performance lab measurements only; no profile cookies or account sessions were read."
+}

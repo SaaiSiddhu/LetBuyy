@@ -1,0 +1,10 @@
+{
+  "captured_at": "2026-10-29T21:04:29.659282+00:00",
+  "mode": "test",
+  "operation": "GET /v1/orders?count=1",
+  "supplier_profile_present": false,
+  "http_status": 401,
+  "error_code": "BAD_REQUEST_ERROR",
+  "description": "Authentication failed",
+  "authenticated": false
+}

@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "validated_on": "2026-10-29",
+  "checks": [
+    "All saved JSON parses",
+    "CSV has 163 English HTML pages",
+    "Main crawl has 171 attempts and empty queue",
+    "35 articles omitted from sitemap confirmed",
+    "101 locale-stripped canonicals confirmed",
+    "12 distinct action items with evidence/dependencies/validation/indicator/failure fields",
+    "Scores/absent metrics remain null",
+    "Markdown local links resolve",
+    "Crawl evidence file paths exist",
+    "Four screenshot artifacts exist"
+  ],
+  "source_modified": false,
+  "full_repository_gate": "not run; architecture validator and governance plan passed separately"
+}

@@ -1,4 +1,3 @@
-import { DEFAULT_EMAIL_BRAND, renderEmailShell, eyebrow, heading, paragraph, detailTable, detailRow, ctaRow, ctaButton, smallPrint, escapeHtml, safeSubject, formatEmailSender } from '@letbuyy/notification-core/email';
 import { bytesToHex, createMerchantStaffInvitationToken, timingSafeEqualHex } from '@letbuyy/auth-core';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 
@@ -22,13 +21,8 @@ export async function sendStaffInvitationEmail(env: StaffInvitationEmailEnv, inv
   accept.searchParams.set('token',token);
   // All message fields come from the immutable invitation snapshot. Do not
   // interpolate mutable store metadata or timestamps into a provider retry.
-  const result=await sendResendEmail({apiKey:env.RESEND_API_KEY,from:formatEmailSender(invitation.sender),to:invitation.email,
-    subject:safeSubject(`You are invited to ${invitation.store_name} on LetBuyy`),
-    html:renderEmailShell(DEFAULT_EMAIL_BRAND,eyebrow('Team invitation')+heading('You are invited to join the team')+
-      paragraph(`Join ${escapeHtml(invitation.store_name)} on LetBuyy. Sign in with the email address that received this invitation and accept to activate access.`)+
-      detailTable([detailRow('Role',escapeHtml(invitation.role))])+ctaRow([ctaButton(accept.toString(),'Review invitation')])+
-      smallPrint(`Expires at ${escapeHtml(invitation.expires_at)}. If you did not expect this invitation, ignore it.`),
-      {preheader:'Review an invitation to work on a LetBuyy store.',reason:'A store administrator invited this email address to their team.',category:'security'}),
+  const result=await sendResendEmail({apiKey:env.RESEND_API_KEY,from:invitation.sender,to:invitation.email,
+    subject:`You are invited to ${invitation.store_name} on LetBuyy`,
     text:[`You have been invited to ${invitation.store_name} as ${invitation.role}.`,
       'Sign in with this verified email address and explicitly accept to activate access.',
       accept.toString(),`This invitation expires at ${invitation.expires_at}.`,

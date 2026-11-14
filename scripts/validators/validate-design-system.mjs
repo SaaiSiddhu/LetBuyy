@@ -103,12 +103,12 @@ const darkModeReachabilityTargets = [
     },
     {
         surface: 'theme-marketplace',
-        files: ['apps/frozen/theme-store/src/components/layout/navbar.tsx', 'apps/frozen/theme-store/src/app/layout.tsx'],
-        patterns: [/<ThemeToggleButton\b/, /<LetbuyyThemeProvider\b/],
+        files: ['apps/frozen/theme-store/src/components/layout/navbar.tsx'],
+        patterns: [/function ThemeToggle\(/, /setTheme\(/],
     },
     {
         surface: 'admin-web',
-        files: ['apps/internal/console/src/app/(dashboard)/layout.tsx'],
+        files: ['apps/internal/console/src/components/ConsoleShell.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
     {

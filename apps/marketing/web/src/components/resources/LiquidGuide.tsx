@@ -37,7 +37,7 @@ function ArchitectureIllustration() {
 function SectionIllustrations() {
   return (
     <div className={styles.sectionGallery}>
-      {[SECTION_ARTWORK[0], SECTION_ARTWORK[2]].map(art => <figure key={art.src}><Image src={art.src} alt="" width={1536} height={1024} sizes="(max-width: 600px) 90vw, 420px" loading="eager" unoptimized /><figcaption><LayoutGrid size={15} aria-hidden="true" /><Copy text={art.label} /><span><Copy text={"Configurable section illustration"} /></span></figcaption></figure>)}
+      {[SECTION_ARTWORK[0], SECTION_ARTWORK[2]].map(art => <figure key={art.src}><Image src={art.src} alt="" width={1536} height={1024} style={{ aspectRatio: '3 / 2' }} sizes="(max-width: 600px) 90vw, 420px" loading="lazy" fetchPriority="low" /><figcaption><LayoutGrid size={15} aria-hidden="true" /><Copy text={art.label} /><span><Copy text={"Configurable section illustration"} /></span></figcaption></figure>)}
     </div>
   )
 }

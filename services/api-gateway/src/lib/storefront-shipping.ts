@@ -1,8 +1,5 @@
-import { StorefrontShippingOptionsSchema, type StorefrontShippingOption } from '@letbuyy/shared-types';
-import type { CreateCheckoutOrderCommand } from '@letbuyy/checkout-core';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { gstStateCodeFromName, gstStateName } from '@letbuyy/checkout-core';
-import { AppError } from './errors';
 
 export interface StorefrontShippingAddress {
     country: string;
@@ -11,7 +8,18 @@ export interface StorefrontShippingAddress {
     pincode: string;
 }
 
-export type StorefrontShippingRateOption = StorefrontShippingOption;
+export interface StorefrontShippingRateOption {
+    id: string;
+    name: string;
+    type: 'flat' | 'free' | 'price_based';
+    currency: 'INR';
+    amount_minor: number;
+    estimated_days_min: number | null;
+    estimated_days_max: number | null;
+    cod_available: boolean;
+    source: 'seller_zone_configuration';
+    carrier_confirmed: false;
+}
 
 export interface ShippingZoneRow {
     id: string;
@@ -94,33 +102,14 @@ export async function listStorefrontShippingRates(
     storeId: string,
     address: StorefrontShippingAddress,
     subtotalMinor: number,
-    items?: CreateCheckoutOrderCommand['items'],
 ): Promise<StorefrontShippingRateOption[]> {
-    if (items) {
-        const result = await db.rpc('list_storefront_shipping_options', {
-            p_store_id: storeId, p_items: items,
-            p_address: { country: address.country, state: address.state,
-                state_code: address.stateCode || gstStateCodeFromName(address.state), zip: address.pincode },
-        });
-        if (result.error) {
-            if ((result.error.message || '').includes('CHECKOUT_SHIPPING_PROFILE_SPLIT_REQUIRED')) {
-                throw new AppError('These items use different delivery profiles. Place a separate order for each profile.', 409, 'CHECKOUT_SHIPPING_PROFILE_SPLIT_REQUIRED');
-            }
-            if ((result.error.message || '').includes('CHECKOUT_SHIPPING_WEIGHT_REQUIRED')) {
-                throw new AppError('The store needs to complete product shipping weights before delivery can be quoted. Please contact the store.', 503, 'CHECKOUT_SHIPPING_WEIGHT_REQUIRED');
-            }
-            throw new AppError('Delivery configuration could not be verified. Please retry or contact the store.', 503, 'SHIPPING_CONFIGURATION_UNAVAILABLE');
-        }
-        return StorefrontShippingOptionsSchema.parse(result.data);
-    }
     const { data: zoneData, error: zoneError } = await db
         .from('shipping_zones')
         .select('id, countries, states, zip_codes, cod_enabled')
         .eq('store_id', storeId)
         .eq('site_id', storeId)
-        .is('deleted_at', null).order('name', { ascending: true }).order('id', { ascending: true }).limit(101);
+        .is('deleted_at', null);
     if (zoneError) throw new Error(`Shipping zone lookup failed: ${zoneError.message}`);
-    if ((zoneData || []).length > 100) throw new Error('Delivery configuration exceeds the supported zone limit');
 
     const zones = ((zoneData || []) as ShippingZoneRow[]).filter((zone) => storefrontZoneCoversAddress(zone, address));
     if (zones.length === 0) return [];
@@ -132,9 +121,8 @@ export async function listStorefrontShippingRates(
         .in('zone_id', zones.map((zone) => zone.id))
         .eq('is_active', true)
         .is('deleted_at', null)
-        .order('name', { ascending: true }).order('id', { ascending: true }).limit(101);
+        .limit(50);
     if (rateError) throw new Error(`Shipping rate lookup failed: ${rateError.message}`);
-    if ((rateData || []).length > 100) throw new Error('Delivery configuration exceeds the supported rate limit');
 
     return quoteStorefrontShippingOptions(zones, (rateData || []) as ShippingRateRow[], address, subtotalMinor);
 }

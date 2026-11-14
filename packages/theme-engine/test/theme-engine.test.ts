@@ -81,7 +81,7 @@ test('theme template validation rejects unsafe JSON keys, unknown sections, and 
     },
   });
 
-  assert.ok(issues.some((issue) => issue.includes('ctaLink') && issue.includes('contains an unsafe URL')));
+  assert.ok(issues.some((issue) => issue.includes('ctaLink contains an unsafe URL protocol')));
   assert.ok(issues.some((issue) => issue.includes('unknownSetting is not defined')));
   assert.ok(issues.some((issue) => issue.includes('thirdPartyUpload')));
   assert.ok(issues.some((issue) => issue.includes('themeSettings.onclick is not allowed')));

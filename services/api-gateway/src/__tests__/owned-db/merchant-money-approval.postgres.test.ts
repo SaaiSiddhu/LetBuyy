@@ -4,7 +4,7 @@
 // Real Gateway/DB. Provider-confirmed IDs and zero-value payout setup are
 // synthetic authorization fixtures, not provider approval/capture evidence.
 import assert from 'node:assert/strict';
-import test,{beforeEach} from 'node:test';
+import test from 'node:test';
 import {readFileSync}from 'node:fs';
 import {verifySensitiveActionStepUp}from '../../lib/security-controls';
 import {sha256Hex}from '../../lib/crypto';
@@ -12,27 +12,10 @@ import {requireOwnedDatabase}from './owned-db-support';
 import {tapRest,restJson,INTERNAL_SECRET}from './gateway-harness';
 import {seedSyntheticOrder}from './synthetic-tenant';
 import {merchantFixture,activeFactor,issue,otp,explain,STEP_SECRET}from './merchant-stepup-fixture';
-import {bindSyntheticRefundCredential}from './refund-credential-fixture';
 const owned=requireOwnedDatabase();
-const paymentAccounts=new Map<string,string>(),refundProofs=new Map<string,{payment:string;amount:number}>();
-beforeEach(t=>{
- if(!('mock' in t))throw new Error('Owned refund fixture requires the test context mock lifecycle');
- const original=globalThis.fetch;
- t.mock.method(globalThis,'fetch',async(input:RequestInfo|URL,init?:RequestInit)=>{
-  const url=new URL(input instanceof Request?input.url:String(input));
-  if(url.hostname==='api.razorpay.com'){
-   assert.equal(init?.method||'GET','GET','manual-refund authorization tests never create a provider refund');
-   const id=decodeURIComponent(url.pathname.split('/').at(-1)!),proof=refundProofs.get(id);assert.ok(proof,'explicit synthetic provider proof is required');
-   assert.equal(new Headers(init?.headers).get('Authorization'),paymentAccounts.get(proof.payment));
-   return Response.json({id,payment_id:'syn-pay-'+proof.payment,amount:proof.amount,currency:'INR',status:'processed'});
-  }
-  return original(input,init);
- });
-});
 const proofHeaders=(r:{json:Record<string,unknown>|null})=>{const d=r.json?.data as {step_up_token:string;verified_at:string};return{'X-Step-Up-Token':d.step_up_token,'X-Step-Up-Verified-At':d.verified_at};};
 async function payment(f:Awaited<ReturnType<typeof merchantFixture>>,currency='INR'){
- const order=seedSyntheticOrder(owned.psql,f),id=crypto.randomUUID();owned.psql(`INSERT INTO payments(id,site_id,order_id,provider,mode,status,amount_minor,currency,provider_payment_id,idempotency_key)VALUES('${id}','${f.siteId}','${order.orderId}','razorpay','sandbox','captured',10000,'${currency}','syn-pay-${id}','syn-payment-${id}');`);
- const credential=await bindSyntheticRefundCredential(owned,f.gateway,f.siteId,[id]);paymentAccounts.set(id,credential.authorization);return id;
+ const order=seedSyntheticOrder(owned.psql,f),id=crypto.randomUUID();owned.psql(`INSERT INTO payments(id,site_id,order_id,provider,mode,status,amount_minor,currency,provider_payment_id,idempotency_key)VALUES('${id}','${f.siteId}','${order.orderId}','razorpay','sandbox','captured',10000,'${currency}','syn-pay-${id}','syn-payment-${id}');`);return id;
 }
 async function statement(f:Awaited<ReturnType<typeof merchantFixture>>){const id=crypto.randomUUID();owned.psql(`INSERT INTO payout_statements(id,site_id,statement_number,status,provider,provider_mode,rail,currency)VALUES('${id}','${f.siteId}','SYN-MFA-${id}','pending','razorpay_route','sandbox','pa_split','INR');`);return id;}
 async function disable(f:Awaited<ReturnType<typeof merchantFixture>>,factor:{id:string;secret:string}){const r=await f.call('POST','/2fa/disable',{factor_id:factor.id,code:otp(factor.secret)});assert.equal(r.status,200,explain(r));}
@@ -48,7 +31,7 @@ test('disabled factor payout proof is refused before provider configuration is c
 test('payment refund checks current approval again when disable wins before the reserve transaction',async()=>{
  const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor),id=await payment(f);assert.equal(proof.status,201,explain(proof));let disabled=false;
  const tap=tapRest(owned.restUrl,async(c,forward)=>{if(!disabled&&['rpc/reserve_payment_refund_attempt','rpc/reserve_owned_payment_refund_v1'].includes(c.resource)){disabled=true;await disable(f,factor);}return forward();});
- try{const result=await manual(f,id,proof,crypto.randomUUID(),'syn-race-'+crypto.randomUUID());assert.equal(disabled,true);assert.equal(result.status,428,explain(result));assert.equal(owned.psql(`SELECT count(*)FROM payment_attempts WHERE payment_id='${id}'AND attempt_type='refund';`),'0');}finally{tap.restore();}
+ try{const result=await f.call('POST','/payments/'+id+'/refund',{amount_minor:1000,provider_refund_id:'syn-race-'+crypto.randomUUID(),idempotency_key:crypto.randomUUID()},proofHeaders(proof));assert.equal(disabled,true);assert.equal(result.status,428,explain(result));assert.equal(owned.psql(`SELECT count(*)FROM payment_attempts WHERE payment_id='${id}'AND attempt_type='refund';`),'0');}finally{tap.restore();}
 });
 test('payout release claim rejects disable winning before claim; named lost-reply fault prevents all provider contact',async()=>{
  const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor,crypto.randomUUID(),'payout.release'),id=await statement(f);assert.equal(proof.status,201,explain(proof));
@@ -58,7 +41,6 @@ test('payout release claim rejects disable winning before claim; named lost-repl
 });
 
 async function manual(f:Awaited<ReturnType<typeof merchantFixture>>,id:string,proof:{json:Record<string,unknown>|null},key:string,ref:string,amount=1000,embedded=false){
- refundProofs.set(ref,{payment:id,amount});
  return f.call('POST','/payments/'+id+'/refund',{amount_minor:amount,provider_refund_id:ref,idempotency_key:key,...(embedded?{metadata:{step_up_token:proofHeaders(proof)['X-Step-Up-Token'],step_up_verified_at:proofHeaders(proof)['X-Step-Up-Verified-At']}}:{})},embedded?{}:proofHeaders(proof));
 }
 test('full refund replay is live-owner/factor gated and survives factor replacement without another posting',async()=>{
@@ -105,7 +87,6 @@ for(const mode of ['same-key','different-keys']as const)test('concurrent '+mode+
 });
 test('omitted amount is recovered from the original full refund source and never recomputed as zero',async()=>{
  const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor),id=await payment(f),key=crypto.randomUUID(),ref='syn-omitted-'+crypto.randomUUID();
- refundProofs.set(ref,{payment:id,amount:10000});
  const call=()=>f.call('POST','/payments/'+id+'/refund',{provider_refund_id:ref,idempotency_key:key},proofHeaders(proof));assert.equal((await call()).status,200);const replay=await call();assert.equal(replay.status,200,explain(replay));assert.equal(replay.json?.data.payment.refunded_amount_minor,10000);
 });
 test('the existing payment currency constraint rejects unsupported money before the refund boundary',async()=>{

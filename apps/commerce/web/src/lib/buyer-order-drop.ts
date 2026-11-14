@@ -2,7 +2,7 @@ import 'server-only';
 
 import { storefrontApiFetch } from '@/lib/api/client';
 import { resolveBuyerDataSessionForRender } from '@/lib/buyer-auth/data-session';
-import { mapOrderDetailDrop, mapOrderDrop, type LiquidCustomerOrderDetail, type LiquidCustomerOrder } from '@/lib/customer-drop';
+import { mapOrderDetailDrop, type LiquidCustomerOrderDetail, type LiquidCustomerOrder } from '@/lib/customer-drop';
 
 export interface LiquidBuyerDrop {
     email: string;
@@ -181,7 +181,14 @@ export async function getStorefrontBuyerOrderDrop(
         if (!ordersResponse.ok) return { buyer: { email, orders: [], has_more: false, next_cursor: null }, order: null, unavailable: true };
         const ordersBody = await ordersResponse.json().catch(() => null) as { data?: { orders?: Array<Record<string, unknown>>; next_cursor?: unknown; has_more?: unknown } } | null;
         if (!Array.isArray(ordersBody?.data?.orders)) return { buyer: { email, orders: [], has_more: false, next_cursor: null }, order: null, unavailable: true };
-        const orders = ordersBody.data.orders.map(mapOrderDrop);
+        const orders = ordersBody.data.orders.map((row) => ({
+            id: String(row.id ?? ''),
+            number: String(row.order_number ?? ''),
+            status: typeof row.status === 'string' ? row.status : 'pending',
+            total: Number(row.total) || 0,
+            currency: typeof row.currency === 'string' ? row.currency : 'INR',
+            created_at: typeof row.created_at === 'string' ? row.created_at : null,
+        }));
         return { buyer: { email, orders, has_more: ordersBody.data.has_more === true, next_cursor: typeof ordersBody.data.next_cursor === 'string' ? ordersBody.data.next_cursor : null }, order: null, unavailable: false };
     } catch {
         return { buyer: null, order: null, unavailable: true };

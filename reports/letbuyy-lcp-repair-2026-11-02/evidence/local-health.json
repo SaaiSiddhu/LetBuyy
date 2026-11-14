@@ -1,0 +1,30 @@
+{
+  "capturedAt": "2026-11-02T18:36:23.024506+00:00",
+  "rows": [
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "status": 200,
+      "bytes": 76636
+    },
+    {
+      "url": "http://127.0.0.1:9006/api/founding-pricing",
+      "status": 200,
+      "bytes": 76731
+    },
+    {
+      "url": "http://127.0.0.1:9006/in/pricing",
+      "status": 200,
+      "bytes": 447757
+    },
+    {
+      "url": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "bytes": 315615
+    },
+    {
+      "url": "http://127.0.0.1:9002/signup",
+      "status": 200,
+      "bytes": 224993
+    }
+  ]
+}

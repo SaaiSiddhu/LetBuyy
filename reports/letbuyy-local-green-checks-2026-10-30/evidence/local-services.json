@@ -1,0 +1,23 @@
+{
+  "captured_at": "2026-10-29T20:54:08.794Z",
+  "rows": [
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:9006/in/pricing",
+      "status": 200
+    },
+    {
+      "url": "http://localhost:9002/signup",
+      "status": 200
+    },
+    {
+      "url": "http://localhost:9001/",
+      "status": 307
+    }
+  ],
+  "public_catalog_unchanged": true,
+  "passed": true
+}

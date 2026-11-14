@@ -1,0 +1,71 @@
+host,method,path,planned_status,planned_location,executed_at_provider
+seller.letbuyy.com,GET,/,301,https://accounts.letbuyy.com/lookup,False
+seller.letbuyy.com,HEAD,/,301,https://accounts.letbuyy.com/lookup,False
+seller.letbuyy.com,GET,/?audit_sample=1,301,https://accounts.letbuyy.com/lookup,False
+seller.letbuyy.com,GET,/api,403,,False
+seller.letbuyy.com,GET,/sdk,403,,False
+seller.letbuyy.com,GET,/in,403,,False
+seller.letbuyy.com,GET,/lookup,403,,False
+seller.letbuyy.com,POST,/,403,,False
+seller.letbuyy.com,OPTIONS,/,403,,False
+seller.letbuyy.com,GET,/missing,403,,False
+developer.letbuyy.com,GET,/,301,https://www.letbuyy.com/in/resources/developers,False
+developer.letbuyy.com,HEAD,/,301,https://www.letbuyy.com/in/resources/developers,False
+developer.letbuyy.com,GET,/?audit_sample=1,301,https://www.letbuyy.com/in/resources/developers,False
+developer.letbuyy.com,GET,/api,403,,False
+developer.letbuyy.com,GET,/sdk,403,,False
+developer.letbuyy.com,GET,/in,403,,False
+developer.letbuyy.com,GET,/lookup,403,,False
+developer.letbuyy.com,POST,/,403,,False
+developer.letbuyy.com,OPTIONS,/,403,,False
+developer.letbuyy.com,GET,/missing,403,,False
+developers.letbuyy.com,GET,/,301,https://www.letbuyy.com/in/resources/developers,False
+developers.letbuyy.com,HEAD,/,301,https://www.letbuyy.com/in/resources/developers,False
+developers.letbuyy.com,GET,/?audit_sample=1,301,https://www.letbuyy.com/in/resources/developers,False
+developers.letbuyy.com,GET,/api,403,,False
+developers.letbuyy.com,GET,/sdk,403,,False
+developers.letbuyy.com,GET,/in,403,,False
+developers.letbuyy.com,GET,/lookup,403,,False
+developers.letbuyy.com,POST,/,403,,False
+developers.letbuyy.com,OPTIONS,/,403,,False
+developers.letbuyy.com,GET,/missing,403,,False
+letbuyy.com,GET,/,outside scope,,False
+letbuyy.com,HEAD,/,outside scope,,False
+letbuyy.com,GET,/?audit_sample=1,outside scope,,False
+letbuyy.com,GET,/api,outside scope,,False
+letbuyy.com,GET,/sdk,outside scope,,False
+letbuyy.com,GET,/in,outside scope,,False
+letbuyy.com,GET,/lookup,outside scope,,False
+letbuyy.com,POST,/,outside scope,,False
+letbuyy.com,OPTIONS,/,outside scope,,False
+letbuyy.com,GET,/missing,outside scope,,False
+www.letbuyy.com,GET,/,outside scope,,False
+www.letbuyy.com,HEAD,/,outside scope,,False
+www.letbuyy.com,GET,/?audit_sample=1,outside scope,,False
+www.letbuyy.com,GET,/api,outside scope,,False
+www.letbuyy.com,GET,/sdk,outside scope,,False
+www.letbuyy.com,GET,/in,outside scope,,False
+www.letbuyy.com,GET,/lookup,outside scope,,False
+www.letbuyy.com,POST,/,outside scope,,False
+www.letbuyy.com,OPTIONS,/,outside scope,,False
+www.letbuyy.com,GET,/missing,outside scope,,False
+accounts.letbuyy.com,GET,/,outside scope,,False
+accounts.letbuyy.com,HEAD,/,outside scope,,False
+accounts.letbuyy.com,GET,/?audit_sample=1,outside scope,,False
+accounts.letbuyy.com,GET,/api,outside scope,,False
+accounts.letbuyy.com,GET,/sdk,outside scope,,False
+accounts.letbuyy.com,GET,/in,outside scope,,False
+accounts.letbuyy.com,GET,/lookup,outside scope,,False
+accounts.letbuyy.com,POST,/,outside scope,,False
+accounts.letbuyy.com,OPTIONS,/,outside scope,,False
+accounts.letbuyy.com,GET,/missing,outside scope,,False
+unrelated.letbuyy.com,GET,/,outside scope,,False
+unrelated.letbuyy.com,HEAD,/,outside scope,,False
+unrelated.letbuyy.com,GET,/?audit_sample=1,outside scope,,False
+unrelated.letbuyy.com,GET,/api,outside scope,,False
+unrelated.letbuyy.com,GET,/sdk,outside scope,,False
+unrelated.letbuyy.com,GET,/in,outside scope,,False
+unrelated.letbuyy.com,GET,/lookup,outside scope,,False
+unrelated.letbuyy.com,POST,/,outside scope,,False
+unrelated.letbuyy.com,OPTIONS,/,outside scope,,False
+unrelated.letbuyy.com,GET,/missing,outside scope,,False

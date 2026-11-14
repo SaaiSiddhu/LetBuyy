@@ -15,8 +15,7 @@ import {
   UuidSchema,
 } from '@letbuyy/shared-types';
 import type { Address } from '@letbuyy/shared-types';
-import type { ProductModel, ProductFactSnapshot } from '@letbuyy/commerce-core';
-import { PersonalizationCartDraftSchema, readProductFactSnapshot } from '@letbuyy/commerce-core';
+import type { ProductModel } from '@letbuyy/commerce-core';
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 export type FulfillmentStatus = 'unfulfilled' | 'partial' | 'fulfilled' | 'returned';
@@ -45,42 +44,9 @@ export const StorefrontCartLineInputSchema = z.object({
   marketplace_listing_id: UuidSchema.optional().nullable(),
   quantity: z.number().int().min(1).max(99),
   properties: z.record(z.string(), z.unknown()).default({}),
-  personalization: PersonalizationCartDraftSchema.optional(),
 }).strict();
 
 export type StorefrontCartLineInput = z.infer<typeof StorefrontCartLineInputSchema>;
-
-/** A configured-line edit is one command against an acknowledged server cart.
- * Keep the raw Postgres revision: Date/toISOString would discard microseconds. */
-export const StorefrontCartRevisionSchema = z.string().max(40).regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/);
-export const StorefrontConfiguredLineEditSchema = z.object({
-  operation_key: z.string().uuid(),
-  expected_updated_at: StorefrontCartRevisionSchema,
-  line_id: z.string().min(1).max(400).regex(/^[A-Za-z0-9:_-]+$/),
-  replacement: z.object({
-    variant_id: UuidSchema.nullable(),
-    personalization: PersonalizationCartDraftSchema,
-  }).strict(),
-}).strict();
-export const StorefrontConfiguredLineEditRequestSchema = z.object({ line_edit: StorefrontConfiguredLineEditSchema }).strict();
-export type StorefrontConfiguredLineEdit = z.infer<typeof StorefrontConfiguredLineEditSchema>;
-
-/** Identity comes from the stored line, never the request's label, price or index.
- * Hydration/merge/aggregate stock remain the existing server cart authority. */
-export function configuredLineEditInputs(
-  lines: Array<StorefrontCartLineInput & { id: string }>, command: StorefrontConfiguredLineEdit,
-): StorefrontCartLineInput[] | null {
-  const matches = lines.filter(line => line.id === command.line_id);
-  if (matches.length !== 1 || !matches[0].personalization || matches[0].marketplace_listing_id) return null;
-  return lines.map(line => StorefrontCartLineInputSchema.parse({
-    product_id: line.product_id, variant_id: line.variant_id ?? null, quantity: line.quantity,
-    properties: line.properties, ...(line.marketplace_listing_id ? { marketplace_listing_id: line.marketplace_listing_id } : {}),
-    ...(line.personalization ? { personalization: line.personalization } : {}),
-    ...(line.id === command.line_id ? { variant_id: command.replacement.variant_id,
-      properties: line.variant_id === command.replacement.variant_id ? line.properties : {},
-      personalization: command.replacement.personalization } : {}),
-  }));
-}
 
 export const CreateOrderSchema = z.object({
   store_id: UuidSchema,
@@ -101,7 +67,6 @@ export const CreateOrderSchema = z.object({
 });
 
 export const StorefrontCreateOrderSchema = z.object({
-  expectedQuoteFingerprint: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   customer: z.object({
     name: z.string().min(1).max(200).trim(),
     email: EmailSchema,
@@ -143,14 +108,6 @@ export const StorefrontCreateOrderSchema = z.object({
   idempotencyKey: z.string().min(8).max(200),
 });
 
-/** Existing guest checkout state read is authorized by its exact cart
- * capability, never by session/site identifiers alone. */
-export const CheckoutStateReadSchema = z.object({
-  id: UuidSchema,
-  site_id: UuidSchema,
-  cart_token: z.string().min(1).max(121).regex(/^[A-Za-z0-9][A-Za-z0-9_-]*$/),
-}).strict();
-
 export const CheckoutSessionStateSchema = z.enum([
   'contact',
   'delivery',
@@ -181,36 +138,8 @@ export const CheckoutDeliverySchema = z.object({
     pincode: z.string().min(3).max(20).optional(),
   }).passthrough(),
   cod_requested: z.boolean().default(false),
-  // Coupon choice is saved at delivery; prices and eligibility remain server-owned.
-  discount_codes: z.array(z.string().trim().min(1).max(50).transform(code => code.toUpperCase())).max(1).optional(),
-  expected_discount_amount_minor: z.number().int().nonnegative().safe().optional(),
-  expected_quote_fingerprint: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   shipping_quote: z.record(z.string(), z.unknown()).default({}),
 }).strict();
-
-export const CheckoutQuoteSchema = z.object({
-  shipping_address: z.object({
-    country: z.enum(['IN', 'India']).default('IN'),
-    state: z.string().trim().min(1).max(100),
-    state_code: z.string().max(3).optional(),
-    zip: z.string().regex(/^[1-9][0-9]{5}$/),
-  }).strict(),
-  shipping_rate_id: UuidSchema,
-  coupon_code: z.string().trim().min(1).max(50).optional().nullable(),
-  customer_email: EmailSchema.optional().nullable(),
-}).strict();
-
-export const StorefrontCheckoutQuoteSchema = CheckoutQuoteSchema.extend({
-  items: z.array(z.object({
-    product_id: UuidSchema,
-    variant_id: UuidSchema.optional().nullable(),
-    quantity: z.number().int().min(1).max(1000),
-  }).strict()).min(1).max(100),
-});
-export const StorefrontDeliveryOptionsSchema = StorefrontCheckoutQuoteSchema.omit({ shipping_rate_id: true, coupon_code: true, customer_email: true });
-export type StorefrontDeliveryOptionsInput = z.infer<typeof StorefrontDeliveryOptionsSchema>;
-export type StorefrontCheckoutQuoteInput = z.infer<typeof StorefrontCheckoutQuoteSchema>;
-export type CheckoutQuoteInput = z.infer<typeof CheckoutQuoteSchema>;
 
 export const CheckoutPaymentIntentSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
@@ -331,7 +260,7 @@ export const StorefrontRazorpayVerifySchema = z.object({
 export const UpdateOrderStatusSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
   status: z.enum([
-    'confirmed', 'processing', 'shipped', 'delivered', 'cancelled',
+    'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded',
   ]),
   tracking_number: z.string().max(100).optional(),
   carrier: z.string().max(100).optional(),
@@ -557,11 +486,6 @@ export interface CheckoutOrderItemCommand {
   variant_id?: string | null;
   marketplace_listing_id?: string | null;
   quantity: number;
-  /** Existing persisted server cart capability. No client snapshot is authoritative. */
-  cart_fact_ref?: {
-    cart_id: string; cart_token: string; line_id: string; product_version: number;
-    configuration_fingerprint: string | null; snapshot_fingerprint: string;
-  };
 }
 
 export interface CreateCheckoutOrderCommand {
@@ -591,9 +515,6 @@ export interface CheckoutCartBindingLine {
   price?: number | string | null;
   line_total?: number | string | null;
   total?: number | string | null;
-  product_version?: number | null;
-  configuration_fingerprint?: string | null;
-  snapshot_fingerprint?: string | null;
 }
 
 export interface CheckoutCartBindingInput {
@@ -638,11 +559,6 @@ export function canonicalCheckoutCartBinding(input: CheckoutCartBindingInput): s
         product_id: productId,
         variant_id: variantId || null,
         ...(marketplaceListingId ? { marketplace_listing_id: marketplaceListingId } : {}),
-        ...(line.snapshot_fingerprint ? {
-          product_version: line.product_version,
-          configuration_fingerprint: line.configuration_fingerprint || null,
-          snapshot_fingerprint: line.snapshot_fingerprint,
-        } : {}),
         quantity,
         unit_price_minor: unitPriceMinor,
         line_total_minor: lineTotalMinor || unitPriceMinor * quantity,
@@ -653,8 +569,6 @@ export function canonicalCheckoutCartBinding(input: CheckoutCartBindingInput): s
       left.product_id.localeCompare(right.product_id)
       || String(left.variant_id || '').localeCompare(String(right.variant_id || ''))
       || String(left.marketplace_listing_id || '').localeCompare(String(right.marketplace_listing_id || ''))
-      || String(left.configuration_fingerprint || '').localeCompare(String(right.configuration_fingerprint || ''))
-      || String(left.snapshot_fingerprint || '').localeCompare(String(right.snapshot_fingerprint || ''))
       || left.quantity - right.quantity
     ));
 
@@ -676,52 +590,15 @@ export function canonicalCheckoutCartBinding(input: CheckoutCartBindingInput): s
   });
 }
 
-/** Server-only minting identity input. Only its digest crosses the hosted URL. */
-export function canonicalCheckoutBuyerBinding(input: {
-  siteId: string; cartId: string; cartToken: string; channel: string;
-  expiresAt: string; cartContentDigest: string; buyerAccountId: string; buyerSessionEpoch: number;
-}): string {
-  return JSON.stringify({ version: 1, site_id: input.siteId, cart_id: input.cartId,
-    cart_token: input.cartToken, channel: normalizeCheckoutChannel(input.channel), expires_at: input.expiresAt,
-    cart_content_digest: input.cartContentDigest, buyer_account_id: input.buyerAccountId, buyer_session_epoch: input.buyerSessionEpoch });
-}
-
-/** Syntax only. Authority still requires the exact verified site-domain record. */
-export function normalizeCheckoutOrigin(value: unknown): string | null {
-  if (typeof value !== 'string' || value.length > 300) return null;
-  try {
-    const origin = new URL(value);
-    const local = origin.hostname === 'localhost' || origin.hostname.endsWith('.localhost');
-    if (origin.origin !== value || origin.username || origin.password
-        || origin.pathname !== '/' || origin.search || origin.hash
-        || (origin.protocol !== 'https:' && !(local && origin.protocol === 'http:'))) return null;
-    return origin.origin;
-  } catch { return null; }
-}
-
-export const LETBUYY_CHECKOUT_ORIGIN_HEADER = 'X-LetBuyy-Checkout-Origin';
-export const LETBUYY_CHECKOUT_ORIGIN_VERSION_HEADER = 'X-LetBuyy-Checkout-Origin-Version';
-
-export function canonicalCheckoutHandoffPayload(input: CheckoutCartBindingInput & {
-  cartContentDigest: string; buyerBindingDigest?: string; checkoutOrigin?: string;
-}): string {
-  // New branded-host handoffs bind their exact origin. Omitted means the unchanged
-  // version1 central-origin protocol, retained only for its existing finite drain.
-  if (input.checkoutOrigin !== undefined) {
-    if (!normalizeCheckoutOrigin(input.checkoutOrigin)) {
-      throw new Error('A canonical secure checkout origin is required');
-    }
-  }
+export function canonicalCheckoutHandoffPayload(input: CheckoutCartBindingInput & { cartContentDigest: string }): string {
   return JSON.stringify({
-    version: input.checkoutOrigin === undefined ? 1 : 2,
-    ...(input.checkoutOrigin === undefined ? {} : { checkout_origin: input.checkoutOrigin }),
+    version: 1,
     site_id: input.siteId,
     cart_id: input.cartId,
     cart_token: input.cartToken,
     channel: normalizeCheckoutChannel(input.channel),
     expires_at: input.expiresAt,
     cart_content_digest: input.cartContentDigest,
-    ...(input.buyerBindingDigest ? { buyer_binding_digest: input.buyerBindingDigest } : {}),
   });
 }
 
@@ -1127,22 +1004,15 @@ export const RazorpayOrderSchema = z.object({
   amount_minor_units: z.number().int().positive().optional(),
 });
 
-export const ShippingTaxSettingsListSchema = PaginationQuery.extend({ store_id: UuidSchema,
-  sort: z.literal('name').optional(), order: z.enum(['asc','desc']).default('asc') });
-export type ShippingTaxSettingsListInput = z.infer<typeof ShippingTaxSettingsListSchema>;
-
 export const CreateShippingZoneSchema = z.object({
   store_id: UuidSchema,
   name: z.string().min(1).max(100).trim(),
-  countries: z.array(z.enum(['IN', 'India'])).min(1).max(1),
-  cod_enabled: z.boolean().default(true),
-  profile_id: UuidSchema.nullable().optional(),
+  countries: z.array(z.string().min(2).max(100).trim()).min(1).max(250),
   states: z.array(z.string().max(100)).max(100).optional(),
-  zip_codes: z.array(z.string().regex(/^[1-9][0-9]{5}$/, 'Use a six-digit Indian PIN code')).max(500).optional(),
+  zip_codes: z.array(z.string().max(20)).max(500).optional(),
 });
 
-
-const ShippingRateSettingsSchema = z.object({
+export const CreateShippingRateSchema = z.object({
   zone_id: UuidSchema,
   name: z.string().min(1).max(100).trim(),
   type: z.enum(['flat', 'weight_based', 'price_based', 'free']),
@@ -1154,25 +1024,6 @@ const ShippingRateSettingsSchema = z.object({
   estimated_days_min: z.number().int().min(0).optional(),
   estimated_days_max: z.number().int().min(0).optional(),
   is_active: z.boolean().default(true),
-  cod_enabled: z.boolean().default(true),
-});
-
-/** Validate ranges both on creation and against the merged saved row on PATCH. */
-export function shippingRateRangeError(value: Record<string, unknown>): string | null {
-  for (const [min, max, label] of [
-    ['min_weight_grams', 'max_weight_grams', 'Weight'],
-    ['min_order_amount', 'max_order_amount', 'Order amount'],
-    ['estimated_days_min', 'estimated_days_max', 'Delivery time'],
-  ]) {
-    if (value[min] != null && value[max] != null && Number(value[min]) > Number(value[max])) {
-      return `${label} minimum must not exceed its maximum.`;
-    }
-  }
-  return null;
-}
-export const CreateShippingRateSchema = ShippingRateSettingsSchema.superRefine((value, ctx) => {
-  const message = shippingRateRangeError(value);
-  if (message) ctx.addIssue({ code: z.ZodIssueCode.custom, message });
 });
 
 export const ShippingServiceabilityQuerySchema = z.object({
@@ -1187,11 +1038,11 @@ export const CreateTaxRateSchema = z.object({
   store_id: UuidSchema,
   name: z.string().min(1).max(100).trim(),
   rate: z.number().min(0).max(100),
-  country: z.literal('IN').default('IN'),
-  state: IndianStateCodeSchema.optional(),
+  country: z.string().length(2).toUpperCase().default('IN'),
+  state: z.string().max(100).optional(),
   hsn_code: z.string().max(20).optional(),
   applies_to: z.enum(['all', 'shipping', 'products']).default('all'),
-  is_compound: z.literal(false).default(false),
+  is_compound: z.boolean().default(false),
   is_shipping: z.boolean().default(false),
   priority: z.number().int().min(0).default(0),
   is_active: z.boolean().default(true),
@@ -1200,12 +1051,12 @@ export const CreateTaxRateSchema = z.object({
 // PATCH contracts deliberately carry no create defaults: an omitted field must
 // preserve the saved value. Nullable bounds/state let merchants clear settings.
 export const UpdateShippingZoneSchema = CreateShippingZoneSchema.omit({ store_id: true })
-  .partial().extend({ cod_enabled: z.boolean().optional() }).refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
+  .partial().refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
 
 export const UpdateShippingRateSchema = z.object({
-  name: ShippingRateSettingsSchema.shape.name.optional(),
+  name: CreateShippingRateSchema.shape.name.optional(),
   description: z.string().max(1000).nullable().optional(),
-  type: ShippingRateSettingsSchema.shape.type.optional(),
+  type: CreateShippingRateSchema.shape.type.optional(),
   price: MoneySchema.optional(),
   min_weight_grams: z.number().int().min(0).nullable().optional(),
   max_weight_grams: z.number().int().min(0).nullable().optional(),
@@ -1214,21 +1065,16 @@ export const UpdateShippingRateSchema = z.object({
   estimated_days_min: z.number().int().min(0).nullable().optional(),
   estimated_days_max: z.number().int().min(0).nullable().optional(),
   is_active: z.boolean().optional(),
-  cod_enabled: z.boolean().optional(),
-}).refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required')
-  .superRefine((value, ctx) => {
-    const message = shippingRateRangeError(value);
-    if (message) ctx.addIssue({ code: z.ZodIssueCode.custom, message });
-  });
+}).refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
 
 export const UpdateTaxRateSchema = z.object({
   name: CreateTaxRateSchema.shape.name.optional(),
   rate: CreateTaxRateSchema.shape.rate.optional(),
-  country: z.literal('IN').optional(),
-  state: IndianStateCodeSchema.nullable().optional(),
+  country: z.string().length(2).toUpperCase().optional(),
+  state: z.string().max(100).nullable().optional(),
   hsn_code: z.string().max(20).nullable().optional(),
   applies_to: z.enum(['all', 'shipping', 'products']).optional(),
-  is_compound: z.literal(false).optional(),
+  is_compound: z.boolean().optional(),
   is_shipping: z.boolean().optional(),
   priority: z.number().int().min(0).optional(),
   is_active: z.boolean().optional(),
@@ -1325,14 +1171,6 @@ export type CouponValidationFailureCode =
 
 export type DiscountClass = 'product' | 'order' | 'shipping';
 export type DiscountSourceType = 'code' | 'automatic';
-/** Merchant decimal input -> exact paise. Never round away an invalid sub-paise charge. */
-export function parseShippingHandlingFeeMinor(input: string): number | null {
-  if (!/^(0|[1-9]\d{0,6})(\.\d{1,2})?$/.test(input)) return null;
-  const [whole, fraction = ''] = input.split('.');
-  const minor = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
-  return Number.isSafeInteger(minor) && minor <= 100_000_000 ? minor : null;
-}
-
 export type DiscountRejectionReason = 'combine_blocked' | 'amount_exhausted';
 
 export interface DiscountCombinesWith {
@@ -1649,16 +1487,7 @@ export function planCouponValidation(
 
   let discount = 0;
   if (!failureCode && type === 'percentage') {
-    // Database coupon values have two decimal places. Quote in integer paise
-    // and basis points so e.g. 20.10 at5% agrees with PostgreSQL ROUND =1.01.
-    const subtotalMinor = Math.round(subtotal * 100);
-    const basisPoints = Math.round(value * 100);
-    if (!Number.isSafeInteger(subtotalMinor) || !Number.isSafeInteger(basisPoints) || subtotalMinor < 0 || basisPoints < 0) {
-      throw new RangeError('Coupon quote amount is unavailable');
-    }
-    const minor = Number((BigInt(subtotalMinor) * BigInt(basisPoints) + BigInt(5000)) / BigInt(10000));
-    if (!Number.isSafeInteger(minor)) throw new RangeError('Coupon quote amount is unavailable');
-    discount = minor / 100;
+    discount = Math.round(subtotal * (value / 100));
     if (maximumDiscount !== null && maximumDiscount > 0) discount = Math.min(discount, maximumDiscount);
   } else if (!failureCode && (type === 'fixed' || type === 'fixed_amount')) {
     discount = Math.min(value, subtotal);
@@ -1721,8 +1550,7 @@ export const VALID_TRANSITIONS: Record<string, string[]> = {
   confirmed: ['processing', 'cancelled'],
   processing: ['shipped', 'cancelled'],
   shipped: ['delivered', 'cancelled'],
-  // Refund completion is a verified money workflow, never a fulfilment edit.
-  delivered: [],
+  delivered: ['refunded'],
   cancelled: [],
   refunded: [],
 };
@@ -1742,10 +1570,14 @@ export function planOrderStatusTransition(
 ): OrderStatusTransitionPlan {
   const allowedTransitions = VALID_TRANSITIONS[currentStatus] || [];
   const allowed = allowedTransitions.includes(newStatus);
-  // Only the canonical verified PSP/COD/refund path may change payment_status.
   const updates: Record<string, unknown> = allowed ? { status: newStatus } : {};
 
+  if (allowed && newStatus === 'delivered') {
+    updates.payment_status = 'paid';
+  }
+
   if (allowed && newStatus === 'cancelled') {
+    updates.payment_status = 'refunded';
     updates.notes = metadata.cancellation_reason || 'Order cancelled';
   }
 
@@ -1859,7 +1691,6 @@ export function normalizeOrderItemRecord(value: unknown) {
   const quantity = toCheckoutNumber(item.quantity, 0);
   const unitPrice = toCheckoutNumber(item.unit_price ?? item.price, 0);
   const total = toCheckoutNumber(item.total, unitPrice * quantity);
-  const nicheSnapshot = readProductFactSnapshot(snapshot.niche);
 
   return {
     product_id: toCheckoutText(item.product_id),
@@ -1871,7 +1702,6 @@ export function normalizeOrderItemRecord(value: unknown) {
     unit_price: unitPrice,
     total,
     image: toCheckoutText(item.image || item.image_url) || firstImageFromOrderSnapshot(snapshot) || null,
-    ...(nicheSnapshot ? { niche_snapshot: nicheSnapshot } : {}),
   };
 }
 
@@ -1948,16 +1778,12 @@ export interface OrderItem {
   productId?: string;
   image?: string;
   variant?: Record<string, string>;
-  niche_snapshot?: ProductFactSnapshot;
 }
 
 export interface CartItem extends ProductModel {
   quantity: number;
   variantId?: string | null;
   selectedVariant?: Record<string, string>;
-  serverLineId?: string;
-  marketplaceListingId?: string;
-  personalizationDraft?: z.infer<typeof PersonalizationCartDraftSchema>;
 }
 
 export interface OrderModel {
@@ -2096,7 +1922,7 @@ export interface TaxRateUpdatePlan {
   updates: Record<string, unknown>;
 }
 
-const SHIPPING_ZONE_UPDATE_FIELDS = ['name', 'countries', 'states', 'zip_codes', 'cod_enabled', 'profile_id'] as const;
+const SHIPPING_ZONE_UPDATE_FIELDS = ['name', 'countries', 'states', 'zip_codes'] as const;
 const SHIPPING_RATE_UPDATE_FIELDS = [
   'name',
   'description',
@@ -2109,7 +1935,6 @@ const SHIPPING_RATE_UPDATE_FIELDS = [
   'estimated_days_max',
   'type',
   'is_active',
-  'cod_enabled',
 ] as const;
 const TAX_RATE_UPDATE_FIELDS = ['name', 'rate', 'country', 'state', 'hsn_code', 'applies_to', 'is_compound', 'is_shipping', 'priority', 'is_active'] as const;
 
@@ -2120,8 +1945,6 @@ export function planShippingZoneCreate(input: CreateShippingZoneInput): Shipping
       site_id: input.store_id,
       name: input.name,
       countries: input.countries,
-      profile_id: input.profile_id ?? null,
-      cod_enabled: input.cod_enabled,
       states: input.states || [],
       zip_codes: input.zip_codes || [],
     },
@@ -2150,7 +1973,6 @@ export function planShippingRateCreate(input: CreateShippingRateInput): Shipping
       estimated_days_max: input.estimated_days_max ?? null,
       type: input.type,
       is_active: input.is_active ?? true,
-      cod_enabled: input.cod_enabled ?? true,
     },
   };
 }
@@ -2216,8 +2038,8 @@ export function planShippingServiceability(
     serviceable: true,
     cod_available: codAvailable,
     provider: matchingRule.provider,
-    estimated_days_min: matchingRule.estimated_days_min ?? 3,
-    estimated_days_max: matchingRule.estimated_days_max ?? 7,
+    estimated_days_min: matchingRule.estimated_days_min || 3,
+    estimated_days_max: matchingRule.estimated_days_max || 7,
     reason,
   };
 }
@@ -2227,8 +2049,7 @@ export function planTaxRateCreate(input: CreateTaxRateInput): TaxRateCreatePlan 
     taxRateInsert: {
       store_id: input.store_id,
       name: input.name,
-      // Merchant API rates are percentages; PostgreSQL/checkout store fractions.
-      rate: input.rate / 100,
+      rate: input.rate,
       country: input.country || 'IN',
       state: input.state || null,
       hsn_code: input.hsn_code || null,
@@ -2246,27 +2067,5 @@ export function planTaxRateUpdate(patch: Record<string, unknown>): TaxRateUpdate
   for (const key of TAX_RATE_UPDATE_FIELDS) {
     if (patch[key] !== undefined) updates[key] = patch[key];
   }
-  if (typeof updates.rate === 'number') updates.rate /= 100;
   return { updates };
 }
-
-export function serializeMerchantTaxRate(row: Record<string, unknown>): Record<string, unknown> {
-  return { ...row, rate: Number(row.rate) * 100 };
-}
-
-
-export const LETBUYY_CHECKOUT_DOMAIN_PROBE_PATH = '/.well-known/letbuyy-checkout-domain';
-export const CheckoutDomainProbeSchema = z.object({
-  site_id: UuidSchema,
-  hostname: z.string().min(3).max(253).regex(/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9-]+$/),
-  nonce: z.string().regex(/^[a-f0-9]{64}$/),
-  expires_at: z.string().datetime(),
-}).strict();
-export type CheckoutDomainProbe = z.infer<typeof CheckoutDomainProbeSchema>;
-/** Purpose/direction separation: a readiness proof can never authenticate a cart handoff. */
-export function canonicalCheckoutDomainProbePayload(direction: 'request'|'response', input: CheckoutDomainProbe): string {
-  const proof=CheckoutDomainProbeSchema.parse(input);
-  return JSON.stringify({purpose:'letbuyy.checkout-domain-probe.v1',direction,...proof});
-}
-
-export { CreateShippingProfileSchema, UpdateShippingProfileSchema, type CreateShippingProfileInput, type UpdateShippingProfileInput } from '@letbuyy/shared-types';

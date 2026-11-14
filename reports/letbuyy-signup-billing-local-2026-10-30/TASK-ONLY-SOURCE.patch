@@ -1,0 +1,813 @@
+--- a/apps/merchant/web/src/app/[store]/access_account/checkout/select-plan/SelectPlanClient.tsx
++++ b/apps/merchant/web/src/app/[store]/access_account/checkout/select-plan/SelectPlanClient.tsx
+@@ -83,6 +83,10 @@
+     const shopify = COMPETITOR_BENCHMARKS.shopify
+     const compareColumnCount = Math.min(Math.max(plans.length, 1), 6)
+     const compareRowClassName = `select-plan-compare-row select-plan-compare-row--${compareColumnCount}`
++    const annualSavingPercent = Math.max(0, ...plans
++        .filter(plan => plan.purchasable && plan.status !== 'coming_soon' && !plan.requires_contact
++            && plan.price_monthly_inr > 0 && plan.price_yearly_inr > 0)
++        .map(plan => Math.floor((1 - plan.price_yearly_inr / plan.price_monthly_inr) * 100)))
+ 
+     return (
+         <div className="select-plan-page">
+@@ -128,7 +132,7 @@
+                             aria-pressed={billingPeriod === period}
+                         >
+                             {period === 'monthly' ? 'Monthly' : 'Annual'}
+-                            {period === 'yearly' && <span className="select-plan-save-badge">Save 20%</span>}
++                            {period === 'yearly' && annualSavingPercent > 0 && <span className="select-plan-save-badge">Save up to {annualSavingPercent}%</span>}
+                         </Button>
+                     ))}
+                 </div>
+--- a/apps/merchant/web/src/app/[store]/settings/billing/page.tsx
++++ b/apps/merchant/web/src/app/[store]/settings/billing/page.tsx
+@@ -93,7 +93,7 @@
+             provider: readString(m.provider, 'upi_autopay'),
+             provider_mode: mode,
+             status: readString(m.status, 'pending_provider'),
+-            plan_slug: readString(m.plan_slug, 'starter'),
++            plan_slug: readString(m.plan_slug),
+             billing_period: readString(m.billing_period, 'monthly'),
+             amount_minor: coerceNumber(m.amount_minor),
+             currency: readString(m.currency, 'INR'),
+@@ -248,8 +248,12 @@
+     }
+ 
+     const billing = data || normalizeBilling(null)
+-    const hasActiveMandate = billing.mandates.some((m) => m.status === 'active')
+-    const isTrial = !billing.subscription
++    const renewable = Boolean(billing.subscription && ['active', 'trialing'].includes(billing.subscription.status))
++    const hasActiveMandate = renewable && billing.mandates.some((m) => m.status === 'active'
++        && m.provider_mode === 'live' && m.plan_slug === billing.upcoming.plan
++        && m.billing_period === billing.upcoming.billing_period)
++    const isTrial = !billing.subscription && billing.trial.status === 'active'
++        && Boolean(billing.trial.ends_at && new Date(billing.trial.ends_at).getTime() > Date.now())
+     const upcomingAmount = formatInrCurrency(billing.upcoming.amount_minor / 100, { minimumFractionDigits: 2 }) || '₹0.00'
+     const upcomingDate = formatUsLongDate(billing.upcoming.due_date, { emptyValue: 'Not scheduled' })
+ 
+@@ -320,25 +324,29 @@
+                         <span className="billing-upcoming-meta">
+                             {isTrial
+                                 ? `Free trial — no charge. Trial ends ${formatUsLongDate(billing.trial.ends_at, { emptyValue: 'soon' })}.`
+-                                : `Next bill on ${upcomingDate} · ${billing.upcoming.plan || 'plan'} (${billing.upcoming.billing_period}).`}
++                                : renewable
++                                    ? `Renewal on ${upcomingDate} · ${billing.upcoming.plan || 'plan'} (${billing.upcoming.billing_period}).`
++                                    : billing.subscription?.status === 'cancelled'
++                                        ? 'Plan cancelled. No renewal is scheduled. Previous invoices remain available.'
++                                        : 'No renewal is scheduled. Choose a plan to continue.'}
+                         </span>
+                     </div>
+                     <div className="billing-upcoming-actions">
+-                        {!hasActiveMandate && (
++                        {renewable && !hasActiveMandate && (
+                             <Button onClick={() => setAddOpen(true)}>
+                                 <Plus className="letbuyy-icon" aria-hidden="true" />
+                                 Add payment method
+                             </Button>
+                         )}
+                         <Button variant="secondary" onClick={() => router.push(`/${store}/settings/plan`)}>
+-                            {isTrial ? 'Choose plan' : 'Change plan'}
++                            {renewable ? 'Change plan' : 'Choose plan'}
+                         </Button>
+                     </div>
+                 </div>
+-                {!hasActiveMandate && !isTrial && (
++                {renewable && !hasActiveMandate && (
+                     <div className="billing-upcoming-warn">
+                         <Info className="letbuyy-icon" aria-hidden="true" />
+-                        <span>Add a payment method to keep your subscription on auto-renewal and avoid interruption.</span>
++                        <span>No live payment method is active for this plan and billing cycle. Sandbox methods do not authorise automatic renewal.</span>
+                     </div>
+                 )}
+                 <div className="billing-upcoming-foot">
+@@ -357,7 +365,7 @@
+                     <BillingPaymentMethods
+                         store={store}
+                         mandates={billing.mandates}
+-                        currentPlanSlug={billing.upcoming.plan || billing.subscription?.plan || null}
++                        currentPlanSlug={renewable ? billing.upcoming.plan || billing.subscription?.plan || null : null}
+                         currentBillingPeriod={billing.upcoming.billing_period}
+                         onChanged={() => void loadData({ quiet: true })}
+                         addOpen={addOpen}
+--- a/apps/merchant/web/src/app/[store]/settings/billing/profile/page.tsx
++++ b/apps/merchant/web/src/app/[store]/settings/billing/profile/page.tsx
+@@ -51,7 +51,7 @@
+             provider: readString(m.provider, 'upi_autopay'),
+             provider_mode: mode,
+             status: readString(m.status, 'pending_provider'),
+-            plan_slug: readString(m.plan_slug, 'starter'),
++            plan_slug: readString(m.plan_slug),
+             billing_period: readString(m.billing_period, 'monthly'),
+             amount_minor: amount,
+             currency: readString(m.currency, 'INR'),
+@@ -70,6 +70,7 @@
+     const [loadError, setLoadError] = useState<string | null>(null)
+     const [profile, setProfile] = useState<ProfileData>({ gstin: null, gst_state_code: null, legal_name: null, currency: 'INR' })
+     const [mandates, setMandates] = useState<BillingMandateView[]>([])
++    const [selectedPlan, setSelectedPlan] = useState<{ slug: string; period: string } | null>(null)
+ 
+     const [gstinInput, setGstinInput] = useState('')
+     const [editingGstin, setEditingGstin] = useState(false)
+@@ -94,6 +95,10 @@
+             setProfile(next)
+             setGstinInput(next.gstin || '')
+             setMandates(normalizeMandates(data.mandates))
++            const upcoming = isRecord(data.upcoming) ? data.upcoming : {}
++            setSelectedPlan(typeof upcoming.plan === 'string' && upcoming.plan.trim()
++                ? { slug: upcoming.plan, period: readString(upcoming.billing_period, 'monthly') }
++                : null)
+         } catch (error) {
+             const message = error instanceof Error ? error.message : 'Unable to load billing profile'
+             setLoadError(message)
+@@ -180,6 +185,8 @@
+                     <BillingPaymentMethods
+                         store={store}
+                         mandates={mandates}
++                        currentPlanSlug={selectedPlan?.slug}
++                        currentBillingPeriod={selectedPlan?.period}
+                         onChanged={() => void loadData({ quiet: true })}
+                     />
+                 </div>
+--- a/apps/merchant/web/src/app/api/stores/[store]/billing/route.ts
++++ b/apps/merchant/web/src/app/api/stores/[store]/billing/route.ts
+@@ -2,14 +2,7 @@
+ import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
+ import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+ 
+-type BillingPlanSlug = 'free' | 'starter' | 'business' | 'enterprise'
+ type BillingPeriod = 'monthly' | 'yearly'
+-
+-const PLAN_SLUGS: readonly BillingPlanSlug[] = ['free', 'starter', 'business', 'enterprise']
+-
+-function isPlanSlug(value: unknown): value is BillingPlanSlug {
+-    return typeof value === 'string' && (PLAN_SLUGS as readonly string[]).includes(value)
+-}
+ 
+ function isBillingPeriod(value: unknown): value is BillingPeriod {
+     return value === 'monthly' || value === 'yearly'
+@@ -50,10 +43,11 @@
+         const trialEndsAt = subscriptionState.store?.trial_ends_at || null
+         const trialStatus = subscriptionState.store?.trial_status || null
+ 
+-        // Upcoming bill — the actual next charge. For an active subscription that is
+-        // the last recorded charge (renews at the same amount); during trial it is ₹0
+-        // due on the trial end date. Never an estimate or fabricated figure.
+-        const upcoming = subscription
++        // Keep cancelled receipts in history without presenting them as new charges.
++        const renewable = subscription && ['active', 'trialing'].includes(subscription.status)
++        const activeTrial = !subscription && trialStatus === 'active' && trialEndsAt
++            && new Date(trialEndsAt).getTime() > Date.now()
++        const upcoming = renewable
+             ? {
+                 amount_minor: Number(subscription.amount_paid || 0),
+                 due_date: subscription.current_period_end || null,
+@@ -63,7 +57,7 @@
+             }
+             : {
+                 amount_minor: 0,
+-                due_date: trialEndsAt,
++                due_date: activeTrial ? trialEndsAt : null,
+                 currency: 'INR',
+                 billing_period: 'monthly' as const,
+                 plan: null,
+@@ -90,10 +84,8 @@
+ }
+ 
+ // POST /api/stores/[store]/billing
+-// Adds a billing payment method = authorises a Razorpay UPI AutoPay mandate.
+-// LetBuyy is not an RBI-licensed payment aggregator, so no card/UPI credential is
+-// stored here — Razorpay holds the instrument and we keep only the mandate handle.
+-// Body: { plan_slug?, billing_period?, upi_vpa? } (sandbox in non-live environments).
++// Requests a billing method through the gateway; sandbox setup is a simulation.
++// Body: { plan_slug, billing_period, upi_vpa? }; stable X-Idempotency-Key required.
+ export async function POST(
+     request: NextRequest,
+     { params }: { params: Promise<{ store: string }> }
+@@ -103,10 +95,19 @@
+         const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
+         if (resolved.error) return resolved.error
+ 
+-        const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
+-        const planSlug: BillingPlanSlug = isPlanSlug(body.plan_slug) ? body.plan_slug : 'starter'
+-        const billingPeriod: BillingPeriod = isBillingPeriod(body.billing_period) ? body.billing_period : 'monthly'
+-        const upiVpa = readString(body.upi_vpa)
++        const body: unknown = await request.json().catch(() => null)
++        if (!body || typeof body !== 'object' || Array.isArray(body)) {
++            return NextResponse.json({ error: 'Choose a plan and billing cycle before adding a payment method.' }, { status: 400 })
++        }
++        const input = body as Record<string, unknown>
++        const planSlug = readString(input.plan_slug)
++        const billingPeriod = input.billing_period
++        const requestKey = request.headers.get('X-Idempotency-Key')?.trim()
++        if (!planSlug || planSlug.length > 120 || !isBillingPeriod(billingPeriod)
++            || !requestKey || requestKey.length < 8 || requestKey.length > 200) {
++            return NextResponse.json({ error: 'Choose a plan and billing cycle, then retry the same payment-method request.' }, { status: 400 })
++        }
++        const upiVpa = readString(input.upi_vpa)
+ 
+         const apiClient = createMerchantApiClient()
+         const result = await apiClient.billing.mandates.create({
+@@ -114,7 +115,7 @@
+             plan_slug: planSlug,
+             billing_period: billingPeriod,
+             ...(upiVpa ? { upi_vpa: upiVpa } : {}),
+-            idempotency_key: `mandate:${resolved.storeId}:${crypto.randomUUID()}`,
++            idempotency_key: requestKey,
+         })
+ 
+         return NextResponse.json({ data: result }, { status: 201 })
+--- a/apps/merchant/web/src/components/billing/BillingPaymentMethods.tsx
++++ b/apps/merchant/web/src/components/billing/BillingPaymentMethods.tsx
+@@ -1,6 +1,7 @@
+ 'use client'
+ 
+-import { useCallback, useState } from 'react'
++import { useCallback, useRef, useState } from 'react'
++import Link from 'next/link'
+ import { Badge, Button, CheckCircle2, CreditCard, Info, Input, Modal, normalizeProviderMode, Plus, ProviderModeBadge, Select, ShieldCheck, Smartphone, useToast } from '@letbuyy/ui'
+ import { formatInrCurrency } from '@letbuyy/ui/formatting'
+ 
+@@ -64,37 +65,53 @@
+         currentBillingPeriod === 'yearly' ? 'yearly' : 'monthly',
+     )
+     const [upiVpa, setUpiVpa] = useState('')
+-
+-    const planSlug = currentPlanSlug && ['starter', 'business', 'enterprise'].includes(currentPlanSlug)
+-        ? currentPlanSlug
+-        : 'starter'
++    const requestIntent = useRef<{ scope: string; key: string } | null>(null)
++    const planSlug = currentPlanSlug?.trim() || null
+ 
+     const handleAdd = useCallback(async () => {
+         if (submitting) return
+         setSubmitting(true)
+         try {
++            if (!planSlug) throw new Error('Choose a plan before adding a payment method.')
++            const scope = JSON.stringify([store, planSlug, billingPeriod, upiVpa.trim()])
++            if (requestIntent.current?.scope !== scope) {
++                requestIntent.current = { scope, key: `mandate:${crypto.randomUUID()}` }
++            }
+             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/billing`, {
+                 method: 'POST',
+-                headers: { 'Content-Type': 'application/json' },
++                headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': requestIntent.current.key },
+                 body: JSON.stringify({
+                     plan_slug: planSlug,
+                     billing_period: billingPeriod,
+                     upi_vpa: upiVpa.trim() || undefined,
+                 }),
+             })
+-            const payload = (await response.json().catch(() => null)) as { error?: string | { message?: string } } | null
++            const payload = (await response.json().catch(() => null)) as {
++                data?: { mandate?: { provider_mode?: string; status?: string } }
++                error?: string | { message?: string }
++            } | null
+             if (!response.ok) {
+                 const message = typeof payload?.error === 'string'
+                     ? payload.error
+                     : payload?.error?.message || 'Unable to add payment method'
+                 throw new Error(message)
+             }
++            const mandate = payload?.data?.mandate
++            if (!mandate || !['sandbox', 'live'].includes(mandate.provider_mode || '')
++                || !['active', 'pending_provider'].includes(mandate.status || '')) {
++                throw new Error('Payment method status could not be confirmed. Retry to recover the same request.')
++            }
++            requestIntent.current = null
+             setModalOpen(false)
+             setUpiVpa('')
+             notify({
+-                title: 'Payment method added',
+-                description: 'Razorpay UPI AutoPay is set up for your subscription billing.',
+-                variant: 'success',
++                title: mandate.provider_mode === 'sandbox' ? 'Sandbox payment method created' : 'Payment method request saved',
++                description: mandate.provider_mode === 'sandbox'
++                    ? 'Local simulation only. No bank or UPI mandate was authorised.'
++                    : mandate.status === 'active'
++                        ? 'The provider reports this payment method as active.'
++                        : 'Awaiting provider authorisation. Automatic renewal is not active yet.',
++                variant: mandate.provider_mode === 'sandbox' || mandate.status !== 'active' ? 'info' : 'success',
+             })
+             onChanged()
+         } catch (error) {
+@@ -106,7 +123,7 @@
+         } finally {
+             setSubmitting(false)
+         }
+-    }, [billingPeriod, notify, onChanged, planSlug, store, submitting, upiVpa])
++    }, [billingPeriod, notify, onChanged, planSlug, setModalOpen, store, submitting, upiVpa])
+ 
+     return (
+         <>
+@@ -118,13 +135,16 @@
+                     <div className="billing-method-empty-copy">
+                         <span className="billing-method-empty-title">No payment method yet</span>
+                         <span className="billing-method-empty-desc">
+-                            Add a Razorpay UPI AutoPay method so your LetBuyy subscription renews automatically.
++                            {planSlug
++                                ? 'Request a payment method for your selected subscription plan.'
++                                : 'Choose a subscription plan before adding a payment method.'}
+                         </span>
+                     </div>
+-                    <Button onClick={() => setModalOpen(true)}>
++                    <Button onClick={() => setModalOpen(true)} disabled={!planSlug}>
+                         <Plus className="letbuyy-icon" aria-hidden="true" />
+                         Add payment method
+                     </Button>
++                    {!planSlug && <Link href={`/${encodeURIComponent(store)}/access_account/checkout/select-plan`}>Choose a plan</Link>}
+                 </div>
+             ) : (
+                 <div className="billing-method-list">
+@@ -157,7 +177,7 @@
+                     })}
+                     {!hideAddButton && (
+                         <div className="billing-method-add-row">
+-                            <Button variant="secondary" onClick={() => setModalOpen(true)}>
++                            <Button variant="secondary" onClick={() => setModalOpen(true)} disabled={!planSlug}>
+                                 <Plus className="letbuyy-icon" aria-hidden="true" />
+                                 Add payment method
+                             </Button>
+@@ -169,14 +189,14 @@
+             <Modal
+                 open={modalOpen}
+                 title="Add payment method"
+-                description="Authorise a Razorpay UPI AutoPay mandate to pay for your LetBuyy subscription automatically."
++                description="Request a payment method for your subscription. Sandbox methods simulate setup and do not authorise bank debits."
+                 onClose={() => { if (!submitting) setModalOpen(false) }}
+                 footer={(
+                     <div className="billing-modal-footer">
+                         <Button variant="secondary" onClick={() => setModalOpen(false)} disabled={submitting}>
+                             Cancel
+                         </Button>
+-                        <Button onClick={() => void handleAdd()} loading={submitting}>
++                        <Button onClick={() => void handleAdd()} loading={submitting} disabled={!planSlug}>
+                             <ShieldCheck className="letbuyy-icon" aria-hidden="true" />
+                             Set up with Razorpay
+                         </Button>
+--- a/apps/merchant/web/tests/billing-entry.test.tsx
++++ b/apps/merchant/web/tests/billing-entry.test.tsx
+@@ -1,10 +1,14 @@
+ import assert from 'node:assert/strict'
+ import test from 'node:test'
+-import React from 'react'
++import React, { act } from 'react'
++import { createRequire } from 'node:module'
++import { BillingPaymentMethods } from '../src/components/billing/BillingPaymentMethods'
++import { ToastProvider } from '@letbuyy/ui'
+ import { renderToStaticMarkup } from 'react-dom/server'
+ import TrialBanner from '../src/components/TrialBanner'
+ import { AppRouterContext, type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime.js'
+ import SelectPlanClient from '../src/app/[store]/access_account/checkout/select-plan/SelectPlanClient'
++import type { SubscriptionPlanView } from '../src/lib/billing/plan-ui'
+ import { gstStateCodeFromName } from '../src/lib/india/gst-states'
+ Object.assign(globalThis, { React })
+ 
+@@ -40,3 +44,79 @@
+     assert.match(renderHeading(null, 'active', future), /left in your trial/)
+     assert.match(renderHeading(null, 'expired', past), /trial has ended/)
+ })
++
++
++async function mountPaymentMethods(plan: string | null, transport: typeof fetch) {
++    const requireUI = createRequire(new URL('../../../../packages/typescript/ui/package.json', import.meta.url))
++    const { JSDOM } = requireUI('jsdom')
++    const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'http://localhost:9001/synthetic/settings/billing', pretendToBeVisual: true })
++    const names = ['window', 'document', 'navigator', 'self', 'HTMLElement', 'MutationObserver', 'getComputedStyle', 'requestAnimationFrame', 'cancelAnimationFrame', 'fetch', 'IS_REACT_ACT_ENVIRONMENT']
++    const previous = Object.fromEntries(names.map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
++    for (const name of names) {
++        const value = name === 'fetch' ? transport : name === 'IS_REACT_ACT_ENVIRONMENT' ? true
++            : name === 'window' || name === 'self' ? dom.window
++                : typeof dom.window[name] === 'function' && ['getComputedStyle', 'requestAnimationFrame', 'cancelAnimationFrame'].includes(name) ? dom.window[name].bind(dom.window) : dom.window[name]
++        Object.defineProperty(globalThis, name, { configurable: true, writable: true, value })
++    }
++    const { createRoot } = await import('react-dom/client')
++    const root = createRoot(dom.window.document.getElementById('root')!)
++    let changed = 0
++    await act(async () => { root.render(<ToastProvider duration={0}><BillingPaymentMethods store="synthetic" mandates={[]} currentPlanSlug={plan} currentBillingPeriod="monthly" onChanged={() => { changed++ }} /></ToastProvider>) })
++    const click = async (label: string) => {
++        const button = [...dom.window.document.querySelectorAll('button')].find((b: HTMLButtonElement) => b.textContent?.trim() === label) as HTMLButtonElement | undefined
++        assert.ok(button, `Missing ${label}`)
++        await act(async () => { button.click() })
++    }
++    const close = async () => {
++        await act(async () => root.unmount()); dom.window.close()
++        for (const name of names) { if (previous[name]) Object.defineProperty(globalThis, name, previous[name]!); else Reflect.deleteProperty(globalThis, name) }
++    }
++    return { document: dom.window.document as Document, click, close, changed: () => changed }
++}
++
++test('payment-method UI preserves Launch/Growth and the request key after uncertain response, and labels sandbox setup honestly', async () => {
++    for (const plan of ['launch', 'growth']) {
++        const calls: { body: Record<string, unknown>; key: string | null }[] = []
++        const fixture = await mountPaymentMethods(plan, (async (_input, init) => {
++            calls.push({ body: JSON.parse(String(init?.body)), key: new Headers(init?.headers).get('X-Idempotency-Key') })
++            if (calls.length === 1) throw new Error('Synthetic response lost after processing')
++            return new Response(JSON.stringify({ data: { mandate: { provider_mode: 'sandbox', status: 'active' } } }), { status: 201 })
++        }) as typeof fetch)
++        try {
++            await fixture.click('Add payment method'); await fixture.click('Set up with Razorpay')
++            assert.equal(fixture.changed(), 0)
++            await fixture.click('Set up with Razorpay')
++            assert.equal(calls.length, 2); assert.equal(calls[0].body.plan_slug, plan)
++            assert.equal(calls[1].body.plan_slug, plan); assert.ok(calls[0].key); assert.equal(calls[0].key, calls[1].key)
++            assert.equal(fixture.changed(), 1)
++            assert.match(fixture.document.body.textContent || '', /Sandbox payment method created/)
++            assert.match(fixture.document.body.textContent || '', /No bank or UPI mandate was authorised/)
++            assert.doesNotMatch(fixture.document.body.textContent || '', /AutoPay is set up/)
++        } finally { await fixture.close() }
++    }
++})
++
++test('billing without a selected plan offers plan selection and cannot silently request Starter', async () => {
++    let requests = 0
++    const fixture = await mountPaymentMethods(null, (async () => { requests++; return new Response('{}') }) as typeof fetch)
++    try {
++        const button = [...fixture.document.querySelectorAll('button')].find(b => b.textContent?.trim() === 'Add payment method')
++        assert.ok(button); assert.equal(button.disabled, true)
++        assert.equal(fixture.document.querySelector('a')?.getAttribute('href'), '/synthetic/access_account/checkout/select-plan')
++        await fixture.click('Add payment method'); assert.equal(requests, 0)
++    } finally { await fixture.close() }
++})
++
++
++test('annual savings badge is derived from purchasable prices and disappears for a same-price founding quote', () => {
++    const router: AppRouterInstance = { back() {}, forward() {}, refresh() {}, push() {}, replace() {}, prefetch() {} }
++    const plan = (monthly: number, annualPerMonth: number, status = 'available'): SubscriptionPlanView => ({
++        id:'synthetic-growth',slug:'growth',name:'Growth',tagline:'Synthetic plan',is_popular:true,
++        price_monthly_inr:monthly,price_yearly_inr:annualPerMonth,gmv_percentage:0,promo_price_inr:0,promo_months:0,promo_label:null,
++        features:[],compare_features:[],requires_contact:false,status,purchasable:status==='available',founding_price_inr:69900,
++    })
++    const render = (plans: SubscriptionPlanView[]) => renderToStaticMarkup(<AppRouterContext.Provider value={router}><SelectPlanClient plans={plans} currentPlan={null} trialStatus={null} trialEndsAt={null} storeName="Synthetic store" storeSlug="synthetic" storeId="11111111-1111-4111-8111-111111111111" siteType="store" /></AppRouterContext.Provider>)
++    assert.doesNotMatch(render([plan(69900,69900)]), /Save 20%|Save up to/)
++    assert.match(render([plan(99900,79900)]), /Save up to 20%/)
++    assert.doesNotMatch(render([plan(99900,10000,'coming_soon')]), /Save up to/)
++})
+--- a/packages/billing-core/src/index.ts
++++ b/packages/billing-core/src/index.ts
+@@ -127,7 +127,7 @@
+ export const BillingProviderModeSchema = z.enum(['sandbox', 'live']);
+ export const BillingMandateSchema = z.object({
+   store_id: z.string().uuid(),
+-  plan_slug: z.enum(['free', 'starter', 'business', 'enterprise']).default('starter'),
++  plan_slug: z.string().trim().min(1).max(120),
+   billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
+   provider_mode: BillingProviderModeSchema.default('sandbox'),
+   upi_vpa: z.string().trim().min(3).max(120).optional(),
+--- a/packages/billing-core/test/billing-core.test.ts
++++ b/packages/billing-core/test/billing-core.test.ts
+@@ -1,6 +1,7 @@
+ import assert from 'node:assert/strict';
+ import test from 'node:test';
+ import {
++  BillingMandateSchema,
+   CreateAppBillingChargeSchema,
+   CreateAppUsageEventSchema,
+   VerifySubscriptionSchema,
+@@ -273,3 +274,15 @@
+   assert.equal(failed.next_dunning_at, '2026-06-12T00:00:00.000Z');
+   assert.equal(failed.event_type, 'billing.failed');
+ });
++
++
++test('mandate requests keep the real catalog slug and reject missing or blank plan intent', () => {
++  for (const plan_slug of ['launch', 'growth']) {
++    const result = BillingMandateSchema.safeParse({store_id:'11111111-1111-4111-8111-111111111111',plan_slug,idempotency_key:'synthetic-mandate-intent'});
++    assert.equal(result.success, true, plan_slug);
++    if (result.success) assert.equal(result.data.plan_slug, plan_slug);
++  }
++  for (const plan_slug of [undefined, '', '   ']) {
++    assert.equal(BillingMandateSchema.safeParse({store_id:'11111111-1111-4111-8111-111111111111',plan_slug,idempotency_key:'synthetic-mandate-intent'}).success, false);
++  }
++});
+--- a/packages/typescript/api-client/src/index.ts
++++ b/packages/typescript/api-client/src/index.ts
+@@ -3764,7 +3764,7 @@
+ };
+ export type CreateBillingMandateInput = {
+   store_id: string;
+-  plan_slug?: 'free' | 'starter' | 'business' | 'enterprise';
++  plan_slug: SubscriptionPlan['slug'];
+   billing_period?: SubscriptionBillingPeriod;
+   provider_mode?: 'sandbox' | 'live';
+   upi_vpa?: string;
+--- a/services/api-gateway/src/__tests__/owned-db/billing-mandate-intent.postgres.test.ts
++++ b/services/api-gateway/src/__tests__/owned-db/billing-mandate-intent.postgres.test.ts
+@@ -0,0 +1,52 @@
++// Real worker/PostgREST/Postgres, disposable synthetic owners only.
++// Mandates use the existing sandbox planner; no provider or bank authorisation.
++import assert from 'node:assert/strict';
++import test from 'node:test';
++import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,tapRest,newBarrier} from './gateway-harness';
++import {requireOwnedDatabase} from './owned-db-support';
++import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
++const owned=requireOwnedDatabase();
++let sequence=0;
++async function fixture(){
++ const owner=crypto.randomUUID(),email=`syn-mandate-${owner}@example.invalid`,tenant=newSyntheticTenant('mandate-'+(++sequence));
++ owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${owner}','${email}',true);`);seedSyntheticTenant(owned.psql,tenant);
++ owned.psql(`UPDATE sites SET custom_user_id='${owner}' WHERE id='${tenant.siteId}';`);
++ const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys()));
++ const post=async(body:Record<string,unknown>,actor={owner,email})=>gateway.request('/v1/billing/mandate',{method:'POST',headers:await signedIdentityHeaders(actor.owner,actor.email),body:JSON.stringify({store_id:tenant.siteId,plan_slug:'growth',billing_period:'monthly',idempotency_key:'syn-mandate-'+crypto.randomUUID(),...body})});
++ const count=()=>Number(owned.psql(`SELECT count(*) FROM billing_mandates WHERE site_id='${tenant.siteId}';`));
++ return {owner,email,tenant,gateway,post,count};
++}
++for(const [plan,minor]of [['launch',19900],['growth',69900]]as const)test(`sandbox mandate preserves ${plan} and the canonical founding amount`,async()=>{
++ const f=await fixture(),key='syn-real-plan-'+crypto.randomUUID(),body={plan_slug:plan,idempotency_key:key};
++ const first=await f.post(body);assert.equal(first.status,201,first.text);assert.equal(first.json?.data.mandate.plan_slug,plan);assert.equal(first.json?.data.mandate.amount_minor,minor);assert.equal(first.json?.data.mandate.provider_mode,'sandbox');
++ const replay=await f.post(body);assert.equal(replay.status,200,replay.text);assert.equal(replay.json?.data.mandate.id,first.json?.data.mandate.id);assert.equal(f.count(),1);
++});
++test('missing, blank, unknown and upcoming plans never substitute Starter or create a mandate',async()=>{
++ const f=await fixture();
++ for(const plan_slug of [null,'','   ','unknown-synthetic-plan','scale','commerce_os']){
++  const result=await f.post({plan_slug});assert.ok([400,404].includes(result.status),result.text);assert.equal(f.count(),0);
++ }
++});
++test('a repeated mandate key cannot change its plan, billing period or payment instrument',async()=>{
++ const f=await fixture(),idempotency_key='syn-intent-'+crypto.randomUUID(),body={idempotency_key,upi_vpa:'synthetic@upi'};
++ const first=await f.post(body);assert.equal(first.status,201,first.text);
++ for(const change of [{plan_slug:'launch'},{billing_period:'yearly'},{upi_vpa:'synthetic-other@upi'}]){
++  const reply=await f.post({...body,...change});assert.equal(reply.status,409,'Changed intent must conflict: '+reply.text);assert.equal(f.count(),1);
++ }
++});
++test('simultaneous retries recover one sandbox mandate without a duplicate or server error',async()=>{
++ const f=await fixture(),body={idempotency_key:'syn-race-'+crypto.randomUUID()};
++ const barrier=newBarrier(2),tap=tapRest(owned.restEnv().SUPABASE_URL,async(call,forward)=>{
++  if(call.resource==='billing_mandates'&&call.method==='POST')await barrier.arrive();
++  return forward();
++ });
++ let replies;
++ try{replies=await Promise.all([f.post(body),f.post(body)]);}finally{tap.restore();}
++ assert.ok(replies.every(r=>[200,201].includes(r.status)),replies.map(r=>r.text).join('\n'));
++ assert.equal(replies[0].json?.data.mandate.id,replies[1].json?.data.mandate.id);assert.equal(f.count(),1);
++});
++test('another actor cannot create or replay a store mandate',async()=>{
++ const f=await fixture(),idempotency_key='syn-owner-'+crypto.randomUUID();assert.equal((await f.post({idempotency_key})).status,201);
++ const other=crypto.randomUUID(),email=`syn-mandate-other-${other}@example.invalid`;owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${other}','${email}',true);`);
++ assert.equal((await f.post({idempotency_key},{owner:other,email})).status,403);assert.equal(f.count(),1);
++});
+--- a/services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts
++++ b/services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts
+@@ -94,7 +94,7 @@
+   await context.route('https://checkout.razorpay.com/v1/checkout.js',route=>route.fulfill({contentType:'application/javascript',body:`window.Razorpay=class{
+    constructor(options){window.__syntheticCheckout=options;}open(){window.__syntheticCheckoutOpen=true;}on(){}};`}));
+   await signIn(page,identityOrigin,ownerEmail,password,merchantOrigin);
+-  const paymentSetup=page.locator(`.activation-card a[href="/${tenant.subdomain}/settings/payments"]`);
++  const paymentSetup=page.locator(`a[href="/${tenant.subdomain}/settings/payments"]`).first();
+   await expect(paymentSetup).toBeVisible();await paymentSetup.click();await page.waitForURL(u=>u.pathname===`/${tenant.subdomain}/settings/payments`);
+   await page.goto(`${merchantOrigin}/${tenant.subdomain}/dashboard`);
+   await expect(page.getByRole('link',{name:'Select a plan',exact:true})).toHaveAttribute('href',`/${tenant.subdomain}/access_account/checkout/select-plan`);
+--- a/services/api-gateway/src/routes/billing.ts
++++ b/services/api-gateway/src/routes/billing.ts
+@@ -58,6 +58,14 @@
+     }, 503);
+ }
+ 
++function assertMandateIntent(mandate: Record<string, unknown>, body: BillingMandateInput) {
++    const instrument = body.upi_vpa ? `sandbox-hash:${body.upi_vpa.trim().toLowerCase()}` : null;
++    if (mandate.plan_slug !== body.plan_slug || mandate.billing_period !== body.billing_period
++        || mandate.provider_mode !== body.provider_mode || (mandate.upi_vpa_hash ?? null) !== instrument) {
++        throw new AppError('This payment-method request is already bound to different details.', 409, 'IDEMPOTENCY_CONFLICT');
++    }
++}
++
+ async function loadPlan(
+     db: ReturnType<typeof getSupabaseAdmin>,
+     siteType: string,
+@@ -153,15 +161,19 @@
+ 
+     const db = getSupabaseAdmin(c);
+     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
+-    const existing = await db
++    const findExisting = () => db
+         .from('billing_mandates')
+         .select('*')
+         .eq('site_id', tenant.siteId)
+         .eq('idempotency_key', body.idempotency_key)
+         .is('deleted_at', null)
+         .maybeSingle();
++    const existing = await findExisting();
+     if (existing.error) throw new Error(`Billing mandate idempotency lookup failed: ${existing.error.message}`);
+-    if (existing.data) return c.json(success({ mandate: existing.data, replayed: true }));
++    if (existing.data) {
++        assertMandateIntent(existing.data, body);
++        return c.json(success({ mandate: existing.data, replayed: true }));
++    }
+ 
+     const siteType = await loadStoreSiteType(db, tenant.siteId);
+     const plan = await loadPlan(db, siteType, body.plan_slug);
+@@ -196,7 +208,14 @@
+         .select('*')
+         .single();
+ 
+-    if (error || !data) throw new Error(`Billing mandate create failed: ${error?.message || 'unknown error'}`);
++    if (error?.code === '23505') {
++        const concurrent = await findExisting();
++        if (!concurrent.error && concurrent.data) {
++            assertMandateIntent(concurrent.data, body);
++            return c.json(success({ mandate: concurrent.data, replayed: true }));
++        }
++    }
++    if (error || !data) throw new AppError('Payment method setup is temporarily unavailable. Retry the same request.', 503, 'BILLING_MANDATE_UNAVAILABLE');
+     return c.json(success({ mandate: data }), 201);
+ });
+ 
+--- a/tests/contracts/marketing-dead-twins.test.ts
++++ b/tests/contracts/marketing-dead-twins.test.ts
+@@ -44,7 +44,14 @@
+     const pagePath = existsSync(join(repoRoot, 'apps/marketing/web/src/app/[locale]/page.tsx'))
+         ? 'apps/marketing/web/src/app/[locale]/page.tsx'
+         : 'apps/marketing/web/src/app/page.tsx';
+-    const source = read(pagePath);
++    const page = read(pagePath);
++    const composition = read('apps/marketing/web/src/components/MarketingHome.tsx');
++    const source = page + '\n' + composition;
++    // Public prices are server-loaded, then supplied to the live client shell.
++    assert.match(page, /@\/components\/MarketingHome/);
++    assert.match(page, /await loadPublicPricing\(\)/);
++    assert.match(page, /<MarketingHome pricing=\{<Pricing initialData=\{initialData\}/);
++    assert.match(composition, /\{pricing\}/);
+ 
+     for (const liveComponent of [
+         'Header',
+--- a/tests/fixtures/public-store-pricing-2026-10-30.json
++++ b/tests/fixtures/public-store-pricing-2026-10-30.json
+@@ -0,0 +1,49 @@
++{
++  "source": "Read-only preserved local catalog captured 2026-10-30; prices and availability are real local plan data. Provider identities and transactions in the consuming test are synthetic.",
++  "plans": [
++    {
++      "slug": "launch",
++      "name": "Launch",
++      "raw_monthly_paise": 29900,
++      "raw_founding_paise": 19900,
++      "regular_rupees": 299,
++      "founding_rupees": 199,
++      "status": "available",
++      "purchasable": true,
++      "feature_count": 10
++    },
++    {
++      "slug": "growth",
++      "name": "Growth",
++      "raw_monthly_paise": 99900,
++      "raw_founding_paise": 69900,
++      "regular_rupees": 999,
++      "founding_rupees": 699,
++      "status": "available",
++      "purchasable": true,
++      "feature_count": 11
++    },
++    {
++      "slug": "scale",
++      "name": "Scale",
++      "raw_monthly_paise": 249900,
++      "raw_founding_paise": 0,
++      "regular_rupees": 2499,
++      "founding_rupees": 2499,
++      "status": "coming_soon",
++      "purchasable": false,
++      "feature_count": 10
++    },
++    {
++      "slug": "commerce_os",
++      "name": "Commerce OS",
++      "raw_monthly_paise": 599900,
++      "raw_founding_paise": 0,
++      "regular_rupees": 5999,
++      "founding_rupees": 5999,
++      "status": "coming_soon",
++      "purchasable": false,
++      "feature_count": 10
++    }
++  ]
++}
+--- a/tests/owned-db/merchant-public-signup-browser.postgres.test.ts
++++ b/tests/owned-db/merchant-public-signup-browser.postgres.test.ts
+@@ -2,6 +2,8 @@
+ // No seeded user, session, verified email, password or store. Resend HTTP is captured;
+ // this is provider-fixture acceptance, not real inbox delivery or hosted cookie proof.
+ import {tmpdir} from 'node:os';
++import {readFileSync} from 'node:fs';
++import {createHmac} from 'node:crypto';
+ import assert from 'node:assert/strict';
+ import test from 'node:test';
+ import {createServer,type Server} from 'node:http';
+@@ -23,15 +25,27 @@
+     }
+     throw new Error('Owned app did not become ready');
+ }
+-test('public signup creates its account and first store through production apps',{timeout:780_000},async()=>{
++test('public signup selects real catalog plans and reads paid billing through production apps',{timeout:780_000},async()=>{
+  const email=`syn-public-${crypto.randomUUID()}@example.invalid`,password='[REDACTED_SYNTHETIC_PASSWORD]';
+  const subdomain='syn-signup-'+crypto.randomUUID().slice(0,8);
+  assert.equal(owned.psql(`SELECT count(*) FROM users_custom WHERE email='${email}';`),'0');
+  const identityPort=await freePort(),merchantPort=await freePort(),identityOrigin=`http://localhost:${identityPort}`,merchantOrigin=`http://localhost:${merchantPort}`;
+- const keys=await newIdentityKeys(),gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'test',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',RESEND_API_KEY:'synthetic-owned-resend-capture'}));
++ const providerSecret=crypto.randomUUID()+crypto.randomUUID();
++ const supplierProfile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_id:'synthetic-owned-only',profile_version:1,approval_status:'approved',approval_reference:'synthetic-approval-not-live',registration_status:'registered',supply_category:'domestic_taxable_saas',rate_bps:1800,supplier:{name:'Synthetic Platform Supplier',gstin:'27AAAAA0000A1Z5',state_code:'27',country:'IN',address:{line1:'Synthetic Supplier Address',city:'Mumbai',state:'Maharashtra',zip:'400001',country:'IN'}}};
++ const keys=await newIdentityKeys(),gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'test',LETBUYY_SUBSCRIPTION_TAX_PROFILE:JSON.stringify(supplierProfile),RAZORPAY_KEY_ID:'synthetic-owned-public-key',RAZORPAY_KEY_SECRET:providerSecret,LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',RESEND_API_KEY:'synthetic-owned-resend-capture'}));
++ const orders=new Map<string,{id:string;amount:number;currency:string;receipt:string;notes:Record<string,string>}>(),payments=new Map<string,unknown>();
+  const mail:{to:string[];subject:string;html:string}[]=[],originalFetch=globalThis.fetch;let failFirstMail=true;
+  globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
+   const url=new URL(typeof input==='string'?input:input instanceof URL?input.toString():input.url);
++  if(url.origin==='https://api.razorpay.com'){
++   const json=(data:unknown)=>new Response(JSON.stringify(data),{status:200,headers:{'Content-Type':'application/json'}});
++   if(url.pathname==='/v1/orders'&&init?.method==='POST'){
++    const order={...JSON.parse(String(init.body)),id:'order_syn_signup_'+crypto.randomUUID()};orders.set(order.id,order);return json(order);
++   }
++   if(url.pathname==='/v1/orders')return json({items:[...orders.values()].filter(o=>o.receipt===url.searchParams.get('receipt'))});
++   if(url.pathname.startsWith('/v1/payments/'))return json(payments.get(url.pathname.split('/').pop()!)||{});
++   throw new Error('Unexpected captured payment-provider operation');
++  }
+   if(url.origin!=='https://api.resend.com')return originalFetch(input,init);
+   assert.equal(url.pathname,'/emails');assert.equal(init?.method,'POST');
+   mail.push(JSON.parse(String(init?.body)));if(failFirstMail){failFirstMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}return new Response(JSON.stringify({id:'synthetic-mail-'+crypto.randomUUID()}),{status:200,headers:{'Content-Type':'application/json'}});
+@@ -55,7 +69,18 @@
+   merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
+   for(const app of [identity,merchant])app.stderr.on('data',d=>errors.push(d.toString().slice(0,600)));
+   await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
+-  browser=await chromium.launch({headless:true});const context=await browser.newContext();page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);  const signup=await page.goto(identityOrigin+'/signup');assert.equal(signup?.status(),200);
++  const catalogSnapshot=JSON.parse(readFileSync(new URL('../fixtures/public-store-pricing-2026-10-30.json',import.meta.url),'utf8'));
++  const publicCatalog=await gateway.request('/v1/pricing');assert.equal(publicCatalog.status,200);
++  assert.equal(publicCatalog.json?.data.plans.length,catalogSnapshot.plans.length);
++  for(const expected of catalogSnapshot.plans){
++   const actual=publicCatalog.json?.data.plans.find((p:{slug:string})=>p.slug===expected.slug);assert.ok(actual);
++   assert.deepEqual([actual.name,actual.regular_inr,actual.founding_inr,actual.status,actual.purchasable,actual.features.length],
++    [expected.name,expected.regular_rupees,expected.founding_rupees,expected.status,expected.purchasable,expected.feature_count]);
++  }
++  browser=await chromium.launch({headless:true});const context=await browser.newContext();page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);
++  // Explicit payment SDK fixture; application auth, BFF, worker and database remain real.
++  await context.route('https://checkout.razorpay.com/v1/checkout.js',route=>route.fulfill({contentType:'application/javascript',body:`window.Razorpay=class{constructor(options){window.__syntheticCheckout=options;}open(){window.__syntheticCheckoutOpen=true;}on(){}};`}));
++  const signup=await page.goto(identityOrigin+'/signup');assert.equal(signup?.status(),200);
+   const signupCopy=await page.locator('body').innerText();
+   await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
+   await page.getByLabel('Email',{exact:true}).fill(email);
+@@ -93,7 +118,66 @@
+   const [created]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/create-store'&&r.request().method()==='POST'),page.getByRole('button',{name:'Create My Site',exact:true}).click()]);assert.equal(created.status(),200);
+   await page.waitForURL(u=>u.origin===merchantOrigin&&u.pathname===`/${subdomain}/access_account/checkout/select-plan`,{timeout:60_000});await expect(page.getByRole('region',{name:'Available plans'})).toBeVisible();
+   const store=JSON.parse(owned.psql(`SELECT jsonb_build_object('count',count(*),'trial_days',max(EXTRACT(EPOCH FROM (trial_ends_at-trial_started_at))/86400),'theme',max(theme_id),'status',max(status))::text FROM sites WHERE custom_user_id=(SELECT id FROM users_custom WHERE email='${email}') AND subdomain='${subdomain}';`));assert.equal(store.count,1);assert.equal(store.trial_days,14,'existing persisted trial policy is preserved');assert.equal(store.status,'draft');
+-  await page.goto(`${merchantOrigin}/${subdomain}/dashboard`);await expect(page.getByRole('heading',{name:'Where do you want to start?',exact:true})).toBeVisible();
++  const siteId=owned.psql(`SELECT id FROM sites WHERE subdomain='${subdomain}';`);
++  const planCard=(name:string)=>page!.locator('article').filter({has:page!.getByRole('heading',{name,exact:true})});
++  await expect(planCard('Launch').locator('.select-plan-price').first()).toHaveText('₹199');
++  await expect(planCard('Growth').locator('.select-plan-price').first()).toHaveText('₹699');
++  for(const name of ['Scale','Commerce OS'])await expect(planCard(name).getByRole('button',{name:'Coming soon',exact:true})).toBeDisabled();
++  // Annual selection and its actual server-scoped quote, then monthly selection.
++  await page.getByRole('button',{name:/^Annual/}).click();
++  await planCard('Launch').getByRole('button',{name:'Choose plan',exact:true}).click();
++  await page.waitForURL(u=>u.searchParams.get('plan')==='launch'&&u.searchParams.get('bp')==='YEARLY');
++  await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹2,388');
++  await page.goto(`${merchantOrigin}/${subdomain}/access_account/checkout/select-plan`);
++  // A fresh signup must supply its own billing identity through the normal forms.
++  await page.goto(`${merchantOrigin}/${subdomain}/settings/business`);
++  await page.getByLabel('Legal business name',{exact:true}).fill('Synthetic Signup Billing Business');
++  const [businessSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/settings')&&r.request().method()==='PATCH'),page.getByRole('button',{name:'Save',exact:true}).click()]);assert.equal(businessSaved.status(),200);
++  await page.goto(`${merchantOrigin}/${subdomain}/settings/general`);
++  await page.getByLabel('Address line 1',{exact:true}).fill('Synthetic Local Billing Address');await page.getByLabel('City',{exact:true}).fill('Bengaluru');await page.getByLabel('State',{exact:true}).selectOption('Karnataka');await page.getByLabel('PIN code',{exact:true}).fill('560001');
++  const [addressSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/settings')&&r.request().method()==='PATCH'),page.getByRole('button',{name:'Save',exact:true}).click()]);assert.equal(addressSaved.status(),200);
++  const billingProofs:{plan:string;amount_minor:number;invoice_count:number}[]=[];
++  for(const [slug,name,amount]of [['launch','Launch',19900],['growth','Growth',69900]]as const){
++   await page.goto(`${merchantOrigin}/${subdomain}/access_account/checkout/select-plan`);
++   await planCard(name).getByRole('button',{name:'Choose plan',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('plan')===slug&&u.searchParams.get('bp')==='MONTHLY');
++   await expect(page.locator('.checkout-amount')).toContainText(`₹${amount/100}`);
++   const subscribe=page.getByRole('button',{name:/Subscribe|Continue saved checkout/});
++   const [createdOrder]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/subscribe'&&r.request().method()==='POST'),subscribe.click()]);assert.equal(createdOrder.status(),200,await createdOrder.text());
++   await page.waitForFunction(()=>Boolean((globalThis as unknown as {__syntheticCheckoutOpen?:boolean}).__syntheticCheckoutOpen));
++   const saved=await createdOrder.json();const order=orders.get(saved.razorpay_order_id);assert.ok(order);assert.equal(order.amount,amount);assert.equal(order.currency,'INR');
++   const proof={razorpay_order_id:order.id,razorpay_payment_id:'pay_syn_signup_'+crypto.randomUUID(),razorpay_signature:''};proof.razorpay_signature=createHmac('sha256',providerSecret).update(order.id+'|'+proof.razorpay_payment_id).digest('hex');
++   payments.set(proof.razorpay_payment_id,{id:proof.razorpay_payment_id,order_id:order.id,amount:order.amount,currency:'INR',status:'captured'});
++   const verified=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/subscribe/verify'&&r.request().method()==='POST');
++   await page.evaluate(p=>{void(globalThis as unknown as {__syntheticCheckout:{handler:(p:unknown)=>Promise<void>}}).__syntheticCheckout.handler(p)},proof);assert.equal((await verified).status(),200);
++   await page.waitForURL(u=>u.pathname===`/${subdomain}/dashboard`);
++   const invoice=JSON.parse(owned.psql(`SELECT jsonb_build_object('amount',amount,'gross',subscription_tax_snapshot->>'gross_minor','taxable',subscription_tax_snapshot->>'taxable_minor','tax',subscription_tax_snapshot->>'tax_minor') FROM billing_history WHERE site_id='${siteId}' AND payment_id='${proof.razorpay_payment_id}';`));
++   assert.equal(Number(invoice.gross),amount);assert.equal(Number(invoice.taxable)+Number(invoice.tax),amount);
++   await page.goto(`${merchantOrigin}/${subdomain}/settings/plan`);await expect(page.locator('.settings-plan-name')).toContainText(new RegExp(slug,'i'));await expect(page.locator('.settings-plan-price')).toContainText(new RegExp(`${amount/100}.*paid`));
++   await page.goto(`${merchantOrigin}/${subdomain}/settings/billing`);await expect(page.getByText('Past bills',{exact:true})).toBeVisible();
++   const result=await page.request.get(`${merchantOrigin}/api/stores/${subdomain}/billing`);assert.equal(result.status(),200);const billing=(await result.json()).data;
++   assert.equal(billing.subscription.plan,slug);assert.equal(billing.upcoming.amount_minor,amount);assert.equal(billing.invoices.length,billingProofs.length+1);
++   billingProofs.push({plan:slug,amount_minor:amount,invoice_count:billing.invoices.length});
++  }
++  // Real Growth intent must survive the UI/BFF/core instead of becoming Starter.
++  await page.getByRole('button',{name:'Add payment method',exact:true}).last().click();
++  const [mandateCreated]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===`/api/stores/${subdomain}/billing`&&r.request().method()==='POST'),page.getByRole('dialog').getByRole('button',{name:'Set up with Razorpay',exact:true}).click()]);
++  assert.equal(mandateCreated.status(),201,await mandateCreated.text());
++  const mandate=(await mandateCreated.json()).data.mandate;assert.equal(mandate.plan_slug,'growth');assert.equal(mandate.amount_minor,69900);assert.equal(mandate.provider_mode,'sandbox');
++  await expect(page.getByText('Sandbox payment method created',{exact:true})).toBeVisible();
++  await page.reload();await expect(page.locator('.billing-method-item')).toContainText('Growth');await expect(page.locator('.billing-method-item')).toContainText(/sandbox/i);
++  await page.goto(`${merchantOrigin}/${subdomain}/settings/billing/profile`);
++  await page.getByRole('button',{name:'Add payment method',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();await expect(page.getByRole('dialog').getByRole('button',{name:'Set up with Razorpay',exact:true})).toBeEnabled();await page.getByRole('dialog').getByRole('button',{name:'Cancel',exact:true}).click();
++  await page.goto(`${merchantOrigin}/${subdomain}/settings/billing`);await expect(page.locator('.billing-stat-value').first()).toHaveText('₹898.00');
++  const billingScreenshot=`${tmpdir()}/letbuyy-signup-billing-${owned.runId}.png`;await page.screenshot({path:billingScreenshot,fullPage:true});
++  await page.goto(`${merchantOrigin}/${subdomain}/settings/plan`);await page.getByRole('button',{name:'Cancel plan',exact:true}).click();
++  const [cancelled]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/plan/cancel')&&r.request().method()==='POST'),page.getByRole('dialog').getByRole('button',{name:'Cancel plan',exact:true}).click()]);assert.equal(cancelled.status(),200);
++  await page.reload();await expect(page.locator('.settings-plan-headline')).toContainText(/cancelled/i);
++  const finalBilling=await page.request.get(`${merchantOrigin}/api/stores/${subdomain}/billing`);assert.equal(finalBilling.status(),200);const cancelledBilling=(await finalBilling.json()).data;assert.equal(cancelledBilling.invoices.length,2);
++  assert.equal(cancelledBilling.upcoming.amount_minor,0,'cancelled subscription must not be presented as another scheduled charge');assert.equal(cancelledBilling.upcoming.due_date,null);
++  await page.goto(`${merchantOrigin}/${subdomain}/settings/billing`);await expect(page.locator('.billing-upcoming-meta')).toContainText('Plan cancelled. No renewal is scheduled.');await expect(page.locator('.billing-stat-value').first()).toHaveText('₹898.00');await expect(page.locator('.billing-upcoming-amount')).toContainText('₹0.00');
++  assert.equal(owned.psql(`SELECT count(*) FROM subscriptions WHERE store_id='${siteId}' AND status='active';`),'0');
++  console.info('OWNED_SIGNUP_BILLING '+JSON.stringify({providerFixtureOnly:true,realLocalCatalogParity:true,seededAccount:false,signupToOnboarding:true,annualQuoteMinor:238800,billingProofs,mandate:{plan:mandate.plan_slug,amount_minor:mandate.amount_minor,mode:mandate.provider_mode},cancelledRetainsInvoices:true,billingScreenshot}));
++  await page.goto(`${merchantOrigin}/${subdomain}/dashboard`);await expect(page.getByRole('heading',{name:'Setup checklist and store health',exact:true})).toBeVisible();
+   const screenshot=`${tmpdir()}/letbuyy-public-signup-${owned.runId}.png`;await page.screenshot({path:screenshot,fullPage:true});
+   console.info('OWNED_PUBLIC_SIGNUP '+JSON.stringify({providerFixtureOnly:true,seededAccount:false,normalSignup:true,wrongOtpDenied:true,normalPasswordAndOnboarding:true,emailFailureThenRetry:true,unboundPasswordDenied:true,otpReplayDenied:true,passwordReplayDenied:true,mailCount:mail.length,store,screenshot}));
+   assert.doesNotMatch(signupCopy,/₹20|14 days free/,'signup must not advertise an unsupported trial/price combination');

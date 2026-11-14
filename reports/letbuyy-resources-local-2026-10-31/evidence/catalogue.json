@@ -1,0 +1,314 @@
+{
+  "articles": [
+    {
+      "slug": "how-to-start-an-online-store-india",
+      "category": "ecommerce",
+      "title": "How To Start an Online Store in India (2026 Guide)"
+    },
+    {
+      "slug": "product-page-optimization",
+      "category": "ecommerce",
+      "title": "Product Page Optimization: The Complete Guide"
+    },
+    {
+      "slug": "reducing-cart-abandonment",
+      "category": "ecommerce",
+      "title": "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores"
+    },
+    {
+      "slug": "store-seo-checklist",
+      "category": "ecommerce",
+      "title": "The Complete Store SEO Checklist for Indian Merchants"
+    },
+    {
+      "slug": "how-product-reviews-increase-conversion",
+      "category": "ecommerce",
+      "title": "How Product Reviews Help Shoppers Decide"
+    },
+    {
+      "slug": "first-100-orders-guide",
+      "category": "growth",
+      "title": "How to Get Your First 100 Orders"
+    },
+    {
+      "slug": "d2c-brand-launch-guide",
+      "category": "growth",
+      "title": "How To Launch a D2C Brand in India (Step by Step)"
+    },
+    {
+      "slug": "email-marketing-ecommerce",
+      "category": "growth",
+      "title": "Email Marketing for Ecommerce: Building Your List in India"
+    },
+    {
+      "slug": "social-commerce-india",
+      "category": "growth",
+      "title": "Social Commerce in India: Instagram, WhatsApp & Beyond"
+    },
+    {
+      "slug": "retention-strategies-india",
+      "category": "growth",
+      "title": "Customer Retention Strategies That Work for Indian Brands"
+    },
+    {
+      "slug": "upi-vs-cod-india",
+      "category": "payments",
+      "title": "UPI vs COD: Which Payment Method Wins for Indian Stores"
+    },
+    {
+      "slug": "gst-for-ecommerce-india",
+      "category": "payments",
+      "title": "GST Planning for Ecommerce Sellers in India"
+    },
+    {
+      "slug": "invoicing-india-merchants",
+      "category": "payments",
+      "title": "GST Invoices for Indian Ecommerce: What Must Be Included"
+    },
+    {
+      "slug": "refunds-returns-policy-india",
+      "category": "payments",
+      "title": "Building a Customer-Friendly Returns Policy for India"
+    },
+    {
+      "slug": "razorpay-integration-guide",
+      "category": "payments",
+      "title": "Accepting Payments on LetBuyy: UPI, Cards, and COD"
+    },
+    {
+      "slug": "inventory-management-guide",
+      "category": "operations",
+      "title": "Inventory Management: From Chaos to Control"
+    },
+    {
+      "slug": "order-fulfillment-guide",
+      "category": "operations",
+      "title": "Order Fulfillment: Processing 100 Orders Per Day Efficiently"
+    },
+    {
+      "slug": "shipping-india-guide",
+      "category": "operations",
+      "title": "Shipping in India: Pincode Coverage, Rates & Couriers"
+    },
+    {
+      "slug": "multi-warehouse-inventory",
+      "category": "operations",
+      "title": "Multi-Warehouse Inventory Management"
+    },
+    {
+      "slug": "understanding-fulfillment",
+      "category": "operations",
+      "title": "Understanding Ecommerce Fulfillment in India"
+    },
+    {
+      "slug": "ai-commerce-explained",
+      "category": "ai-commerce",
+      "title": "AI Commerce Explained: What It Means for Your Store"
+    },
+    {
+      "slug": "automating-operations-ai",
+      "category": "ai-commerce",
+      "title": "Automating Store Operations with AI"
+    },
+    {
+      "slug": "commerce-copilot-guide",
+      "category": "ai-commerce",
+      "title": "The LetBuyy AI Copilot Guide"
+    },
+    {
+      "slug": "ai-product-recommendations",
+      "category": "ai-commerce",
+      "title": "AI Product Recommendations That Actually Convert"
+    },
+    {
+      "slug": "workflow-automation-merchants",
+      "category": "ai-commerce",
+      "title": "Workflow Automation for Indian Merchants"
+    },
+    {
+      "slug": "letbuyy-api-getting-started",
+      "category": "developers",
+      "title": "Getting Started with the LetBuyy API"
+    },
+    {
+      "slug": "webhooks-complete-guide",
+      "category": "developers",
+      "title": "Webhooks: Real-Time Commerce Event Streaming"
+    },
+    {
+      "slug": "building-first-letbuyy-app",
+      "category": "developers",
+      "title": "Planning a LetBuyy App Integration"
+    },
+    {
+      "slug": "liquid-theming-guide",
+      "category": "developers",
+      "title": "How Liquid Themes Work on LetBuyy"
+    },
+    {
+      "slug": "custom-integrations-guide",
+      "category": "developers",
+      "title": "Creating Custom Integrations with LetBuyy"
+    },
+    {
+      "slug": "building-first-letbuyy-store",
+      "category": "platform",
+      "title": "Building Your First LetBuyy Store: A Complete Walkthrough"
+    },
+    {
+      "slug": "introduction-to-apps",
+      "category": "platform",
+      "title": "Introduction to the LetBuyy App Marketplace"
+    },
+    {
+      "slug": "how-themes-work",
+      "category": "platform",
+      "title": "How Themes Work on LetBuyy"
+    },
+    {
+      "slug": "letbuyy-platform-overview",
+      "category": "platform",
+      "title": "LetBuyy Platform Overview: Everything in One Place"
+    },
+    {
+      "slug": "merchant-web-guide",
+      "category": "platform",
+      "title": "The Merchant Control Plane: Your Commerce OS Dashboard"
+    }
+  ],
+  "categories": [
+    {
+      "slug": "ecommerce",
+      "label": "Ecommerce"
+    },
+    {
+      "slug": "growth",
+      "label": "Growth"
+    },
+    {
+      "slug": "payments",
+      "label": "Payments"
+    },
+    {
+      "slug": "operations",
+      "label": "Operations"
+    },
+    {
+      "slug": "ai-commerce",
+      "label": "AI Commerce"
+    },
+    {
+      "slug": "developers",
+      "label": "Developers"
+    },
+    {
+      "slug": "platform",
+      "label": "Platform"
+    }
+  ],
+  "authors": [
+    "letbuyy-team"
+  ],
+  "retired_authors": [
+    "priya-commerce",
+    "arjun-developer",
+    "neha-payments",
+    "ravi-operations"
+  ],
+  "tags": [
+    "3pl",
+    "ai",
+    "api",
+    "apps",
+    "architecture",
+    "authentication",
+    "automation",
+    "b2b",
+    "beginners",
+    "brand",
+    "cart",
+    "cod",
+    "commerce",
+    "compliance",
+    "conversion",
+    "copilot",
+    "copywriting",
+    "courier",
+    "customer-service",
+    "customization",
+    "d2c",
+    "developers",
+    "efficiency",
+    "email",
+    "erp",
+    "events",
+    "fulfillment",
+    "future",
+    "getting-started",
+    "google",
+    "growth",
+    "gst",
+    "india",
+    "instagram",
+    "integration",
+    "integrations",
+    "inventory",
+    "invoicing",
+    "launch",
+    "letbuyy",
+    "liquid",
+    "list-building",
+    "logistics",
+    "loyalty",
+    "ltv",
+    "marketing",
+    "marketplace",
+    "merchant-dashboard",
+    "multi-location",
+    "oauth",
+    "operations",
+    "orders",
+    "organic",
+    "overview",
+    "payments",
+    "personalization",
+    "platform",
+    "policy",
+    "product",
+    "product-pages",
+    "razorpay",
+    "recommendations",
+    "recovery",
+    "refunds",
+    "repeat-purchase",
+    "retention",
+    "returns",
+    "reviews",
+    "scaling",
+    "seo",
+    "setup",
+    "shipping",
+    "social-commerce",
+    "social-media",
+    "social-proof",
+    "stock",
+    "store-setup",
+    "storefront",
+    "tax",
+    "technical-seo",
+    "themes",
+    "trust",
+    "upi",
+    "ux",
+    "walkthrough",
+    "warehouse",
+    "webhooks",
+    "whatsapp",
+    "workflows"
+  ],
+  "locales": [
+    "in",
+    "in-hi",
+    "in-ta"
+  ]
+}

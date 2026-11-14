@@ -30,10 +30,6 @@ class StoreModel {
   // Template Configuration (Section-based builder)
   final StoreTemplateModel? templateConfig;
 
-  /// Canonical portable theme document; never coerce its section map into the
-  /// legacy list-based editor model. Preserve it through local cache roundtrips.
-  final Map<String, dynamic>? portableTemplateConfig;
-
   // Status
   final StoreStatus status;
   final StorePlan plan;
@@ -111,7 +107,6 @@ class StoreModel {
     this.themeCustomization = const {},
     this.selectedProductIds = const [],
     this.templateConfig,
-    this.portableTemplateConfig,
     this.status = StoreStatus.draft,
     this.plan = StorePlan.free,
     this.subscriptionPlan,
@@ -124,7 +119,7 @@ class StoreModel {
     this.isFrozen = false,
     this.frozenAt,
     this.freezeReason,
-    this.paymentMode = PaymentMode.notConnected,
+    this.paymentMode = PaymentMode.shared,
     this.teamMemberCount = 0,
     this.seoTitle,
     this.seoDescription,
@@ -142,7 +137,7 @@ class StoreModel {
     this.accessMessage,
     this.published = false,
     this.codEnabled = true,
-    this.onlinePaymentEnabled = false,
+    this.onlinePaymentEnabled = true,
     this.taxInclusive = false,
     this.legalName,
     this.gstin,
@@ -170,9 +165,6 @@ class StoreModel {
   /// Create from JSON (API response).
   factory StoreModel.fromJson(Map<String, dynamic> data) {
     final id = data['id']?.toString() ?? '';
-    final rawTemplate = data['templateConfig'] ?? data['template_config'];
-    final isPortableTemplate =
-        rawTemplate is Map && rawTemplate['sections'] is Map;
     return StoreModel(
       id: id,
       sellerId: data['sellerId'] ?? data['seller_id'] ?? data['owner_id'] ?? '',
@@ -257,7 +249,7 @@ class StoreModel {
       onlinePaymentEnabled:
           data['onlinePaymentEnabled'] ??
           data['online_payment_enabled'] ??
-          false,
+          true,
       taxInclusive: data['taxInclusive'] ?? data['tax_inclusive'] ?? false,
       legalName: data['legalName'] ?? data['legal_name'],
       gstin: data['gstin'],
@@ -279,13 +271,13 @@ class StoreModel {
           _parseTimestamp(data['updatedAt'] ?? data['updated_at']) ??
           DateTime.now(),
       publishedAt: _parseTimestamp(data['publishedAt'] ?? data['published_at']),
-      templateConfig: rawTemplate != null && !isPortableTemplate
+      templateConfig:
+          (data['templateConfig'] ?? data['template_config']) != null
           ? StoreTemplateModel.fromMap(
-              Map<String, dynamic>.from(rawTemplate as Map),
+              Map<String, dynamic>.from(
+                (data['templateConfig'] ?? data['template_config']) as Map,
+              ),
             )
-          : null,
-      portableTemplateConfig: isPortableTemplate
-          ? Map<String, dynamic>.from(rawTemplate)
           : null,
     );
   }
@@ -346,7 +338,7 @@ class StoreModel {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'published_at': publishedAt?.toIso8601String(),
-      'template_config': portableTemplateConfig ?? templateConfig?.toMap(),
+      'template_config': templateConfig?.toMap(),
     };
   }
 
@@ -464,7 +456,6 @@ class StoreModel {
       updatedAt: updatedAt ?? this.updatedAt,
       publishedAt: publishedAt ?? this.publishedAt,
       templateConfig: templateConfig ?? this.templateConfig,
-      portableTemplateConfig: portableTemplateConfig,
     );
   }
 
@@ -630,10 +621,8 @@ class StoreModel {
       case 'ownaccount':
       case 'own_account':
         return PaymentMode.ownAccount;
-      case 'shared':
-        return PaymentMode.shared;
       default:
-        return PaymentMode.notConnected;
+        return PaymentMode.shared;
     }
   }
 

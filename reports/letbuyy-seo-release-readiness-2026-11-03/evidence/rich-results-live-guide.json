@@ -1,0 +1,30 @@
+{
+  "capturedAt": "2026-11-03T03:05:34.347883+00:00",
+  "source": "Native Chrome Google Rich Results Test",
+  "testedUrl": "https://www.letbuyy.com/in/resources/platform/building-first-letbuyy-store",
+  "resultUrl": "https://search.google.com/test/rich-results/result?id=Gk9mYK4gau429NE8PAsTbQ",
+  "testedAtDisplayed": "Nov3,2026,8:30:02AM",
+  "validItems": 4,
+  "types": [
+    "Article",
+    "Breadcrumb",
+    "Organization",
+    "SoftwareApplication"
+  ],
+  "articleOptionalWarnings": [
+    "Missing image",
+    "Invalid datetime datePublished; missing timezone",
+    "Invalid datetime dateModified; missing timezone",
+    "Missing author URL"
+  ],
+  "articleLiveValues": {
+    "datePublished": "2026-05-28",
+    "dateModified": "2026-06-16",
+    "authorType": "Person",
+    "authorName": "LetBuyy Team",
+    "mainEntityOfPage": "https://www.letbuyy.com/resources/platform/building-first-letbuyy-store"
+  },
+  "currentLocalComparison": "Local image/Organization author/final localized identities already repaired. Date-only source records do not attest an exact publication instant; do not invent a timezone or time.",
+  "displayGuaranteed": false,
+  "indexingRequested": false
+}

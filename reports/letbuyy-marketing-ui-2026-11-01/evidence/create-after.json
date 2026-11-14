@@ -1,0 +1,25 @@
+{
+  "captured_at": "2026-11-01T03:09:05.277Z",
+  "rows": [
+    {
+      "width": 375,
+      "network_failure_unknown": true,
+      "http_503_unknown": true,
+      "http_404_available": true,
+      "http_200_occupied": true,
+      "late_result_cannot_override_edited_value": true,
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "network_failure_unknown": true,
+      "http_503_unknown": true,
+      "http_404_available": true,
+      "http_200_occupied": true,
+      "late_result_cannot_override_edited_value": true,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "fixtures": "Intercepted public GET responses only; no store creation or external requests"
+}

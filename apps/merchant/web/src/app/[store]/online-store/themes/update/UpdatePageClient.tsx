@@ -33,8 +33,6 @@ import {
     Skeleton,
 } from '@letbuyy/ui'
 import ThemeUpdatePanel from '@/components/theme-editor/ThemeUpdatePanel'
-import { useReadRequest } from '@/lib/api/use-read-request'
-import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 
 interface UpdatePageClientProps {
     store: string
@@ -75,26 +73,21 @@ export default function UpdatePageClient({
     themeSlug: initialThemeSlug,
     fetchError: initialFetchError,
 }: UpdatePageClientProps) {
-    const { actorId } = useMerchantSecurityContext(store)
-    const beginVersions = useReadRequest(`${actorId}:${store}:${initialThemeSlug}`)
-    const [loading, setLoading] = useState(Boolean(storeId && initialThemeSlug))
+    const [loading, setLoading] = useState(false)
     const [fetchError, setFetchError] = useState<string | null>(initialFetchError ?? null)
     const [versionInfo, setVersionInfo] = useState<ThemeVersionInfo | null>(null)
 
     const fetchVersionInfo = useCallback(async () => {
         if (!storeId || !initialThemeSlug) return
-        const request = beginVersions()
         setLoading(true)
         setFetchError(null)
-        setVersionInfo(null)
         try {
             // GET the theme's release list to find current + available versions
             const res = await fetch(
                 `/api/themes/${encodeURIComponent(initialThemeSlug)}/releases?store_name=${encodeURIComponent(store)}`,
-                { credentials: 'same-origin', cache: 'no-store', signal: request.signal }
+                { credentials: 'same-origin' }
             )
             const payload = await res.json().catch(() => null) as Record<string, unknown> | null
-            if (!request.isCurrent()) return
             if (!res.ok || !payload) {
                 setFetchError(friendlyError(payload, 'Could not load theme version information.'))
                 return
@@ -113,6 +106,9 @@ export default function UpdatePageClient({
                 r.release_status === 'superseded' && typeof r.release_version === 'number' &&
                 typeof currentRelease?.release_version === 'number' && r.release_version < currentRelease.release_version)
                 .sort((a: Record<string, unknown>, b: Record<string, unknown>) => Number(b.release_version) - Number(a.release_version))[0] as Record<string, unknown> | undefined
+            const actorResponse = await fetch(`/api/themes/${encodeURIComponent(initialThemeSlug)}/editor?store_name=${encodeURIComponent(store)}`, { cache: 'no-store' })
+            const actorPayload = await actorResponse.json().catch(() => null) as Record<string, unknown> | null
+            if (!actorResponse.ok || typeof actorPayload?.actorId !== 'string') throw new Error('The current account could not be confirmed. Reload releases.')
             setVersionInfo({
                 themeSlug: initialThemeSlug,
                 currentVersionId: typeof currentRelease?.schema_version === 'string'
@@ -124,15 +120,14 @@ export default function UpdatePageClient({
                 currentReleaseId: typeof currentRelease?.id === 'string' ? currentRelease.id : undefined,
                 rollbackTargetReleaseId: typeof priorRelease?.id === 'string' ? priorRelease.id : undefined,
                 rollbackTargetVersion: typeof priorRelease?.release_version === 'number' ? priorRelease.release_version : undefined,
-                actorId,
+                actorId: actorPayload.actorId,
             })
         } catch (err) {
-            if (!request.isCurrent()) return
             setFetchError(err instanceof Error ? err.message : 'Could not load version information.')
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [actorId, beginVersions, storeId, initialThemeSlug, store])
+    }, [storeId, initialThemeSlug, store])
 
     useEffect(() => {
         void fetchVersionInfo()
@@ -231,7 +226,6 @@ export default function UpdatePageClient({
 
                 {versionInfo ? (
                     <ThemeUpdatePanel
-                        storeSlug={store}
                         themeSlug={versionInfo.themeSlug}
                         storeId={storeId}
                         currentVersionId={versionInfo.currentVersionId}

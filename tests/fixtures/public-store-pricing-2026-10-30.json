@@ -1,0 +1,49 @@
+{
+  "source": "Read-only preserved local catalog captured 2026-10-30; prices and availability are real local plan data. Provider identities and transactions in the consuming test are synthetic.",
+  "plans": [
+    {
+      "slug": "launch",
+      "name": "Launch",
+      "raw_monthly_paise": 29900,
+      "raw_founding_paise": 19900,
+      "regular_rupees": 299,
+      "founding_rupees": 199,
+      "status": "available",
+      "purchasable": true,
+      "feature_count": 10
+    },
+    {
+      "slug": "growth",
+      "name": "Growth",
+      "raw_monthly_paise": 99900,
+      "raw_founding_paise": 69900,
+      "regular_rupees": 999,
+      "founding_rupees": 699,
+      "status": "available",
+      "purchasable": true,
+      "feature_count": 11
+    },
+    {
+      "slug": "scale",
+      "name": "Scale",
+      "raw_monthly_paise": 249900,
+      "raw_founding_paise": 0,
+      "regular_rupees": 2499,
+      "founding_rupees": 2499,
+      "status": "coming_soon",
+      "purchasable": false,
+      "feature_count": 10
+    },
+    {
+      "slug": "commerce_os",
+      "name": "Commerce OS",
+      "raw_monthly_paise": 599900,
+      "raw_founding_paise": 0,
+      "regular_rupees": 5999,
+      "founding_rupees": 5999,
+      "status": "coming_soon",
+      "purchasable": false,
+      "feature_count": 10
+    }
+  ]
+}

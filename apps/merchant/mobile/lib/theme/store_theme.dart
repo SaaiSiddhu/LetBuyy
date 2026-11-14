@@ -211,7 +211,7 @@ class StoreTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 4,
-        shape: StadiumBorder(),
+        shape: CircleBorder(),
       ),
 
       // Divider
@@ -477,7 +477,7 @@ class StoreTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 4,
-        shape: StadiumBorder(),
+        shape: CircleBorder(),
       ),
 
       // Divider

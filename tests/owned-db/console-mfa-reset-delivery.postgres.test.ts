@@ -22,19 +22,14 @@ test('ambiguous provider response recovers one stable security message through c
   const url=new URL(typeof input==='string'?input:input instanceof URL?input.toString():input.url);
   if(url.origin!=='https://api.resend.com')return original(input,init);
   assert.equal(url.pathname,'/emails');const request=new Request(input,init),raw=await request.text(),body=JSON.parse(raw),key=request.headers.get('idempotency-key');assert.ok(key);
-  assert.deepEqual(Array.isArray(body.to)?body.to:[body.to],[j.target.email]);assert.equal(body.from,'LetBuyy <operator-sender@example.invalid>');
-  // Match private field names/capabilities, not innocent CSS comments such as
-  // "light-mode counterpart". The actual target factor must never be sent.
-  assert.doesNotMatch(raw,/\b(?:fingerprint|counter|cookie_sha256)\b|otpauth:\/\//);
-  assert.ok(!raw.includes(fixtureConsoleFactorFingerprint(j.target.id)));
+  assert.deepEqual(Array.isArray(body.to)?body.to:[body.to],[j.target.email]);assert.equal(body.from,j.env.RESEND_FROM_EMAIL);assert.doesNotMatch(raw,/fingerprint|counter|otpauth|cookie_sha256/);
   const hash=createHash('sha256').update(raw).digest('hex'),existing=messages.get(key);if(existing)assert.equal(hash,existing.hash,'ambiguous retry message must remain identical');else messages.set(key,{id:'email_syn_'+crypto.randomUUID(),hash});
   calls.push({key,hash,recipient:body.to,sender:body.from});
   if(!replyAvailable)throw new Error('Synthetic provider response lost after accepting message');
   return new Response(JSON.stringify({id:messages.get(key)!.id}),{headers:{'Content-Type':'application/json'}});
  }) as typeof fetch;
  try{
-  const failed=await consumeNotificationJobs(j.env,'syn-security-email-first');assert.equal(failed[0].failed,1,JSON.stringify(failed));assert.equal(failed[0].succeeded,0);assert.equal(messages.size,1,
-    owned.psql(`SELECT coalesce(error_message,'no error recorded') FROM platform_queue_jobs WHERE id='${j.job}';`));
+  const failed=await consumeNotificationJobs(j.env,'syn-security-email-first');assert.equal(failed[0].failed,1,JSON.stringify(failed));assert.equal(failed[0].succeeded,0);assert.equal(messages.size,1);
   assert.equal(owned.psql(`SELECT status||'|'||attempts||'|'||coalesce(result->>'provider_message_id','unsent') FROM platform_queue_jobs WHERE id='${j.job}';`),'failed|1|unsent');
   owned.psql(`UPDATE platform_queue_jobs SET available_at=clock_timestamp()-interval '1 second' WHERE id='${j.job}';`);replyAvailable=true;
   const recovered=await consumeNotificationJobs({...j.env,RESEND_FROM_EMAIL:'Synthetic Different Sender <changed@example.invalid>'},'syn-security-email-retry');assert.equal(recovered[0].succeeded,1,JSON.stringify(recovered));assert.equal(messages.size,1);

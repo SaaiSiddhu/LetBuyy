@@ -9,8 +9,6 @@ import '../services/theme_provider.dart';
 import 'routes.dart';
 import 'auth_wrapper.dart';
 
-final merchantNavigatorKey = GlobalKey<NavigatorState>();
-
 /// Store Builder App
 /// Uses shared LetBuyy theme colors for consistency
 class StoreBuilderApp extends StatelessWidget {
@@ -23,7 +21,6 @@ class StoreBuilderApp extends StatelessWidget {
     final telemetry = _maybeTelemetry(context);
 
     return MaterialApp(
-      navigatorKey: merchantNavigatorKey,
       title: AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
       theme: StoreTheme.light(),

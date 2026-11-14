@@ -1,16 +1,10 @@
-import { StorefrontDirectoryQuerySchema, StorefrontDirectoryCursorSchema, StorefrontDirectoryPayloadSchema, type StorefrontDirectoryQuery } from '@letbuyy/shared-types';
-import { AppError } from '../../lib/errors';
-import type { StorefrontDiscoveryQuery, StorefrontDiscoveryMetadata } from '@letbuyy/commerce-core';
-import { parseStorefrontDiscoveryRequest } from '../../lib/storefront-discovery';
-import {authorizeVisitor,authorizeVisitorSite,type VisitorSite} from '../../lib/storefront-visitor-access';
 import { resolveLiquidBundleArtifact } from '../../lib/theme-release-bundle';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../../index';
 import { sha256Hex } from '../../lib/crypto';
-import { dbFailureBody, getSupabaseAdmin, paginated, success, decodeListCursor } from '../../lib/supabase';
+import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/supabase';
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
 import { registerStorefrontBlogRoutes } from './storefront-blog-routes';
-import { readThemePreviewContent, readThemePreviewCollection } from './theme-preview-content';
 import { PUBLIC_PRODUCT_SELECT, PUBLIC_PRODUCT_SELECT_RELATIONAL, toPublicProduct } from '../../lib/public-product-view';
 import { validate } from '../../middleware/validation';
 import { StorefrontProductReviewsQuery } from '../../schemas/review.schema';
@@ -22,7 +16,7 @@ import { registerStorefrontMarketplaceFeedRoutes, type StorefrontMarketplaceFeed
 import { registerStorefrontCheckoutPaymentRoutes } from './checkout-payment-routes';
 import { registerStorefrontCustomerEngagementRoutes } from './customer-engagement-routes';
 import { planCouponValidation, storefrontCouponValidationError, type CouponRecord } from '@letbuyy/checkout-core';
-import { mapPublicStorePayload, mapPublicStoreRenderPayload, normalizeStorefrontHandle, type PublishedStoreRecord, type StorefrontSiteRecord, type StorefrontThemeReleaseRecord } from '@letbuyy/tenant-core';
+import { mapPublicStorePayload, normalizeStorefrontHandle, type PublishedStoreRecord, type StorefrontSiteRecord, type StorefrontThemeReleaseRecord } from '@letbuyy/tenant-core';
 import { StorefrontAnalyticsBeaconSchema, type StorefrontAnalyticsBeacon } from '@letbuyy/shared-types';
 import type { AppBlockInstance } from '@letbuyy/shared-types';
 
@@ -168,14 +162,12 @@ type PublicProductQueryOptions = {
     search?: string;
     countryOfOrigin?: string;
     ids?: string[];
-    discovery?: StorefrontDiscoveryQuery;
 };
 
 type PublicProductQueryResult = {
     data: PublicProductRow[];
     count: number;
     error: unknown;
-    discovery?: StorefrontDiscoveryMetadata;
 };
 
 type ThemePreviewSessionRow = {
@@ -202,14 +194,11 @@ type ThemeEditorDraftRow = {
     auto_saved_at: string | null;
 };
 
-export type StorefrontThemeReleaseReadOptions = { releaseId?: string | null; releaseVersion?: number | null; projection?: 'render-v1' };
-
 type StorefrontPublicRouteDependencies = StorefrontMarketplaceFeedDependencies & {
-    loadPublicDirectory?: (c: AppContext, input: {p_limit:number;p_after_at:string|null;p_after_id:string|null}) => Promise<{data:unknown;error:unknown}>;
     loadSiteByHandle: (c: AppContext, handle: string, options: { publishedOnly: boolean }) => Promise<StorefrontSiteRecord | null>;
     loadPublishedStore: (c: AppContext, subdomain: string) => Promise<PublishedStoreRecord | null>;
     loadPublishedStoreById: (c: AppContext, storeId: string) => Promise<PublishedStoreRecord | null>;
-    loadCurrentThemeRelease: (c: AppContext, storeId: string, options?: StorefrontThemeReleaseReadOptions) => Promise<StorefrontThemeReleaseRecord | null>;
+    loadCurrentThemeRelease: (c: AppContext, storeId: string) => Promise<StorefrontThemeReleaseRecord | null>;
     loadPublicStorefrontAppBlocks: (c: AppContext, storeId: string) => Promise<AppBlockInstance[]>;
     listPublicProductReviews: (c: AppContext) => Promise<Response>;
     queryPublicProducts: (c: AppContext, storeId: string, options: PublicProductQueryOptions) => Promise<PublicProductQueryResult>;
@@ -241,9 +230,9 @@ export function registerStorefrontPublicRoutes(
     dependencies: StorefrontPublicRouteDependencies,
 ): void {
     const {
-        loadSiteByHandle: rawSiteByHandle,
-        loadPublishedStore: rawPublishedStore,
-        loadPublishedStoreById: rawPublishedStoreById,
+        loadSiteByHandle,
+        loadPublishedStore,
+        loadPublishedStoreById,
         loadCurrentThemeRelease,
         loadPublicStorefrontAppBlocks,
         listPublicProductReviews,
@@ -266,43 +255,6 @@ export function registerStorefrontPublicRoutes(
         getRequestId,
         emitStorefrontOrderPaidEvent,
     } = dependencies;
-    const loadPublishedStore: typeof rawPublishedStore = (c,handle) => {
-        const allowed=c.get('storefrontVisitorGrant');
-        return allowed?.site.subdomain===handle ? Promise.resolve(allowed.site) : rawPublishedStore(c,handle);
-    };
-    const loadPublishedStoreById: typeof rawPublishedStoreById = (c,id) => {
-        const allowed=c.get('storefrontVisitorGrant');
-        return allowed?.site.id===id ? Promise.resolve(allowed.site) : rawPublishedStoreById(c,id);
-    };
-    const loadSiteByHandle: typeof rawSiteByHandle = (c,handle,options) => {
-        const allowed=c.get('storefrontVisitorGrant');
-        return rawSiteByHandle(c,handle,{publishedOnly:options.publishedOnly&&!(allowed?.preview&&allowed.site.subdomain===handle)});
-    };
-    const catalogueGuard = async (c:AppContext,next:()=>Promise<void>) => {
-        if(!['GET','HEAD'].includes(c.req.method)){await next();return;}
-        // This exact global taxonomy route has independent marketplace authority;
-        // a merchant handle named marketplace does not exempt any other path.
-        if(c.req.param('subdomain')==='marketplace'&&/(?:^|\/)marketplace\/categories\/?$/.test(c.req.path)){await next();return;}
-        await authorizeVisitor(c,{handle:c.req.param('subdomain')});
-        await next();c.header('Cache-Control','no-store');
-    };
-    // Guard before Cache API lookup. Private buyer history and marketplace channel
-    // endpoints keep their own authority; these are store catalogue populations.
-    for(const resource of ['products','collections','categories','navigation','pages','policies','blog','search']){
-        router.use(`/:subdomain/${resource}`,catalogueGuard);
-        router.use(`/:subdomain/${resource}/*`,catalogueGuard);
-    }
-    const idGuard = async(c:AppContext,next:()=>Promise<void>)=>{
-        if(!['GET','HEAD'].includes(c.req.method)){await next();return;}
-        await authorizeVisitor(c,{id:c.req.param('storeId')});await next();c.header('Cache-Control','no-store');
-    };
-    router.use('/store/:storeId',idGuard);router.use('/store/:storeId/*',idGuard);
-    router.use('/reviews',async(c,next)=>{
-        if(!['GET','HEAD'].includes(c.req.method)){await next();return;}
-        const ids=c.req.queries('store_id');
-        if(!ids||ids.length!==1)return c.json({error:{code:'VALIDATION',message:'One store_id is required'}},400);
-        await authorizeVisitor(c,{id:ids[0]});await next();c.header('Cache-Control','no-store');
-    });
     registerStorefrontMarketplaceFeedRoutes(router, dependencies);
 
     // MKT-2 — the single-listing read, beside the feed and taxonomy above.
@@ -322,7 +274,6 @@ export function registerStorefrontPublicRoutes(
     });
 
     router.get('/lookup', async (c) => {
-        c.header('Cache-Control', 'no-store');
         const query = normalizeStorefrontHandle(c.req.query('q') || '');
         if (!query) {
             return c.json({
@@ -335,29 +286,28 @@ export function registerStorefrontPublicRoutes(
         }
 
         const db = getSupabaseAdmin(c);
-        const selectFields = 'store_name,name,status,site_type,subdomain,published,access_mode';
+        const selectFields = 'store_name,name,status,site_type,subdomain';
         // Store finder, not tenant resolution: it returns no site id, and the storefront read that
         // follows resolves its own tenant from sites.subdomain. Matching either handle column stays
         // intentional, but subdomain and store_name are unique only within their own column, so one
         // combined predicate can match two tenants and — with limit(1) and no ordering — return an
         // arbitrary one, letting a store_name capture another tenant's subdomain. Probe the canonical
-        // column first, then store_name only if absent. Query failures remain unavailable.
+        // column first, then store_name; each equality is single-valued, so more than one row (or a
+        // query error) resolves to "store not found".
         const lookupExactSite = async (column: 'subdomain' | 'store_name') => {
-            const { data, error } = await db
+            const { data } = await db
                 .from('sites')
                 .select(selectFields)
                 .eq(column, query)
+                .not('status', 'eq', 'suspended')
                 .is('deleted_at', null)
                 .maybeSingle();
-            if (error) throw new AppError('Store lookup is temporarily unavailable.', 503, 'LOOKUP_UNAVAILABLE');
+
             return data;
         };
 
         const exactSite = (await lookupExactSite('subdomain')) || (await lookupExactSite('store_name'));
-        // Resolve canonical ownership before public eligibility. A private
-        // subdomain must not fall through to another store's legacy name alias.
-        if (exactSite && exactSite.site_type === 'store' && exactSite.status === 'published'
-            && exactSite.published === true && (exactSite.access_mode == null || exactSite.access_mode === 'public')) {
+        if (exactSite) {
             return c.json(success({
                 status: 'found',
                 store: {
@@ -369,34 +319,96 @@ export function registerStorefrontPublicRoutes(
             }));
         }
 
-        // A finder accepts exact handles. Never turn a miss into an unscoped
-        // tenant-name scan or describe a private/unpublished draft as online.
+        const { data: fuzzyMatch } = await db
+            .from('sites')
+            .select(selectFields)
+            .ilike('name', `%${query}%`)
+            .not('status', 'eq', 'suspended')
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+        const fuzzySite = fuzzyMatch?.[0];
+        if (fuzzySite) {
+            return c.json(success({
+                status: 'found',
+                store: {
+                    name: fuzzySite.name || fuzzySite.store_name,
+                    subdomain: fuzzySite.subdomain || fuzzySite.store_name,
+                    status: fuzzySite.status,
+                    siteType: fuzzySite.site_type,
+                },
+            }));
+        }
+
         return c.json(success({ status: 'not_found' }));
     });
 
-    // Owner decision CAP-C60, 27 October: public launched stores may appear in discovery.
-    // A fixed service-only SQL projection owns eligibility, fields, counts and cursor ordering.
-    // Ordinary tenant-table guards and every private/draft access gate remain unchanged.
-    router.get('/directory', validate('query', StorefrontDirectoryQuerySchema), async (c) => {
-        const query = c.get('validatedQuery') as StorefrontDirectoryQuery;
-        const cursor = query.cursor
-            ? StorefrontDirectoryCursorSchema.safeParse(decodeListCursor(query.cursor))
-            : null;
-        if (cursor && !cursor.success) throw new AppError('Invalid directory cursor', 400, 'VALIDATION_ERROR');
-        c.header('Cache-Control', 'no-store');
-        const loadDirectory = dependencies.loadPublicDirectory ?? (async (context, input) =>
-            await getSupabaseAdmin(context).rpc('public_storefront_directory_v1', input));
-        const { data, error } = await loadDirectory(c, {
-            p_limit: query.limit,
-            p_after_at: cursor?.success ? cursor.data.value : null,
-            p_after_id: cursor?.success ? cursor.data.id : null,
-        });
-        const payload = StorefrontDirectoryPayloadSchema.safeParse(data);
-        if (error || !payload.success || payload.data.stores.length > query.limit
-            || payload.data.pagination.limit !== query.limit) {
-            throw new AppError('The public store directory is temporarily unavailable.', 503, 'DIRECTORY_UNAVAILABLE');
+    // GET /storefront/directory — Public LetBuyy discovery directory and aggregate stats.
+    // SECURITY: owner PII (full_name, email) is never returned to anonymous callers.
+    // SECURITY: published stores ONLY. A `draft` site is a store its merchant has created and not
+    // launched; listing one here, or counting it in `totalStores`, discloses that merchant's
+    // store_name/logo_url/theme_id to any anonymous caller before they have chosen to be public.
+    // Both filters below are `.eq('status', 'published')` for that reason — see F-DIRECTORY-1 and
+    // __tests__/storefront-directory-exposure.test.ts, which fails if either widens again.
+    // NOTE: this route does not currently execute at all. `sites` is a registered tenant table and
+    // `status` is not one of its accepted scope columns, so createTenantGuardedSupabaseClient
+    // rejects both queries before they run. That fail-closed state is deliberate and unchanged
+    // here: making a platform-wide public store directory live is an owner decision (CAP-C60),
+    // and getSupabaseAdminUnguarded is not the instrument for it — see its conditions 1 and 3.
+    //
+    // F1.5 (foundation-phase1-closure, 2026-09-26): the guard's rejection used to propagate
+    // uncaught to the global error handler, so an anonymous caller saw an opaque `500
+    // INTERNAL_ERROR` — indistinguishable from a real crash, and logged as one. The catch below
+    // recognizes only that one documented, expected rejection (by the exact message the guard
+    // throws — pinned by __tests__/storefront-directory-exposure.test.ts) and reports it as the
+    // deliberate, named unavailability it is, at 503, matching this file's own house style
+    // (see METAFIELDS_UNAVAILABLE in ../metafields.ts and TENANT_TX_UNAVAILABLE in ../loyalty.ts).
+    // Anything else — a real bug, a genuine DB outage — still falls through to `throw`, unchanged,
+    // so it is still logged and still a 500. No query predicate below changed.
+    router.get('/directory', async (c) => {
+        try {
+            const db = getSupabaseAdmin(c);
+
+            const { data: storesRaw } = await db
+                .from('sites')
+                .select(`
+                    store_name,
+                    name,
+                    logo_url,
+                    theme_id,
+                    status,
+                    site_type,
+                    created_at
+                `)
+                .eq('status', 'published')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false })
+                .limit(12);
+
+            const [storesCount, themesCount] = await Promise.all([
+                db.from('sites').select('*', { count: 'exact', head: true }).eq('status', 'published').is('deleted_at', null),
+                db.from('online_store_themes').select('*', { count: 'exact', head: true }),
+            ]);
+
+            return c.json(success({
+                stores: storesRaw || [],
+                stats: {
+                    totalStores: storesCount.count || 0,
+                    totalThemes: themesCount.count || 0,
+                },
+            }));
+        } catch (err) {
+            if (err instanceof Error && /Tenant table sites requires a tenant\/owner predicate/.test(err.message)) {
+                return c.json({
+                    error: {
+                        code: 'DIRECTORY_UNAVAILABLE',
+                        message: 'The public store directory is not available yet.',
+                    },
+                }, 503);
+            }
+            throw err;
         }
-        return c.json(success(payload.data));
     });
 
     // GET /storefront/store/:storeId — Public published store data by immutable ID.
@@ -407,11 +419,42 @@ export function registerStorefrontPublicRoutes(
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid store id' } }, 400);
         }
 
-        const allowed=await authorizeVisitor(c,{id:storeId});
-        const store=allowed.site.subdomain?await loadSiteByHandle(c,allowed.site.subdomain,{publishedOnly:!allowed.preview}):null;
-        if(!store||store.id!==storeId.toLowerCase())return c.json({error:{code:'NOT_FOUND',message:'Store not found'}},404);
+        const db = getSupabaseAdmin(c);
+        const selectStore = (selectFields: string, includeDeletedAtFilter: boolean) => {
+            let query = db
+                .from('sites')
+                .select(selectFields)
+                .eq('id', storeId)
+                .eq('status', 'published');
+
+            if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+
+            return query;
+        };
+
+        let { data, error } = await selectStore(STOREFRONT_SITE_RELEASE_SELECT, true).single();
+
+        if (error || !data) {
+            ({ data, error } = await selectStore(STOREFRONT_SITE_RELEASE_COMPAT_SELECT, true).single());
+        }
+
+        if (error || !data) {
+            ({ data, error } = await selectStore(STOREFRONT_SITE_SELECT, true).single());
+        }
+
+        if (error || !data) {
+            ({ data, error } = await selectStore(STOREFRONT_SITE_COMPAT_SELECT, true).single());
+        }
+
+        if (error || !data) {
+            ({ data } = await selectStore(STOREFRONT_SITE_COMPAT_SELECT, false).single());
+        }
+
+        if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const store = data as unknown as StorefrontSiteRecord;
         const [release, appBlocks] = await Promise.all([
-            loadCurrentThemeRelease(c, store.id, { releaseId: store.current_theme_release_id, releaseVersion: store.storefront_release_version }),
+            loadCurrentThemeRelease(c, store.id),
             loadPublicStorefrontAppBlocks(c, store.id),
         ]);
         return c.json(success({
@@ -431,11 +474,10 @@ export function registerStorefrontPublicRoutes(
 
         if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
 
-        const filters = parseStorefrontDiscoveryRequest(c.req.url);
-        if (!filters.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product filters or pagination.' } }, 400);
-        const { data, count, discovery, error } = await queryPublicProducts(c, storeId, { limit: filters.data.limit, page: filters.data.page, discovery: filters.data });
+        const limit = Math.min(parseInt(c.req.query('limit') || '100'), 100);
+        const { data, error } = await queryPublicProducts(c, storeId, { limit });
         if (error) return c.json(dbFailureBody(), 500);
-        return c.json({ ...paginated(data.map(product => toPublicProduct(product)), count, filters.data.page, filters.data.limit), discovery });
+        return c.json(success(data || []));
     });
 
     // GET /storefront/store/:storeId/coupons/validate — Public checkout coupon validation by store ID
@@ -596,19 +638,10 @@ export function registerStorefrontPublicRoutes(
         }
 
         const resource = c.req.query('resource');
-        if (resource === 'page' || resource === 'article' || resource === 'blog') {
-            const result = await readThemePreviewContent(db, store.id, c.req.query());
-            return c.json(result.body, result.status);
-        }
         if (resource && resource !== 'products' && resource !== 'collections') {
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Unknown preview resource' } }, 400);
         }
         if (resource === 'collections') {
-            const collectionId = c.req.query('collection_id');
-            if (collectionId !== undefined) {
-                const result = await readThemePreviewCollection(db, store.id, collectionId);
-                return c.json(result.body, result.status);
-            }
             const browse = collectionBrowseQuery(c);
             if (!browse) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection cursor' } }, 400);
             const { data, error } = await loadCollectionSummaries(c, store.id, browse);
@@ -622,20 +655,9 @@ export function registerStorefrontPublicRoutes(
                 return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid preview product IDs' } }, 400);
             }
             if (ids && !ids.length) return c.json(success([]));
-            const collectionId = c.req.query('collection_id');
-            if (collectionId && !/^[0-9a-f-]{36}$/i.test(collectionId)) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection binding.' } }, 400);
-            if (collectionId) {
-                const collection = await db.from('collections').select('id').eq('id', collectionId).eq('store_id', store.id).eq('is_active', true).is('deleted_at', null).maybeSingle();
-                if (collection.error) return c.json(dbFailureBody(), 500);
-                if (!collection.data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Collection unavailable.' } }, 404);
-            }
-            const filters = parseStorefrontDiscoveryRequest(c.req.url, { transportKeys: ['token', 'resource', 'pagination', 'ids'], overrides: c.req.query('pagination') === '1' ? {} : { limit: 100 } });
-            if (!filters.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid preview filters.' } }, 400);
-            const { data, count, discovery, error } = await queryPublicProducts(c, store.id, { page: filters.data.page, limit: filters.data.limit, paginated: true, ids,
-                discovery: filters.data });
+            const { data, error } = await queryPublicProducts(c, store.id, { page: 1, limit: 100, paginated: true, ids });
             if (error) return c.json(dbFailureBody(), 500);
-            const publicProducts = (data || []).map(product => toPublicProduct(product));
-            return c.json({ ...(c.req.query('pagination') === '1' ? paginated(publicProducts, count, filters.data.page, filters.data.limit) : success(publicProducts)), discovery });
+            return c.json(success((data || []).map((product) => toPublicProduct(product))));
         }
 
         const liveRelease = await loadCurrentThemeRelease(c, store.id);
@@ -679,40 +701,30 @@ export function registerStorefrontPublicRoutes(
         }));
     });
 
-    // Public/default mobile shape remains stable; web explicitly requests render-v1.
+    // GET /storefront/:subdomain — Public published store data and immutable current release
     router.get('/:subdomain', async (c) => {
-        const params = new URL(c.req.url).searchParams;
-        const projection = params.get('projection');
-        if ((projection !== null && projection !== 'render-v1') || params.getAll('projection').length > 1
-            || (projection && [...params.keys()].some(key => key !== 'projection'))) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Unsupported storefront projection' } }, 400);
-        }
         const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
-        // A cache hit must never skip the current publication/visibility fence.
-        let store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
-        if(store&&(store.access_mode==null||store.access_mode==='public')&&store.published!==false){
-            await authorizeVisitorSite(c,store as unknown as VisitorSite);
-        }else{
-            const allowed=await authorizeVisitor(c,{handle:c.req.param('subdomain')});
-            if(!store&&allowed.preview)store=await loadSiteByHandle(c,c.req.param('subdomain'),{publishedOnly:false});
-        }
-        if(!store)return c.json({error:{code:'NOT_FOUND',message:'Store not found'}},404);
-        const snapshot = await sha256Hex(JSON.stringify(store));
-        const reply = await cachedJson(c, await storefrontRequestCacheKey(c, 'bootstrap', handle, snapshot), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        return cachedJson(c, await storefrontRequestCacheKey(c, 'bootstrap', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+            const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
+            if (!store) {
+                return {
+                    status: 404,
+                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+                };
+            }
+
             const [release, appBlocks] = await Promise.all([
-                loadCurrentThemeRelease(c, store.id, { releaseId: store.current_theme_release_id, releaseVersion: store.storefront_release_version, ...(projection ? { projection } : {}) }),
+                loadCurrentThemeRelease(c, store.id),
                 loadPublicStorefrontAppBlocks(c, store.id),
             ]);
             return {
-                body: success({ ...(projection ? mapPublicStoreRenderPayload(store, release) : mapPublicStorePayload(store, release)), app_blocks: appBlocks }),
+                body: success({
+                    ...mapPublicStorePayload(store, release),
+                    app_blocks: appBlocks,
+                }),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:bootstrap', 'storefront:theme'),
             };
-        }, { bypassCache: !store.current_theme_release_id });
-        // Internal Cache API entries are content-keyed. Downstream caches must not
-        // bypass the live site check; no cross-request private reuse is introduced.
-        const headers = new Headers(reply.headers);
-        headers.set('Cache-Control', 'no-store');
-        return new Response(reply.body, { status: reply.status, headers });
+        });
     });
 
     // GET /storefront/:subdomain/status — Public limited status data for gated storefront routing.
@@ -882,9 +894,12 @@ export function registerStorefrontPublicRoutes(
 
     // GET /storefront/:subdomain/products — Public product listing
     router.get('/:subdomain/products', async (c) => {
-        const filters = parseStorefrontDiscoveryRequest(c.req.url);
-        if (!filters.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product filters or pagination.' } }, 400);
-        const { page, limit } = filters.data;
+        const page = parseInt(c.req.query('page') || '1');
+        const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+        const countryOfOrigin = c.req.query('country_of_origin')?.trim() || undefined;
+        if (countryOfOrigin && countryOfOrigin.length > 100) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Country of origin must be at most 100 characters' } }, 400);
+        }
         const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
         return cachedJson(c, await storefrontRequestCacheKey(c, 'products', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
             const store = await loadPublishedStore(c, c.req.param('subdomain'));
@@ -894,15 +909,17 @@ export function registerStorefrontPublicRoutes(
                     body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
                 };
             }
-            const { data, count, discovery, error } = await queryPublicProducts(c, store.id, {
+            const { data, count, error } = await queryPublicProducts(c, store.id, {
                 page,
                 limit,
                 paginated: true,
-                discovery: filters.data,
+                category: c.req.query('category') || undefined,
+                search: c.req.query('search') || undefined,
+                countryOfOrigin,
             });
             if (error) return { status: 500, body: dbFailureBody() };
             return {
-                body: { ...paginated((data || []).map((product) => toPublicProduct(product)), count || 0, page, limit), discovery },
+                body: paginated((data || []).map((product) => toPublicProduct(product)), count || 0, page, limit),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:products'),
             };
         });
@@ -910,14 +927,16 @@ export function registerStorefrontPublicRoutes(
 
     // GET /storefront/:subdomain/products/by-ids?ids=a,b — Public product subset scoped by store
     router.get('/:subdomain/products/by-ids', async (c) => {
-        const filters = parseStorefrontDiscoveryRequest(c.req.url, { transportKeys: ['ids'], overrides: { limit: 100 } });
-        if (!filters.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product filters or pagination.' } }, 400);
+        const countryOfOrigin = c.req.query('country_of_origin')?.trim() || undefined;
+        if (countryOfOrigin && countryOfOrigin.length > 100) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Country of origin must be at most 100 characters' } }, 400);
+        }
         const ids = (c.req.query('ids') || '')
             .split(',')
             .map((id) => id.trim())
-            .filter(Boolean);
-        if (ids.length > 100 || ids.some(id => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product IDs.' } }, 400);
-        const page = filters.data.page;
+            .filter((id) => /^[0-9a-f-]{36}$/i.test(id))
+            .slice(0, 100);
+        const page = Math.max(1, parseInt(c.req.query('page') || '1', 10) || 1);
 
         if (!ids.length) return c.json(success([]));
 
@@ -936,7 +955,9 @@ export function registerStorefrontPublicRoutes(
                 page,
                 paginated: true,
                 ids,
-                discovery: filters.data,
+                category: c.req.query('category') || undefined,
+                search: c.req.query('search') || undefined,
+                countryOfOrigin,
             });
             if (error) return { status: 500, body: dbFailureBody() };
             return {
@@ -1093,7 +1114,7 @@ export function registerStorefrontPublicRoutes(
     // The route accepts either a UUID (canonical) or any token and resolves by id.
     router.get('/:subdomain/collections/:slug', async (c) => {
         const identifier = c.req.param('slug');
-        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier)) {
+        if (!identifier || identifier.length > 120 || !/^[a-z0-9_-]+$/i.test(identifier)) {
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection identifier' } }, 400);
         }
         const countryOfOrigin = c.req.query('country_of_origin')?.trim() || undefined;
@@ -1138,13 +1159,38 @@ export function registerStorefrontPublicRoutes(
 
             const collectionRow = collection as SqlRecord;
 
-            const parsedFilters = parseStorefrontDiscoveryRequest(c.req.url, { overrides: { collection_id: identifier } });
-            if (!parsedFilters.success) return { status: 400, body: { success: false, error: { code: 'VALIDATION', message: 'Invalid collection filters or pagination.' } } };
-            const { data: products, count: total, discovery, error: productError } = await queryPublicProducts(c, store.id, {
-                limit: parsedFilters.data.limit, page: parsedFilters.data.page, paginated: true,
-                discovery: parsedFilters.data,
-            });
-            if (productError) return { status: 500, body: dbFailureBody() };
+            // Load assigned product IDs from junction table
+            const { data: assignments, error: assignError } = await db
+                .from('collection_products')
+                .select('product_id')
+                .eq('collection_id', identifier)
+                .order('position', { ascending: true });
+
+            if (assignError) {
+                return { status: 500, body: dbFailureBody() };
+            }
+
+            const productIds = (assignments || [])
+                .map((row) => (row as SqlRecord).product_id as string)
+                .filter(Boolean);
+
+            let products: PublicProductRow[] = [];
+            let total = 0;
+            if (productIds.length > 0) {
+                const { data: productData, count, error: productError } = await queryPublicProducts(c, store.id, {
+                    limit: Math.min(productIds.length, 100),
+                    page: Math.max(1, parseInt(c.req.query('page') || '1', 10) || 1),
+                    paginated: true,
+                    ids: productIds,
+                    category: c.req.query('category') || undefined,
+                    search: c.req.query('search') || undefined,
+                    countryOfOrigin,
+                });
+                if (productError) return { status: 500, body: dbFailureBody() };
+                const hydratedProducts = await hydratePublicProductVariants(c, productData || []);
+                products = hydratedProducts;
+                total = count;
+            }
 
             return {
                 body: success({
@@ -1154,9 +1200,8 @@ export function registerStorefrontPublicRoutes(
                         description: collectionRow.description || null,
                         image_url: collectionRow.image_url || null,
                     },
-                    products: products.map(product => toPublicProduct(product)),
+                    products,
                     total,
-                    discovery,
                 }),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:collections', `storefront:collection:${identifier}`),
             };

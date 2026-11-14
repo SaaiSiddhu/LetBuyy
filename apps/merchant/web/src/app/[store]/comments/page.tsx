@@ -1,12 +1,9 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { COMMENT_MODERATION_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { AlertTriangle, Avatar, Badge, Banner, Button, Card, Check, ConfirmDialog, Mail, MessageSquare, Page, PageHeader, RefreshCw, Section, Skeleton, StatusPresentationBadge, Tabs, Trash2, useToast } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
+import { AlertTriangle, Avatar, Badge, Banner, Button, Card, Check, ConfirmDialog, EmptyState, Mail, MessageSquare, Page, PageHeader, RefreshCw, Section, Skeleton, StatusPresentationBadge, Tabs, Trash2, useToast } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 type CommentStatus = 'pending' | 'approved' | 'spam'
@@ -59,18 +56,15 @@ export default function CommentsPage() {
     const [commentToDelete, setCommentToDelete] = useState<BlogComment | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadComments = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/blog-comments?limit=100`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load comments'))
@@ -78,7 +72,6 @@ export default function CommentsPage() {
 
             setComments(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load comments'
             setComments([])
             setLoadError(message)
@@ -88,9 +81,9 @@ export default function CommentsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadComments()
@@ -171,7 +164,7 @@ export default function CommentsPage() {
 
     const renderComments = useCallback((items: BlogComment[]) => (
         items.length === 0 ? (
-            <EmptyState scene="comments"
+            <EmptyState
                 icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 title="No comments in this view"
                 body="Switch moderation views or wait for readers to comment on published posts."
@@ -263,8 +256,7 @@ export default function CommentsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="content"
-                    recipe="index"
+                <PageHeader
                     title="Comments"
                     description="Moderate blog comments before they appear on your site."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Comments' }]}
@@ -280,8 +272,7 @@ export default function CommentsPage() {
 
     return (
         <Page>
-            <PageHeader identity="content"
-                recipe="index"
+            <PageHeader
                 title="Comments"
                 description="Moderate blog comments before they appear on your site."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Comments' }]}
@@ -365,7 +356,7 @@ export default function CommentsPage() {
                     description="Approve useful comments, mark spam, or delete comments that should not appear on your blog."
                 >
                     {comments.length === 0 ? (
-                        <EmptyState scene="comments"
+                        <EmptyState
                             icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No comments yet"
                             body="When readers comment on your blog posts, they will appear here for moderation."

@@ -13,23 +13,7 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
     AND EXISTS(SELECT 1 FROM pg_proc tax_fn JOIN public.migration_privilege_journal tax_custody ON tax_custody.object_oid=tax_fn.oid
       WHERE tax_fn.oid=e.evtfoid AND tax_fn.proowner='postgres'::regrole AND tax_custody.migration='360'
       AND tax_custody.object_signature='public.guard_subscription_tax_ddl_360()' AND tax_custody.grantee='service_role' AND tax_custody.privilege='EXECUTE' AND tax_custody.action='granted'
-      AND tax_custody.object_owner=tax_fn.proowner AND tax_custody.object_definition_hash=encode(sha256(convert_to(pg_get_functiondef(tax_fn.oid),'UTF8')),'hex')) OR EXISTS(SELECT 1 FROM(VALUES
-  ('issue_graphql_placeholder','sql_drop',ARRAY['DROP EXTENSION']::text[],'supabase_admin','extensions.set_graphql_placeholder()','supabase_admin','80e0c97f0a475697c1b517e0d27887bfa0c2baf138229735a58a345d2168505b'),
-  ('pgrst_ddl_watch','ddl_command_end',NULL::text[],'supabase_admin','extensions.pgrst_ddl_watch()','supabase_admin','de987df746eb39647098459e7993bd8595e592969b0cd647828a3d13d37cffe0'),
-  ('pgrst_drop_watch','sql_drop',NULL::text[],'supabase_admin','extensions.pgrst_drop_watch()','supabase_admin','791b41f0632fc86e0fc86a303ec0fd710c4e2ecf947a23422dae2b7a2c122f1d'),
-  ('issue_pg_cron_access','ddl_command_end',ARRAY['CREATE EXTENSION']::text[],'supabase_admin','extensions.grant_pg_cron_access()','supabase_admin','00db212b76cecd4b0794b2f20c414ab4988d675959747cd12d3eb4c6d6736f38'),
-  ('issue_pg_net_access','ddl_command_end',ARRAY['CREATE EXTENSION']::text[],'supabase_admin','extensions.grant_pg_net_access()','supabase_admin','754e58111dbe32030af4d91591dfd78cb3cf8e8f4f56a5fcc199bb0cf7f4ac2b'),
-  ('issue_pg_graphql_access','ddl_command_end',ARRAY['CREATE EXTENSION']::text[],'supabase_admin','extensions.grant_pg_graphql_access()','supabase_admin','03de03bb70da1d448f7a674215d1b63a924dc7115db657dae34b1aa8977e030e'),
-  ('ensure_rls','ddl_command_end',ARRAY['CREATE TABLE','CREATE TABLE AS','SELECT INTO']::text[],'postgres','rls_auto_enable()','postgres','2782e98b348aca7d6f6f73c420fd78d2e094957dd7a52b0483d4c34f29d2a7a1')
- ) provider(name,event,tags,owner,signature,function_owner,body_sha256)
- JOIN pg_proc provider_fn ON provider_fn.oid=e.evtfoid
- WHERE e.evtname=provider.name AND e.evtevent=provider.event AND e.evtenabled='O'
-  AND e.evttags IS NOT DISTINCT FROM provider.tags AND e.evtowner=to_regrole(provider.owner)
-  AND provider_fn.oid=to_regprocedure(provider.signature) AND provider_fn.proowner=to_regrole(provider.function_owner)
-  AND provider_fn.prokind='f' AND provider_fn.prorettype='event_trigger'::regtype AND NOT provider_fn.proretset
-  AND provider_fn.prolang=(SELECT oid FROM pg_language WHERE lanname='plpgsql')
-  AND encode(sha256(convert_to(provider_fn.prosrc,'UTF8')),'hex')=provider.body_sha256)
-))
+      AND tax_custody.object_owner=tax_fn.proowner AND tax_custody.object_definition_hash=encode(sha256(convert_to(pg_get_functiondef(tax_fn.oid),'UTF8')),'hex'))))
   OR EXISTS(SELECT 1 FROM pg_roles profile_role WHERE profile_role.rolname IN('postgres','anon','authenticated','service_role','app_tenant','authenticator')
     AND (profile_role.rolconnlimit<>-1 OR profile_role.rolvaliduntil IS NOT NULL OR NOT coalesce(profile_role.rolconfig,'{}'::text[]) <@ CASE profile_role.rolname
       WHEN 'postgres' THEN ARRAY['search_path="$user", public, extensions','search_path="\$user", public, extensions','search_path=public, extensions']::text[]
@@ -37,7 +21,7 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
       WHEN 'authenticated' THEN ARRAY['statement_timeout=8s']::text[]
       WHEN 'authenticator' THEN ARRAY['session_preload_libraries=supautils, safeupdate','statement_timeout=8s','lock_timeout=8s']::text[]
       ELSE '{}'::text[] END))
-  OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='postgres' AND (rolsuper OR (NOT rolsuper AND rolinherit AND rolcreaterole AND rolcreatedb AND rolcanlogin AND rolreplication AND rolbypassrls AND EXISTS(SELECT 1 FROM pg_roles managed_admin WHERE managed_admin.rolname='supabase_admin' AND managed_admin.rolsuper) AND EXISTS(SELECT 1 FROM pg_auth_members managed_member JOIN pg_roles managed_parent ON managed_parent.oid=managed_member.roleid WHERE managed_member.member='postgres'::regrole AND managed_parent.rolname='supabase_privileged_role' AND managed_member.inherit_option AND managed_member.set_option AND NOT managed_member.admin_option))) AND rolinherit AND rolcreaterole AND rolcreatedb AND rolcanlogin AND rolreplication AND rolbypassrls)
+  OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='postgres' AND rolsuper AND rolinherit AND rolcreaterole AND rolcreatedb AND rolcanlogin AND rolreplication AND rolbypassrls)
   OR (SELECT count(*)FROM pg_roles WHERE rolname IN('anon','authenticated','app_tenant') AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND NOT rolbypassrls)<>3
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='service_role' AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND rolbypassrls)
   OR EXISTS(SELECT 1 FROM pg_roles WHERE rolname='authenticator' AND (rolsuper OR rolinherit OR rolcreaterole OR rolcreatedb OR NOT rolcanlogin OR rolreplication OR rolbypassrls)) THEN
@@ -48,11 +32,7 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
   OR EXISTS(SELECT 1 FROM pg_auth_members m JOIN pg_roles parent ON parent.oid=m.roleid JOIN pg_roles member ON member.oid=m.member
    WHERE (parent.rolname IN('postgres','app_tenant','anon','authenticated','service_role') OR member.rolname IN('anon','authenticated','service_role','app_tenant','authenticator')) AND NOT(
     (parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin')))
-    OR (parent.rolname IN('anon','authenticated','service_role') AND member.rolname='authenticator' AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin'))
-    OR (m.member='postgres'::regrole AND m.grantor=to_regrole('supabase_admin')
-     AND EXISTS(SELECT 1 FROM pg_roles managed_postgres WHERE managed_postgres.rolname='postgres' AND NOT managed_postgres.rolsuper)
-     AND ((m.roleid IN('anon'::regrole,'authenticated'::regrole,'service_role'::regrole) AND m.admin_option AND m.inherit_option AND m.set_option)
-       OR(m.roleid='app_tenant'::regrole AND m.admin_option AND NOT m.inherit_option AND NOT m.set_option)))))) THEN
+    OR (parent.rolname IN('anon','authenticated','service_role') AND member.rolname='authenticator' AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin'))))) THEN
   RAISE EXCEPTION 'COLLECTION_MEMBERSHIP361_ROLE_MEMBERSHIP';END IF;
  IF to_regclass('public.collections') IS NULL OR to_regclass('public.collection_products')IS NULL
   OR to_regclass('public.audit_activity_events')IS NULL OR to_regclass('public.outbox_events')IS NULL OR to_regclass('public.migration_privilege_journal')IS NULL

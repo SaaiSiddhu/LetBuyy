@@ -29,9 +29,7 @@ test('infrastructure owns the postgres-backed pooled SQL adapter', () => {
     'STOREFRONT_POOLED_SQL?: string',
     "normalizedFlag(env.STOREFRONT_POOLED_SQL) !== 'off'",
     'env.HYPERDRIVE?.connectionString || env.DATABASE_URL || env.SUPABASE_DB_URL',
-    'prepare: hyperdrive',
-    "hyperdrive ? 'prepared-hyperdrive' : 'direct'",
-    'prepare: true, simple: false',
+    'prepare: false',
     'onnotice: () => undefined',
     'const pooledClients = new Map',
   ], 'pooled SQL adapter');
@@ -47,25 +45,20 @@ test('api gateway exposes Hyperdrive and rollbackable storefront pooled SQL flag
   assert.equal((wranglerSource.match(/STOREFRONT_POOLED_SQL = "on"/g) || []).length, 3);
 });
 
-test('immutable storefront content uses pooled SQL while current site policy bypasses pooled results', () => {
+test('storefront cache-miss hot reads use pooled SQL before Supabase fallback', () => {
   assertIncludesAll(storefrontRouteSource, [
     "import { getPooledSql } from '@letbuyy/infrastructure/pooled-sql-adapter'",
     'async function loadPublishedStoreFromPooledSql',
+    'async function loadSiteByHandleFromPooledSql',
     'async function loadCurrentThemeReleaseFromPooledSql',
     'async function queryPublicProductsFromPooledSql',
     'const pooledStore = await loadPublishedStoreFromPooledSql',
-    'pooled = await loadCurrentThemeReleaseFromPooledSql',
-    'public.read_published_storefront_site_v1($1, true)',
-    'public.read_published_storefront_release_v1($1, $2, $3, $4)',
-    '.rpc(STOREFRONT_DISCOVERY_RPC, storefrontDiscoveryRpcArgs(storeId, query, options.ids))',
+    'const pooledSite = await loadSiteByHandleFromPooledSql',
+    'const pooledRelease = await loadCurrentThemeReleaseFromPooledSql',
+    'const pooledResult = await queryPublicProductsFromPooledSql',
     'return null',
     'getSupabaseAdmin(c)',
   ], 'storefront pooled SQL hot reads');
-  assert.doesNotMatch(storefrontRouteSource,/loadSiteByHandleFromPooledSql/);
-  const access=readFileSync('services/api-gateway/src/lib/storefront-visitor-access.ts','utf8');
-  assert.doesNotMatch(access,/getPooledSql/);
-  assert.match(access,/loadVisitorSite/);
-  assert.match(access,/from\('sites'\)/);
 });
 
 test('pooled catalog reads preserve existing filters and exact-count behavior until P2-4', () => {

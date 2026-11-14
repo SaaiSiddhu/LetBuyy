@@ -1,0 +1,13 @@
+{
+  "baseline_count": 175,
+  "changed_baseline_files": {
+    "services/api-gateway/src/__tests__/owned-db/console-ui-refinement-browser.postgres.test.ts": "7b853a76bda256c41d933fe0e6bd5b3d51d2d069e47de19116cf2e4b636e08fa",
+    "apps/internal/console/src/app/globals.css": "81afd7d19891e6dceaeebdcb167fbd6ef74e1c12844cf39dacb0226cee655ef5",
+    "packages/typescript/ui/src/tokens.ts": "8ff2db3531e54247b63d4d897d002c60db6c4abb80516c5f1e9470f672aeaaad",
+    "packages/typescript/ui/tests/components/foundation.test.tsx": "6a4191d312dde26f1eb22c133629dc5ea9cfc3c9c3a6d73c7a52bd179cb3e863",
+    "packages/typescript/ui/tokens.json": "aabab6026b8404373637dbe274f381fec29f989d29de2abb56e5ec8e9cc153b9"
+  },
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "runtime_source_manifest_count": 10009,
+  "runtime_source_manifest_sha256": "a93c443a3995cc44c3805f309e2eb4c179404d817a98f46744ee7a8b3b89a132"
+}

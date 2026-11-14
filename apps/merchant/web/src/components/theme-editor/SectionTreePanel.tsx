@@ -31,12 +31,56 @@ import {
     Plus,
     Trash2,
 } from 'lucide-react'
-import type { ExtendedSectionSchema as SectionSchema } from '@letbuyy/theme-engine'
+import type { SectionSchema } from '@/lib/theme-schemas'
 import { BlockChildRow } from './BlockChildRow'
-import type { EditorBlockCatalog } from './editor-block-actions'
 
-import type { BlockEntry, SectionEntry, EditorState, EditorSelection } from './editor-view-state'
-export type { BlockEntry } from './editor-view-state'
+// ── Local type mirrors (match page.tsx; avoids cross-file coupling) ────────────
+
+type JsonRecord = Record<string, unknown>
+
+/**
+ * BlockEntry — one block instance in a section's block tree.
+ *
+ * Exported so BlockChildRow (Phase T) can share this type without duplicating it.
+ * The children field is optional so all existing callers compile unchanged.
+ * RISK-DUAL-N01: children here are INSTANCE children — block_definitions (the
+ * type catalog) are never stored in BlockEntry.
+ */
+export type BlockEntry = {
+    id: string
+    type: string
+    order: number
+    visible: boolean
+    settings: JsonRecord
+    /**
+     * Phase T: nested child block instances (populated when the document contains
+     * nested blocks). Optional so flat-block callers require no changes.
+     */
+    children?: BlockEntry[]
+}
+
+type SectionEntry = {
+    id: string
+    type: string
+    order: number
+    visible: boolean
+    settings: JsonRecord
+    blocks: BlockEntry[]
+}
+
+type EditorState = {
+    themeSettings: JsonRecord
+    sections: {
+        header: SectionEntry | null
+        footer: SectionEntry | null
+        template: SectionEntry[]
+    }
+}
+
+type EditorSelection =
+    | { kind: 'section'; sectionId: string }
+    | { kind: 'block'; sectionId: string; blockId: string }
+    | { kind: 'theme'; groupKey: string }
 
 type AvailableSection = {
     type: string
@@ -77,7 +121,6 @@ export function TreeGroup({ label, children }: { label: string; children: ReactN
 type TreeSectionRowProps = {
     section: SectionEntry
     schema?: SectionSchema
-    blockCatalog?: EditorBlockCatalog
     selected: boolean
     /**
      * Override for aria-selected. When a child block is selected, the parent section
@@ -110,7 +153,6 @@ type TreeSectionRowProps = {
      * Add a child block of childType to parentBlockId's instance children list.
      * RISK-DUAL-N01: mutates the template instance tree, never block_definitions.
      */
-    onToggleBlock?: (sectionId: string, blockId: string) => void
     onAddChildBlock?: (sectionId: string, parentBlockId: string, childType: string) => void
     /**
      * Remove childId from parentBlockId's instance children list.
@@ -132,7 +174,6 @@ type TreeSectionRowProps = {
 function TreeSectionRow({
     section,
     schema,
-    blockCatalog,
     selected,
     ariaSelected,
     blockSelection,
@@ -152,7 +193,6 @@ function TreeSectionRow({
     onDragOver,
     onDrop,
     onDragEnd,
-    onToggleBlock,
     onAddChildBlock,
     onRemoveChildBlock,
     onMoveChildBlock,
@@ -168,10 +208,8 @@ function TreeSectionRow({
     return (
         <div
             role="treeitem"
-            aria-level={1}
             aria-selected={ariaSelected ?? selected}
             tabIndex={tabIndex}
-            onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); onSelect() } }}
             className={[
                 'theme-os-tree-section',
                 selected ? 'theme-os-tree-section--selected' : '',
@@ -199,18 +237,21 @@ function TreeSectionRow({
                 <span>{sectionName}</span>
             </Button>
             <div className="theme-os-tree-section__actions">
-                <Button unstyled type="button" aria-label={`Toggle ${sectionName} visibility`} aria-pressed={section.visible} onClick={onToggle}>
+                {/* tabIndex={-1}: action buttons are not in the Tab sequence; the treeitem
+                    outer div is the roving tabindex stop. Actions are accessible via focus
+                    + Enter/Space on the treeitem, or mouse click. */}
+                <Button unstyled type="button" tabIndex={-1} aria-label="Toggle visibility" onClick={onToggle}>
                     <Eye size={13} aria-hidden="true" />
                 </Button>
                 {!pinned ? (
                     <>
-                        <Button unstyled type="button" aria-label={`Move ${sectionName} up`} onClick={onMoveUp} disabled={!canMoveUp}>
+                        <Button unstyled type="button" tabIndex={-1} aria-label="Move up" onClick={onMoveUp} disabled={!canMoveUp}>
                             <ChevronRight className="theme-os-rotate-up" size={13} aria-hidden="true" />
                         </Button>
-                        <Button unstyled type="button" aria-label={`Move ${sectionName} down`} onClick={onMoveDown} disabled={!canMoveDown}>
+                        <Button unstyled type="button" tabIndex={-1} aria-label="Move down" onClick={onMoveDown} disabled={!canMoveDown}>
                             <ChevronRight className="theme-os-rotate-down" size={13} aria-hidden="true" />
                         </Button>
-                        <Button unstyled type="button" aria-label={`Remove ${sectionName}`} onClick={onRemove}>
+                        <Button unstyled type="button" tabIndex={-1} aria-label="Remove" onClick={onRemove}>
                             <Trash2 size={13} aria-hidden="true" />
                         </Button>
                     </>
@@ -221,7 +262,7 @@ function TreeSectionRow({
                 wrapper div has no CSS and BlockChildRow falls back to the same Button
                 structure with theme-os-tree-block class. */}
             {hasBlocks ? (
-                <div className="theme-os-tree-blocks" role="group">
+                <div className="theme-os-tree-blocks">
                     {section.blocks.map((block) => (
                         <BlockChildRow
                             key={block.id}
@@ -231,12 +272,7 @@ function TreeSectionRow({
                             parentBlockId={section.id}
                             selectedBlockId={blockSelection}
                             blockLabel={schema?.blocks_schema?.[block.type]?.name || labelFromKey(block.type)}
-                            blockCatalog={blockCatalog}
-                            siblingIndex={section.blocks.findIndex(entry => entry.id === block.id)}
-                            siblingCount={section.blocks.length}
-                            allowedChildTypes={blockCatalog?.childTypes[block.type]}
                             onSelectBlock={onSelectBlock}
-                            onToggleBlock={onToggleBlock}
                             onAddChildBlock={onAddChildBlock}
                             onRemoveChildBlock={onRemoveChildBlock}
                             onMoveChildBlock={onMoveChildBlock}
@@ -253,7 +289,6 @@ function TreeSectionRow({
 export type SectionTreePanelProps = {
     state: EditorState
     sectionSchemas: Record<string, SectionSchema>
-    blockCatalogs?: Record<string, EditorBlockCatalog>
     selection: EditorSelection
     addableSections: AvailableSection[]
     addSectionType: string
@@ -269,7 +304,6 @@ export type SectionTreePanelProps = {
      * within the given section. Autosaved via the existing P draft CAS mechanism.
      * RISK-DUAL-N01: mutates template instance data, never block_definitions.
      */
-    onToggleBlock?: (sectionId: string, blockId: string) => void
     onAddChildBlock?: (sectionId: string, parentBlockId: string, childType: string) => void
     /**
      * Remove childId from the instance children list of parentBlockId within the given
@@ -303,7 +337,6 @@ export type SectionTreePanelProps = {
 export default function SectionTreePanel({
     state,
     sectionSchemas,
-    blockCatalogs,
     selection,
     addableSections,
     addSectionType,
@@ -313,7 +346,6 @@ export default function SectionTreePanel({
     onMoveSection,
     onToggleSection,
     onRemoveSection,
-    onToggleBlock,
     onAddChildBlock,
     onRemoveChildBlock,
     onMoveChildBlock,
@@ -326,9 +358,7 @@ export default function SectionTreePanel({
     // Event-delegation: listen once on the role="tree" container so individual
     // treeitem divs do not each need their own key handler.
     const handleTreeKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return
-        const activeItem = (e.target as HTMLElement).closest?.('[role="treeitem"]')
-        if (!activeItem || !treeRef.current?.contains(activeItem)) return
+        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
         e.preventDefault()
 
         const items = treeRef.current
@@ -336,14 +366,15 @@ export default function SectionTreePanel({
             : []
         if (items.length === 0) return
 
-        const currentIndex = items.findIndex((item) => item === activeItem)
+        const focused = document.activeElement
+        const currentIndex = items.findIndex((item) => item === focused || item.contains(focused))
 
         if (currentIndex === -1) {
             items[0]?.focus()
             return
         }
 
-        const nextIndex = e.key === 'Home' ? 0 : e.key === 'End' ? items.length - 1 : e.key === 'ArrowDown'
+        const nextIndex = e.key === 'ArrowDown'
             ? Math.min(items.length - 1, currentIndex + 1)
             : Math.max(0, currentIndex - 1)
 
@@ -387,35 +418,30 @@ export default function SectionTreePanel({
     }
 
     return (
-        <div className="theme-os-tree" role="tree" aria-label="Theme sections" ref={treeRef} onKeyDown={handleTreeKeyDown}>
+        <div className="theme-os-tree">
             {/* Header — pinned, not draggable */}
             <TreeGroup label="Header">
-                {state.sections.header.map(section => (
+                {state.sections.header ? (
                     <TreeSectionRow
-                        key={section.id}
-                        section={section}
-                        schema={sectionSchemas[section.type]}
-                        blockCatalog={blockCatalogs?.[section.type]}
+                        section={state.sections.header}
+                        schema={sectionSchemas[state.sections.header.type]}
                         pinned
-                        selected={selection.kind === 'section' && selection.sectionId === section.id}
-                        ariaSelected={selection.kind !== 'theme' && selection.sectionId === section.id}
-                        blockSelection={selection.kind === 'block' && selection.sectionId === section.id ? selection.blockId : null}
-                        onSelect={() => onSelect({ kind: 'section', sectionId: section.id })}
-                        onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: section.id, blockId })}
-                        onToggle={() => onToggleSection(section.id)}
-                        onToggleBlock={onToggleBlock}
-                        onAddChildBlock={onAddChildBlock}
-                        onRemoveChildBlock={onRemoveChildBlock}
-                        onMoveChildBlock={onMoveChildBlock}
+                        selected={selection.kind === 'section' && selection.sectionId === state.sections.header.id}
+                        blockSelection={selection.kind === 'block' && selection.sectionId === state.sections.header.id ? selection.blockId : null}
+                        onSelect={() => onSelect({ kind: 'section', sectionId: state.sections.header?.id || '' })}
+                        onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: state.sections.header?.id || '', blockId })}
+                        onToggle={() => onToggleSection(state.sections.header?.id || '')}
                     />
-                ))}
+                ) : null}
             </TreeGroup>
 
             {/* Template — ARIA tree widget; rows are draggable */}
             <TreeGroup label="Template">
                 <div
-                    role="group"
+                    role="tree"
                     aria-label="Template sections"
+                    ref={treeRef}
+                    onKeyDown={handleTreeKeyDown}
                 >
                     {state.sections.template.map((section, index) => {
                         const isSelected = selection.kind === 'section' && selection.sectionId === section.id
@@ -429,7 +455,6 @@ export default function SectionTreePanel({
                                 key={section.id}
                                 section={section}
                                 schema={sectionSchemas[section.type]}
-                                blockCatalog={blockCatalogs?.[section.type]}
                                 selected={isSelected}
                                 ariaSelected={isSelected || isActiveParent}
                                 blockSelection={
@@ -452,7 +477,6 @@ export default function SectionTreePanel({
                                 onDragOver={handleDragOver(index)}
                                 onDrop={handleDrop(index)}
                                 onDragEnd={handleDragEnd}
-                                onToggleBlock={onToggleBlock}
                                 onAddChildBlock={onAddChildBlock}
                                 onRemoveChildBlock={onRemoveChildBlock}
                                 onMoveChildBlock={onMoveChildBlock}
@@ -477,25 +501,22 @@ export default function SectionTreePanel({
 
             {/* Footer — pinned, not draggable */}
             <TreeGroup label="Footer">
-                {state.sections.footer.map(section => (
+                {state.sections.footer ? (
                     <TreeSectionRow
-                        key={section.id}
-                        section={section}
-                        schema={sectionSchemas[section.type]}
-                        blockCatalog={blockCatalogs?.[section.type]}
+                        section={state.sections.footer}
+                        schema={sectionSchemas[state.sections.footer.type]}
                         pinned
-                        selected={selection.kind === 'section' && selection.sectionId === section.id}
-                        ariaSelected={selection.kind !== 'theme' && selection.sectionId === section.id}
-                        blockSelection={selection.kind === 'block' && selection.sectionId === section.id ? selection.blockId : null}
-                        onSelect={() => onSelect({ kind: 'section', sectionId: section.id })}
-                        onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: section.id, blockId })}
-                        onToggle={() => onToggleSection(section.id)}
-                        onToggleBlock={onToggleBlock}
-                        onAddChildBlock={onAddChildBlock}
-                        onRemoveChildBlock={onRemoveChildBlock}
-                        onMoveChildBlock={onMoveChildBlock}
+                        selected={selection.kind === 'section' && selection.sectionId === state.sections.footer.id}
+                        blockSelection={
+                            selection.kind === 'block' && selection.sectionId === state.sections.footer.id
+                                ? selection.blockId
+                                : null
+                        }
+                        onSelect={() => onSelect({ kind: 'section', sectionId: state.sections.footer?.id || '' })}
+                        onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: state.sections.footer?.id || '', blockId })}
+                        onToggle={() => onToggleSection(state.sections.footer?.id || '')}
                     />
-                ))}
+                ) : null}
             </TreeGroup>
         </div>
     )

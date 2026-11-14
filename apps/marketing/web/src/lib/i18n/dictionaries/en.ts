@@ -13,7 +13,7 @@ export const en = {
     meta: {
         title: 'LetBuyy — India-first commerce operating system',
         description:
-            'Launch an online store in India with UPI, cash on delivery, GST invoices and shipping built in. 0% commission on your sales.',
+            "Build an online store for your Indian business. Manage products and orders, review plans and configure payment and delivery settings. 0% sales commission.",
     },
 
     nav: {
@@ -112,7 +112,7 @@ export const en = {
         close: 'Close',
         apply: 'Apply',
         currentlyViewing: 'Currently viewing',
-        moreCountriesSoon: 'More countries coming as LetBuyy expands.',
+        moreCountriesSoon: "India is the currently supported country.",
     },
 
     contact: {

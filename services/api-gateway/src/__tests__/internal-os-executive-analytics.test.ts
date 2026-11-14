@@ -90,7 +90,8 @@ test('console analytics, revenue, and dashboard pages consume rollups instead of
     assert.match(analyticsPage, /\/internal\/console\/analytics\/company-health/);
     assert.match(analyticsPage, /Reason-captured cohort drill-through/);
     assert.match(revenuePage, /Revenue Mix/);
-    assert.match(dashboardPage, /Company Health/);
+    assert.match(dashboardPage, /Operating signals/);
+    assert.match(dashboardPage, /\/internal\/console\/analytics\/company-health/);
 });
 
 test('shared stale helper marks missing and old rollups stale', () => {

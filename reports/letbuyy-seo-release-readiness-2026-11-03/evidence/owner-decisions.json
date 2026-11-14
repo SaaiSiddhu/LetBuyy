@@ -1,0 +1,22 @@
+{
+  "capturedAt": "2026-11-03T02:27:21.634155+00:00",
+  "source": "Direct owner response in this chat",
+  "facts": {
+    "play_package_com_letbuyy_letbuyy_owner_confirmed": true,
+    "legacy_firebase_host_owner_confirmed": true,
+    "consumer_buyer_app_lifecycle": "stays_active",
+    "letbuyy_dns_owner": "user"
+  },
+  "independent_cloud_publisher_verification": false,
+  "external_mutation_authorized": false,
+  "remaining_facts": [
+    "Actual consumer-app data-practice inventory",
+    "Verified app support and policy destinations",
+    "Current publisher/hosting linkage and deploy source"
+  ],
+  "laterSteering": {
+    "consumerPrivacyDataPractices": "Deferred by owner; owner will do later. Do not implement/publish buyer privacy content in this run.",
+    "fundingClaim": "Owner says the third-party funding result is not their company; treat as unrelated brand entity, not an attested LetBuyy funding event.",
+    "browserAccess": "Owner logged into Firebase project letbuy-y and GSC letbuyy.com domain property, screenshots and subsequent browser access confirm."
+  }
+}

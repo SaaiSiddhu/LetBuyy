@@ -2,10 +2,9 @@
 
 import { useCopy } from '@/components/i18n/useCopy'
 
-import Copy from '@/components/i18n/Copy'
-
 import { useState, useRef } from 'react'
-import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, useInView, useReducedMotion } from 'framer-motion'
+import * as motion from 'framer-motion/m'
 import MarketingIllustration from './MarketingIllustration'
 import { Button, Check, Minus, Plus } from '@letbuyy/ui'
 
@@ -18,9 +17,9 @@ const TRUST_ITEMS = [
 ]
 
 const METRICS = [
-  { val: '50+',  label: 'AI capabilities' },
-  { val: '24/7', label: 'Monitoring' },
-  { val: '100%', label: 'Data ownership' },
+  { val: 'AI', label: 'Content drafts' },
+  { val: 'Plan', label: 'Check availability' },
+  { val: 'Your', label: 'Business data' },
   { val: '0%',   label: 'Commission' },
 ]
 
@@ -28,16 +27,16 @@ const FAQS: { q: string; a: string[] }[] = [
   {
     q: 'What is LetBuyy?',
     a: [
-      'LetBuyy is an AI-native Commerce Operating System that helps businesses manage storefronts, products, inventory, orders, payments, customers, analytics, and operations from one platform.',
+      'LetBuyy helps Indian businesses build an online store and manage products and orders from one merchant workspace.',
       'Unlike traditional store builders, LetBuyy is designed to run the entire commerce business, not just the online store.',
     ],
   },
   {
     q: 'How is LetBuyy different from Shopify?',
     a: [
-      'Shopify primarily focuses on storefront creation and app integrations.',
+      'Compare platforms using your required tasks, total cost and current availability.',
       'LetBuyy combines storefronts, inventory, orders, payments, customer management, analytics, automation, AI assistance, and business operations into a single unified platform.',
-      'Instead of connecting multiple tools, merchants manage everything from one operating system.',
+      'Some capabilities require separate provider accounts, credentials or approval.',
     ],
   },
   {
@@ -51,7 +50,7 @@ const FAQS: { q: string; a: string[] }[] = [
   {
     q: 'Which payment methods does LetBuyy support?',
     a: [
-      'LetBuyy supports UPI, credit cards, debit cards, net banking, wallets, and cash on delivery.',
+      'Available online payment methods depend on your connected provider account; COD is configured separately.',
       'Payment gateway integrations and GST-ready workflows are built into the platform for Indian businesses.',
     ],
   },
@@ -59,7 +58,7 @@ const FAQS: { q: string; a: string[] }[] = [
     q: 'Can I migrate from Shopify, WooCommerce, or another platform?',
     a: [
       'Yes.',
-      'You can import products, collections, customers, and other business data into LetBuyy.',
+      'Check the supported product import/export format and review any customer or order migration with support first.',
       'Migration tools are designed to help merchants move without rebuilding their entire business from scratch.',
     ],
   },
@@ -67,7 +66,7 @@ const FAQS: { q: string; a: string[] }[] = [
     q: 'Is LetBuyy suitable for growing businesses?',
     a: [
       'Absolutely.',
-      "Whether you're launching your first store or managing multiple brands, LetBuyy scales with your business through advanced inventory management, automation, analytics, multi-store operations, and AI-powered commerce tools.",
+      "Choose a plan around the store, catalog and reporting controls you need. Confirm additional automation, AI and wholesale requirements before relying on them.",
     ],
   },
   {
@@ -93,7 +92,7 @@ const FAQS: { q: string; a: string[] }[] = [
       'You do.',
       'Your products, customers, orders, content, and business data remain yours at all times.',
       'LetBuyy provides the infrastructure and tools to operate your commerce business, but you retain ownership and control of your data.',
-      'Business data can be exported whenever needed.',
+      'Use the export tools available for the relevant records, or contact support about an access or portability request.',
     ],
   },
 ]
@@ -128,11 +127,11 @@ export default function FAQ() {
           viewport={{ once: true }}
           transition={{ duration: dur(0.6) }}
         >
-          <p className="section-label"><Copy text={"Frequently Asked Questions"} /></p>
+          <p className="section-label">{t("Frequently Asked Questions")}</p>
           <h2 id="faq-heading" className="section-title">
-            <Copy text={"Everything you need to know before launching"} /></h2>
+            {t("Everything you need to know before launching")}</h2>
           <p className="section-subtitle" style={{ maxWidth: 640, margin: '16px auto 0' }}>
-            <Copy text={"Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms."} /></p>
+            {t("Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.")}</p>
         </motion.div>
 
         {/* Two-column body */}
@@ -150,14 +149,14 @@ export default function FAQ() {
               <div className="faq-trust-content">
                 <div className="faq-trust-header">
                   <MarketingIllustration artwork="support" className="marketing-illustration--faq" sizes="128px" />
-                  <h3 className="faq-trust-title" id="faq-trust-heading"><Copy text={"Built for modern commerce"} /></h3>
+                  <h3 className="faq-trust-title" id="faq-trust-heading">{t("Built for modern commerce")}</h3>
                 </div>
 
                 <ul className="faq-trust-list">
                   {TRUST_ITEMS.map(item => (
                     <li key={item} className="faq-trust-item">
                       <span className="faq-trust-check" aria-hidden="true"><Check width={16} height={16} strokeWidth={1.8} /></span>
-                      <Copy text={item} />
+                      {t((item) ?? '')}
                     </li>
                   ))}
                 </ul>
@@ -166,7 +165,7 @@ export default function FAQ() {
               <dl className="faq-metrics" aria-label={t("Platform highlights")}>
                 {METRICS.map(m => (
                   <div key={m.label} className="faq-metric">
-                    <dt className="faq-metric-lbl"><Copy text={m.label} /></dt>
+                    <dt className="faq-metric-lbl">{t((m.label) ?? '')}</dt>
                     <dd className="faq-metric-val">{m.val}</dd>
                   </div>
                 ))}
@@ -198,7 +197,7 @@ export default function FAQ() {
                       id={`faq-btn-${i}`}
                       onClick={() => toggleItem(i)}
                     >
-                      <span className="faq-q-text"><Copy text={faq.q} /></span>
+                      <span className="faq-q-text">{t((faq.q) ?? '')}</span>
                       <span className="faq-toggle-icon" aria-hidden="true">
                         {isOpen ? <Minus width={20} height={20} strokeWidth={1.5} /> : <Plus width={20} height={20} strokeWidth={1.5} />}
                       </span>
@@ -219,7 +218,7 @@ export default function FAQ() {
                       >
                         <div className="faq-answer-inner">
                           {faq.a.map((para, pi) => (
-                            <p key={pi}><Copy text={para} /></p>
+                            <p key={pi}>{t((para) ?? '')}</p>
                           ))}
                         </div>
                       </motion.div>

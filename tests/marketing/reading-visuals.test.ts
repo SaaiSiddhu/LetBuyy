@@ -1,3 +1,4 @@
+import { resourceHeadingId } from '../../apps/marketing/web/src/lib/resources/headings'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { existsSync, statSync } from 'node:fs'
@@ -36,7 +37,7 @@ test('each reading plan has an illustration and every standard article has two v
       continue
     }
     assert.equal(Object.keys(visuals).length, 2, article.slug)
-    const headings = article.body.filter(block => block.type === 'h2').map(block => block.text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))
+    const headings = article.body.filter(block => block.type === 'h2').map(block => block.id ?? resourceHeadingId(block.text))
     for (const [target, visual] of Object.entries(visuals)) {
       assert.ok(headings.includes(target), `${article.slug}: missing section ${target}`)
       assert.ok(statSync(resolve('apps/marketing/web/public', visual.src.slice(1))).size > 1000)

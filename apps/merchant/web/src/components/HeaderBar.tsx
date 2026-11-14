@@ -1,29 +1,24 @@
 'use client'
 
-import { Suspense, use, useState, useRef, useEffect, useCallback, type ReactNode } from 'react'
-import { useMerchantRouter as useRouter, useMerchantDeparture } from './MerchantNavigationProvider'
-import { MerchantNavigationLink as Link } from './MerchantNavigationLink'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import Image from 'next/image'
 import type { SessionUser } from '@/lib/auth/session'
-import type { StoreData, UserStore, StoreSwitcherResult } from './AdminShell'
-import dynamic from 'next/dynamic'
-import { AppWindow, Bell, Bot, Button, Check, ChevronDown, LogOut, Menu, Moon, Search, Sun, X, acquireScrollLock, useFocusTrap, useTheme, useToast } from '@letbuyy/ui'
+import type { StoreData, UserStore } from './AdminShell'
+import NotificationsPanel from './NotificationsPanel'
+import { Button, MaterialIcon, acquireScrollLock } from '@letbuyy/ui'
 import { resolveKeyboardShortcut } from './merchantNavigation'
 import { getAccountsUrl } from '@/lib/public-urls'
-
-const NotificationsPanel = dynamic(() => import('./NotificationsPanel'))
 
 interface HeaderBarProps {
     store: string
     storeData: StoreData
     user: SessionUser
     userStores: UserStore[]
-    userStoresPromise?: Promise<StoreSwitcherResult>
-    appPlatformEnabled: boolean
     onMenuToggle: () => void
     onSearchOpen: () => void
     onAISidebarToggle: () => void
-    showAssistant?: boolean
     isSettingsPage?: boolean
     /** Whether the shared nav drawer is open — drives the menu/close icon swap. */
     isMenuOpen?: boolean
@@ -52,47 +47,24 @@ function getSiteTypeLabel(type: string): string {
     }
 }
 
-function DeferredStoreList({ promise, fallback, render, retry }: {
-    promise: Promise<StoreSwitcherResult>
-    fallback: UserStore[]
-    render: (stores: UserStore[]) => ReactNode
-    retry: () => void
-}) {
-    const result = use(promise)
-    return <>
-        {result.unavailable && <div role="alert" className="p-[var(--lb-space-3)]">
-            Other stores could not load. <Button variant="ghost" onClick={retry}>Retry stores</Button>
-        </div>}
-        {render(result.stores.length ? result.stores : fallback)}
-    </>
-}
-
 export default function MerchantHeaderBar({
     store,
     storeData,
     user,
     userStores,
-    userStoresPromise,
-    appPlatformEnabled,
     onMenuToggle,
     onSearchOpen,
     onAISidebarToggle,
-    showAssistant = true,
     isSettingsPage = false,
     isMenuOpen = false,
     menuDrawerId,
 }: HeaderBarProps) {
     const router = useRouter()
-    const requestDeparture = useMerchantDeparture()
-    const { notify } = useToast()
-    const { resolvedTheme, setTheme } = useTheme()
     const [switcherOpen, setSwitcherOpen] = useState(false)
     const [notificationsOpen, setNotificationsOpen] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
     const switcherRef = useRef<HTMLDivElement>(null)
     const notificationsRef = useRef<HTMLDivElement>(null)
-    const switcherSheetRef = useRef<HTMLDivElement>(null)
-    const notificationsSheetRef = useRef<HTMLDivElement>(null)
     const shortcutPrefixRef = useRef<string | null>(null)
     const shortcutTimerRef = useRef<number | null>(null)
 
@@ -112,30 +84,6 @@ export default function MerchantHeaderBar({
         if (!isMobile || !(switcherOpen || notificationsOpen)) return
         return acquireScrollLock()
     }, [isMobile, switcherOpen, notificationsOpen])
-
-    useFocusTrap(switcherSheetRef, {
-        active: isMobile && switcherOpen,
-    })
-    useFocusTrap(notificationsSheetRef, {
-        active: isMobile && notificationsOpen,
-    })
-
-    useEffect(() => {
-        if (!switcherOpen && !notificationsOpen) return
-        const dismissOnEscape = (event: KeyboardEvent) => {
-            if (event.key !== 'Escape') return
-            if (switcherOpen) {
-                setSwitcherOpen(false)
-                switcherRef.current?.querySelector('button')?.focus()
-            }
-            if (notificationsOpen) {
-                setNotificationsOpen(false)
-                notificationsRef.current?.querySelector('button')?.focus()
-            }
-        }
-        document.addEventListener('keydown', dismissOnEscape)
-        return () => document.removeEventListener('keydown', dismissOnEscape)
-    }, [switcherOpen, notificationsOpen])
 
     // Close switcher on outside click (desktop only)
     useEffect(() => {
@@ -190,7 +138,7 @@ export default function MerchantHeaderBar({
             const currentPrefix = shortcutPrefixRef.current
 
             if (currentPrefix) {
-                const destination = resolveKeyboardShortcut(storeData.site_type, `${currentPrefix} ${key}`, appPlatformEnabled)
+                const destination = resolveKeyboardShortcut(storeData.site_type, `${currentPrefix} ${key}`)
                 clearShortcutPrefix()
 
                 if (destination) {
@@ -212,26 +160,19 @@ export default function MerchantHeaderBar({
             document.removeEventListener('keydown', handleKey)
             clearShortcutPrefix()
         }
-    }, [appPlatformEnabled, clearShortcutPrefix, onSearchOpen, router, store, storeData.site_type])
+    }, [clearShortcutPrefix, onSearchOpen, router, store, storeData.site_type])
 
-    const performSignOut = async () => {
+    const handleSignOut = async () => {
         try {
             const res = await fetch('/api/auth/logout', {
                 method: 'POST',
             })
-            if (!res.ok) throw new Error('The server could not end this session. Please try again.')
-            const data = await res.json() as { success?: boolean }
-            if (!data.success) throw new Error('The server could not confirm sign out. Please try again.')
-            window.location.assign(getAccountsUrl('/lookup'))
+            const data = await res.json()
+            window.location.assign(data.redirectTo || getAccountsUrl('/lookup'))
         } catch {
-            notify({
-                title: 'Could not sign out',
-                description: 'Your session was not confirmed as ended. Please try again.',
-                variant: 'critical',
-            })
+            window.location.assign(getAccountsUrl('/lookup'))
         }
     }
-    const handleSignOut = () => requestDeparture(() => { void performSignOut() })
 
     const handleSwitchStore = (subdomain: string) => {
         setSwitcherOpen(false)
@@ -244,19 +185,6 @@ export default function MerchantHeaderBar({
     const userDisplayName = user.fullName?.trim() || user.email.split('@')[0] || 'Account'
     const userInitial = userDisplayName.charAt(0).toUpperCase()
 
-    const renderStores = (stores: UserStore[]) => stores.map((s) => {
-        const isCurrent = s.subdomain === store || s.store_name === store
-        return <Button unstyled key={s.id} className={`store-switcher-item ${isCurrent ? 'active' : ''}`}
-            onClick={() => !isCurrent && handleSwitchStore(s.subdomain)}>
-            <span className="store-switcher-item-icon">{getStoreInitials(s.name || s.store_name)}</span>
-            <div className="store-switcher-item-info">
-                <span className="store-switcher-item-name">{s.name || s.store_name}</span>
-                <span className="store-switcher-item-type">{getSiteTypeLabel(s.site_type)}</span>
-            </div>
-            {isCurrent && <Check size={16} className="store-switcher-check" aria-hidden="true" />}
-        </Button>
-    })
-
     /* ——— Store switcher content (shared between dropdown & bottom sheet) ——— */
     const switcherContent = (
         <>
@@ -265,10 +193,29 @@ export default function MerchantHeaderBar({
 
             {/* Section 1: Store list */}
             <div className="store-switcher-section">
-                {userStoresPromise ? <Suspense fallback={<>
-                    {renderStores(userStores)}
-                    <p role="status" className="p-[var(--lb-space-3)]">Loading stores…</p>
-                </>}><DeferredStoreList promise={userStoresPromise} fallback={userStores} render={renderStores} retry={() => router.refresh()} /></Suspense> : renderStores(userStores)}
+                {userStores.map((s) => {
+                    const isCurrent = s.subdomain === store || s.store_name === store
+                    return (
+                        <Button unstyled
+                            key={s.id}
+                            className={`store-switcher-item ${isCurrent ? 'active' : ''}`}
+                            onClick={() => !isCurrent && handleSwitchStore(s.subdomain)}
+                        >
+                            <span className="store-switcher-item-icon">
+                                {getStoreInitials(s.name || s.store_name)}
+                            </span>
+                            <div className="store-switcher-item-info">
+                                <span className="store-switcher-item-name">{s.name || s.store_name}</span>
+                                <span className="store-switcher-item-type">
+                                    {getSiteTypeLabel(s.site_type)}
+                                </span>
+                            </div>
+                            {isCurrent && (
+                                <MaterialIcon name="check" className="store-switcher-check" />
+                            )}
+                        </Button>
+                    )
+                })}
             </div>
 
             {/* Section 2: All stores link */}
@@ -277,10 +224,10 @@ export default function MerchantHeaderBar({
                     className="store-switcher-link"
                     onClick={() => {
                         setSwitcherOpen(false)
-                        router.push('/stores')
+                        window.location.href = '/stores'
                     }}
                 >
-                    <AppWindow size={18} aria-hidden="true" />
+                    <MaterialIcon name="apps" />
                     All stores
                 </Button>
             </div>
@@ -298,21 +245,13 @@ export default function MerchantHeaderBar({
                 </div>
             </div>
 
-            <div className="store-switcher-section">
-                <Button unstyled type="button" className="store-switcher-link"
-                    onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
-                    {resolvedTheme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
-                    {resolvedTheme === 'dark' ? 'Use light appearance' : 'Use dark appearance'}
-                </Button>
-            </div>
-
             {/* Section 4: Log out */}
             <div className="store-switcher-section">
                 <Button unstyled
                     className="store-switcher-link logout"
                     onClick={handleSignOut}
                 >
-                    <LogOut size={18} aria-hidden="true" />
+                    <MaterialIcon name="logout" />
                     Log out
                 </Button>
             </div>
@@ -328,22 +267,23 @@ export default function MerchantHeaderBar({
                         type="button"
                         className="admin-header-hamburger"
                         onClick={onMenuToggle}
-                        // The button's accessible name tracks the drawer state.
+                        // MaterialIcon is always aria-hidden, so this label is the
+                        // button's only accessible name — it has to track the state.
                         aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
                         aria-expanded={isMenuOpen}
                         aria-controls={menuDrawerId}
                     >
-                        {isMenuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
+                        <MaterialIcon name={isMenuOpen ? 'close' : 'menu'} size={20} />
                     </Button>
 
                     <Link href={`/${store}/dashboard`} className="admin-header-logo" aria-label="LetBuyy dashboard">
                         <span className="admin-header-logo-frame" aria-hidden="true">
                             <Image
-                                src="/icons/letbuyy-store-logo-dark-v3.svg"
+                                src="/icons/letbuyy-logo-dark.svg"
                                 alt="LetBuyy"
                                 fill
                                 priority
-                                sizes="180px"
+                                sizes="144px"
                                 className="admin-header-logo-image"
                             />
                         </span>
@@ -353,7 +293,7 @@ export default function MerchantHeaderBar({
                 {/* Center: search bar (desktop) */}
                 <div className="admin-header-center">
                     <Button unstyled type="button" className="admin-header-search" onClick={onSearchOpen}>
-                        <Search size={18} aria-hidden="true" />
+                        <MaterialIcon name="search" />
                         <span className="search-text">Search</span>
                         <span className="admin-header-shortcut" aria-hidden="true">
                             <kbd>⌘</kbd>
@@ -372,19 +312,19 @@ export default function MerchantHeaderBar({
                         title="Search"
                         aria-label="Search"
                     >
-                        <Search size={18} aria-hidden="true" />
+                        <MaterialIcon name="search" size={18} />
                     </Button>
 
                     {/* Setup assistant button */}
-                    {showAssistant && <Button unstyled
+                    <Button unstyled
                         type="button"
                         className="admin-header-btn"
                         onClick={onAISidebarToggle}
                         title="Setup assistant"
                         aria-label="Setup assistant"
                     >
-                        <Bot size={16} aria-hidden="true" />
-                    </Button>}
+                        <MaterialIcon name="assistant" size={16} />
+                    </Button>
 
                     {/* Notifications */}
                     <div className="admin-notifications-container" ref={notificationsRef}>
@@ -393,14 +333,12 @@ export default function MerchantHeaderBar({
                             className="admin-header-btn"
                             title="Notifications"
                             aria-label="Notifications"
-                            aria-expanded={notificationsOpen}
-                            aria-controls="admin-notifications-panel"
                             onClick={() => {
                                 setNotificationsOpen(!notificationsOpen)
                                 setSwitcherOpen(false)
                             }}
                         >
-                            <Bell size={16} aria-hidden="true" />
+                            <MaterialIcon name="notifications" size={16} />
                         </Button>
 
                         {/* Desktop: inline dropdown */}
@@ -417,7 +355,6 @@ export default function MerchantHeaderBar({
                                 setNotificationsOpen(false)
                             }}
                             aria-expanded={switcherOpen}
-                            aria-controls="admin-store-switcher-panel"
                             aria-label={`Switch store, current store ${storeData.name || storeData.store_name}`}
                         >
                             <span className="store-switcher-pill-icon">
@@ -426,12 +363,12 @@ export default function MerchantHeaderBar({
                             <span className="store-switcher-pill-name">
                                 {storeData.name || storeData.store_name}
                             </span>
-                            <ChevronDown size={16} className="store-switcher-pill-chevron" aria-hidden="true" />
+                            <MaterialIcon name="expand_more" className="store-switcher-pill-chevron" />
                         </Button>
 
                         {/* Desktop: inline dropdown */}
                         {switcherOpen && !isMobile && (
-                            <div id="admin-store-switcher-panel" className="store-switcher-dropdown">
+                            <div className="store-switcher-dropdown">
                                 {switcherContent}
                             </div>
                         )}
@@ -443,11 +380,6 @@ export default function MerchantHeaderBar({
             {switcherOpen && isMobile && (
                 <div className="bottom-sheet-overlay" onClick={closeSwitcher}>
                     <div
-                        id="admin-store-switcher-panel"
-                        ref={switcherSheetRef}
-                        role="dialog"
-                        aria-modal="true"
-                        aria-label="Switch store and account"
                         className="bottom-sheet store-switcher-bottom-sheet"
                         onClick={(e) => e.stopPropagation()}
                     >
@@ -460,10 +392,6 @@ export default function MerchantHeaderBar({
             {notificationsOpen && isMobile && (
                 <div className="bottom-sheet-overlay" onClick={closeNotifications}>
                     <div
-                        ref={notificationsSheetRef}
-                        role="dialog"
-                        aria-modal="true"
-                        aria-label="Notifications"
                         className="bottom-sheet notifications-bottom-sheet"
                         onClick={(e) => e.stopPropagation()}
                     >

@@ -1,7 +1,0 @@
-{
-  "status": "SOURCE_EXTRACTION_STARTUP_REFUSAL",
-  "cause": "pg_get_functiondef closes dollar delimiter without a mandatory semicolon; first extractor assumed semicolon",
-  "noNativeOrDatabaseActions": true,
-  "completedHandoffProduced": false,
-  "correction": "Use exact opening/closing dollar delimiter, independently compare body bytes to qualified source"
-}

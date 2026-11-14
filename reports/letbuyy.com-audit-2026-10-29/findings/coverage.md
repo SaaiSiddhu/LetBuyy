@@ -1,0 +1,9 @@
+# Coverage and exclusions
+
+No connected Search Console, GA4, Matomo, backlink-vendor or paid SEO provider was available through the discovered tools. The packaged Google credential check was attempted through the required launcher but could not run because the managed skill environment is absent; this is not proof that the user has no credentials elsewhere. A public unauthenticated PSI call returned 429. No setup, paid credits, indexing submission, disavow, business-profile change, account creation or publishing occurred.
+
+Backlinks and external authority: unmeasured; no domain authority, toxicity, link count, competitor ranking, organic traffic or AI citation score is invented. Search snippets show LetBuyy results, but a site: query is not Google index-coverage evidence. No comparable stored production drift baseline was used; existing localhost marketing evidence is not a substitute. Current crawl.json can support a future comparison, but no formal drift-baseline workflow was run.
+
+Crawl: public www.letbuyy.com /in HTML graph, sitemap, robots, root alias samples, Tamil/Hindi homepage and four localized page samples. Query/filter URL variants were recorded but not crawled. Sitemap listings in other locales were inventoried, not fully crawled. Three declared satellite sitemap DNS probes failed; confirm from another resolver before removal. No accounts subdomain was crawled; /in/signup returned 307 there and was stopped at the scope boundary. llms.txt returned 404 and was not an internal broken-link finding.
+
+Checks: governance plan/inventory exit 0; architecture validator exit 0. This is not a full repository governance or production acceptance claim. No application source was modified, so no build/test suite was needed. The full gate was not executed: its generated-artifact cleanup can remove unrelated local build directories in this heavily modified shared checkout. Existing user changes were preserved.

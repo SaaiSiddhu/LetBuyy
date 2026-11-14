@@ -37,8 +37,6 @@
 //   Fix is a tracked follow-on; the registry documents the canonical slash keys.
 // ============================================================================
 
-import { z } from 'zod';
-
 // ──────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
 // ──────────────────────────────────────────────────────────────────────────────
@@ -51,8 +49,8 @@ export const MAX_TEMPLATE_KEY_LENGTH = 120;
 
 /**
  * Prototype-pollution keys that must never be used as template keys.
- * Intentionally duplicated from theme-document.ts to avoid a document/registry
- * circular dependency.
+ * Intentionally duplicated from theme-document.ts to keep this module
+ * import-free (no circular dependency risk).
  */
 const BLOCKED_TEMPLATE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
 
@@ -500,15 +498,6 @@ export function validateTemplateKey(key: string): void {
     );
   }
 }
-
-/** Editor transport uses the same key authority as the document and bundle. */
-export const ThemeEditorTemplateKeySchema = z.string().trim().superRefine((key, context) => {
-  try {
-    validateTemplateKey(key);
-  } catch (error) {
-    context.addIssue({ code: z.ZodIssueCode.custom, message: error instanceof InvalidTemplateKeyError ? error.reason : 'Invalid template key' });
-  }
-});
 
 // ──────────────────────────────────────────────────────────────────────────────
 // ALTERNATE TEMPLATE RESOLUTION

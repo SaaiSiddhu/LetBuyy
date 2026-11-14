@@ -46,7 +46,7 @@ test('cursor browsing covers every eligible collection, supports previous pages,
  const ids=Array.from({length:53},(_,i)=>collection(a.siteId,'Synthetic browse '+String(i).padStart(2,'0'))).sort();
  collection(a.siteId,'Synthetic hidden',{active:false});collection(a.siteId,'Synthetic deleted',{deleted:true});const foreign=collection(b.siteId,'Synthetic foreign browse');
  const browse=(query='')=>gateway.request(`/v1/storefront/${a.subdomain}/collections?browse=1${query}`);
- const before=tap!.calls.length,first=await browse();assert.equal(first.status,200,first.text);const firstPage=first.json!.data;
+ const before=tap!.calls.length,first=await browse();assert.equal(first.status,200);const firstPage=first.json!.data;
  assert.deepEqual(firstPage.items.map((x:{id:string})=>x.id),ids.slice(0,24));assert.equal(firstPage.previousCursor,null);assert.equal(firstPage.nextCursor,ids[23]);
  const second=await browse('&after='+firstPage.nextCursor);assert.equal(second.status,200);const secondPage=second.json!.data;
  assert.deepEqual(secondPage.items.map((x:{id:string})=>x.id),ids.slice(24,48));assert.equal(secondPage.previousCursor,ids[24]);
@@ -55,5 +55,5 @@ test('cursor browsing covers every eligible collection, supports previous pages,
  for(const call of tap!.calls.slice(before).filter(c=>c.resource==='collections')){assert.equal(call.search.get('store_id'),'eq.'+a.siteId);assert.equal(call.search.get('limit'),'25');assert.equal(call.search.get('offset'),null);assert.equal(call.search.get('select'),'id,title,description,image_url');}
  const foreignRead=await gateway.request(`/v1/storefront/${b.subdomain}/collections?browse=1&after=${ids[0]}`);assert.equal(foreignRead.status,200);assert.ok(foreignRead.json!.data.items.every((x:{id:string})=>x.id===foreign));
  for(const query of ['browse=bad','browse=1&after=bad','browse=1&before=bad',`browse=1&after=${ids[0]}&before=${ids[1]}`,`after=${ids[0]}`]){const callStart=tap!.calls.length;assert.equal((await gateway.request(`/v1/storefront/${a.subdomain}/collections?${query}`)).status,400);assert.equal(tap!.calls.slice(callStart).filter(c=>c.resource==='collections').length,0);}
- const empty=await browse('&after='+ids[ids.length-1]);assert.equal(empty.status,200);assert.deepEqual(empty.json!.data,{items:[],nextCursor:null,previousCursor:null});
+ const empty=await browse('&after=ffffffff-ffff-ffff-ffff-ffffffffffff');assert.equal(empty.status,200);assert.deepEqual(empty.json!.data,{items:[],nextCursor:null,previousCursor:null});
 });

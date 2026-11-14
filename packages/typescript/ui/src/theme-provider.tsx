@@ -70,10 +70,13 @@ function readStoredChoice(storageKey: string, fallback: LetbuyyThemeChoice): Let
 function applyDomSignals(resolved: LetbuyyResolvedTheme): void {
     if (typeof document === 'undefined') return;
     const root = document.documentElement;
-    root.setAttribute('data-theme', resolved);
-    root.classList.remove('light', 'dark');
-    root.classList.add(resolved);
-    root.style.colorScheme = resolved;
+    // ThemeScript already applies these before first paint. Rewriting them on
+    // hydration invalidates theme selectors across the whole document.
+    if (root.getAttribute('data-theme') !== resolved) root.setAttribute('data-theme', resolved);
+    const previous = resolved === 'dark' ? 'light' : 'dark';
+    if (root.classList.contains(previous)) root.classList.remove(previous);
+    if (!root.classList.contains(resolved)) root.classList.add(resolved);
+    if (root.style.colorScheme !== resolved) root.style.colorScheme = resolved;
     (window as unknown as GlobalWithResolvedTheme).__letbuyyResolvedTheme = resolved;
 }
 

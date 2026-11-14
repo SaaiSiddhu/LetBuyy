@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
+import { Search, Inbox, ChevronLeft, ChevronRight, TriangleAlert } from 'lucide-react';
+import { ConsoleRefresh } from './ConsoleRefresh';
 import { Button, Input, Table } from '@letbuyy/ui';
 import type { ConsolePagination } from '@/lib/console-api';
+import { StatusPill } from './_local-ui/console-workspace';
 
 export type ConsoleDataColumn<T> = {
     key: string;
@@ -17,6 +20,7 @@ type ConsoleDataTableProps<T> = {
     query?: Record<string, string | undefined>;
     emptyLabel: string;
     getRowKey: (row: T) => string;
+    caption?: string;
 };
 
 export function ConsoleDataTable<T>({
@@ -27,34 +31,36 @@ export function ConsoleDataTable<T>({
     query = {},
     emptyLabel,
     getRowKey,
+    caption,
 }: ConsoleDataTableProps<T>) {
     return (
-        <section>
-            <Table className="rounded-lg border-zinc-800 bg-zinc-900 shadow-none" containerClassName="overflow-x-auto" tableClassName="min-w-full divide-y divide-zinc-800 text-sm">
-                    <thead className="bg-zinc-950/60">
+        <section className="console-data-table overflow-hidden border border-line bg-surface">
+            <Table className="border-0 bg-surface shadow-none" containerClassName="overflow-x-auto" tableClassName="min-w-full divide-y divide-line text-sm">
+                    <caption className="sr-only">{caption || `Records by ${columns.map(column => column.header).join(', ')}`}</caption>
+                    <thead className="bg-page">
                         <tr>
                             {columns.map((column) => (
                                 <th
                                     key={column.key}
                                     scope="col"
-                                    className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500 ${column.className || ''}`}
+                                    className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subdued ${column.className || ''}`}
                                 >
                                     {column.header}
                                 </th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-800">
+                    <tbody className="divide-y divide-line">
                         {rows.length === 0 ? (
                             <tr>
-                                <td colSpan={columns.length} className="px-4 py-10 text-center text-sm text-zinc-500">
-                                    {emptyLabel}
+                                <td colSpan={columns.length} className="px-4 py-10 text-center text-sm text-subdued">
+                                    <div className="mx-auto flex max-w-md flex-col items-center gap-3"><Inbox size={28} strokeWidth={1.5} aria-hidden="true" /><p className="font-medium text-default">No matching records</p><p>{emptyLabel}</p></div>
                                 </td>
                             </tr>
                         ) : rows.map((row) => (
-                            <tr key={getRowKey(row)} className="transition-colors hover:bg-zinc-800/40">
+                            <tr key={getRowKey(row)} className="transition-colors hover:bg-surface-subdued">
                                 {columns.map((column) => (
-                                    <td key={column.key} className={`px-4 py-3 text-zinc-300 ${column.className || ''}`}>
+                                    <td key={column.key} className={`px-4 py-3 text-default ${column.className || ''}`}>
                                         {column.cell(row)}
                                     </td>
                                 ))}
@@ -64,11 +70,11 @@ export function ConsoleDataTable<T>({
             </Table>
 
             {meta ? (
-                <div className="flex flex-col gap-3 border-t border-zinc-800 px-4 py-3 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
+                <div className="console-table-footer flex flex-col gap-3 border-t border-line px-4 py-3 text-sm text-subdued sm:flex-row sm:items-center sm:justify-between">
                     <span>
-                        Page {meta.page} of {Math.max(meta.total_pages, 1)} - {meta.total} records
+                        {meta.total === 0 ? '0' : `${(meta.page - 1) * meta.per_page + 1}–${Math.min(meta.page * meta.per_page, meta.total)}`} of {meta.total.toLocaleString('en-IN')} records · Page {meta.page} of {Math.max(meta.total_pages, 1)}
                     </span>
-                    <div className="flex items-center gap-2">
+                    <nav aria-label="Pagination" className="flex items-center gap-2">
                         <PaginationLink
                             href={pageHref(basePath, query, meta.page - 1)}
                             disabled={!meta.has_prev}
@@ -79,7 +85,7 @@ export function ConsoleDataTable<T>({
                             disabled={!meta.has_next}
                             label="Next"
                         />
-                    </div>
+                    </nav>
                 </div>
             ) : null}
         </section>
@@ -96,18 +102,8 @@ export function StatusBadge({ value, tone }: { value: string; tone?: 'green' | '
                     ? 'red'
                     : 'zinc'
     );
-    const className = {
-        green: 'bg-emerald-500/10 text-emerald-300',
-        amber: 'bg-amber-500/10 text-amber-300',
-        red: 'bg-red-500/10 text-red-300',
-        zinc: 'bg-zinc-700/60 text-zinc-300',
-    }[resolvedTone];
-
-    return (
-        <span className={`inline-flex items-center rounded px-2 py-1 text-xs font-medium ${className}`}>
-            {value}
-        </span>
-    );
+    const semanticTone = { green: 'success', amber: 'warning', red: 'critical', zinc: 'neutral' } as const;
+    return <StatusPill value={value} tone={semanticTone[resolvedTone]} />;
 }
 
 export function ConsoleSearchForm({
@@ -120,21 +116,23 @@ export function ConsoleSearchForm({
     children?: ReactNode;
 }) {
     return (
-        <form className="flex flex-col gap-2 sm:flex-row sm:items-center" method="get">
+        <form role="search" aria-label={placeholder} className="console-filterbar flex flex-col gap-2 sm:flex-row sm:items-center" method="get">
             <Input
                 unstyled
                 type="search"
                 name="q"
                 defaultValue={defaultValue}
                 placeholder={placeholder}
-                className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm text-zinc-100 outline-none transition-colors placeholder:text-zinc-500 focus:border-[var(--lb-color-primary)]"
+                aria-label={placeholder}
+                className="min-h-11 rounded-[var(--lb-radius-md)] border border-line bg-surface px-4 py-2 text-sm text-default outline-none transition-colors placeholder:text-subdued focus:border-[var(--lb-color-primary)]"
             />
             {children}
             <Button
                 unstyled
                 type="submit"
-                className="min-h-11 rounded-lg bg-[var(--lb-color-primary)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--lb-color-primary-hover)] active:bg-[var(--lb-color-primary-active)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-primary-cta)] px-4 py-2 text-sm font-semibold text-[var(--lb-color-primary-cta-text)] transition-colors hover:bg-[var(--lb-color-primary-hover)] active:bg-[var(--lb-color-primary-active)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
             >
+                <Search size={16} aria-hidden="true" />
                 Search
             </Button>
         </form>
@@ -143,18 +141,20 @@ export function ConsoleSearchForm({
 
 export function ConsoleApiErrorPanel({ title, message }: { title: string; message: string }) {
     return (
-        <section className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-warning)] bg-[var(--lb-color-warning-soft)] p-[var(--lb-space-5)]">
-            <h2 className="m-0 text-sm font-semibold text-[var(--lb-color-warning)]">{title}</h2>
+        <section role="alert" className="console-error-panel rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-warning)] bg-[var(--lb-color-warning-soft)] p-[var(--lb-space-5)]">
+            <h2 className="m-0 flex items-center gap-[var(--lb-space-2)] text-sm font-semibold text-[var(--lb-component-banner-warning-text)]"><TriangleAlert size={18} aria-hidden="true" />{title}</h2>
             <p className="m-0 mt-[var(--lb-space-1)] text-sm text-[var(--lb-color-text)]">{message}</p>
+            <div className="mt-3"><ConsoleRefresh label="Retry loading" /></div>
         </section>
     );
 }
 
 function PaginationLink({ href, disabled, label }: { href: string; disabled: boolean; label: string }) {
+    const content = <>{label === 'Previous' && <ChevronLeft size={16} aria-hidden="true" />}{label}{label === 'Next' && <ChevronRight size={16} aria-hidden="true" />}</>;
     if (disabled) {
         return (
-            <span className="rounded border border-zinc-800 px-3 py-2 text-xs font-medium text-zinc-600">
-                {label}
+            <span aria-disabled="true" className="console-pagination-link">
+                {content}
             </span>
         );
     }
@@ -162,9 +162,9 @@ function PaginationLink({ href, disabled, label }: { href: string; disabled: boo
     return (
         <a
             href={href}
-            className="rounded border border-zinc-700 px-3 py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
+            className="console-pagination-link"
         >
-            {label}
+            {content}
         </a>
     );
 }

@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import React from 'react'
 import type { CapabilityId } from '@/lib/capability-tour'
 
 const ARTWORK = {
@@ -14,5 +15,5 @@ const ARTWORK = {
 
 /** Decorative shortcut artwork; the parent node or button owns its label and state. */
 export default function CapabilityArtwork({ module }: { module: CapabilityId }) {
-    return <Image className="cmap-shortcut-artwork" src={`/illustrations/capabilities/icons/${ARTWORK[module]}-v2.webp`} alt="" width={256} height={256} sizes="60px" loading="eager" unoptimized aria-hidden="true" draggable={false} />
+    return <Image className="cmap-shortcut-artwork" src={`/illustrations/capabilities/icons/${ARTWORK[module]}-v2.webp`} alt="" width={256} height={256} sizes="60px" loading="eager" fetchPriority="low" unoptimized aria-hidden="true" draggable={false} />
 }

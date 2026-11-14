@@ -212,8 +212,6 @@ function cloneStorefrontHeaders(c: GatewayContext): Headers {
     const names = [
         'Authorization',
         'Cookie',
-        'X-LetBuyy-Storefront-Gate',
-        'X-LetBuyy-Storefront-Preview',
         'X-Request-ID',
         'X-Trace-ID',
         'X-Store-ID',

@@ -1,0 +1,314 @@
+--- a/apps/marketing/web/next.config.ts
++++ b/apps/marketing/web/next.config.ts
+@@ -51,7 +51,7 @@
+   devIndicators: false,
+   // Keep the shell's tiny font/locale/module styles in one cacheable request.
+   // Explicit groups below retain separate home and resource delivery.
+-  experimental: { cssChunking: false },
++  experimental: { cssChunking: false, optimizePackageImports: ['@letbuyy/ui', '@letbuyy/api-client'] },
+   transpilePackages: workspacePackages,
+   images: {
+     formats: ['image/avif', 'image/webp'],
+@@ -74,6 +74,18 @@
+         module.nameForCondition?.() ?? module.resource ?? module.identifier?.() ?? '';
+       split.cacheGroups = {
+         ...split.cacheGroups,
++        // Consolidate modules already shared by many page templates, retaining
++        // route-specific and asynchronous modules in their existing chunks.
++        marketingCommonClient: {
++          type: /^javascript/,
++          layer: 'app-pages-browser',
++          name: 'marketing-common-client',
++          chunks: 'initial',
++          minChunks: 8,
++          enforce: true,
++          priority: 35,
++          reuseExistingChunk: true,
++        },
+         marketingSharedStyles: {
+           type: 'css/mini-extract',
+           name: 'marketing-shared',
+--- a/apps/marketing/web/src/app/layout.tsx
++++ b/apps/marketing/web/src/app/layout.tsx
+@@ -13,10 +13,10 @@
+ import MarketingMotionProvider from '@/components/MarketingMotionProvider';
+ 
+ const letbuyySans = localFont({
+-  src: "../../public/fonts/Inter-Variable-Marketing.woff2",
++  src: "../../public/fonts/Inter-Marketing-400-900.woff2",
+   variable: "--font-letbuyy-sans",
+   display: "swap",
+-  weight: "100 900",
++  weight: "400 900",
+   // Resolve the observed native Tamil faces directly, retaining their existing
+   // weight mapping. Platforms without those local faces keep the usual stack.
+   fallback: ["LetBuyy Tamil Fallback"],
+--- a/apps/marketing/web/src/app/[locale]/layout.tsx
++++ b/apps/marketing/web/src/app/[locale]/layout.tsx
+@@ -66,7 +66,7 @@
+             {/* The <html> element is owned by the root layout, which cannot see
+                 the locale param. This syncs lang/dir from inside the segment. */}
+             <LocaleHtmlLang lang={locale.language.bcp47} dir={locale.language.dir} />
+-            <CopyProvider segment={segment} messages={getCopyMessages(locale.language.code)}>
++            <CopyProvider segment={segment} messages={getCopyMessages(locale.language.code)} dictionary={getDictionary(locale)}>
+                 <div lang={locale.language.bcp47} dir={locale.language.dir}>{children}</div>
+             </CopyProvider>
+         </>
+--- a/apps/marketing/web/src/components/i18n/CopyProvider.tsx
++++ b/apps/marketing/web/src/components/i18n/CopyProvider.tsx
+@@ -1,21 +1,24 @@
+ 'use client'
+ 
+ import { createContext, useContext, useMemo, type ReactNode } from 'react'
++import { en, type Dictionary } from '@/lib/i18n/dictionaries/en'
+ import { DEFAULT_LOCALE, getLocale } from '@/lib/i18n/locales'
+ import { formatCopy, type CopyMessages, type CopyVariables } from '@/lib/i18n/copy-format'
+ 
+ const english = {
+     locale: DEFAULT_LOCALE,
++    dictionary: en,
+     t: (source: string, variables?: CopyVariables) => formatCopy(source, {}, variables),
+ }
+ const CopyContext = createContext(english)
+ 
+ /** The server supplies one language. Text leaves share one translator and locale. */
+-export default function CopyProvider({ segment, messages, children }: { segment: string; messages: CopyMessages; children: ReactNode }) {
++export default function CopyProvider({ segment, messages, dictionary, children }: { segment: string; messages: CopyMessages; dictionary: Dictionary; children: ReactNode }) {
+     const value = useMemo(() => ({
+         locale: getLocale(segment),
++        dictionary,
+         t: (source: string, variables?: CopyVariables) => formatCopy(source, messages, variables),
+-    }), [segment, messages])
++    }), [segment, messages, dictionary])
+     return <CopyContext.Provider value={value}>{children}</CopyContext.Provider>
+ }
+ 
+--- a/apps/marketing/web/src/components/Header.tsx
++++ b/apps/marketing/web/src/components/Header.tsx
+@@ -43,10 +43,7 @@
+ } from '@letbuyy/ui'
+ import BrandLogo from './BrandLogo'
+ import featuredArtStyles from './header-featured-art.module.css'
+-import { getDictionaryForSegment } from '@/lib/i18n'
+ import type { Dictionary } from '@/lib/i18n/dictionaries/en'
+-import { localeFromPathname } from '@/lib/i18n/routing'
+-import { usePathname } from 'next/navigation'
+ import {
+     getAccountsUrl,
+ } from '../lib/public-urls'
+@@ -565,9 +562,7 @@
+ const MENU_TEXT_INSET = 12
+ 
+ export default function Header() {
+-    const { t } = useCopy()
+-    const pathname = usePathname()
+-    const dict = getDictionaryForSegment(localeFromPathname(pathname).segment)
++    const { t, dictionary: dict } = useCopy()
+     const [scrolled, setScrolled] = useState(false)
+     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+     const [activeDesktopMenu, setActiveDesktopMenu] = useState<DropdownKey | null>(null)
+--- a/apps/marketing/web/src/components/Footer.tsx
++++ b/apps/marketing/web/src/components/Footer.tsx
+@@ -18,9 +18,6 @@
+ import BrandLogo from './BrandLogo'
+ import { XMark } from './BrandGlyphs'
+ import LanguageSwitcher from './i18n/LanguageSwitcher'
+-import { getDictionaryForSegment } from '@/lib/i18n'
+-import { localeFromPathname } from '@/lib/i18n/routing'
+-import { usePathname } from 'next/navigation'
+ import { BRAND_PROFILES } from '@letbuyy/shared-types/brand'
+ import { getPlatformNavigationLinks } from '@/lib/platform-links'
+ 
+@@ -92,11 +89,9 @@
+ const privacyChoicesIconUrl = '/assets/legal/privacy-choices.svg'
+ 
+ export default function Footer() {
+-    const { t } = useCopy()
++    const { t, dictionary: dict } = useCopy()
+     /* The footer is already a client component, so it reads the locale from
+        the pathname rather than threading a prop through every page. */
+-    const pathname = usePathname()
+-    const dict = getDictionaryForSegment(localeFromPathname(pathname).segment)
+     const [privacyPanelOpen, setPrivacyPanelOpen] = useState(false)
+     const [analyticsEnabled, setAnalyticsEnabled] = useState(false)
+     const [personalizationEnabled, setPersonalizationEnabled] = useState(false)
+--- a/apps/marketing/web/src/components/FinalCTA.tsx
++++ b/apps/marketing/web/src/components/FinalCTA.tsx
+@@ -1,5 +1,3 @@
+-'use client'
+-
+ import Copy from '@/components/i18n/Copy'
+ import Link from '@/components/i18n/LocaleLink'
+ import Image from 'next/image'
+--- a/apps/marketing/web/src/components/resources/ArticleSidebar.tsx
++++ b/apps/marketing/web/src/components/resources/ArticleSidebar.tsx
+@@ -1,5 +1,3 @@
+-'use client'
+-
+ import Copy from '@/components/i18n/Copy'
+ 
+ import NewsletterAvailability from './NewsletterAvailability'
+--- a/apps/marketing/web/src/lib/pricing.ts
++++ b/apps/marketing/web/src/lib/pricing.ts
+@@ -47,5 +47,19 @@
+             remaining_slots: program.remaining_slots, active: program.active, paused: program.paused,
+         }
+         : null
+-    return { pricing, remaining }
++    // The API may repeat an identical comparison matrix on each plan. Share its
++    // reference for React Flight while preserving every canonical response value.
++    const comparisons = new Map<string, unknown[]>()
++    const plans = pricing.plans.map(plan => {
++        const view = plan as typeof plan & { compare_features?: unknown[] }
++        if (!Array.isArray(view.compare_features)) return plan
++        const key = JSON.stringify(view.compare_features)
++        const existing = comparisons.get(key)
++        if (!existing) {
++            comparisons.set(key, view.compare_features)
++            return plan
++        }
++        return { ...plan, compare_features: existing }
++    })
++    return { pricing: { ...pricing, plans }, remaining }
+ }
+--- a/apps/marketing/web/public/fonts/README.md
++++ b/apps/marketing/web/public/fonts/README.md
+@@ -1,13 +1,17 @@
+ # Inter
+ 
+-Locally hosted variable Inter (weights 100–900), used by the marketing site's sans-serif and display typography. Served through `next/font/local` with `font-display: swap`.
++Locally hosted variable Inter, used by the marketing site's sans-serif and display typography. The retained source spans weights 100–900; the current delivery face covers the used 400–900 range. Served through `next/font/local` with `font-display: swap`.
+ 
+ Webfont source: [Inter official repository](https://github.com/rsms/inter/blob/master/docs/font-files/InterVariable.woff2). License: [Google Fonts / Inter](https://github.com/google/fonts/tree/main/ofl/inter), preserved in `Inter-OFL.txt`. Downloaded 23 October 2026.
+ 
+ Inter replaces the earlier Manrope visual trial at the owner's request.
+ 
+-The marketing app loads `Inter-Variable-Marketing.woff2`, a lossless-outline subset of the retained original variable font. It preserves the original font's Latin-1 coverage and every source character supported by the original font at the time of subsetting, including the current punctuation and currency symbols. Hindi/Tamil continue to use the existing language fallbacks; subsetting does not claim new script coverage. Variable axes, advance metrics and sampled outlines at weights 100/400/900 were verified unchanged. The local-font `unicode-range` declaration matches the subset's cmap so the browser can select Indic fallbacks before the Latin file loads. Review character coverage and update that declaration when introducing new copy.
++`Inter-Variable-Marketing.woff2` is the retained full-weight input: a lossless-outline subset of the original variable font. It preserves the original font's Latin-1 coverage and every source character supported by the original font at the time of subsetting, including the current punctuation and currency symbols. Hindi/Tamil continue to use the existing language fallbacks; subsetting does not claim new script coverage. Variable axes, advance metrics and sampled outlines at weights 100/400/900 were verified unchanged. The local-font `unicode-range` declaration matches its cmap so the browser can select Indic fallbacks before the Latin file loads. Review character coverage and update that declaration when introducing new copy.
+ 
+ The original `Inter-Variable.woff2` and `Inter-OFL.txt` remain here. The subset keeps the font's copyright and licence metadata. Its current Unicode recipe, tool versions and verification are recorded in `reports/letbuyy-mobile-performance-2026-10-30/evidence/font-proof.json`; regenerate with fontTools/woff2 in an isolated tool environment rather than installing dependencies into the application. The earlier broader subset is documented in the preceding SEO closeout report as dated history.
+ 
++The app now loads `Inter-Marketing-400-900.woff2`. This removes only glyph-variation tuples whose contribution is zero throughout weights 400–900. It retains all 210 Unicode mappings, the optical-size range, active variation data, shaping features, and name/licence metadata. The generator checks exact outlines and advance widths in 11,550 glyph/axis samples. It avoids variable-font instancing because that introduced small outline-rounding changes in the rejected trial.
++
++Within an isolated Python environment containing `fonttools==4.60.1` and `brotli==1.1.0`, regenerate with `python scripts/marketing/prepare-inter-weight-subset.py --output apps/marketing/web/public/fonts/Inter-Marketing-400-900.woff2 --proof /tmp/marketing-font-proof.json`. The source fingerprint is pinned and timestamps are retained for deterministic output. Before adding typography below weight 400, restore the retained full-weight input and rerun the visual and performance checks.
++
+ The subset retains default shaping, kerning, and the configured tabular-numeral feature, with slashed-zero support. Unused optional stylistic alternates are omitted. New OpenType feature requests require checking the recipe as well as character coverage. Every retained glyph's advance and outline was compared at six weights and three optical sizes; current page geometry and representative raster output were also checked.
+--- a/packages/typescript/ui/src/icons.tsx
++++ b/packages/typescript/ui/src/icons.tsx
+@@ -478,7 +478,9 @@
+ 
+ export type MaterialIconName = StrictMaterialIconName | LooseMaterialIconName;
+ 
+-export const materialIconNames = Object.freeze(Object.keys(materialIconMap)) as readonly StrictMaterialIconName[];
++// These operations only derive and freeze a new array. Mark both calls so
++// named-icon consumers can omit the unused compatibility name list.
++export const materialIconNames = /*#__PURE__*/ Object.freeze(/*#__PURE__*/ Object.keys(materialIconMap)) as readonly StrictMaterialIconName[];
+ 
+ export function isMaterialIconName(name: string): name is StrictMaterialIconName {
+     return Object.prototype.hasOwnProperty.call(materialIconMap, name);
+--- a/tests/marketing/pricing-delivery.test.ts
++++ b/tests/marketing/pricing-delivery.test.ts
+@@ -45,3 +45,22 @@
+     t.mock.method(globalThis, 'fetch', async () => { throw new Error('Synthetic unavailable upstream') })
+     assert.equal(await loadPublicPricing(), null)
+ })
++
++test('Flight can share repeated comparison data without changing plans or distinct matrices', async t => {
++    const comparison = [{ category: 'Store', items: [{ label: 'Products', launch: '100' }] }]
++    const distinct = [{ category: 'Store', items: [{ label: 'Products', launch: '500' }] }]
++    const response = { ...pricing, plans: [
++        { ...pricing.plans[0], compare_features: comparison },
++        { ...pricing.plans[0], slug: 'growth', compare_features: structuredClone(comparison) },
++        { ...pricing.plans[0], slug: 'scale', status: 'coming_soon', purchasable: false, compare_features: distinct },
++    ] }
++    t.mock.method(globalThis, 'fetch', async () => Response.json({ success: true, data: response }))
++    const result = await loadPublicPricing()
++    assert.ok(result)
++    assert.deepEqual(result.pricing, response)
++    assert.equal(JSON.stringify(result.pricing), JSON.stringify(response))
++    const plans = result.pricing.plans as Array<typeof pricing.plans[number] & { compare_features: unknown[] }>
++    assert.equal(plans[0].compare_features, plans[1].compare_features)
++    assert.notEqual(plans[0].compare_features, plans[2].compare_features)
++    assert.equal(plans[2].purchasable, false)
++})
+--- /dev/null
++++ b/scripts/marketing/prepare-inter-weight-subset.py
+@@ -0,0 +1,78 @@
++"""Prepare the marketing Inter face without changing used glyph geometry.
++
++Run with fonttools==4.60.1 and brotli==1.1.0 in an isolated tool environment.
++The retained source face remains authoritative for the full 100-900 range.
++"""
++from pathlib import Path
++import argparse
++import hashlib
++import json
++import fontTools
++from fontTools.ttLib import TTFont
++from fontTools.pens.recordingPen import DecomposingRecordingPen
++
++ROOT = Path(__file__).resolve().parents[2]
++SOURCE = ROOT / "apps/marketing/web/public/fonts/Inter-Variable-Marketing.woff2"
++SOURCE_SHA256 = "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9"
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", required=True, type=Path)
++    parser.add_argument("--proof", type=Path)
++    args = parser.parse_args()
++    if fontTools.__version__ != "4.60.1":
++        raise SystemExit("Use the documented isolated fonttools==4.60.1 runtime.")
++    if hashlib.sha256(SOURCE.read_bytes()).hexdigest() != SOURCE_SHA256:
++        raise SystemExit("Source font changed; review this range recipe before regenerating.")
++    font = TTFont(SOURCE, recalcTimestamp=False)
++    axis = next(x for x in font["fvar"].axes if x.axisTag == "wght")
++    assert (axis.minValue, axis.defaultValue, axis.maxValue) == (100, 400, 900)
++    removed = 0
++    for glyph, variations in font["gvar"].variations.items():
++        keep = []
++        for variation in variations:
++            support = variation.axes.get("wght")
++            # These tuples contribute exactly zero throughout weights 400-900.
++            # Retain every other tuple verbatim, avoiding instancer rounding.
++            if support and support[1] < 0 and support[2] <= 0:
++                removed += 1
++            else:
++                keep.append(variation)
++        font["gvar"].variations[glyph] = keep
++    axis.minValue = 400
++    font["fvar"].instances = [x for x in font["fvar"].instances if x.coordinates.get("wght", 400) >= 400]
++    args.output.parent.mkdir(parents=True, exist_ok=True)
++    font.flavor = "woff2"
++    font.save(args.output)
++
++    original, result = TTFont(SOURCE), TTFont(args.output)
++    old_map, new_map = original.getBestCmap(), result.getBestCmap()
++    assert old_map.keys() == new_map.keys()
++    assert original["name"].compile(original) == result["name"].compile(result)
++    samples = 0
++    for weight in range(400, 901, 50):
++        for optical_size in [14, 16, 20, 24, 32]:
++            old = original.getGlyphSet(location={"wght": weight, "opsz": optical_size})
++            new = result.getGlyphSet(location={"wght": weight, "opsz": optical_size})
++            for codepoint in old_map:
++                a, b = old[old_map[codepoint]], new[new_map[codepoint]]
++                pa, pb = DecomposingRecordingPen(old), DecomposingRecordingPen(new)
++                a.draw(pa)
++                b.draw(pb)
++                assert a.width == b.width and pa.value == pb.value, (codepoint, weight, optical_size)
++                samples += 1
++    proof = {"source_sha256": SOURCE_SHA256, "output_sha256": hashlib.sha256(args.output.read_bytes()).hexdigest(),
++             "source_bytes": SOURCE.stat().st_size, "output_bytes": args.output.stat().st_size,
++             "removed_zero_contribution_tuples": removed, "cmap_codepoints": len(old_map),
++             "glyph_samples": samples, "outlines_and_advances_exact": True, "name_table_exact": True,
++             "weight_range": [400, 900], "optical_size_range": [14, 32],
++             "fonttools": fontTools.__version__}
++    if args.proof:
++        args.proof.parent.mkdir(parents=True, exist_ok=True)
++        args.proof.write_text(json.dumps(proof, indent=2) + "\n")
++    print(json.dumps(proof))
++
++
++if __name__ == "__main__":
++    main()

@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>LetBuyy Resources</title>
+    <link>https://www.letbuyy.com/resources</link>
+    <description>Commerce guides, tutorials, and platform updates for Indian merchants on LetBuyy.</description>
+    <language>en-in</language>
+    <atom:link href="https://www.letbuyy.com/resources/rss.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>https://www.letbuyy.com/icons/letbuyy-logo-512.png</url>
+      <title>LetBuyy Resources</title>
+      <link>https://www.letbuyy.com/resources</link>
+    </image>
+    <item>
+      <title>The Merchant Control Plane: Your Commerce OS Dashboard</title>
+      <link>https://www.letbuyy.com/resources/platform/merchant-web-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/platform/merchant-web-guide</guid>
+      <description>Complete guide to the LetBuyy Merchant Control Plane — navigation, modules, dashboards, and power features.</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>Platform</category>
+      <tag>merchant-dashboard</tag>
+      <tag>platform</tag>
+      <tag>getting-started</tag>
+      <tag>product</tag>
+    </item>
+    <item>
+      <title>The LetBuyy AI Copilot Guide</title>
+      <link>https://www.letbuyy.com/resources/ai-commerce/commerce-copilot-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ai-commerce/commerce-copilot-guide</guid>
+      <description>Complete guide to using the LetBuyy AI Copilot — what it can do, how to use it, and advanced prompts for merchants.</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>AI Commerce</category>
+      <tag>copilot</tag>
+      <tag>ai</tag>
+      <tag>letbuyy</tag>
+      <tag>product</tag>
+    </item>
+    <item>
+      <title>LetBuyy Platform Overview: Everything in One Place</title>
+      <link>https://www.letbuyy.com/resources/platform/letbuyy-platform-overview</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/platform/letbuyy-platform-overview</guid>
+      <description>Complete overview of the LetBuyy platform — merchant control plane, storefront runtime, identity, developer ecosystem, and roadmap.</description>
+      <pubDate>Sat, 30 May 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>Platform</category>
+      <tag>platform</tag>
+      <tag>overview</tag>
+      <tag>architecture</tag>
+      <tag>product</tag>
+    </item>
+    <item>
+      <title>Building Your First LetBuyy Store: A Complete Walkthrough</title>
+      <link>https://www.letbuyy.com/resources/platform/building-first-letbuyy-store</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/platform/building-first-letbuyy-store</guid>
+      <description>Step-by-step walkthrough of building a LetBuyy store from scratch — theme selection, products, payments, and going live.</description>
+      <pubDate>Thu, 28 May 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>Platform</category>
+      <tag>getting-started</tag>
+      <tag>platform</tag>
+      <tag>store-setup</tag>
+      <tag>walkthrough</tag>
+    </item>
+    <item>
+      <title>AI Commerce Explained: What It Means for Your Store</title>
+      <link>https://www.letbuyy.com/resources/ai-commerce/ai-commerce-explained</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ai-commerce/ai-commerce-explained</guid>
+      <description>A practical introduction to AI commerce for Indian merchants — what AI can do for your store, what it can&apos;t, and where to start.</description>
+      <pubDate>Mon, 25 May 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>AI Commerce</category>
+      <tag>ai</tag>
+      <tag>automation</tag>
+      <tag>commerce</tag>
+      <tag>future</tag>
+    </item>
+    <item>
+      <title>Building Your First LetBuyy App</title>
+      <link>https://www.letbuyy.com/resources/developers/building-first-letbuyy-app</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/developers/building-first-letbuyy-app</guid>
+      <description>Step-by-step guide to building a LetBuyy App — OAuth 2.0, embedded UI, webhooks, and submitting to the App Marketplace.</description>
+      <pubDate>Fri, 22 May 2026 00:00:00 GMT</pubDate>
+      <author>Arjun Mehta</author>
+      <category>Developers</category>
+      <tag>apps</tag>
+      <tag>oauth</tag>
+      <tag>developers</tag>
+      <tag>marketplace</tag>
+    </item>
+    <item>
+      <title>Multi-Warehouse Inventory Management</title>
+      <link>https://www.letbuyy.com/resources/operations/multi-warehouse-inventory</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/operations/multi-warehouse-inventory</guid>
+      <description>How to set up multi-warehouse inventory for your Indian ecommerce store — zone allocation, stock transfers, and fulfillment routing.</description>
+      <pubDate>Wed, 20 May 2026 00:00:00 GMT</pubDate>
+      <author>Ravi Krishnan</author>
+      <category>Operations</category>
+      <tag>inventory</tag>
+      <tag>warehouse</tag>
+      <tag>multi-location</tag>
+      <tag>operations</tag>
+    </item>
+    <item>
+      <title>Getting Started with the LetBuyy API</title>
+      <link>https://www.letbuyy.com/resources/developers/letbuyy-api-getting-started</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/developers/letbuyy-api-getting-started</guid>
+      <description>Developer guide to the LetBuyy API — authentication, rate limits, endpoints, and your first integration.</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 GMT</pubDate>
+      <author>Arjun Mehta</author>
+      <category>Developers</category>
+      <tag>api</tag>
+      <tag>developers</tag>
+      <tag>integration</tag>
+      <tag>authentication</tag>
+    </item>
+    <item>
+      <title>How to Get Your First 100 Orders</title>
+      <link>https://www.letbuyy.com/resources/growth/first-100-orders-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/growth/first-100-orders-guide</guid>
+      <description>Step-by-step guide to getting your first 100 orders as a new Indian ecommerce brand using organic, WhatsApp, and community channels.</description>
+      <pubDate>Fri, 15 May 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Growth</category>
+      <tag>growth</tag>
+      <tag>beginners</tag>
+      <tag>organic</tag>
+      <tag>whatsapp</tag>
+    </item>
+    <item>
+      <title>Automating Store Operations with AI</title>
+      <link>https://www.letbuyy.com/resources/ai-commerce/automating-operations-ai</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ai-commerce/automating-operations-ai</guid>
+      <description>Practical guide to automating ecommerce operations with AI — inventory alerts, customer support, order routing, and more.</description>
+      <pubDate>Tue, 12 May 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>AI Commerce</category>
+      <tag>automation</tag>
+      <tag>ai</tag>
+      <tag>operations</tag>
+      <tag>efficiency</tag>
+    </item>
+    <item>
+      <title>Product Page Optimization: The Complete Guide</title>
+      <link>https://www.letbuyy.com/resources/ecommerce/product-page-optimization</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ecommerce/product-page-optimization</guid>
+      <description>Learn how to optimize your product pages for Indian buyers — better images, descriptions, reviews, and trust signals that convert.</description>
+      <pubDate>Sun, 10 May 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Ecommerce</category>
+      <tag>conversion</tag>
+      <tag>product-pages</tag>
+      <tag>ux</tag>
+      <tag>copywriting</tag>
+    </item>
+    <item>
+      <title>Workflow Automation for Indian Merchants</title>
+      <link>https://www.letbuyy.com/resources/ai-commerce/workflow-automation-merchants</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ai-commerce/workflow-automation-merchants</guid>
+      <description>Guide to building ecommerce workflow automation for Indian merchants — triggers, actions, and real-world examples.</description>
+      <pubDate>Fri, 08 May 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>AI Commerce</category>
+      <tag>automation</tag>
+      <tag>workflows</tag>
+      <tag>operations</tag>
+      <tag>efficiency</tag>
+    </item>
+    <item>
+      <title>Customer Retention Strategies That Work for Indian Brands</title>
+      <link>https://www.letbuyy.com/resources/growth/retention-strategies-india</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/growth/retention-strategies-india</guid>
+      <description>Proven customer retention strategies for Indian ecommerce — loyalty programs, re-engagement, and lifetime value optimization.</description>
+      <pubDate>Tue, 05 May 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Growth</category>
+      <tag>retention</tag>
+      <tag>loyalty</tag>
+      <tag>ltv</tag>
+      <tag>repeat-purchase</tag>
+    </item>
+    <item>
+      <title>How To Start an Online Store in India (2026 Guide)</title>
+      <link>https://www.letbuyy.com/resources/ecommerce/how-to-start-an-online-store-india</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ecommerce/how-to-start-an-online-store-india</guid>
+      <description>A complete step-by-step guide to starting an online store in India in 2026, covering GST, payments, logistics, and marketing.</description>
+      <pubDate>Fri, 01 May 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Ecommerce</category>
+      <tag>store-setup</tag>
+      <tag>india</tag>
+      <tag>beginners</tag>
+      <tag>gst</tag>
+    </item>
+    <item>
+      <title>AI Product Recommendations That Actually Convert</title>
+      <link>https://www.letbuyy.com/resources/ai-commerce/ai-product-recommendations</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ai-commerce/ai-product-recommendations</guid>
+      <description>How AI product recommendations work on LetBuyy — collaborative filtering, upsells, cross-sells, and recommendation placement strategy.</description>
+      <pubDate>Thu, 30 Apr 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>AI Commerce</category>
+      <tag>recommendations</tag>
+      <tag>ai</tag>
+      <tag>conversion</tag>
+      <tag>personalization</tag>
+    </item>
+    <item>
+      <title>Shipping in India: Pincode Coverage, Rates &amp; Couriers</title>
+      <link>https://www.letbuyy.com/resources/operations/shipping-india-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/operations/shipping-india-guide</guid>
+      <description>Complete guide to ecommerce shipping in India — courier comparison, rate negotiation, PIN code coverage, and last-mile optimization.</description>
+      <pubDate>Tue, 28 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Ravi Krishnan</author>
+      <category>Operations</category>
+      <tag>shipping</tag>
+      <tag>logistics</tag>
+      <tag>courier</tag>
+      <tag>india</tag>
+    </item>
+    <item>
+      <title>Accepting Payments on LetBuyy: UPI, Cards, and COD</title>
+      <link>https://www.letbuyy.com/resources/payments/razorpay-integration-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/payments/razorpay-integration-guide</guid>
+      <description>Step-by-step guide to setting up Razorpay, UPI, COD, and all Indian payment methods on your LetBuyy store.</description>
+      <pubDate>Sat, 25 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Neha Gupta</author>
+      <category>Payments</category>
+      <tag>payments</tag>
+      <tag>razorpay</tag>
+      <tag>upi</tag>
+      <tag>setup</tag>
+    </item>
+    <item>
+      <title>Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores</title>
+      <link>https://www.letbuyy.com/resources/ecommerce/reducing-cart-abandonment</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ecommerce/reducing-cart-abandonment</guid>
+      <description>Tactical guide to reducing cart abandonment rates for Indian ecommerce stores with COD, UPI, and WhatsApp recovery.</description>
+      <pubDate>Wed, 22 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Ecommerce</category>
+      <tag>conversion</tag>
+      <tag>cart</tag>
+      <tag>recovery</tag>
+      <tag>whatsapp</tag>
+    </item>
+    <item>
+      <title>How Themes Work on LetBuyy</title>
+      <link>https://www.letbuyy.com/resources/platform/how-themes-work</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/platform/how-themes-work</guid>
+      <description>Complete guide to LetBuyy themes — theme types, customization options, the theme editor, and publishing a custom theme.</description>
+      <pubDate>Mon, 20 Apr 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>Platform</category>
+      <tag>themes</tag>
+      <tag>storefront</tag>
+      <tag>customization</tag>
+      <tag>platform</tag>
+    </item>
+    <item>
+      <title>Social Commerce in India: Instagram, WhatsApp &amp; Beyond</title>
+      <link>https://www.letbuyy.com/resources/growth/social-commerce-india</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/growth/social-commerce-india</guid>
+      <description>Guide to social commerce in India — Instagram Shopping, WhatsApp Business, and building a social-first ecommerce strategy.</description>
+      <pubDate>Sat, 18 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Growth</category>
+      <tag>social-media</tag>
+      <tag>instagram</tag>
+      <tag>whatsapp</tag>
+      <tag>social-commerce</tag>
+    </item>
+    <item>
+      <title>Webhooks: Real-Time Commerce Event Streaming</title>
+      <link>https://www.letbuyy.com/resources/developers/webhooks-complete-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/developers/webhooks-complete-guide</guid>
+      <description>Complete developer guide to LetBuyy webhooks — setup, signature verification, event types, and reliability patterns.</description>
+      <pubDate>Wed, 15 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Arjun Mehta</author>
+      <category>Developers</category>
+      <tag>webhooks</tag>
+      <tag>api</tag>
+      <tag>events</tag>
+      <tag>integration</tag>
+    </item>
+    <item>
+      <title>Inventory Management: From Chaos to Control</title>
+      <link>https://www.letbuyy.com/resources/operations/inventory-management-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/operations/inventory-management-guide</guid>
+      <description>Practical inventory management guide for Indian ecommerce — reorder points, safety stock, ABC analysis, and multi-location strategy.</description>
+      <pubDate>Sun, 12 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Ravi Krishnan</author>
+      <category>Operations</category>
+      <tag>inventory</tag>
+      <tag>operations</tag>
+      <tag>warehouse</tag>
+      <tag>stock</tag>
+    </item>
+    <item>
+      <title>How To Launch a D2C Brand in India (Step by Step)</title>
+      <link>https://www.letbuyy.com/resources/growth/d2c-brand-launch-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/growth/d2c-brand-launch-guide</guid>
+      <description>Complete guide to launching a Direct-to-Consumer brand in India: product, brand, store, and go-to-market strategy.</description>
+      <pubDate>Fri, 10 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Growth</category>
+      <tag>d2c</tag>
+      <tag>brand</tag>
+      <tag>launch</tag>
+      <tag>india</tag>
+    </item>
+    <item>
+      <title>How Liquid Themes Work on LetBuyy</title>
+      <link>https://www.letbuyy.com/resources/developers/liquid-theming-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/developers/liquid-theming-guide</guid>
+      <description>Developer guide to building Liquid themes on LetBuyy — syntax, objects, filters, tags, sections, and the theme architecture.</description>
+      <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Arjun Mehta</author>
+      <category>Developers</category>
+      <tag>themes</tag>
+      <tag>liquid</tag>
+      <tag>developers</tag>
+      <tag>storefront</tag>
+    </item>
+    <item>
+      <title>UPI vs COD: Which Payment Method Wins for Indian Stores</title>
+      <link>https://www.letbuyy.com/resources/payments/upi-vs-cod-india</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/payments/upi-vs-cod-india</guid>
+      <description>In-depth comparison of UPI and Cash on Delivery for Indian ecommerce stores — conversion rates, return rates, and revenue impact.</description>
+      <pubDate>Sun, 05 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Neha Gupta</author>
+      <category>Payments</category>
+      <tag>payments</tag>
+      <tag>upi</tag>
+      <tag>cod</tag>
+      <tag>india</tag>
+    </item>
+    <item>
+      <title>How Product Reviews Increase Conversion by 270%</title>
+      <link>https://www.letbuyy.com/resources/ecommerce/how-product-reviews-increase-conversion</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ecommerce/how-product-reviews-increase-conversion</guid>
+      <description>Data-backed guide on how product reviews impact conversion rates for Indian ecommerce, with a step-by-step collection playbook.</description>
+      <pubDate>Wed, 01 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Ecommerce</category>
+      <tag>reviews</tag>
+      <tag>social-proof</tag>
+      <tag>conversion</tag>
+      <tag>trust</tag>
+    </item>
+    <item>
+      <title>Email Marketing for Ecommerce: Building Your List in India</title>
+      <link>https://www.letbuyy.com/resources/growth/email-marketing-ecommerce</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/growth/email-marketing-ecommerce</guid>
+      <description>How to build and monetize an email list for your Indian ecommerce store — from capture to automated flows.</description>
+      <pubDate>Sat, 28 Mar 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Growth</category>
+      <tag>email</tag>
+      <tag>marketing</tag>
+      <tag>automation</tag>
+      <tag>list-building</tag>
+    </item>
+    <item>
+      <title>Order Fulfillment: Processing 100 Orders Per Day Efficiently</title>
+      <link>https://www.letbuyy.com/resources/operations/order-fulfillment-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/operations/order-fulfillment-guide</guid>
+      <description>How to set up efficient order fulfillment operations for your Indian ecommerce store — packing, labeling, courier integration, and tracking.</description>
+      <pubDate>Wed, 25 Mar 2026 00:00:00 GMT</pubDate>
+      <author>Ravi Krishnan</author>
+      <category>Operations</category>
+      <tag>fulfillment</tag>
+      <tag>orders</tag>
+      <tag>operations</tag>
+      <tag>scaling</tag>
+    </item>
+    <item>
+      <title>Introduction to the LetBuyy App Marketplace</title>
+      <link>https://www.letbuyy.com/resources/platform/introduction-to-apps</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/platform/introduction-to-apps</guid>
+      <description>Overview of the LetBuyy App Marketplace — what apps are available, how to install them, and how to choose the right apps for your store.</description>
+      <pubDate>Sun, 22 Mar 2026 00:00:00 GMT</pubDate>
+      <author>LetBuyy Team</author>
+      <category>Platform</category>
+      <tag>apps</tag>
+      <tag>marketplace</tag>
+      <tag>platform</tag>
+      <tag>integrations</tag>
+    </item>
+    <item>
+      <title>Building a Customer-Friendly Returns Policy for India</title>
+      <link>https://www.letbuyy.com/resources/payments/refunds-returns-policy-india</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/payments/refunds-returns-policy-india</guid>
+      <description>How to write and implement a returns and refunds policy for Indian ecommerce that builds trust and manages costs.</description>
+      <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
+      <author>Neha Gupta</author>
+      <category>Payments</category>
+      <tag>returns</tag>
+      <tag>refunds</tag>
+      <tag>policy</tag>
+      <tag>customer-service</tag>
+    </item>
+    <item>
+      <title>Creating Custom Integrations with LetBuyy</title>
+      <link>https://www.letbuyy.com/resources/developers/custom-integrations-guide</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/developers/custom-integrations-guide</guid>
+      <description>Developer guide to building custom integrations with LetBuyy — sync patterns, queue workers, and common integration recipes.</description>
+      <pubDate>Wed, 18 Mar 2026 00:00:00 GMT</pubDate>
+      <author>Arjun Mehta</author>
+      <category>Developers</category>
+      <tag>integrations</tag>
+      <tag>api</tag>
+      <tag>developers</tag>
+      <tag>erp</tag>
+    </item>
+    <item>
+      <title>The Complete Store SEO Checklist for Indian Merchants</title>
+      <link>https://www.letbuyy.com/resources/ecommerce/store-seo-checklist</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/ecommerce/store-seo-checklist</guid>
+      <description>A comprehensive SEO checklist for Indian ecommerce stores — covering technical SEO, on-page optimization, and local signals.</description>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+      <author>Priya Sharma</author>
+      <category>Ecommerce</category>
+      <tag>seo</tag>
+      <tag>technical-seo</tag>
+      <tag>organic</tag>
+      <tag>google</tag>
+    </item>
+    <item>
+      <title>Understanding Ecommerce Fulfillment in India</title>
+      <link>https://www.letbuyy.com/resources/operations/understanding-fulfillment</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/operations/understanding-fulfillment</guid>
+      <description>Overview of ecommerce fulfillment models for Indian brands — self-fulfillment, third-party logistics (3PL), and FBA/FBF comparison.</description>
+      <pubDate>Tue, 10 Mar 2026 00:00:00 GMT</pubDate>
+      <author>Ravi Krishnan</author>
+      <category>Operations</category>
+      <tag>fulfillment</tag>
+      <tag>3pl</tag>
+      <tag>logistics</tag>
+      <tag>operations</tag>
+    </item>
+    <item>
+      <title>GST for Ecommerce in India: The Complete 2026 Guide</title>
+      <link>https://www.letbuyy.com/resources/payments/gst-for-ecommerce-india</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/payments/gst-for-ecommerce-india</guid>
+      <description>Everything Indian ecommerce sellers need to know about GST in 2026 — registration, TCS, invoicing, returns, and compliance.</description>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 GMT</pubDate>
+      <author>Neha Gupta</author>
+      <category>Payments</category>
+      <tag>gst</tag>
+      <tag>tax</tag>
+      <tag>compliance</tag>
+      <tag>india</tag>
+    </item>
+    <item>
+      <title>GST Invoices for Indian Ecommerce: What Must Be Included</title>
+      <link>https://www.letbuyy.com/resources/payments/invoicing-india-merchants</link>
+      <guid isPermaLink="true">https://www.letbuyy.com/resources/payments/invoicing-india-merchants</guid>
+      <description>Complete guide to GST invoice requirements for Indian ecommerce merchants — mandatory fields, formats, and automation.</description>
+      <pubDate>Fri, 20 Feb 2026 00:00:00 GMT</pubDate>
+      <author>Neha Gupta</author>
+      <category>Payments</category>
+      <tag>invoicing</tag>
+      <tag>gst</tag>
+      <tag>compliance</tag>
+      <tag>b2b</tag>
+    </item>
+  </channel>
+</rss>

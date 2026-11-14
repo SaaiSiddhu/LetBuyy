@@ -1,6 +1,6 @@
 import type { Hono } from 'hono';
 import type { Env } from '../../index';
-import { findFirstOwnedSiteId, resolveCustomUser, resolveOwnedSiteId, verifySiteOwnership } from '../../lib/auth-user';
+import { findFirstOwnedSiteId, resolveCustomUser, verifySiteOwnership } from '../../lib/auth-user';
 import { getSupabaseAdmin, success } from '../../lib/supabase';
 import { authMiddleware } from '../../middleware/auth';
 import {
@@ -86,7 +86,6 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
             .from('app_installations')
             .select('id, app_id, store_id, status')
             .eq('id', installationId)
-            .eq('store_id', await resolveOwnedSiteId(db, customUser.id, storeId, auth.user.storeId))
             .neq('status', 'uninstalled')
             .maybeSingle();
 
@@ -111,7 +110,6 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
             .from('app_extension_registrations')
             .select('*')
             .eq('installation_id', installation.id)
-            .eq('site_id', installation.store_id)
             .is('deleted_at', null)
             .order('sort_order', { ascending: true });
 
@@ -123,7 +121,6 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
             .from('app_function_registrations')
             .select('*')
             .eq('installation_id', installation.id)
-            .eq('site_id', installation.store_id)
             .is('deleted_at', null)
             .order('created_at', { ascending: true });
 
@@ -172,7 +169,6 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
             .from('app_installations')
             .select('id, store_id, status')
             .eq('id', installationId)
-            .eq('store_id', await resolveOwnedSiteId(db, customUser.id, stringOrNull(body.store_id || body.storeId), auth.user.storeId))
             .neq('status', 'uninstalled')
             .maybeSingle();
 
@@ -196,7 +192,6 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
                 : { status, disabled_at: now, updated_by: customUser.id })
             .eq('id', registrationId)
             .eq('installation_id', installation.id)
-            .eq('site_id', installation.store_id)
             .is('deleted_at', null)
             .select()
             .maybeSingle();
@@ -248,7 +243,6 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
             .from('app_installations')
             .select('id, store_id, status')
             .eq('id', installationId)
-            .eq('store_id', await resolveOwnedSiteId(db, customUser.id, stringOrNull(body.store_id || body.storeId), auth.user.storeId))
             .neq('status', 'uninstalled')
             .maybeSingle();
 
@@ -272,7 +266,6 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
                 : { status, disabled_at: now, updated_by: customUser.id })
             .eq('id', registrationId)
             .eq('installation_id', installation.id)
-            .eq('site_id', installation.store_id)
             .is('deleted_at', null)
             .select()
             .maybeSingle();
@@ -318,7 +311,6 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
             .from('app_installations')
             .select('id, app_id, store_id, status, scopes_granted, config, installed_at, uninstalled_at, marketplace_apps(id, name, slug, icon_url, tagline, pricing_model, app_url, app_extensions(id, type, target, label, config, sort_order))')
             .eq('id', installationId)
-            .eq('store_id', await resolveOwnedSiteId(db, customUser.id, storeId, auth.user.storeId))
             .neq('status', 'uninstalled')
             .maybeSingle();
 
@@ -378,8 +370,7 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
                     },
                 },
             })
-            .eq('id', installation.id)
-            .eq('store_id', installation.store_id);
+            .eq('id', installation.id);
 
         if (bridgeTokenError) {
             return c.json({ error: { code: 'DB_ERROR', message: bridgeTokenError.message } }, 500);
@@ -457,13 +448,6 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
 
         if (!installation || installation.installed_by !== verification.payload.installedBy) {
             return c.json({ error: { code: 'UNAUTHORIZED', message: 'App installation is not active' } }, 401);
-        }
-        const currentScopes = new Set(stringArray(installation.scopes_granted));
-        if (!requiredScopes.every(scope => currentScopes.has(scope))) {
-            return c.json({ error: { code: 'FORBIDDEN', message: 'The required app permission has been revoked' } }, 403);
-        }
-        if (!await verifySiteOwnership(db, installation.store_id, installation.installed_by)) {
-            return c.json({ error: { code: 'FORBIDDEN', message: 'The installing account no longer owns this store' } }, 403);
         }
 
         const tokenHash = await sha256Hex(verification.token);

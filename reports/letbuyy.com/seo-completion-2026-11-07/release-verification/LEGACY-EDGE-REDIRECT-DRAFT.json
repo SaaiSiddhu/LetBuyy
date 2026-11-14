@@ -1,0 +1,67 @@
+{
+  "status": "draft for separate authorization",
+  "records": [
+    {
+      "name": "seller.letbuyy.com",
+      "type": "A",
+      "content": "192.0.2.1",
+      "proxied": true,
+      "ttl": 1
+    },
+    {
+      "name": "developer.letbuyy.com",
+      "type": "A",
+      "content": "192.0.2.1",
+      "proxied": true,
+      "ttl": 1
+    },
+    {
+      "name": "developers.letbuyy.com",
+      "type": "A",
+      "content": "192.0.2.1",
+      "proxied": true,
+      "ttl": 1
+    }
+  ],
+  "vercel_source_bindings": [],
+  "redirect_rules": [
+    {
+      "ref": "letbuyy_legacy_seller_root",
+      "description": "Proposed exact legacy public root redirect",
+      "expression": "(http.host eq \"seller.letbuyy.com\") and http.request.uri.path eq \"/\" and http.request.method in {\"GET\" \"HEAD\"}",
+      "action": "redirect",
+      "enabled": false,
+      "action_parameters": {
+        "from_value": {
+          "target_url": {
+            "value": "https://accounts.letbuyy.com/lookup"
+          },
+          "status_code": 301,
+          "preserve_query_string": false
+        }
+      }
+    },
+    {
+      "ref": "letbuyy_legacy_developer_roots",
+      "description": "Proposed exact legacy public root redirect",
+      "expression": "(http.host in {\"developer.letbuyy.com\" \"developers.letbuyy.com\"}) and http.request.uri.path eq \"/\" and http.request.method in {\"GET\" \"HEAD\"}",
+      "action": "redirect",
+      "enabled": false,
+      "action_parameters": {
+        "from_value": {
+          "target_url": {
+            "value": "https://www.letbuyy.com/in/resources/developers"
+          },
+          "status_code": 301,
+          "preserve_query_string": false
+        }
+      }
+    }
+  ],
+  "unmatched_path_guard": {
+    "action": "block",
+    "enabled": false,
+    "response": "default WAF 403",
+    "expression": "(http.host in {\"seller.letbuyy.com\" \"developer.letbuyy.com\" \"developers.letbuyy.com\"}) and not (http.request.uri.path eq \"/\" and http.request.method in {\"GET\" \"HEAD\"})"
+  }
+}

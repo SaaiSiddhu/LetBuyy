@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-10-29T18:56:10.986419+00:00",
+  "json_files_parsed": 27,
+  "issue_records": 11,
+  "csv_records": 11,
+  "local_links_checked": 76,
+  "counts": {
+    "severity": {
+      "High": 1,
+      "Medium": 5,
+      "Low": 5
+    },
+    "states": {
+      "Confirmed": 8,
+      "Opportunity": 1,
+      "Needs verification": 2
+    }
+  },
+  "errors": [],
+  "passed": true
+}

@@ -1,0 +1,73 @@
+{
+  "checked_on": "2026-10-29",
+  "method": "Available tool names/descriptions inspected in-session; credential presence checked separately",
+  "available_search_browser": [
+    "web search",
+    "SEO isolated Playwright Chromium",
+    "computer-use browser tooling"
+  ],
+  "connected_specialist_providers": [],
+  "limitations": "No connected GSC/GA4/Ahrefs/Firecrawl/DataForSEO/Matomo/Profound/SE Ranking/Bing executable tools discovered. Tool availability may change; a skill recipe alone is not a connection.",
+  "catalog": [
+    {
+      "name": "list_mcp_resource_templates",
+      "description": "Lists resource templates provided by MCP servers. Parameterized resource templates allow servers to share data that takes parameters and provides context to language models, such a"
+    },
+    {
+      "name": "list_mcp_resources",
+      "description": "Lists resources provided by MCP servers. Resources allow servers to share data that provides context to language models, such as files, database schemas, or application-specific in"
+    },
+    {
+      "name": "mcp__codex_app__open_in_codex",
+      "description": "Show a workspace file, browser tab, terminal, or review in a Codex panel. The calling thread in the calling window receives the tab by default. Set threadId only when the user expl"
+    },
+    {
+      "name": "mcp__codex_apps__codex_document_control_get_document_tool_schemas",
+      "description": "Fetch the concrete input schemas for tools supported by a selected Codex document session before constructing `execute_document_command.args`. First call `list_document_sessions`, "
+    },
+    {
+      "name": "mcp__codex_apps__codex_document_control_list_document_sessions",
+      "description": "List the user's currently connected Codex document sessions and the surface-specific tools each session supports. Call this before executing a document-control command so you can c"
+    },
+    {
+      "name": "mcp__codex_apps__hotline_get_local_hotline",
+      "description": "Look up local suicide or self harm helpline information for the user based on country inferred from the conversation. You must use this tool before providing a suicide or self-harm"
+    },
+    {
+      "name": "mcp__codex_apps__plugin_management_get_app_permissions",
+      "description": "Inspect one named ChatGPT plugin's global/default and plugin-specific permission settings. Use when the user asks what the plugin may read, write, or do, whether it must ask first,"
+    },
+    {
+      "name": "mcp__codex_apps__plugin_management_get_plugin_dependencies",
+      "description": "Resolve the canonical public plugins declared by one plugin's app manifest. Use only when a skill or user explicitly asks for dependency metadata. Pass a plugin ID or name@marketpl"
+    },
+    {
+      "name": "mcp__codex_apps__plugin_management_search_plugins",
+      "description": "Search available plugins when the user explicitly requests a plugin or provider, or when their task would benefit from an external app, account, service, data source, or capability"
+    },
+    {
+      "name": "mcp__codex_apps__plugin_management_suggest_plugins",
+      "description": "Suggest plugins when an external integration would help the user. The user does not need to mention plugins or installation. Call plugin_management.search_plugins for relevant miss"
+    },
+    {
+      "name": "mcp__codex_apps__plugin_management_uninstall_app",
+      "description": "Uninstall ChatGPT plugins only for explicit uninstall, remove, or disconnect intent. Pass every exact, user-approved target in one call. For a missing/broad target such as Google, "
+    },
+    {
+      "name": "mcp__codex_apps__plugin_management_update_app_permissions",
+      "description": "Update global ChatGPT plugin permissions or a plugin-specific override. Omit app_id for global-only updates and provide it for plugin-specific updates. Map Always ask to always_ask"
+    },
+    {
+      "name": "mcp__codex_apps__search_service_web_run",
+      "description": "Run the web commands documented in this namespace.\n\nTool for accessing the internet.\n\n\n---\n\n## Examples of different commands available in this tool\n\nExamples of different commands"
+    },
+    {
+      "name": "mcp__codex_apps__sites_list_sites",
+      "description": "List Sites you own in the selected account, including personal accounts. Defaults to 20 Sites; limit must be an integer from 1 to 50. For more results, call list_sites again with t"
+    },
+    {
+      "name": "web__run",
+      "description": "Tool for accessing the internet.\n\n\n---\n\n## Examples of different commands available in this tool\n\nExamples of different commands available in this tool:\n* `search_query`: {\"search_"
+    }
+  ]
+}

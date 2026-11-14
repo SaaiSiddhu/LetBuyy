@@ -9,6 +9,7 @@ import {
     type ComplianceDataSubjectStatus,
     type ComplianceDataSubjectSubjectType,
 } from '@letbuyy/shared-types';
+import { AppError } from './errors';
 import { sha256Hex } from './crypto';
 import type { getSupabaseAdmin } from './supabase';
 
@@ -99,9 +100,6 @@ function webhookSubjectType(eventType: ComplianceDataSubjectSource): ComplianceD
     return eventType === 'shop/redact' ? 'shop' : 'customer';
 }
 
-function activeStatus(status: string | null | undefined): boolean {
-    return !['fulfilled', 'rejected', 'cancelled', 'expired'].includes(status || '');
-}
 
 function safeReason(reason: string | null | undefined, fallback: string): string {
     const trimmed = reason?.trim();
@@ -134,7 +132,7 @@ export async function writeComplianceAudit(
     const auditActorType = input.actorType === 'webhook' || input.actorType === 'worker'
         ? 'system'
         : input.actorType || 'super_admin';
-    await db.from('audit_logs').insert({
+    const { error } = await db.from('audit_logs').insert({
         actor_id: input.actorId || null,
         actor_type: auditActorType,
         actor_email: input.actorEmail || null,
@@ -148,6 +146,7 @@ export async function writeComplianceAudit(
             retention_policy_version: COMPLIANCE_RETENTION_POLICY_VERSION,
         },
     });
+    if (error) throw new Error('Compliance audit could not be recorded');
 }
 
 export async function upsertDataSubjectRequestFromComplianceWebhook(
@@ -242,6 +241,7 @@ export async function listDataSubjectRequests(
         .select('*', { count: 'exact' })
         .is('deleted_at', null)
         .order('due_at', { ascending: true })
+        .order('id', { ascending: true })
         .range(from, to);
 
     if (input.status && input.status !== 'all') query = query.eq('status', input.status);
@@ -262,6 +262,25 @@ export async function createManualDataSubjectRequest(
     db: ComplianceDb,
     input: DataSubjectRequestInput,
 ): Promise<JsonRecord> {
+    if (input.idempotency_key) {
+        let lookup = db.from('data_subject_requests').select('*').eq('source', input.source || 'manual')
+            .eq('idempotency_key', input.idempotency_key).is('deleted_at', null);
+        lookup = input.site_id ? lookup.eq('site_id', input.site_id) : lookup.filter('site_id', 'is', null);
+        const existing = await lookup.maybeSingle();
+        if (existing.error) throw new Error('Privacy request recovery is unavailable');
+        if (existing.data) {
+            const row = existing.data as JsonRecord;
+            const same = row.request_type === input.request_type && row.subject_type === input.subject_type
+                && (row.subject_id || null) === (input.subject_id || null)
+                && (row.subject_email || null) === (input.subject_email || null);
+            if (!same) throw new AppError('This request key already belongs to another privacy request.', 409, 'IDEMPOTENCY_CONFLICT');
+            // A previous request may have committed before its audit acknowledgement.
+            await writeComplianceAudit(db, { action: 'data_subject_request.create.recovered', resourceType: 'data_subject_request',
+                resourceId: String(row.id), actorId: input.actor_id, actorEmail: input.actor_email,
+                actorType: input.actor_type, reason: input.reason, metadata: { idempotency_key: input.idempotency_key } });
+            return row;
+        }
+    }
     const insert = await db
         .from('data_subject_requests')
         .insert({
@@ -319,6 +338,7 @@ export async function updateDataSubjectRequest(
     db: ComplianceDb,
     id: string,
     input: DataSubjectRequestPatch,
+    siteId: string | null,
 ): Promise<JsonRecord | null> {
     const now = new Date().toISOString();
     const patch: JsonRecord = {
@@ -338,13 +358,13 @@ export async function updateDataSubjectRequest(
     if (input.assignee_id !== undefined) patch.assignee_id = input.assignee_id;
     if (input.fulfillment_summary !== undefined) patch.fulfillment_summary = input.fulfillment_summary;
 
-    const updated = await db
+    let update = db
         .from('data_subject_requests')
         .update(patch)
         .eq('id', id)
-        .is('deleted_at', null)
-        .select('*')
-        .maybeSingle();
+        .is('deleted_at', null);
+    update = siteId === null ? update.filter('site_id', 'is', null) : update.eq('site_id', siteId);
+    const updated = await update.select('*').maybeSingle();
 
     if (updated.error) throw new Error(`Data-subject request update failed: ${updated.error.message}`);
     if (!updated.data) return null;
@@ -372,45 +392,24 @@ export async function updateDataSubjectRequest(
 export async function buildComplianceOverview(db: ComplianceDb): Promise<JsonRecord> {
     const now = new Date();
     const dueSoon = addDays(now, 3).toISOString();
-    const [requestsResult, cursorResult] = await Promise.all([
-        db
-            .from('data_subject_requests')
-            .select('id, request_type, source, status, due_at, created_at')
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(10000),
-        db
-            .from('audit_export_cursors')
-            .select('*')
-            .is('deleted_at', null)
-            .order('updated_at', { ascending: false })
-            .limit(5),
+    const count = () => db.from('data_subject_requests').select('id', { count: 'exact', head: true }).is('deleted_at', null);
+    const open = () => count().not('status', 'in', '(fulfilled,rejected,cancelled,expired)');
+    const [total, openCount, overdue, dueSoonCount, fulfilled, erasure, access, latest, cursors] = await Promise.all([
+        count(), open(), open().lt('due_at', now.toISOString()), open().lte('due_at', dueSoon),
+        count().eq('status', 'fulfilled'), count().eq('request_type', 'erasure'), count().eq('request_type', 'access'),
+        db.from('data_subject_requests').select('id, request_type, source, status, due_at, created_at')
+            .is('deleted_at', null).order('created_at', { ascending: false }).order('id', { ascending: false }).limit(10),
+        db.from('audit_export_cursors').select('*').is('deleted_at', null).order('updated_at', { ascending: false }).limit(5),
     ]);
-
-    if (requestsResult.error) throw new Error(`Compliance overview request query failed: ${requestsResult.error.message}`);
-    if (cursorResult.error) throw new Error(`Compliance overview cursor query failed: ${cursorResult.error.message}`);
-
-    const requests = (requestsResult.data || []) as JsonRecord[];
-    const nowIso = now.toISOString();
-    const open = requests.filter((row) => activeStatus(stringValue(row.status)));
-    const overdue = open.filter((row) => stringValue(row.due_at) && String(row.due_at) < nowIso);
-    const dueSoonRows = open.filter((row) => stringValue(row.due_at) && String(row.due_at) <= dueSoon);
-    const fulfilled = requests.filter((row) => row.status === 'fulfilled');
-
+    if ([total, openCount, overdue, dueSoonCount, fulfilled, erasure, access, latest, cursors].some(result => result.error)) {
+        throw new Error('Compliance overview could not be loaded');
+    }
     return {
-        generated_at: nowIso,
-        totals: {
-            total: requests.length,
-            open: open.length,
-            overdue: overdue.length,
-            due_soon: dueSoonRows.length,
-            fulfilled: fulfilled.length,
-            erasure: requests.filter((row) => row.request_type === 'erasure').length,
-            access: requests.filter((row) => row.request_type === 'access').length,
-        },
-        latest_requests: requests.slice(0, 10),
-        audit_export_cursors: (cursorResult.data || []) as JsonRecord[],
-        retention_policy: retentionPolicySnapshot(),
+        generated_at: now.toISOString(),
+        totals: { total: total.count ?? 0, open: openCount.count ?? 0, overdue: overdue.count ?? 0,
+            due_soon: dueSoonCount.count ?? 0, fulfilled: fulfilled.count ?? 0,
+            erasure: erasure.count ?? 0, access: access.count ?? 0 },
+        latest_requests: latest.data || [], audit_export_cursors: cursors.data || [], retention_policy: retentionPolicySnapshot(),
     };
 }
 

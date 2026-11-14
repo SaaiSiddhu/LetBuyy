@@ -1,0 +1,19 @@
+role,variant,build_id,path,method,repeat,lcp_ms,tbt_ms,cls,lighthouse_exit,budget_pass,evidence
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/pricing,simulate,1,2917.5237500000003,43.5,0,0,False,evidence/final-performance/run-LyAU2I/pricing-simulate-1.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/resources/platform/building-first-letbuyy-store,simulate,1,3830.388,25.999999999999545,0,0,False,evidence/final-performance/run-LyAU2I/guide-simulate-1.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/pricing,devtools,1,1938.169,73.00500000000011,0,0,True,evidence/final-performance/run-LyAU2I/pricing-devtools-1.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/resources/platform/building-first-letbuyy-store,devtools,1,2137.807,65.40300000000025,0,0,True,evidence/final-performance/run-LyAU2I/guide-devtools-1.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/pricing,simulate,2,3450.928,33.990999999999985,0,0,False,evidence/final-performance/run-LyAU2I/pricing-simulate-2.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/resources/platform/building-first-letbuyy-store,simulate,2,3827.424,24.499999999999545,0,0,False,evidence/final-performance/run-LyAU2I/guide-simulate-2.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/pricing,devtools,2,1944.12,59.9079999999999,0,0,True,evidence/final-performance/run-LyAU2I/pricing-devtools-2.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/resources/platform/building-first-letbuyy-store,devtools,2,2142.106,63.396000000000186,0,0,True,evidence/final-performance/run-LyAU2I/guide-devtools-2.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/pricing,simulate,3,3563,38,0,0,False,evidence/final-performance/run-LyAU2I/pricing-simulate-3.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/resources/platform/building-first-letbuyy-store,simulate,3,3827.696,24.5,0,0,False,evidence/final-performance/run-LyAU2I/guide-simulate-3.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/pricing,devtools,3,1985.184,60.10500000000002,0,0,True,evidence/final-performance/run-LyAU2I/pricing-devtools-3.json
+acceptance,retained source,Nr2bD-AZ_XyFXsUJdc2FD,/in/resources/platform/building-first-letbuyy-store,devtools,3,2149.709,59.79700000000048,0,0,True,evidence/final-performance/run-LyAU2I/guide-devtools-3.json
+diagnostic-only,baseline,,/in/pricing,simulate,1,3487.2789999999995,44,0,0,excluded,evidence/privacy-split-performance/baseline-pricing.json
+diagnostic-only,baseline,,/in/resources/platform/building-first-letbuyy-store,simulate,1,3906.308,24.999999999999773,0,0,excluded,evidence/privacy-split-performance/baseline-guide.json
+diagnostic-only,privacy-split,,/in/pricing,simulate,1,3448.8607500000003,37.99999999999977,0,0,excluded,evidence/privacy-split-performance/privacy-split-pricing.json
+diagnostic-only,privacy-split,,/in/resources/platform/building-first-letbuyy-store,simulate,1,3690.8199999999997,38.5,0,0,excluded,evidence/privacy-split-performance/privacy-split-guide.json
+diagnostic-only,next-16.4.5,,/in/pricing,simulate,1,2928.6146249999997,36.5,0,0,excluded,evidence/framework-performance/next-16.4.5-pricing.json
+diagnostic-only,next-16.4.5,,/in/resources/platform/building-first-letbuyy-store,simulate,1,3907.4880000000003,28.5,0,0,excluded,evidence/framework-performance/next-16.4.5-guide.json

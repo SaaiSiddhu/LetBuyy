@@ -1,8 +1,4 @@
-import { argon2Verify, argon2id } from '#store-access-hashing';
-import { AppError } from './errors';
-import { StorePasswordWorkGate } from './store-password-work-gate';
-const workGate = new StorePasswordWorkGate();
-type WorkOptions = { signal?: AbortSignal };
+import { argon2Verify, argon2id } from 'hash-wasm';
 
 const ARGON2_OPTIONS = {
     iterations: 3,
@@ -20,27 +16,21 @@ function randomSalt(byteCount = 16): Uint8Array {
     return salt;
 }
 
-export async function hashStoreAccessPassword(password: string, options: WorkOptions = {}): Promise<string> {
-    return workGate.run(async () => {
-        try {
-            return await argon2id({ ...ARGON2_OPTIONS, password, salt: randomSalt() });
-        } catch {
-            throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
-        }
-    }, options.signal);
+export async function hashStoreAccessPassword(password: string): Promise<string> {
+    return argon2id({
+        ...ARGON2_OPTIONS,
+        password,
+        salt: randomSalt(),
+    });
 }
 
-export async function verifyStoreAccessPassword(password: string, encodedHash: string | null | undefined, options: WorkOptions = {}): Promise<boolean> {
-    // Catch hash/state errors inside the admitted operation. A queue/abort refusal
-    // must never trigger dummy hashing outside the resource bound.
-    return workGate.run(async () => {
-        try {
-            const hash = encodedHash || DUMMY_ARGON2ID_HASH;
-            const valid = await argon2Verify({ password, hash });
-            return Boolean(encodedHash && valid);
-        } catch {
-            await argon2Verify({ password, hash: DUMMY_ARGON2ID_HASH }).catch(() => false);
-            throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
-        }
-    }, options.signal);
+export async function verifyStoreAccessPassword(password: string, encodedHash: string | null | undefined): Promise<boolean> {
+    try {
+        const hash = encodedHash || DUMMY_ARGON2ID_HASH;
+        const valid = await argon2Verify({ password, hash });
+        return Boolean(encodedHash && valid);
+    } catch {
+        await argon2Verify({ password, hash: DUMMY_ARGON2ID_HASH }).catch(() => false);
+        return false;
+    }
 }

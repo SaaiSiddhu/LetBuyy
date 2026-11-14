@@ -1,8 +1,0 @@
-{
-  "classification": "INDEPENDENT_PROBE_SETUP_REFUSAL_NOT_PRODUCT_FAILURE",
-  "observed": "Initial probe assumed the addable collection-product-list section was already the Pantry default collection instance. It was absent and assert.ok(row) stopped execution before render.",
-  "correction": "Explicitly place the actual declared addable section in the existing pantry-results slot in the in-memory source-test bundle, matching the owner test. Retain separate exact default-composition comparisons.",
-  "browser": false,
-  "database": false,
-  "providerCalls": 0
-}

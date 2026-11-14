@@ -1,0 +1,8 @@
+{
+  "url": "http://localhost:9007/merchant-messages",
+  "mode": "existing normal signed-in operator session; no account/factor/role changes",
+  "directory": "loaded; honest empty state",
+  "authoring": "new draft fields visible; no save or publish",
+  "screenshot": "private local-console-merchant-messages.png",
+  "tabRecovery": "stale prior tab reached a browser error wrapper; a fresh tab loaded the approved localhost page normally without environment or protection changes"
+}

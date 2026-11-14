@@ -1,0 +1,122 @@
+{
+  "capturedAt": "2026-11-07T03:05:05.891948+00:00",
+  "website": "https://www.letbuyy.com/in",
+  "requestedOutcomeComplete": false,
+  "implementation": {
+    "existingSourceRepairsRetained": true,
+    "newApplicationSourceAccepted": false,
+    "isolatedCandidatesRejected": 2,
+    "cssSourcesUnchanged": 20
+  },
+  "source": {
+    "capturedAt": "2026-11-07T02:48:41.855232+00:00",
+    "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+    "rootBuildId": "b2CsFLYIUn25H5EguBjys",
+    "finalIsolatedBuildId": "Nr2bD-AZ_XyFXsUJdc2FD",
+    "finalIsolatedOrigin": "http://127.0.0.1:9016",
+    "productionCanonicalOrigin": "https://www.letbuyy.com",
+    "apiAndAccountsLoopback": true,
+    "frozenNextVersion": "16.1.6",
+    "sourceFiles": 1289,
+    "packageRoots": 15,
+    "sourceDifferences": [],
+    "rootApplicationSourceChanged": false,
+    "archive": "../../letbuyy-seo-release-readiness-2026-11-03/MARKETING-RELEASE-SOURCE.tar.gz",
+    "archiveSHA256": "9a0145e2fbf5396660526e9fe1d64004fc598fd1e0df6403cd6fd13ce2d02dbe",
+    "deployableBuildOutput": false,
+    "reason": "Local API and Accounts origins; no deployment authorized; acceptance remains open."
+  },
+  "acceptance": {
+    "marketingTestsPassed": 224,
+    "authBoundaryTestsPassed": 4,
+    "typecheckLintStylelintPassed": true,
+    "tokenAliasValidatorPassed": true,
+    "filteredBuildTasksPassed": 29,
+    "filteredBuildTasksCached": 0,
+    "knownUniqueLocalURLs": 489,
+    "html200": 477,
+    "publisherRedirects308To200": 12,
+    "localizedGuides": 105,
+    "expectedLocalizedBodyLinksPresent": 180,
+    "xmlEntries": 189,
+    "jsonldBlocksParsed": 690,
+    "currentChromeVerified": true,
+    "isolatedChromiumPageCasesPassed": 48,
+    "isolatedChromiumInteractionCasesPassed": 8,
+    "performanceRunnerExitCode": 1,
+    "performance": [
+      {
+        "target": "/in/pricing",
+        "method": "simulate",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 0,
+        "medianLcpMs": 3450.928,
+        "status": "fail"
+      },
+      {
+        "target": "/in/pricing",
+        "method": "devtools",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 3,
+        "medianLcpMs": 1944.12,
+        "status": "pass"
+      },
+      {
+        "target": "/in/resources/platform/building-first-letbuyy-store",
+        "method": "simulate",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 0,
+        "medianLcpMs": 3827.696,
+        "status": "fail"
+      },
+      {
+        "target": "/in/resources/platform/building-first-letbuyy-store",
+        "method": "devtools",
+        "samples": 3,
+        "complete": true,
+        "passedSamples": 3,
+        "medianLcpMs": 2142.106,
+        "status": "pass"
+      }
+    ],
+    "realFieldCWV": "not measured",
+    "providerSandboxVerified": false,
+    "nativeEditorialReviewPassed": false,
+    "humanReviewRowsPending": 202,
+    "physicalDeviceAndATVerified": false
+  },
+  "external": {
+    "cloudflareDNSReadVerified": true,
+    "vercelProjectBindingsReadVerified": true,
+    "legacyDNSProposalReady": true,
+    "dnsApplyReady": false,
+    "tracking": "off by owner decision; proposal only",
+    "razorpay": "HTTP401; owner has no valid test keys",
+    "buyerPrivacy": "explicitly deferred",
+    "googleReprocessing": "not measured after release because no release occurred"
+  },
+  "workRegister": {
+    "inherited": 56,
+    "newAcceptancePrerequisites": 1,
+    "total": 57,
+    "severityCountsAcrossAllStates": {
+      "High": 11,
+      "Medium": 27,
+      "Low": 12,
+      "Informational": 7
+    }
+  },
+  "toolkitRoutes": 35,
+  "postReleaseChecks": 23,
+  "releaseApprovalReady": false,
+  "deployment": false,
+  "evidence": {
+    "performance": "evidence/final-performance/run-LyAU2I/summary.json",
+    "checks": "CHECKS.csv",
+    "liveBaseline": "evidence/live-readonly-baseline.json",
+    "dns": "DNS-AND-HOSTING-PROPOSED-DIFF.json"
+  }
+}

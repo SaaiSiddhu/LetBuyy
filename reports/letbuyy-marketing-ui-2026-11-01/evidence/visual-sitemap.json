@@ -1,0 +1,54 @@
+{
+  "captured_at": "2026-11-01T03:06:22.869Z",
+  "method": "Reconstructed unsplit-CSS control9038 versus current split-CSS candidate9039; identical application code and assets, every CSS rule/declaration/condition equal; control preserves recorded pre-split order; fixed reduced-motion light/dark viewports; all art explicitly decoded and all sections fully revealed for visual capture; pixel differences from responsive codec changes retained separately from structural equality; only the measured display:none legacy accordion subtree is excluded from element counts; progressive previews revealed by real scrolling",
+  "rows": [
+    {
+      "path": "/in/sitemap",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 51,
+      "pixel_fraction": 0.000021013597033374538,
+      "mean_channel_difference": 0.0006790276060980635,
+      "before_sha256": "401193ebf8ff06cd39f32f7ccc5b540976a3f3cc986f4b33a91be7530cd7bcf5",
+      "after_sha256": "09b470a30082553caccb1d8c6712e5e6e1bdac3476526ffad58640deaea5ae15"
+    },
+    {
+      "path": "/in/sitemap",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 54,
+      "pixel_fraction": 0.000022249690976514216,
+      "mean_channel_difference": 0.0009644622991347343,
+      "before_sha256": "5d12bfd7867d9ad7f33a8e7b342a6ed442fd7866cfba2a5841341b67b6817dce",
+      "after_sha256": "2141137cc08beda29ae9057565d54dc641b554c9b13354891766a300c1de22a7"
+    },
+    {
+      "path": "/in/sitemap",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 51,
+      "pixel_fraction": 0.000010347917268604339,
+      "mean_channel_difference": 0.00033437975801294017,
+      "before_sha256": "ee5db18a8ac055bf50c8c0a8e21a81c5afc643d3bda4829742444bc0f13e7afc",
+      "after_sha256": "ff8332eb2df9c35d1a24cb059a678469299cd1e1a82c4718fa588eb1373ef2b7"
+    },
+    {
+      "path": "/in/sitemap",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 54,
+      "pixel_fraction": 0.000010956618284404594,
+      "mean_channel_difference": 0.0004749389675781491,
+      "before_sha256": "f98854829ac53699d2b109f2294642a9520edb9d12f24950612e5c88cd84fbc9",
+      "after_sha256": "8aeeb2eee8fe32b5de71778daa1b7bcd66b6b02d5c3a5fb99a01be5bcbacfdb1"
+    }
+  ]
+}

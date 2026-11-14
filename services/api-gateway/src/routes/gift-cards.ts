@@ -52,11 +52,10 @@ export function registerGiftCardRoutes(router: GiftCardRouter): void {
 
         const { data, error } = await db.rpc('list_gift_cards', { p_store_id: query.store_id });
         if (error) {
-            if (isMissingRpc(error, 'list_gift_cards')) return giftCardSchemaUnavailable(c);
-            return giftCardReadFailed(c, 'list');
+            if (isMissingRpc(error, 'list_gift_cards')) return c.json(success([]));
+            return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
         }
-        if (!Array.isArray(data)) return giftCardReadIncomplete(c);
-        return c.json(success(data));
+        return c.json(success(Array.isArray(data) ? data : []));
     });
 
     // POST /products/gift-cards — issue a gift card into the canonical model.
@@ -73,15 +72,6 @@ export function registerGiftCardRoutes(router: GiftCardRouter): void {
             return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
         }
 
-        const headerKey = (c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key') || '').trim();
-        if (body.idempotency_key && headerKey && body.idempotency_key !== headerKey) {
-            return c.json({ error: { code: 'IDEMPOTENCY_KEY_CONFLICT', message: 'Gift card issue request keys do not match.' } }, 400);
-        }
-        const idempotencyKey = body.idempotency_key || headerKey;
-        if (!idempotencyKey || idempotencyKey.length < 8 || idempotencyKey.length > 200) {
-            return c.json({ error: { code: 'IDEMPOTENCY_KEY_REQUIRED', message: 'A valid gift card issue request key is required.' } }, 400);
-        }
-
         const requestId = requestIdOf(c);
         const recipient = {
             recipient_email: body.recipient_email || undefined,
@@ -94,6 +84,7 @@ export function registerGiftCardRoutes(router: GiftCardRouter): void {
         let lastError: { message: string } | null = null;
         for (let attempt = 0; attempt < 2 && !issued; attempt++) {
             const code = generateGiftCardCodeFromBytes(crypto.getRandomValues(new Uint8Array(16)));
+            const idempotencyKey = `gift_card.issue:${body.store_id}:${crypto.randomUUID()}`;
             const { data, error } = await db.rpc('issue_gift_card', {
                 p_store_id: body.store_id,
                 p_code: code,
@@ -106,14 +97,10 @@ export function registerGiftCardRoutes(router: GiftCardRouter): void {
                 p_idempotency_key: idempotencyKey,
             });
             if (!error && data && typeof data === 'object') {
-                const result = data as Record<string, unknown>;
-                issued = result.replayed === true ? result : { ...result, code };
+                issued = { ...(data as Record<string, unknown>), code };
                 break;
             }
             lastError = error;
-            if (error && /gift card issue intent conflict/i.test(error.message)) {
-                return c.json({ error: { code: 'GIFT_CARD_INTENT_CONFLICT', message: 'This issue request belongs to a different gift card. Review the existing card before trying again.' } }, 409);
-            }
             if (error && isMissingRpc(error, 'issue_gift_card')) {
                 return c.json({ error: { code: 'GIFT_CARD_SCHEMA_MISSING', message: 'Gift cards are not available in this environment.' } }, 503);
             }
@@ -121,13 +108,12 @@ export function registerGiftCardRoutes(router: GiftCardRouter): void {
         }
 
         if (!issued) {
-            console.warn(JSON.stringify({ level: 'warn', event: 'gift_card_issue_failed', store_id: body.store_id, error: lastError?.message || 'unknown' }));
-            return c.json({ error: { code: 'DB_ERROR', message: 'Unable to issue gift card. Review the list before retrying the same request.' } }, 500);
+            return c.json({ error: { code: 'DB_ERROR', message: lastError?.message || 'Unable to issue gift card' } }, 500);
         }
 
         // Best-effort recipient email (never blocks issuance). The code is only ever
         // returned/emailed at issuance time; it is not persisted by the gateway.
-        if (body.recipient_email && issued.replayed !== true) {
+        if (body.recipient_email) {
             try {
                 const { data: site } = await db.from('sites').select('name').eq('id', body.store_id).maybeSingle();
                 await enqueueGiftCardIssuedEmail(c.env, {
@@ -153,7 +139,7 @@ export function registerGiftCardRoutes(router: GiftCardRouter): void {
             }
         }
 
-        return c.json(success(issued), issued.replayed === true ? 200 : 201);
+        return c.json(success(issued), 201);
     });
 
     // GET /products/gift-cards/balance — validate a card by code (masked).
@@ -175,11 +161,10 @@ export function registerGiftCardRoutes(router: GiftCardRouter): void {
             p_code: query.code,
         });
         if (error) {
-            if (isMissingRpc(error, 'check_gift_card_balance')) return giftCardSchemaUnavailable(c);
-            return giftCardReadFailed(c, 'balance');
+            if (isMissingRpc(error, 'check_gift_card_balance')) return c.json(success({ found: false }));
+            return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
         }
-        if (!isGiftCardLookup(data)) return giftCardReadIncomplete(c);
-        return c.json(success(data));
+        return c.json(success(data || { found: false }));
     });
 
     // GET /products/gift-cards/:id/transactions — ledger + redemption audit trail.
@@ -202,13 +187,10 @@ export function registerGiftCardRoutes(router: GiftCardRouter): void {
             p_account_id: accountId,
         });
         if (error) {
-            if (isMissingRpc(error, 'gift_card_transactions')) return giftCardSchemaUnavailable(c);
-            return giftCardReadFailed(c, 'transactions');
+            if (isMissingRpc(error, 'gift_card_transactions')) return c.json(success({ found: false }));
+            return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
         }
-        if (!isGiftCardLookup(data) || (data.found && (!Array.isArray(data.ledger) || !Array.isArray(data.redemptions)))) {
-            return giftCardReadIncomplete(c);
-        }
-        return c.json(success(data));
+        return c.json(success(data || { found: false }));
     });
 
     // POST /products/gift-cards/:id/status — fraud control (hold / disable / reactivate).
@@ -238,28 +220,10 @@ export function registerGiftCardRoutes(router: GiftCardRouter): void {
             if (/not found/i.test(error.message)) {
                 return c.json({ error: { code: 'NOT_FOUND', message: 'Gift card not found' } }, 404);
             }
-            if (isMissingRpc(error, 'set_gift_card_status')) return giftCardSchemaUnavailable(c);
-            return c.json({ error: { code: 'DB_ERROR', message: 'Unable to update gift card status.' } }, 500);
+            return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
         }
         return c.json(success(data));
     });
-}
-
-function giftCardSchemaUnavailable(c: Context<{ Bindings: Env }>) {
-    return c.json({ error: { code: 'GIFT_CARD_SCHEMA_MISSING', message: 'Gift cards are not available in this environment.' } }, 503);
-}
-
-function giftCardReadFailed(c: Context<{ Bindings: Env }>, view: 'list' | 'balance' | 'transactions') {
-    return c.json({ error: { code: 'DB_ERROR', message: `Unable to load gift card ${view}. Try again.` } }, 500);
-}
-
-function giftCardReadIncomplete(c: Context<{ Bindings: Env }>) {
-    return c.json({ error: { code: 'INCOMPLETE_UPSTREAM_RESPONSE', message: 'Gift card information is temporarily unavailable. Try again.' } }, 502);
-}
-
-function isGiftCardLookup(data: unknown): data is { found: boolean; ledger?: unknown; redemptions?: unknown } {
-    return data !== null && typeof data === 'object' && !Array.isArray(data)
-        && 'found' in data && typeof data.found === 'boolean';
 }
 
 function isMissingRpc(error: { message?: string | null; code?: string | null } | null, fn: string): boolean {

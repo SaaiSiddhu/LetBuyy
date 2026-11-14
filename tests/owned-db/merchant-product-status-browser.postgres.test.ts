@@ -126,15 +126,6 @@ const input=(page:Page,p:Product)=>page.getByRole('combobox',{name:`Change statu
 const count=(table:string,id:string,column='product_id')=>Number(owned.psql(`SELECT count(*) FROM ${table} WHERE ${column}='${id}';`));
 function state(id:string){return JSON.parse(owned.psql(`SELECT jsonb_build_object('version',version,'status',status,'is_active',is_active,'receipts',(SELECT count(*) FROM product_edit_receipts WHERE product_id='${id}'),'audit',(SELECT count(*) FROM audit_activity_events WHERE resource_id='${id}'),'outbox',(SELECT count(*) FROM outbox_events WHERE aggregate_id='${id}' AND event_type='product.updated')) FROM products WHERE id='${id}';`));}
 async function list(context:BrowserContext){const page=await context.newPage();const[reply]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===`/api/stores/${site.subdomain}/products`&&r.request().method()==='GET'),page.goto(`${merchantOrigin}/${site.subdomain}/products`)]);assert.equal(reply.status(),200);const data=(await reply.json()).data as {id:string;version:number}[];assert.ok(data.length>0);assert.ok(data.every(p=>Number.isInteger(p.version)&&p.version>0),'actual collection rows carry positive versions');await expect(page.getByLabel('Search products',{exact:true})).toBeVisible();return{page,data};}
-async function filteredProducts(page:Page,prefix:string,sortByName=false){
- const filtered=page.waitForResponse(r=>{const url=new URL(r.url());return url.pathname===`/api/stores/${site.subdomain}/products`&&url.searchParams.get('search')===prefix&&r.request().method()==='GET';});
- await page.getByLabel('Search products',{exact:true}).fill(prefix);assert.equal((await filtered).status(),200);
- if(sortByName){
-  const sorted=page.waitForResponse(r=>{const url=new URL(r.url());return url.pathname===`/api/stores/${site.subdomain}/products`&&url.searchParams.get('search')===prefix&&url.searchParams.get('sort')==='name'&&url.searchParams.get('order')==='asc'&&r.request().method()==='GET';});
-  await page.locator('table').getByRole('button',{name:'Product',exact:true}).click();assert.equal((await sorted).status(),200);
- }
- await expect(page.locator('table tbody tr')).toHaveCount(3);
-}
 async function change(page:Page,p:Product,status:Status){const[reply]=await Promise.all([page.waitForResponse(r=>r.url()===endpoint(p.id)&&r.request().method()==='PATCH'),input(page,p).selectOption(status)]);return reply;}
 async function select(page:Page,products:Product[]){for(const p of products)await row(page,p.name).getByRole('checkbox').check();}
 async function draftBulk(page:Page){await page.getByRole('button',{name:'Set as draft',exact:true}).click();}
@@ -146,7 +137,7 @@ test('normal single status action preserves loaded versions, three canonical sta
  try{
   for(const status of ['draft','active','archived'] as Status[]){const reply=await change(page,p,status);assert.equal(reply.status(),200,await reply.text());const body=reply.request().postDataJSON();assert.equal(body.version,expected);assert.equal(body.status,status);assert.equal(body.is_active,status==='active');assert.equal(reply.request().headers()['x-idempotency-key'],body.idempotency_key);assert.equal(reply.request().headers()['x-letbuyy-merchant-context'],ownerId);const current=state(p.id);assert.equal(current.status,status);assert.equal(current.is_active,status==='active');assert.ok(current.version>expected);expected=current.version;await expect(input(page,p)).toHaveValue(status);}
   assert.equal(receiptCount(p.id),3);assert.equal(owned.psql(`SELECT id||'|'||available FROM inventory_levels WHERE variant_id='${p.variantId}';`),level+'|5');
-  await page.goto(`${merchantOrigin}/${site.subdomain}/products/${p.id}`);await expect(page.getByLabel('Title',{exact:true})).toHaveValue(p.name);
+  await page.goto(`${merchantOrigin}/${site.subdomain}/products/${p.id}`);await expect(page.getByRole('button',{name:'Save product',exact:true}).first()).toBeEnabled();
   await page.getByLabel('Title',{exact:true}).fill(p.name+' details');const detail=await waitItemPatch(page,p,()=>page.getByRole('button',{name:'Save product',exact:true}).first().click());assert.equal(detail.status(),200,await detail.text());assert.equal(detail.request().postDataJSON().status,'archived');assert.equal(detail.request().postDataJSON().is_active,false);assert.equal(state(p.id).status,'archived');assert.equal(receiptCount(p.id),4);assert.equal(owned.psql(`SELECT id||'|'||available FROM inventory_levels WHERE variant_id='${p.variantId}';`),level+'|5');
   const before=state(p.id);const invalid=await page.evaluate(async({url,actorId,version})=>{const key=crypto.randomUUID();return(await fetch(url,{method:'PATCH',headers:{'Content-Type':'application/json','X-LetBuyy-Merchant-Context':actorId,'X-Idempotency-Key':key},body:JSON.stringify({version,idempotency_key:key,status:'archived',is_active:true})})).status;},{url:endpoint(p.id),actorId:ownerId,version:before.version});assert.equal(invalid,400);assert.deepEqual(state(p.id),before);checkpoints.push('single_three_states_exact_version_key_context_stock_and_invalid_pair');
  }finally{await page.close();}
@@ -173,7 +164,7 @@ test('committed single-status HTTP loss reloads and recovers the same command on
 test('mixed bulk outcomes remain per item and reload retries only the uncertain command',{timeout:240000},async()=>{
  const prefix='Synthetic partial '+crypto.randomUUID(),a=product(prefix+' A'),b=product(prefix+' B'),c=product(prefix+' C');const owner=(await list(ownerA)).page,second=(await list(ownerB)).page;
  try{
-  await filteredProducts(owner,prefix,true);assert.equal((await change(second,c,'archived')).status(),200);await select(owner,[a,b,c]);loseReplyFor=b.id;
+  assert.equal((await change(second,c,'archived')).status(),200);await owner.getByLabel('Search products',{exact:true}).fill(prefix);await select(owner,[a,b,c]);loseReplyFor=b.id;
   const [first,lost,conflict]=await Promise.all([owner.waitForResponse(r=>r.url()===endpoint(a.id)&&r.request().method()==='PATCH'),owner.waitForResponse(r=>r.url()===endpoint(b.id)&&r.request().method()==='PATCH'),owner.waitForResponse(r=>r.url()===endpoint(c.id)&&r.request().method()==='PATCH'),draftBulk(owner)]);
   assert.equal(first.status(),200);assert.ok(lost.status()>=500);assert.equal(conflict.status(),409);const uncertain=lost.request().postData(),committedB=state(b.id);
   await expect(owner.getByText('1 confirmed',{exact:true})).toBeVisible();await expect(owner.getByText('1 uncertain',{exact:true})).toBeVisible();await expect(owner.getByText('1 needs review',{exact:true})).toBeVisible();assert.equal(receiptCount(a.id),1);assert.equal(receiptCount(b.id),1);assert.equal(receiptCount(c.id),1);
@@ -198,7 +189,7 @@ test('captured account switch and live owner/staff revocations refuse status eff
 test('bulk stops after a captured account changes between committed items without resending known success',{timeout:180000},async()=>{
  const prefix='Synthetic held '+crypto.randomUUID(),a=product(prefix+' A'),b=product(prefix+' B'),c=product(prefix+' C'),{page}=await list(ownerA),cookies=await ownerA.cookies(merchantOrigin);
  try{
-  await filteredProducts(page,prefix,true);await select(page,[a,b,c]);holdReplyFor=a.id;replyHeld=false;await draftBulk(page);await expect.poll(()=>replyHeld,{timeout:15000}).toBe(true);assert.equal(state(a.id).receipts,1);
+  await page.getByLabel('Search products',{exact:true}).fill(prefix);await select(page,[a,b,c]);holdReplyFor=a.id;replyHeld=false;await draftBulk(page);await expect.poll(()=>replyHeld,{timeout:15000}).toBe(true);assert.equal(state(a.id).receipts,1);
   await ownerA.addCookies(await staff.cookies(merchantOrigin));const next=page.waitForResponse(r=>r.url()===endpoint(b.id)&&r.request().method()==='PATCH');releaseReply!();const denied=await next;assert.equal(denied.status(),409);assert.equal((await denied.json()).error.code,'SESSION_CONTEXT_CHANGED');
   await expect(page.getByText('Account or store access changed',{exact:true})).toBeVisible();assert.equal(receiptCount(a.id),1);assert.equal(receiptCount(b.id),0);assert.equal(receiptCount(c.id),0);assert.equal(calls.filter(x=>x.productBody&&x.path.endsWith('/'+a.id)).length,1);assert.equal(calls.filter(x=>x.productBody&&x.path.endsWith('/'+c.id)).length,0);await expect(page.getByText('1 confirmed',{exact:true})).toBeVisible();await expect(page.getByText('1 not sent',{exact:true})).toBeVisible();checkpoints.push('mid_bulk_cookie_switch_stops_unstarted_items_preserves_confirmed');
  }finally{releaseReply?.();holdReplyFor='';replyHeld=false;await ownerA.addCookies(cookies);await page.close();}
@@ -207,8 +198,8 @@ test('bulk stops after a captured account changes between committed items withou
 test('normal catalog status views distinguish archived from draft without mixing inactive states',{timeout:180000},async()=>{
  const prefix='Synthetic views '+crypto.randomUUID(),archived=product(prefix+' archived','archived'),draft=product(prefix+' draft','draft'),active=product(prefix+' active','active'),{page}=await list(ownerA);
  try{
-  await filteredProducts(page,prefix);await page.getByRole('combobox',{name:'Table view'}).selectOption('archived');await expect(row(page,archived.name)).toBeVisible();await expect(row(page,draft.name)).toHaveCount(0);await expect(row(page,active.name)).toHaveCount(0);
-  await page.getByRole('combobox',{name:'Table view'}).selectOption('draft');await expect(row(page,draft.name)).toBeVisible();await expect(row(page,archived.name)).toHaveCount(0);
-  await page.getByRole('combobox',{name:'Table view'}).selectOption('active');await expect(row(page,active.name)).toBeVisible();await expect(row(page,draft.name)).toHaveCount(0);await expect(row(page,archived.name)).toHaveCount(0);checkpoints.push('actual_status_views_use_distinct_archived_draft_active');
+  await page.getByLabel('Search products',{exact:true}).fill(prefix);await page.getByRole('button',{name:'Archived',exact:true}).click();await expect(row(page,archived.name)).toBeVisible();await expect(row(page,draft.name)).toHaveCount(0);await expect(row(page,active.name)).toHaveCount(0);
+  await page.getByRole('button',{name:'Draft',exact:true}).click();await expect(row(page,draft.name)).toBeVisible();await expect(row(page,archived.name)).toHaveCount(0);
+  await page.getByRole('button',{name:'Active',exact:true}).click();await expect(row(page,active.name)).toBeVisible();await expect(row(page,draft.name)).toHaveCount(0);await expect(row(page,archived.name)).toHaveCount(0);checkpoints.push('actual_status_views_use_distinct_archived_draft_active');
  }finally{await page.close();}
 });

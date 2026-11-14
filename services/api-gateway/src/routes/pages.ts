@@ -1,6 +1,3 @@
-import { saveStorefrontPage } from '../execution/page-mutation.adapter';
-import { replaceNavigation } from '../execution/navigation-mutation.adapter';
-import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
@@ -19,12 +16,13 @@ import {
 } from '../schemas/page.schema';
 import {
     getCmsString,
-    pageBodyToContent,
     normalizeLegacyPageRecord,
     normalizeNavigationItemRecord,
     normalizeStorefrontPageRecord,
     normalizeStorefrontPolicyRecord,
+    pageBodyToContent,
     seoFromPageInput,
+    slugifyCmsTitle,
 } from '@letbuyy/cms-core';
 import type { z } from 'zod';
 
@@ -154,6 +152,43 @@ async function requireOwnedStore(c: AppContext, storeId: string) {
     return { db, ok: true as const, customUser };
 }
 
+async function ensurePageRevision(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    page: PageRow,
+    content: Record<string, unknown>,
+    seo: Record<string, unknown>,
+) {
+    const revisionNumberResult = await db
+        .from('storefront_page_revisions')
+        .select('revision_number')
+        .eq('page_id', page.id)
+        .order('revision_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (isMissingTableError(revisionNumberResult.error, 'storefront_page_revisions')) return null;
+    if (revisionNumberResult.error) throw new Error(revisionNumberResult.error.message);
+
+    const nextRevision = Number(revisionNumberResult.data?.revision_number || 0) + 1;
+    const revisionInsert = await db
+        .from('storefront_page_revisions')
+        .insert({
+            page_id: page.id,
+            store_id: page.store_id,
+            revision_number: nextRevision,
+            title: page.title || 'Untitled page',
+            slug: page.slug || '',
+            seo,
+            content,
+            template_key: page.assigned_template_key || null,
+        })
+        .select('id')
+        .single();
+
+    if (revisionInsert.error) throw new Error(revisionInsert.error.message);
+    return revisionInsert.data?.id as string | undefined;
+}
+
 async function ensureNavigationMenu(
     db: ReturnType<typeof getSupabaseAdmin>,
     storeId: string,
@@ -190,6 +225,54 @@ async function ensureNavigationMenu(
     return created.data as NavigationMenuRow;
 }
 
+async function syncPageNavigationItem(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    page: ReturnType<typeof normalizeStorefrontPageRecord>,
+) {
+    const menu = await ensureNavigationMenu(db, page.store_id || '', 'main', 'Main menu');
+    if (!menu) return;
+
+    const existing = await db
+        .from('navigation_menu_items')
+        .select('id')
+        .eq('menu_id', menu.id)
+        .eq('target_type', 'page')
+        .eq('target_resource_id', page.id)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (existing.error && !(isMissingTableError(existing.error, 'navigation_menu_items') || isSchemaMismatchError(existing.error))) {
+        throw new Error(existing.error.message);
+    }
+    if (existing.error && isMissingTableError(existing.error, 'navigation_menu_items')) return;
+
+    if (!page.show_in_nav || page.status !== 'published') {
+        if (existing.data?.id) {
+            await db
+                .from('navigation_menu_items')
+                .update({ deleted_at: new Date().toISOString(), is_visible: false })
+                .eq('id', existing.data.id);
+        }
+        return;
+    }
+
+    const payload = {
+        menu_id: menu.id,
+        store_id: page.store_id,
+        label: page.title,
+        url: `/${page.slug}`,
+        target_type: 'page',
+        target_resource_id: page.id,
+        is_visible: true,
+    };
+
+    if (existing.data?.id) {
+        await db.from('navigation_menu_items').update(payload).eq('id', existing.data.id);
+    } else {
+        await db.from('navigation_menu_items').insert(payload);
+    }
+}
+
 router.get('/', validate('query', ListPagesQuery), async (c) => {
     const query = c.get('validatedQuery') as ListPagesInput;
     const offset = (query.page - 1) * query.limit;
@@ -210,14 +293,8 @@ router.get('/', validate('query', ListPagesQuery), async (c) => {
         .range(offset, offset + query.limit - 1);
 
     if (!newPagesResult.error) {
-        const rows = newPagesResult.data || [];
-        const pageIds = rows.map(row => row.id);
-        const nav = pageIds.length ? await db.from('navigation_menu_items').select('target_resource_id')
-            .eq('store_id', query.store_id).eq('target_type', 'page').in('target_resource_id', pageIds).is('deleted_at', null) : { data: [], error: null };
-        if (nav.error) return c.json({ error: { code: 'PAGE_NAVIGATION_UNAVAILABLE', message: 'Unable to confirm page navigation settings' } }, 503);
-        const linked = new Set((nav.data || []).map(row => row.target_resource_id));
         return c.json(paginated(
-            rows.map((row) => normalizeStorefrontPageRecord({ ...row, show_in_nav: linked.has(row.id) } as PageRow)),
+            (newPagesResult.data || []).map((row) => normalizeStorefrontPageRecord(row as PageRow)),
             newPagesResult.count || 0,
             query.page,
             query.limit
@@ -258,12 +335,71 @@ router.get('/', validate('query', ListPagesQuery), async (c) => {
 
 router.post('/', validate('json', CreatePageSchema), async (c) => {
     const body = c.get('validatedBody') as CreatePageInput;
-    const storeIds = await resolveMerchantResourceStoreIds(c);
-    if (!storeIds.includes(body.store_id)) return c.json({ error: { code: 'FORBIDDEN', message: 'Selected store does not match this page' } }, 403);
     const ownership = await requireOwnedStore(c, body.store_id);
     if (!ownership.ok) return ownership.response;
-    const page = await saveStorefrontPage(c.env, ownership.customUser.id, body.store_id, c.res.headers.get('X-Request-ID') || crypto.randomUUID(), body);
-    return c.json(success(page), 201);
+    const { db, customUser } = ownership;
+
+    const slug = body.slug || slugifyCmsTitle(body.title);
+    const now = new Date().toISOString();
+    const content = pageBodyToContent(body.body);
+    const seo = seoFromPageInput(body);
+
+    const newPageResult = await db
+        .from('storefront_pages')
+        .insert({
+            store_id: body.store_id,
+            title: body.title,
+            slug,
+            content,
+            seo,
+            page_type: body.page_type,
+            status: body.status,
+            published_at: body.status === 'published' ? now : null,
+            created_by: customUser.id,
+            updated_by: customUser.id,
+        })
+        .select('id,store_id,title,slug,status,page_type,seo,content,assigned_template_key,published_at,updated_at')
+        .single();
+
+    if (!newPageResult.error && newPageResult.data) {
+        const page = normalizeStorefrontPageRecord({ ...(newPageResult.data as PageRow), show_in_nav: body.show_in_nav });
+        const revisionId = await ensurePageRevision(db, page as PageRow, content, seo);
+        if (revisionId && body.status === 'published') {
+            await db.from('storefront_pages').update({ published_revision_id: revisionId }).eq('id', page.id);
+        }
+        await syncPageNavigationItem(db, page);
+        return c.json(success(page), 201);
+    }
+
+    if (!(isMissingTableError(newPageResult.error, 'storefront_pages') || isSchemaMismatchError(newPageResult.error))) {
+        return c.json({ success: false, error: { code: 'DB_ERROR', message: newPageResult.error?.message || 'Unable to create page' } }, 500);
+    }
+
+    const { data, error } = await db
+        .from('pages')
+        .insert({
+            store_id: body.store_id,
+            title: body.title,
+            slug,
+            body: body.body,
+            html_content: body.body,
+            content: { body: body.body },
+            page_type: body.page_type,
+            status: body.status,
+            show_in_nav: body.show_in_nav,
+            seo_title: body.seo_title || null,
+            seo_description: body.seo_description || null,
+            display_order: body.display_order,
+            published_at: body.status === 'published' ? now : null,
+        })
+        .select()
+        .single();
+
+    if (error) {
+        return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success(normalizeLegacyPageRecord(data as PageRow)), 201);
 });
 
 router.get('/policies', validate('query', ListPoliciesQuery), async (c) => {
@@ -328,14 +464,13 @@ router.patch('/policies/:id', validate('json', UpdatePolicySchema), async (c) =>
     const policyId = c.req.param('id');
     const body = c.get('validatedBody') as UpdatePolicyInput;
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const auth = c.get('auth');
     const customUser = await resolveCustomUser(db, auth.user);
 
     const existing = await db
         .from('storefront_policies')
         .select('id,store_id,policy_type,slug,title,body,status,seo,published_at,updated_at')
-        .eq('id', policyId).in('store_id', storeIds)
+        .eq('id', policyId)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -368,7 +503,7 @@ router.patch('/policies/:id', validate('json', UpdatePolicySchema), async (c) =>
     const updated = await db
         .from('storefront_policies')
         .update(updates)
-        .eq('id', policyId).in('store_id', storeIds)
+        .eq('id', policyId)
         .select('id,store_id,policy_type,slug,title,body,status,seo,published_at,updated_at')
         .single();
 
@@ -382,13 +517,12 @@ router.patch('/policies/:id', validate('json', UpdatePolicySchema), async (c) =>
 router.delete('/policies/:id', async (c) => {
     const policyId = c.req.param('id');
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const auth = c.get('auth');
     const customUser = await resolveCustomUser(db, auth.user);
     const existing = await db
         .from('storefront_policies')
         .select('id,store_id')
-        .eq('id', policyId).in('store_id', storeIds)
+        .eq('id', policyId)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -404,7 +538,7 @@ router.delete('/policies/:id', async (c) => {
     const { error } = await db
         .from('storefront_policies')
         .update({ deleted_at: new Date().toISOString(), status: 'archived', updated_by: customUser.id })
-        .eq('id', policyId).in('store_id', storeIds);
+        .eq('id', policyId);
 
     if (error) return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     return c.json(success({ deleted: true }));
@@ -444,27 +578,60 @@ router.put('/navigation/:location', validate('json', ReplaceNavigationSchema), a
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Location mismatch' } }, 400);
     }
 
-    const storeIds = await resolveMerchantResourceStoreIds(c);
-    if (!storeIds.includes(body.store_id)) return c.json({ error: { code: 'FORBIDDEN', message: 'Selected store does not match this menu' } }, 403);
-
     const ownership = await requireOwnedStore(c, body.store_id);
     if (!ownership.ok) return ownership.response;
-    const result = await replaceNavigation(c.env, ownership.customUser.id, c.res.headers.get('X-Request-ID') || crypto.randomUUID(), body);
-    return c.json(success(result));
+    const { db } = ownership;
+    const menu = await ensureNavigationMenu(db, body.store_id, location, body.name);
+    if (!menu) return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Navigation tables are not migrated' } }, 503);
+
+    const deletedAt = new Date().toISOString();
+    const deleteResult = await db
+        .from('navigation_menu_items')
+        .update({ deleted_at: deletedAt, is_visible: false })
+        .eq('menu_id', menu.id)
+        .eq('store_id', body.store_id)
+        .is('deleted_at', null);
+
+    if (deleteResult.error) {
+        return c.json({ success: false, error: { code: 'DB_ERROR', message: deleteResult.error.message } }, 500);
+    }
+
+    if (body.items.length > 0) {
+        const insertResult = await db
+            .from('navigation_menu_items')
+            .insert(body.items.map((item, index) => ({
+                menu_id: menu.id,
+                store_id: body.store_id,
+                parent_item_id: item.parent_item_id || null,
+                label: item.label,
+                url: item.url,
+                target_type: item.target_type,
+                target_resource_id: item.target_resource_id || null,
+                sort_order: item.sort_order ?? index,
+                is_visible: item.is_visible,
+                open_in_new_tab: item.open_in_new_tab,
+                metadata: {},
+            })));
+
+        if (insertResult.error) {
+            return c.json({ success: false, error: { code: 'DB_ERROR', message: insertResult.error.message } }, 500);
+        }
+    }
+
+    return c.json(success({ replaced: true, menu_id: menu.id, count: body.items.length }));
 });
 
 router.patch('/:id', validate('json', UpdatePageSchema), async (c) => {
     const pageId = c.req.param('id');
     const body = c.get('validatedBody') as UpdatePageInput;
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const auth = c.get('auth');
     const customUser = await resolveCustomUser(db, auth.user);
 
     const newExisting = await db
         .from('storefront_pages')
         .select('id,store_id,title,slug,status,page_type,seo,content,assigned_template_key,published_at,updated_at')
-        .eq('id', pageId).in('store_id', storeIds)
+        .eq('id', pageId)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -474,8 +641,48 @@ router.patch('/:id', validate('json', UpdatePageSchema), async (c) => {
             return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
         }
 
-        const page = await saveStorefrontPage(c.env, customUser.id, ownedPage.store_id, c.res.headers.get('X-Request-ID') || crypto.randomUUID(), body, pageId);
-        return c.json(success(page));
+        const previous = normalizeStorefrontPageRecord(ownedPage);
+        const content = body.body !== undefined ? pageBodyToContent(body.body) : (ownedPage.content || {});
+        const seo = {
+            ...ownedPage.seo,
+            ...seoFromPageInput({
+                seo_title: body.seo_title ?? getCmsString(ownedPage.seo || {}, 'title'),
+                seo_description: body.seo_description ?? getCmsString(ownedPage.seo || {}, 'description'),
+            }),
+        };
+        const updates: Record<string, unknown> = {
+            ...('title' in body ? { title: body.title } : {}),
+            ...('slug' in body ? { slug: body.slug } : {}),
+            ...('page_type' in body ? { page_type: body.page_type } : {}),
+            ...('status' in body ? { status: body.status } : {}),
+            content,
+            seo,
+            updated_by: customUser.id,
+        };
+
+        if (body.status === 'published') updates.published_at = new Date().toISOString();
+
+        const updated = await db
+            .from('storefront_pages')
+            .update(updates)
+            .eq('id', pageId)
+            .select('id,store_id,title,slug,status,page_type,seo,content,assigned_template_key,published_at,updated_at')
+            .single();
+
+        if (updated.error || !updated.data) {
+            return c.json({ success: false, error: { code: 'DB_ERROR', message: updated.error?.message || 'Unable to update page' } }, 500);
+        }
+
+        const normalized = normalizeStorefrontPageRecord({
+            ...(updated.data as PageRow),
+            show_in_nav: body.show_in_nav ?? previous.show_in_nav,
+        });
+        const revisionId = await ensurePageRevision(db, normalized as PageRow, content, seo);
+        if (revisionId && normalized.status === 'published') {
+            await db.from('storefront_pages').update({ published_revision_id: revisionId }).eq('id', normalized.id);
+        }
+        await syncPageNavigationItem(db, normalized);
+        return c.json(success(normalized));
     }
 
     if (newExisting.error && !(isMissingTableError(newExisting.error, 'storefront_pages') || isSchemaMismatchError(newExisting.error))) {
@@ -486,7 +693,7 @@ router.patch('/:id', validate('json', UpdatePageSchema), async (c) => {
         let request = db
             .from('pages')
             .select('id, store_id')
-            .eq('id', pageId).in('store_id', storeIds);
+            .eq('id', pageId);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.single();
@@ -515,7 +722,7 @@ router.patch('/:id', validate('json', UpdatePageSchema), async (c) => {
     const { data, error } = await db
         .from('pages')
         .update(updates)
-        .eq('id', pageId).in('store_id', storeIds)
+        .eq('id', pageId)
         .select()
         .single();
 
@@ -529,14 +736,13 @@ router.patch('/:id', validate('json', UpdatePageSchema), async (c) => {
 router.delete('/:id', async (c) => {
     const pageId = c.req.param('id');
     const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
     const auth = c.get('auth');
     const customUser = await resolveCustomUser(db, auth.user);
 
     const newExisting = await db
         .from('storefront_pages')
         .select('id, store_id')
-        .eq('id', pageId).in('store_id', storeIds)
+        .eq('id', pageId)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -550,7 +756,7 @@ router.delete('/:id', async (c) => {
         const { error } = await db
             .from('storefront_pages')
             .update({ deleted_at: deletedAt, status: 'archived', updated_by: customUser.id })
-            .eq('id', pageId).in('store_id', storeIds);
+            .eq('id', pageId);
 
         if (error) {
             return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
@@ -573,7 +779,7 @@ router.delete('/:id', async (c) => {
         let request = db
             .from('pages')
             .select('id, store_id')
-            .eq('id', pageId).in('store_id', storeIds);
+            .eq('id', pageId);
 
         if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         return request.single();
@@ -593,7 +799,7 @@ router.delete('/:id', async (c) => {
     const { error } = await db
         .from('pages')
         .update({ deleted_at: new Date().toISOString(), status: 'archived' })
-        .eq('id', pageId).in('store_id', storeIds);
+        .eq('id', pageId);
 
     if (error) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);

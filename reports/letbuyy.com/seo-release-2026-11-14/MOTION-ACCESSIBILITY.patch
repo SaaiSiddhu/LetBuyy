@@ -1,0 +1,113 @@
+--- a/apps/marketing/web/src/app/globals.css
++++ b/apps/marketing/web/src/app/globals.css
+@@ -3954,26 +3954,22 @@
+ .cmap-viewport .cmap-left { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; align-self: stretch; }
+ .cmap-viewport .cmap-graph-container { display: flex; flex-direction: column; width: 100%; height: 100%; min-width: 0; min-height: 0; padding-bottom: 0; }
+ .cmap-viewport .cmap-motion-control {
+-  position: absolute;
+-  width: 1px;
+-  height: 1px;
+-  padding: 0;
+-  overflow: hidden;
+-  clip-path: inset(50%);
+-  white-space: nowrap;
+-}
+-.cmap-viewport .cmap-motion-control:focus-visible {
+-  position: absolute;
+-  z-index: 2;
+-  width: auto;
+-  height: auto;
+-  padding: var(--lb-space-3);
+-  overflow: visible;
+-  clip-path: none;
++  display: block;
++  margin: var(--lb-space-3) auto 0;
++  min-block-size: calc(var(--lb-space-1) * 11);
++  padding-inline: var(--lb-space-3);
+   background: var(--lb-color-surface);
+   color: var(--lb-color-text);
+   border: 1px solid var(--lb-color-border);
+   border-radius: var(--lb-radius-md);
++  font-size: var(--lb-font-size-secondary);
++}
++.cmap-viewport .cmap-motion-control:focus-visible {
++  outline: 2px solid var(--lb-color-focus-ring);
++  outline-offset: var(--lb-space-1);
++}
++@media (prefers-reduced-motion: reduce) {
++  .cmap-viewport .cmap-motion-control { display: none; }
+ }
+ .cmap-viewport .cmap-graph-wrap { display: flex; align-items: center; justify-content: center; flex: 1; min-height: 0; max-width: none; }
+ .cmap-viewport .cmap-graph-svg { width: 100%; height: 100%; min-height: 0; overflow: visible; }
+--- a/apps/marketing/web/src/components/CapabilityMap.tsx
++++ b/apps/marketing/web/src/components/CapabilityMap.tsx
+@@ -6,7 +6,7 @@
+ 
+ import { useState, useRef, useEffect, useSyncExternalStore, forwardRef, type PointerEvent, type KeyboardEvent } from 'react'
+ import Image from 'next/image'
+-import { AnimatePresence, useInView, useReducedMotion, useIsPresent } from 'framer-motion'
++import { AnimatePresence, useInView, useIsPresent } from 'framer-motion'
+ import * as motion from 'framer-motion/m'
+ import {
+     BarChart3,
+@@ -632,9 +632,15 @@
+     )
+ }
+ 
+-const subscribeHydration = () => () => {}
+-const clientHydrated = () => true
+-const serverHydrated = () => false
++const reducedMotionQuery = '(prefers-reduced-motion: reduce)'
++const readReducedMotion = () => window.matchMedia(reducedMotionQuery).matches
++const readReducedMotionOnServer = () => true
++
++function subscribeReducedMotion(onChange: () => void) {
++    const media = window.matchMedia(reducedMotionQuery)
++    media.addEventListener('change', onChange)
++    return () => media.removeEventListener('change', onChange)
++}
+ 
+ // ── Commerce OS Graph visualization ───────────────────────────────────────────
+ 
+@@ -876,10 +882,8 @@
+     const suppressClickUntil = useRef(0)
+     const bodyRef = useRef<HTMLDivElement>(null)
+     const inView = useInView(bodyRef, { amount: 0.25 })
+-    const preference = useReducedMotion()
+-    const hydrated = useSyncExternalStore(subscribeHydration, clientHydrated, serverHydrated)
+-    // Keep server and first client markup identical; enable motion only afterwards.
+-    const isReduced = !hydrated || Boolean(preference)
++    // Render the first frame without motion, then follow the live OS preference.
++    const isReduced = useSyncExternalStore(subscribeReducedMotion, readReducedMotion, readReducedMotionOnServer)
+     const active = CAPABILITIES.find(c => c.id === activeId)!
+ 
+     function pauseForReading() {
+@@ -998,6 +1002,14 @@
+                     <p className="cmap-lead">
+                         <Copy text={"Explore merchant tools and planned capabilities. Check plan access and provider setup before relying on a feature."} /></p>
+                 </motion.div>
++                <Button
++                    unstyled
++                    type="button"
++                    className="cmap-motion-control"
++                    onClick={() => setPlaying(value => !value)}
++                >
++                    <Copy text={playing ? "Pause automatic module tour" : "Continue automatic module tour"} />
++                </Button>
+             </div>
+ 
+             {/* Desktop: illustrated graph beside the synchronized preview. */}
+@@ -1009,12 +1021,7 @@
+ 
+                 <aside className="cmap-left">
+                     <div className="cmap-graph-container">
+-                        <CommerceOSGraph activeId={activeId} onSelect={selectCapability} reduced={isReduced} />
+-                        {!isReduced && (
+-                            <Button unstyled type="button" className="cmap-motion-control" onClick={() => setPlaying(value => !value)}>
+-                                <Copy text={playing ? "Pause automatic module tour" : "Continue automatic module tour"} />
+-                            </Button>
+-                        )}
++                        <CommerceOSGraph activeId={activeId} onSelect={selectCapability} reduced={isReduced || !playing} />
+                     </div>
+                 </aside>
+ 

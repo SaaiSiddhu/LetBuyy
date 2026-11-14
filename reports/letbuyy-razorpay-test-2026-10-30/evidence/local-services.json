@@ -1,0 +1,26 @@
+{
+  "captured_at": "2026-10-29T21:06:01.191925+00:00",
+  "read_only": true,
+  "rows": [
+    {
+      "url": "http://127.0.0.1:9006/in/pricing",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9006/in/pricing"
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9010/v1/pricing"
+    },
+    {
+      "url": "http://localhost:9002/login",
+      "status": 200,
+      "final_url": "http://localhost:9002/login"
+    },
+    {
+      "url": "http://localhost:9001/",
+      "status": 200,
+      "final_url": "http://localhost:9002/lookup"
+    }
+  ]
+}

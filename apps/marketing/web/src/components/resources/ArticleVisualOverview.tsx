@@ -47,7 +47,7 @@ export default function ArticleVisualOverview({ artwork, topics }: { artwork: Ed
       <div className={styles.eyebrow}><BookOpen size={15} aria-hidden="true" /><span><Copy text={"The guide, illustrated"} /></span></div>
       <figure className={styles.figure}>
         <div className={styles.canvas}>
-          <Image src={artwork.src} alt={t(artwork.alt)} width={artwork.width} height={artwork.height} sizes="(max-width: 767px) 90vw, 760px" loading="eager" unoptimized />
+          <Image src={artwork.src} alt={t(artwork.alt)} width={artwork.width} height={artwork.height} sizes="(max-width: 767px) 90vw, 760px" loading="eager" priority fetchPriority="high" />
         </div>
         <figcaption>{t(artwork.caption)}<span className={styles.concept}><Copy text={"Concept illustration"} /></span></figcaption>
       </figure>
@@ -64,7 +64,7 @@ export default function ArticleVisualOverview({ artwork, topics }: { artwork: Ed
           <div key={topic.targetId} id={`${id}-panel-${index}`} role="tabpanel" aria-labelledby={`${id}-tab-${index}`} aria-hidden={active !== index} inert={active !== index} className={`${styles.panel}${active === index ? ` ${styles.selected}` : ''}`}>
             <h2 className={styles.topicHeading}>{topic.heading}</h2>
             <p className={styles.excerpt}>{t(topic.excerpt)}</p>
-            <a href={`#${topic.targetId}`} onClick={event => readSection(event, topic.targetId)} className={styles.readLink} aria-label={t("Read section: {heading}", { heading: topic.heading })}><Copy text={"Read this section"} /><ArrowRight size={16} aria-hidden="true" /></a>
+            <a href={`#${topic.targetId}`} onClick={event => readSection(event, topic.targetId)} className={styles.readLink} aria-label={`${t("Read this section")}: ${topic.heading}`}><Copy text={"Read this section"} /><ArrowRight size={16} aria-hidden="true" /></a>
           </div>
         ))}
       </div>

@@ -1,0 +1,8 @@
+{
+  "captured_at": "2026-10-29T21:55:09.599994+00:00",
+  "queried": "Enabled tool names/descriptions for Search Console, GA4, PageSpeed, CrUX, Bing Webmaster, Matomo, DataForSEO, Ahrefs, Firecrawl, Profound, SEranking",
+  "matching_connected_provider_tools": [],
+  "local_browser": "Installed Playwright Chromium used; app browser use disabled",
+  "spend": "No paid provider requests or new entitlement assumed",
+  "first_party_limitation": "No new authenticated property access established; prior audit prerequisite inventory retained"
+}

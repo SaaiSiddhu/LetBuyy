@@ -1,0 +1,64 @@
+{
+  "capturedAt": "2026-11-03T03:50:30.999974+00:00",
+  "readOnly": true,
+  "rows": [
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "origin": "https://www.letbuyy.com",
+      "status": 200,
+      "headers": {
+        "Access-Control-Allow-Origin": "https://letbuyy.com",
+        "Access-Control-Allow-Credentials": "true",
+        "Vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+        "Content-Type": "application/json",
+        "Server": null,
+        "CF-Ray": null,
+        "X-Mitmproxy-Blocked-Reason": null
+      }
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "origin": "https://letbuyy.com",
+      "status": 200,
+      "headers": {
+        "Access-Control-Allow-Origin": "https://letbuyy.com",
+        "Access-Control-Allow-Credentials": "true",
+        "Vary": "X-LetBuyy-API-Version, LetBuyy-API-Version, Origin",
+        "Content-Type": "application/json",
+        "Server": null,
+        "CF-Ray": null,
+        "X-Mitmproxy-Blocked-Reason": null
+      }
+    },
+    {
+      "url": "https://api.letbuyy.com/v1/pricing",
+      "origin": "https://www.letbuyy.com",
+      "status": 403,
+      "headers": {
+        "Access-Control-Allow-Origin": null,
+        "Access-Control-Allow-Credentials": null,
+        "Vary": null,
+        "Content-Type": "text/plain; charset=UTF-8",
+        "Server": "cloudflare",
+        "CF-Ray": "a5486a47982c899b-SIN",
+        "X-Mitmproxy-Blocked-Reason": null
+      },
+      "errorBody": "error code: 1010\n"
+    },
+    {
+      "url": "https://api.letbuyy.com/v1/pricing",
+      "origin": "https://letbuyy.com",
+      "status": 403,
+      "headers": {
+        "Access-Control-Allow-Origin": null,
+        "Access-Control-Allow-Credentials": null,
+        "Vary": null,
+        "Content-Type": "text/plain; charset=UTF-8",
+        "Server": "cloudflare",
+        "CF-Ray": "a5486a4b6df39e1e-SIN",
+        "X-Mitmproxy-Blocked-Reason": null
+      },
+      "errorBody": "error code: 1010\n"
+    }
+  ]
+}

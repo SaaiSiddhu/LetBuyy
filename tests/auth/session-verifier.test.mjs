@@ -3,14 +3,10 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
-import { createRequire } from 'node:module';
 import { webcrypto } from 'node:crypto';
 import ts from 'typescript';
 
 const AUTH_CORE_SOURCE = 'packages/auth-core/src/index.ts';
-const authDependency = createRequire(new URL('../../packages/auth-core/package.json', import.meta.url));
-const { z } = authDependency('zod');
-const AUTH_CORE_CONNECTION_SOURCE = 'packages/auth-core/src/merchant-buyer-connection.ts';
 const AUTH_CORE_CUSTOMER_SESSION_SOURCE = 'packages/auth-core/src/customer-session.ts';
 const AUTH_CORE_STOREFRONT_ACCESS_SOURCE = 'packages/auth-core/src/storefront-access.ts';
 
@@ -34,6 +30,10 @@ function transpileTypeScript(sourcePath) {
 
 function loadAuthCore() {
   const moduleCache = new Map();
+  const zChain = new Proxy(function zChain() {}, {
+    get: () => zChain,
+    apply: () => zChain,
+  });
 
   function evaluateModule(sourcePath) {
     const cached = moduleCache.get(sourcePath);
@@ -47,9 +47,8 @@ function loadAuthCore() {
     require(specifier) {
       if (specifier === './customer-session') return evaluateModule(AUTH_CORE_CUSTOMER_SESSION_SOURCE);
       if (specifier === './storefront-access') return evaluateModule(AUTH_CORE_STOREFRONT_ACCESS_SOURCE);
-      if (specifier === './merchant-buyer-connection') return evaluateModule(AUTH_CORE_CONNECTION_SOURCE);
-      if (specifier === 'zod') return { z };
-      if (specifier === '@letbuyy/shared-types') return { EmailSchema: z.string().email() };
+      if (specifier === 'zod') return { z: { string: () => zChain, object: () => zChain } };
+      if (specifier === '@letbuyy/shared-types') return { EmailSchema: zChain };
       throw new Error(`Unexpected test require: ${specifier}`);
     },
     TextEncoder,
@@ -367,7 +366,20 @@ test('runtime auth surfaces import the shared verifier instead of local HMAC ses
 
   for (const file of sharedAuthFiles) {
     const source = readFileSync(file, 'utf8');
-    assert.match(source, /@letbuyy\/auth-core/, `${file} must use @letbuyy/auth-core`);
+    if (file === 'apps/internal/console/src/proxy.ts') {
+      // Console has its own operator credential. Its wrapper pins the canonical
+      // Identity verifier; importing the merchant-cookie verifier is unnecessary.
+      assert.match(source, /import \{[^}]*readConsoleSession[^}]*\} from '\.\/lib\/console-session'/);
+      assert.match(source, /await readConsoleSession\(value\)/);
+      assert.match(source, /await readCurrentConsoleSession\(value\)/);
+      assert.doesNotMatch(source, /LETBUYY_MERCHANT_SESSION_COOKIE|verifyLetbuyySessionCookieValue/);
+      const wrapper=readFileSync('apps/internal/console/src/lib/console-session.ts','utf8');
+      assert.match(wrapper, /from '@letbuyy\/auth-core\/platform-identity'/);
+      assert.match(wrapper, /return verifyIdentityPlatformSession\(cookieValue,/);
+      assert.match(wrapper, /issuer:process.env.LETBUYY_IDENTITY_ISSUER,publicJwks:process.env.LETBUYY_IDENTITY_PUBLIC_JWKS/);
+    } else {
+      assert.match(source, /@letbuyy\/auth-core/, `${file} must use @letbuyy/auth-core`);
+    }
     assert.doesNotMatch(
       source,
       /function hmacSha256Hex|function bytesToHex|function hmacSha256|constantTimeEqual|base64UrlEncode|base64UrlDecode|crypto\.subtle\.sign|const textEncoder = new TextEncoder/,

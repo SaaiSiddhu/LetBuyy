@@ -1,0 +1,25 @@
+{
+  "providerFixtureOnly": true,
+  "unregisteredProfileFromRealForm": true,
+  "businessIdentityFromRealForm": true,
+  "seededLegalName": false,
+  "normalTrialPlanNavigation": true,
+  "actualPlanCardChosen": true,
+  "canonicalSeoFreshRender": true,
+  "cancelReadbackRetainsReceipt": true,
+  "profileScreenshot": "recovery-profileScreenshot.png",
+  "seoScreenshot": "recovery-seoScreenshot.png",
+  "providerCreates": 1,
+  "normalCreateStatuses": [
+    503,
+    200,
+    200,
+    200
+  ],
+  "normalVerifyStatuses": [
+    503,
+    201
+  ],
+  "paidSubscriptions": 1,
+  "paidInvoices": 1
+}

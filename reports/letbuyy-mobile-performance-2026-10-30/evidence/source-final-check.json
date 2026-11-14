@@ -1,0 +1,12 @@
+{
+  "captured_at": "2026-10-30T00:20:22.187037+00:00",
+  "source_files": 447,
+  "all_source_and_candidate_hashes_equal": true,
+  "source_patch_files": 41,
+  "candidate_build_id": "Jt6Duvm2bymgmwpDPdjxY",
+  "baseline_build_id": "caXDoRRSnHmqMGpFj4J4m",
+  "font_sha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+  "reverse_patch_dry_run_passed": true,
+  "patch_whitespace_check_passed": true,
+  "basis": "Task-start working-tree bytes, preserving all pre-existing dirty work"
+}

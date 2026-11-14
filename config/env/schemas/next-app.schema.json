@@ -14,7 +14,6 @@
     "NEXT_PUBLIC_THEME_MARKETPLACE_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_APP_MARKETPLACE_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_DEVELOPER_PORTAL_URL": { "type": "string", "format": "uri" },
-    "NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES": { "type": "string", "description": "Comma-separated exact platform preview hostnames; never tenant wildcard patterns." },
     "NEXT_PUBLIC_STORE_ROOT_DOMAIN": { "type": "string", "pattern": "^[a-z0-9.-]+$" },
     "NEXT_PUBLIC_SUPPORT_EMAIL": { "type": "string", "format": "email" },
     "NEXT_PUBLIC_ASSET_PUBLIC_BASE_URL": { "type": "string", "format": "uri" },

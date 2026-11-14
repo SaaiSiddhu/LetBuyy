@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from 'framer-motion'
+import * as motion from 'framer-motion/m'
 import {
     BarChart3,
     CreditCard,

@@ -1,0 +1,14 @@
+{
+  "status": "completed",
+  "removed_header_classes": [
+    "set-cookie",
+    "authorization",
+    "proxy-authorization"
+  ],
+  "affected_files": [
+    "signup-boundary.log",
+    "signup-fetch.json"
+  ],
+  "values_logged": false,
+  "image_inventory_scope": "4413 occurrences on489cleanmarketingpages; aliases/probes remain in per-URL inventory only"
+}

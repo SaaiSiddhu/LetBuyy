@@ -74,11 +74,12 @@ test('marketing site exposes crawlable platform app navigation and sitemaps', ()
     assert.match(publicUrls, new RegExp(marker));
   }
 
-  assert.match(platformLinks, /getThemeMarketplaceUrl\('\/sitemap\.xml'\)/);
-  assert.match(platformLinks, /getAppMarketplaceUrl\('\/sitemap\.xml'\)/);
-  assert.match(platformLinks, /getDeveloperPortalUrl\('\/sitemap\.xml'\)/);
+  assert.match(platformLinks, /getMarketingSiteUrl\('\/sitemap\.xml'\)/);
+  assert.doesNotMatch(platformLinks, /get(?:ThemeMarketplace|AppMarketplace|DeveloperPortal)Url\('\/sitemap\.xml'\)/);
   assert.match(robots, /getPlatformSitemapUrls/);
-  assert.match(sitemap, /\/sitemap/);
+  assert.match(sitemap, /getAllArticlesForSitemap/);
+  assert.doesNotMatch(sitemap, /path:\s*['"]\/sitemap['"]/);
+  assert.match(sitemapPage, /robots:\s*\{\s*index:\s*false,\s*follow:\s*true/);
   assert.match(layout, /SiteNavigationElement/);
   assert.match(header, /label(?:Key)?:\s*['"](?:themes|Themes)['"]/);
   assert.match(header, /label(?:Key)?:\s*['"](?:apps|Apps)['"]/);

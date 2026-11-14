@@ -1,0 +1,151 @@
+{
+  "captured_at": "2026-10-29T22:02:58.562157+00:00",
+  "measurement": "Lighthouse lab data on local production artifacts; not CrUX or INP field measurement",
+  "rows": [
+    {
+      "name": "home",
+      "path": "/in",
+      "port": 9039,
+      "mode": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.99,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 1065.021,
+      "cls": 0.0010249999999999997,
+      "tbt_ms": 97,
+      "fcp_ms": 1065.021,
+      "failed_audits": [
+        {
+          "id": "speed-index",
+          "title": "Speed Index",
+          "score": 0.99
+        },
+        {
+          "id": "total-blocking-time",
+          "title": "Total Blocking Time",
+          "score": 0.98
+        },
+        {
+          "id": "max-potential-fid",
+          "title": "Max Potential First Input Delay",
+          "score": 0.85
+        },
+        {
+          "id": "interactive",
+          "title": "Time to Interactive",
+          "score": 0.76
+        },
+        {
+          "id": "bf-cache",
+          "title": "Page prevented back/forward cache restoration",
+          "score": 0
+        }
+      ],
+      "runtime_error": null
+    },
+    {
+      "name": "pricing",
+      "path": "/in/pricing",
+      "port": 9039,
+      "mode": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.82,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 4878.845999999999,
+      "cls": 0,
+      "tbt_ms": 65,
+      "fcp_ms": 987.923,
+      "failed_audits": [
+        {
+          "id": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+          "score": 0.29
+        },
+        {
+          "id": "total-blocking-time",
+          "title": "Total Blocking Time",
+          "score": 0.99
+        },
+        {
+          "id": "max-potential-fid",
+          "title": "Max Potential First Input Delay",
+          "score": 0.93
+        },
+        {
+          "id": "interactive",
+          "title": "Time to Interactive",
+          "score": 0.78
+        },
+        {
+          "id": "bf-cache",
+          "title": "Page prevented back/forward cache restoration",
+          "score": 0
+        }
+      ],
+      "runtime_error": null
+    },
+    {
+      "name": "setup-guide",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "port": 9039,
+      "mode": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.76,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 6161.9205,
+      "cls": 0,
+      "tbt_ms": 14,
+      "fcp_ms": 1957.947,
+      "failed_audits": [
+        {
+          "id": "first-contentful-paint",
+          "title": "First Contentful Paint",
+          "score": 0.85
+        },
+        {
+          "id": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+          "score": 0.11
+        },
+        {
+          "id": "speed-index",
+          "title": "Speed Index",
+          "score": 0.99
+        },
+        {
+          "id": "max-potential-fid",
+          "title": "Max Potential First Input Delay",
+          "score": 0.99
+        },
+        {
+          "id": "interactive",
+          "title": "Time to Interactive",
+          "score": 0.61
+        },
+        {
+          "id": "bf-cache",
+          "title": "Page prevented back/forward cache restoration",
+          "score": 0
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "title": "Network dependency tree",
+          "score": 0
+        }
+      ],
+      "runtime_error": null
+    }
+  ]
+}

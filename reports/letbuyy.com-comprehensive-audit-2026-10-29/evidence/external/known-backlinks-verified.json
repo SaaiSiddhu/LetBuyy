@@ -1,0 +1,39 @@
+{
+  "status": "success",
+  "data": {
+    "target_url": "https://letbuyy.com",
+    "summary": {
+      "total": 1,
+      "verified": 1,
+      "lost": 0,
+      "moved": 0,
+      "link_removed": 0,
+      "unverifiable_js": 0,
+      "exists": 0,
+      "error": 0
+    },
+    "results": [
+      {
+        "source_url": "https://www.pixlnova.com/",
+        "target_url": "https://letbuyy.com",
+        "status": "verified",
+        "http_status": 200,
+        "target_found": true,
+        "anchor_text": "letbuyy.com(opens in a new tab)",
+        "rel_attributes": [
+          "noopener",
+          "noreferrer"
+        ],
+        "link_context": null,
+        "error": null,
+        "match_type": "exact_url"
+      }
+    ]
+  },
+  "error": null,
+  "metadata": {
+    "source": "verify_crawler",
+    "head_only": false,
+    "timestamp": "2026-10-29T18:00:49Z"
+  }
+}

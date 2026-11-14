@@ -1,0 +1,326 @@
+{
+  "captured_at": "2026-11-01T05:12:46.869Z",
+  "method": "Frozen task-start production baseline9046 versus final repaired source build9048; natural scrolling reveals and remembers native content-visibility sections; no content-visibility override; fixed reduced-motion light/dark viewports; all art explicitly decoded and all sections fully revealed for visual capture; pixel differences from responsive codec changes retained separately from structural equality; IMG computed color is excluded because next/image adds color:transparent to an otherwise identical external SVG; SVG label geometry is included; progressive previews revealed by real scrolling",
+  "rows": [
+    {
+      "path": "/in",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "f9a7a3fafa93b936996d417653712132de13f485c554a52be1c174b85d001c62",
+      "after_sha256": "f9a7a3fafa93b936996d417653712132de13f485c554a52be1c174b85d001c62"
+    },
+    {
+      "path": "/in/pricing",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [
+        "visible text differs"
+      ],
+      "geometry_and_copy_equal": false,
+      "pixels_different_over_3": 353278,
+      "pixel_fraction": 0.14278185308679398,
+      "mean_channel_difference": 2.4789434171971303,
+      "before_sha256": "fe35032051e83e0bdc48e473299a68373c3b519af9f1b970a65021f3ec4fd99c",
+      "after_sha256": "391ed00743187cea5eae4f0008ec88dcc03b63efc55c2ebd110904762f063beb"
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 36761,
+      "pixel_fraction": 0.011009583707696915,
+      "mean_channel_difference": 0.08049341120095838,
+      "before_sha256": "6919c26971f6ca1cf2286850cd6b544a79f559bf9ca83475f02916dbe2dc260d",
+      "after_sha256": "0d5318583b2d8f8a8e9b78b34f0a04d34183da0b4c0ab5728e6eccbf3d617b01"
+    },
+    {
+      "path": "/in",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "bd17fbbd8c86b043d9fbe4b7ba25e0086227653958792f600a1820d97c7e43dc",
+      "after_sha256": "bd17fbbd8c86b043d9fbe4b7ba25e0086227653958792f600a1820d97c7e43dc"
+    },
+    {
+      "path": "/in/pricing",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 8327,
+      "pixel_fraction": 0.0014312985299926397,
+      "mean_channel_difference": 0.040525841925650855,
+      "before_sha256": "1643ec7607bfe2c952d90a3bf3a33e42ea025415f033b625ed6c32870f7a86eb",
+      "after_sha256": "6de918c7579d57d8a2e6b81ed8bd78742440dfb0ab1dbc7515961b5663df2a13"
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 70420,
+      "pixel_fraction": 0.008643859251163398,
+      "mean_channel_difference": 0.1018632537047566,
+      "before_sha256": "199344e1175264f12c85989186b0df203e6a9e45e59a7b560553a17731a359e2",
+      "after_sha256": "6decdb2b3a4a14de1ede988b88231264e715ad92be82f98faf72ea7290692c3e"
+    },
+    {
+      "path": "/in-hi",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "ffdbebd03bf1501014b28bb4fd0e68be25064fdaf1b28b316f2b27a1843c9a29",
+      "after_sha256": "ffdbebd03bf1501014b28bb4fd0e68be25064fdaf1b28b316f2b27a1843c9a29"
+    },
+    {
+      "path": "/in-hi/pricing",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [
+        "visible text differs"
+      ],
+      "geometry_and_copy_equal": false,
+      "pixels_different_over_3": 344718,
+      "pixel_fraction": 0.14116216216216215,
+      "mean_channel_difference": 2.164326474201474,
+      "before_sha256": "b5ce767e6e2e6d627af79d36475da662f262035d049013ca2931bb904d8e9b8b",
+      "after_sha256": "79d4a7a85da10773c258ce0adca7d5ef71e431703a8e23b451166f1cc37eddb7"
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 36762,
+      "pixel_fraction": 0.01201078167115903,
+      "mean_channel_difference": 0.08781181083067875,
+      "before_sha256": "94925d186fa53beb07cd0c931f96898750e670bf2015dcd8d86a0609ba73ad85",
+      "after_sha256": "2eda28108d4bfe0e796af2c2332edcdb51777411d9a2326a913a30342945508a"
+    },
+    {
+      "path": "/in-hi",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "415ab4c9bc57cc51e2278c54d6582ed2eab4717d880f7218744d2a4627bbaf92",
+      "after_sha256": "415ab4c9bc57cc51e2278c54d6582ed2eab4717d880f7218744d2a4627bbaf92"
+    },
+    {
+      "path": "/in-hi/pricing",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 1292,
+      "pixel_fraction": 0.00022665402175808436,
+      "mean_channel_difference": 0.01886885959695582,
+      "before_sha256": "dd67436bbadbcb8329aa74484d0daf805c4f858b82abd5a8d58c5414a05629d7",
+      "after_sha256": "c63ff1558c62621bc965d2527aa5ac6ca57b3849a1201a5667b18ec50ba885f2"
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 70422,
+      "pixel_fraction": 0.009065138157689792,
+      "mean_channel_difference": 0.10682463742408066,
+      "before_sha256": "beb5551aa9d5cacc30cee399d46f6577ab9727c510d68361bfbd7e9c976cfedc",
+      "after_sha256": "16ada3a2bdae65a1bb748a9c3ea444a66f9ff22a381e573682b1cc21a4627871"
+    },
+    {
+      "path": "/in-ta",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "44fec7cbdfd3fc766376defe67de9f78f85cefc0dd682a6b6a4381dc8837cd6d",
+      "after_sha256": "44fec7cbdfd3fc766376defe67de9f78f85cefc0dd682a6b6a4381dc8837cd6d"
+    },
+    {
+      "path": "/in-ta/pricing",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [
+        "visible text differs"
+      ],
+      "geometry_and_copy_equal": false,
+      "pixels_different_over_3": 359508,
+      "pixel_fraction": 0.13786137474834628,
+      "mean_channel_difference": 2.456974403221168,
+      "before_sha256": "5c907b287d5dd3408ab9684fd1e0d4f63854b06ab80a05798ac2a283782218f3",
+      "after_sha256": "189fee267ae01053ea3f9735ac91bd5dc810b67f84f12176eb48778c5c94e97d"
+    },
+    {
+      "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 36761,
+      "pixel_fraction": 0.010820014716703458,
+      "mean_channel_difference": 0.07910743193524651,
+      "before_sha256": "ae2e401bdc40fc0419f635aa6c2bf7fd9b5ecec21a08eb3cc3fc93ffa9b755b4",
+      "after_sha256": "5d95b02e0c5543eee09a39210fa56c6e23b6ce403004ec573af7d42a6ec970cf"
+    },
+    {
+      "path": "/in-ta",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "cd2f5c90e16270394a5020b740cc9d947d5db363a733c613a9c53b68cf199360",
+      "after_sha256": "cd2f5c90e16270394a5020b740cc9d947d5db363a733c613a9c53b68cf199360"
+    },
+    {
+      "path": "/in-ta/pricing",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 34512,
+      "pixel_fraction": 0.005825457071857094,
+      "mean_channel_difference": 0.25387097841414286,
+      "before_sha256": "24833e1994dd16f21269a3c7330b743fdac5bcefbfe32eed8122beb2abff7713",
+      "after_sha256": "85383584a0f402a60bcb238f34444473fd590ce813b5ac9460167da07b64a8c1"
+    },
+    {
+      "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 70426,
+      "pixel_fraction": 0.008251659564735678,
+      "mean_channel_difference": 0.09723887632329314,
+      "before_sha256": "8c13a6da059667fae6ed1e0375b253e0f4f5e5f395fb7e1865b173240b4da0e7",
+      "after_sha256": "f728e69cb7f4d0dd15fe4a36854bc197bc352a11e1f4f56422d541fa6eae6dbc"
+    },
+    {
+      "path": "/in",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "e58bafdbecafa2b1d1c0f8d084a4213f8a31778efb2f33f770f1f1c8cfe6ac66",
+      "after_sha256": "e58bafdbecafa2b1d1c0f8d084a4213f8a31778efb2f33f770f1f1c8cfe6ac66"
+    },
+    {
+      "path": "/in/pricing",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [
+        "visible text differs"
+      ],
+      "geometry_and_copy_equal": false,
+      "pixels_different_over_3": 347422,
+      "pixel_fraction": 0.14041507527533595,
+      "mean_channel_difference": 2.763520258664242,
+      "before_sha256": "886badfd6c80c047b80f3e515c186bbdafaa11786db10878d0c8dbf6e0e719af",
+      "after_sha256": "bc533edce1ce22e2e881eabe9e6997ccf7d7fdb8db0b729b7056f7a07b3ae1ba"
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 36646,
+      "pixel_fraction": 0.010975142258161126,
+      "mean_channel_difference": 0.08127006588799042,
+      "before_sha256": "fd949a595896e8b973790be38d53f79cf0c2ce8b6fcc3e0b2a1924ea30418b75",
+      "after_sha256": "d3cf5a6e922545336bb0a43d673e3162d62f08c28c1bb5dde5cebf42cf7fe487"
+    },
+    {
+      "path": "/in",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "0ce645019a7af3a5f5ebf6fbdf78fc9f4b328321124563dcad996cb91d687b1b",
+      "after_sha256": "0ce645019a7af3a5f5ebf6fbdf78fc9f4b328321124563dcad996cb91d687b1b"
+    },
+    {
+      "path": "/in/pricing",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 8443,
+      "pixel_fraction": 0.0014512373590402135,
+      "mean_channel_difference": 0.05918815619803657,
+      "before_sha256": "012d56cca4623392317e9bcd8fc1e5502ba1b607645c032b10e06f04cd0b9abf",
+      "after_sha256": "dc271d88322ac95529ff059350bb74b2c6ce27efef73a5b873ac70ee5c8cae94"
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 69039,
+      "pixel_fraction": 0.008474345339975431,
+      "mean_channel_difference": 0.09969762449759563,
+      "before_sha256": "2566afd7911d82f210f485c05a84cbbfbcdbb9ab4b6273b238a79826f806fcfb",
+      "after_sha256": "dadfcc6f5d33cb65a46d6cc57030a748dc996394518243a54eb6822c6d245e37"
+    },
+    {
+      "path": "/in/resources",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "3048a23e5d23efac48ca60575713e1c6f6f5254deb3a213b60ca6ea28ea7bdb2",
+      "after_sha256": "3048a23e5d23efac48ca60575713e1c6f6f5254deb3a213b60ca6ea28ea7bdb2"
+    },
+    {
+      "path": "/in/resources/ecommerce",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "00257aba5646e4ff4127086b649034dede6f7b51547370227585c7b8abd9179a",
+      "after_sha256": "00257aba5646e4ff4127086b649034dede6f7b51547370227585c7b8abd9179a"
+    }
+  ]
+}

@@ -1,0 +1,1023 @@
+{
+  "captured_at": "2026-10-30T00:36:13.983644+00:00",
+  "scope": "Local marketing performance implementation; no new live SEO audit or release",
+  "branch": "codex/local-work-preserved-20261025",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "candidate_build_id": "Jt6Duvm2bymgmwpDPdjxY",
+  "baseline_build_id": "caXDoRRSnHmqMGpFj4J4m",
+  "task_source_file_count": 41,
+  "source_fidelity_count": 447,
+  "browser_samples": 64,
+  "visual_cases": 36,
+  "natural_scroll_cases": 28,
+  "single_document_navigation_cases": 10,
+  "capability_modules_per_width": 8,
+  "globe_command_trace_cases": 60,
+  "html_inventory": {
+    "captured_at": "2026-10-30T00:26:25.154389+00:00",
+    "base": "http://127.0.0.1:9039",
+    "requested": 489,
+    "html_200": 477,
+    "retired_profile_redirects": 12,
+    "sitemap_entries": 192,
+    "missing_articles": [],
+    "sitemap_errors": [],
+    "page_errors": [],
+    "unknown_internal_targets": [],
+    "broken_fragments": [],
+    "feeds": [
+      {
+        "locale": "in",
+        "kind": "rss.xml",
+        "count": 35
+      },
+      {
+        "locale": "in",
+        "kind": "sitemap.xml",
+        "count": 43
+      },
+      {
+        "locale": "in-hi",
+        "kind": "rss.xml",
+        "count": 35
+      },
+      {
+        "locale": "in-hi",
+        "kind": "sitemap.xml",
+        "count": 43
+      },
+      {
+        "locale": "in-ta",
+        "kind": "rss.xml",
+        "count": 35
+      },
+      {
+        "locale": "in-ta",
+        "kind": "sitemap.xml",
+        "count": 43
+      }
+    ],
+    "negative_controls": [
+      {
+        "path": "/in/resources/authors/unknown-profile",
+        "status": 404
+      },
+      {
+        "path": "/in-hi/resources/tag/not-a-real-topic",
+        "status": 404
+      },
+      {
+        "path": "/in-ta/resources/platform/missing-guide",
+        "status": 404
+      }
+    ]
+  },
+  "stage_results": [
+    {
+      "stage": "localized-mobile",
+      "started_at": "2026-10-30T00:18:29.276131+00:00",
+      "finished_at": "2026-10-30T00:21:33.865091+00:00",
+      "exit_code": 0,
+      "log": "acceptance-localized-mobile.log"
+    },
+    {
+      "stage": "devtools-mobile",
+      "started_at": "2026-10-30T00:21:33.865849+00:00",
+      "finished_at": "2026-10-30T00:24:34.976630+00:00",
+      "exit_code": 0,
+      "log": "acceptance-devtools-mobile.log"
+    },
+    {
+      "stage": "simulated-mobile-desktop",
+      "started_at": "2026-10-30T00:24:34.977030+00:00",
+      "finished_at": "2026-10-30T00:25:44.958418+00:00",
+      "exit_code": 0,
+      "log": "acceptance-simulated-mobile-desktop.log"
+    },
+    {
+      "stage": "http2-sensitivity",
+      "started_at": "2026-10-30T00:25:44.958820+00:00",
+      "finished_at": "2026-10-30T00:26:18.720631+00:00",
+      "exit_code": 0,
+      "log": "acceptance-http2-sensitivity.log"
+    },
+    {
+      "stage": "html-inventory",
+      "started_at": "2026-10-30T00:26:18.720964+00:00",
+      "finished_at": "2026-10-30T00:26:25.201946+00:00",
+      "exit_code": 0,
+      "log": "acceptance-html-inventory.log"
+    },
+    {
+      "stage": "browser",
+      "started_at": "2026-10-30T00:26:25.202258+00:00",
+      "finished_at": "2026-10-30T00:27:10.513946+00:00",
+      "exit_code": 0,
+      "log": "acceptance-browser.log"
+    },
+    {
+      "stage": "animation",
+      "started_at": "2026-10-30T00:27:10.514316+00:00",
+      "finished_at": "2026-10-30T00:28:03.268358+00:00",
+      "exit_code": 0,
+      "log": "acceptance-animation.log"
+    }
+  ],
+  "design": {
+    "captured_at": "2026-10-30T00:31:24.685599+00:00",
+    "build_id": "Jt6Duvm2bymgmwpDPdjxY",
+    "visual_cases": 36,
+    "natural_scroll_cases": 28,
+    "client_navigation_cases": 10,
+    "passed": true
+  },
+  "pricing_recovery": {
+    "captured_at": "2026-10-30T00:32:46.569Z",
+    "synthetic_fault_only": true,
+    "positive_control": "Unmodified local gateway9010 public read, retained real catalog",
+    "ssr_outage": true,
+    "repeated_failure_stays_honest": true,
+    "real_retry_recovery": true,
+    "client_retry_requests": 2,
+    "plan_count": 4,
+    "plans": [
+      {
+        "slug": "launch",
+        "status": "available",
+        "purchasable": true,
+        "regular_inr": 299,
+        "founding_inr": 199
+      },
+      {
+        "slug": "growth",
+        "status": "available",
+        "purchasable": true,
+        "regular_inr": 999,
+        "founding_inr": 699
+      },
+      {
+        "slug": "scale",
+        "status": "coming_soon",
+        "purchasable": false,
+        "regular_inr": 2499,
+        "founding_inr": 2499
+      },
+      {
+        "slug": "commerce_os",
+        "status": "coming_soon",
+        "purchasable": false,
+        "regular_inr": 5999,
+        "founding_inr": 5999
+      }
+    ],
+    "comparison_rows": 110,
+    "one_upstream_request_per_successful_recovery": true,
+    "page_errors": [],
+    "provider_or_database_mutations": false,
+    "passed": true
+  },
+  "normal_local_services": {
+    "captured_at": "2026-10-30T00:33:26.082Z",
+    "rows": [
+      {
+        "path": "/in",
+        "status": 200,
+        "lang": "en",
+        "worker": "dotted-canvas-worker"
+      },
+      {
+        "path": "/in-hi",
+        "status": 200,
+        "lang": "hi",
+        "worker": null
+      },
+      {
+        "path": "/in-ta",
+        "status": 200,
+        "lang": "ta",
+        "worker": null
+      },
+      {
+        "path": "/in/pricing",
+        "status": 200,
+        "lang": "en",
+        "worker": null
+      }
+    ],
+    "services": [
+      {
+        "name": "accounts",
+        "url": "http://localhost:9002/login",
+        "status": 200
+      },
+      {
+        "name": "merchant",
+        "url": "http://localhost:9001",
+        "status": 200
+      },
+      {
+        "name": "gateway",
+        "url": "http://127.0.0.1:9010/v1/pricing",
+        "status": 200
+      }
+    ],
+    "font_assets": [
+      {
+        "url": "http://127.0.0.1:9006/_next/static/media/e0c4929507195d52-s.p.woff2",
+        "bytes": 58308,
+        "status": 200
+      }
+    ],
+    "real_plans": [
+      {
+        "slug": "launch",
+        "founding_inr": 199,
+        "purchasable": true
+      },
+      {
+        "slug": "growth",
+        "founding_inr": 699,
+        "purchasable": true
+      },
+      {
+        "slug": "scale",
+        "founding_inr": 2499,
+        "purchasable": false
+      },
+      {
+        "slug": "commerce_os",
+        "founding_inr": 5999,
+        "purchasable": false
+      }
+    ],
+    "page_errors": [],
+    "read_only": true,
+    "passed": true
+  },
+  "server_cleanup": {
+    "captured_at": "2026-10-30T00:34:22.762785+00:00",
+    "stopped_verified_temporary_listeners": [
+      {
+        "port": 9038,
+        "pid": 69036,
+        "cwd": "/private/tmp/letbuyy-seo-closeout-20261030/candidate/apps/marketing/web",
+        "ownership_verified": true
+      },
+      {
+        "port": 9039,
+        "pid": 83219,
+        "cwd": "/private/tmp/letbuyy-mobile-performance-20261030/candidate/apps/marketing/web",
+        "ownership_verified": true
+      },
+      {
+        "port": 9040,
+        "pid": 76707,
+        "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy",
+        "ownership_verified": true
+      },
+      {
+        "port": 9041,
+        "pid": 76707,
+        "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy",
+        "ownership_verified": true
+      },
+      {
+        "port": 9042,
+        "pid": 84664,
+        "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy",
+        "ownership_verified": true
+      },
+      {
+        "port": 9043,
+        "pid": 84666,
+        "cwd": "/private/tmp/letbuyy-mobile-performance-20261030/candidate/apps/marketing/web",
+        "ownership_verified": true
+      }
+    ],
+    "temporary_ports_after": {
+      "9038": [],
+      "9039": [],
+      "9040": [],
+      "9041": [],
+      "9042": [],
+      "9043": []
+    },
+    "normal_listeners_before": {
+      "9001": [
+        32288
+      ],
+      "9002": [
+        21480
+      ],
+      "9006": [
+        70894
+      ],
+      "9010": [
+        21987
+      ]
+    },
+    "normal_listeners_after": {
+      "9001": [
+        32288
+      ],
+      "9002": [
+        21480
+      ],
+      "9006": [
+        70894
+      ],
+      "9010": [
+        21987
+      ]
+    },
+    "normal_services_unchanged": true,
+    "temporary_tls_private_key_removed": true,
+    "unrelated_processes_stopped": false
+  },
+  "measured_performance": {
+    "actual_mobile": {
+      "captured_at": "2026-10-30T00:24:34.945555+00:00",
+      "method": "Actual DevTools network/CPU throttling; separate from the default simulated Lantern model; no field data",
+      "rows": [
+        {
+          "name": "home",
+          "path": "/in",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.96,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 1881.621,
+          "cls": 0.000123,
+          "tbt_ms": 62.115999999999076,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "home-repeat",
+          "path": "/in",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.96,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 1873.107,
+          "cls": 0.000123,
+          "tbt_ms": 65.39700000000084,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "pricing",
+          "path": "/in/pricing",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.97,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 2072.203,
+          "cls": 0.002438,
+          "tbt_ms": 86.38300000000027,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "setup-guide",
+          "path": "/in/resources/platform/building-first-letbuyy-store",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.96,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 2287.071,
+          "cls": 0,
+          "tbt_ms": 57.527000000000044,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "pricing-repeat",
+          "path": "/in/pricing",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.97,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 2059.631,
+          "cls": 0.002438,
+          "tbt_ms": 84.36900000000014,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "setup-guide-repeat",
+          "path": "/in/resources/platform/building-first-letbuyy-store",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.95,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 2392.965,
+          "cls": 0,
+          "tbt_ms": 51.76299999999992,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        }
+      ]
+    },
+    "simulated_mobile_desktop": {
+      "captured_at": "2026-10-30T00:25:44.946855+00:00",
+      "measurement": "Lighthouse lab data on local production artifacts; not CrUX or INP field measurement",
+      "rows": [
+        {
+          "name": "home",
+          "path": "/in",
+          "port": 9039,
+          "mode": "mobile",
+          "exit_code": 0,
+          "scores": {
+            "performance": 1,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 957.978,
+          "cls": 0,
+          "tbt_ms": 36.5,
+          "fcp_ms": 957.978,
+          "failed_audits": [
+            {
+              "id": "max-potential-fid",
+              "title": "Max Potential First Input Delay",
+              "score": 0.91
+            },
+            {
+              "id": "interactive",
+              "title": "Time to Interactive",
+              "score": 0.83
+            },
+            {
+              "id": "bf-cache",
+              "title": "Page prevented back/forward cache restoration",
+              "score": 0
+            }
+          ],
+          "runtime_error": null
+        },
+        {
+          "name": "home",
+          "path": "/in",
+          "port": 9039,
+          "mode": "desktop",
+          "exit_code": 0,
+          "scores": {
+            "performance": 1,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 285.528,
+          "cls": 0,
+          "tbt_ms": 0,
+          "fcp_ms": 285.528,
+          "failed_audits": [
+            {
+              "id": "bf-cache",
+              "title": "Page prevented back/forward cache restoration",
+              "score": 0
+            }
+          ],
+          "runtime_error": null
+        },
+        {
+          "name": "pricing",
+          "path": "/in/pricing",
+          "port": 9039,
+          "mode": "mobile",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.89,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 3797.5835,
+          "cls": 0,
+          "tbt_ms": 19.5,
+          "fcp_ms": 977.881,
+          "failed_audits": [
+            {
+              "id": "largest-contentful-paint",
+              "title": "Largest Contentful Paint",
+              "score": 0.55
+            },
+            {
+              "id": "max-potential-fid",
+              "title": "Max Potential First Input Delay",
+              "score": 0.98
+            },
+            {
+              "id": "interactive",
+              "title": "Time to Interactive",
+              "score": 0.89
+            },
+            {
+              "id": "bf-cache",
+              "title": "Page prevented back/forward cache restoration",
+              "score": 0
+            }
+          ],
+          "runtime_error": null
+        },
+        {
+          "name": "pricing",
+          "path": "/in/pricing",
+          "port": 9039,
+          "mode": "desktop",
+          "exit_code": 0,
+          "scores": {
+            "performance": 1,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 768.9564999999998,
+          "cls": 0,
+          "tbt_ms": 0,
+          "fcp_ms": 262.55899999999997,
+          "failed_audits": [
+            {
+              "id": "largest-contentful-paint",
+              "title": "Largest Contentful Paint",
+              "score": 0.98
+            },
+            {
+              "id": "bf-cache",
+              "title": "Page prevented back/forward cache restoration",
+              "score": 0
+            }
+          ],
+          "runtime_error": null
+        },
+        {
+          "name": "setup-guide",
+          "path": "/in/resources/platform/building-first-letbuyy-store",
+          "port": 9039,
+          "mode": "mobile",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.82,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 4788.098,
+          "cls": 0,
+          "tbt_ms": 17,
+          "fcp_ms": 1804.549,
+          "failed_audits": [
+            {
+              "id": "first-contentful-paint",
+              "title": "First Contentful Paint",
+              "score": 0.89
+            },
+            {
+              "id": "largest-contentful-paint",
+              "title": "Largest Contentful Paint",
+              "score": 0.31
+            },
+            {
+              "id": "max-potential-fid",
+              "title": "Max Potential First Input Delay",
+              "score": 0.99
+            },
+            {
+              "id": "interactive",
+              "title": "Time to Interactive",
+              "score": 0.77
+            },
+            {
+              "id": "bf-cache",
+              "title": "Page prevented back/forward cache restoration",
+              "score": 0
+            },
+            {
+              "id": "network-dependency-tree-insight",
+              "title": "Network dependency tree",
+              "score": 0
+            }
+          ],
+          "runtime_error": null
+        },
+        {
+          "name": "setup-guide",
+          "path": "/in/resources/platform/building-first-letbuyy-store",
+          "port": 9039,
+          "mode": "desktop",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.99,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 930.321,
+          "cls": 0,
+          "tbt_ms": 0,
+          "fcp_ms": 444.844,
+          "failed_audits": [
+            {
+              "id": "largest-contentful-paint",
+              "title": "Largest Contentful Paint",
+              "score": 0.96
+            },
+            {
+              "id": "bf-cache",
+              "title": "Page prevented back/forward cache restoration",
+              "score": 0
+            },
+            {
+              "id": "network-dependency-tree-insight",
+              "title": "Network dependency tree",
+              "score": 0
+            }
+          ],
+          "runtime_error": null
+        }
+      ]
+    },
+    "additional_http2_sensitivity": {
+      "captured_at": "2026-10-30T00:26:18.688348+00:00",
+      "method": "Additional default-simulated mobile A/B via read-only local TLS HTTP/2 proxy to the SAME frozen baseline and candidate artifacts. Self-signed local certificate accepted only by this diagnostic Chrome run; does not replace original HTTP/1.1 results or certify deployed protocols/field experience. Baseline rows reuse the unchanged frozen artifact measurements from this same session; their source timestamp is retained.",
+      "rows": [
+        {
+          "variant": "baseline",
+          "port": 9040,
+          "page": "home",
+          "exit_code": 0,
+          "lcp_ms": 1178.8235,
+          "tbt_ms": 265.5,
+          "cls": 0.0010159999999999998,
+          "performance": 0.95,
+          "protocols": [
+            "h2"
+          ],
+          "reused_frozen_baseline": true,
+          "source_captured_at": "2026-10-29T23:13:21.192520+00:00"
+        },
+        {
+          "variant": "baseline",
+          "port": 9040,
+          "page": "pricing",
+          "exit_code": 0,
+          "lcp_ms": 4052.401,
+          "tbt_ms": 336,
+          "cls": 0,
+          "performance": 0.79,
+          "protocols": [
+            "h2"
+          ],
+          "reused_frozen_baseline": true,
+          "source_captured_at": "2026-10-29T23:13:21.192520+00:00"
+        },
+        {
+          "variant": "baseline",
+          "port": 9040,
+          "page": "setup-guide",
+          "exit_code": 0,
+          "lcp_ms": 5853.3215,
+          "tbt_ms": 211.5,
+          "cls": 0,
+          "performance": 0.75,
+          "protocols": [
+            "h2"
+          ],
+          "reused_frozen_baseline": true,
+          "source_captured_at": "2026-10-29T23:13:21.192520+00:00"
+        },
+        {
+          "variant": "candidate",
+          "port": 9041,
+          "page": "home",
+          "exit_code": 0,
+          "lcp_ms": 1110.996,
+          "tbt_ms": 46.5,
+          "cls": 0,
+          "performance": 1,
+          "protocols": [
+            "h2"
+          ]
+        },
+        {
+          "variant": "candidate",
+          "port": 9041,
+          "page": "pricing",
+          "exit_code": 0,
+          "lcp_ms": 2852.561,
+          "tbt_ms": 88,
+          "cls": 0,
+          "performance": 0.95,
+          "protocols": [
+            "h2"
+          ]
+        },
+        {
+          "variant": "candidate",
+          "port": 9041,
+          "page": "setup-guide",
+          "exit_code": 0,
+          "lcp_ms": 3978.4015,
+          "tbt_ms": 46,
+          "cls": 0,
+          "performance": 0.87,
+          "protocols": [
+            "h2"
+          ]
+        }
+      ]
+    },
+    "localized_actual_mobile": {
+      "captured_at": "2026-10-30T00:21:33.849262+00:00",
+      "build_id": "Jt6Duvm2bymgmwpDPdjxY",
+      "method": "Actual DevTools network/CPU throttling; separate from the default simulated Lantern model; no field data",
+      "rows": [
+        {
+          "name": "hindi-home",
+          "path": "/in-hi",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.96,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 1894.967,
+          "cls": 0,
+          "tbt_ms": 103.91799999618479,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "tamil-home",
+          "path": "/in-ta",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.9,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 1744.403,
+          "cls": 0,
+          "tbt_ms": 319.64600000000064,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "hindi-home-repeat",
+          "path": "/in-hi",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.96,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 1715.832,
+          "cls": 0,
+          "tbt_ms": 115.90699999999993,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "tamil-home-repeat",
+          "path": "/in-ta",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.89,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 1742.228,
+          "cls": 0,
+          "tbt_ms": 327.55499999999984,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "hindi-pricing",
+          "path": "/in-hi/pricing",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.95,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 2223.149,
+          "cls": 0.001283,
+          "tbt_ms": 133.1840000000002,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        },
+        {
+          "name": "tamil-pricing",
+          "path": "/in-ta/pricing",
+          "exit_code": 0,
+          "scores": {
+            "performance": 0.89,
+            "accessibility": 1,
+            "best-practices": 1,
+            "seo": 1
+          },
+          "lcp_ms": 2410.035,
+          "cls": 0.000119,
+          "tbt_ms": 300.0799999999999,
+          "throttling": {
+            "rttMs": 150,
+            "throughputKbps": 1638.4,
+            "requestLatencyMs": 562.5,
+            "downloadThroughputKbps": 1474.5600000000002,
+            "uploadThroughputKbps": 675,
+            "cpuSlowdownMultiplier": 4
+          },
+          "method": "devtools"
+        }
+      ]
+    }
+  },
+  "remaining_lab_threshold_breaches": [
+    {
+      "method": "simulated-http1",
+      "run": "pricing",
+      "lcp_ms": 3797.5835,
+      "tbt_ms": 19.5,
+      "cls": 0,
+      "lcp_above_2500": true,
+      "tbt_above_200": false,
+      "cls_above_point1": false
+    },
+    {
+      "method": "simulated-http1",
+      "run": "setup-guide",
+      "lcp_ms": 4788.098,
+      "tbt_ms": 17,
+      "cls": 0,
+      "lcp_above_2500": true,
+      "tbt_above_200": false,
+      "cls_above_point1": false
+    },
+    {
+      "method": "localized-actual-devtools",
+      "run": "tamil-home",
+      "lcp_ms": 1744.403,
+      "tbt_ms": 319.64600000000064,
+      "cls": 0,
+      "lcp_above_2500": false,
+      "tbt_above_200": true,
+      "cls_above_point1": false
+    },
+    {
+      "method": "localized-actual-devtools",
+      "run": "tamil-home-repeat",
+      "lcp_ms": 1742.228,
+      "tbt_ms": 327.55499999999984,
+      "cls": 0,
+      "lcp_above_2500": false,
+      "tbt_above_200": true,
+      "cls_above_point1": false
+    },
+    {
+      "method": "localized-actual-devtools",
+      "run": "tamil-pricing",
+      "lcp_ms": 2410.035,
+      "tbt_ms": 300.0799999999999,
+      "cls": 0.000119,
+      "lcp_above_2500": false,
+      "tbt_above_200": true,
+      "cls_above_point1": false
+    },
+    {
+      "method": "additional-simulated-http2",
+      "run": "pricing",
+      "lcp_ms": 2852.561,
+      "tbt_ms": 88,
+      "cls": 0,
+      "lcp_above_2500": true,
+      "tbt_above_200": false,
+      "cls_above_point1": false
+    },
+    {
+      "method": "additional-simulated-http2",
+      "run": "setup-guide",
+      "lcp_ms": 3978.4015,
+      "tbt_ms": 46,
+      "cls": 0,
+      "lcp_above_2500": true,
+      "tbt_above_200": false,
+      "cls_above_point1": false
+    }
+  ],
+  "broad_ui_gate": {
+    "passed": false,
+    "preexisting_alias_violations": 18,
+    "evidence": "evidence/ui-alias-baseline-proof.json"
+  },
+  "field_cwv_or_inp_measured": false,
+  "physical_device_acceptance": false,
+  "deployed": false,
+  "environment_files_changed": false,
+  "provider_or_database_mutations": false,
+  "all_warnings_resolved": false,
+  "whole_repository_green": false
+}

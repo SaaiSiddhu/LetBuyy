@@ -1,5 +1,3 @@
-import { StorefrontDeliveryOptionsSchema, type StorefrontDeliveryOptionsInput } from '@letbuyy/checkout-core';
-import { authorizeFreshStorefrontPurchase } from '../../lib/storefront-visitor-access';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../../index';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
@@ -11,7 +9,6 @@ import {
 } from '../../schemas/order.schema';
 import { OrderExecutionAdapter } from '../../execution/order-execution.adapter';
 import { PaymentExecutionAdapter, readCaptureResult } from '../../execution/payment-execution.adapter';
-import { AppError } from '../../lib/errors';
 import { FIXED_PUBLIC_ERROR_MESSAGES } from '../../lib/public-errors';
 import { IdempotencyExecutionAdapter } from '../../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
@@ -29,8 +26,11 @@ import type {
     StorefrontRazorpayOrderInput,
     StorefrontRazorpayVerifyInput,
 } from '@letbuyy/checkout-core';
-import { StorefrontCheckoutQuoteSchema, type StorefrontCheckoutQuoteInput } from '@letbuyy/checkout-core';
-import { quoteCheckoutTotals } from '../../lib/checkout-tax-quote';
+import {
+    calculateGstLine,
+    normalizeIndianStateCode,
+    extractGstStateCode,
+} from '@letbuyy/checkout-core';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { listStorefrontShippingRates, loadStorefrontSubtotalMinor } from '../../lib/storefront-shipping';
 import { authenticateStorefrontBuyerSession, getStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
@@ -141,35 +141,6 @@ export function registerStorefrontCheckoutPaymentRoutes(
 ): void {
     const { loadPublishedStore, getRequestId, emitStorefrontOrderPaidEvent } = dependencies;
 
-    router.post('/:subdomain/checkout-quote', validate('json', StorefrontCheckoutQuoteSchema), async (c) => {
-        const store = await loadPublishedStore(c, c.req.param('subdomain'));
-        if (!store) return c.json({ success: false, error: { code: 'STORE_NOT_FOUND', message: 'Store not found.' } }, 404);
-        const body = c.get('validatedBody') as StorefrontCheckoutQuoteInput;
-        const quote = await quoteCheckoutTotals(getSupabaseAdmin(c), {
-            siteId: store.id, items: body.items, shippingAddress: body.shipping_address,
-            shippingRateId: body.shipping_rate_id, couponCode: body.coupon_code, customerEmail: body.customer_email,
-        });
-        return c.json(success({ quote }));
-    });
-
-    router.post('/:subdomain/shipping-rates', validate('json', StorefrontDeliveryOptionsSchema), async (c) => {
-        const store = await loadPublishedStore(c, c.req.param('subdomain'));
-        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found.' } }, 404);
-        const body = c.get('validatedBody') as StorefrontDeliveryOptionsInput;
-        try {
-            const rates = await listStorefrontShippingRates(getSupabaseAdmin(c), store.id, {
-                country: 'IN', state: body.shipping_address.state, stateCode: body.shipping_address.state_code,
-                pincode: body.shipping_address.zip,
-            }, 0, body.items);
-            return c.json(success({ rates, serviceability: { serviceable: rates.length > 0,
-                source: 'seller_zone_configuration', carrier_confirmed: false } }));
-        } catch (error) {
-            if (error instanceof AppError) throw error;
-            return c.json({ success: false, error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE',
-                message: 'Delivery for these items could not be verified. Please contact the store or retry.' } }, 503);
-        }
-    });
-
     router.get('/:subdomain/shipping-rates', async (c) => {
         const pincode = c.req.query('pincode')?.trim() || '';
         const state = c.req.query('state')?.trim() || '';
@@ -195,7 +166,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 rates,
             }));
         } catch {
-            throw new AppError('Delivery options could not be verified. Please retry.', 503, 'SHIPPING_CONFIGURATION_UNAVAILABLE');
+            return c.json({ success: false, error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Delivery options could not be verified. Please retry.' } }, 503);
         }
     });
 
@@ -212,8 +183,6 @@ export function registerStorefrontCheckoutPaymentRoutes(
             );
         }
 
-        await authorizeFreshStorefrontPurchase(c, store.id);
-
         // A supplied token is never downgraded to a guest checkout. Its site binding is checked
         // against the store resolved from the route, and the live account epoch is revalidated
         // before any idempotency replay or order write.
@@ -223,6 +192,48 @@ export function registerStorefrontCheckoutPaymentRoutes(
             if (rejected) return rejected;
         }
         const buyerSession = getStorefrontBuyerSession(c);
+
+        const shippingAddress = {
+            name: body.customer.name,
+            line1: body.customer.address.address,
+            city: body.customer.address.city,
+            state: body.customer.address.state,
+            state_code: body.customer.address.stateCode,
+            zip: body.customer.address.pincode,
+            country: 'IN',
+            phone: body.customer.phone,
+            gstin: body.customer.gstin,
+        };
+        if (!body.shippingRateId || !Number.isSafeInteger(body.shippingAmountMinor) || body.shippingAmountMinor === null || body.shippingAmountMinor === undefined) {
+            return c.json({ success: false, error: { code: 'CHECKOUT_SHIPPING_RATE_REQUIRED', message: 'Choose an available delivery option before placing the order.' } }, 409);
+        }
+        let resolvedRate: { id: string; amount: number; codAvailable: boolean };
+        try {
+            const subtotalMinor = await loadStorefrontSubtotalMinor(db, store.id, body.items);
+            const options = await listStorefrontShippingRates(db, store.id, {
+                country: 'IN',
+                state: body.customer.address.state,
+                stateCode: body.customer.address.stateCode,
+                pincode: body.customer.address.pincode,
+            }, subtotalMinor);
+            const selected = options.find((option) => option.id === body.shippingRateId);
+            if (!selected) {
+                return c.json({ success: false, error: { code: 'CHECKOUT_SHIPPING_CHANGED', message: 'That delivery option is no longer available for this address. Refresh delivery options and try again.' } }, 409);
+            }
+            if (selected.amount_minor !== body.shippingAmountMinor) {
+                return c.json({ success: false, error: { code: 'CHECKOUT_SHIPPING_CHANGED', message: 'The delivery price changed. Review the updated delivery option and try again.' } }, 409);
+            }
+            if (body.paymentMethod === 'cod' && !selected.cod_available) {
+                return c.json({ success: false, error: { code: 'CHECKOUT_COD_UNAVAILABLE', message: 'Cash on delivery is not available for the selected delivery option.' } }, 409);
+            }
+            resolvedRate = { id: selected.id, amount: selected.amount_minor / 100, codAvailable: selected.cod_available };
+        } catch (error) {
+            const message = error instanceof Error ? error.message : '';
+            if (message.includes('Checkout item is no longer available')) {
+                return c.json({ success: false, error: { code: 'CHECKOUT_ITEM_UNAVAILABLE', message: 'An item changed before checkout. Refresh your cart and try again.' } }, 409);
+            }
+            return c.json({ success: false, error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Delivery options could not be verified. Please retry.' } }, 503);
+        }
 
         const service = new OrderExecutionAdapter(db);
         const tenant = await createPublicStorefrontTenantContext(c, store.id);
@@ -240,54 +251,185 @@ export function registerStorefrontCheckoutPaymentRoutes(
         }
 
         try {
-        const shippingAddress = {
-            name: body.customer.name,
-            line1: body.customer.address.address,
-            city: body.customer.address.city,
-            state: body.customer.address.state,
-            state_code: body.customer.address.stateCode,
-            zip: body.customer.address.pincode,
-            country: 'IN',
-            phone: body.customer.phone,
-            gstin: body.customer.gstin,
-        };
-        if (!body.shippingRateId || !Number.isSafeInteger(body.shippingAmountMinor) || body.shippingAmountMinor === null || body.shippingAmountMinor === undefined) {
-            throw new AppError('Choose an available delivery option before placing the order.', 409, 'CHECKOUT_SHIPPING_RATE_REQUIRED');
-        }
-        let resolvedRate: { id: string; amount: number; codAvailable: boolean };
-        try {
-            const subtotalMinor = await loadStorefrontSubtotalMinor(db, store.id, body.items);
-            const options = await listStorefrontShippingRates(db, store.id, {
-                country: 'IN',
-                state: body.customer.address.state,
-                stateCode: body.customer.address.stateCode,
-                pincode: body.customer.address.pincode,
-            }, subtotalMinor, body.items.map(item => ({ product_id: item.productId, variant_id: item.variantId, quantity: item.quantity })));
-            const selected = options.find((option) => option.id === body.shippingRateId);
-            if (!selected) {
-                throw new AppError('That delivery option is no longer available for this address. Refresh delivery options and try again.', 409, 'CHECKOUT_SHIPPING_CHANGED');
-            }
-            if (selected.amount_minor !== body.shippingAmountMinor) {
-                throw new AppError('The delivery price changed. Review the updated delivery option and try again.', 409, 'CHECKOUT_SHIPPING_CHANGED');
-            }
-            if (body.paymentMethod === 'cod' && !selected.cod_available) {
-                throw new AppError('Cash on delivery is not available for the selected delivery option.', 409, 'CHECKOUT_COD_UNAVAILABLE');
-            }
-            resolvedRate = { id: selected.id, amount: selected.amount_minor / 100, codAvailable: selected.cod_available };
-        } catch (error) {
-            if (error instanceof AppError) throw error;
-            const message = error instanceof Error ? error.message : '';
-            if (message.includes('Checkout item is no longer available')) {
-                throw new AppError('An item changed before checkout. Refresh your cart and try again.', 409, 'CHECKOUT_ITEM_UNAVAILABLE');
-            }
-            return c.json({ success: false, error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Delivery options could not be verified. Please retry.' } }, 503);
-        }
+            // T13/W0-W3 — server-side GST computation, recomputed entirely from DB rows this
+            // request, never trusted from the client. Three legs, each read fresh:
+            //   supplier state <- sites.gstin/gst_state_code (T13: was tax_registrations, a
+            //     table with zero merchant-facing surface anywhere in the app; sites.gstin/
+            //     gst_state_code already has a real, working merchant UI at
+            //     settings/business/page.tsx and is already what generateAndPersistGstInvoice
+            //     reads post-commit -- reading a DIFFERENT table here than the post-commit
+            //     invoice step risked the two silently disagreeing the moment either table
+            //     was ever populated; unifying on sites removes that risk entirely)
+            //   recipient state <- body.customer.address.stateCode (T13/W1: now a real
+            //     picker-sourced GST state code on the client, not a free-text name)
+            //   rate <- tax_rates, HSN-specific (tax_rates.hsn_code) taking precedence over
+            //     the store default (hsn_code IS NULL), per item
+            // Taxable value is POST-DISCOUNT: the order-level coupon discount (evaluated via
+            // the SAME evaluate_checkout_promotion RPC create_checkout_order will call moments
+            // later -- read-only, no usage-count mutation, so calling it twice here is safe)
+            // is apportioned across lines by each line's share of the pre-discount subtotal.
+            // products.charge_tax = false is honoured (that line is skipped entirely).
+            let computedTaxAmount: number | null = null;
+            let placeOfSupplyStateCode: string | null = null;
+            let computedTaxLines: Array<{ title: string; rate: number; amount: number; jurisdiction: Record<string, unknown> }> | null = null;
+            try {
+                const { data: siteData } = await db
+                    .from('sites')
+                    .select('gstin, gst_state_code')
+                    .eq('id', store.id)
+                    .maybeSingle();
 
-            // Tax facts are recomputed atomically by the canonical SQL writer.
+                const supplierStateCode = siteData
+                    ? normalizeIndianStateCode((siteData as { gst_state_code?: string | null }).gst_state_code ?? null)
+                        || extractGstStateCode((siteData as { gstin?: string | null }).gstin ?? null)
+                    : null;
+                const recipientStateCode = normalizeIndianStateCode(body.customer.address.stateCode ?? null);
+                placeOfSupplyStateCode = recipientStateCode;
+
+                if (supplierStateCode && recipientStateCode) {
+                    const supplyType = supplierStateCode === recipientStateCode ? 'intra_state' : 'inter_state';
+
+                    const productIds = [...new Set(body.items.map((item) => item.productId))];
+                    const variantIds = body.items.map((item) => item.variantId).filter((id): id is string => Boolean(id));
+
+                    const { data: productsData } = await db
+                        .from('products')
+                        .select('id, price, hsn_code, charge_tax')
+                        .in('id', productIds)
+                        .eq('store_id', store.id)
+                        .is('deleted_at', null);
+                    const productById = new Map(
+                        (productsData || []).map((p: { id: string }) => [p.id, p as { id: string; price?: number | string | null; hsn_code?: string | null; charge_tax?: boolean | null }]),
+                    );
+
+                    const variantById = new Map<string, { id: string; price?: number | string | null }>();
+                    if (variantIds.length > 0) {
+                        const { data: variantsData } = await db
+                            .from('product_variants')
+                            .select('id, price')
+                            .in('id', variantIds);
+                        for (const v of (variantsData || []) as Array<{ id: string; price?: number | string | null }>) {
+                            variantById.set(v.id, v);
+                        }
+                    }
+
+                    const { data: rateRows } = await db
+                        .from('tax_rates')
+                        .select('rate, hsn_code')
+                        .eq('store_id', store.id)
+                        .eq('is_active', true)
+                        .eq('is_shipping', false)
+                        .is('deleted_at', null)
+                        .order('priority', { ascending: false });
+                    const toBps = (r: unknown): number => {
+                        const n = Number(r ?? 0);
+                        return Number.isFinite(n) ? Math.round(n <= 1 ? n * 10_000 : n * 100) : 0;
+                    };
+                    const rateRowList = (rateRows || []) as Array<{ rate?: number | string | null; hsn_code?: string | null }>;
+                    const defaultRateBps = toBps(rateRowList.find((r) => !r.hsn_code)?.rate);
+                    const rateByHsn = new Map(
+                        rateRowList.filter((r) => r.hsn_code).map((r) => [r.hsn_code as string, toBps(r.rate)]),
+                    );
+
+                    if (defaultRateBps > 0 || rateByHsn.size > 0) {
+                        const lineInputs = body.items.map((item) => {
+                            const product = productById.get(item.productId);
+                            const variant = item.variantId ? variantById.get(item.variantId) : undefined;
+                            const variantPrice = variant ? Number(variant.price ?? 0) : 0;
+                            const unitPriceMajor = variantPrice > 0 ? variantPrice : Number(product?.price ?? 0);
+                            const unitPriceMinor = Math.round(unitPriceMajor * 100);
+                            return { item, product, lineAmountMinor: unitPriceMinor * item.quantity, unitPriceMinor };
+                        });
+                        const subtotalMinor = lineInputs.reduce((sum, l) => sum + l.lineAmountMinor, 0);
+
+                        let discountMinor = 0;
+                        if (body.couponCode) {
+                            const { data: promo } = await db.rpc('evaluate_checkout_promotion', {
+                                p_store_id: store.id,
+                                p_code: body.couponCode,
+                                p_subtotal: subtotalMinor / 100,
+                                p_shipping_amount: resolvedRate ? resolvedRate.amount : 0,
+                                p_customer_email: body.customer.email,
+                            });
+                            const discountMajor = promo && typeof promo === 'object' && 'discount' in (promo as Record<string, unknown>)
+                                ? Number((promo as { discount?: number | string | null }).discount ?? 0)
+                                : 0;
+                            discountMinor = Number.isFinite(discountMajor) ? Math.round(discountMajor * 100) : 0;
+                        }
+
+                        let taxMinor = 0;
+                        let cgstMinor = 0;
+                        let sgstMinor = 0;
+                        let igstMinor = 0;
+                        for (const { item, product, lineAmountMinor, unitPriceMinor } of lineInputs) {
+                            if (product?.charge_tax === false) continue;
+                            const lineDiscountMinor = subtotalMinor > 0
+                                ? Math.round((lineAmountMinor / subtotalMinor) * discountMinor)
+                                : 0;
+                            const hsn = product?.hsn_code ?? null;
+                            const rateBps = (hsn && rateByHsn.has(hsn)) ? (rateByHsn.get(hsn) as number) : defaultRateBps;
+                            if (rateBps <= 0) continue;
+
+                            const gstLine = calculateGstLine(
+                                {
+                                    id: item.productId,
+                                    description: 'Order item',
+                                    quantity: item.quantity,
+                                    unit_amount_minor: unitPriceMinor,
+                                    discount_amount_minor: lineDiscountMinor,
+                                    hsn_code: hsn ?? undefined,
+                                    gst_rate_bps: rateBps,
+                                    tax_inclusive: false,
+                                },
+                                supplyType,
+                            );
+                            taxMinor += gstLine.tax_amount_minor;
+                            cgstMinor += gstLine.cgst_amount_minor;
+                            sgstMinor += gstLine.sgst_amount_minor;
+                            igstMinor += gstLine.igst_amount_minor;
+                        }
+                        computedTaxAmount = taxMinor / 100;
+
+                        // Order-level CGST/SGST (intra-state) or IGST (inter-state) components,
+                        // written into order_tax_lines by create_checkout_order (migration 213).
+                        const halfRateBps = Math.round(defaultRateBps / 2);
+                        computedTaxLines = supplyType === 'intra_state'
+                            ? [
+                                { title: 'CGST', rate: halfRateBps / 100, amount: cgstMinor / 100, jurisdiction: { supply_type: supplyType, supplier_state_code: supplierStateCode, recipient_state_code: recipientStateCode } },
+                                { title: 'SGST', rate: halfRateBps / 100, amount: sgstMinor / 100, jurisdiction: { supply_type: supplyType, supplier_state_code: supplierStateCode, recipient_state_code: recipientStateCode } },
+                            ]
+                            : [
+                                { title: 'IGST', rate: defaultRateBps / 100, amount: igstMinor / 100, jurisdiction: { supply_type: supplyType, supplier_state_code: supplierStateCode, recipient_state_code: recipientStateCode } },
+                            ];
+                    }
+                }
+            } catch (taxError) {
+                // T13/W3 — fail OPEN (order still completes at tax=0), never SILENT. Blocking
+                // every checkout on a tax-config error is its own outage; silently mischarging
+                // GST is a compliance exposure but does not stop commerce. The previous
+                // `catch { computedTaxAmount = null }` swallowed this with no signal at all —
+                // logged loudly here so a misconfigured store's zero-tax orders are visible to
+                // observability, not just to whoever eventually reconciles GST filings.
+                console.error(JSON.stringify({
+                    level: 'error',
+                    event: 'gst_computation_failed',
+                    store_id: store.id,
+                    error: taxError instanceof Error ? taxError.message : String(taxError),
+                }));
+                computedTaxAmount = null;
+                computedTaxLines = null;
+                // placeOfSupplyStateCode is deliberately NOT reset — it is derived from the
+                // client's address alone and should still be recorded on the order even when
+                // tax itself could not be computed (a missing supplier registration or rate is
+                // a tax-config gap, not a reason to lose the recipient's state on the order).
+            }
+
             const orderCommand: CreateCheckoutOrderCommand & {
                 shipping_rate_id?: string | null;
                 expected_shipping_amount?: number | null;
-                expected_quote_fingerprint?: string;
+                tax_amount?: number | null;
+                place_of_supply_state?: string | null;
+                tax_lines?: Array<{ title: string; rate: number; amount: number; jurisdiction?: Record<string, unknown> }> | null;
                 buyer_account_id?: string | null;
                 buyer_session_epoch?: number | null;
             } = {
@@ -309,7 +451,9 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 idempotency_key: body.idempotencyKey,
                 shipping_rate_id: resolvedRate ? resolvedRate.id : (body.shippingRateId ?? null),
                 expected_shipping_amount: resolvedRate.amount,
-                expected_quote_fingerprint: body.expectedQuoteFingerprint,
+                tax_amount: computedTaxAmount,
+                place_of_supply_state: placeOfSupplyStateCode,
+                tax_lines: computedTaxLines,
                 buyer_account_id: buyerSession?.buyerAccountId ?? null,
                 buyer_session_epoch: buyerSession?.sessionEpoch ?? null,
             };

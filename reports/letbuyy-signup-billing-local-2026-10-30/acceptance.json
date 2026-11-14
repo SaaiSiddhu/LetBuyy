@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-10-29T20:33:01.907339+00:00",
+  "status": "LOCAL_APPLICATION_FLOW_VERIFIED_PROVIDER_FIXTURES_ONLY",
+  "fixed_issues": 7,
+  "owned_tests": 83,
+  "owned_pass": 83,
+  "owned_fail": 0,
+  "merchant_tests": 925,
+  "billing_core_tests": 40,
+  "gateway_units": {
+    "pass": 1608,
+    "fail": 1,
+    "unrelated_failure_reproduced_at_task_start": true
+  },
+  "contracts": {
+    "pass": 336,
+    "fail": 2,
+    "unrelated_failures_reproduced_at_task_start": true
+  },
+  "real_local_plans_preserved": true,
+  "shared_database_mutated": false,
+  "provider_sandbox_verified": false,
+  "real_email_delivery_verified": false,
+  "approved_tax_profile_configured_in_shared_gateway": false,
+  "deployed": false,
+  "committed": false,
+  "pushed": false,
+  "owned_cleanup_complete": true,
+  "source_files_changed": 15
+}

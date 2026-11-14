@@ -1,0 +1,385 @@
+{
+  "timestamp": "2026-11-01T05:10:39.410976+00:00",
+  "build_id": "TS4if92DWNZ2WSTKfbM9f",
+  "scope": "Cold local production lab measurements. DevTools network/CPU runs and default simulated models kept separate. Not field CWV/INP or physical-device acceptance.",
+  "rows": [
+    {
+      "name": "ta-home-1",
+      "path": "/in-ta",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.95
+      },
+      "lcp_ms": 1989.707,
+      "tbt_ms": 97.74700000000098,
+      "cls": 0,
+      "fcp_ms": 1989.707,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "ta-pricing-1",
+      "path": "/in-ta/pricing",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.97
+      },
+      "lcp_ms": 2039.493,
+      "tbt_ms": 59.62599999999975,
+      "cls": 0.000119,
+      "fcp_ms": 2039.493,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-home",
+      "path": "/in",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.95,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2036.408,
+      "tbt_ms": 77.50199999809229,
+      "cls": 0,
+      "fcp_ms": 1969.742,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-pricing",
+      "path": "/in/pricing",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.97,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2030.981,
+      "tbt_ms": 51.13100000000031,
+      "cls": 0.002438,
+      "fcp_ms": 2030.981,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-guide",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.97,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 2196.65,
+      "tbt_ms": 52.971999998093,
+      "cls": 0,
+      "fcp_ms": 2138.317,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "hi-home",
+      "path": "/in-hi",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.94
+      },
+      "lcp_ms": 2019.201,
+      "tbt_ms": 139.82899999999927,
+      "cls": 0,
+      "fcp_ms": 2019.201,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "hi-pricing",
+      "path": "/in-hi/pricing",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.97
+      },
+      "lcp_ms": 2070.002,
+      "tbt_ms": 57.65899999999965,
+      "cls": 0.001283,
+      "fcp_ms": 2070.002,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "ta-guide",
+      "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.97
+      },
+      "lcp_ms": 2158.251,
+      "tbt_ms": 54.43899999999985,
+      "cls": 0,
+      "fcp_ms": 2158.251,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "ta-home-2",
+      "path": "/in-ta",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.95
+      },
+      "lcp_ms": 2070.767,
+      "tbt_ms": 101.47600000000057,
+      "cls": 0.03085,
+      "fcp_ms": 1970.767,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "ta-pricing-2",
+      "path": "/in-ta/pricing",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.97
+      },
+      "lcp_ms": 2033.866,
+      "tbt_ms": 57.29399999999987,
+      "cls": 0.000119,
+      "fcp_ms": 2033.866,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-home-desktop",
+      "path": "/in",
+      "method": "simulate",
+      "device": "desktop",
+      "exit_code": 0,
+      "scores": {
+        "performance": 1,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 256.62,
+      "tbt_ms": 0,
+      "cls": 0,
+      "fcp_ms": 256.62,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 40,
+        "throughputKbps": 10240,
+        "requestLatencyMs": 0,
+        "downloadThroughputKbps": 0,
+        "uploadThroughputKbps": 0,
+        "cpuSlowdownMultiplier": 1
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-pricing-desktop",
+      "path": "/in/pricing",
+      "method": "simulate",
+      "device": "desktop",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.99,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 900,
+      "tbt_ms": 0,
+      "cls": 0,
+      "fcp_ms": 290,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 40,
+        "throughputKbps": 10240,
+        "requestLatencyMs": 0,
+        "downloadThroughputKbps": 0,
+        "uploadThroughputKbps": 0,
+        "cpuSlowdownMultiplier": 1
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-guide-desktop",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "method": "simulate",
+      "device": "desktop",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.99,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "lcp_ms": 831.5079999999998,
+      "tbt_ms": 0,
+      "cls": 0,
+      "fcp_ms": 367.254,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 40,
+        "throughputKbps": 10240,
+        "requestLatencyMs": 0,
+        "downloadThroughputKbps": 0,
+        "uploadThroughputKbps": 0,
+        "cpuSlowdownMultiplier": 1
+      },
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-pricing-model",
+      "path": "/in/pricing",
+      "method": "simulate",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.89
+      },
+      "lcp_ms": 3750,
+      "tbt_ms": 19,
+      "cls": 0,
+      "fcp_ms": 978,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": false
+    },
+    {
+      "name": "en-guide-model",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "method": "simulate",
+      "device": "mobile",
+      "exit_code": 0,
+      "scores": {
+        "performance": 0.87
+      },
+      "lcp_ms": 4059.443,
+      "tbt_ms": 38,
+      "cls": 0,
+      "fcp_ms": 1505.481,
+      "runtime_error": null,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "measured_budget_pass": false
+    }
+  ]
+}

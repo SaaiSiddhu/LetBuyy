@@ -7,6 +7,7 @@ import {
     FileJson,
     FileText,
     Globe,
+    Headphones,
     IndianRupee,
     Rocket,
     Settings,
@@ -36,6 +37,13 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     {
         title: 'Store',
         items: [
+            {
+                href: 'store-health',
+                label: 'Setup and store health',
+                description: 'Launch checklist, publication, payment configuration and recorded domain evidence.',
+                keywords: ['setup', 'health', 'launch', 'checklist', 'readiness'],
+                Icon: Store,
+            },
             {
                 href: 'general',
                 label: 'General',
@@ -164,6 +172,16 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         ],
     },
     {
+        title: 'Help',
+        items: [{
+            href: 'support',
+            label: 'Support',
+            description: 'Create a ticket and follow support replies for this store.',
+            keywords: ['support', 'help', 'tickets', 'contact'],
+            Icon: Headphones,
+        }],
+    },
+    {
         title: 'Extensions',
         items: [
             {
@@ -186,14 +204,6 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
 ]
 
 export const SETTINGS_NAV_ITEMS = SETTINGS_NAV_GROUPS.flatMap((group) => group.items)
-
-export function getSettingsNavigationGroups(appPlatformEnabled = false): SettingsNavGroup[] {
-    if (appPlatformEnabled) return SETTINGS_NAV_GROUPS
-    return SETTINGS_NAV_GROUPS.map(group => ({
-        ...group,
-        items: group.items.filter(item => item.href !== 'apps'),
-    }))
-}
 
 export function getSettingsItemByPath(pathname: string | null | undefined, store: string) {
     if (!pathname) return null

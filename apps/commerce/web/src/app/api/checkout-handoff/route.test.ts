@@ -35,10 +35,7 @@ test('a signed buyer cookie is sent only server-to-server to the store-bound che
         const response = await call({ subdomain: 'snaz', cartToken: 'ct_1234567890abcdef' }, { cookie: buyerCookieHeader() });
         assert.equal(response.status, 200);
         assert.equal(response.headers.get('cache-control'), 'no-store');
-        const result = new URL((await response.json()).checkout_url);
-        assert.equal(result.searchParams.get('storefront_return_origin'), 'https://snaz.test');
-        result.searchParams.delete('storefront_return_origin');
-        assert.equal(result.toString(), checkoutUrl, 'financial handoff fields remain unchanged');
+        assert.deepEqual(await response.json(), { checkout_url: checkoutUrl });
         assert.equal(requests.length, 1);
     });
 });
@@ -62,7 +59,6 @@ test('same-origin checkout survives a trusted reverse proxy host while cross-sit
             fetchSite: 'same-origin',
         });
         assert.equal(forwarded.status, 200);
-        assert.equal(new URL((await forwarded.json()).checkout_url).searchParams.get('storefront_return_origin'), 'https://snaz.test');
         assert.equal(requests.length, 1);
 
         const crossSite = await call({ subdomain: 'snaz', cartToken: 'ct_1234567890abcdef' }, {
@@ -83,7 +79,6 @@ test('foreign origins, malformed cookies, invalid input, and unsafe checkout hos
         assert.equal((await call({ subdomain: 'snaz', cartToken: 'ct_1234567890abcdef' }, { cookie: '__Host-lb_store_buyer=malformed' })).status, 401);
         assert.equal((await call({ subdomain: '../attacker', cartToken: 'ct_1234567890abcdef' })).status, 400);
         assert.equal((await call({ subdomain: 'snaz', cartToken: 'ct_1234567890abcdef', buyerAccountId: 'forged' })).status, 400);
-        assert.equal((await call({ subdomain: 'snaz', cartToken: 'ct_1234567890abcdef', storefront_return_origin: 'https://attacker.test' })).status, 400);
         assert.equal(requests.length, 0);
     });
 

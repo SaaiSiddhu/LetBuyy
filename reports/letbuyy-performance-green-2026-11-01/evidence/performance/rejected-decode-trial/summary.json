@@ -1,0 +1,21 @@
+{
+  "variant": "Only priority image decode hint switched async to sync; isolated source, not adopted",
+  "rows": [
+    {
+      "name": "pricing",
+      "exit_code": 0,
+      "lcp_ms": 3799.8635000000004,
+      "tbt_ms": 61,
+      "cls": 0,
+      "score": 0.89
+    },
+    {
+      "name": "guide",
+      "exit_code": 0,
+      "lcp_ms": 4060.702,
+      "tbt_ms": 38.5,
+      "cls": 0,
+      "score": 0.87
+    }
+  ]
+}

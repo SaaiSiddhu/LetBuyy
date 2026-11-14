@@ -1,0 +1,75 @@
+{
+  "note": "Read-only current local source hashes; existing uncommitted user changes preserved. No env-file contents captured.",
+  "files": [
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/app/[locale]/layout.tsx",
+      "sha256": "a17e0723ccf191858cbbfc9c16b463fbb0588a4f082fd7895d4f81a367a8b2c4",
+      "line_count": 67
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/app/[locale]/resources/[category]/page.tsx",
+      "sha256": "7633802559a0da95148986ce1cf7224ada74db5736b07bd120cca1d022313cc5",
+      "line_count": 300
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/app/[locale]/resources/authors/[slug]/page.tsx",
+      "sha256": "1e169423aa0785753b04b1b57b46b5f727d8c289e6bf48dbeadf90092f14924a",
+      "line_count": 117
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/app/[locale]/resources/layout.tsx",
+      "sha256": "a103803e080d4bd69900472aabb49a72b6c07f97ebbf882356283c2b86220025",
+      "line_count": 36
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/app/[locale]/resources/page.tsx",
+      "sha256": "0bfdfe20746de5fd7c38be75d5411c4270d72ec98a36cc3f7141e0f1fdfc0e76",
+      "line_count": 192
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/app/[locale]/resources/releases/page.tsx",
+      "sha256": "ef1d7f321886a3de537fa766946dd5c5b07bec02e4fc80d063b54bb06d27bfdd",
+      "line_count": 145
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/app/[locale]/sitemap/page.tsx",
+      "sha256": "40651a0038a92fa016dff460ed47dfb4c1a8633dbf5e44d2441f9f7424a5a9f5",
+      "line_count": 131
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/app/layout.tsx",
+      "sha256": "22acf16d5ea4a00b7041ed0681e02cc5d8cfce85d6af2f7098455d56884232cf",
+      "line_count": 247
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/app/sitemap.ts",
+      "sha256": "2b3f22d8dd4e3a01f094f77d4c48457afb2997c44cbed32ab7a713a9d5c7ed2e",
+      "line_count": 63
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/components/Footer.tsx",
+      "sha256": "7081fd6c792cebdaca4afcdfd86d1e25d169e5caf22c634f53427eb0458bf76d",
+      "line_count": 267
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/components/i18n/LocaleHtmlLang.tsx",
+      "sha256": "b29a6dc6ea45c1bd1718ec0988ff0bea5ef1d6d91cd624854e63ecad1e586668",
+      "line_count": 28
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/lib/i18n/metadata.ts",
+      "sha256": "213cb77d4058b3ec745e45a0792de6e7574cfae9266f96cea84dd7f40a98a9bf",
+      "line_count": 20
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/lib/platform-links.ts",
+      "sha256": "214abde6d3fea0c714247a0dfc198d83fd6714ab62e913978edccd7458660e09",
+      "line_count": 59
+    },
+    {
+      "path": "/Users/saai_mithra/Projects/Start_Up/LetBuyy/apps/marketing/web/src/lib/public-urls.ts",
+      "sha256": "bcd5f63d5f81e1a8f90f4edc497b7e734fe37414256f1ed0ccf3af9d7357450c",
+      "line_count": 171
+    }
+  ]
+}

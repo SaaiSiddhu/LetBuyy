@@ -1,0 +1,30 @@
+{
+  "capturedAt": "2026-11-03T09:25:43.477478+00:00",
+  "reverseChecks": [
+    {
+      "patch": "SOURCE-CHANGES.patch",
+      "exitCode": 0,
+      "applied": false
+    },
+    {
+      "patch": "GATEWAY-CORS-REPAIR.patch",
+      "exitCode": 0,
+      "applied": false
+    },
+    {
+      "patch": "PROXY-MIGRATION.patch",
+      "exitCode": 0,
+      "applied": false
+    }
+  ],
+  "archiveCredentialShapeScan": {
+    "matchingPaths": [],
+    "credentialValuesPrinted": false
+  },
+  "temporaryExperimentPort9048Stopped": true,
+  "normalLocalPortsPreserved": [
+    9006,
+    9010,
+    9002
+  ]
+}

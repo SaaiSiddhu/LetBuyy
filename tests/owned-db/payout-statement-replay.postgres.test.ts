@@ -176,13 +176,14 @@ test('payout statement money effects and settlement payout instruction/item/outb
     assert.equal(owned.psql("SELECT has_table_privilege('service_role', 'public.payout_statement_source_ledger_transactions', 'SELECT');"), 't');
     assert.equal(owned.psql("SELECT has_table_privilege('service_role', 'public.payout_statement_source_ledger_transactions', 'INSERT');"), 'f');
 
-    const prohibitedFee = await createPayout();
-    assert.equal(prohibitedFee.status, 409, prohibitedFee.text);
-    assert.equal(prohibitedFee.json?.error?.code, 'TRANSACTION_FEE_POLICY_CONFLICT');
-    assert.equal(owned.psql(`SELECT count(*) FROM public.payout_statements WHERE site_id = ${q(tenant.siteId)}::uuid;`), '0');
-    owned.psql(`UPDATE public.commission_schedules SET commission_bps=0 WHERE site_id=${q(tenant.siteId)}::uuid;`);
     const walletFault = await createPayout();
     assert.equal(walletFault.status, 500, walletFault.text);
+    assert.equal(owned.psql(`SELECT count(*) FROM public.payout_statements WHERE site_id = ${q(tenant.siteId)}::uuid;`), '0');
+    assert.equal(owned.psql(`SELECT count(*) FROM public.wallet_ledger_entries WHERE site_id = ${q(tenant.siteId)}::uuid;`), '0');
+    assert.equal(owned.psql(`SELECT count(*) FROM public.ledger_transactions WHERE site_id = ${q(tenant.siteId)}::uuid;`), '0');
+
+    const feeJournalFault = await createPayout();
+    assert.equal(feeJournalFault.status, 500, feeJournalFault.text);
     assert.equal(owned.psql(`SELECT count(*) FROM public.payout_statements WHERE site_id = ${q(tenant.siteId)}::uuid;`), '0');
     assert.equal(owned.psql(`SELECT count(*) FROM public.wallet_ledger_entries WHERE site_id = ${q(tenant.siteId)}::uuid;`), '0');
     assert.equal(owned.psql(`SELECT count(*) FROM public.ledger_transactions WHERE site_id = ${q(tenant.siteId)}::uuid;`), '0');
@@ -193,16 +194,19 @@ test('payout statement money effects and settlement payout instruction/item/outb
       JOIN public.payout_statements p ON p.id = w.payout_statement_id
       WHERE p.site_id = ${q(tenant.siteId)}::uuid AND p.idempotency_key = ${q(idempotencyKey)}
         AND w.idempotency_key = 'payout-credit:' || p.id::text AND w.entry_type = 'payout_credit'
-        AND w.direction = 'credit' AND w.status = 'pending' AND w.amount_minor = 10000;`), '1',
+        AND w.direction = 'credit' AND w.status = 'pending' AND w.amount_minor = 9882;`), '1',
     `wallet rows: ${owned.psql(`SELECT id || ':' || payout_statement_id || ':' || entry_type || ':' || direction || ':' || status || ':' || amount_minor || ':' || idempotency_key FROM public.wallet_ledger_entries WHERE site_id = ${q(tenant.siteId)}::uuid;`)}`);
     assert.equal(owned.psql(`SELECT count(*) FROM public.payout_statements
       WHERE site_id = ${q(tenant.siteId)}::uuid AND idempotency_key = ${q(idempotencyKey)};`), '1');
-    assert.equal(created.json?.data?.canonical_ledger_transaction_id ?? null, null,
-      'zero platform fees create no fabricated fee-assessment journal');
-    assert.equal(owned.psql(`SELECT is_called FROM public.payout_fee_fault_once;`), 'f',
-      'the fee-journal trigger is never reached under the canonical zero-fee contract');
+    const ledgerId = String(created.json?.data?.canonical_ledger_transaction_id || '');
+    assert.match(ledgerId, /^[0-9a-f-]{36}$/i);
+    assert.equal(owned.psql(`SELECT string_agg(account.account_code || ':' || entry.side || ':' || entry.amount_minor,
+        ',' ORDER BY entry.sequence)
+      FROM public.ledger_entries entry JOIN public.ledger_accounts account ON account.id = entry.account_id
+      WHERE entry.transaction_id = ${q(ledgerId)}::uuid;`),
+    'merchant_payable:debit:118,platform_revenue:credit:100,gst_payable:credit:18');
     assert.equal(owned.psql(`SELECT gross_amount_minor || ':' || platform_fee_minor || ':' || tax_minor || ':' || net_amount_minor
-      FROM public.payout_statements WHERE site_id = ${q(tenant.siteId)}::uuid AND idempotency_key = ${q(idempotencyKey)};`), '10000:0:0:10000');
+      FROM public.payout_statements WHERE site_id = ${q(tenant.siteId)}::uuid AND idempotency_key = ${q(idempotencyKey)};`), '10000:100:18:9882');
     assert.deepEqual(created.json?.data?.source_order_lineage, [{
       order_id: orderId,
       source_order_gross_minor: 10000,
@@ -288,10 +292,10 @@ test('payout statement money effects and settlement payout instruction/item/outb
           SELECT id FROM public.ledger_transactions
            WHERE site_id = ${q(tenant.siteId)}::uuid
              AND idempotency_key LIKE 'payout-fee-assessment:%'
-        );`), '0',
-    'zero-fee statements do not invent adjustment projections');
+        );`), '2',
+    'migration 303 projects both payout fee assessments without changing payout-credit cardinality');
     assert.equal(owned.psql(`SELECT count(*) FROM public.ledger_transactions
-      WHERE site_id = ${q(tenant.siteId)}::uuid AND source_type = 'settlement';`), '0');
+      WHERE site_id = ${q(tenant.siteId)}::uuid AND source_type = 'settlement';`), '2');
     assert.equal(owned.psql(`SELECT count(*) FROM public.payout_statements
       WHERE site_id = ${q(tenant.siteId)}::uuid AND idempotency_key = ANY(ARRAY[${concurrentKeys.map(q).join(',')}]);`), '1');
     const concurrentCreated = concurrent.find((response) => response.status === 201)!;

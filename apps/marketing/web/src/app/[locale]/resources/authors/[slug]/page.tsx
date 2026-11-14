@@ -1,3 +1,4 @@
+import { localizeMetadata } from '@/lib/i18n/metadata'
 import { localizeArticleSummary } from '@/lib/i18n/article-summary'
 import { localizeCategory, localizeAuthor } from '@/lib/i18n/resource-metadata'
 import { getLocale } from '@/lib/i18n/locales'
@@ -5,13 +6,14 @@ import { createCopy } from '@/lib/i18n/copy'
 
 import Copy from '@/components/i18n/Copy'
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import Link from '@/components/i18n/LocaleLink'
 import Image from 'next/image'
 import { getEditorialScene } from '@/lib/resources/artwork'
 import visualStyles from '@/components/resources/resource-list-visuals.module.css'
 import ArticleCard from '@/components/resources/ArticleCard'
-import { AUTHORS } from '@/lib/resources/authors'
+import { AUTHORS, RETIRED_AUTHOR_SLUGS } from '@/lib/resources/authors'
+import { localePath } from '@/lib/i18n/routing'
 import { getAuthorArticles } from '@/lib/resources/utils'
 import { getCategory } from '@/lib/resources/categories'
 
@@ -26,15 +28,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, locale: segment } = await params
   const locale = getLocale(segment)
-  const t = createCopy(locale.language.code)
   const sourceAuthor = AUTHORS.find(a => a.slug === slug)
   const author = sourceAuthor && localizeAuthor(sourceAuthor, locale.language.code)
   if (!author) return {}
-  return {
-    title: `${author.name} — LetBuyy ${t('Resources')}`,
+  return localizeMetadata({
+    title: author.name,
     description: author.bio,
-    alternates: { canonical: `/resources/authors/${slug}` },
-  }
+
+  }, segment, `/resources/authors/${slug}`)
 }
 
 export default async function AuthorPage({
@@ -45,6 +46,7 @@ export default async function AuthorPage({
   const { slug, locale: segment } = await params
   const locale = getLocale(segment)
   const t = createCopy(locale.language.code)
+  if (RETIRED_AUTHOR_SLUGS.some(retired => retired === slug)) permanentRedirect(localePath(locale, '/resources/authors/letbuyy-team'))
   const sourceAuthor = AUTHORS.find(a => a.slug === slug)
   const author = sourceAuthor && localizeAuthor(sourceAuthor, locale.language.code)
   if (!author) notFound()

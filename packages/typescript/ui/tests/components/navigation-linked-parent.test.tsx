@@ -20,18 +20,6 @@ const linkedParent = (overrides: Record<string, unknown> = {}) => ({
 });
 
 describe('Navigation — parent that is also a destination', () => {
-    it('uses the supplied router link for parent, child and standalone destinations', () => {
-        const RouterLink = (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => <a {...props} data-router-link="true" />;
-        renderInSystem(<Navigation linkComponent={RouterLink} items={[
-            linkedParent({ active: true }),
-            { id: 'orders', label: 'Orders', href: '/saai/orders' },
-        ]} />);
-        for (const name of ['Products', 'Collections', 'Categories', 'Orders']) {
-            expect(screen.getByRole('link', { name }).getAttribute('data-router-link')).toBe('true');
-        }
-        expect(screen.getByRole('button', { name: 'Toggle Products section' })).toBeTruthy();
-    });
-
     it('renders the parent as a link plus a separate disclosure button', () => {
         renderInSystem(<Navigation items={[linkedParent()]} />);
 

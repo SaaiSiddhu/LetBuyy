@@ -38,12 +38,7 @@ test('federated apps redirect unauthenticated browser traffic to accounts lookup
       `${file} must allow the accounts origin to be configured`,
     );
     assert.match(source, /new URL\(['"]\/lookup['"]/, `${file} must redirect through the identity lookup flow`);
-    if (file === 'apps/frozen/theme-store/src/proxy.ts') {
-      assert.match(source, /searchParams\.set\(['"]return_to['"],\s*getThemeMarketplaceUrl\(/, `${file} must use its configured marketplace origin`);
-      assert.match(source, /\$\{pathname\}\$\{request\.nextUrl\.search\}/, `${file} must preserve the complete requested path and query`);
-    } else {
-      assert.match(source, /searchParams\.set\(['"]return_to['"],\s*request\.url\)/, `${file} must preserve the caller URL`);
-    }
+    assert.match(source, /searchParams\.set\(['"]return_to['"],\s*request\.url\)/, `${file} must preserve the caller URL`);
     assert.doesNotMatch(source, /searchParams\.set\(['"]redirect['"],\s*request\.url\)/, `${file} must not use the legacy login redirect contract`);
     assert.doesNotMatch(source, /new URL\(['"][^'"]*accounts\.letbuyy\.store\/login['"]/, `${file} must not redirect directly to accounts login`);
   }

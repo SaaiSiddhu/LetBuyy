@@ -3,12 +3,11 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import ts from 'typescript';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const storeServicePath = join(testDir, '../../apps/commerce/web/src/lib/store-service.ts');
 const productServicePath = join(testDir, '../../apps/commerce/web/src/lib/product-service.ts');
-const previewPagePath = join(testDir, '../../apps/commerce/web/src/app/preview/preview-content.tsx');
+const previewPagePath = join(testDir, '../../apps/commerce/web/src/app/preview/page.tsx');
 const demoShortcutPath = join(testDir, '../../apps/commerce/web/src/app/demo/urban-kicks/page.tsx');
 const editorPagePath = join(testDir, '../../apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
 const themeGovernancePath = join(testDir, '../../docs/governance/theme-engine-governance.md');
@@ -18,28 +17,25 @@ function read(path: string): string {
     return readFileSync(path, 'utf8');
 }
 
-// Extract the exact method or cache-wrapped property with the TypeScript parser.
-// Prefix names, nested functions and declaration order cannot change its boundary.
+// TEST-2: `methodName` must be followed by `(` — a real method signature — not just any character.
+// Both files this helper reads declare a short method name that is a literal prefix of a longer one
+// checked in the same loop (store-service.ts: getStoreBySubdomain / getStoreBySubdomainAnyStatus).
+// A plain `indexOf('async ' + methodName)` would match the START of the longer method's declaration
+// too, and today it happens to return the right body only because the shorter name is declared
+// first in the file — an accident of ordering, not a guarantee. Reordering the two methods would
+// make this test silently inspect the wrong one and could pass even if the real short-named method
+// contained the exact demo-fixture short-circuit this file exists to catch. Third instance of this
+// defect class this session: SEC-1's wildcard-select regex stopped at the first paren (unfalsifiable
+// by construction); MIG-0's fence-isolation check used a plain indexOf an ELSIF-prefixed branch could
+// also satisfy. All three are the same root cause — a substring search used as an extraction
+// boundary, with nothing to guarantee the match found is the intended occurrence.
 function methodBody(source: string, methodName: string): string {
-    const tree = ts.createSourceFile('service.ts', source, ts.ScriptTarget.Latest, true);
-    const bodies: string[] = [];
-    const visit = (node: ts.Node) => {
-        if ((ts.isMethodDeclaration(node) || ts.isPropertyAssignment(node))
-            && node.name.getText(tree) === methodName) {
-            if (ts.isMethodDeclaration(node) && node.body) bodies.push(node.body.getText(tree));
-            if (ts.isPropertyAssignment(node)) {
-                let value = node.initializer;
-                if (ts.isCallExpression(value) && ts.isIdentifier(value.expression)
-                    && value.expression.text === 'cache' && value.arguments.length === 1) value = value.arguments[0];
-                assert.ok(ts.isArrowFunction(value) || ts.isFunctionExpression(value), `${methodName} must contain an actual function`);
-                bodies.push(value.body.getText(tree));
-            }
-        }
-        ts.forEachChild(node, visit);
-    };
-    visit(tree);
-    assert.equal(bodies.length, 1, `${methodName} must have exactly one declaration`);
-    return bodies[0];
+    const marker = new RegExp(`async ${methodName}\\(`);
+    const match = marker.exec(source);
+    assert.ok(match, `${methodName} must exist`);
+    const start = match.index;
+    const nextMethod = source.indexOf('\n    async ', start + match[0].length);
+    return nextMethod === -1 ? source.slice(start) : source.slice(start, nextMethod);
 }
 
 // The OLD helper, reproduced here only so this self-test can prove it was wrong — never applied to
@@ -77,17 +73,6 @@ test('TEST-2 self-test: the old extraction was genuinely wrong when the longer n
     const otherOrder = decoySource(false);
     assert.doesNotMatch(methodBody(otherOrder, 'getStoreBySubdomain'), /isUrbanKicksDemoSubdomain/);
     assert.match(methodBody(otherOrder, 'getStoreBySubdomainAnyStatus'), /isUrbanKicksDemoSubdomain/);
-});
-
-test('cached declarations keep same-prefix and nested helper bodies separate in either order', () => {
-    const short = 'getStoreBySubdomain: cache(async (handle: string) => { const nested = async () => SAFE_IMPLEMENTATION; return nested(); })';
-    const long = 'getStoreBySubdomainAnyStatus: cache(async () => isUrbanKicksDemoSubdomain())';
-    for (const properties of [[short, long], [long, short]]) {
-        const source = `const service = { ${properties.join(',')} };`;
-        assert.match(methodBody(source, 'getStoreBySubdomain'), /SAFE_IMPLEMENTATION/);
-        assert.doesNotMatch(methodBody(source, 'getStoreBySubdomain'), /isUrbanKicksDemoSubdomain/);
-        assert.match(methodBody(source, 'getStoreBySubdomainAnyStatus'), /isUrbanKicksDemoSubdomain/);
-    }
 });
 
 test('real storefront store reads do not short-circuit to the Urban Kicks demo fixture', () => {

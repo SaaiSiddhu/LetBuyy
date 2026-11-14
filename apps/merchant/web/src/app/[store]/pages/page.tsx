@@ -1,12 +1,9 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { PAGE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
-import { Badge, Banner, Button, Card, ConfirmDialog, Eye, EyeOff, FileText, Input, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Textarea, Trash2, useToast } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
+import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Eye, EyeOff, FileText, Input, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Textarea, Trash2, useToast } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
@@ -67,18 +64,15 @@ export default function PagesPage() {
     const [pageToDelete, setPageToDelete] = useState<StorePage | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadPages = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/pages?limit=100`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load pages'))
@@ -86,7 +80,6 @@ export default function PagesPage() {
 
             setPages(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load pages'
             setPages([])
             setLoadError(message)
@@ -96,9 +89,9 @@ export default function PagesPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadPages()
@@ -258,8 +251,7 @@ export default function PagesPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="content"
-                    recipe="index"
+                <PageHeader
                     title="Pages"
                     description="Create and publish informational pages for this site."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Pages' }]}
@@ -275,8 +267,7 @@ export default function PagesPage() {
 
     return (
         <Page>
-            <PageHeader identity="content"
-                recipe="index"
+            <PageHeader
                 title="Pages"
                 description="Create and publish informational pages for this site."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Pages' }]}
@@ -413,7 +404,7 @@ export default function PagesPage() {
                     description="Publish, unpublish, or remove storefront pages."
                 >
                     {pages.length === 0 ? (
-                        <EmptyState scene="pages"
+                        <EmptyState
                             icon={<FileText className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No pages yet"
                             body="Create pages like About, Contact, FAQ, portfolio details, or service pages for your site."

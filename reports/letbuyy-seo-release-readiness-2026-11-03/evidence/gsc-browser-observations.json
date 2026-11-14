@@ -1,0 +1,134 @@
+{
+  "capturedAt": "2026-11-03T02:39:58.253088+00:00",
+  "source": "Authenticated Chrome UI, letbuyy.com domain property; read-only navigation and CSV exports",
+  "indexing": {
+    "lastUpdated": "2026-10-23",
+    "indexed": 221,
+    "notIndexed": 144,
+    "reasons": {
+      "Alternative page with proper canonical tag": 83,
+      "Page with redirect": 13,
+      "Excluded by noindex": 7,
+      "Soft 404": 2,
+      "Discovered currently not indexed": 36,
+      "Crawled currently not indexed": 2,
+      "Duplicate without user-selected canonical": 1
+    },
+    "soft404Examples": [
+      {
+        "url": "https://www.letbuyy.com/in/resources/tag/shopify",
+        "lastCrawled": "2026-09-11"
+      },
+      {
+        "url": "https://www.letbuyy.com/resources/tag/shopify",
+        "lastCrawled": "2026-09-09"
+      }
+    ]
+  },
+  "sitemap": {
+    "url": "https://www.letbuyy.com/sitemap.xml",
+    "submitted": "2026-06-10",
+    "lastRead": "2026-11-01",
+    "status": "Success",
+    "discoveredPages": 99,
+    "discoveredVideos": 0
+  },
+  "inspections": [
+    {
+      "url": "https://www.letbuyy.com/in",
+      "indexVerdict": "URL is on Google; Page is indexed",
+      "lastCrawlDisplayed": "1 Nov 2026,22:06:53",
+      "crawler": "Googlebot smartphone",
+      "crawlAllowed": true,
+      "fetch": "Successful",
+      "indexingAllowed": true,
+      "declaredCanonical": "https://www.letbuyy.com/in",
+      "googleSelectedCanonical": "Inspected URL",
+      "referringPages": [
+        "https://www.letbuyy.store/in",
+        "https://www.letbuyy.com/resources/developers/building-first-letbuyy-app",
+        "https://www.letbuyy.com/resources/payments",
+        "https://www.letbuyy.store/"
+      ]
+    },
+    {
+      "url": "https://www.letbuyy.com/in/pricing",
+      "indexVerdict": "URL is not on Google; Alternative page with proper canonical tag",
+      "lastCrawlDisplayed": "17 Aug 2026,02:24:26",
+      "crawler": "Googlebot smartphone",
+      "crawlAllowed": true,
+      "fetch": "Successful",
+      "indexingAllowed": true,
+      "declaredCanonical": "https://www.letbuyy.com/pricing",
+      "googleSelectedCanonical": "Same as user-declared canonical",
+      "sitemap": "https://www.letbuyy.com/sitemap.xml",
+      "interpretation": "Historical indexed snapshot; compare with fresh live response before diagnosing a current canonical defect.",
+      "liveTest": {
+        "testedAtDisplayed": "3 Nov 2026,08:11:35",
+        "verdict": "URL is available to Google; Page can be indexed",
+        "crawler": "Google Inspection Tool smartphone",
+        "crawlAllowed": true,
+        "fetch": "Successful",
+        "indexingAllowed": true,
+        "declaredCanonical": "https://www.letbuyy.com/in/pricing",
+        "googleSelectedCanonical": "Only determined after indexing",
+        "indexingRequestSubmitted": false
+      }
+    }
+  ],
+  "indexingRequestsSubmitted": false,
+  "sitemapSubmissionsMade": false,
+  "fixValidationsRequested": false,
+  "fieldPerformance": {
+    "source": "Search Console, Chrome UX report",
+    "lastUpdatedDisplayed": "01/11/2026",
+    "mobile": "Not enough usage data in the last 90 days for this device type.",
+    "desktop": "Not enough usage data in the last 90 days for this device type.",
+    "fieldLcpInpClsMeasured": false
+  },
+  "linksReport": {
+    "source": "Authenticated GSC links overview; available sample, not complete Internet backlink inventory",
+    "externalLinksReported": 3,
+    "externalTopLinkedPages": [
+      {
+        "url": "https://www.letbuyy.com/in",
+        "reportedLinks": 3
+      }
+    ],
+    "topLinkingSites": [
+      {
+        "domain": "letbuyy.store",
+        "reportedLinks": 2
+      },
+      {
+        "domain": "pixlnova.com",
+        "reportedLinks": 1
+      }
+    ],
+    "anchorText": [
+      "what is letbuyy",
+      "letbuyy com opens in a new tab"
+    ],
+    "internalLinksReported": 158,
+    "topInternalTargets": [
+      {
+        "url": "https://www.letbuyy.com/in",
+        "reportedLinks": 148
+      },
+      {
+        "url": "https://www.letbuyy.com/resources/authors/neha-payments",
+        "reportedLinks": 10
+      }
+    ]
+  },
+  "manualActions": "No issues detected, as displayed in authenticated GSC",
+  "securityIssues": "No issues detected, as displayed in authenticated GSC",
+  "generativeAiPerformance": {
+    "source": "Authenticated GSC Generative AI features Beta report and exported CSV",
+    "dateRange": "2026-08-01 through2026-10-31",
+    "impressions": 51,
+    "lastUpdateDisplayed": "4 hours ago",
+    "pageRowsExported": 15,
+    "limitation": "Impressions in this Google report are not citation counts, rank, share of voice, clicks or visibility across other assistants."
+  }
+}

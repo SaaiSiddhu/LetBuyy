@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import '../../theme/app_theme_colors.dart';
 
 /// Stats row showing key metrics
 class StatsRow extends StatelessWidget {
@@ -31,6 +30,7 @@ class StatsRow extends StatelessWidget {
           _StatCard(
             label: 'TOTAL SALES',
             value: sales.toString(),
+            trend: '+12% vs last week',
             trendColor: Colors.greenAccent,
             icon: Icons.shopping_bag_outlined,
             color: Colors.blueAccent,
@@ -39,6 +39,7 @@ class StatsRow extends StatelessWidget {
           _StatCard(
             label: 'REVENUE',
             value: '$currencySymbol$revenue',
+            trend: '+5% vs last week',
             trendColor: Colors.greenAccent,
             icon: Icons.attach_money_rounded,
             color: Colors.greenAccent,
@@ -47,6 +48,7 @@ class StatsRow extends StatelessWidget {
           _StatCard(
             label: 'STORE VISITS',
             value: views.toString(),
+            trend: '-2% vs last week',
             trendColor: Colors.orangeAccent,
             icon: Icons.visibility_outlined,
             color: Colors.purpleAccent,
@@ -56,7 +58,7 @@ class StatsRow extends StatelessWidget {
             label: 'PRODUCTS',
             value: products.toString(),
             trend: 'Active Inventory',
-            trendColor: AppThemeColors.of(context).textSecondary,
+            trendColor: Colors.white70,
             icon: Icons.inventory_2_outlined,
             color: Colors.orangeAccent,
           ),
@@ -89,9 +91,9 @@ class _StatCard extends StatelessWidget {
       width: 160,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppThemeColors.of(context).glassMedium,
+        color: Colors.white.withValues(alpha: 0.05), // Glass
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppThemeColors.of(context).glassMediumBorder),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
@@ -120,10 +122,10 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppThemeColors.of(context).textPrimary,
+              color: Colors.white,
               height: 1.0,
             ),
           ),
@@ -133,7 +135,7 @@ class _StatCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: AppThemeColors.of(context).textSecondary,
+              color: Colors.white.withValues(alpha: 0.6),
               letterSpacing: 0.5,
             ),
           ),
@@ -181,17 +183,15 @@ class StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveColor = color ?? AppColors.primary;
-
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppThemeColors.of(context).glassMediumBorder,
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppThemeColors.of(context).glassMediumBorder,
-          ),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Row(
           children: [
@@ -211,27 +211,24 @@ class StatTile extends StatelessWidget {
                 children: [
                   Text(
                     value,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppThemeColors.of(context).textPrimary,
+                      color: Colors.white,
                     ),
                   ),
                   Text(
                     label,
                     style: TextStyle(
                       fontSize: 13,
-                      color: AppThemeColors.of(context).textSecondary,
+                      color: Colors.white.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
               ),
             ),
             if (onTap != null)
-              Icon(
-                Icons.chevron_right_rounded,
-                color: AppThemeColors.of(context).textTertiary,
-              ),
+              Icon(Icons.chevron_right_rounded, color: Colors.white.withValues(alpha: 0.4)),
           ],
         ),
       ),

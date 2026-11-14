@@ -1,0 +1,157 @@
+{
+  "runId": "22176a691801",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-62339-mvj5zhxz-b0bfed"
+  ],
+  "reaped": [],
+  "suites": 3,
+  "gatewayDbSuites": 3,
+  "failedSuites": 0,
+  "tests": 7,
+  "assertionsPassed": 7,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 150.6,
+  "suiteSeconds": 149.2,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "console-support-billing.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/console-support-billing.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-62339-mvj5zhxz-b0bfed",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 22,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_console_support_billing_postgres",
+      "templateSeconds": 16.3,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-22176a691801-rest-1",
+        "upstreamPort": 56800,
+        "proxyPort": 56801
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 396,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "merchant-console-support-browser.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-62339-mvj5zhxz-b0bfed",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 92.7,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_merchant_console_support_browser_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-22176a691801-rest-3",
+        "upstreamPort": 56955,
+        "proxyPort": 56956
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 819,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "console-support-billing-browser.postgres",
+      "path": "tests/owned-db/console-support-billing-browser.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-62339-mvj5zhxz-b0bfed",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 34.5,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_console_support_billing_browser_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.8,
+      "rest": {
+        "container": "letbuyy-exec-22176a691801-rest-2",
+        "upstreamPort": 56817,
+        "proxyPort": 56818
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 319,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

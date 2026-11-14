@@ -1,3 +1,8 @@
+import { getLocale } from '@/lib/i18n/locales'
+import { localePath } from '@/lib/i18n/routing'
+import { localizeArticleContent } from '@/lib/i18n/article-content'
+import { createCopy } from '@/lib/i18n/copy'
+import { BRAND_ASSETS } from '@/lib/brand-assets'
 import { ARTICLES } from '@/lib/resources/articles'
 import { getAuthor } from '@/lib/resources/authors'
 import { getCategory } from '@/lib/resources/categories'
@@ -14,42 +19,47 @@ function escapeXml(str: string): string {
     .replace(/'/g, '&apos;')
 }
 
-export async function GET() {
+export async function GET(_request: Request, { params }: { params: Promise<{ locale: string }> }) {
+  const locale = getLocale((await params).locale)
+  const t = createCopy(locale.language.code)
+  const resourceUrl = getMarketingSiteUrl(localePath(locale, '/resources'))
+  const feedUrl = getMarketingSiteUrl(localePath(locale, '/resources/rss.xml'))
   const siteUrl = getMarketingSiteUrl()
   const sorted = [...ARTICLES].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
 
   const items = sorted
     .slice(0, 50)
-    .map(article => {
+    .map(source => {
+      const { article } = localizeArticleContent(source, locale.language.code)
       const author = getAuthor(article.author)
       const cat = getCategory(article.category)
-      const url = `${siteUrl}/resources/${article.category}/${article.slug}`
+      const url = getMarketingSiteUrl(localePath(locale, `/resources/${article.category}/${article.slug}`))
       return `
     <item>
       <title>${escapeXml(article.title)}</title>
       <link>${url}</link>
-      <guid isPermaLink="true">${url}</guid>
+      <guid isPermaLink="false">${escapeXml(`${siteUrl}/resources/${article.category}/${article.slug}`)}${locale.language.code === 'en' ? '' : `#${locale.language.code}`}</guid>
       <description>${escapeXml(article.description)}</description>
       <pubDate>${new Date(article.publishedAt).toUTCString()}</pubDate>
-      <author>${escapeXml(author.name)}</author>
+      <dc:creator>${escapeXml(author.name)}</dc:creator>
       <category>${escapeXml(cat?.label ?? article.category)}</category>
-      ${article.tags.map(t => `<tag>${escapeXml(t)}</tag>`).join('\n      ')}
+      ${article.tags.map(t => `<category>${escapeXml(t)}</category>`).join('\n      ')}
     </item>`
     })
     .join('')
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <title>LetBuyy Resources</title>
-    <link>${siteUrl}/resources</link>
-    <description>Commerce guides, tutorials, and platform updates for Indian merchants on LetBuyy.</description>
-    <language>en-in</language>
-    <atom:link href="${siteUrl}/resources/rss.xml" rel="self" type="application/rss+xml"/>
+    <title>LetBuyy ${escapeXml(t('Resources'))}</title>
+    <link>${resourceUrl}</link>
+    <description>${escapeXml(t('Practical guides for starting, running, and growing an online business in India. Explore store setup, payments, operations, and more.'))}</description>
+    <language>${locale.hreflang}</language>
+    <atom:link href="${feedUrl}" rel="self" type="application/rss+xml"/>
     <image>
-      <url>${siteUrl}/icons/letbuyy-logo-512.png</url>
-      <title>LetBuyy Resources</title>
-      <link>${siteUrl}/resources</link>
+      <url>${siteUrl}${BRAND_ASSETS.raster}</url>
+      <title>LetBuyy ${escapeXml(t('Resources'))}</title>
+      <link>${resourceUrl}</link>
     </image>${items}
   </channel>
 </rss>`

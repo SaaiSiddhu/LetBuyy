@@ -194,27 +194,24 @@ test('phase-q: ThemeLibraryCard uses aria-label for action menu buttons', () => 
     assert.match(src, /Dropdown/, 'ThemeLibraryCard must use Dropdown for action menu');
 });
 
-test('theme workspace keeps overview discovery and the library as separate named views', () => {
-    const src = read(`${MCP_BASE}/components/theme-library/ThemeWorkspace.tsx`);
-    assert.match(src, /view === 'overview'/);
-    assert.match(src, /aria-label="Discover themes"/);
-    assert.match(src, /view === 'library'/);
-    assert.match(src, /aria-label="Your theme library"/);
-    assert.match(src, /<ThemeLibraryWorkspace/);
-    assert.doesNotMatch(src, /activeTab|role="tabpanel"/, 'overview and library use explicit routes');
+test('phase-q: workspace tab strip uses ARIA tablist/tab/tabpanel pattern', () => {
+    const src = read(`${MCP_BASE}/app/[store]/online-store/themes/page.tsx`);
+    assert.match(src, /role="tablist"/, 'themes page must use tablist role');
+    assert.match(src, /role="tab"/, 'themes page must use tab role');
+    assert.match(src, /role="tabpanel"/, 'themes page must use tabpanel role');
+    assert.match(src, /aria-selected/, 'tab buttons must have aria-selected');
 });
 
 // ── Page imports ThemeLibraryWorkspace ───────────────────────────────────────
 
 test('phase-q: themes page imports and renders ThemeLibraryWorkspace', () => {
     const src = read(`${MCP_BASE}/app/[store]/online-store/themes/page.tsx`);
-    assert.match(src, /ThemeWorkspace/, 'themes page must import the shared workspace');
+    assert.match(src, /ThemeLibraryWorkspace/, 'themes page must import ThemeLibraryWorkspace');
     assert.match(
         src,
-        /from '@\/components\/theme-library\/ThemeWorkspace'/,
+        /from '@\/components\/theme-library\/ThemeLibraryWorkspace'/,
         'must import from correct path'
     );
-    assert.match(read(`${MCP_BASE}/components/theme-library/ThemeWorkspace.tsx`), /<ThemeLibraryWorkspace/);
 });
 
 // ── en-IN date format ──────────────────────────────────────────────────────────
@@ -289,14 +286,12 @@ test('phase-q-hardening: handlePublish sends store_name as URL query parameter, 
         /\/editor\?store_name=/,
         'handlePublish must include store_name as a query parameter in the /editor URL',
     );
-    // The authenticated BFF owns live publication; the client supplies its loaded
-    // actor/store/revision context and a stable intent rather than inventing it.
+    // Confirm make_store_live is still present in the source (required by the gateway publish contract)
     assert.match(
-        read(`${MCP_BASE}/app/api/themes/[themeId]/editor/route.ts`),
+        src,
         /make_store_live/,
-        'the BFF must publish through the canonical gateway contract',
+        'handlePublish must still pass make_store_live in the request body',
     );
-    for (const field of ['actorId', 'storeId', 'baseVersion', 'idempotencyKey']) assert.ok(src.includes(field));
     // The editor fetch must NOT smuggle store_name as JSON body alongside the query param
     // (that would mean it appears in JSON.stringify body, not needed with query param)
     const handlePublishBlock = src.slice(src.indexOf('handlePublish'), src.indexOf('handleDuplicate'));

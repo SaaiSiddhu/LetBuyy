@@ -1,0 +1,266 @@
+--- a/apps/marketing/web/src/app/[locale]/resources/[category]/[slug]/page.tsx
++++ b/apps/marketing/web/src/app/[locale]/resources/[category]/[slug]/page.tsx
+@@ -105,7 +105,6 @@
+   const isLiquidGuide = category === 'developers' && slug === 'liquid-theming-guide'
+   const artwork = getArticleArtwork(slug)
+   const readingTopics = getReadingTopics(article)
+-  const ArticleContainer = isThemeGuide || isLiquidGuide ? 'article' : 'main'
+ 
+   // Related + recommended
+   const related = getRelatedArticles(article.relatedSlugs ?? [], article.slug).map(a => localizeArticleContent(a, locale.language.code).article)
+@@ -200,7 +199,7 @@
+           </div>
+ 
+           {/* ── Center: article ── */}
+-          <ArticleContainer className="arc-center" lang={translated ? locale.language.bcp47 : 'en'}>
++          <article className="arc-center" lang={translated ? locale.language.bcp47 : 'en'}>
+ 
+             {/* Article header */}
+             <header className="arc-header">
+@@ -277,7 +276,7 @@
+             {/* Completion banner */}
+             <ArticleCompletionBanner next={next} />
+ 
+-          </ArticleContainer>
++          </article>
+ 
+           {/* ── Right: sticky sidebar (desktop) ── */}
+           <div className="arc-right">
+--- /dev/null
++++ b/scripts/marketing/performance-results.mts
+@@ -0,0 +1,56 @@
++export const PERFORMANCE_BUDGETS = { lcpMs: 2500, tbtMs: 200, cls: 0.1 } as const
++
++export interface PerformanceSample {
++    target: string
++    method: 'simulate' | 'devtools'
++    repeat: number
++    role: 'acceptance' | 'diagnostic'
++    exitCode: number
++    runtimeError: unknown
++    lcpMs: number | null
++    tbtMs: number | null
++    cls: number | null
++}
++
++function median(values: number[]): number | null {
++    if (!values.length) return null
++    const sorted = [...values].sort((a, b) => a - b)
++    const middle = Math.floor(sorted.length / 2)
++    return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2
++}
++
++export function meetsBudgets(sample: PerformanceSample): boolean {
++    return sample.exitCode === 0 && !sample.runtimeError &&
++        sample.lcpMs !== null && Number.isFinite(sample.lcpMs) && sample.lcpMs > 0 && sample.lcpMs <= PERFORMANCE_BUDGETS.lcpMs &&
++        sample.tbtMs !== null && Number.isFinite(sample.tbtMs) && sample.tbtMs >= 0 && sample.tbtMs <= PERFORMANCE_BUDGETS.tbtMs &&
++        sample.cls !== null && Number.isFinite(sample.cls) && sample.cls >= 0 && sample.cls <= PERFORMANCE_BUDGETS.cls
++}
++
++/** Keep model predictions, applied lab measurements and diagnostic experiments
++ * separate. Passing observed runs must never erase a failed simulator lane. */
++export function summarizePerformance(samples: PerformanceSample[], targets: string[]) {
++    if (!targets.length || new Set(targets).size !== targets.length) throw new Error('Unique targets are required')
++    const lanes = targets.flatMap(target => (['simulate', 'devtools'] as const).map(method => {
++        const rows = samples.filter(row => row.role === 'acceptance' && row.target === target && row.method === method)
++        const repeats = new Set(rows.map(row => row.repeat))
++        const complete = rows.length >= 3 && repeats.size === rows.length &&
++            rows.every(row => Number.isInteger(row.repeat) && row.repeat > 0)
++        const measured = rows.map(row => row.lcpMs).filter((value): value is number => value !== null && Number.isFinite(value) && value > 0)
++        return {
++            target, method, samples: rows.length, complete,
++            passedSamples: rows.filter(meetsBudgets).length,
++            medianLcpMs: median(measured),
++            status: !complete ? 'incomplete' as const : rows.every(meetsBudgets) ? 'pass' as const : 'fail' as const,
++        }
++    }))
++    return {
++        budgets: PERFORMANCE_BUDGETS,
++        minimumRepeatsPerLane: 3,
++        lanes,
++        originalSimulatedTargetMet: lanes.filter(lane => lane.method === 'simulate').every(lane => lane.status === 'pass'),
++        appliedLabTargetMet: lanes.filter(lane => lane.method === 'devtools').every(lane => lane.status === 'pass'),
++        allRequiredLanesPass: lanes.every(lane => lane.status === 'pass'),
++        diagnosticSamplesExcluded: samples.filter(row => row.role === 'diagnostic').length,
++        fieldCoreWebVitalsMeasured: false,
++    }
++}
+--- /dev/null
++++ b/scripts/marketing/verify-performance.mjs
+@@ -0,0 +1,93 @@
++/** Read-only local performance verification. Requires Node >=22.19, the
++ * installed Playwright browser and an explicitly supplied Lighthouse CLI.
++ * Both original simulation and applied-throttling lanes retain their results.
++ * A passing diagnostic/observed result cannot waive the simulator budget.
++ */
++import { spawn } from 'node:child_process'
++import { createRequire } from 'node:module'
++import { access, mkdir, mkdtemp, readFile, writeFile, open } from 'node:fs/promises'
++import { join, resolve } from 'node:path'
++import { summarizePerformance } from './performance-results.mts'
++
++const require = createRequire(import.meta.url)
++const options = new Map()
++for (let index = 2; index < process.argv.length; index += 2) {
++    const key = process.argv[index]
++    const value = process.argv[index + 1]
++    if (!['--origin', '--output', '--lighthouse', '--chrome', '--repeats', '--locale'].includes(key) || !value || options.has(key)) {
++        throw new Error('Use --origin, --output and --lighthouse; optional: --chrome, --repeats and --locale')
++    }
++    options.set(key, value)
++}
++
++async function main() {
++    const origin = new URL(options.get('--origin') ?? 'http://127.0.0.1:9006')
++    if (!['127.0.0.1', 'localhost', '[::1]'].includes(origin.hostname) || !['http:', 'https:'].includes(origin.protocol) ||
++        origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) {
++        throw new Error('Only a loopback origin without credentials, path or query is supported')
++    }
++    const locale = options.get('--locale') ?? 'in'
++    if (!['in', 'in-hi', 'in-ta'].includes(locale)) throw new Error('Use a configured marketing locale')
++    const repeats = Number(options.get('--repeats') ?? 3)
++    if (!Number.isInteger(repeats) || repeats < 3 || repeats > 5) throw new Error('Use three to five repetitions')
++    if (!options.has('--lighthouse') || !options.has('--output')) throw new Error('--lighthouse and --output are required; no dependencies are downloaded')
++    const lighthouse = resolve(options.get('--lighthouse'))
++    const chrome = options.has('--chrome') ? resolve(options.get('--chrome')) : require('@playwright/test').chromium.executablePath()
++    await Promise.all([access(lighthouse), access(chrome)])
++    const output = resolve(options.get('--output'))
++    await mkdir(output, { recursive: true })
++    const directory = await mkdtemp(join(output, 'run-'))
++    const targets = [`/${locale}/pricing`, `/${locale}/resources/platform/building-first-letbuyy-store`]
++    const samples = []
++    const settings = []
++    let lastSummary
++    for (let repeat = 1; repeat <= repeats; repeat++) {
++        for (const method of ['simulate', 'devtools']) {
++            for (const [index, target] of targets.entries()) {
++                const name = `${index === 0 ? 'pricing' : 'guide'}-${method}-${repeat}`
++                const file = join(directory, `${name}.json`)
++                const log = await open(join(directory, `${name}.log`), 'w')
++                const args = [lighthouse, new URL(target, origin).href, '--chrome-flags=--headless --no-first-run',
++                    `--throttling-method=${method}`, '--only-categories=performance', '--output=json', `--output-path=${file}`, '--quiet', '--save-assets']
++                let timer
++                let exitCode
++                try {
++                    const child = spawn(process.execPath, args, { env: { ...process.env, CHROME_PATH: chrome }, stdio: ['ignore', log.fd, log.fd] })
++                    exitCode = await new Promise((done, reject) => {
++                        timer = setTimeout(() => child.kill('SIGTERM'), 180_000)
++                        child.once('error', reject)
++                        child.once('close', code => done(code ?? 1))
++                    })
++                } finally {
++                    clearTimeout(timer)
++                    await log.close()
++                }
++                let report
++                try { report = JSON.parse(await readFile(file, 'utf8')) } catch { report = {} }
++                const audits = report.audits ?? {}
++                const sample = {
++                    target, method, repeat, role: 'acceptance', exitCode,
++                    runtimeError: report.runtimeError ?? (report.audits ? null : 'No usable Lighthouse report'),
++                    lcpMs: audits['largest-contentful-paint']?.numericValue ?? null,
++                    tbtMs: audits['total-blocking-time']?.numericValue ?? null,
++                    cls: audits['cumulative-layout-shift']?.numericValue ?? null,
++                }
++                samples.push(sample)
++                settings.push({ name, lighthouseVersion: report.lighthouseVersion ?? null,
++                    userAgent: report.environment?.hostUserAgent ?? report.userAgent ?? null, settings: report.configSettings ?? null })
++                lastSummary = { capturedAt: new Date().toISOString(), origin: origin.origin, samples, settings,
++                    ...summarizePerformance(samples, targets) }
++                await writeFile(join(directory, 'summary.json'), `${JSON.stringify(lastSummary, null, 2)}\n`)
++                process.stdout.write(`${name}: LCP=${sample.lcpMs}ms TBT=${sample.tbtMs}ms CLS=${sample.cls}\n`)
++            }
++        }
++    }
++    process.stdout.write(`${JSON.stringify({ directory, originalSimulatedTargetMet: lastSummary.originalSimulatedTargetMet,
++        appliedLabTargetMet: lastSummary.appliedLabTargetMet, allRequiredLanesPass: lastSummary.allRequiredLanesPass })}\n`)
++    process.exitCode = lastSummary.allRequiredLanesPass ? 0 : 1
++}
++
++main().catch(error => {
++    process.stderr.write(`Performance verification did not complete: ${error.message}\n`)
++    process.exitCode = 1
++})
+--- /dev/null
++++ b/scripts/marketing/README.md
+@@ -0,0 +1,37 @@
++# Local marketing performance verification
++
++Use a production build with the real local gateway running. Development mode is
++useful for functional checks but does not establish production performance.
++The runner requires Node 22.19 or later, an installed Lighthouse CLI, and the
++installed Playwright Chromium browser. It does not download dependencies.
++
++```sh
++node scripts/marketing/verify-performance.mjs \
++  --origin http://127.0.0.1:9006 \
++  --lighthouse /absolute/path/to/lighthouse/cli/index.js \
++  --output /tmp/letbuyy-performance
++```
++
++Only loopback origins are accepted. Optional arguments: `--chrome` for an
++existing browser executable, `--locale` (`in`, `in-hi`, `in-ta`), and `--repeats`
++(3–5; default 3). Each run creates a separate output directory. JSON reports,
++traces, DevTools logs, command logs and a rolling summary are retained.
++
++The two targets are pricing and the first-store guide. Each receives three
++fresh browser launches per method: the original Lighthouse mobile simulation
++and separate applied DevTools throttling. Lighthouse defaults are preserved and
++the actual versions and complete configuration are recorded. Pin the same
++Lighthouse and browser versions when comparing builds. The server's optimizer
++cache can warm between requests; this does not certify a cold production edge.
++
++Every acceptance sample must satisfy LCP ≤2,500 ms, TBT ≤200 ms and CLS ≤0.1.
++Missing measurements, tool errors, duplicate repeat IDs, fewer than three
++samples per lane, or any failing sample prevent an overall pass. Medians are
++descriptive only. A passing applied measurement cannot erase a failing
++simulation. Diagnostic experiments cannot satisfy acceptance. The process exits
++1 for incomplete or failing acceptance; a successful Lighthouse process alone
++does not mean the performance budget passed.
++
++Both methods produce lab measurements. Neither establishes real-user Core Web
++Vitals or INP. Lighthouse documents differences and limitations in its
++[throttling guide](https://github.com/GoogleChrome/lighthouse/blob/main/docs/throttling.md).
+--- /dev/null
++++ b/tests/marketing/performance-measurement.test.ts
+@@ -0,0 +1,40 @@
++import assert from 'node:assert/strict'
++import test from 'node:test'
++import { summarizePerformance, type PerformanceSample } from '../../scripts/marketing/performance-results.mts'
++
++const targets = ['/pricing', '/guide']
++function completeSamples(): PerformanceSample[] {
++    return targets.flatMap(target => (['simulate', 'devtools'] as const).flatMap(method =>
++        [1, 2, 3].map(repeat => ({ target, method, repeat, role: 'acceptance' as const,
++            exitCode: 0, runtimeError: null, lcpMs: 2000, tbtMs: 0, cls: 0 }))))
++}
++
++test('passing applied measurements never hide a failed original simulation lane', () => {
++    const rows = completeSamples().map(row => row.method === 'simulate' ? { ...row, lcpMs: 3450 } : row)
++    const result = summarizePerformance(rows, targets)
++    assert.equal(result.appliedLabTargetMet, true)
++    assert.equal(result.originalSimulatedTargetMet, false)
++    assert.equal(result.allRequiredLanesPass, false)
++})
++
++test('one passing run or duplicated sample IDs cannot establish repeatability', () => {
++    const rows = completeSamples()
++    assert.equal(summarizePerformance(rows.filter(row => row.repeat === 1), targets).allRequiredLanesPass, false)
++    assert.equal(summarizePerformance(rows.map(row => ({ ...row, repeat: 1 })), targets).allRequiredLanesPass, false)
++    assert.equal(summarizePerformance(rows, targets).allRequiredLanesPass, true)
++})
++
++test('a diagnostic that changes delivery cannot satisfy site acceptance', () => {
++    const result = summarizePerformance(completeSamples().map(row => ({ ...row, role: 'diagnostic' })), targets)
++    assert.equal(result.diagnosticSamplesExcluded, 12)
++    assert.equal(result.allRequiredLanesPass, false)
++})
++
++test('outliers, absent measurements and tool errors remain failures', () => {
++    for (const change of [{ lcpMs: 2501 }, { tbtMs: 201 }, { cls: 0.101 }, { lcpMs: null },
++        { lcpMs: Number.NaN }, { lcpMs: 0 }, { exitCode: 1 }, { runtimeError: { code: 'NO_LCP' } }]) {
++        const rows = completeSamples()
++        rows[0] = { ...rows[0], ...change }
++        assert.equal(summarizePerformance(rows, targets).allRequiredLanesPass, false)
++    }
++})

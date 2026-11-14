@@ -1,8 +1,0 @@
-{
-  "recordedAt": "2026-10-24T12:33:04.497792+00:00",
-  "parent": "source-lease.json",
-  "path": "services/api-gateway/src/__tests__/owned-db/playfield201-catalog394-qualification.manual.ts",
-  "beforeSHA256": "84becdfe37203f28a31471c336cce40f2b559e0d6dcb61ea7bede7d50904767c",
-  "scope": "Nativepositivecataloguereadcontrol before negativeShadow, readonlyactualpublisherprofile diagnostic extractedfrompinnedproductionSQL, no guard/oracle/subtestweaken; original8phases9TAP remain",
-  "owner": "01a164a4-a342-76d3-ab33-65e021ed57db"
-}

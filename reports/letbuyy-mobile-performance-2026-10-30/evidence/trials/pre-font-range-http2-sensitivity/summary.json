@@ -1,0 +1,90 @@
+{
+  "captured_at": "2026-10-29T23:47:24.276790+00:00",
+  "method": "Additional default-simulated mobile A/B via read-only local TLS HTTP/2 proxy to the SAME frozen baseline and candidate artifacts. Self-signed local certificate accepted only by this diagnostic Chrome run; does not replace original HTTP/1.1 results or certify deployed protocols/field experience. Baseline rows reuse the unchanged frozen artifact measurements from this same session; their source timestamp is retained.",
+  "rows": [
+    {
+      "variant": "baseline",
+      "port": 9040,
+      "page": "home",
+      "exit_code": 0,
+      "lcp_ms": 1178.8235,
+      "tbt_ms": 265.5,
+      "cls": 0.0010159999999999998,
+      "performance": 0.95,
+      "protocols": [
+        "h2"
+      ],
+      "reused_frozen_baseline": true,
+      "source_captured_at": "2026-10-29T23:13:21.192520+00:00"
+    },
+    {
+      "variant": "baseline",
+      "port": 9040,
+      "page": "pricing",
+      "exit_code": 0,
+      "lcp_ms": 4052.401,
+      "tbt_ms": 336,
+      "cls": 0,
+      "performance": 0.79,
+      "protocols": [
+        "h2"
+      ],
+      "reused_frozen_baseline": true,
+      "source_captured_at": "2026-10-29T23:13:21.192520+00:00"
+    },
+    {
+      "variant": "baseline",
+      "port": 9040,
+      "page": "setup-guide",
+      "exit_code": 0,
+      "lcp_ms": 5853.3215,
+      "tbt_ms": 211.5,
+      "cls": 0,
+      "performance": 0.75,
+      "protocols": [
+        "h2"
+      ],
+      "reused_frozen_baseline": true,
+      "source_captured_at": "2026-10-29T23:13:21.192520+00:00"
+    },
+    {
+      "variant": "candidate",
+      "port": 9041,
+      "page": "home",
+      "exit_code": 0,
+      "lcp_ms": 1115.762,
+      "tbt_ms": 48,
+      "cls": 0,
+      "performance": 0.99,
+      "protocols": [
+        "h2"
+      ]
+    },
+    {
+      "variant": "candidate",
+      "port": 9041,
+      "page": "pricing",
+      "exit_code": 0,
+      "lcp_ms": 3002.01,
+      "tbt_ms": 86,
+      "cls": 0,
+      "performance": 0.94,
+      "protocols": [
+        "h2"
+      ]
+    },
+    {
+      "variant": "candidate",
+      "port": 9041,
+      "page": "setup-guide",
+      "exit_code": 0,
+      "lcp_ms": 4127.4745,
+      "tbt_ms": 28,
+      "cls": 0,
+      "performance": 0.86,
+      "protocols": [
+        "h2"
+      ]
+    }
+  ]
+}

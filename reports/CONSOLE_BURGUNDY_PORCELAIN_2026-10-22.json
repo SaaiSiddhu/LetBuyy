@@ -1,0 +1,58 @@
+{
+  "status": "LOCAL_UI_VERIFIED_HOSTED_PENDING",
+  "selection": "E \u2014 Burgundy & Porcelain",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "palette": {
+    "canvas": "#F6F2F3",
+    "sidebar": "#44232E",
+    "cards": "#FFFFFF",
+    "text": "#30232B",
+    "action": "#8D3F56"
+  },
+  "checks": {
+    "sharedUi": {
+      "passed": 52,
+      "failed": 0
+    },
+    "console": {
+      "passed": 46,
+      "failed": 0
+    },
+    "pagesAndVisual": {
+      "runId": "49585b5a13ab",
+      "passed": 2,
+      "failed": 0
+    },
+    "finalVisual": {
+      "runId": "8f32681027d2",
+      "passed": 1,
+      "failed": 0
+    },
+    "productionBuildExit": 0,
+    "types": "shared UI, Console and Gateway pass; final build checks Console types",
+    "scopedStyle": "Console ESLint and CSS stylelint pass",
+    "contracts": "DTCG parity, public API and protected token-variable snapshots pass",
+    "designSystemRatchet": "pass; no increased baseline",
+    "tokenAlias": "18 pre-existing findings reproduced byte-identically; validator remains red"
+  },
+  "contrast": {
+    "observations": 554,
+    "minimumRatio": 4.507812544919492,
+    "scope": "computed browser text-colour samples, not full WCAG or assistive-technology certification"
+  },
+  "sourceCopies": {
+    "candidate": "matches delivered runtime sources; generated next-env excluded",
+    "build-candidate": "matches delivered runtime sources; generated next-env excluded"
+  },
+  "preservation": {
+    "preexistingChangedFiles": 175,
+    "intentionalRuntimeAndTestChanges": 5,
+    "unrelatedPreexistingFilesPreserved": 170
+  },
+  "limits": [
+    "uncommitted local source",
+    "browser uses disposable synthetic data and development runtime",
+    "separate production compilation, no production browser acceptance",
+    "no merge, push, deploy, hosted migration, provider action or parent programme acceptance"
+  ]
+}

@@ -74,7 +74,6 @@ export function ExtensionConfigPanel({ appId, installationId, storeId }: Extensi
                     action: kind === 'extension' ? 'update_extension_registration' : 'update_function_registration',
                     installation_id: installationId,
                     registration_id: registration.id,
-                    store_id: storeId,
                     status: nextStatus,
                 }),
             });

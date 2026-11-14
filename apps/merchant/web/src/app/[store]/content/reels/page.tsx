@@ -5,7 +5,6 @@ import { Banner, Button, Card, Input, Section } from '@letbuyy/ui'
 import type { ReelDraftSelection, ReelMerchantCommand, ReelReadback, ReelReviewPage } from '@letbuyy/api-client'
 import { ReelMerchantCommandSchema } from '@letbuyy/cms-core'
 import { PrivateReelIntake } from '@/components/reels/PrivateReelIntake'
-import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 
 const emptySelection = (): ReelDraftSelection => ({ media_asset_id: null, listing_id: null, variant_id: null, thumbnail_asset_id: null, caption: '', rights_evidence_ids: [] })
@@ -26,7 +25,7 @@ function ReelWorkspace({ store, actorId }: { store: string; actorId: string }) {
         try { if (value) sessionStorage.setItem(recoveryKey, JSON.stringify(value)); else sessionStorage.removeItem(recoveryKey) } catch { /* The mounted request still retains its exact key. */ }
     }, [recoveryKey])
     const request = useCallback(async (path: string, command?: ReelMerchantCommand) => {
-        const response = await fetch(endpoint + path, { method: command ? 'POST' : 'GET', cache: 'no-store', ...(!command ? { signal: AbortSignal.timeout(15_000) } : {}), headers: {
+        const response = await fetch(endpoint + path, { method: command ? 'POST' : 'GET', cache: 'no-store', headers: {
             'Content-Type': 'application/json', 'X-LetBuyy-Merchant-Context': actorId,
             ...(command ? { 'X-Idempotency-Key': command.idempotency_key } : {}),
         }, ...(command ? { body: JSON.stringify(command) } : {}) })
@@ -103,7 +102,7 @@ function ReelWorkspace({ store, actorId }: { store: string; actorId: string }) {
         {error && <Banner title="Reel needs attention" variant="critical">{error}</Banner>}{notice && <p role="status">{notice}</p>}
         {loading ? <p role="status">Checking private reel access…</p> : <><Card><Section title="Your reels">
             <Button disabled={busy || retry} onClick={() => { setDetail(null); setReelId(''); setVersion(0); setSelection(emptySelection()); setNotice('New private draft.'); remember(null) }}>New draft</Button>
-            {!page ? <Button onClick={() => void load()}>Retry loading</Button> : page.items.length === 0 ? <div className="flex flex-col items-center gap-2 py-5 text-center"><MerchantEmptyArtwork scene="reels" /><p>No reel drafts yet.</p></div> : page.items.slice(0, 20).map(item => <p key={item.id}><Button disabled={busy || retry} onClick={() => void open(item.id)}>{item.status} · version {item.version} · {item.id}</Button></p>)}
+            {!page ? <Button onClick={() => void load()}>Retry loading</Button> : page.items.length === 0 ? <p>No reel drafts yet.</p> : page.items.slice(0, 20).map(item => <p key={item.id}><Button disabled={busy || retry} onClick={() => void open(item.id)}>{item.status} · version {item.version} · {item.id}</Button></p>)}
             {page && <div className="flex gap-2"><Button disabled={busy || retry || page.page <= 1} onClick={() => void load(page.page - 1)}>Previous</Button><Button disabled={busy || retry || !page.has_more} onClick={() => void load(page.page + 1)}>Next</Button></div>}
         </Section></Card>{page && <Card><Section title={reelId ? 'Edit current draft' : 'New private draft'}>
             <fieldset disabled={busy || retry || (detail !== null && !['draft', 'rejected', 'pending_review', 'approved'].includes(detail.reel.status))} className="grid gap-4">

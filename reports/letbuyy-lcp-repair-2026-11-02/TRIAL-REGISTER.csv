@@ -1,0 +1,49 @@
+trial,role,page,lcp_ms,tbt_ms,cls,tool_exit_code,retained_in_site,decision,evidence
+baseline,baseline,/in/pricing,3519.7789749999997,53,0,0,False,Unchanged task-start source; original simulation budget remains failing.,baseline-metrics/summary.json
+baseline,baseline,/in/resources/platform/building-first-letbuyy-store,3730.036,2,0,0,False,Unchanged task-start source; original simulation budget remains failing.,baseline-metrics/summary.json
+brotli,rejected_candidate,/in/pricing,3264.8047500000007,1.5,0,0,False,Delivery prototype not adopted; negotiation/fallback incomplete and pricing over budget.,brotli-metrics/summary.json
+brotli,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,1505.434,1.5,0,0,False,Delivery prototype not adopted; negotiation/fallback incomplete and pricing over budget.,brotli-metrics/summary.json
+critical-global-preview,diagnostic,/in/pricing,3095.9368,39.5,0,0,False,"Diagnostic critical CSS proxy, never accepted site source.",critical-global-preview-metrics/summary.json
+critical-global-preview,diagnostic,/in/resources/platform/building-first-letbuyy-store,3323.11325,18,0,0,False,"Diagnostic critical CSS proxy, never accepted site source.",critical-global-preview-metrics/summary.json
+critical-preview,diagnostic,/in/pricing,2933.7734,6.5,0,0,False,"Diagnostic critical CSS proxy, never accepted site source.",critical-preview-metrics/summary.json
+critical-preview,diagnostic,/in/resources/platform/building-first-letbuyy-store,3336.593249999999,11.5,0.759316,0,False,"Diagnostic critical CSS proxy, never accepted site source.",critical-preview-metrics/summary.json
+css-combined,rejected_candidate,/in/pricing,2958.244925,44.5,0,0,False,Exact declaration multiset retained in scratch; budget still failed; no root CSS change.,css-combined-metrics/summary.json
+css-combined,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3104.703,22,0,0,False,Exact declaration multiset retained in scratch; budget still failed; no root CSS change.,css-combined-metrics/summary.json
+default-js-chunks,rejected_candidate,/in/pricing,3529.662000000001,24.999999999999773,0,0,False,Removing the existing shared split raised requests/bytes and worsened both simulations.,default-js-chunks-metrics/summary.json
+default-js-chunks,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3764.4820000000004,2,0,0,False,Removing the existing shared split raised requests/bytes and worsened both simulations.,default-js-chunks-metrics/summary.json
+delayed-init,rejected_candidate,/in/pricing,3437.044,55.57600000000002,0,0,False,Image-aware motion initialization did not meet budgets; not adopted.,delayed-init-metrics/summary.json
+delayed-init,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3731.696,2,0,0,False,Image-aware motion initialization did not meet budgets; not adopted.,delayed-init-metrics/summary.json
+early-image,rejected_candidate,/in/pricing,3266.7560000000003,3,0,0,False,Early image hint did not meet both page budgets.,early-image-metrics/summary.json
+early-image,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,1504.888,2.5,0,0,False,Early image hint did not meet both page budgets.,early-image-metrics/summary.json
+external-tokens,rejected_candidate,/in/pricing,3102.09575,40.317374999999856,0,0,False,External token stylesheet reduced HTML but did not meet budgets.,external-tokens-metrics/summary.json
+external-tokens,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3189.9140000000007,2,0,0,False,External token stylesheet reduced HTML but did not meet budgets.,external-tokens-metrics/summary.json
+fast-finish-all-diagnostic,diagnostic,/in/pricing,2167.7826999999997,16,0,0,False,Diagnostic only: delayed all unchanged app JS250ms; passing prediction is not a site fix.,fast-finish-all-diagnostic-metrics/summary.json
+fast-finish-all-diagnostic,diagnostic,/in/resources/platform/building-first-letbuyy-store,2037.6503000000002,15,0,0,False,Diagnostic only: delayed all unchanged app JS250ms; passing prediction is not a site fix.,fast-finish-all-diagnostic-metrics/summary.json
+fast-finish-diagnostic,diagnostic,/in/pricing,2982.5058750000003,0.5,0,0,False,"Diagnostic only: delayed common JS250ms, unchanged source; not acceptance.",fast-finish-diagnostic-metrics/summary.json
+fast-finish-diagnostic,diagnostic,/in/resources/platform/building-first-letbuyy-store,3291.3918499999995,1.5,0,0,False,"Diagnostic only: delayed common JS250ms, unchanged source; not acceptance.",fast-finish-diagnostic-metrics/summary.json
+final-candidate,rejected_candidate,/in/pricing,2863.7165999999997,34,0,0,False,Scratch name only. Pricing failed and guide had only one passing sample; never accepted.,final-candidate-metrics/summary.json
+final-candidate,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,1354.304,23,0,0,False,Scratch name only. Pricing failed and guide had only one passing sample; never accepted.,final-candidate-metrics/summary.json
+font-core-only,rejected_candidate,/in/pricing,3684.951,23,0,0,False,"Core-subset trial also triggered the full font, adding transfer cost; rejected.",font-core-only-metrics/summary.json
+font-core-only,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3729.6399999999994,2,0,0,False,"Core-subset trial also triggered the full font, adding transfer cost; rejected.",font-core-only-metrics/summary.json
+inline-font,rejected_candidate,/in/pricing,2989.6130000000003,40.5,0.002438,0,False,Embedding current font bytes did not meet budgets.,inline-font-metrics/summary.json
+inline-font,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3249.1975,21,7.9e-05,0,False,Embedding current font bytes did not meet budgets.,inline-font-metrics/summary.json
+lean-combined,rejected_candidate,/in/pricing,3013.5267999999996,45,0,0,False,Combined payload/delivery trial remained over budget.,lean-combined-metrics/summary.json
+lean-combined,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3102.7264999999998,21.5,0,0,False,Combined payload/delivery trial remained over budget.,lean-combined-metrics/summary.json
+native-sync,rejected_candidate,/in/pricing,3443.2434000000003,55.62609999999995,0,0,False,Native image/decode priority prototype did not meet budgets.,native-sync-metrics/summary.json
+native-sync,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3730.5519999999997,1.5,0,0,False,Native image/decode priority prototype did not meet budgets.,native-sync-metrics/summary.json
+primary-bundle,rejected_candidate,/in/pricing,3311.1487500000003,69,0,0,False,Merging initial chunks did not meet both budgets.,primary-bundle-metrics/summary.json
+primary-bundle,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3109.772,25,0,0,False,Merging initial chunks did not meet both budgets.,primary-bundle-metrics/summary.json
+quiet-initial,rejected_candidate,/in/pricing,3018.425,63,0,0,False,Identical inline SVGs and prefetch change did not meet budgets.,quiet-initial-metrics/summary.json
+quiet-initial,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3099.7160000000003,22.5,0,0,False,Identical inline SVGs and prefetch change did not meet budgets.,quiet-initial-metrics/summary.json
+selective-hydration,rejected_candidate,/in/pricing,3608.8999999999996,40,0,0,False,Rejected: introduced unknown-route 200 responses; budgets also failed.,selective-hydration-metrics/summary.json
+selective-hydration,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,4224.155999999999,35.000000000000455,0,0,False,Rejected: introduced unknown-route 200 responses; budgets also failed.,selective-hydration-metrics/summary.json
+semantic-islands,rejected_candidate,/in/pricing,3480.7991500000003,26.999999999999545,0,0,False,Static article/pricing islands did not meet budgets.,semantic-islands-metrics/summary.json
+semantic-islands,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3730.608,2,0,0,False,Static article/pricing islands did not meet budgets.,semantic-islands-metrics/summary.json
+semantic-streaming,rejected_candidate,/in/pricing,3462.5474999999997,52.408750000000055,0,0,False,Server shell/streaming trial did not meet budgets; not adopted.,semantic-streaming-metrics/summary.json
+semantic-streaming,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3685.7920000000004,18,0,0,False,Server shell/streaming trial did not meet budgets; not adopted.,semantic-streaming-metrics/summary.json
+theme-boundary-fixed,rejected_candidate,/in/pricing,3134.4987500000007,1,0,0,False,Server/client theme split still exceeded both budgets.,theme-boundary-fixed-metrics/summary.json
+theme-boundary-fixed,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3383.4079999999994,0.5,0,0,False,Server/client theme split still exceeded both budgets.,theme-boundary-fixed-metrics/summary.json
+theme-boundary,rejected_candidate,/in/pricing,3255.765,27.5,0,0,False,First measurement did not resolve local UI alias; fixed trial remains over budget.,theme-boundary-metrics/summary.json
+theme-boundary,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3429.74,2,0,0,False,First measurement did not resolve local UI alias; fixed trial remains over budget.,theme-boundary-metrics/summary.json
+theme-motion,rejected_candidate,/in/pricing,3011.74,28,0,0,False,Async motion prototype remained over budget; not adopted.,theme-motion-metrics/summary.json
+theme-motion,rejected_candidate,/in/resources/platform/building-first-letbuyy-store,3236.2880000000005,10,0,0,False,Async motion prototype remained over budget; not adopted.,theme-motion-metrics/summary.json

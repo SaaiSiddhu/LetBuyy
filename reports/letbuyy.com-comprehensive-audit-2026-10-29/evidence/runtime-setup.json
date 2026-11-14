@@ -1,0 +1,13 @@
+{
+  "setup_command": "/Users/saai_mithra/.codex/skills/seo/scripts/seo setup",
+  "exit_code": 0,
+  "actual_output": [
+    "Creating isolated Claude SEO environment...",
+    "Claude SEO runtime is ready."
+  ],
+  "requirements_sha256": "0d36b4a6c9268290d63ab7d0834d4c9e5a865d9acad6a74c95749e72fdacb829",
+  "dependency_constraints_modified": false,
+  "global_python_packages_installed": false,
+  "core_ready": true,
+  "browser_ready": true
+}

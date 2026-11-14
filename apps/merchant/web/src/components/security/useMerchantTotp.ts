@@ -32,7 +32,7 @@ export function useMerchantTotp(store: string) {
     const forget = useCallback((command: string) => sessionStorage.removeItem(namespace + command), [namespace])
     const request = useCallback(async (path: string, body?: Record<string, unknown>, commandKey?: string) => {
         const capturedEpoch = epoch.current
-        const response = await fetch(endpoint + path, { method: body ? 'POST' : 'GET', cache: 'no-store', ...(!body ? { signal: AbortSignal.timeout(15_000) } : {}), headers: { ...headers(), ...(commandKey ? { 'X-Idempotency-Key': commandKey } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) })
+        const response = await fetch(endpoint + path, { method: body ? 'POST' : 'GET', cache: 'no-store', headers: { ...headers(), ...(commandKey ? { 'X-Idempotency-Key': commandKey } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) })
         const payload = await response.json().catch(() => null)
         if (!alive.current || capturedEpoch !== epoch.current) return null
         if (!response.ok) {

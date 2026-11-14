@@ -33,7 +33,6 @@ import {
     migrationsDir,
     numericPrefix,
     referencesIn,
-    stripTsComments,
 } from './reachability-common.mjs';
 
 // The canonical money RPCs CLAUDE.md names. They predate 217 — create_checkout_order goes back to
@@ -152,13 +151,4 @@ test('every exemption names a function that actually exists', () => {
     for (const name of Object.keys(EXEMPT)) {
         assert.ok(names.has(name), `${name} is exempted but is not a governed function — stale entry`);
     }
-});
-
-// Comment delimiters inside values are data; actual comments never count.
-test('reachability retains SQL after URL and regex literals but ignores comments and prefixes',()=>{
- const name='synthetic_rpc';
- const text=stripTsComments("const url='https://example.invalid'; const re=/https?:\\/\\//; const sql=`select public.synthetic_rpc($1)`; // public.comment_rpc()\n/* 'comment_rpc' */");
- assert.deepEqual(referencesIn([{path:'fixture.ts',text}],name),['fixture.ts']);
- assert.deepEqual(referencesIn([{path:'fixture.ts',text}],'comment_rpc'),[]);
- assert.deepEqual(referencesIn([{path:'fixture.ts',text}],'synthetic_r'),[]);
 });

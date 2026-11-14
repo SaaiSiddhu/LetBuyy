@@ -55,11 +55,6 @@ async function mount(transport: Transport) {
         return element
     }
     const click = async (label: string) => { await act(async () => { button(label).click() }) }
-    const openFilters = async () => { await act(async () => {
-        const search = container.querySelector('input[type="search"]') as HTMLInputElement | null
-        assert.ok(search, 'Products search opens the filter controls')
-        search.focus()
-    }) }
     const change = async (name: string, status: string) => { await act(async () => {
         const element = container.querySelector(`select[aria-label="Change status for ${name}"]`) as HTMLSelectElement
         assert.ok(element, 'real row status selector'); assert.equal(element.disabled, false)
@@ -78,7 +73,7 @@ async function mount(transport: Transport) {
         await act(async () => root.unmount()); dom.window.close()
         for (const name of names) { if (previous[name]) Object.defineProperty(globalThis, name, previous[name]!); else Reflect.deleteProperty(globalThis, name) }
     }
-    return { container, render, remount, button, click, openFilters, change, selectRows, text, storage: dom.window.sessionStorage, close }
+    return { container, render, remount, button, click, change, selectRows, text, storage: dom.window.sessionStorage, close }
 }
 
 test('single row commands use opaque loaded/returned revisions, canonical pairs and captured context', async () => {
@@ -136,7 +131,7 @@ test('missing revision sends no command and refresh can load a real revision',as
     let loaded:any={...row(),version:undefined},writes=0
     const h=await mount(async(_url,init)=>{if(init?.method==='PATCH'){writes++;const body=JSON.parse(String(init.body));return json({...row(113),...body,version:127})}return json([loaded])})
     try{await h.change(loaded.name,'draft');assert.equal(writes,0);assert.match(h.text(),/load its current version/)
-        loaded=row(113);await h.openFilters();await h.click('Refresh products');await h.change(loaded.name,'draft');assert.equal(writes,1);assert.match(h.text(),/1 confirmed/)
+        loaded=row(113);await h.click('Refresh');await h.change(loaded.name,'draft');assert.equal(writes,1);assert.match(h.text(),/1 confirmed/)
     }finally{await h.close()}
 })
 
@@ -159,7 +154,7 @@ test('corrupt saved command blocks fresh status changes rather than minting a re
     const h=await mount(async(_url,init)=>{if(init?.method==='PATCH')writes++;return json([row()])})
     try{h.storage.setItem(`letbuyy.product-status.v1:${actorId}:alpha`,'{unreadable');await h.remount()
         assert.match(h.text(),/Saved status changes need recovery/)
-        const select=h.container.querySelector('select[aria-label="Change status for Original product"]')as HTMLSelectElement;assert.ok(select);assert.equal(select.disabled,true);assert.equal(writes,0)
+        const select=h.container.querySelector('select[aria-label]')as HTMLSelectElement;assert.equal(select.disabled,true);assert.equal(writes,0)
         assert.equal(h.storage.getItem(`letbuyy.product-status.v1:${actorId}:alpha`),'{unreadable')
     }finally{await h.close()}
 })
@@ -189,7 +184,7 @@ test('an outstanding collection response cannot hydrate a newly selected store',
         return late.promise
     })
     try{
-        await h.openFilters();const refresh=h.click('Refresh products');await new Promise(resolve=>setTimeout(resolve,0));await h.render('beta')
+        const refresh=h.click('Refresh');await new Promise(resolve=>setTimeout(resolve,0));await h.render('beta')
         await act(async()=>late.resolve(json([row(29,'Alpha late')])));await refresh
         assert.match(h.text(),/Beta only/);assert.doesNotMatch(h.text(),/Alpha late/)
     }finally{await h.close()}

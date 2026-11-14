@@ -1,0 +1,14 @@
+[
+  {
+    "file": "visual-comparison.json",
+    "old_method": "Frozen task-start production baseline9046 versus final repaired source build9048; natural scrolling first reveals progressive sections, then content-visibility:auto is disabled only for a complete full-page visual/copy capture; independent natural viewport comparisons retain it; fixed reduced-motion light/dark viewports; all art explicitly decoded and all sections fully revealed for visual capture; pixel differences from responsive codec changes retained separately from structural equality; IMG computed color is excluded because next/image adds color:transparent to an otherwise identical external SVG; SVG label geometry is included; progressive previews revealed by real scrolling",
+    "corrected_method": "Frozen task-start baseline9049 versus retained source build9048. Reduced-motion light/dark responsive captures, art/fonts decoded; natural scrolling reveals progressive sections, then content-visibility is disabled only for full-page comparison. Geometry, copy and sampled styles are checked; pixel differences are reported separately. Independent natural-scroll comparisons retain content-visibility.",
+    "reason": "Copied harness label referenced the earlier task port; actual capture calls used baseline9049 and candidate9048. Measurements and rows are unchanged."
+  },
+  {
+    "file": "ratio-fix-visual.json",
+    "old_method": "Frozen task-start production baseline9046 versus final repaired source build9048; natural scrolling first reveals progressive sections, then content-visibility:auto is disabled only for a complete full-page visual/copy capture; independent natural viewport comparisons retain it; fixed reduced-motion light/dark viewports; all art explicitly decoded and all sections fully revealed for visual capture; pixel differences from responsive codec changes retained separately from structural equality; IMG computed color is excluded because next/image adds color:transparent to an otherwise identical external SVG; SVG label geometry is included; progressive previews revealed by real scrolling",
+    "corrected_method": "Frozen task-start baseline9049 versus retained source build9048. Reduced-motion light/dark responsive captures, art/fonts decoded; natural scrolling reveals progressive sections, then content-visibility is disabled only for full-page comparison. Geometry, copy and sampled styles are checked; pixel differences are reported separately. Independent natural-scroll comparisons retain content-visibility.",
+    "reason": "Copied harness label referenced the earlier task port; actual capture calls used baseline9049 and candidate9048. Measurements and rows are unchanged."
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "method": "Reuse each existing parent useCopy translator; keep the same expressions, variables, rendered text and DOM; no catalogue edits",
+  "files": [
+    {
+      "file": "apps/marketing/web/src/components/Pricing.tsx",
+      "text_leaf_components_inlined": 31
+    },
+    {
+      "file": "apps/marketing/web/src/components/Hero.tsx",
+      "text_leaf_components_inlined": 6
+    },
+    {
+      "file": "apps/marketing/web/src/components/MerchantJourney.tsx",
+      "text_leaf_components_inlined": 13
+    },
+    {
+      "file": "apps/marketing/web/src/components/FAQ.tsx",
+      "text_leaf_components_inlined": 8
+    },
+    {
+      "file": "apps/marketing/web/src/components/Footer.tsx",
+      "text_leaf_components_inlined": 1
+    }
+  ]
+}

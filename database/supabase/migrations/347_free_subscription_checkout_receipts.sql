@@ -4,7 +4,7 @@
 BEGIN;
 CREATE OR REPLACE FUNCTION public.claim_merchant_subscription_checkout_v1(
  p_actor uuid,p_site uuid,p_key text,p_request jsonb,p_quote jsonb DEFAULT NULL)
-RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public SET application_name='claim_merchant_subscription_checkout_v1:347' AS $f$
+RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public SET letbuyy.subscription_checkout_version='347' AS $f$
 DECLARE s public.sites%ROWTYPE;c public.billing_history%ROWTYPE;receipt uuid:=gen_random_uuid();amount bigint;scope text;free_quote boolean;
 BEGIN
  SELECT * INTO s FROM public.sites WHERE id=p_site AND deleted_at IS NULL FOR SHARE;
@@ -13,10 +13,10 @@ BEGIN
  -- The table admission lock is already held by the store SELECT above. A
  -- call compiled before rollback may have waited on that lock; verify the
  -- currently bound function's own SET attribute, not the caller/session GUC.
- -- Read the live catalog binding even for a cached frame; admit exact supported versions only.
- IF p_quote->>'mode'='free_activation' AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc current_binding
-  WHERE current_binding.oid='public.claim_merchant_subscription_checkout_v1(uuid,uuid,text,jsonb,jsonb)'::pg_catalog.regprocedure
-   AND current_binding.proconfig && ARRAY['application_name=claim_merchant_subscription_checkout_v1:347','application_name=claim_merchant_subscription_checkout_v1:347:360']::text[]) THEN
+ -- pg_get_functiondef reads the live catalog binding even for a cached frame.
+ IF p_quote->>'mode'='free_activation' AND pg_catalog.strpos(
+  pg_catalog.split_part(pg_catalog.pg_get_functiondef('public.claim_merchant_subscription_checkout_v1(uuid,uuid,text,jsonb,jsonb)'::pg_catalog.regprocedure),E'\nAS ',1),
+  E'\n SET "letbuyy.subscription_checkout_version" TO ''347''')=0 THEN
   RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_CONTEXT_INVALID'); END IF;
  IF nullif(btrim(p_key),'') IS NULL OR length(p_key)>200 OR jsonb_typeof(p_request) IS DISTINCT FROM 'object' THEN
   RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_CONTEXT_INVALID'); END IF;
@@ -104,7 +104,7 @@ BEGIN
  RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_CHECKOUT_CONFLICT');
 END $f$;
 CREATE OR REPLACE FUNCTION public.activate_merchant_subscription_v1(p_input jsonb)
-RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public SET application_name='activate_merchant_subscription_v1:347' AS $function$
+RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public SET letbuyy.subscription_checkout_version='347' AS $function$
 DECLARE s public.sites%ROWTYPE;plan public.plans%ROWTYPE;existing public.subscriptions%ROWTYPE;created public.subscriptions%ROWTYPE;
  actor uuid;site uuid;plan_id uuid;gateway text;payment text;period text;amount bigint;tax bigint;total bigint;
  charge public.billing_history%ROWTYPE;source_ref text;free_id uuid;is_free boolean;
@@ -146,10 +146,10 @@ BEGIN
  -- The table admission lock is already held by the store SELECT above. A
  -- call compiled before rollback may have waited on that lock; verify the
  -- currently bound function's own SET attribute, not the caller/session GUC.
- -- Read the live catalog binding even for a cached frame; admit exact supported versions only.
- IF is_free AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc current_binding
-  WHERE current_binding.oid='public.activate_merchant_subscription_v1(jsonb)'::pg_catalog.regprocedure
-   AND current_binding.proconfig && ARRAY['application_name=activate_merchant_subscription_v1:347','application_name=activate_merchant_subscription_v1:347:360']::text[]) THEN
+ -- pg_get_functiondef reads the live catalog binding even for a cached frame.
+ IF is_free AND pg_catalog.strpos(
+  pg_catalog.split_part(pg_catalog.pg_get_functiondef('public.activate_merchant_subscription_v1(jsonb)'::pg_catalog.regprocedure),E'\nAS ',1),
+  E'\n SET "letbuyy.subscription_checkout_version" TO ''347''')=0 THEN
   RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_CONTEXT_INVALID'); END IF;
  IF is_free THEN
   SELECT * INTO charge FROM public.billing_history WHERE id=free_id FOR UPDATE;

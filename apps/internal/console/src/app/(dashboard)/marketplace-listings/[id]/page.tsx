@@ -1,3 +1,4 @@
+import { ConsoleActionForm } from '@/components/ConsoleActionForm';
 import Link from 'next/link';
 import { Table, Button, Input, Textarea } from '@letbuyy/ui';
 import { ConsoleWorkspace, EmptyDataState, Panel, StatusPill } from '@/components/_local-ui/console-workspace';
@@ -49,7 +50,7 @@ function DecisionForm({ listingId, decision, action, label, reasonRequired = fal
 }) {
     const id = `${decision}-reason`;
     return (
-        <form action={action} className="space-y-3">
+        <ConsoleActionForm action={action} className="space-y-3">
             <Input type="hidden" name="listing_id" value={listingId} />
             <Input type="hidden" name="idempotency_key" value={newListingDecisionKey(decision, listingId)} />
             {reasonRequired && <>
@@ -57,7 +58,7 @@ function DecisionForm({ listingId, decision, action, label, reasonRequired = fal
                 <Textarea id={id} name="reason" minLength={MIN_DECISION_REASON} maxLength={MAX_DECISION_REASON} required />
             </>}
             <Button type="submit" variant={decision === 'approve' ? 'primary' : 'secondary'}>{label}</Button>
-        </form>
+        </ConsoleActionForm>
     );
 }
 
@@ -106,18 +107,18 @@ export default async function MarketplaceListingDetailPage({ params }: { params:
                 </Panel>
 
                 {listing.status === 'pending_review' && !listing.assigned_reviewer_id && consoleSession.userId && <Panel title="Claim review" description="Claiming reserves this pending listing for your review and adds an assignment event to its audit history.">
-                    <form action={claimListingReview} className="space-y-3">
+                    <ConsoleActionForm action={claimListingReview} className="space-y-3">
                         <Input type="hidden" name="listing_id" value={listing.id} />
                         <Input type="hidden" name="expected_version" value={listing.version} />
                         <Input type="hidden" name="idempotency_key" value={newListingClaimKey(listing.id)} />
                         <label htmlFor="claim-reason" className="block text-sm font-medium">Claim reason</label>
                         <Textarea id="claim-reason" name="reason" minLength={MIN_DECISION_REASON} maxLength={MAX_DECISION_REASON} required />
                         <Button type="submit" variant="secondary">Claim for review</Button>
-                    </form>
+                    </ConsoleActionForm>
                 </Panel>}
                 {listing.assigned_reviewer_id && <Panel title="Reviewer assignment" description={`Assigned to ${listing.assigned_reviewer?.full_name || 'an assigned reviewer'}${listing.reviewer_assigned_at ? ` · ${formatDateTime(listing.reviewer_assigned_at)}` : ''}`}><EmptyDataState message="Assignment changes are recorded in moderation history." /></Panel>}
                 {listing.status === 'pending_review' && consoleSession.userId && !reviewersResponse?.error && <Panel title={listing.assigned_reviewer_id ? 'Reassign reviewer' : 'Assign reviewer'} description="An active platform lead or admin can change assignment. The database checks the displayed listing version and records the change atomically.">
-                    {eligibleReviewers.length === 0 ? <EmptyDataState message="No other active platform reviewers are available to assign this review." /> : <form action={assignListingReviewer} className="space-y-3">
+                    {eligibleReviewers.length === 0 ? <EmptyDataState message="No other active platform reviewers are available to assign this review." /> : <ConsoleActionForm action={assignListingReviewer} className="space-y-3">
                         <Input type="hidden" name="listing_id" value={listing.id} />
                         <Input type="hidden" name="expected_version" value={listing.version} />
                         <Input type="hidden" name="idempotency_key" value={newListingAssignmentKey(listing.id)} />
@@ -129,7 +130,7 @@ export default async function MarketplaceListingDetailPage({ params }: { params:
                         <label htmlFor="assignment-reason" className="block text-sm font-medium">Assignment reason</label>
                         <Textarea id="assignment-reason" name="reason" minLength={MIN_DECISION_REASON} maxLength={MAX_DECISION_REASON} required />
                         <Button type="submit" variant="secondary">{listing.assigned_reviewer_id ? 'Reassign review' : 'Assign review'}</Button>
-                    </form>}
+                    </ConsoleActionForm>}
                 </Panel>}
 
                 {listing.status === 'pending_review' && listing.submitted_product_snapshot && listing.assigned_reviewer_id === consoleSession.userId && <Panel title="Record review decision" description="Only the assigned reviewer can decide. Rejection and take-down reasons are recorded for the merchant; every action requires an MFA-verified console session.">

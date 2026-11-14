@@ -1,0 +1,372 @@
+{
+  "captured_at": "2026-10-29T20:10:31.751463+00:00",
+  "data_source": "Existing local PostgreSQL -> real local gateway9010 -> marketing9006; no fixture responses or request fulfilment stubs",
+  "read_only": "All non-GET/HEAD browser requests blocked. No signup, OTP, checkout or payment submitted.",
+  "rows": [
+    {
+      "segment": "in",
+      "mobile": false,
+      "status": 200,
+      "root_language": "en",
+      "h1_count": 1,
+      "cards": [
+        {
+          "slug": "launch",
+          "visible_name": "Launch",
+          "price_text": "₹199/month",
+          "expected_rupees": 199,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "growth",
+          "visible_name": "Growth",
+          "price_text": "₹699/month",
+          "expected_rupees": 699,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "scale",
+          "visible_name": "Scale",
+          "price_text": "Coming soon",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        },
+        {
+          "slug": "commerce_os",
+          "visible_name": "Commerce OS",
+          "price_text": "Coming soon",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        }
+      ],
+      "page_errors": [],
+      "viewport": {
+        "width": 1366,
+        "scroll": 1366
+      },
+      "passed": true,
+      "screenshot": "evidence/pricing-desktop.png"
+    },
+    {
+      "segment": "in-hi",
+      "mobile": false,
+      "status": 200,
+      "root_language": "hi",
+      "h1_count": 1,
+      "cards": [
+        {
+          "slug": "launch",
+          "visible_name": "शुरुआत",
+          "price_text": "₹199/माह",
+          "expected_rupees": 199,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "growth",
+          "visible_name": "विकास",
+          "price_text": "₹699/माह",
+          "expected_rupees": 699,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "scale",
+          "visible_name": "विस्तार",
+          "price_text": "जल्द आ रहा है",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        },
+        {
+          "slug": "commerce_os",
+          "visible_name": "Commerce OS",
+          "price_text": "जल्द आ रहा है",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        }
+      ],
+      "page_errors": [],
+      "viewport": {
+        "width": 1366,
+        "scroll": 1366
+      },
+      "passed": true
+    },
+    {
+      "segment": "in-ta",
+      "mobile": false,
+      "status": 200,
+      "root_language": "ta",
+      "h1_count": 1,
+      "cards": [
+        {
+          "slug": "launch",
+          "visible_name": "தொடக்கம்",
+          "price_text": "₹199/மாதம்",
+          "expected_rupees": 199,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "growth",
+          "visible_name": "வளர்ச்சி",
+          "price_text": "₹699/மாதம்",
+          "expected_rupees": 699,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "scale",
+          "visible_name": "விரிவாக்கம்",
+          "price_text": "விரைவில்",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        },
+        {
+          "slug": "commerce_os",
+          "visible_name": "Commerce OS",
+          "price_text": "விரைவில்",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        }
+      ],
+      "page_errors": [],
+      "viewport": {
+        "width": 1366,
+        "scroll": 1366
+      },
+      "passed": true
+    },
+    {
+      "segment": "in",
+      "mobile": true,
+      "status": 200,
+      "root_language": "en",
+      "h1_count": 1,
+      "cards": [
+        {
+          "slug": "launch",
+          "visible_name": "Launch",
+          "price_text": "₹199/month",
+          "expected_rupees": 199,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "growth",
+          "visible_name": "Growth",
+          "price_text": "₹699/month",
+          "expected_rupees": 699,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "scale",
+          "visible_name": "Scale",
+          "price_text": "Coming soon",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        },
+        {
+          "slug": "commerce_os",
+          "visible_name": "Commerce OS",
+          "price_text": "Coming soon",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        }
+      ],
+      "page_errors": [],
+      "viewport": {
+        "width": 375,
+        "scroll": 375
+      },
+      "passed": true,
+      "screenshot": "evidence/pricing-mobile.png"
+    },
+    {
+      "segment": "in-hi",
+      "mobile": true,
+      "status": 200,
+      "root_language": "hi",
+      "h1_count": 1,
+      "cards": [
+        {
+          "slug": "launch",
+          "visible_name": "शुरुआत",
+          "price_text": "₹199/माह",
+          "expected_rupees": 199,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "growth",
+          "visible_name": "विकास",
+          "price_text": "₹699/माह",
+          "expected_rupees": 699,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "scale",
+          "visible_name": "विस्तार",
+          "price_text": "जल्द आ रहा है",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        },
+        {
+          "slug": "commerce_os",
+          "visible_name": "Commerce OS",
+          "price_text": "जल्द आ रहा है",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        }
+      ],
+      "page_errors": [],
+      "viewport": {
+        "width": 375,
+        "scroll": 375
+      },
+      "passed": true
+    },
+    {
+      "segment": "in-ta",
+      "mobile": true,
+      "status": 200,
+      "root_language": "ta",
+      "h1_count": 1,
+      "cards": [
+        {
+          "slug": "launch",
+          "visible_name": "தொடக்கம்",
+          "price_text": "₹199/மாதம்",
+          "expected_rupees": 199,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "growth",
+          "visible_name": "வளர்ச்சி",
+          "price_text": "₹699/மாதம்",
+          "expected_rupees": 699,
+          "signup_links": 1,
+          "signup_href": "http://localhost:9002/signup",
+          "disabled_action_count": 0,
+          "passed": true
+        },
+        {
+          "slug": "scale",
+          "visible_name": "விரிவாக்கம்",
+          "price_text": "விரைவில்",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        },
+        {
+          "slug": "commerce_os",
+          "visible_name": "Commerce OS",
+          "price_text": "விரைவில்",
+          "expected_rupees": null,
+          "signup_links": 0,
+          "signup_href": null,
+          "disabled_action_count": 1,
+          "passed": true
+        }
+      ],
+      "page_errors": [],
+      "viewport": {
+        "width": 375,
+        "scroll": 375
+      },
+      "passed": true
+    }
+  ],
+  "no_javascript": [
+    {
+      "path": "/in",
+      "status": 200,
+      "launch199": true,
+      "growth699": true,
+      "passed": true
+    },
+    {
+      "path": "/in/pricing",
+      "status": 200,
+      "launch199": true,
+      "growth699": true,
+      "passed": true
+    }
+  ],
+  "comparison_controls": {
+    "rows_all": 110,
+    "rows_differences": 61,
+    "rows_restored": 110,
+    "expanded": true,
+    "collapsed": true,
+    "passed": true
+  },
+  "signup_handoff": {
+    "href": "http://localhost:9002/signup",
+    "final_url": "http://localhost:9002/signup",
+    "email_form_visible": true,
+    "title": "LetBuyy - Create Your Online Store",
+    "submitted": false,
+    "passed": true
+  },
+  "passed": true
+}

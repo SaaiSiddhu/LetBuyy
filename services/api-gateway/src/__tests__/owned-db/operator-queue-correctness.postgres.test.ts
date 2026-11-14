@@ -32,7 +32,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test, { afterEach, before } from 'node:test';
-import {setTimeout as pause} from 'node:timers/promises';
 import { createLetbuyyInternalIdentityHeaders } from '@letbuyy/auth-core';
 import {
     Gateway,
@@ -139,9 +138,16 @@ function seedSuperAdmin(label: string): Person {
 
 /** A request as this person: a freshly signed internal identity, the credential platform staff present. */
 async function as(person: Person, path: string, init: RequestInit = {}): Promise<GatewayResponse> {
-    await pause(800); // Keep ordinary journeys within the real 20-point/s limiter.
-    const headers = { ...(await signedIdentityHeaders(person.id, person.email)), 'X-Idempotency-Key': crypto.randomUUID(), ...((init.headers as Record<string, string> | undefined) ?? {}) };
-    return gateway.request(path, { ...init, headers });
+    // This dense matrix obeys the real production cost budget. Only the
+    // pre-handler budget refusal is retried; assertions still see real denials.
+    const key=crypto.randomUUID();
+    for(let attempt=0;;attempt++) {
+        const headers = { ...(await signedIdentityHeaders(person.id, person.email)), 'X-Idempotency-Key': key, ...((init.headers as Record<string, string> | undefined) ?? {}) };
+        const result=await gateway.request(path, { ...init, headers });
+        if(result.status!==429||result.json?.error?.code!=='QUERY_COST_RATE_LIMITED'||attempt>=3)return result;
+        const seconds=Number(result.headers.get('Retry-After'));
+        await new Promise(resolve=>setTimeout(resolve,Math.min(60000,Math.max(1000,(Number.isFinite(seconds)?seconds:5)*1000+20))));
+    }
 }
 
 const send = (method: 'POST' | 'PATCH', payload: unknown): RequestInit => ({ method, body: JSON.stringify(payload) });
@@ -531,7 +537,7 @@ test('A3. action matrix (O1): the reviewer takes no action; the operator replies
             await resolveTicket(admin, id);
             return [`${OPS}/tickets/${id}/csat`, send('POST', { score: 5, reason: REASON })];
         }],
-        ['assign', async (person) => [`${OPS}/tickets/${await fresh('Assignment target')}/assign`, send('PATCH', { assignee_id: person.employeeId ?? null, reason: REASON })]],
+        ['assign', async (person) => {const id=await fresh('Assignment target');return [`${OPS}/tickets/${id}/assign`,send('PATCH',{assignee_id:person.employeeId??null,priority:'normal',expected_updated_at:queryJson<{updated_at:string}>(psql,`SELECT jsonb_build_object('updated_at',updated_at)::text FROM support_tickets WHERE id='${id}';`).updated_at,reason:REASON})];}],
         ['create a macro', async () => [`${OPS}/macros`, send('POST', { name: `Macro ${crypto.randomUUID().slice(0, 8)}`, body: 'Thanks for writing in', reason: REASON })]],
     ];
     assert.equal(new Set(actions.map(([name]) => name)).size, actions.length);
@@ -707,7 +713,7 @@ test('B2. a malformed filter, id or body is a sanitized 400 (never an internal e
         ['a search over the length cap', `${OPS}/tickets?q=${'x'.repeat(161)}`, {}, 'VALIDATION_ERROR'],
         ['detail of a malformed id', `${OPS}/tickets/not-a-ticket-id`, {}, 'VALIDATION_ERROR'],
         ['reply to a malformed id', `${OPS}/tickets/not-a-ticket-id/messages`, send('POST', { body: 'Hello', reason: REASON }), 'VALIDATION_ERROR'],
-        ['assign a malformed id', `${OPS}/tickets/not-a-ticket-id/assign`, send('PATCH', { assignee_id: null, reason: REASON }), 'VALIDATION_ERROR'],
+        ['assign a malformed id', `${OPS}/tickets/not-a-ticket-id/assign`, send('PATCH', { assignee_id: null, priority:'normal', expected_updated_at:new Date().toISOString(), reason: REASON }), 'VALIDATION_ERROR'],
         ['escalate a malformed id', `${OPS}/tickets/not-a-ticket-id/escalate`, send('POST', { target: 'finance', reason: REASON }), 'VALIDATION_ERROR'],
         ['resolve a malformed id', `${OPS}/tickets/not-a-ticket-id/resolve`, send('POST', { reason: REASON }), 'VALIDATION_ERROR'],
         ['satisfaction for a malformed id', `${OPS}/tickets/not-a-ticket-id/csat`, send('POST', { score: 5, reason: REASON }), 'VALIDATION_ERROR'],
@@ -866,7 +872,7 @@ test('D. a reply the privacy rule refuses is refused whole (409, no message, no 
         ['a reply that escalates it', { body: 'Escalating', status: 'escalated', reason: REASON }],
     ];
     const statusRoutes: Array<[string, string, RequestInit]> = [
-        ['assign, which moves it to pending_internal', `${OPS}/tickets/${closed}/assign`, send('PATCH', { assignee_id: null, reason: REASON })],
+        ['assign, which cannot reopen a closed ticket', `${OPS}/tickets/${closed}/assign`, send('PATCH', { assignee_id: null, priority:'normal', expected_updated_at:new Date().toISOString(), reason: REASON })],
         ['escalate to finance', `${OPS}/tickets/${closed}/escalate`, send('POST', { target: 'finance', reason: REASON })],
         ['escalate to Trust & Safety', `${OPS}/tickets/${closed}/escalate`, send('POST', { target: 'trust_safety', reason: REASON })],
     ];
@@ -948,7 +954,7 @@ test('E2a. a ticket that is gone (removed, or never existed) is a 404 on every t
     const routes = (id: string): Array<[string, string, RequestInit]> => [
         ['detail', `${OPS}/tickets/${id}`, {}],
         ['reply', `${OPS}/tickets/${id}/messages`, send('POST', { body: 'Hello', reason: REASON })],
-        ['assign', `${OPS}/tickets/${id}/assign`, send('PATCH', { assignee_id: null, reason: REASON })],
+        ['assign', `${OPS}/tickets/${id}/assign`, send('PATCH', { assignee_id: null, priority:'normal', expected_updated_at:new Date().toISOString(), reason: REASON })],
         ['escalate', `${OPS}/tickets/${id}/escalate`, send('POST', { target: 'engineering', reason: REASON })],
         ['resolve', `${OPS}/tickets/${id}/resolve`, send('POST', { reason: REASON })],
     ];

@@ -1,3 +1,4 @@
+import { localizeMetadata } from '@/lib/i18n/metadata'
 import type { Metadata } from 'next'
 import Link from '@/components/i18n/LocaleLink'
 import { notFound } from 'next/navigation'
@@ -14,9 +15,8 @@ import {
 } from '@/lib/legal/documents'
 import { LEGAL_REVISION_DATE } from '@/lib/legal/entity'
 import { clauseNumber, formatLegalDate } from '@/lib/legal/format'
-import { getMarketingSiteUrl, getSupportEmail } from '@/lib/public-urls'
-import { LOCALES, getLocale } from '@/lib/i18n/locales'
-import { buildAlternates } from '@/lib/i18n/routing'
+import { getSupportEmail } from '@/lib/public-urls'
+import { getLocale } from '@/lib/i18n/locales'
 import { getDictionary } from '@/lib/i18n'
 import UntranslatedNotice from '@/components/i18n/UntranslatedNotice'
 import { ArrowRight, ShieldCheck, CreditCard, KeyRound } from '@letbuyy/ui'
@@ -42,16 +42,11 @@ export async function generateMetadata({
 
     const locale = getLocale(segment)
     const { document: doc } = localizeLegalContent(source, locale.language.code)
-    const alternates = buildAlternates(getMarketingSiteUrl(), `/legal/${doc.slug}`, LOCALES)
 
-    return {
+    return localizeMetadata({
         title: doc.title,
         description: doc.purpose,
-        alternates: {
-            canonical: alternates.canonicalOf(locale),
-            languages: alternates.languages,
-        },
-    }
+    }, segment, `/legal/${doc.slug}`)
 }
 
 export default async function LegalDocumentPage({

@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation'
+import { localizeMetadata } from '@/lib/i18n/metadata'
 import { localizeArticleSummary } from '@/lib/i18n/article-summary'
 import { localizeCategory } from '@/lib/i18n/resource-metadata'
 import { getLocale } from '@/lib/i18n/locales'
@@ -13,23 +15,27 @@ import ArticleCard from '@/components/resources/ArticleCard'
 import { getCategory } from '@/lib/resources/categories'
 import { getArticlesByTag, getAllTags, generateStaticTagParams } from '@/lib/resources/utils'
 
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return generateStaticTagParams()
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; tag: string }> }): Promise<Metadata> {
   const { tag, locale: segment } = await params
+  if (!getAllTags().some(entry => entry.tag === tag)) notFound()
   const locale = getLocale(segment)
   const t = createCopy(locale.language.code)
-  return {
+  return localizeMetadata({
     title: `#${tag} — ${t('Resources')}`,
     description: t('All LetBuyy resource articles tagged with #{tag}.', { tag }),
-    alternates: { canonical: `/resources/tag/${tag}` },
-  }
+
+  }, segment, `/resources/tag/${tag}`)
 }
 
 export default async function TagPage({ params }: { params: Promise<{ locale: string; tag: string }> }) {
   const { tag, locale: segment } = await params
+  if (!getAllTags().some(entry => entry.tag === tag)) notFound()
   const locale = getLocale(segment)
   const t = createCopy(locale.language.code)
   const articles = getArticlesByTag(tag).map(a => localizeArticleSummary(a, locale.language.code))

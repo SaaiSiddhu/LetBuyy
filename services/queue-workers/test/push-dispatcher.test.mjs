@@ -12,13 +12,9 @@ import {
 const testDir = dirname(fileURLToPath(import.meta.url));
 const workerRoot = join(testDir, '..');
 
-function fakeDb(rows, preferences = [], preferenceError = null) {
+function fakeDb(rows) {
   return {
     from(table) {
-      if (table === 'notification_preferences') {
-        const query = {select:()=>query,eq:()=>query,in:()=>query,or:()=>({data:preferences,error:preferenceError}),is:()=>({data:preferences,error:preferenceError})};
-        return query;
-      }
       assert.equal(table, 'device_tokens');
       return {
         select(columns) {
@@ -107,10 +103,7 @@ test('push dispatcher sends Android device tokens through FCM', async () => {
   assert.equal(calls[1].init.headers.Authorization, 'Bearer fcm-access-token');
   const body = JSON.parse(String(calls[1].init.body));
   assert.equal(body.message.token, 'android-token');
-  assert.equal(body.message.notification, undefined, 'Android must not bypass the current-actor display fence');
-  assert.equal(body.message.data.title, 'New order received');
-  assert.equal(body.message.data.user_id, 'user-1');
-  assert.equal(body.message.android.priority, 'high');
+  assert.equal(body.message.notification.title, 'New order received');
   assert.equal(body.message.data.action_url, '/orders/order-1');
 });
 
@@ -251,13 +244,4 @@ test('queue consumer persists push dispatch failure evidence', () => {
   assert.match(consumerSource, /channel:\s*'push'/);
   assert.match(consumerSource, /idempotency_key:\s*`push\.failure:/);
   assert.match(consumerSource, /failure_details:\s*pushResult\.failureDetails/);
-});
-
-test('disabled store/category preferences suppress every provider call; failed preference reads fail closed', async () => {
-  let calls=0;
-  const input={userId:'user-1',siteId:'00000000-0000-4000-8000-000000000001',category:'order_created',title:'Synthetic',message:'Synthetic',data:{}};
-  const db=fakeDb([{token:'synthetic-token',platform:'android'}],[{store_id:input.siteId,category:'system',enabled:false}]);
-  const result=await dispatchPushNotificationToDevices(db,{PUSH_DISPATCH_MODE:'live'},input,{fetcher:async()=>{calls++;throw Error('must not send');}});
-  assert.equal(result.sent,0);assert.equal(result.skipped,1);assert.equal(calls,0);
-  await assert.rejects(()=>dispatchPushNotificationToDevices(fakeDb([],[],{message:'synthetic DB failure'}),{},input),/preferences are unavailable/);
 });

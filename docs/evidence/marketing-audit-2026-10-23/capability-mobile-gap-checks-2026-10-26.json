@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-26",
+  "before": {
+    "viewport": [
+      429,
+      1160
+    ],
+    "gap": 158.22,
+    "cardHeight": 428.51,
+    "sectionHeight": 1096
+  },
+  "after": [
+    {
+      "label": "Storefronts",
+      "layout": {
+        "cardHeight": 428.5069580078125,
+        "gap": 7.994796752929688,
+        "height": 1160,
+        "overflow": 0,
+        "pairHeight": 656.5017700195312,
+        "width": 429
+      }
+    },
+    {
+      "label": "Orders",
+      "layout": {
+        "cardHeight": 428.5069580078125,
+        "gap": 7.994796752929688,
+        "height": 1160,
+        "overflow": 0,
+        "pairHeight": 656.5017700195312,
+        "width": 429
+      }
+    },
+    {
+      "label": "Inventory",
+      "layout": {
+        "cardHeight": 428.5069580078125,
+        "gap": 7.994796752929688,
+        "height": 1160,
+        "overflow": 0,
+        "pairHeight": 656.5017700195312,
+        "width": 429
+      }
+    },
+    {
+      "label": "Payments",
+      "layout": {
+        "cardHeight": 428.5069580078125,
+        "gap": 7.994796752929688,
+        "height": 1160,
+        "overflow": 0,
+        "pairHeight": 656.5017700195312,
+        "width": 429
+      }
+    },
+    {
+      "label": "Customers",
+      "layout": {
+        "cardHeight": 428.5069580078125,
+        "gap": 7.994796752929688,
+        "height": 1160,
+        "overflow": 0,
+        "pairHeight": 656.5017700195312,
+        "width": 429
+      }
+    },
+    {
+      "label": "Analytics",
+      "layout": {
+        "cardHeight": 428.5069580078125,
+        "gap": 7.994796752929688,
+        "height": 1160,
+        "overflow": 0,
+        "pairHeight": 656.5017700195312,
+        "width": 429
+      }
+    },
+    {
+      "label": "AI Operator & Automation",
+      "layout": {
+        "cardHeight": 428.5069580078125,
+        "gap": 7.994796752929688,
+        "height": 1160,
+        "overflow": 0,
+        "pairHeight": 656.5017700195312,
+        "width": 429
+      }
+    },
+    {
+      "label": "B2B & Wholesale",
+      "layout": {
+        "cardHeight": 428.5069580078125,
+        "gap": 7.994796752929688,
+        "height": 1160,
+        "overflow": 0,
+        "pairHeight": 656.5017700195312,
+        "width": 429
+      }
+    }
+  ]
+}

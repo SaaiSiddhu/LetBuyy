@@ -1,11 +1,5 @@
 'use client'
 
-import { CheckoutTotalsQuoteSchema, type CheckoutTotalsQuote } from '@letbuyy/shared-types'
-
-import { NicheOrderFacts } from '@/components/orders/niche-order-facts'
-import { readOrderLineItems as readLineItems } from '@/components/orders/order-line-items'
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
@@ -13,13 +7,13 @@ import {
     Banner,
     Button,
     Card,
+    EmptyState,
     MaterialIcon,
     Page,
     PageHeader,
     Section,
     Skeleton,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import {
     formatInrCurrency,
     formatIndiaDate,
@@ -31,7 +25,18 @@ import {
 // The gateway returns a normalizeOrderRecord() result which has these fields.
 // ---------------------------------------------------------------------------
 
-type OrderLineItem = ReturnType<typeof readLineItems>[number]
+interface OrderLineItem {
+    product_id: string | null
+    variant_id: string | null
+    title: string | null
+    name: string | null
+    sku: string | null
+    quantity: number
+    unit_price: number
+    total: number
+    variant_title: string | null
+    image_url: string | null
+}
 
 interface OrderAddress {
     full_name?: string
@@ -52,7 +57,6 @@ interface OrderAddress {
 }
 
 interface OrderDetail {
-    totals_quote: CheckoutTotalsQuote | null
     id: string
     store_id: string
     order_number: string
@@ -105,10 +109,7 @@ function readNullableString(row: Record<string, unknown>, key: string): string |
 }
 
 function readNumber(row: Record<string, unknown>, key: string): number {
-    const value = row[key]
-    if (value === null || value === undefined || value === '') return Number.NaN
-    const parsed = Number(value)
-    return Number.isFinite(parsed) ? parsed : Number.NaN
+    return Number(row[key] ?? 0)
 }
 
 function readAddress(raw: unknown): OrderAddress | null {
@@ -116,6 +117,24 @@ function readAddress(raw: unknown): OrderAddress | null {
     return raw as OrderAddress
 }
 
+function readLineItems(raw: unknown): OrderLineItem[] {
+    if (!Array.isArray(raw)) return []
+    return raw.map((item: unknown): OrderLineItem => {
+        const r = (typeof item === 'object' && item !== null ? item : {}) as Record<string, unknown>
+        return {
+            product_id: readNullableString(r, 'product_id'),
+            variant_id: readNullableString(r, 'variant_id'),
+            title: readNullableString(r, 'title') ?? readNullableString(r, 'name'),
+            name: readNullableString(r, 'name'),
+            sku: readNullableString(r, 'sku'),
+            quantity: readNumber(r, 'quantity') || 1,
+            unit_price: readNumber(r, 'unit_price') || readNumber(r, 'price'),
+            total: readNumber(r, 'total'),
+            variant_title: readNullableString(r, 'variant_title'),
+            image_url: readNullableString(r, 'image_url') ?? readNullableString(r, 'image'),
+        }
+    })
+}
 
 function mapOrderDetail(raw: Record<string, unknown>): OrderDetail {
     // The gateway normalizeOrderRecord() puts items at both raw.items and raw.order_items
@@ -125,10 +144,10 @@ function mapOrderDetail(raw: Record<string, unknown>): OrderDetail {
         id: readString(raw, 'id'),
         store_id: readString(raw, 'store_id'),
         order_number: readString(raw, 'order_number'),
-        status: readString(raw, 'status') || 'unknown',
-        payment_status: readString(raw, 'payment_status') || 'unknown',
+        status: readString(raw, 'status') || 'pending',
+        payment_status: readString(raw, 'payment_status') || 'pending',
         fulfillment_status: readNullableString(raw, 'fulfillment_status'),
-        payment_method: readString(raw, 'payment_method') || 'unknown',
+        payment_method: readString(raw, 'payment_method') || 'cod',
         payment_gateway: readNullableString(raw, 'payment_gateway'),
         payment_id: readNullableString(raw, 'payment_id'),
         payment_processed_at: readNullableString(raw, 'payment_processed_at'),
@@ -142,7 +161,6 @@ function mapOrderDetail(raw: Record<string, unknown>): OrderDetail {
         subtotal: readNumber(raw, 'subtotal'),
         shipping_cost: readNumber(raw, 'shipping_cost'),
         tax: readNumber(raw, 'tax'),
-        totals_quote: (() => { const quote = CheckoutTotalsQuoteSchema.safeParse(raw.tax_snapshot); return quote.success ? quote.data : null })(),
         discount: readNumber(raw, 'discount'),
         coupon_code: readNullableString(raw, 'coupon_code'),
         coupon_discount: readNumber(raw, 'coupon_discount'),
@@ -337,7 +355,7 @@ function AddressesCard({ order }: { order: OrderDetail }) {
         return (
             <Card>
                 <Section title="Addresses">
-                    <EmptyState scene="order-detail"
+                    <EmptyState
                         icon={<MaterialIcon name="location_on" />}
                         title="No addresses on this order"
                         body="Shipping and billing addresses will appear here when available."
@@ -435,7 +453,7 @@ function LineItemsCard({ items }: { items: OrderLineItem[] }) {
         return (
             <Card>
                 <Section title="Line items">
-                    <EmptyState scene="order-detail"
+                    <EmptyState
                         icon={<MaterialIcon name="inventory_2" />}
                         title="No line items available"
                         body="Line items for this order are not available from the gateway response."
@@ -487,7 +505,6 @@ function LineItemsCard({ items }: { items: OrderLineItem[] }) {
                                     {formatInrCurrency(item.total) ?? '—'}
                                 </div>
                             </div>
-                            <NicheOrderFacts facts={item.niche_snapshot?.facts} personalization={item.niche_snapshot?.personalization} options={Object.fromEntries((item.niche_snapshot?.selected_options ?? []).map(option => [option.name, option.value]))} itemName={item.title ?? undefined} />
                         </div>
                     ))}
                 </div>
@@ -506,13 +523,13 @@ function PaymentSummaryCard({ order }: { order: OrderDetail }) {
                     <div className="w-full md:max-w-sm flex flex-col gap-[var(--lb-space-2)] text-[var(--lb-font-size-base)]">
                         <AmountLine label="Subtotal" value={formatInrCurrency(order.subtotal) ?? '—'} />
                         <AmountLine label="Shipping" value={formatInrCurrency(order.shipping_cost) ?? '—'} />
-                        {(order.coupon_code || order.discount > 0) && (
+                        {order.discount > 0 && (
                             <AmountLine
-                                label={order.coupon_code ? `Coupon (${order.coupon_code})` : 'Discount'}
+                                label={order.coupon_code ? `Discount (${order.coupon_code})` : 'Discount'}
                                 value={`-${formatInrCurrency(order.discount) ?? '—'}`}
                             />
                         )}
-                        <AmountLine label={order.totals_quote?.included_tax_minor ? "GST (includes tax already in prices)" : "Tax (GST)"} value={formatInrCurrency(order.tax) ?? '—'} />
+                        <AmountLine label="Tax (GST)" value={formatInrCurrency(order.tax) ?? '—'} />
                         <div className="flex justify-between border-t border-[var(--lb-color-border)] pt-[var(--lb-space-2)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
                             <span>Total</span>
                             <span>{formatInrCurrency(order.total) ?? '—'}</span>
@@ -556,22 +573,19 @@ export default function OrderDetailPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    const beginLoadOrder = useReadRequest(JSON.stringify([store, orderId]))
     const loadOrder = useCallback(async () => {
-        const request = beginLoadOrder()
         setLoading(true)
         setError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/orders/${encodeURIComponent(orderId)}`,
-                { cache: 'no-store', signal: request.signal },
+                { cache: 'no-store' },
             )
             const payload = await response.json().catch(() => null) as {
                 data?: Record<string, unknown>
                 error?: unknown
             } | null
 
-            if (!request.isCurrent()) return
             if (!response.ok) {
                 if (response.status === 404) {
                     setError('Order not found.')
@@ -584,22 +598,17 @@ export default function OrderDetailPage() {
                 return
             }
 
-            if (payload?.data && typeof payload.data === 'object' &&
-                typeof payload.data.id === 'string' && payload.data.id === orderId &&
-                payload.data.total !== null && payload.data.total !== undefined && payload.data.total !== '' &&
-                Number.isFinite(Number(payload.data.total)) &&
-                typeof payload.data.status === 'string') {
+            if (payload?.data && typeof payload.data === 'object') {
                 setOrder(mapOrderDetail(payload.data as Record<string, unknown>))
             } else {
                 setError('Unexpected response from server.')
             }
         } catch {
-            if (!request.isCurrent()) return
             setError('Unable to load order.')
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginLoadOrder, orderId, store])
+    }, [orderId, store])
 
     useEffect(() => {
         void loadOrder()
@@ -614,8 +623,7 @@ export default function OrderDetailPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="orders"
-                    recipe="record"
+                <PageHeader
                     eyebrow="Operations"
                     title="Order"
                     breadcrumbs={breadcrumbs}
@@ -639,15 +647,14 @@ export default function OrderDetailPage() {
     if (error || !order) {
         return (
             <Page>
-                <PageHeader identity="orders"
-                    recipe="record"
+                <PageHeader
                     eyebrow="Operations"
                     title="Order"
                     breadcrumbs={breadcrumbs}
                 />
                 <Card>
                     <Section>
-                        <EmptyState scene="order-detail"
+                        <EmptyState
                             icon={<MaterialIcon name="error" />}
                             title="Unable to load order"
                             body={error ?? 'An unexpected error occurred.'}
@@ -671,8 +678,7 @@ export default function OrderDetailPage() {
 
     return (
         <Page>
-            <PageHeader identity="orders"
-                recipe="record"
+            <PageHeader
                 eyebrow="Operations"
                 title={`Order #${order.order_number}`}
                 description={`Placed ${formatIndiaDateWithTime(order.created_at, { emptyValue: '' })}`}

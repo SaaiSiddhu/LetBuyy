@@ -1,0 +1,65 @@
+[
+  {
+    "stage": "visual-acceptance",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:30:15.932269+00:00"
+  },
+  {
+    "stage": "scroll-acceptance",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:30:57.406852+00:00"
+  },
+  {
+    "stage": "spa-acceptance",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:31:21.764557+00:00"
+  },
+  {
+    "stage": "capability-acceptance",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:31:24.684895+00:00"
+  },
+  {
+    "stage": "pricing-recovery",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:31:26.831706+00:00",
+    "initial_exit_code": 1,
+    "rerun_finished_at": "2026-10-30T00:32:46.640616+00:00",
+    "initial_evidence": "evidence/trials/initial-pricing-recovery.log",
+    "correction": "Wait for actual plan headings, not skeleton card; use actual html lang contract rather than regional hreflang"
+  },
+  {
+    "stage": "normal-local-smoke",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:31:35.006943+00:00",
+    "initial_exit_code": 1,
+    "rerun_finished_at": "2026-10-30T00:33:26.176902+00:00",
+    "initial_evidence": "evidence/trials/initial-normal-local-smoke.log",
+    "correction": "Wait for actual plan headings, not skeleton card; use actual html lang contract rather than regional hreflang"
+  },
+  {
+    "stage": "types-final",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:31:40.081146+00:00"
+  },
+  {
+    "stage": "lint-final",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:31:46.843533+00:00"
+  },
+  {
+    "stage": "tests-final",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:31:47.847216+00:00"
+  },
+  {
+    "stage": "marketing-validator-final",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:31:47.895835+00:00"
+  },
+  {
+    "stage": "package-export-validator-final",
+    "exit_code": 0,
+    "finished_at": "2026-10-30T00:31:48.740226+00:00"
+  }
+]

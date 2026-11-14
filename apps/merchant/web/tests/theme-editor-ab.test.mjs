@@ -272,15 +272,13 @@ test('phase-ab: ThemeUpdatePanel shows requiresDuplicate warning when required',
     )
 })
 
-test('phase-ab: conflict warning links to the existing theme library duplication workflow', () => {
+test('phase-ab: ThemeUpdatePanel has "Duplicate first" action in conflicts state (blocking warning)', () => {
     const src = read(UPDATE_PANEL)
     assert.match(
         src,
-        /Duplicate in theme library/,
-        'The warning must name the actual duplication destination before a potentially lossy update'
+        /Duplicate first/,
+        'Must show "Duplicate first" as the primary action when requiresDuplicate=true (NO-DATA-LOSS)'
     )
-    assert.match(src, /encodeURIComponent\(storeSlug\)\}\/online-store\/themes/)
-    assert.match(src, /!diff\.requiresDuplicate \|\| conflictsAcknowledged/)
 })
 
 // ═════════════════════════════════════════════════════════════════════════════

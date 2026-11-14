@@ -1,4 +1,6 @@
 import { Hono } from 'hono';
+import {MerchantInboxQuerySchema} from '@letbuyy/shared-types';
+import {AppError,NotFoundError,ValidationError} from '../lib/errors';
 import { z } from 'zod';
 import {
     isValidWebhookTarget,
@@ -26,21 +28,6 @@ const DeviceTokenRegistrationSchema = z.object({
 
 const DeviceTokenDeleteSchema = z.object({
     token: z.string().trim().min(1).max(4096),
-});
-
-const NotificationPreferenceUpdateSchema = z.object({
-    store_id: z.string().uuid().nullable().optional(),
-    channel: z.enum(['email', 'in_app', 'sms', 'push', 'whatsapp']),
-    category: z.string().trim().min(1).max(120),
-    enabled: z.boolean().optional(),
-}).strict();
-
-const DeliveryLogQuerySchema = z.object({
-    site_id: z.string().uuid().optional(),
-    channel: z.enum(['email', 'in_app', 'sms', 'push', 'whatsapp']).optional(),
-    status: z.enum(['queued', 'sent', 'failed', 'suppressed']).optional(),
-    page: z.string().regex(/^[1-9]\d*$/).default('1').transform(Number).pipe(z.number().int().safe().max(10_000)),
-    limit: z.string().regex(/^[1-9]\d*$/).default('25').transform(Number).pipe(z.number().int().safe().max(100)),
 });
 
 const WebhookCreateSchema = z.object({
@@ -105,7 +92,6 @@ async function emitNotificationEvent(
         eventType: input.eventType,
         payload: {
             site_id: input.siteId,
-            notification_id: input.logId,
             notification_log_id: input.logId,
             ...input.payload,
         },
@@ -127,88 +113,46 @@ async function verifyOptionalStoreOwnership(
     return Boolean(customUser && await verifySiteOwnership(db, storeId, customUser.id, authUser.storeId));
 }
 
-// GET /notifications — List notifications for the authenticated user
-router.get('/', async (c) => {
-    const auth = c.get('auth');
-    const isRead = c.req.query('is_read');
-    const type = c.req.query('type');
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 50);
-    const offset = (page - 1) * limit;
-    const db = getSupabaseAdmin(c);
-
-    let query = db
-        .from('notifications')
-        .select('*', { count: 'exact' })
-        .eq('user_id', auth.user.id)
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
-
-    if (isRead !== undefined) query = query.eq('is_read', isRead === 'true');
-    if (type) query = query.eq('type', type);
-
-    const { data, error, count } = await query;
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(paginated(data || [], count || 0, page, limit));
+// Canonical account inbox: the signed actor owns every read and read-state write.
+router.get('/', async c=>{
+    const parsed=MerchantInboxQuerySchema.safeParse(c.req.query());
+    if(!parsed.success)throw new ValidationError('Invalid inbox filters.');
+    const q=parsed.data;
+    let query=getSupabaseAdmin(c).from('notifications')
+        .select('id,user_id,type,title,message,data,is_read,action_url,created_at',{count:'exact'})
+        .eq('user_id',c.get('auth').user.id).is('deleted_at',null)
+        .order('created_at',{ascending:false}).order('id',{ascending:false})
+        .range((q.page-1)*q.limit,q.page*q.limit-1);
+    if(q.is_read!==undefined)query=query.eq('is_read',q.is_read==='true');
+    if(q.type)query=query.eq('type',q.type);
+    if(q.source)query=query.eq('data->>source','letbuyy_platform');
+    if(q.category)query=query.eq('data->>category',q.category);
+    const {data,error,count}=await query;
+    if(error)throw new AppError('Account inbox unavailable. Retry to reload.',503,'INBOX_UNAVAILABLE');
+    return c.json(paginated(data||[],count||0,q.page,q.limit));
 });
-
-// GET /notifications/count — Unread notification count
-router.get('/count', async (c) => {
-    const auth = c.get('auth');
-    const db = getSupabaseAdmin(c);
-
-    const { count, error } = await db
-        .from('notifications')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', auth.user.id)
-        .eq('is_read', false);
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json({ count: count || 0 });
+router.get('/count',async c=>{
+    const q=MerchantInboxQuerySchema.safeParse(c.req.query());if(!q.success)throw new ValidationError('Invalid inbox filters.');
+    let query=getSupabaseAdmin(c).from('notifications').select('id',{count:'exact',head:true})
+        .eq('user_id',c.get('auth').user.id).is('deleted_at',null).eq('is_read',false);
+    if(q.data.source)query=query.eq('data->>source','letbuyy_platform');
+    if(q.data.category)query=query.eq('data->>category',q.data.category);
+    const {error,count}=await query;if(error)throw new AppError('Unread count unavailable.',503,'INBOX_UNAVAILABLE');
+    return c.json({count:count||0});
 });
-
-// PATCH /notifications/:id/read — Mark notification as read
-router.patch('/:id/read', async (c) => {
-    const auth = c.get('auth');
-    const notifId = c.req.param('id');
-    const db = getSupabaseAdmin(c);
-
-    const { error } = await db
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', notifId)
-        .eq('user_id', auth.user.id);
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(success({ marked: true }));
+router.patch('/:id/read',async c=>{
+    const id=z.string().uuid().safeParse(c.req.param('id'));if(!id.success)throw new ValidationError('Invalid inbox message.');
+    const {data,error}=await getSupabaseAdmin(c).from('notifications').update({is_read:true})
+        .eq('id',id.data).eq('user_id',c.get('auth').user.id).is('deleted_at',null).select('id').maybeSingle();
+    if(error)throw new AppError('Read status could not be saved. Retry safely.',503,'INBOX_UNAVAILABLE');
+    if(!data)throw new NotFoundError('Inbox message not found.');
+    return c.json(success({marked:true}));
 });
-
-// POST /notifications/read-all — Mark all as read
-router.post('/read-all', async (c) => {
-    const auth = c.get('auth');
-    const db = getSupabaseAdmin(c);
-
-    const { error } = await db
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('user_id', auth.user.id)
-        .eq('is_read', false);
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(success({ marked_all: true }));
+router.post('/read-all',async c=>{
+    const {error}=await getSupabaseAdmin(c).from('notifications').update({is_read:true})
+        .eq('user_id',c.get('auth').user.id).is('deleted_at',null).eq('is_read',false);
+    if(error)throw new AppError('Read status could not be saved. Retry safely.',503,'INBOX_UNAVAILABLE');
+    return c.json(success({marked:true}));
 });
 
 // GET /notifications/preferences — Get notification preferences
@@ -238,9 +182,9 @@ router.get('/preferences', async (c) => {
 });
 
 // PUT /notifications/preferences — Upsert notification preferences
-router.put('/preferences', validate('json', NotificationPreferenceUpdateSchema), async (c) => {
+router.put('/preferences', async (c) => {
     const auth = c.get('auth');
-    const body = c.get('validatedBody') as z.infer<typeof NotificationPreferenceUpdateSchema>;
+    const body = await c.req.json();
     const db = getSupabaseAdmin(c);
 
     if (!body.channel || !body.category) {
@@ -415,12 +359,14 @@ router.post('/send', validate('json', NotificationSendSchema), async (c) => {
 });
 
 // GET /notifications/delivery-logs — Merchant-scoped notification delivery evidence
-router.get('/delivery-logs', validate('query', DeliveryLogQuerySchema), async (c) => {
+router.get('/delivery-logs', async (c) => {
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
-    const filters = c.get('validatedQuery') as z.infer<typeof DeliveryLogQuerySchema>;
-    const siteId = filters.site_id || auth.user.storeId;
-    const { channel, status, page, limit } = filters;
+    const siteId = c.req.query('site_id') || auth.user.storeId;
+    const channel = c.req.query('channel');
+    const status = c.req.query('status');
+    const page = Math.max(parseInt(c.req.query('page') || '1'), 1);
+    const limit = Math.min(Math.max(parseInt(c.req.query('limit') || '25'), 1), 100);
     const offset = (page - 1) * limit;
 
     if (!siteId) {
@@ -691,22 +637,22 @@ router.post('/onboarding-failure-log', async (c) => {
 });
 
 // DELETE /notifications/:id — Delete a notification
-router.delete('/:id', async (c) => {
-    const auth = c.get('auth');
-    const notifId = c.req.param('id');
-    const db = getSupabaseAdmin(c);
-
-    const { error } = await db
-        .from('notifications')
-        .delete()
-        .eq('id', notifId)
-        .eq('user_id', auth.user.id);
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json({ data: { deleted: true } });
+router.get('/:id',async c=>{
+    const id=z.string().uuid().safeParse(c.req.param('id'));if(!id.success)throw new ValidationError('Invalid inbox message.');
+    const parsed=MerchantInboxQuerySchema.safeParse(c.req.query());if(!parsed.success)throw new ValidationError('Invalid inbox filters.');
+    let query=getSupabaseAdmin(c).from('notifications').select('id,user_id,type,title,message,data,is_read,action_url,created_at')
+        .eq('id',id.data).eq('user_id',c.get('auth').user.id).is('deleted_at',null);
+    if(parsed.data.source)query=query.eq('data->>source','letbuyy_platform');
+    const {data,error}=await query.maybeSingle();
+    if(error)throw new AppError('Inbox message unavailable.',503,'INBOX_UNAVAILABLE');
+    if(!data)throw new NotFoundError('Inbox message not found.');return c.json(success(data));
+});
+router.delete('/:id',async c=>{
+    const id=z.string().uuid().safeParse(c.req.param('id'));if(!id.success)throw new ValidationError('Invalid inbox message.');
+    const {data,error}=await getSupabaseAdmin(c).from('notifications').update({deleted_at:new Date().toISOString()})
+        .eq('id',id.data).eq('user_id',c.get('auth').user.id).is('deleted_at',null).select('id').maybeSingle();
+    if(error)throw new AppError('Inbox message could not be dismissed.',503,'INBOX_UNAVAILABLE');
+    if(!data)throw new NotFoundError('Inbox message not found.');return c.json(success({deleted:true}));
 });
 
 export default router;

@@ -1,0 +1,108 @@
+{
+  "capturedAt": "2026-11-07T02:48:41.855232+00:00",
+  "cssSources": 20,
+  "allMatch": true,
+  "rows": [
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "sha256": "77923e1c6b5cb17abb707eb143ba69cae3d44b26ab892eff3c396345fab0bfd4",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/locale-typography.css",
+      "sha256": "8e8ec11eee5e768d79b8862f40cb66098cde149bf8dade236bc09b85c440196e",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/how-it-works.css",
+      "sha256": "62e25060f9823f77deda7b647b471109ccefc006982769bf92125d67af3e54ae",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "sha256": "e2de7c6c61df5b89c47df3a2f3dcd5999f6e6b5d686b41f308342c590663cd50",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "sha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/resources-home.module.css",
+      "sha256": "a6801d9e2a3d46f6a9e9e0e852378a0ad52ebc9e1aab0c3e111679571b1bfb67",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/category-illustrated.module.css",
+      "sha256": "ca816eef758333ef5a529a0d27cb5cc9de5678394c7088f019428c180db4a14f",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/sitemap/sitemap.module.css",
+      "sha256": "34c0c5a781784798f994df1308778d9429c1fc32ed8025acf3022f01d95bca7d",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/platform-surfaces.module.css",
+      "sha256": "11b8532b9d0386f3488eb416e3c8d8fbeed1ada784c6de63a09a66f553b68d76",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/final-cta.module.css",
+      "sha256": "47c08d2facb86e49838074e6c0ffb18687bb6c238b623607a044f47c4c68e214",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/header-featured-art.module.css",
+      "sha256": "a74befaf9288acc46ca456995ad8710a966dc7184e8b9df450140fdbaedcbcbe",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/theme-guide.module.css",
+      "sha256": "7eb8b3bdcfbd18194cf77fb8b96b4073bdc86518e154639ab51ec6aafc5464d8",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-visual-overview.module.css",
+      "sha256": "bceaa87f9cbc4331d30d776bb1b20e2e91d45d0e4b72441c0c4bd4e2d96f7d7a",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/liquid-guide.module.css",
+      "sha256": "3073a7695d31802bea7c6158f859067208a28bca600eaafbf747e9456bfbcc73",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/changelog.module.css",
+      "sha256": "e202bec9ec797f384f648dec7cc760656f0ac938ec8b13b9f343c370b0c3d180",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-artwork.module.css",
+      "sha256": "8c13b6c30c8c50471deb40dfe5b20e22869d6b2be6ea563d4c759d0caa73417a",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-list-visuals.module.css",
+      "sha256": "e6d3ac5a62e59dfb803f1b01e5ee376573a3899f01f87a72a37cf593bf5d5054",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-section-visual.module.css",
+      "sha256": "04b0b33213bd47a92c10eed18a146863f85aca079835898294e489b2d02e8d63",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/support/support-experience.module.css",
+      "sha256": "ac9506f560a259809f723887b0ee6cb75e9a9f8abe04b28b7ffc51043d4ee644",
+      "isolatedMatches": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/legal/legal-layout.module.css",
+      "sha256": "c35704c40c2d09b41e834ee42a35ccb39bdab85549a53bd09ccd55e8b1a921ef",
+      "isolatedMatches": true
+    }
+  ],
+  "note": "No root CSS, layout, asset or animation source edits were retained; full source-manifest comparison has no differences."
+}

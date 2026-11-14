@@ -36,8 +36,8 @@
  */
 
 import { useState, useEffect, useId, useCallback } from 'react'
-import { Button, Input } from '@letbuyy/ui'
-import { ChevronDown, ChevronUp, CircleAlert, LoaderCircle, Plus, Puzzle, Settings, Trash2, Unplug, X } from 'lucide-react'
+import { Button, Input, MaterialIcon } from '@letbuyy/ui'
+import { ChevronUp, ChevronDown, Plus, Trash2, Settings, X } from 'lucide-react'
 import type { BlockEntry } from './SectionTreePanel'
 import styles from './controls/controls.module.css'
 
@@ -344,7 +344,7 @@ export default function AppBlockSlotPanel({
         return (
             <div className={styles.appBlockSlotWrapper} aria-label="App block slot" aria-busy="true">
                 <div className={styles.appBlockLoading} role="status" aria-label="Loading installed apps">
-                    <LoaderCircle size={16} aria-hidden="true" />
+                    <MaterialIcon name="hourglass_empty" size={16} aria-hidden="true" />
                     <span>Loading installed apps&hellip;</span>
                 </div>
             </div>
@@ -356,7 +356,7 @@ export default function AppBlockSlotPanel({
         return (
             <div className={styles.appBlockSlotWrapper} aria-label="App block slot">
                 <div className={styles.appBlockError} role="alert">
-                    <CircleAlert size={16} aria-hidden="true" />
+                    <MaterialIcon name="error_outline" size={16} aria-hidden="true" />
                     <span>Failed to load apps. {fetchState.message}</span>
                 </div>
             </div>
@@ -382,7 +382,7 @@ export default function AppBlockSlotPanel({
             {/* Empty state — no app blocks in the slot yet */}
             {appBlocks.length === 0 && !not_connected && (
                 <div className={styles.appBlockEmpty} role="status">
-                    <Unplug size={20} aria-hidden="true" />
+                    <MaterialIcon name="extension_off" size={20} aria-hidden="true" />
                     <p>No app blocks in this slot.</p>
                     {extensions.length === 0 && (
                         <p className={styles.disclaimerNote}>No apps installed for this store.</p>
@@ -410,7 +410,7 @@ export default function AppBlockSlotPanel({
                             >
                                 <div className={styles.appBlockItemHeader}>
                                     <span className={styles.appBlockItemIcon} aria-hidden="true">
-                                        <Puzzle size={14} aria-hidden="true" />
+                                        <MaterialIcon name="extension" size={14} />
                                     </span>
                                     <span className={styles.appBlockItemLabel}>{label}</span>
                                     <div className={styles.appBlockItemActions}>

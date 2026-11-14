@@ -135,7 +135,7 @@ export default async function RootLayout({
             </head>
             <body className="min-h-screen flex flex-col">
                 <LetbuyyThemeProvider surface="marketplace" className="min-h-screen flex flex-col">
-                    <AuthProvider initialAuthenticated={Boolean(initialUser)} initialUser={initialUser}>
+                    <AuthProvider initialAuthenticated={session.accepted} initialUser={initialUser}>
                         <ToastProvider>
                             <Navbar />
                             <main className="flex-grow pt-[72px]">

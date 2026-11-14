@@ -1,0 +1,109 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">LetBuyy regenerated app mark</title>
+  <desc id="desc">A blue 3D storefront inside a phone, with a globe, shopping bags and orbit ring.</desc>
+  <defs>
+    <radialGradient id="globeGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(79 78) rotate(57) scale(78 64)">
+      <stop stop-color="#F4F7FF"/>
+      <stop offset="0.2" stop-color="#A9B8FF"/>
+      <stop offset="0.55" stop-color="#4759F6"/>
+      <stop offset="1" stop-color="#14185F"/>
+    </radialGradient>
+    <linearGradient id="phoneBody" x1="90" y1="23" x2="161" y2="184" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B9C5FF"/>
+      <stop offset="0.18" stop-color="#586DEB"/>
+      <stop offset="0.62" stop-color="#11174C"/>
+      <stop offset="1" stop-color="#06091F"/>
+    </linearGradient>
+    <linearGradient id="phoneFace" x1="103" y1="40" x2="151" y2="169" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7ECFF"/>
+      <stop offset="0.22" stop-color="#8293FF"/>
+      <stop offset="0.58" stop-color="#24319B"/>
+      <stop offset="1" stop-color="#0B0F35"/>
+    </linearGradient>
+    <linearGradient id="awningBlue" x1="71" y1="82" x2="165" y2="116" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FBFF"/>
+      <stop offset="0.26" stop-color="#AFC8FF"/>
+      <stop offset="0.53" stop-color="#536AF7"/>
+      <stop offset="0.78" stop-color="#DCE8FF"/>
+      <stop offset="1" stop-color="#3140D1"/>
+    </linearGradient>
+    <linearGradient id="bag" x1="24" y1="119" x2="64" y2="174" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8799FF"/>
+      <stop offset="0.45" stop-color="#3E52E8"/>
+      <stop offset="1" stop-color="#0D1249"/>
+    </linearGradient>
+    <linearGradient id="box" x1="151" y1="143" x2="205" y2="201" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D5DEFF"/>
+      <stop offset="0.45" stop-color="#697AFF"/>
+      <stop offset="1" stop-color="#1B2490"/>
+    </linearGradient>
+    <linearGradient id="orbit" x1="18" y1="177" x2="228" y2="154" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7F8FF"/>
+      <stop offset="0.18" stop-color="#6DBEFF"/>
+      <stop offset="0.62" stop-color="#5363FF"/>
+      <stop offset="1" stop-color="#A9E6FF"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20" y="-18" width="280" height="284" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="12" flood-color="#1923AE" flood-opacity="0.32"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+    <filter id="sparkGlow" x="20" y="18" width="90" height="92" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#softShadow)">
+    <ellipse cx="120" cy="193" rx="82" ry="11" fill="#070A24" opacity="0.5"/>
+    <circle cx="78" cy="82" r="51" fill="url(#globeGlow)" opacity="0.96"/>
+    <path d="M31 78C45 85 61 88 78 88C96 88 112 84 126 77" stroke="#DDE8FF" stroke-width="1.4" opacity="0.42"/>
+    <path d="M37 102C50 95 64 92 79 92C93 92 108 96 119 102" stroke="#DDE8FF" stroke-width="1.3" opacity="0.32"/>
+    <path d="M79 34C70 51 66 67 67 84C68 100 74 115 84 130" stroke="#DDE8FF" stroke-width="1.4" opacity="0.34"/>
+    <path d="M95 40C85 58 81 75 84 92C86 106 92 119 102 130" stroke="#DDE8FF" stroke-width="1.1" opacity="0.25"/>
+    <path d="M38 64C53 58 70 56 88 58C104 60 117 65 128 72" stroke="#DDE8FF" stroke-width="1.1" opacity="0.26"/>
+    <g filter="url(#sparkGlow)">
+      <path d="M57 50L62 60L74 62L64 68L62 80L56 69L44 66L55 60L57 50Z" fill="#FFFFFF" opacity="0.9"/>
+      <circle cx="43" cy="83" r="3" fill="#FFFFFF" opacity="0.76"/>
+      <circle cx="98" cy="51" r="2.4" fill="#DCE6FF" opacity="0.78"/>
+    </g>
+    <path d="M88 21L153 16C165 15 176 24 178 37L195 164C197 178 187 190 173 191L92 196C80 197 69 188 67 175L50 49C48 35 57 24 71 23L88 21Z" fill="#070B24"/>
+    <path d="M90 22L154 17C165 16 175 25 177 37L194 162C196 176 186 188 172 189L93 194C81 195 71 186 69 174L52 50C50 37 59 26 72 25L90 22Z" fill="url(#phoneBody)"/>
+    <path d="M91 30L151 25C160 24 168 31 169 40L185 158C187 168 180 177 170 178L96 183C87 184 80 177 78 168L62 51C61 42 68 34 77 33L91 30Z" stroke="#C9D7FF" stroke-width="3.5" opacity="0.84"/>
+    <path d="M96 43L151 40C155 40 158 43 159 47L163 77L77 83L73 54C72 50 75 46 79 46L96 43Z" fill="url(#phoneFace)"/>
+    <rect x="103" y="32" width="38" height="7" rx="3.5" transform="rotate(-3.7 103 32)" fill="#E8EEFF" opacity="0.88"/>
+    <path d="M74 84L164 78L172 109L68 116L74 84Z" fill="#090D2E"/>
+    <path d="M77 82L92 81L85 116L67 117L77 82Z" fill="#EDF5FF"/>
+    <path d="M92 81L107 80L103 115L85 116L92 81Z" fill="#8397FF"/>
+    <path d="M107 80L122 79L121 114L103 115L107 80Z" fill="#F0F6FF"/>
+    <path d="M122 79L138 78L141 113L121 114L122 79Z" fill="#6177FF"/>
+    <path d="M138 78L164 77L172 109L141 113L138 78Z" fill="#2838B9"/>
+    <path d="M68 116C70 125 82 125 85 116C89 127 101 126 104 115C108 126 121 125 122 114C128 125 140 124 142 113C149 123 166 119 172 109L68 116Z" fill="url(#awningBlue)"/>
+    <path d="M84 119L162 113L170 164L91 169L84 119Z" fill="#E7ECFF" opacity="0.22"/>
+    <path d="M92 127L122 125L126 161L95 163L92 127Z" fill="#111646" stroke="#D7E2FF" stroke-width="3"/>
+    <path d="M132 124L158 122L161 148L135 150L132 124Z" fill="#111646" stroke="#D7E2FF" stroke-width="3"/>
+    <rect x="101" y="139" width="18" height="10" rx="3" transform="rotate(-2.5 101 139)" fill="#EFF4FF"/>
+    <rect x="139" y="133" width="16" height="9" rx="3" transform="rotate(-2.5 139 133)" fill="#EFF4FF"/>
+    <path d="M100 153L119 152" stroke="#7E91FF" stroke-width="2" stroke-linecap="round"/>
+    <path d="M139 145L157 144" stroke="#7E91FF" stroke-width="2" stroke-linecap="round"/>
+    <path d="M89 169L171 164L173 174L90 179L89 169Z" fill="#E9F1FF" opacity="0.72"/>
+    <circle cx="133" cy="181" r="11" fill="#11164C" stroke="#AFC3FF" stroke-width="3"/>
+    <path d="M132 176L137 181L132 187L127 181L132 176Z" fill="#E9F5FF"/>
+    <path d="M30 128C31 114 40 108 49 109C58 110 64 118 63 132" stroke="#86C8FF" stroke-width="4" stroke-linecap="round"/>
+    <path d="M22 129L62 126L66 178L27 183L22 129Z" fill="url(#bag)"/>
+    <path d="M69 133C70 119 78 112 88 113C98 114 104 123 103 137" stroke="#B4DFFF" stroke-width="4" stroke-linecap="round"/>
+    <path d="M58 136L105 132L109 184L62 190L58 136Z" fill="url(#bag)"/>
+    <path d="M173 129L207 122L218 172L184 179L173 129Z" fill="#3347D8"/>
+    <path d="M207 122L224 136L231 182L218 172L207 122Z" fill="#151A79"/>
+    <path d="M161 148L204 147L207 198L163 199L161 148Z" fill="url(#box)"/>
+    <path d="M204 147L221 159L220 204L207 198L204 147Z" fill="#1B258F"/>
+    <rect x="178" y="160" width="11" height="20" rx="1.5" fill="#1B2490" opacity="0.66"/>
+    <rect x="194" y="164" width="6" height="18" rx="1.5" fill="#131B73" opacity="0.58"/>
+    <path d="M21 174C54 213 144 219 211 169" stroke="#0B0F36" stroke-width="22" stroke-linecap="round" opacity="0.5"/>
+    <path d="M20 166C63 209 155 205 213 155" stroke="url(#orbit)" stroke-width="14" stroke-linecap="round"/>
+    <path d="M30 164C75 195 154 194 204 155" stroke="#F3FAFF" stroke-width="4.5" stroke-linecap="round" opacity="0.75"/>
+    <path d="M36 65C63 32 104 22 151 29" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" opacity="0.28"/>
+    <path d="M184 49C201 76 205 112 197 143" stroke="#6EE7FF" stroke-width="2.2" stroke-linecap="round" opacity="0.58"/>
+  </g>
+</svg>

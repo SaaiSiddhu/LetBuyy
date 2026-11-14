@@ -1,0 +1,428 @@
+{
+  "timing": 3127,
+  "keys": [
+    "timing",
+    "optimisticEstimate",
+    "pessimisticEstimate",
+    "optimisticGraph",
+    "pessimisticGraph"
+  ],
+  "optimistic": {
+    "keys": [
+      "timeInMs",
+      "nodeTimings"
+    ],
+    "time": 3112,
+    "nodes": [
+      {
+        "id": "8B38D82D841114B57B097B25304F8590",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/in/pricing",
+        "dependencies": [],
+        "startTime": 0,
+        "endTime": 930,
+        "duration": 930
+      },
+      {
+        "id": "437640.44904752121",
+        "type": "cpu",
+        "event": "RunTask",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 932,
+        "duration": 2
+      },
+      {
+        "id": "437640.44904754205",
+        "type": "cpu",
+        "event": "RunTask",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 932,
+        "endTime": 934,
+        "duration": 2
+      },
+      {
+        "id": "437640.44904763177",
+        "type": "cpu",
+        "event": "RunTask",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 934,
+        "endTime": 962,
+        "duration": 28
+      },
+      {
+        "id": "9591.8",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/webpack-3f579b24014698f4.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 1260,
+        "duration": 330
+      },
+      {
+        "id": "9591.11",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/main-app-35b83acb5746a20b.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 1260,
+        "endTime": 1440,
+        "duration": 180
+      },
+      {
+        "id": "9591.6",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/image?url=%2Fillustrations%2Fcommerce-essentials-v1.png&w=640&q=75",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 1860,
+        "duration": 930
+      },
+      {
+        "id": "9591.14",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/app/layout-9bfc7bbeddc21043.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 1860,
+        "endTime": 2040,
+        "duration": 180
+      },
+      {
+        "id": "9591.13",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/2188-287b3815070cb15a.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 1440,
+        "endTime": 2070,
+        "duration": 630
+      },
+      {
+        "id": "9591.15",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/app/%5Blocale%5D/layout-216d7b4d3d93144d.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 2040,
+        "endTime": 2220,
+        "duration": 180
+      },
+      {
+        "id": "9591.16",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/7666-04716cfc1ab4dd62.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 2070,
+        "endTime": 2400,
+        "duration": 330
+      },
+      {
+        "id": "9591.17",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/app/%5Blocale%5D/pricing/page-23f2f4eb666749a3.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 2220,
+        "endTime": 2400,
+        "duration": 180
+      },
+      {
+        "id": "9591.2",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/media/07e12798c3a3f210-s.p.woff2",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 2610,
+        "duration": 1680
+      },
+      {
+        "id": "9591.3",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/css/49f839c2f9f50a3d.css",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 2760,
+        "duration": 1830
+      },
+      {
+        "id": "9591.10",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/9270-6c16b0501f251426.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 2760,
+        "duration": 1830
+      },
+      {
+        "id": "9591.9",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/a5cb4e8f-445b28e35251d062.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 3060,
+        "duration": 2130
+      },
+      {
+        "id": "437640.44904782893",
+        "type": "cpu",
+        "event": "RunTask",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590",
+          "9591.10",
+          "9591.8",
+          "9591.11",
+          "9591.9"
+        ],
+        "startTime": 3060,
+        "endTime": 3112,
+        "duration": 52
+      }
+    ]
+  },
+  "pessimistic": {
+    "keys": [
+      "timeInMs",
+      "nodeTimings"
+    ],
+    "time": 3142,
+    "nodes": [
+      {
+        "id": "8B38D82D841114B57B097B25304F8590",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/in/pricing",
+        "dependencies": [],
+        "startTime": 0,
+        "endTime": 930,
+        "duration": 930
+      },
+      {
+        "id": "437640.44904752121",
+        "type": "cpu",
+        "event": "RunTask",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 932,
+        "duration": 2
+      },
+      {
+        "id": "437640.44904754205",
+        "type": "cpu",
+        "event": "RunTask",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 932,
+        "endTime": 934,
+        "duration": 2
+      },
+      {
+        "id": "437640.44904763177",
+        "type": "cpu",
+        "event": "RunTask",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 934,
+        "endTime": 962,
+        "duration": 28
+      },
+      {
+        "id": "9591.8",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/webpack-3f579b24014698f4.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 1260,
+        "duration": 330
+      },
+      {
+        "id": "9591.4",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/icons/letbuyy-store-logo-light-v3.svg",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 1410,
+        "duration": 480
+      },
+      {
+        "id": "9591.5",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/icons/letbuyy-store-logo-dark-v3.svg",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 1410,
+        "duration": 480
+      },
+      {
+        "id": "9591.11",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/main-app-35b83acb5746a20b.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 1410,
+        "endTime": 1590,
+        "duration": 180
+      },
+      {
+        "id": "9591.6",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/image?url=%2Fillustrations%2Fcommerce-essentials-v1.png&w=640&q=75",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 1860,
+        "duration": 930
+      },
+      {
+        "id": "9591.14",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/app/layout-9bfc7bbeddc21043.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 1860,
+        "endTime": 2040,
+        "duration": 180
+      },
+      {
+        "id": "9591.13",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/2188-287b3815070cb15a.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 1590,
+        "endTime": 2220,
+        "duration": 630
+      },
+      {
+        "id": "9591.15",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/app/%5Blocale%5D/layout-216d7b4d3d93144d.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 2040,
+        "endTime": 2220,
+        "duration": 180
+      },
+      {
+        "id": "9591.17",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/app/%5Blocale%5D/pricing/page-23f2f4eb666749a3.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 2220,
+        "endTime": 2400,
+        "duration": 180
+      },
+      {
+        "id": "9591.16",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/7666-04716cfc1ab4dd62.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 2220,
+        "endTime": 2550,
+        "duration": 330
+      },
+      {
+        "id": "9591.2",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/media/07e12798c3a3f210-s.p.woff2",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 2760,
+        "duration": 1830
+      },
+      {
+        "id": "9591.3",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/css/49f839c2f9f50a3d.css",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 930,
+        "endTime": 2760,
+        "duration": 1830
+      },
+      {
+        "id": "9591.10",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/9270-6c16b0501f251426.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 1410,
+        "endTime": 2940,
+        "duration": 1530
+      },
+      {
+        "id": "9591.9",
+        "type": "network",
+        "url": "http://127.0.0.1:9049/_next/static/chunks/a5cb4e8f-445b28e35251d062.js",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590"
+        ],
+        "startTime": 1260,
+        "endTime": 3090,
+        "duration": 1830
+      },
+      {
+        "id": "437640.44904782893",
+        "type": "cpu",
+        "event": "RunTask",
+        "dependencies": [
+          "8B38D82D841114B57B097B25304F8590",
+          "9591.10",
+          "9591.8",
+          "9591.11",
+          "9591.9"
+        ],
+        "startTime": 3090,
+        "endTime": 3142,
+        "duration": 52
+      }
+    ]
+  }
+}

@@ -4,14 +4,14 @@ import { useCopy } from '@/components/i18n/useCopy'
 
 import Copy from '@/components/i18n/Copy'
 
-import { useState, useRef, useEffect, forwardRef, type PointerEvent, type KeyboardEvent } from 'react'
+import { useState, useRef, useEffect, useSyncExternalStore, forwardRef, type PointerEvent, type KeyboardEvent } from 'react'
 import Image from 'next/image'
-import { motion, AnimatePresence, useInView, useReducedMotion, useIsPresent } from 'framer-motion'
+import { AnimatePresence, useInView, useIsPresent } from 'framer-motion'
+import * as motion from 'framer-motion/m'
 import {
     BarChart3,
     Bot,
     Button,
-    ChevronDown,
     CreditCard,
     Sparkles,
     Package,
@@ -22,7 +22,6 @@ import {
     type LucideIcon,
 } from '@letbuyy/ui'
 import { fitCapabilityPreview } from '@/lib/capability-preview-layout'
-import { revealAccordionItem } from '@/lib/reveal-accordion-item'
 import CapabilityArtwork from './CapabilityArtwork'
 import { TOUR_STEP_MS, TOUR_READING_PAUSE_MS, nextCapability, previousCapability, capabilitySwipeDirection, capabilityTourIsDue, type CapabilityId } from '@/lib/capability-tour'
 
@@ -48,10 +47,10 @@ const CAPABILITIES: Capability[] = [
         id: 'storefronts',
         label: 'Storefronts',
         tagline: 'Your brand, live everywhere',
-        description: 'Launch a fully branded storefront with custom domains, themes, and responsive product pages — all synced to your inventory and orders in real time.',
+        description: 'Build a branded storefront with products and themes. Custom domains require an eligible plan, DNS setup and verification.',
         features: ['Custom domains & SSL', 'Mobile-first themes', 'SEO-ready pages'],
         connections: ['orders', 'inventory', 'analytics', 'ai'],
-        badge: 'Live',
+        badge: 'Workspace',
         icon: Store,
         accentColor: 'var(--lb-primitive-color-teal-500)',
     },
@@ -59,10 +58,10 @@ const CAPABILITIES: Capability[] = [
         id: 'orders',
         label: 'Orders',
         tagline: 'End-to-end order lifecycle',
-        description: 'Track every order from placed to delivered. Fulfill, manage returns, notify customers, and reconcile payments — all in one unified inbox.',
+        description: 'Review order, payment and fulfillment status in your workspace. Returns, refunds and customer messages depend on permissions and configured providers.',
         features: ['Real-time order status', 'Returns & refunds', 'Fulfillment + shipping'],
         connections: ['storefronts', 'inventory', 'payments', 'customers'],
-        badge: 'Live',
+        badge: 'Workspace',
         icon: ShoppingBag,
         accentColor: 'var(--lb-primitive-color-blue-500)',
     },
@@ -70,10 +69,10 @@ const CAPABILITIES: Capability[] = [
         id: 'inventory',
         label: 'Inventory',
         tagline: 'Stock intelligence, zero surprises',
-        description: 'Monitor stock levels across your storefront and B2B channels. Get low-stock alerts, manage variants, and trigger purchase orders automatically.',
+        description: 'Review stock, variants and inventory history. Prepare purchase orders and transfers using the controls available to your account.',
         features: ['Variants & SKUs', 'Low-stock alerts', 'Purchase orders'],
         connections: ['orders', 'storefronts', 'b2b', 'ai'],
-        badge: 'Live',
+        badge: 'Workspace',
         icon: Package,
         accentColor: 'var(--lb-primitive-color-amber-500)',
     },
@@ -81,10 +80,10 @@ const CAPABILITIES: Capability[] = [
         id: 'payments',
         label: 'Payments',
         tagline: 'India-first, zero friction',
-        description: 'UPI, COD, and cards — all ready out of the box. GST invoices auto-generated, Razorpay verified server-side, every rupee in your ledger.',
-        features: ['UPI + COD + Cards', 'Auto GST invoices', 'Razorpay integrated'],
+        description: 'Configure buyer payments and COD for your business. Online methods require provider approval and valid credentials; tax documents depend on accurate billing and tax setup.',
+        features: ['Configured payment methods', 'Tax setup required', 'Razorpay integrated'],
         connections: ['orders', 'customers', 'analytics'],
-        badge: 'Live',
+        badge: 'Workspace',
         icon: CreditCard,
         accentColor: 'var(--lb-primitive-color-emerald-500)',
     },
@@ -92,10 +91,10 @@ const CAPABILITIES: Capability[] = [
         id: 'customers',
         label: 'Customers',
         tagline: 'Profiles, loyalty, insights',
-        description: 'Build rich customer profiles with full purchase history, reviews, and behavioral segments. Run retention campaigns directly from the platform.',
-        features: ['Customer profiles', 'Purchase history & reviews', 'Segments & retention'],
+        description: 'Organize customer profiles, purchase history and segments. Confirm consent and the supported sending workflow before planning customer communications.',
+        features: ['Customer profiles', 'Purchase history', 'Customer segments'],
         connections: ['orders', 'payments', 'analytics', 'ai'],
-        badge: 'Live',
+        badge: 'Workspace',
         icon: Users,
         accentColor: 'var(--lb-primitive-color-pink-500)',
     },
@@ -103,45 +102,33 @@ const CAPABILITIES: Capability[] = [
         id: 'analytics',
         label: 'Analytics',
         tagline: 'Revenue intelligence, always on',
-        description: 'Monitor revenue, conversion, and product performance. Get daily snapshots and live dashboards powered by your real commerce data.',
+        description: 'Review commerce reports with their date ranges and filters. Available metrics depend on recorded data, plan access and the report definition.',
         features: ['Revenue & conversion', 'Product performance', 'Customer trends'],
         connections: ['storefronts', 'orders', 'payments', 'customers'],
-        badge: 'Live',
+        badge: 'Workspace',
         icon: BarChart3,
         accentColor: 'var(--lb-primitive-color-purple-500)',
     },
     {
         id: 'ai',
         label: 'AI Operator & Automation',
-        tagline: 'Autonomous commerce operations',
-        description: 'AI-driven operations: auto-generate product descriptions, forecast demand, detect fraudulent orders, and optimize dynamic pricing.',
-        features: [
-            'Generative AI for SEO-optimized product copy and imagery',
-            'Demand forecasting engine based on historical sales and seasonality',
-            'Fraud and RTO (Return to Origin) prediction score on every order',
-            'AI customer support agent for order tracking and FAQs',
-            'Dynamic discount recommendation based on inventory velocity',
-        ],
+        tagline: 'Content tools with review',
+        description: 'Prepare supported content drafts with AI tools. Provider configuration, credits and human review are required; sandbox output is a demonstration.',
+        features: ['Content drafts', 'Provider mode and credits', 'Review before use'],
         connections: ['inventory', 'orders', 'customers', 'storefronts'],
         accentColor: 'var(--lb-primitive-color-purple-400)',
-        badge: 'Intelligence',
+        badge: 'Provider setup',
         icon: Bot,
     },
     {
         id: 'b2b',
         label: 'B2B & Wholesale',
         tagline: 'Bulk ordering, tiered pricing, and credit terms',
-        description: 'Wholesale commerce built into your store: tiered price lists, minimum order quantities, net payment terms, and custom buyer catalogs.',
-        features: [
-            'Custom price lists per customer group or corporate account',
-            'Net-30 / Net-60 credit terms with automated invoicing',
-            'Tiered volume discounts and minimum order value gates',
-            'Quick-order forms and CSV bulk reorder capability',
-            'Dedicated B2B buyer portal with approval workflows',
-        ],
+        description: 'Wholesale and B2B concepts are shown for planning. Public availability of buyer portals, credit terms and custom catalogs is not established; discuss your requirements with support.',
+        features: ['Planning guide', 'Confirm account availability'],
         connections: ['inventory', 'payments', 'customers', 'orders'],
         accentColor: 'var(--lb-color-primary)',
-        badge: 'B2B',
+        badge: 'Planned',
         icon: Truck,
     },
 ]
@@ -471,9 +458,9 @@ function AIMock() {
                 <span><Copy text={"AI Copilot"} /></span>
             </div>
             {[
-                { type: 'alert', text: 'Restock "Everyday Hoodie" — 7 units left, 12 orders expected this week.' },
-                { type: 'nudge', text: 'Offer 5% discount on orders > ₹2,000 to boost AOV by ~18%.' },
-                { type: 'copy',  text: 'Updated "Classic Sneakers" description using top-converting phrases.' },
+                { type: 'alert', text: 'Example draft: describe the materials and fit of Everyday Hoodie.' },
+                { type: 'nudge', text: 'Review every product fact and promotion before using this draft.' },
+                { type: 'copy',  text: 'Example draft only. No product changes have been applied.' },
             ].map((insight, i) => (
                 <div key={i} className={`cmap-mock-ai-card cmap-mock-ai-card-${insight.type}`}>
                     {insight.text}
@@ -552,52 +539,13 @@ function CapabilityMock({ id }: { id: CapabilityId }) {
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
-function ConnectedModules({
-    connections,
-    onNavigate,
-}: {
-    connections: CapabilityId[]
-    onNavigate: (id: CapabilityId) => void
-}) {
-    const { t } = useCopy()
-    return (
-        <div className="cmap-connected">
-            <span className="cmap-connected-label">Connected modules</span>
-            <div className="cmap-connected-chips">
-                {connections.map(id => {
-                    const cap = CAPABILITIES.find(c => c.id === id)!
-                    const Icon = cap.icon
-                    return (
-                        <Button
-                            unstyled
-                            key={id}
-                            type="button"
-                            className="cmap-connected-chip"
-                            style={{ '--cmap-accent': cap.accentColor } as CmapVars}
-                            onClick={() => onNavigate(id)}
-                            aria-label={t("Explore {label}", { label: t(cap.label) })}
-                        >
-                            <span style={{ color: cap.accentColor }} aria-hidden="true">
-                                {cap.materialName
-                                    ? <Sparkles width={12} height={12} aria-hidden="true" />
-                                    : Icon ? <Icon width={12} height={12} strokeWidth={2} /> : null
-                                }
-                            </span>
-                            <Copy text={cap.label} />
-                        </Button>
-                    )
-                })}
-            </div>
-        </div>
-    )
-}
-
 function CapabilityInfo({ cap, artwork = true }: { cap: Capability; artwork?: boolean }) {
     const { t } = useCopy()
     return (
         <div className={`cmap-panel-info${cap.id !== 'storefronts' ? ' cmap-panel-info--illustrated' : ''}`}>
             <div className="cmap-panel-copy">
                 <p className="cmap-panel-desc"><Copy text={cap.description} /></p>
+                <p className="cmap-panel-desc"><Copy text="Illustrative previews with example data. Features depend on plan, permissions and provider setup." /></p>
                 <ul className="cmap-panel-features" aria-label={t("{label} features", { label: t(cap.label) })}>
                     {cap.features.map(f => <li key={f}><Copy text={f} /></li>)}
                 </ul>
@@ -624,8 +572,12 @@ function FittedCapabilityPreview({ id }: { id: CapabilityId }) {
     const frame = useRef<HTMLDivElement>(null)
     const source = useRef<HTMLDivElement>(null)
     const [scale, setScale] = useState(0)
+    // The frame has fixed geometry. Build its inert illustration only when it
+    // is visible, rather than shaping an offscreen mock during first paint.
+    const visible = useInView(frame, { once: true })
 
     useEffect(() => {
+        if (!visible) return
         const viewport = frame.current
         const content = source.current
         if (!viewport || !content) return
@@ -635,12 +587,12 @@ function FittedCapabilityPreview({ id }: { id: CapabilityId }) {
         observer.observe(content)
         update()
         return () => observer.disconnect()
-    }, [id])
+    }, [id, visible])
 
     return (
         <div className="cmap-preview-frame" ref={frame} aria-hidden="true" inert>
             <div className={`cmap-preview-source${id === 'storefronts' ? ' cmap-preview-source--storefront' : ''}`} ref={source} style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
-                <CapabilityMock id={id} />
+                {visible && <CapabilityMock id={id} />}
             </div>
         </div>
     )
@@ -680,99 +632,14 @@ function PanelHeader({ cap, artwork = true }: { cap: Capability; artwork?: boole
     )
 }
 
-function AccordionItem({
-    cap,
-    isOpen,
-    onToggle,
-    onNavigate,
-    isReduced,
-}: {
-    cap: Capability
-    isOpen: boolean
-    onToggle: () => void
-    onNavigate: (id: CapabilityId) => void
-    isReduced: boolean
-}) {
-    const itemRef = useRef<HTMLDivElement>(null)
-    // 'storefronts' is open on first render, so without this guard the effect
-    // scrolls the page down to this section on every load/refresh. Only scroll
-    // when the user actually opens an item.
-    const hasMounted = useRef(false)
+const reducedMotionQuery = '(prefers-reduced-motion: reduce)'
+const readReducedMotion = () => window.matchMedia(reducedMotionQuery).matches
+const readReducedMotionOnServer = () => true
 
-    useEffect(() => {
-        if (!hasMounted.current) {
-            hasMounted.current = true
-            return
-        }
-        if (!isOpen) return
-        const item = itemRef.current
-        if (!item) return
-
-        /* Both layouts stay mounted at every width — CSS hides one. Above
-           960px the accordion is display:none while the side-by-side panel is
-           shown, so selecting a capability there was still firing this effect
-           and scrolling the page to an invisible element.
-
-           getClientRects() is empty for anything in a display:none subtree, so
-           this tracks the CSS without duplicating its breakpoint. */
-        if (item.getClientRects().length === 0) return
-
-        return revealAccordionItem(item, isReduced)
-    }, [isOpen, isReduced])
-
-    return (
-        <div
-            ref={itemRef}
-            className={`cmap-accordion-item${isOpen ? ' is-open' : ''}`}
-        >
-            <Button
-                unstyled
-                type="button"
-                className="cmap-accordion-trigger"
-                onClick={onToggle}
-                aria-expanded={isOpen}
-                style={isOpen ? { '--cmap-accent': cap.accentColor } as CmapVars : undefined}
-            >
-                <span className="cmap-acc-icon" style={{ color: cap.accentColor }} aria-hidden="true">
-                    <CapabilityArtwork module={cap.id} />
-                </span>
-                <span className="cmap-acc-info">
-                    <span className="cmap-acc-label"><Copy text={cap.label} /></span>
-                    <span className="cmap-acc-tagline"><Copy text={cap.tagline} /></span>
-                </span>
-                <span className={`cmap-acc-badge cmap-acc-badge-${cap.badge.toLowerCase()}`} aria-hidden="true">
-                    <Copy text={cap.badge} />
-                </span>
-                <motion.span
-                    className="cmap-acc-chevron"
-                    aria-hidden="true"
-                    animate={isReduced ? {} : { rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                >
-                    <ChevronDown width={16} height={16} />
-                </motion.span>
-            </Button>
-            <AnimatePresence initial={false}>
-                {isOpen && (
-                    <motion.div
-                        initial={isReduced ? { opacity: 1, height: 'auto' } : { opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={isReduced ? { opacity: 1, height: 'auto' } : { opacity: 0, height: 0 }}
-                        transition={
-                            isReduced
-                                ? { duration: 0 }
-                                : { duration: 0.26, ease: [0.16, 1, 0.3, 1] as const }
-                        }
-                        style={{ overflow: 'hidden' }}
-                    >
-                        <div className="cmap-accordion-body">
-                            <CapabilityContent cap={cap} onNavigate={onNavigate} />
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    )
+function subscribeReducedMotion(onChange: () => void) {
+    const media = window.matchMedia(reducedMotionQuery)
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
 }
 
 // ── Commerce OS Graph visualization ───────────────────────────────────────────
@@ -780,12 +647,13 @@ function AccordionItem({
 function CommerceOSGraph({
     activeId,
     onSelect,
+    reduced,
 }: {
     activeId: CapabilityId
     onSelect: (id: CapabilityId) => void
+    reduced: boolean
 }) {
     const { t } = useCopy()
-    const reduced = useReducedMotion()
     const CX = 340, CY = 285
     const R = 175
     const NODE_R = 36
@@ -929,7 +797,7 @@ function CommerceOSGraph({
                             tabIndex={0}
                             role="button"
                             aria-pressed={isActive}
-                            aria-label={t(cap.label)}
+                            aria-label={`${t(SHORT[cap.id])}: ${t(cap.label)}`}
                         >
                             <circle cx={nx} cy={ny} r={42} fill="transparent" />
                             {isActive && (
@@ -1014,7 +882,8 @@ export default function CapabilityMap() {
     const suppressClickUntil = useRef(0)
     const bodyRef = useRef<HTMLDivElement>(null)
     const inView = useInView(bodyRef, { amount: 0.25 })
-    const isReduced = useReducedMotion()
+    // Render the first frame without motion, then follow the live OS preference.
+    const isReduced = useSyncExternalStore(subscribeReducedMotion, readReducedMotion, readReducedMotionOnServer)
     const active = CAPABILITIES.find(c => c.id === activeId)!
 
     function pauseForReading() {
@@ -1120,7 +989,7 @@ export default function CapabilityMap() {
             <div className="container">
                 <motion.div
                     className="cmap-section-header"
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={false}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
@@ -1131,8 +1000,16 @@ export default function CapabilityMap() {
                         <span className="cmap-headline-accent"><Copy text={"One operating system."} /></span>
                     </h2>
                     <p className="cmap-lead">
-                        <Copy text={"Run storefronts, orders, inventory, payments, analytics, AI, B2B and operations from one unified platform."} /></p>
+                        <Copy text={"Explore merchant tools and planned capabilities. Check plan access and provider setup before relying on a feature."} /></p>
                 </motion.div>
+                <Button
+                    unstyled
+                    type="button"
+                    className="cmap-motion-control"
+                    onClick={() => setPlaying(value => !value)}
+                >
+                    <Copy text={playing ? "Pause automatic module tour" : "Continue automatic module tour"} />
+                </Button>
             </div>
 
             {/* Desktop: illustrated graph beside the synchronized preview. */}
@@ -1144,12 +1021,7 @@ export default function CapabilityMap() {
 
                 <aside className="cmap-left">
                     <div className="cmap-graph-container">
-                        <CommerceOSGraph activeId={activeId} onSelect={selectCapability} />
-                        {!isReduced && (
-                            <Button unstyled type="button" className="cmap-motion-control" onClick={() => setPlaying(value => !value)}>
-                                <Copy text={playing ? "Pause automatic module tour" : "Continue automatic module tour"} />
-                            </Button>
-                        )}
+                        <CommerceOSGraph activeId={activeId} onSelect={selectCapability} reduced={isReduced || !playing} />
                     </div>
                 </aside>
 
@@ -1192,19 +1064,6 @@ export default function CapabilityMap() {
                         </AnimatePresence>
                     </div>
 
-                    {/* Mobile: accordion — one open at a time */}
-                    <div className="cmap-mobile-accordion">
-                        {CAPABILITIES.map(cap => (
-                            <AccordionItem
-                                key={cap.id}
-                                cap={cap}
-                                isOpen={cap.id === activeId}
-                                onToggle={() => selectCapability(cap.id)}
-                                onNavigate={selectCapability}
-                                isReduced={!!isReduced}
-                            />
-                        ))}
-                    </div>
 
                 </div>
 

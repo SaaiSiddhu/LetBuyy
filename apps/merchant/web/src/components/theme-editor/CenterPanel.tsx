@@ -1,9 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Lock, MousePointer2 } from 'lucide-react'
-import { Button } from '@letbuyy/ui'
-import { getEditorPreviewBaseUrl, getStorefrontRootDomain } from '@/lib/public-urls'
+import { MaterialIcon } from '@letbuyy/ui'
+import { getStorefrontBaseUrl, getStorefrontRootDomain } from '@/lib/public-urls'
 import {
     EDITOR_LEGACY_SELECTION_MESSAGE,
     EDITOR_SELECTION_MESSAGE,
@@ -12,12 +11,6 @@ import {
     INSPECTOR_SECTION_HOVERED,
     INSPECTOR_HOVER_CLEARED,
     INSPECTOR_ADD_SECTION_INTENT,
-    EDITOR_INSPECTOR_MODE_MESSAGE,
-    EDITOR_READY_MESSAGE,
-    editorPreviewContextMatches,
-    readEditorPreviewSelection,
-    type EditorPreviewContext,
-    type EditorPreviewIdentityIndex,
 } from '@letbuyy/theme-engine/editor-bridge-protocol'
 import PreviewInspectorOverlay from './PreviewInspectorOverlay'
 import { fitPreviewViewport } from './preview-viewport'
@@ -29,13 +22,7 @@ interface CenterPanelProps {
     previewError: string | null
     isPreviewRefreshing: boolean
     selectedSectionId: string | null
-    selectedBlockId: string | null
-    previewContext: EditorPreviewContext | null
-    identities: EditorPreviewIdentityIndex
-    onRetryPreview: () => void
-    retryDisabled?: boolean
     onSelectSection?: (sectionId: string) => void
-    onSelectBlock?: (sectionId: string, blockId: string) => void
     /** Called when the pointer enters or leaves a section in the preview.
      *  Receives the hovered sectionId on enter, null on leave. */
     onHoverSection?: (sectionId: string | null) => void
@@ -54,22 +41,13 @@ export default function CenterPanel({
     previewError,
     isPreviewRefreshing,
     selectedSectionId,
-    selectedBlockId,
-    previewContext,
-    identities,
-    onRetryPreview,
-    retryDisabled = false,
     onSelectSection,
-    onSelectBlock,
     onHoverSection,
     onAddSectionIntent,
 }: CenterPanelProps) {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const previewBodyRef = useRef<HTMLDivElement>(null)
     const [availableSize, setAvailableSize] = useState({ width: 0, height: 900 })
-    const [inspectorEnabled, setInspectorEnabled] = useState(true)
-    const [frameError, setFrameError] = useState<string | null>(null)
-    const previewReadyRef = useRef(false)
     const viewportFit = fitPreviewViewport(viewport, availableSize.width, availableSize.height)
 
     useEffect(() => {
@@ -98,24 +76,21 @@ export default function CenterPanel({
     }, [viewportFit.width, viewportFit.height, viewportFit.scale, availableSize.width])
 
     const iframeLoadedRef = useRef(false)
-    const storefrontBaseUrl = getEditorPreviewBaseUrl()
+    const storefrontBaseUrl = getStorefrontBaseUrl()
 
     /** Tracks which section the preview is currently hovering — displayed in the overlay chip. */
     const [hoveredSection, setHoveredSection] = useState<{ sectionId: string; sectionType: string } | null>(null)
 
     const previewUrl = useMemo(() => {
-        if (!storefrontBaseUrl || !storeName || !previewContext) return ''
+        if (!storefrontBaseUrl || !storeName) return ''
 
         const url = new URL('/preview', storefrontBaseUrl)
         url.searchParams.set('subdomain', storeName)
         url.searchParams.set('editor', '1')
         url.searchParams.set('viewport', viewport)
-        url.searchParams.set('template', previewContext.templateKey)
-        if (previewContext.resourceId) url.searchParams.set('resource_id', previewContext.resourceId)
-        if (previewContext.page !== undefined) url.searchParams.set('page', String(previewContext.page))
         if (previewToken) url.searchParams.set('theme_preview_token', previewToken)
         return url.toString()
-    }, [previewToken, storefrontBaseUrl, storeName, viewport, previewContext])
+    }, [previewToken, storefrontBaseUrl, storeName, viewport])
 
     /**
      * The explicit origin the preview iframe is allowed to post messages from.
@@ -134,21 +109,16 @@ export default function CenterPanel({
     // (and re-posting on selection change once loaded) removes that error without losing the message.
     const postSelectionToPreview = useCallback(() => {
         const frame = iframeRef.current
-        if (!frame?.contentWindow || !previewOrigin || !previewContext || !iframeLoadedRef.current) return
+        if (!frame?.contentWindow || !previewOrigin || !iframeLoadedRef.current) return
         const targetOrigin = previewOrigin
-        frame.contentWindow.postMessage({ type: EDITOR_INSPECTOR_MODE_MESSAGE, enabled: inspectorEnabled, context: previewContext }, targetOrigin)
-        if (!inspectorEnabled) return
-        const blockPath = selectedSectionId && selectedBlockId && Object.hasOwn(identities, selectedSectionId)
-            ? identities[selectedSectionId].blocks[selectedBlockId] || [] : []
-        const selection = { sectionId: selectedSectionId, ...(selectedBlockId ? { blockId: selectedBlockId } : {}), blockPath, context: previewContext }
         // Emit the legacy name for backward compatibility with older preview iframes.
         frame.contentWindow.postMessage(
-            { type: EDITOR_LEGACY_SELECTION_MESSAGE, selectedSectionId, ...selection },
+            { type: EDITOR_LEGACY_SELECTION_MESSAGE, selectedSectionId },
             targetOrigin
         )
         // Also emit the modern name so preview iframes that only listen for the modern protocol work.
         frame.contentWindow.postMessage(
-            { type: EDITOR_SELECTION_MESSAGE, selectedSectionId, ...selection },
+            { type: EDITOR_SELECTION_MESSAGE, sectionId: selectedSectionId, selectedSectionId },
             targetOrigin
         )
         // Emit an explicit scroll message so the preview can distinguish scroll intent from
@@ -156,25 +126,18 @@ export default function CenterPanel({
         // having the explicit message lets preview-side flash logic distinguish the two.
         if (selectedSectionId) {
             frame.contentWindow.postMessage(
-                { type: EDITOR_SCROLL_MESSAGE, ...selection },
+                { type: EDITOR_SCROLL_MESSAGE, sectionId: selectedSectionId },
                 targetOrigin
             )
         }
-    }, [previewOrigin, previewContext, identities, selectedSectionId, selectedBlockId, inspectorEnabled])
+    }, [previewOrigin, selectedSectionId])
 
     // The iframe remounts whenever previewUrl changes (key={previewUrl}); mark it not-yet-loaded until
     // its onLoad fires again so we never post to a still-navigating frame.
     // Also clear hover state so a stale chip doesn't linger across navigations.
     useEffect(() => {
         iframeLoadedRef.current = false
-        previewReadyRef.current = false
-        setFrameError(null)
         setHoveredSection(null)
-        if (!previewUrl) return
-        const timer = window.setTimeout(() => {
-            if (!previewReadyRef.current) setFrameError('The preview could not finish loading. Your saved draft is kept. Retry to open a fresh preview.')
-        }, 20000)
-        return () => window.clearTimeout(timer)
     }, [previewUrl])
 
     useEffect(() => {
@@ -191,42 +154,31 @@ export default function CenterPanel({
             // SECURITY: reject messages from any origin other than the preview iframe.
             // previewOrigin is null when no preview is configured; in that case there is
             // nothing to listen for, so all messages are ignored.
-            if (!previewOrigin || event.origin !== previewOrigin || event.source !== iframeRef.current?.contentWindow) return
+            if (!previewOrigin || event.origin !== previewOrigin) return
 
             // Shape guard: we only act on plain objects with a string type field.
             if (!event.data || typeof event.data !== 'object' || Array.isArray(event.data)) return
             const message = event.data as Record<string, unknown>
             if (typeof message.type !== 'string') return
-            if (!editorPreviewContextMatches(message.context, previewContext)) return
 
             switch (message.type) {
-                case EDITOR_READY_MESSAGE: {
-                    iframeLoadedRef.current = true
-                    previewReadyRef.current = true
-                    setFrameError(null)
-                    postSelectionToPreview()
-                    break
-                }
                 case EDITOR_SECTION_SELECT_MESSAGE: {
                     // Preview clicked a section — select it in the editor tree.
-                    const selected = readEditorPreviewSelection(message, identities)
-                    if (selected?.blockId) onSelectBlock?.(selected.sectionId, selected.blockId)
-                    else if (selected) onSelectSection?.(selected.sectionId)
+                    const sectionId = typeof message.sectionId === 'string' ? message.sectionId : ''
+                    if (sectionId) onSelectSection?.(sectionId)
                     break
                 }
                 case INSPECTOR_SECTION_HOVERED: {
                     // Preview hover entered a section — update overlay chip + notify parent.
-                    const selected = readEditorPreviewSelection(message, identities)
-                    if (selected) {
-                        const sectionId = selected.sectionId
-                        const sectionType = identities[sectionId].type
+                    const sectionId = typeof message.sectionId === 'string' ? message.sectionId : ''
+                    const sectionType = typeof message.sectionType === 'string' ? message.sectionType : sectionId
+                    if (sectionId) {
                         setHoveredSection({ sectionId, sectionType })
                         onHoverSection?.(sectionId)
                     }
                     break
                 }
                 case INSPECTOR_HOVER_CLEARED: {
-                    if (!readEditorPreviewSelection(message, identities)) return
                     // Preview hover left a section — clear the overlay chip + notify parent.
                     setHoveredSection(null)
                     onHoverSection?.(null)
@@ -239,7 +191,7 @@ export default function CenterPanel({
                         ? message.adjacentSectionId : ''
                     const pos = message.position
                     const position = pos === 'before' || pos === 'after' ? pos : null
-                    if (Object.hasOwn(identities, adjacentSectionId) && position) onAddSectionIntent?.(adjacentSectionId, position)
+                    if (adjacentSectionId && position) onAddSectionIntent?.(adjacentSectionId, position)
                     break
                 }
                 default:
@@ -250,7 +202,7 @@ export default function CenterPanel({
 
         window.addEventListener('message', handleMessage)
         return () => window.removeEventListener('message', handleMessage)
-    }, [previewOrigin, previewContext, identities, onSelectSection, onSelectBlock, onHoverSection, onAddSectionIntent, postSelectionToPreview])
+    }, [previewOrigin, onSelectSection, onHoverSection, onAddSectionIntent])
 
     return (
         <div className="te-center-panel">
@@ -262,10 +214,9 @@ export default function CenterPanel({
                         <span className="te-preview-dot te-preview-dot--green" />
                     </div>
                     <div className="te-preview-url-bar">
-                        <Lock size={14} aria-hidden="true" />
+                        <MaterialIcon name="lock" size={14} />
                         <span className="te-preview-url">{storeName}.{getStorefrontRootDomain()}</span>
                     </div>
-                    <Button variant="ghost" size="sm" aria-label="Inspect preview" aria-pressed={inspectorEnabled} onClick={() => setInspectorEnabled(value => !value)}><MousePointer2 size={14} aria-hidden="true" />Inspect</Button>
                 </div>
 
                 <div ref={previewBodyRef} className="te-preview-body te-preview-body--iframe">
@@ -276,10 +227,8 @@ export default function CenterPanel({
                             title={`${storeName} storefront preview`}
                             src={previewUrl}
                             onLoad={handlePreviewLoad}
-                            onError={() => setFrameError('The preview could not be loaded. Your saved draft is kept.')}
                             className="te-preview-iframe"
                             sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
-                            referrerPolicy="no-referrer"
                         />
                     ) : (
                         <div className="te-preview-state">Preparing preview…</div>
@@ -289,10 +238,9 @@ export default function CenterPanel({
                         handled by the section tree (which already has keyboard selection). */}
                     <PreviewInspectorOverlay hoveredSection={hoveredSection} />
 
-                    {(isPreviewRefreshing || previewError || frameError) && (
-                        <div className="te-preview-status" role={previewError || frameError ? 'alert' : 'status'}>
-                            <span>{previewError || frameError || 'Syncing preview…'}</span>
-                            {(previewError || frameError) && <Button variant="secondary" size="sm" disabled={isPreviewRefreshing || retryDisabled} onClick={onRetryPreview}>Retry preview</Button>}
+                    {(isPreviewRefreshing || previewError) && (
+                        <div className="te-preview-status" role={previewError ? 'alert' : 'status'}>
+                            {previewError || 'Syncing preview…'}
                         </div>
                     )}
                 </div>

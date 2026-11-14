@@ -1,1 +1,0 @@
-services/api-gateway/src/__tests__/owned-db/playfield201-promotion-qualification.manual.ts:26:const suitePath = 'services/api-gateway/src/__tests__/owned-db/playfield201-promotion.postgres.test.ts';

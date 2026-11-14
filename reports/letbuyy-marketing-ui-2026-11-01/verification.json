@@ -1,0 +1,89 @@
+{
+  "captured_at": "2026-11-01T03:25:24.154070+00:00",
+  "branch": "codex/local-work-preserved-20261025",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "final_build_id": "crnqQUoGeKJdcGxRWXlNc",
+  "final_review_origin": "http://127.0.0.1:9045",
+  "source_file_count": 277,
+  "changed_source_files": 5,
+  "html_urls": 489,
+  "all_page_browser_cases": 573,
+  "final_template_cases": 48,
+  "retained_css_comparisons": 116,
+  "natural_scroll_comparisons": 28,
+  "spa_comparisons": 10,
+  "source_css_rules_preserved": 3136,
+  "new_touch_policy_rules": 1,
+  "fixes": [
+    "Availability failures stay unknown and stale requests cannot overwrite edits",
+    "Create Site sign-in reaches existing account lookup",
+    "Mobile menu focus containment/return and desktop Escape focus return",
+    "Inner carousel scroll containers preserve horizontal card gestures and native vertical/pinch gestures"
+  ],
+  "no_existing_css_rule_or_animation_keyframe_removed": true,
+  "primary_functional_checks_passed": true,
+  "whole_repository_green": false,
+  "preexisting_alias_violations": 18,
+  "physical_device_acceptance": false,
+  "field_cwv_measured": false,
+  "deployed": false,
+  "data_seed_reset_migration_or_provider_send": false,
+  "cleanup": {
+    "captured_at": "2026-11-01T03:25:25.241044+00:00",
+    "normal_before": {
+      "9002": [
+        7344
+      ],
+      "9006": [
+        2671
+      ],
+      "9010": [
+        3797
+      ]
+    },
+    "normal_after": {
+      "9002": [
+        7344
+      ],
+      "9006": [
+        2671
+      ],
+      "9010": [
+        3797
+      ]
+    },
+    "normal_services_preserved": true,
+    "stopped_verified_review_listeners": [
+      {
+        "port": 9038,
+        "pid": 3932,
+        "ownership_verified": true
+      },
+      {
+        "port": 9039,
+        "pid": 5787,
+        "ownership_verified": true
+      },
+      {
+        "port": 9042,
+        "pid": 6597,
+        "ownership_verified": true
+      },
+      {
+        "port": 9045,
+        "pid": 7072,
+        "ownership_verified": true
+      }
+    ],
+    "temporary_ports_after": {
+      "9038": [],
+      "9039": [],
+      "9042": [],
+      "9043": [],
+      "9044": [],
+      "9045": []
+    },
+    "database_engine_left_running_for_real_local_data": true,
+    "unrelated_processes_stopped": false
+  }
+}

@@ -1,7 +1,0 @@
-Browser tab: 19, Title: "syn-threadline-ui-33be9d94.localhost:62076/api/buyer-auth/session", URL: "http://syn-threadline-ui-33be9d94.localhost:62076/api/buyer-auth/session".
-1 AXWebArea syn-threadline-ui-33be9d94.localhost:62076/api/buyer-auth/session
-	2 text {"buyer":{"id":"93a4a2ae-9feb-4f70-b828-01752079b9fb","email":"syn-dewdrop-a-f6074d90e894@example.invalid","emailVerified":false}}
-	3 container
-		4 checkbox 0
-
-The focused UI element is 1 AXWebArea syn-threadline-ui-33be9d94.localhost:62076/api/buyer-auth/session

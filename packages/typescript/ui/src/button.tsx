@@ -3,7 +3,6 @@
 import React from 'react';
 import { Loader2 } from './icons';
 import { cx } from './utils';
-import { useNavigationLink } from './navigation/link-provider';
 
 type ButtonSlotProps = {
     className?: string;
@@ -61,7 +60,6 @@ export function Button({
     onClick,
     ...props
 }: ButtonProps) {
-    const Link = useNavigationLink();
     const interactiveDisabled = disabled || loading;
     const buttonClassName = unstyled
         ? className
@@ -110,7 +108,7 @@ export function Button({
 
     if (as === 'a') {
         return (
-            <Link
+            <a
                 className={buttonClassName}
                 href={interactiveDisabled ? undefined : href}
                 target={target}
@@ -126,7 +124,7 @@ export function Button({
                 {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
             >
                 {content}
-            </Link>
+            </a>
         );
     }
 

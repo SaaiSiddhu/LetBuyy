@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema } from '@letbuyy/shared-types'
+import type { SaveStorePaymentConfigInput } from '@letbuyy/api-client'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
@@ -31,12 +31,14 @@ export async function POST(
 
         if (resolved.error) return resolved.error
 
-        const parsed = SaveStorePaymentConfigSchema.safeParse(await request.json().catch(() => null))
-        if (!parsed.success) return NextResponse.json({ error: { code: 'VALIDATION', message: 'Enter valid Razorpay credentials matching the selected environment.' } }, { status: 400 })
+        const body = await request.json()
         const payload = await createMerchantApiClient().stores.paymentConfig.save(
             resolved.storeId,
-            parsed.data,
-            { idempotencyKey: request.headers.get('X-Idempotency-Key') }
+            {
+                key_id: body.key_id,
+                key_secret: body.key_secret,
+                test_mode: Boolean(body.test_mode),
+            } as SaveStorePaymentConfigInput
         )
 
         return NextResponse.json({ success: true, data: payload })
@@ -56,11 +58,28 @@ export async function PATCH(
 
         if (resolved.error) return resolved.error
 
-        const parsed = UpdateStorePaymentMethodsSchema.safeParse(await request.json().catch(() => null))
-        if (!parsed.success) return NextResponse.json({ error: { code: 'VALIDATION', message: 'Choose a valid payment method setting.' } }, { status: 400 })
-        const payload = await createMerchantApiClient().stores.paymentConfig.updateMethods(
-            resolved.storeId, parsed.data, { idempotencyKey: request.headers.get('X-Idempotency-Key') },
-        )
+        const body = await request.json() as { cod_enabled?: boolean; online_payment_enabled?: boolean }
+
+        const updates: Record<string, boolean> = {}
+        if (typeof body.cod_enabled === 'boolean') updates.cod_enabled = body.cod_enabled
+        if (typeof body.online_payment_enabled === 'boolean') updates.online_payment_enabled = body.online_payment_enabled
+
+        if (Object.keys(updates).length === 0) {
+            return NextResponse.json(
+                { error: { code: 'VALIDATION', message: 'No valid toggle fields provided' } },
+                { status: 400 }
+            )
+        }
+
+        // stores.update accepts Partial<Store> — cod_enabled/online_payment_enabled are
+        // payment-adjacent columns added to the gateway PATCH allowed list.
+        // The cast bridges the shared-types Store schema (which omits these columns) to
+        // the actual DB columns that the gateway now writes.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await createMerchantApiClient().stores.update(resolved.storeId, updates as any)
+
+        // Re-fetch the payment config so the response shape matches GET
+        const payload = await createMerchantApiClient().stores.paymentConfig.get(resolved.storeId)
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
         return merchantApiErrorResponse(err, 'Unable to update payment toggles')

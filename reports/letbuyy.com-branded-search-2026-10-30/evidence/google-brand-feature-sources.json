@@ -1,0 +1,42 @@
+{
+  "verified_on_local": "2026-10-30",
+  "timezone": "Asia/Kolkata",
+  "method": "Primary official Google pages opened using web tool in this audit session; summaries are interpretations, not full quotes.",
+  "sources": [
+    {
+      "feature": "site-name",
+      "url": "https://developers.google.com/search/docs/appearance/site-names",
+      "verified_summary": "Domain/subdomain identity is distinct from a page title. Selection is automated. A WebSite preference belongs in the existing entity. Root redirects are addressed when the target is accessible."
+    },
+    {
+      "feature": "favicon",
+      "url": "https://developers.google.com/search/docs/appearance/favicon-in-search",
+      "verified_summary": "Updated 27 October 2026: square image at least 8×8; recommend larger than 48×48. Current listed formats: BMP, GIF, ICO, PNG, JPEG, PPM and TIFF. Display is not guaranteed. Homepage redirects and icon crawling must work."
+    },
+    {
+      "feature": "sitelinks",
+      "url": "https://developers.google.com/search/docs/appearance/sitelinks",
+      "verified_summary": "Automated shortcuts selected using link structure and usefulness. Concise titles, headings, anchors and logical structure help; there is no direct ordering setting. A noindex removal affects the whole page."
+    },
+    {
+      "feature": "snippet",
+      "url": "https://developers.google.com/search/docs/appearance/snippet",
+      "verified_summary": "Automatically drawn mainly from page content; may use the description and vary by query. data-nosnippet excludes selected content from snippets without excluding the entire page."
+    },
+    {
+      "feature": "title-link",
+      "url": "https://developers.google.com/search/docs/appearance/title-link",
+      "verified_summary": "Automatically derived from title, headings, prominent text and references. Google may omit a repetitive site name. Titles should agree with the primary content language."
+    },
+    {
+      "feature": "localized-versions",
+      "url": "https://developers.google.com/search/docs/specialty/international/localized-versions",
+      "verified_summary": "HTML, header and sitemap hreflang methods are equivalent; redundant implementations offer no additional benefit. Google detects content language algorithmically, rather than using hreflang or the HTML lang attribute for detection."
+    },
+    {
+      "feature": "noindex",
+      "url": "https://developers.google.com/search/docs/crawling-indexing/block-indexing",
+      "verified_summary": "A crawl-visible noindex rule removes the whole page from Google Search. Blocking crawling can prevent Google from seeing the rule."
+    }
+  ]
+}

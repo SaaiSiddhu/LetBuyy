@@ -1,0 +1,126 @@
+{
+  "captured_at": "2026-11-01T03:18:37.377Z",
+  "method": "Reconstructed unsplit-CSS control9038 versus current split-CSS candidate9045; identical application code and assets, every CSS rule/declaration/condition equal; control preserves recorded pre-split order; fixed reduced-motion light/dark viewports; all art explicitly decoded and all sections fully revealed for visual capture; pixel differences from responsive codec changes retained separately from structural equality; only the measured display:none legacy accordion subtree is excluded from element counts; progressive previews revealed by real scrolling",
+  "rows": [
+    {
+      "path": "/in/support",
+      "width": 320,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "b325973d11fa47090070feb38597606052408168e196521ab13bc41e9b370a77",
+      "after_sha256": "b325973d11fa47090070feb38597606052408168e196521ab13bc41e9b370a77"
+    },
+    {
+      "path": "/in/support",
+      "width": 320,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "5465e685c9c83ef24ae46c291afdcef0ab68cb544296a35946cb29851f50b1fa",
+      "after_sha256": "5465e685c9c83ef24ae46c291afdcef0ab68cb544296a35946cb29851f50b1fa"
+    },
+    {
+      "path": "/in/support",
+      "width": 375,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "a2d5e8973e943b14f7fedb7bf40ab6756bcef5f5a1bacd31fb8fc6d94180bf96",
+      "after_sha256": "a2d5e8973e943b14f7fedb7bf40ab6756bcef5f5a1bacd31fb8fc6d94180bf96"
+    },
+    {
+      "path": "/in/support",
+      "width": 375,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "6dd5f1fd8021bc53716501e8665d5b952aeebd79a21b5a3c8554d2e333967119",
+      "after_sha256": "6dd5f1fd8021bc53716501e8665d5b952aeebd79a21b5a3c8554d2e333967119"
+    },
+    {
+      "path": "/in/support",
+      "width": 768,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "d2f321c5b0b45115b08c0f944aef6c279b54464a156638b11253fea0d7ed0b70",
+      "after_sha256": "d2f321c5b0b45115b08c0f944aef6c279b54464a156638b11253fea0d7ed0b70"
+    },
+    {
+      "path": "/in/support",
+      "width": 768,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "51e1ab4a89579b468e1ec7889d225eae3dde151a45f9564aa829d8b05c981ee4",
+      "after_sha256": "51e1ab4a89579b468e1ec7889d225eae3dde151a45f9564aa829d8b05c981ee4"
+    },
+    {
+      "path": "/in/support",
+      "width": 1366,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "fdef424921ab648d8543691fc2116dc1d99fba0b44fa7c2db62230254f7693e7",
+      "after_sha256": "fdef424921ab648d8543691fc2116dc1d99fba0b44fa7c2db62230254f7693e7"
+    },
+    {
+      "path": "/in/support",
+      "width": 1366,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "95415628de912a4e637e9d92605bf0f4961259d3a213e130abdb8238164e4bb2",
+      "after_sha256": "95415628de912a4e637e9d92605bf0f4961259d3a213e130abdb8238164e4bb2"
+    },
+    {
+      "path": "/in/support",
+      "width": 1920,
+      "scheme": "light",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "91c322c0d8c8b72f7e1baeccb45d0df3c19d20fa0b8a6a9e391d656bd657a6a6",
+      "after_sha256": "91c322c0d8c8b72f7e1baeccb45d0df3c19d20fa0b8a6a9e391d656bd657a6a6"
+    },
+    {
+      "path": "/in/support",
+      "width": 1920,
+      "scheme": "dark",
+      "dom_differences": [],
+      "geometry_and_copy_equal": true,
+      "pixels_different_over_3": 0,
+      "pixel_fraction": 0,
+      "mean_channel_difference": 0,
+      "before_sha256": "e54d2b448e09b76921eb88ab06d7d9e8084953d4bfac7104b28691eeb0ddc459",
+      "after_sha256": "e54d2b448e09b76921eb88ab06d7d9e8084953d4bfac7104b28691eeb0ddc459"
+    }
+  ]
+}

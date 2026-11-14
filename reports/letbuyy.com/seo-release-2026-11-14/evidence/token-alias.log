@@ -1,0 +1,5 @@
+
+> @letbuyy/ui@1.0.0 validate:aliases /private/tmp/letbuyy-marketing-nov13.VCJg4w/usable/packages/typescript/ui
+> node tests/validators/ui-no-new-token-alias-validator.mjs
+
+Token alias snapshot passed (138 protected duplicate-value group(s)).

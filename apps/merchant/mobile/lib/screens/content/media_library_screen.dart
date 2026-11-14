@@ -12,7 +12,6 @@ import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
 import '../../widgets/shared/image_source_sheet.dart';
-import '../../widgets/shared/merchant_media_picker.dart';
 
 class MediaLibraryScreen extends StatefulWidget {
   const MediaLibraryScreen({super.key});
@@ -136,12 +135,13 @@ class _MediaLibraryScreenState extends State<MediaLibraryScreen> {
     final store = _store;
     if (store == null || _isBusy) return;
 
+    final picked = video
+        ? await _picker.pickVideo(source: ImageSource.gallery)
+        : await _picker.pickImage(source: source);
+    if (picked == null) return;
+
     setState(() => _isBusy = true);
     try {
-      final picked = await pickMerchantMedia(context, source: source, pick: () => video
-          ? _picker.pickVideo(source: ImageSource.gallery)
-          : _picker.pickImage(source: source));
-      if (!mounted || picked == null) return;
       final file = File(picked.path);
       await context.read<MediaService>().uploadAndCreate(
         storeId: store.id,

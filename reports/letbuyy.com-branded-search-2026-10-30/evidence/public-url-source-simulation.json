@@ -1,0 +1,26 @@
+{
+  "note": "Pure source simulation in VM with synthetic environment values only. This does not inspect or prove production configuration.",
+  "source": "apps/marketing/web/src/lib/public-urls.ts",
+  "cases": [
+    {
+      "case": "Explicit canonical origin",
+      "server": "https://www.letbuyy.com/in",
+      "browser": "https://www.letbuyy.com/in"
+    },
+    {
+      "case": "No explicit origin; Vercel deployment fallback",
+      "server": "https://example-marketing.vercel.app/in",
+      "browser": "https://letbuyy.com/in"
+    },
+    {
+      "case": "No explicit origin or Vercel vars",
+      "server": "https://letbuyy.com/in",
+      "browser": "https://letbuyy.com/in"
+    },
+    {
+      "case": "Misconfigured path-bearing explicit URL",
+      "server": "https://www.letbuyy.com/in/in",
+      "browser": "https://www.letbuyy.com/in/in"
+    }
+  ]
+}

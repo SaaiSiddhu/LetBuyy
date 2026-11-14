@@ -1,0 +1,665 @@
+{
+  "captured_at": "2026-10-29T21:50:06.008Z",
+  "base": "http://127.0.0.1:9038",
+  "rows": [
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "More than a store. Your Commerce OS.",
+      "page_errors": [],
+      "journey_keyboard": true
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/pricing",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "Simple, transparent pricing",
+      "page_errors": [],
+      "real_plan_prices": true
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/resources/authors/letbuyy-team",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "page_errors": [],
+      "contextual_links": true,
+      "bookmark_clicked": true
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/resources/ai-commerce/commerce-copilot-guide",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "The LetBuyy AI Copilot Guide",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/resources/platform/how-themes-work",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "How Themes Work on LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "How Liquid Themes Work on LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/resources/platform/introduction-to-apps",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "Introduction to the LetBuyy App Marketplace",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/resources/changelog",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "ChangelogEvery update.A little more possibility.",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "path": "/resources/releases",
+      "status": 200,
+      "scroll": 375,
+      "lang": "en",
+      "heading": "Platform Releases",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "More than a store. Your Commerce OS.",
+      "page_errors": [],
+      "journey_keyboard": true
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/pricing",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "Simple, transparent pricing",
+      "page_errors": [],
+      "real_plan_prices": true
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/resources/authors/letbuyy-team",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "page_errors": [],
+      "contextual_links": true,
+      "bookmark_clicked": true
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/resources/ai-commerce/commerce-copilot-guide",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "The LetBuyy AI Copilot Guide",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/resources/platform/how-themes-work",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "How Themes Work on LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "How Liquid Themes Work on LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/resources/platform/introduction-to-apps",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "Introduction to the LetBuyy App Marketplace",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/resources/changelog",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "ChangelogEvery update.A little more possibility.",
+      "page_errors": []
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "path": "/resources/releases",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "en",
+      "heading": "Platform Releases",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "स्टोर से बढ़कर। आपका कॉमर्स OS।",
+      "page_errors": [],
+      "journey_keyboard": true
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/pricing",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "सरल और स्पष्ट कीमत",
+      "page_errors": [],
+      "real_plan_prices": true
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/resources/authors/letbuyy-team",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "अपना पहला LetBuyy स्टोर बनाएँ: पूरा मार्गदर्शन",
+      "page_errors": [],
+      "contextual_links": true,
+      "bookmark_clicked": true
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/resources/ai-commerce/commerce-copilot-guide",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "LetBuyy AI Copilot मार्गदर्शिका",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/resources/platform/how-themes-work",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "LetBuyy पर थीम कैसे काम करती हैं",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "LetBuyy पर Liquid थीम कैसे काम करती हैं",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/resources/platform/introduction-to-apps",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "LetBuyy ऐप मार्केटप्लेस का परिचय",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/resources/changelog",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "बदलाव विवरणहर अपडेट।थोड़ी और संभावना।",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "path": "/resources/releases",
+      "status": 200,
+      "scroll": 375,
+      "lang": "hi",
+      "heading": "प्लेटफ़ॉर्म रिलीज़",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "स्टोर से बढ़कर। आपका कॉमर्स OS।",
+      "page_errors": [],
+      "journey_keyboard": true
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/pricing",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "सरल और स्पष्ट कीमत",
+      "page_errors": [],
+      "real_plan_prices": true
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/resources/authors/letbuyy-team",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "अपना पहला LetBuyy स्टोर बनाएँ: पूरा मार्गदर्शन",
+      "page_errors": [],
+      "contextual_links": true,
+      "bookmark_clicked": true
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/resources/ai-commerce/commerce-copilot-guide",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "LetBuyy AI Copilot मार्गदर्शिका",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/resources/platform/how-themes-work",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "LetBuyy पर थीम कैसे काम करती हैं",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "LetBuyy पर Liquid थीम कैसे काम करती हैं",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/resources/platform/introduction-to-apps",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "LetBuyy ऐप मार्केटप्लेस का परिचय",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/resources/changelog",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "बदलाव विवरणहर अपडेट।थोड़ी और संभावना।",
+      "page_errors": []
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "path": "/resources/releases",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "hi",
+      "heading": "प्लेटफ़ॉर्म रिलीज़",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "கடைக்கும் மேலாக. உங்கள் வணிக OS.",
+      "page_errors": [],
+      "journey_keyboard": true
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/pricing",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "எளிய, வெளிப்படையான விலை",
+      "page_errors": [],
+      "real_plan_prices": true
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/resources/authors/letbuyy-team",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "உங்கள் முதல் LetBuyy கடை: முழு நடைமுறை வழிகாட்டி",
+      "page_errors": [],
+      "contextual_links": true,
+      "bookmark_clicked": true
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/resources/ai-commerce/commerce-copilot-guide",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "LetBuyy AI Copilot வழிகாட்டி",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/resources/platform/how-themes-work",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "LetBuyy-இல் தீம்கள் செயல்படும் விதம்",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "LetBuyy-இல் Liquid தீம்கள் செயல்படும் விதம்",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/resources/platform/introduction-to-apps",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "LetBuyy செயலிச் சந்தை அறிமுகம்",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/resources/changelog",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "மாற்றப் பதிவுஒவ்வொரு புதுப்பிப்பும்.மேலும் சிறிது வாய்ப்பு.",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "path": "/resources/releases",
+      "status": 200,
+      "scroll": 375,
+      "lang": "ta",
+      "heading": "தள வெளியீடுகள்",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "கடைக்கும் மேலாக. உங்கள் வணிக OS.",
+      "page_errors": [],
+      "journey_keyboard": true
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/pricing",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "எளிய, வெளிப்படையான விலை",
+      "page_errors": [],
+      "real_plan_prices": true
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/resources/authors/letbuyy-team",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "LetBuyy",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "உங்கள் முதல் LetBuyy கடை: முழு நடைமுறை வழிகாட்டி",
+      "page_errors": [],
+      "contextual_links": true,
+      "bookmark_clicked": true
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/resources/ai-commerce/commerce-copilot-guide",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "LetBuyy AI Copilot வழிகாட்டி",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/resources/platform/how-themes-work",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "LetBuyy-இல் தீம்கள் செயல்படும் விதம்",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/resources/developers/liquid-theming-guide",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "LetBuyy-இல் Liquid தீம்கள் செயல்படும் விதம்",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/resources/platform/introduction-to-apps",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "LetBuyy செயலிச் சந்தை அறிமுகம்",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/resources/changelog",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "மாற்றப் பதிவுஒவ்வொரு புதுப்பிப்பும்.மேலும் சிறிது வாய்ப்பு.",
+      "page_errors": []
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "path": "/resources/releases",
+      "status": 200,
+      "scroll": 1366,
+      "lang": "ta",
+      "heading": "தள வெளியீடுகள்",
+      "page_errors": []
+    },
+    {
+      "width": 375,
+      "path": "/in",
+      "no_js": true,
+      "status": 200,
+      "passed": true
+    },
+    {
+      "width": 375,
+      "path": "/in/pricing",
+      "no_js": true,
+      "status": 200,
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "path": "/in",
+      "no_js": true,
+      "status": 200,
+      "passed": true
+    },
+    {
+      "width": 1366,
+      "path": "/in/pricing",
+      "no_js": true,
+      "status": 200,
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "/tmp/letbuyy-seo-closeout-20261030/screenshots/pricing-mobile.png",
+    "/tmp/letbuyy-seo-closeout-20261030/screenshots/publisher-desktop.png"
+  ],
+  "non_get_requests_blocked": 0,
+  "provider_and_database_mutations": false,
+  "passed": true
+}

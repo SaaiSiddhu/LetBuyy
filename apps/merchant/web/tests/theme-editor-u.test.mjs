@@ -116,20 +116,20 @@ test('phase-u: ColorBackgroundControl imports from @letbuyy/ui', () => {
     assert.match(read(CONTROLS.ColorBackground), /from '@letbuyy\/ui'/, 'must import from @letbuyy/ui');
 });
 
-test('phase-u: ColorSchemeControl uses canonical Lucide icons (CODE-R7)', () => {
-    assert.match(read(CONTROLS.ColorScheme), /from 'lucide-react'/);
+test('phase-u: ColorSchemeControl imports from @letbuyy/ui', () => {
+    assert.match(read(CONTROLS.ColorScheme), /from '@letbuyy\/ui'/);
 });
 
-test('phase-u: FontPickerControl uses canonical Lucide icons (CODE-R7)', () => {
-    assert.match(read(CONTROLS.FontPicker), /from 'lucide-react'/);
+test('phase-u: FontPickerControl imports from @letbuyy/ui', () => {
+    assert.match(read(CONTROLS.FontPicker), /from '@letbuyy\/ui'/);
 });
 
-test('phase-u: HtmlControl uses canonical Lucide icons (CODE-R7)', () => {
-    assert.match(read(CONTROLS.Html), /from 'lucide-react'/);
+test('phase-u: HtmlControl imports from @letbuyy/ui', () => {
+    assert.match(read(CONTROLS.Html), /from '@letbuyy\/ui'/);
 });
 
-test('phase-u: LiquidControl uses canonical Lucide icons (CODE-R7)', () => {
-    assert.match(read(CONTROLS.Liquid), /from 'lucide-react'/);
+test('phase-u: LiquidControl imports from @letbuyy/ui', () => {
+    assert.match(read(CONTROLS.Liquid), /from '@letbuyy\/ui'/);
 });
 
 test('phase-u: CheckboxControl imports from @letbuyy/ui', () => {
@@ -144,8 +144,8 @@ test('phase-u: VideoUrlControl imports from @letbuyy/ui', () => {
     assert.match(read(CONTROLS.VideoUrl), /from '@letbuyy\/ui'/);
 });
 
-test('phase-u: InfoControls uses canonical Lucide icons (CODE-R7)', () => {
-    assert.match(read(CONTROLS.Info), /from 'lucide-react'/);
+test('phase-u: InfoControls imports from @letbuyy/ui', () => {
+    assert.match(read(CONTROLS.Info), /from '@letbuyy\/ui'/);
 });
 
 test('phase-u: ResourcePickerControl imports from @letbuyy/ui', () => {

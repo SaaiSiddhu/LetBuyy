@@ -66,7 +66,7 @@ export default function ExperiencePicker({ presets, activeExperienceId, onApply 
         return (
             <div className="te-experience-picker" style={s.panel} role="list" aria-label="Experiences">
                 <p style={s.intro}>
-                    Apply a color and typography style to your draft. Page content and layout stay in place.
+                    Pick a ready-made Experience. Applying one updates your draft preview instantly — customize and publish when you are ready.
                 </p>
                 <div style={s.empty} role="status">
                     <p style={s.emptyTitle}>No Experiences on this theme yet</p>
@@ -79,7 +79,7 @@ export default function ExperiencePicker({ presets, activeExperienceId, onApply 
     return (
         <div className="te-experience-picker" style={s.panel} role="list" aria-label="Experiences">
             <p style={s.intro}>
-                Apply a color and typography style to your draft. Page content and layout stay in place.
+                Pick a ready-made Experience. Applying one updates your draft preview instantly — customize and publish when you are ready.
             </p>
             {presets.map((preset) => {
                 const isActive = preset.id === activeExperienceId
@@ -97,6 +97,7 @@ export default function ExperiencePicker({ presets, activeExperienceId, onApply 
                         <p style={s.desc}>{preset.description}</p>
                         <div style={s.meta}>
                             {preset.headingFont ? <span>{preset.headingFont}</span> : null}
+                            {preset.sectionCount !== null ? <span>{preset.sectionCount} sections</span> : null}
                         </div>
                         <Button
                             unstyled
@@ -106,7 +107,7 @@ export default function ExperiencePicker({ presets, activeExperienceId, onApply 
                             aria-pressed={isActive}
                             disabled={isActive}
                         >
-                            {isActive ? 'Applied style' : `Apply ${preset.name} style`}
+                            {isActive ? 'Applied' : `Apply ${preset.name}`}
                         </Button>
                     </div>
                 )

@@ -1,0 +1,306 @@
+{
+  "captured_at": "2026-11-01T08:53:36.445Z",
+  "rows": [
+    {
+      "path": "/in",
+      "width": 375,
+      "status": 200,
+      "lang": "en",
+      "h1": "More than a store. Your Commerce OS.",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/pricing",
+      "width": 375,
+      "status": 200,
+      "lang": "en",
+      "h1": "Simple, transparent pricing",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "status": 200,
+      "lang": "en",
+      "h1": "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in",
+      "width": 1366,
+      "status": 200,
+      "lang": "en",
+      "h1": "More than a store. Your Commerce OS.",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/pricing",
+      "width": 1366,
+      "status": 200,
+      "lang": "en",
+      "h1": "Simple, transparent pricing",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "status": 200,
+      "lang": "en",
+      "h1": "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi",
+      "width": 375,
+      "status": 200,
+      "lang": "hi",
+      "h1": "स्टोर से बढ़कर। आपका कॉमर्स OS।",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/pricing",
+      "width": 375,
+      "status": 200,
+      "lang": "hi",
+      "h1": "सरल और स्पष्ट कीमत",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "status": 200,
+      "lang": "hi",
+      "h1": "अपना पहला LetBuyy स्टोर बनाएँ: पूरा मार्गदर्शन",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi",
+      "width": 1366,
+      "status": 200,
+      "lang": "hi",
+      "h1": "स्टोर से बढ़कर। आपका कॉमर्स OS।",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/pricing",
+      "width": 1366,
+      "status": 200,
+      "lang": "hi",
+      "h1": "सरल और स्पष्ट कीमत",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "status": 200,
+      "lang": "hi",
+      "h1": "अपना पहला LetBuyy स्टोर बनाएँ: पूरा मार्गदर्शन",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta",
+      "width": 375,
+      "status": 200,
+      "lang": "ta",
+      "h1": "கடைக்கும் மேலாக. உங்கள் வணிக OS.",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/pricing",
+      "width": 375,
+      "status": 200,
+      "lang": "ta",
+      "h1": "எளிய, வெளிப்படையான விலை",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+      "width": 375,
+      "status": 200,
+      "lang": "ta",
+      "h1": "உங்கள் முதல் LetBuyy கடை: முழு நடைமுறை வழிகாட்டி",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta",
+      "width": 1366,
+      "status": 200,
+      "lang": "ta",
+      "h1": "கடைக்கும் மேலாக. உங்கள் வணிக OS.",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/pricing",
+      "width": 1366,
+      "status": 200,
+      "lang": "ta",
+      "h1": "எளிய, வெளிப்படையான விலை",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+      "width": 1366,
+      "status": 200,
+      "lang": "ta",
+      "h1": "உங்கள் முதல் LetBuyy கடை: முழு நடைமுறை வழிகாட்டி",
+      "overflow": false,
+      "font_urls": [
+        "http://127.0.0.1:9006/_next/static/media/07e12798c3a3f210-s.p.woff2"
+      ],
+      "errors": []
+    }
+  ],
+  "pricing": {
+    "marketing_status": 200,
+    "gateway_status": 200,
+    "marketing_plans": [
+      {
+        "slug": "launch",
+        "name": "Launch",
+        "founding_inr": 199,
+        "regular_inr": 299,
+        "status": "available",
+        "purchasable": true
+      },
+      {
+        "slug": "growth",
+        "name": "Growth",
+        "founding_inr": 699,
+        "regular_inr": 999,
+        "status": "available",
+        "purchasable": true
+      },
+      {
+        "slug": "scale",
+        "name": "Scale",
+        "founding_inr": 2499,
+        "regular_inr": 2499,
+        "status": "coming_soon",
+        "purchasable": false
+      },
+      {
+        "slug": "commerce_os",
+        "name": "Commerce OS",
+        "founding_inr": 5999,
+        "regular_inr": 5999,
+        "status": "coming_soon",
+        "purchasable": false
+      }
+    ],
+    "gateway_plans": [
+      {
+        "slug": "launch",
+        "name": "Launch",
+        "founding_inr": 199,
+        "regular_inr": 299,
+        "status": "available",
+        "purchasable": true
+      },
+      {
+        "slug": "growth",
+        "name": "Growth",
+        "founding_inr": 699,
+        "regular_inr": 999,
+        "status": "available",
+        "purchasable": true
+      },
+      {
+        "slug": "scale",
+        "name": "Scale",
+        "founding_inr": 2499,
+        "regular_inr": 2499,
+        "status": "coming_soon",
+        "purchasable": false
+      },
+      {
+        "slug": "commerce_os",
+        "name": "Commerce OS",
+        "founding_inr": 5999,
+        "regular_inr": 5999,
+        "status": "coming_soon",
+        "purchasable": false
+      }
+    ],
+    "remaining": {
+      "total_slots": 100,
+      "used_slots": 0,
+      "remaining_slots": 100,
+      "active": true,
+      "paused": false
+    }
+  },
+  "font": {
+    "status": 200,
+    "bytes": 44600,
+    "sha256": "4333e5b1fdb186a15ab1fce785e288ee3253393ae9b7e18c4bb5e3e23326881d"
+  },
+  "pass": true
+}

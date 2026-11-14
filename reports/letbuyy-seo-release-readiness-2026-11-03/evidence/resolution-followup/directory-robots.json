@@ -1,0 +1,18 @@
+{
+  "source": "http://127.0.0.1:9006/robots.txt",
+  "directories": [
+    {
+      "path": "/in/sitemap",
+      "googlebotAllowed": true
+    },
+    {
+      "path": "/in-hi/sitemap",
+      "googlebotAllowed": true
+    },
+    {
+      "path": "/in-ta/sitemap",
+      "googlebotAllowed": true
+    }
+  ],
+  "passed": true
+}

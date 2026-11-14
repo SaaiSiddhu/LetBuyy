@@ -1,0 +1,41 @@
+{
+  "captured_at": "2026-11-07T02:31:07.768946+00:00",
+  "checks": [
+    {
+      "host": "seller.letbuyy.com",
+      "resolver": "cloudflare",
+      "status": 3,
+      "answers": []
+    },
+    {
+      "host": "seller.letbuyy.com",
+      "resolver": "google",
+      "status": 3,
+      "answers": []
+    },
+    {
+      "host": "developer.letbuyy.com",
+      "resolver": "cloudflare",
+      "status": 3,
+      "answers": []
+    },
+    {
+      "host": "developer.letbuyy.com",
+      "resolver": "google",
+      "status": 3,
+      "answers": []
+    },
+    {
+      "host": "developers.letbuyy.com",
+      "resolver": "cloudflare",
+      "status": 3,
+      "answers": []
+    },
+    {
+      "host": "developers.letbuyy.com",
+      "resolver": "google",
+      "status": 3,
+      "answers": []
+    }
+  ]
+}

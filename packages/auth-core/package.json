@@ -13,8 +13,7 @@
     "./legacy": "./src/legacy.ts",
     "./rp-sdk": "./src/rp-sdk.ts",
     "./session": "./src/session.ts",
-    "./platform-identity": "./src/platform-identity.ts",
-    "./turnstile": "./src/turnstile.ts"
+    "./platform-identity": "./src/platform-identity.ts"
   },
   "scripts": {
     "build": "tsc -b",

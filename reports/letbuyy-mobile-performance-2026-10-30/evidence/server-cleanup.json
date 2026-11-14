@@ -1,0 +1,80 @@
+{
+  "captured_at": "2026-10-30T00:34:22.762785+00:00",
+  "stopped_verified_temporary_listeners": [
+    {
+      "port": 9038,
+      "pid": 69036,
+      "cwd": "/private/tmp/letbuyy-seo-closeout-20261030/candidate/apps/marketing/web",
+      "ownership_verified": true
+    },
+    {
+      "port": 9039,
+      "pid": 83219,
+      "cwd": "/private/tmp/letbuyy-mobile-performance-20261030/candidate/apps/marketing/web",
+      "ownership_verified": true
+    },
+    {
+      "port": 9040,
+      "pid": 76707,
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy",
+      "ownership_verified": true
+    },
+    {
+      "port": 9041,
+      "pid": 76707,
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy",
+      "ownership_verified": true
+    },
+    {
+      "port": 9042,
+      "pid": 84664,
+      "cwd": "/Users/saai_mithra/Projects/Start_Up/LetBuyy",
+      "ownership_verified": true
+    },
+    {
+      "port": 9043,
+      "pid": 84666,
+      "cwd": "/private/tmp/letbuyy-mobile-performance-20261030/candidate/apps/marketing/web",
+      "ownership_verified": true
+    }
+  ],
+  "temporary_ports_after": {
+    "9038": [],
+    "9039": [],
+    "9040": [],
+    "9041": [],
+    "9042": [],
+    "9043": []
+  },
+  "normal_listeners_before": {
+    "9001": [
+      32288
+    ],
+    "9002": [
+      21480
+    ],
+    "9006": [
+      70894
+    ],
+    "9010": [
+      21987
+    ]
+  },
+  "normal_listeners_after": {
+    "9001": [
+      32288
+    ],
+    "9002": [
+      21480
+    ],
+    "9006": [
+      70894
+    ],
+    "9010": [
+      21987
+    ]
+  },
+  "normal_services_unchanged": true,
+  "temporary_tls_private_key_removed": true,
+  "unrelated_processes_stopped": false
+}

@@ -1,0 +1,25 @@
+build,target,method,repeat,role,exitCode,runtimeError,lcpMs,tbtMs,cls,allBudgetsPass
+Previous preserved build,/in/pricing,simulate,1,acceptance,0,,3080,24,0,False
+Previous preserved build,/in/resources/platform/building-first-letbuyy-store,simulate,1,acceptance,0,,3825.9480000000003,23,0,False
+Previous preserved build,/in/pricing,devtools,1,acceptance,0,,1977.438,60.198999999999614,0,True
+Previous preserved build,/in/resources/platform/building-first-letbuyy-store,devtools,1,acceptance,0,,2106.875,61.86700000000019,0,True
+Previous preserved build,/in/pricing,simulate,2,acceptance,0,,3562,36.5,0,False
+Previous preserved build,/in/resources/platform/building-first-letbuyy-store,simulate,2,acceptance,0,,3825.7039999999997,22.5,0,False
+Previous preserved build,/in/pricing,devtools,2,acceptance,0,,1983.575,58.17399999237068,0,True
+Previous preserved build,/in/resources/platform/building-first-letbuyy-store,devtools,2,acceptance,0,,2145.91,59.577999999999975,0,True
+Previous preserved build,/in/pricing,simulate,3,acceptance,0,,3005.54,20.5,0,False
+Previous preserved build,/in/resources/platform/building-first-letbuyy-store,simulate,3,acceptance,0,,3827.576,23.000000000000455,0,False
+Previous preserved build,/in/pricing,devtools,3,acceptance,0,,1972.408,55.503000000000156,0,True
+Previous preserved build,/in/resources/platform/building-first-letbuyy-store,devtools,3,acceptance,0,,2101.847,69.60199999999986,0,True
+Final accessibility candidate,/in/pricing,simulate,1,acceptance,0,,3449.9519999999998,29.743999999999915,0,False
+Final accessibility candidate,/in/resources/platform/building-first-letbuyy-store,simulate,1,acceptance,0,,3830.3360000000002,23.999999999999545,0,False
+Final accessibility candidate,/in/pricing,devtools,1,acceptance,0,,1964.009,59.07599999999957,0,True
+Final accessibility candidate,/in/resources/platform/building-first-letbuyy-store,devtools,1,acceptance,0,,2145.793,62.482999992370424,0,True
+Final accessibility candidate,/in/pricing,simulate,2,acceptance,0,,3008.975,23,0,False
+Final accessibility candidate,/in/resources/platform/building-first-letbuyy-store,simulate,2,acceptance,0,,3829.044,23.999999999999545,0,False
+Final accessibility candidate,/in/pricing,devtools,2,acceptance,0,,1977.798,60.86100000000033,0,True
+Final accessibility candidate,/in/resources/platform/building-first-letbuyy-store,devtools,2,acceptance,0,,2150.405,62.389000000000124,0,True
+Final accessibility candidate,/in/pricing,simulate,3,acceptance,0,,3450.898,32.987249999999904,0,False
+Final accessibility candidate,/in/resources/platform/building-first-letbuyy-store,simulate,3,acceptance,0,,3751.572,23,0,False
+Final accessibility candidate,/in/pricing,devtools,3,acceptance,0,,1937.799,64.18499999237088,0,True
+Final accessibility candidate,/in/resources/platform/building-first-letbuyy-store,devtools,3,acceptance,0,,2139.997,59.690000000000055,0,True

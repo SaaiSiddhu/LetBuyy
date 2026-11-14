@@ -27,15 +27,6 @@
     "INTERNAL_API_SECRET": {
       "type": "string"
     },
-    "INTERNAL_API_KEYRING": {
-      "type": "string",
-      "description": "API-only JSON caller key map. The reserved queue-workers-domain-reconcile entry authorizes only its bound maintenance request, never general app authentication."
-    },
-    "DOMAIN_RECONCILE_REQUEST_SECRET": {
-      "type": "string",
-      "minLength": 32,
-      "description": "Queue-only dedicated domain-maintenance signing key; independent per environment. Its matching receiver entry is held only in the API keyring."
-    },
     "PREVIEW_SIGNING_KEY": {
       "type": "string"
     },

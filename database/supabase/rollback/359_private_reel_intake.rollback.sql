@@ -5,48 +5,13 @@ SET LOCAL search_path=pg_catalog,public;
 SET LOCAL lock_timeout='5s';
 -- NOWAIT refuses an already-active catalog/table writer. Locks serialize new
 -- DDL, grants/role changes and every private table access until commit/abort.
--- Preserve native catalog exclusion. Managed PostgreSQL requires the reviewed
--- provider-admin bootstrap; no advisory/event-trigger substitute is accepted.
-DO $managed_catalog_fence$
-BEGIN
- IF (SELECT rolsuper FROM pg_catalog.pg_roles WHERE rolname=current_user) THEN
-  LOCK TABLE pg_catalog.pg_proc,pg_catalog.pg_class,pg_catalog.pg_attribute,
+LOCK TABLE pg_catalog.pg_proc,pg_catalog.pg_class,pg_catalog.pg_attribute,
  pg_catalog.pg_attrdef,pg_catalog.pg_constraint,pg_catalog.pg_trigger,
  pg_catalog.pg_policy,pg_catalog.pg_index,pg_catalog.pg_namespace,
  pg_catalog.pg_type,pg_catalog.pg_depend,pg_catalog.pg_rewrite,
  pg_catalog.pg_authid,pg_catalog.pg_auth_members,pg_catalog.pg_database,
  pg_catalog.pg_inherits,pg_catalog.pg_description,pg_catalog.pg_seclabel,
  pg_catalog.pg_extension IN SHARE ROW EXCLUSIVE MODE NOWAIT;
- ELSE
-  IF current_user<>'postgres' OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
- WHERE p.oid=pg_catalog.to_regprocedure('letbuyy_maintenance.lock_catalogs_v1()')
- AND n.nspname='letbuyy_maintenance' AND n.nspowner='supabase_admin'::regrole
- AND p.proowner='supabase_admin'::regrole AND p.prosecdef AND p.prokind='f' AND NOT p.proretset
- AND p.prorettype='pg_catalog.void'::regtype AND p.prolang=(SELECT oid FROM pg_catalog.pg_language WHERE lanname='plpgsql')
- AND p.pronargs=0 AND p.pronargdefaults=0 AND p.proargnames IS NULL AND p.proargmodes IS NULL AND p.proallargtypes IS NULL
- AND NOT p.proisstrict AND NOT p.proleakproof AND p.prosupport=0 AND p.provolatile='v' AND p.proparallel='u'
- AND p.proconfig=ARRAY['search_path=pg_catalog, pg_temp']::text[]
- AND pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(p.prosrc,'UTF8')),'hex')='4772eebc5017ef1e188b188f87f1cca8fb8f2b9cfd1e928798ef5cd5dfebfabc'
- AND EXISTS(SELECT 1 FROM pg_catalog.pg_roles r WHERE r.oid=p.proowner AND r.rolsuper)
- AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner)))a
-  WHERE a.grantor<>p.proowner OR a.grantee NOT IN(p.proowner,'postgres'::regrole) OR (a.grantee<>p.proowner AND a.is_grantable))
- AND pg_catalog.has_function_privilege('postgres',p.oid,'EXECUTE')
- AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(n.nspacl,pg_catalog.acldefault('n',n.nspowner)))a
-  WHERE a.grantor<>n.nspowner OR a.grantee NOT IN(n.nspowner,'postgres'::regrole)
-   OR(a.grantee<>n.nspowner AND (a.is_grantable OR a.privilege_type<>'USAGE')))
- AND pg_catalog.has_schema_privilege('postgres',n.oid,'USAGE')
- AND (SELECT count(*) FROM pg_catalog.pg_proc x WHERE x.pronamespace=n.oid AND x.proname=p.proname)=1) THEN
-   RAISE EXCEPTION 'LETBUYY_PROVIDER_ADMIN_CATALOG_FENCE_REQUIRED' USING ERRCODE='42501';END IF;
-  PERFORM letbuyy_maintenance.lock_catalogs_v1();
-  -- Prove actual backend-held relation locks, including cluster-shared catalogs.
-  IF EXISTS(SELECT 1 FROM unnest(ARRAY['pg_catalog.pg_proc'::pg_catalog.regclass,'pg_catalog.pg_class'::pg_catalog.regclass,'pg_catalog.pg_attribute'::pg_catalog.regclass,'pg_catalog.pg_attrdef'::pg_catalog.regclass,'pg_catalog.pg_constraint'::pg_catalog.regclass,'pg_catalog.pg_trigger'::pg_catalog.regclass,'pg_catalog.pg_policy'::pg_catalog.regclass,'pg_catalog.pg_index'::pg_catalog.regclass,'pg_catalog.pg_namespace'::pg_catalog.regclass,'pg_catalog.pg_type'::pg_catalog.regclass,'pg_catalog.pg_depend'::pg_catalog.regclass,'pg_catalog.pg_rewrite'::pg_catalog.regclass,'pg_catalog.pg_authid'::pg_catalog.regclass,'pg_catalog.pg_auth_members'::pg_catalog.regclass,'pg_catalog.pg_database'::pg_catalog.regclass,'pg_catalog.pg_inherits'::pg_catalog.regclass,'pg_catalog.pg_description'::pg_catalog.regclass,'pg_catalog.pg_seclabel'::pg_catalog.regclass,'pg_catalog.pg_extension'::pg_catalog.regclass]::oid[]) catalog_oid
-    WHERE NOT EXISTS(SELECT 1 FROM pg_catalog.pg_locks l WHERE l.pid=pg_catalog.pg_backend_pid()
-     AND l.locktype='relation' AND l.relation=catalog_oid AND l.granted
-     AND l.mode IN('ShareRowExclusiveLock','ExclusiveLock','AccessExclusiveLock')
-     AND l.database IN(0,(SELECT oid FROM pg_catalog.pg_database WHERE datname=pg_catalog.current_database())))) THEN
-   RAISE EXCEPTION 'LETBUYY_NATIVE_CATALOG_LOCKS_REQUIRED';END IF;
- END IF;
-END $managed_catalog_fence$;
 LOCK TABLE public.sites,public.users_custom,public.sessions,public.media_assets,
  public.reel_asset_provenance,public.audit_logs,public.outbox_events IN SHARE MODE NOWAIT;
 LOCK TABLE public.reel_upload_intents IN ACCESS EXCLUSIVE MODE NOWAIT;

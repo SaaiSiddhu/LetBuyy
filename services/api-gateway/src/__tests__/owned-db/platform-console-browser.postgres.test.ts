@@ -5,7 +5,7 @@ import test from 'node:test';
 import { expect } from '@playwright/test';
 import { LETBUYY_PLATFORM_SESSION_COOKIE } from '@letbuyy/auth-core';
 import { requireOwnedDatabase } from './owned-db-support';
-import { withConsoleBrowser, consoleBrowserTotp } from './console-browser-fixture';
+import { withConsoleBrowser, consoleBrowserTotp, expectConsoleAccount } from './console-browser-fixture';
 const owned = requireOwnedDatabase();
 test('normal local Console magic-link/TOTP forms bind a durable session, survive restart and deny logout replay', { timeout: 300_000 }, async () => {
     await withConsoleBrowser(owned, async ({origin, browser, actors, login, calls}) => {
@@ -21,24 +21,24 @@ test('normal local Console magic-link/TOTP forms bind a durable session, survive
         await page.getByLabel('Authenticator code', { exact: true }).fill(acceptedCode);
         await page.getByRole('button', { name: 'Verify', exact: true }).click();
         await page.waitForURL(url => url.pathname === '/dashboard');
-        await expect(page.getByText(actor.email, { exact: true })).toBeVisible();
+        await expectConsoleAccount(page, actor.email);
         for(const path of ['/v1/internal/console/summary','/v1/internal/console/analytics'])
             assert.ok(calls.some(call=>call.path===path&&call.status===200),'normal authenticated dashboard reads '+path);
-        await expect(page.getByText('Summary API unavailable', {exact:true})).toHaveCount(0);
-        await expect(page.getByText('Launch counter API unavailable', {exact:true})).toHaveCount(0);
+        await expect(page.getByText('Platform totals unavailable', {exact:true})).toHaveCount(0);
+        await expect(page.getByText('Growth counters unavailable', {exact:true})).toHaveCount(0);
         await expect(page.getByRole('article').filter({has:page.getByText('New signups',{exact:true})}).getByText(owned.psql("SELECT count(*) FROM users_custom WHERE created_at>=now()-interval '30 days';"),{exact:true})).toBeVisible();
-        await expect(page.getByRole('article').filter({has:page.getByText('MRR',{exact:true})}).getByText('Unavailable',{exact:true})).toBeVisible();
+        await expect(page.getByRole('article').filter({has:page.getByText('Monthly recurring revenue',{exact:true})}).getByText('Unavailable',{exact:true})).toBeVisible();
         await page.screenshot({path:`${ownedTmpDir()}/letbuyy-console-overview-${owned.runId}.png`,fullPage:true});
         const overviewSignature='public.read_console_overview_v1(uuid,text,text,text)';
         const overviewAcl=()=>owned.psql(`SELECT proacl::text FROM pg_proc WHERE oid='${overviewSignature}'::regprocedure;`);
         const overviewPermissions=overviewAcl();owned.psql(`REVOKE EXECUTE ON FUNCTION ${overviewSignature} FROM service_role;`);
         try {
-            await page.reload();await expect(page.getByText('Summary API unavailable',{exact:true})).toBeVisible();
-            await expect(page.getByText('Launch counter API unavailable',{exact:true})).toBeVisible();
+            await page.reload();await expect(page.getByText('Platform totals unavailable',{exact:true})).toBeVisible();
+            await expect(page.getByText('Growth counters unavailable',{exact:true})).toBeVisible();
         } finally {owned.psql(`GRANT EXECUTE ON FUNCTION ${overviewSignature} TO service_role;`);}
         assert.equal(overviewAcl(),overviewPermissions);await page.reload();
-        await expect(page.getByText('Summary API unavailable',{exact:true})).toHaveCount(0);
-        await expect(page.getByText('Launch counter API unavailable',{exact:true})).toHaveCount(0);
+        await expect(page.getByText('Platform totals unavailable',{exact:true})).toHaveCount(0);
+        await expect(page.getByText('Growth counters unavailable',{exact:true})).toHaveCount(0);
         assert.ok(Number(owned.psql(`SELECT count(*) FROM audit_logs WHERE actor_id='${actor.id}' AND action IN('console.summary.read','console.analytics.read');`))>=4);
         // Same real code through the normal step-up form must not mint another
         // elevated session, even though factor matching itself is now stateless.
@@ -56,7 +56,7 @@ test('normal local Console magic-link/TOTP forms bind a durable session, survive
         const state = await context.storageState(); await page.goto('about:blank'); await context.close();
         context = await browser.newContext({ storageState: state }); page = await context.newPage(); page.setDefaultTimeout(30_000);
         page.on('pageerror', error => pageErrors.push(error.message));
-        await page.goto(origin + '/dashboard'); await expect(page.getByText(actor.email, { exact: true })).toBeVisible();
+        await page.goto(origin + '/dashboard'); await expectConsoleAccount(page, actor.email);
         const signature = 'public.transition_console_session_v1(text,uuid,text,text,uuid,timestamptz,timestamptz,timestamptz,uuid,text)';
         const acl = () => owned.psql(`SELECT jsonb_agg(jsonb_build_array(a.grantor,a.grantee,a.privilege_type,a.is_grantable)
             ORDER BY a.grantor,a.grantee,a.privilege_type,a.is_grantable) FROM pg_proc p CROSS JOIN LATERAL
@@ -64,7 +64,8 @@ test('normal local Console magic-link/TOTP forms bind a durable session, survive
         const permissions = acl();
         owned.psql(`REVOKE EXECUTE ON FUNCTION ${signature} FROM service_role;`);
         try {
-            await page.getByRole('button', { name: 'Logout', exact: true }).click();
+            await page.getByLabel('Account menu', {exact:true}).click();
+            await page.getByRole('button', { name: 'Sign out', exact: true }).click();
             await page.waitForURL(url => url.pathname === '/login' && url.searchParams.get('error') === 'logout_unavailable');
             await expect(page.getByText('Sign-out could not be saved. Retry sign-out when service is restored.', { exact: true })).toBeVisible();
             assert.ok((await context.cookies(origin)).some(cookie => cookie.name === LETBUYY_PLATFORM_SESSION_COOKIE),
@@ -73,8 +74,9 @@ test('normal local Console magic-link/TOTP forms bind a durable session, survive
                 WHERE p.realm='admin' AND p.legacy_user_id='${actor.id}' AND s.status='active';`), '1');
         } finally { owned.psql(`GRANT EXECUTE ON FUNCTION ${signature} TO service_role;`); }
         assert.equal(acl(), permissions, 'restore the exact RPC privilege profile');
-        await page.goto(origin + '/dashboard'); await expect(page.getByText(actor.email, { exact: true })).toBeVisible();
-        await page.getByRole('button', { name: 'Logout', exact: true }).click();
+        await page.goto(origin + '/dashboard'); await expectConsoleAccount(page, actor.email);
+        await page.getByLabel('Account menu', {exact:true}).click();
+            await page.getByRole('button', { name: 'Sign out', exact: true }).click();
         await page.waitForURL(url => url.pathname === '/login' && url.searchParams.get('loggedOut') === '1');
         await expect(page.getByText('Signed out.', { exact: true })).toBeVisible();
         assert.equal((await context.cookies(origin)).some(cookie => cookie.name === LETBUYY_PLATFORM_SESSION_COOKIE), false);

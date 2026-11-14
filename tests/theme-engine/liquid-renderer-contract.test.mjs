@@ -45,7 +45,7 @@ test('LiquidRenderer exposes schema-valid inline blocks to section scope', () =>
   const source = read(THEME_RENDERER_SOURCE);
 
   assert.match(source, /const inlineBlockAllowed = sectionFile\?\.schema\.blocks\.some/);
-  assert.match(source, /settings: block\.settings,[\s\S]*?html: blockHtml,[\s\S]*?isAppBlock: false/s);
+  assert.match(source, /settings: block\.settings,\s+html: '',\s+isAppBlock: false/s);
 });
 
 test('LiquidRenderer keeps app blocks as explicit injectable slots', () => {

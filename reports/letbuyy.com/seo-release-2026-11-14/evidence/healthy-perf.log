@@ -1,0 +1,13 @@
+pricing-simulate-1: LCP=2906.10675ms TBT=36ms CLS=0
+guide-simulate-1: LCP=3826.532ms TBT=22.499999999999545ms CLS=0
+pricing-devtools-1: LCP=1978.555ms TBT=61.177999999999884ms CLS=0
+guide-devtools-1: LCP=2154.948ms TBT=61.15299999999979ms CLS=0.000004
+pricing-simulate-2: LCP=3078ms TBT=23ms CLS=0
+guide-simulate-2: LCP=3829.008ms TBT=25ms CLS=0
+pricing-devtools-2: LCP=1997.135ms TBT=69.07400000000007ms CLS=0
+guide-devtools-2: LCP=2110.8ms TBT=57.64800000000014ms CLS=0
+pricing-simulate-3: LCP=3560ms TBT=34.5ms CLS=0
+guide-simulate-3: LCP=3830.8280000000004ms TBT=26ms CLS=0
+pricing-devtools-3: LCP=1963.018ms TBT=60.54500000000007ms CLS=0
+guide-devtools-3: LCP=2150.216ms TBT=60.93100000000004ms CLS=0
+{"directory":"/private/tmp/letbuyy-marketing-nov13.VCJg4w/evidence/healthy-perf/run-iquaAe","originalSimulatedTargetMet":false,"appliedLabTargetMet":true,"allRequiredLanesPass":false}

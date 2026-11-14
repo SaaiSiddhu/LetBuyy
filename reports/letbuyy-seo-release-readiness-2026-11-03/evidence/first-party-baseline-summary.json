@@ -1,0 +1,104 @@
+{
+  "capturedAt": "2026-11-03T03:11:56.356980+00:00",
+  "source": "Actual downloaded GSC CSV exports; domain property letbuyy.com",
+  "dateStart": "2026-08-01",
+  "dateEnd": "2026-10-31",
+  "searchType": "Web (text-based)",
+  "clicks": 29,
+  "impressions": 384,
+  "ctr": 0.07552083333333333,
+  "impressionWeightedDailyPositionApprox": 24.26171875000001,
+  "exportRows": {
+    "Pages": 112,
+    "Countries": 30,
+    "Devices": 3,
+    "Chart": 92,
+    "Queries": 25,
+    "Filters": 2,
+    "Search appearance": 0
+  },
+  "visibleQueryClicks": 0,
+  "visibleQueryImpressions": 52,
+  "brandQueryRows": [],
+  "pageRowsClickSum": 34,
+  "pageRowsImpressionSum": 701,
+  "legacyHostPageRows": [
+    {
+      "Top pages": "https://developer.letbuyy.com/",
+      "Clicks": "2",
+      "Impressions": "34",
+      "CTR": "5.88%",
+      "Position": "5.56"
+    },
+    {
+      "Top pages": "https://developer.letbuyy.com/api",
+      "Clicks": "1",
+      "Impressions": "24",
+      "CTR": "4.17%",
+      "Position": "3.62"
+    },
+    {
+      "Top pages": "https://developer.letbuyy.com/sdk",
+      "Clicks": "0",
+      "Impressions": "23",
+      "CTR": "0%",
+      "Position": "2.96"
+    }
+  ],
+  "interpretation": [
+    "Daily chart supplies the property-level totals. Do not sum page dimensions into unique property totals; multiple URLs can occur in one search.",
+    "Visible query rows total0 clicks/52 impressions, while property totals are29/384; query privacy/aggregation prevents assigning the missing clicks to branded or nonbranded search.",
+    "Observed country/device figures describe this exported interval, not conversion or customer demand volume.",
+    "AI impression totals are not citation counts or cross-provider visibility."
+  ],
+  "ai": {
+    "impressions": 51,
+    "pageRowImpressionSum": 65,
+    "pageRows": 15,
+    "countries": [
+      {
+        "Country": "India",
+        "Impressions": "45"
+      },
+      {
+        "Country": "Australia",
+        "Impressions": "1"
+      },
+      {
+        "Country": "Brazil",
+        "Impressions": "1"
+      },
+      {
+        "Country": "Switzerland",
+        "Impressions": "1"
+      },
+      {
+        "Country": "Denmark",
+        "Impressions": "1"
+      },
+      {
+        "Country": "Egypt",
+        "Impressions": "1"
+      },
+      {
+        "Country": "United States",
+        "Impressions": "1"
+      }
+    ],
+    "devices": [
+      {
+        "Device": "Desktop",
+        "Impressions": "29"
+      },
+      {
+        "Device": "Mobile",
+        "Impressions": "21"
+      },
+      {
+        "Device": "Tablet",
+        "Impressions": "1"
+      }
+    ]
+  },
+  "noTrackingOrPropertyMutation": true
+}

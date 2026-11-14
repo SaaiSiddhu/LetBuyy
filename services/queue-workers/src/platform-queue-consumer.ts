@@ -1,6 +1,4 @@
 import {sendOperatorMfaResetEmail,type OperatorMfaResetEmailEnv,type OperatorMfaResetDelivery} from './operator-mfa-reset-email';
-import { sendOrderLifecycleEmail } from './order-lifecycle-email';
-import { createNotificationRpcClient, type NotificationRpcClient } from './notification-transport';
 import { sendStaffInvitationEmail, type StaffInvitationDelivery, type StaffInvitationEmailEnv } from './staff-invitation-email';
 import {
   eventRetryDelaySeconds,
@@ -390,22 +388,15 @@ export async function consumePlatformQueuesForCloudflareQueue(
   });
   if (queueNames.length === 0) return [];
 
+  const db = createSupabaseServiceClient(env);
+  const consumer = new PlatformQueueConsumer(db, env);
   const workerId = input.workerId || `queue-workers:${input.cloudflareQueueName}:${crypto.randomUUID()}`;
-  const consumer = notificationCapableConsumer(env, workerId);
   return consumer.consumeQueues(workerId, queueNames, drainBudget(env, input.limit));
 }
 
 /** Scheduled catch-up ensures a lost native queue wakeup cannot lose a durable invitation. */
 export async function consumeNotificationJobs(env: PlatformQueueConsumerEnv, workerId: string) {
-  return notificationCapableConsumer(env, workerId).consumeQueues(workerId,['notification-jobs'],25);
-}
-
-function notificationCapableConsumer(env: PlatformQueueConsumerEnv, workerId: string) {
-  const hosted = env.ENVIRONMENT === 'production' || env.ENVIRONMENT === 'staging';
-  const db = env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY ? createSupabaseServiceClient(env) : undefined;
-  // Hosted notification work always crosses the approved narrow monolith gate.
-  // Owned local fixtures can still drive the same consumer directly with real PG.
-  return new PlatformQueueConsumer(db, env, hosted || !db ? createNotificationRpcClient(env, workerId) : undefined);
+  return new PlatformQueueConsumer(createSupabaseServiceClient(env),env).consumeQueues(workerId,['notification-jobs'],25);
 }
 
 /** Bounded scheduled recovery. Ledger discovery is authoritative; no external
@@ -422,18 +413,9 @@ export const consumeStaffInvitationJobs=consumeNotificationJobs;
 
 class PlatformQueueConsumer {
   constructor(
-    private database: SupabaseClient | undefined,
+    private db: SupabaseClient,
     private env: PlatformQueueConsumerEnv,
-    private notificationTransport?: NotificationRpcClient,
   ) {}
-
-  private get db(): SupabaseClient {
-    if (!this.database) throw new Error('Database is not configured for this queue');
-    return this.database;
-  }
-  private rpcClient(queueName: PlatformQueueName): NotificationRpcClient {
-    return queueName === 'notification-jobs' && this.notificationTransport ? this.notificationTransport : this.db;
-  }
 
   async consumeQueues(
     workerId: string,
@@ -480,13 +462,10 @@ class PlatformQueueConsumer {
       if (error) throw new Error('Loyalty refund lease recovery is unavailable');
     }
     if (queueName === 'notification-jobs') {
-      const rpc = this.rpcClient(queueName);
-      const { error } = await rpc.rpc('recover_expired_staff_invitation_jobs_v1', { p_limit: limit });
+      const { error } = await this.db.rpc('recover_expired_staff_invitation_jobs_v1', { p_limit: limit });
       if (error) throw new Error('Staff invitation lease recovery is unavailable');
-      const {error:securityError}=await rpc.rpc('recover_expired_console_security_email_jobs_v1',{p_limit:limit});
+      const {error:securityError}=await this.db.rpc('recover_expired_console_security_email_jobs_v1',{p_limit:limit});
       if(securityError)throw new Error('Operator notification lease recovery is unavailable');
-      const {error:orderError}=await rpc.rpc('recover_expired_order_email_jobs_v1',{p_limit:limit});
-      if(orderError)throw new Error('Order email lease recovery is unavailable');
     }
     const jobs = await this.claimJobs(workerId, queueName, limit);
     const result: PlatformQueueConsumeResult = {
@@ -510,7 +489,7 @@ class PlatformQueueConsumer {
             ? await this.processSearchJob(job)
             : await this.processPaymentJob(job);
 
-        await this.completeJob(workerId, job.id, { ...notification, processed, consumer_runtime: 'services/queue-workers' }, queueName);
+        await this.completeJob(workerId, job.id, { ...notification, processed, consumer_runtime: 'services/queue-workers' });
         if (processed) {
           result.succeeded += 1;
         } else {
@@ -544,12 +523,10 @@ class PlatformQueueConsumer {
   }
 
   private async processNotificationJob(workerId:string,job:PlatformQueueJob):Promise<JsonObject>{
-    const rpc = this.rpcClient('notification-jobs');
-    if(job.job_type==='order.lifecycle_email_queued')return sendOrderLifecycleEmail(rpc,this.env,job,workerId);
     if(job.job_type==='email.employee_invite')return this.processStaffInvitationJob(job);
     if(job.job_type!=='email.operator_mfa_reset'||job.site_id!==null||typeof job.payload.approval_id!=='string')
       throw deterministicQueueJobError('Unsupported notification source');
-    const {data,error}=await rpc.rpc('console_mfa_reset_delivery_v1',{p_job_id:job.id,p_worker_id:workerId,p_sender:this.env.RESEND_FROM_EMAIL??null});
+    const {data,error}=await this.db.rpc('console_mfa_reset_delivery_v1',{p_job_id:job.id,p_worker_id:workerId,p_sender:this.env.RESEND_FROM_EMAIL??null});
     if(error||!data)throw new Error('Operator notification delivery state is unavailable');
     if(data.job_id!==job.id||data.approval_id!==job.payload.approval_id)throw deterministicQueueJobError('Operator notification source mismatch');
     return sendOperatorMfaResetEmail(this.env,data as OperatorMfaResetDelivery);
@@ -558,7 +535,7 @@ class PlatformQueueConsumer {
   private async processStaffInvitationJob(job: PlatformQueueJob): Promise<JsonObject> {
     if(job.job_type !== 'email.employee_invite' || typeof job.payload.invitation_id !== 'string'
       || !/^[0-9a-f-]{36}$/i.test(job.payload.invitation_id)) throw deterministicQueueJobError('Unsupported notification job or invitation ID');
-    const {data,error}=await this.rpcClient('notification-jobs').rpc('merchant_staff_invitation_delivery_v1',{p_invite_id:job.payload.invitation_id});
+    const {data,error}=await this.db.rpc('merchant_staff_invitation_delivery_v1',{p_invite_id:job.payload.invitation_id});
     if(error)throw new Error('Staff invitation delivery state is unavailable');
     if(!data)return {processed:false,reason:'invitation_expired_revoked_or_consumed'};
     if(data.id !== job.payload.invitation_id || data.store_id !== job.site_id) throw deterministicQueueJobError('Staff invitation job scope mismatch');
@@ -566,7 +543,7 @@ class PlatformQueueConsumer {
   }
 
   private async claimJobs(workerId: string, queueName: PlatformQueueName, limit: number): Promise<PlatformQueueJob[]> {
-    const { data, error } = await this.rpcClient(queueName).rpc('claim_platform_queue_jobs', {
+    const { data, error } = await this.db.rpc('claim_platform_queue_jobs', {
       p_queue_name: queueName,
       p_worker_id: workerId,
       p_limit: limit,
@@ -751,8 +728,6 @@ class PlatformQueueConsumer {
 
     const pushResult = await dispatchPushNotificationToDevices(this.db, this.env, {
       userId,
-      siteId: event.site_id,
-      category: ({ 'order.created':'order_created', 'order.placed':'order_created', 'order.paid':'order_paid', 'inventory.low_stock':'low_stock', 'refund.created':'refunds', 'customer.created':'customer_signup' } as Record<string,string>)[event.event_type] || 'system',
       title: planned.title,
       message: planned.message,
       data: {
@@ -1671,8 +1646,8 @@ class PlatformQueueConsumer {
     if (error) throw new Error(`Analytics rollup increment failed: ${error.message}`);
   }
 
-  private async completeJob(workerId: string, jobId: string, result: JsonObject, queueName: PlatformQueueName): Promise<void> {
-    const { error } = await this.rpcClient(queueName).rpc('complete_platform_queue_job', {
+  private async completeJob(workerId: string, jobId: string, result: JsonObject): Promise<void> {
+    const { error } = await this.db.rpc('complete_platform_queue_job', {
       p_job_id: jobId,
       p_worker_id: workerId,
       p_result: result,
@@ -1682,7 +1657,7 @@ class PlatformQueueConsumer {
   }
 
   private async failJob(workerId: string, job: PlatformQueueJob, error: unknown): Promise<void> {
-    const { error: failError } = await this.rpcClient(job.queue_name).rpc('fail_platform_queue_job', {
+    const { error: failError } = await this.db.rpc('fail_platform_queue_job', {
       p_job_id: job.id,
       p_worker_id: workerId,
       p_error_message: error instanceof Error ? error.message : 'Queue job failed',
@@ -1694,7 +1669,7 @@ class PlatformQueueConsumer {
   }
 
   private async quarantineJob(workerId: string, job: PlatformQueueJob, error: unknown): Promise<void> {
-    const { error: quarantineError } = await this.rpcClient(job.queue_name).rpc('quarantine_platform_queue_job', {
+    const { error: quarantineError } = await this.db.rpc('quarantine_platform_queue_job', {
       p_job_id: job.id,
       p_worker_id: workerId,
       p_error_message: error instanceof Error ? error.message : 'Queue job failed deterministic validation',

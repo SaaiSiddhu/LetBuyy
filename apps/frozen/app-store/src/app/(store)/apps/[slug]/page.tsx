@@ -223,7 +223,6 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
     const category = APP_CATEGORIES.find((item) => item.slug === app.app_categories?.slug) || app.app_categories;
     const price = getAppPriceDisplay(app);
     const recommendations = await AppService.getRecommendations(app.id);
-    const installContext = await AppService.getInstallContext();
     const alternatives = recommendations?.alternatives || [];
     const alsoInstalled = recommendations?.also_installed || [];
     const screenshots = getAppScreenshots(app);
@@ -614,7 +613,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                                             <span>{(review as typeof review & { usage_duration?: string | null; duration_using_app?: string | null }).usage_duration || (review as typeof review & { duration_using_app?: string | null }).duration_using_app}</span>
                                                         ) : null}
                                                     </div>
-                                                    {review.is_verified && (
+                                                    {(review.app_review_proofs?.some((proof) => proof.proof_status === 'verified') || review.verified_installation_id) && (
                                                         <span className="review-proof-badge">
                                                             <ShieldCheck size={12} aria-hidden="true" />
                                                             Verified install
@@ -675,8 +674,6 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                 priceLabel={price.label}
                                 priceDetail={price.detail}
                                 scopes={scopes}
-                                stores={installContext.stores}
-                                storeStatus={installContext.status}
                                 pricingPlans={pricingPlans}
                                 launchUrl={launchUrl}
                                 privacyUrl={privacyUrl}

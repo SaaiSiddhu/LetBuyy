@@ -38,7 +38,7 @@ test('a deployed gateway with no provider sends nothing, and says so', async () 
 });
 
 test('the code is in the body, never the subject', () => {
-    for (const purpose of ['verify_email', 'reset_password', 'connect_merchant'] as const) {
+    for (const purpose of ['verify_email', 'reset_password'] as const) {
         const message = buildBuyerEmailCodeMessage({ ...delivery, purpose });
         assert.ok(!message.subject.includes('482913'), purpose);
         assert.ok(message.text.includes('482913'), purpose);

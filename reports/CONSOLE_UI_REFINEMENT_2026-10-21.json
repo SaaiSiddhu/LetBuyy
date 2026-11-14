@@ -1,0 +1,309 @@
+{
+  "artifactHashes": {
+    "docs/evidence/console-ui-refinement-2026-10-21/accepted-visual-runner.json": "06f4b89c189e89172a395e5fd5ac09479e5c1ae0a04f2bcc3a355f60b4fc0271",
+    "docs/evidence/console-ui-refinement-2026-10-21/connected-runner.json": "202e22a1941c8e542bd89663a408f9629afb0fbb14519f824984060b5efca192",
+    "docs/evidence/console-ui-refinement-2026-10-21/focus-theme-runner.json": "7f9d003d9e67a8713499f7f14de1161260da872b3d07968a0525583d8e7efa21",
+    "docs/evidence/console-ui-refinement-2026-10-21/initial-runner.json": "c8595bfaac91e694d5b19bdf63db8c1605b57109f95b0952793085c9c4aaf0e2",
+    "docs/evidence/console-ui-refinement-2026-10-21/measured-text-contrast.json": "9b066e4922e52600e80e5ba762cd78ed80f1c00239976799b146b30555a2835f",
+    "docs/evidence/console-ui-refinement-2026-10-21/merchant-catalog-light.png": "d316e634c0ff967688877d74ffa46a7f8991323d349d432e24a46524798038ca",
+    "docs/evidence/console-ui-refinement-2026-10-21/merchant-workspace-dark-320px.png": "7f8fab022e58b423054e798d98aff1f5166dd02e6f95140399865e3f09ed67a1",
+    "docs/evidence/console-ui-refinement-2026-10-21/merchant-workspace-dark-390px.png": "8af7795f2e3fc2fa9033b2a65d41922871b829a9dbe22f9c6194e92db2dc8df0",
+    "docs/evidence/console-ui-refinement-2026-10-21/merchant-workspace-dark.png": "74fb4cb2adb98519cccb5cb55368489a9a2a468b7e0f7f15142524cc3efd839c",
+    "docs/evidence/console-ui-refinement-2026-10-21/merchant-workspace-light.png": "b0f6ce9e3af3560de139340dcd00dbbfa7c7d6bde9baf4d85a5e1e0e95594679",
+    "docs/evidence/console-ui-refinement-2026-10-21/merchant-workspace-outage-dark.png": "994217c630958c6dcb6bd448ee02901e4723de2a20c910acfb233a2bffb32816",
+    "docs/evidence/console-ui-refinement-2026-10-21/overview-light.png": "9842359f4e4fcd03eab50c1bf4930f9e967abe8cfe04117093103dcbb18cf315",
+    "docs/evidence/console-ui-refinement-2026-10-21/support-console-390px.png": "861e8cca619e0254fb00fc17da937af8ae5f709ebbaff56b0528f6452833b002",
+    "docs/evidence/console-ui-refinement-2026-10-21/support-console-desktop.png": "9b72b0a96ca609813d3e1bb057ad39753e2d2386eaade57d5aa3663502a24116",
+    "docs/evidence/console-ui-refinement-2026-10-21/theme-reload-runner.json": "cafe39688132c14c5ace05e70b53fb5d29c11847ecd195879954ffed6a1fe344"
+  },
+  "branch": "develop",
+  "browserEvidence": {
+    "accepted-visual": {
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "fail": 0,
+      "pass": 1,
+      "results": [
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "console-ui-refinement-browser.postgres",
+          "pass": 1
+        }
+      ],
+      "runId": "d324d60a899b",
+      "skips": 0,
+      "tests": 1
+    },
+    "connected": {
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "fail": 1,
+      "pass": 3,
+      "results": [
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "console-all-pages-browser.postgres",
+          "pass": 1
+        },
+        {
+          "code": 1,
+          "fail": 1,
+          "name": "console-ui-refinement-browser.postgres",
+          "pass": 0
+        },
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "merchant-console-support-browser.postgres",
+          "pass": 1
+        },
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "platform-approval-browser.postgres",
+          "pass": 1
+        }
+      ],
+      "runId": "afbfd595bf9f",
+      "skips": 0,
+      "tests": 4
+    },
+    "focus-theme": {
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "fail": 1,
+      "pass": 0,
+      "results": [
+        {
+          "code": 1,
+          "fail": 1,
+          "name": "console-ui-refinement-browser.postgres",
+          "pass": 0
+        }
+      ],
+      "runId": "0d975b8edd20",
+      "skips": 0,
+      "tests": 1
+    },
+    "initial": {
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "fail": 1,
+      "pass": 1,
+      "results": [
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "console-all-pages-browser.postgres",
+          "pass": 1
+        },
+        {
+          "code": 1,
+          "fail": 1,
+          "name": "console-ui-refinement-browser.postgres",
+          "pass": 0
+        }
+      ],
+      "runId": "d77f59daacb2",
+      "skips": 0,
+      "tests": 2
+    },
+    "theme-reload": {
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "fail": 1,
+      "pass": 0,
+      "results": [
+        {
+          "code": 1,
+          "fail": 1,
+          "name": "console-ui-refinement-browser.postgres",
+          "pass": 0
+        }
+      ],
+      "runId": "4103316eb11a",
+      "skips": 0,
+      "tests": 1
+    }
+  },
+  "browserVerdict": "Connected page/support/approval journeys each passed; mixed aggregate remains 3pass/1fail; corrected final visual suite passes independently on unchanged runtime source.",
+  "candidate": {
+    "documentationUpdatedAfterVerification": true,
+    "environmentFilesCopied": false,
+    "finalTouchedCodeMismatches": [],
+    "fullManifestSha256": "10b4e609a2ae161ecd6745f5bf8b05432dfa17d1daf62ae03e38fad1f98dee9f",
+    "generatedOutputsCopied": false,
+    "initialMismatches": 0,
+    "initialSourceFilesCompared": 9979,
+    "productionRuntimeMismatches": []
+  },
+  "checks": {
+    "consoleEslint": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/eslint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "consoleStylelint": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/stylelint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "consoleTests": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/console-tests-final.log",
+      "sha256": "34a54042f317373f1db2596bbbb493cef07b1ae9ab988e3948bfcada7cd62410"
+    },
+    "consoleTypes": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/console-types-final.log",
+      "sha256": "f9d2c7d268e12cc62785ca86c0bfc7b07ee90bd256dd92596dd0cdffb17d3f19"
+    },
+    "designSystem": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/design-system-final.log",
+      "sha256": "25eee30a33b0f5dc1af8c8133137af922ac53200f448d5a8ebf7b0c42e4ed6ea"
+    },
+    "gatewayTypes": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/gateway-types-final.log",
+      "sha256": "b6e70f1bff58ec529692e68bb1e9fff97cfa6c1380dce4a5a48e35294b1059f2"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/console-production-build.log",
+      "sha256": "ed3d1d108f6075c1ada83ecc3a5b0661c0448944f16958afc6a0a1ea7dd15071"
+    },
+    "publicApiSnapshot": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/shared-ui-public-api.log",
+      "sha256": "bda2a044207abf809bebe855451c224f46d85ffe1014ff78a55f2c0a67374aed"
+    },
+    "sharedUiTests": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/shared-ui-tests-complete.log",
+      "sha256": "5d6b84052fbda46eaa450145ae2494abfbc8c734e513e440c816038c776874f6"
+    },
+    "sharedUiTypes": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-ui-20261021/shared-ui-types-final.log",
+      "sha256": "7d2022da07f287e0b625e6fe52a60f74eedcc3c7cf4a4200ab9655b8a2524b8c"
+    }
+  },
+  "completedAtUtc": "2026-10-21T18:34:06.753891+00:00",
+  "evidenceDirectory": "docs/evidence/console-ui-refinement-2026-10-21",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "limits": [
+    "No push, merge, deployment, migration or provider delivery performed.",
+    "Console browser fixture uses development runtime; separate production build passes.",
+    "No full WCAG, assistive-technology, physical device, performance or hosted acceptance claim.",
+    "Earlier support migration370 remains controlled-hosted work; no migration added by this UI pass."
+  ],
+  "preservation": {
+    "baselineDirtyFiles": 129,
+    "intentionalChangesToBaseline": [
+      "EXECUTION_LEDGER.md",
+      "apps/internal/console/src/app/(dashboard)/dashboard/page.tsx",
+      "apps/internal/console/src/app/(dashboard)/merchants/[id]/operations/page.tsx",
+      "apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx",
+      "apps/internal/console/src/app/(dashboard)/subscriptions/page.tsx",
+      "apps/internal/console/src/app/(dashboard)/support/support-desk.tsx",
+      "apps/internal/console/src/app/globals.css",
+      "apps/internal/console/src/components/ConsoleDataTable.tsx",
+      "apps/internal/console/src/components/ConsoleShell.tsx",
+      "apps/internal/console/src/components/_local-ui/console-workspace.tsx",
+      "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md",
+      "packages/typescript/ui/src/internal-workspace.tsx",
+      "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts"
+    ],
+    "unchangedPreexistingDirtyFiles": 116,
+    "unexpectedChanges": []
+  },
+  "sourceHashes": {
+    "apps/internal/console/src/app/(dashboard)/dashboard/page.tsx": "7d5a66d90cd508ee701f85e67716dbe690affd07f8792c3e566e3aac33418272",
+    "apps/internal/console/src/app/(dashboard)/merchants/[id]/operations/page.tsx": "47ed31cd6d8d9a29ccd51837e9e6aa576e056e85b0ca6f3853b484ccbf566c2e",
+    "apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx": "8b0a7924b3a14e8b7955776b53d4fae21f5b63065f4f3f1faf2de09f67d332ef",
+    "apps/internal/console/src/app/(dashboard)/subscriptions/page.tsx": "a346d2d2c5c6a0cfde72a10dd05495d0875d50218cbd8d83e718695e74a95e43",
+    "apps/internal/console/src/app/(dashboard)/support/support-desk.tsx": "575c07d8ed8c571a077b0cf1a80dae6bfbe10c133812b4981cbc2a66cd0689b6",
+    "apps/internal/console/src/app/globals.css": "1d75b410892395a2978e71719e6e8ccd3f024e130280bb2ff7dcd604468c204d",
+    "apps/internal/console/src/components/ConsoleDataTable.tsx": "0fe7bb8f384789728ce1e55928bd2163e9e795defb5bb1358735e4cbf4c53cf1",
+    "apps/internal/console/src/components/ConsoleShell.tsx": "82cd95914326aca01eb7dcf39752ad7a53fcf065ddcd7a4e44c7159817ba1ed9",
+    "apps/internal/console/src/components/MerchantReadinessPanel.tsx": "5cbc9a765c30b15916c1200b2b7e1dbc90393e3febd3aaaca9f2a1d430cec470",
+    "apps/internal/console/src/components/_local-ui/console-workspace.tsx": "ad49a0d4ee33c668a65b9211fc61fe2ed2c90d24fd63d147069b8108614b30c3",
+    "packages/typescript/ui/src/internal-workspace.tsx": "90fa7f069e7dc9d8e83b1d0f183f2c02defd0d81d880c26ce721f6c4a41d43af",
+    "packages/typescript/ui/src/overlay-hooks.ts": "bc3ea7c856d008fb4245bd3644b17850c42eb594702165941069a08e15c21db1",
+    "packages/typescript/ui/src/overlays.tsx": "cda4226c8535d4f14dbd3dff09bd2c000b493109693fc8be14afdf417076efdd",
+    "packages/typescript/ui/src/theme-provider.tsx": "dbaaa9c2e55c802d79861422e50cdd94b7061031d2b5222f075230194fe77de6",
+    "packages/typescript/ui/tests/components/foundation.test.tsx": "c1f317ecb2467f50402a5a22528099ecb933486e7ad0c5d73c8664c088d4cc03",
+    "packages/typescript/ui/tests/components/theme-hydration.test.tsx": "ecb02c04d27a2080188a8db3871304ec80bb565b87ffde90ed5fdb62a0b78465",
+    "services/api-gateway/src/__tests__/owned-db/console-ui-refinement-browser.postgres.test.ts": "f19c73d74df87be6da87245d6d0b50b1c47d72550081790ac1d821af762f9468",
+    "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts": "b09ee26b5d61aca66a6ebb4eecd9592be40164f398cbce04d394f0caf6740383"
+  },
+  "startedDateIst": "2026-10-21",
+  "status": "LOCAL_UI_VERIFIED_HOSTED_PENDING",
+  "task": "Console UI refinement",
+  "testCounts": {
+    "console": 46,
+    "sharedUi": 50
+  },
+  "visual": {
+    "fullWcagConformanceClaimed": false,
+    "minimumTextContrast": 4.566867389143417,
+    "perMode": {
+      "dark": {
+        "minimumContrast": 6.541672893849158,
+        "samples": 30
+      },
+      "light": {
+        "minimumContrast": 4.566867389143417,
+        "samples": 53
+      },
+      "outageDark": {
+        "minimumContrast": 6.541672893849158,
+        "samples": 30
+      },
+      "restrictedDark": {
+        "minimumContrast": 6.541672893849158,
+        "samples": 30
+      }
+    },
+    "textObservations": 143,
+    "threshold": 4.5,
+    "viewports": [
+      1440,
+      390,
+      320
+    ]
+  }
+}

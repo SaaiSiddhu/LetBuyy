@@ -1,8 +1,0 @@
-{
-  "originalResponseSha256": "009da83d4f0f56f22b7f0ff65aad5a11814647d38a97e00c712845d4878aca28",
-  "replayResponseSha256": "1f83d069b6ac37a07ed498aaad1afbc50d02d84aaba76c282fe73562a929ba56",
-  "equal": false,
-  "reasonForDifference": "Not determined from sanitized hash-only receipt",
-  "initialAuditFailure": "An extra response-byte equality assertion failed before artifact creation; the premature notice was immediately withdrawn. HI15 requires same order/exact command and unchanged effects, not identical response bytes.",
-  "responseByteIdentityClaimed": false
-}

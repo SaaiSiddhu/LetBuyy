@@ -1,0 +1,102 @@
+{
+  "captured_at": "2026-11-01T05:36:27.362Z",
+  "scope": "Simulated absence of the new local-only font faces in this macOS Chromium browser. Not an Android/iOS/Safari/Firefox measurement.",
+  "baseline_fonts": [
+    {
+      "selector": ".hero-title-line",
+      "fonts": [
+        {
+          "familyName": "Tamil Sangam MN",
+          "postScriptName": "TamilSangamMN-Bold",
+          "isCustomFont": false,
+          "glyphCount": 11
+        },
+        {
+          "familyName": "Inter Variable",
+          "postScriptName": "InterVariable_opsz1B0000_wght2580000",
+          "isCustomFont": true,
+          "glyphCount": 2
+        }
+      ]
+    },
+    {
+      "selector": ".hero-subtitle",
+      "fonts": [
+        {
+          "familyName": "Inter Variable",
+          "postScriptName": "InterVariable",
+          "isCustomFont": true,
+          "glyphCount": 10
+        },
+        {
+          "familyName": "Tamil Sangam MN",
+          "postScriptName": "TamilSangamMN",
+          "isCustomFont": false,
+          "glyphCount": 75
+        }
+      ]
+    },
+    {
+      "selector": ".cmap-graph-node-g text",
+      "fonts": [
+        {
+          "familyName": "Tamil Sangam MN",
+          "postScriptName": "TamilSangamMN-Bold",
+          "isCustomFont": false,
+          "glyphCount": 6
+        }
+      ]
+    }
+  ],
+  "missing_face_fonts": [
+    {
+      "selector": ".hero-title-line",
+      "fonts": [
+        {
+          "familyName": "Tamil Sangam MN",
+          "postScriptName": "TamilSangamMN-Bold",
+          "isCustomFont": false,
+          "glyphCount": 11
+        },
+        {
+          "familyName": "Inter Variable",
+          "postScriptName": "InterVariable_opsz1B0000_wght2580000",
+          "isCustomFont": true,
+          "glyphCount": 2
+        }
+      ]
+    },
+    {
+      "selector": ".hero-subtitle",
+      "fonts": [
+        {
+          "familyName": "Inter Variable",
+          "postScriptName": "InterVariable",
+          "isCustomFont": true,
+          "glyphCount": 10
+        },
+        {
+          "familyName": "Tamil Sangam MN",
+          "postScriptName": "TamilSangamMN",
+          "isCustomFont": false,
+          "glyphCount": 75
+        }
+      ]
+    },
+    {
+      "selector": ".cmap-graph-node-g text",
+      "fonts": [
+        {
+          "familyName": "Tamil Sangam MN",
+          "postScriptName": "TamilSangamMN-Bold",
+          "isCustomFont": false,
+          "glyphCount": 6
+        }
+      ]
+    }
+  ],
+  "removed_faces": 3,
+  "differences": [],
+  "errors": [],
+  "passed": true
+}

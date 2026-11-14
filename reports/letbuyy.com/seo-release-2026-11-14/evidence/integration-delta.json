@@ -1,0 +1,1685 @@
+{
+  "delta": [
+    {
+      "path": ".stylelintrc.cjs",
+      "disposition": "prerequisite for build trial",
+      "baseOid": "dc5964c5cebde31daeae7e8b74b377f910fedfd5",
+      "candidateOid": "aec181a31a64dd216738be13423a7dd07417da6a"
+    },
+    {
+      "path": "apps/marketing/web/next-env.d.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "9edff1c7cacb3bfac9a1eadcf6f51eaa99565e38"
+    },
+    {
+      "path": "apps/marketing/web/next.config.ts",
+      "disposition": "marketing",
+      "baseOid": "59af9c8799bcfc268e7b12abcb390b892c5d8b00",
+      "candidateOid": "1a9d27b4fe07ba43677afb9855d58e6189e057fb"
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-Marketing-400-900.woff2",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "816f27614881bce3cfcaac73d357d995bf8c42f8"
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-Variable-Marketing.woff2",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "336d488c4f2a5e60d7cba35442e21836e5673097"
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/README.md",
+      "disposition": "marketing",
+      "baseOid": "b89c8d5f3901fd4605d6fdd588348fa37b2d09ea",
+      "candidateOid": "694c28aff1045e034d477aa570897f5fda09636d"
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-apple-touch-v3.png",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "5a8d5eb93556f102ed7a9dc1992ae012952c08c2"
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-logo-512.png",
+      "disposition": "marketing",
+      "baseOid": "202e38621d30a7cbed5dd1b51c8a66baffa5128e",
+      "candidateOid": "18abde24c5e56aabbcbfe48568bc4ad557c46f73"
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-store-mark-v3.svg",
+      "disposition": "marketing",
+      "baseOid": "2fe3c74f912a85e462479fd14e6335da0b641d3f",
+      "candidateOid": "4e0fb5a19cac5fb2b31db1ec7ff3f98a3e13eb54"
+    },
+    {
+      "path": "apps/marketing/web/public/og/letbuyy-default.png",
+      "disposition": "marketing",
+      "baseOid": "57764d15e8793cf7526e93f8824972a3562db369",
+      "candidateOid": "a7535dfa2dd14877f9645b9ac52b1c1ef1d883e4"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/create/layout.tsx",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "682fe5d98bc95cfb444942a0eecd7482bd3daf11"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/create/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "066d84d80dcd201a568a7becc2726261e3762ca8",
+      "candidateOid": "d7fd0045613c7493c1e5eb3606b3dc46e594c851"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/demo/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "1812e0189c4be9eb4110beaf2e6ecf5db0b60b35",
+      "candidateOid": "5b8f03c48dc3a504bc25287e29ca80e3a40c8fd7"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/layout.tsx",
+      "disposition": "marketing",
+      "baseOid": "5eafe69617f6191e7c4552798e26833d01d39f14",
+      "candidateOid": "51090d9d64c6d20361df133c6e9e44f9cfa10e90"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/legal/[slug]/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "7f5e6317e4998f5c82ad7082dfb4b578ed504ade",
+      "candidateOid": "7d9e4c7a332c6ba7c96b58749d76460c27b8c9b3"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "096842e07aea4db5eefe88db3270e88ad6c45fee",
+      "candidateOid": "6ffea1bd1050191067ba1ed3ddf9eafc7e5a1a77"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/pricing/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "b06c00ad4dd0407aaab2a3504de5738e70717bf3",
+      "candidateOid": "ccf2c198d75888c498d33f8d1382707c778af8c8"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/[slug]/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "fa4340da41034ce1e16b397f09ca668bd0278492",
+      "candidateOid": "ebc19aded7a3fe1d2758bb2b7f9c7419af9d386c"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "e056f5737e1bf3512ba9a26d66b05eba39b785dc",
+      "candidateOid": "163b3226789cbfca3ccd9f362895d4eb6b93f385"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/authors/[slug]/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "96aa5e5fb32db19f0cc2cf4c877e9b14c5bb2d4e",
+      "candidateOid": "e00143554a7b009e65f485fdcd676aa849d273a6"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/changelog/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "c46698632a227a564388a065e5931e5e629c57cf",
+      "candidateOid": "7b2b1e81b962552af990bd723b17a159edfb3640"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/layout.tsx",
+      "disposition": "marketing",
+      "baseOid": "93d1b16cbf6011f470af0ea574766b14e5c08ef8",
+      "candidateOid": "c311ccbca7683bd9046ecf3681d134f022531ead"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/releases/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "9cc110a5d8e457c09e818fefd4e29fcbbe72310b",
+      "candidateOid": "d5ba3232a6787f982ac7713f3868031ef3cda031"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/rss.xml/route.ts",
+      "disposition": "marketing",
+      "baseOid": "fa980e3ebcb81d2983ca40b186dfb70b52f91691",
+      "candidateOid": "1eb4c6a3cb64106838addb0b0a4ec8d242ae3e63"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/search/layout.tsx",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "dee056989626e979c9158c8bdfe748ad689e7e04"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/sitemap.xml/route.ts",
+      "disposition": "marketing",
+      "baseOid": "9860eea15ef28054c41c1921d53001234ecd73ce",
+      "candidateOid": "d5531d2e7442fef70e79aa356a4a16056026e24b"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/tag/[tag]/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "3977ee24b65eca60b25e66c33330d12b5f03ecb8",
+      "candidateOid": "9c685da7dea89f669aad87580cdf39b449465f30"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/sitemap/page.tsx",
+      "disposition": "marketing",
+      "baseOid": "ac13c2a7b1cff09da021ae536fc87a797ced256b",
+      "candidateOid": "ffecda197b753c469cd6b5e41fbfea59e89a8e29"
+    },
+    {
+      "path": "apps/marketing/web/src/app/api/founding-pricing/route.ts",
+      "disposition": "marketing",
+      "baseOid": "5e48f6f60b15c8c03cd981abcc2372599e884978",
+      "candidateOid": "827c6acffbd2eb5b317b808ef761f61eccb7c8cf"
+    },
+    {
+      "path": "apps/marketing/web/src/app/favicon.ico",
+      "disposition": "marketing",
+      "baseOid": "718d6fea4835ec2d246af9800eddb7ffb276240c",
+      "candidateOid": "a51098477ae06b9ebe7368ec43255d121a535545"
+    },
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "disposition": "marketing",
+      "baseOid": "daf659f64a53d617f1b825e0f86e4bcb4239ca3f",
+      "candidateOid": "cfaddb69b268ea2bd3441ed1c7f54c74ef902f6d"
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "5a69dd931f4b307d7131c0d2da46dd538e64f8af"
+    },
+    {
+      "path": "apps/marketing/web/src/app/how-it-works.css",
+      "disposition": "marketing",
+      "baseOid": "aca8e0376e0cbc1e9a79b8b3be5c0478599d62bf",
+      "candidateOid": "7b5a1b9d131084a2bf0a11dcfa2f0c491799b3cc"
+    },
+    {
+      "path": "apps/marketing/web/src/app/layout.tsx",
+      "disposition": "marketing",
+      "baseOid": "32628107f5affaaf14d2fd913e50c131051d8925",
+      "candidateOid": "d186c395d2c5f165fe631fe9c2eda28ae3d50bae"
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "c9ac6928e834d52a2372bb90b728424ce5e73704"
+    },
+    {
+      "path": "apps/marketing/web/src/app/sitemap.ts",
+      "disposition": "marketing",
+      "baseOid": "51a68e04a15485ce316498fe86e3acf7f2cb1166",
+      "candidateOid": "39dd05af85c44ff862f8439279eb62ee259600e2"
+    },
+    {
+      "path": "apps/marketing/web/src/components/BrandLogo.tsx",
+      "disposition": "marketing",
+      "baseOid": "7d5d92b2c91bf1e2519bd88c747907092e9f15ba",
+      "candidateOid": "d88b5473b37b714153b4bf550a2aba84056e7bd0"
+    },
+    {
+      "path": "apps/marketing/web/src/components/CapabilityArtwork.tsx",
+      "disposition": "marketing",
+      "baseOid": "ec463549d662c0f4dc17cad1455950ddb4369d46",
+      "candidateOid": "b7d6b2bb2c90ec680d74af31e0618df51bfbad15"
+    },
+    {
+      "path": "apps/marketing/web/src/components/CapabilityMap.tsx",
+      "disposition": "marketing",
+      "baseOid": "e160d8e8d131bca820761335aa71d4438177b652",
+      "candidateOid": "72aac2fd3a5c5cc7a8b352e0436069554df5ab73"
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceGlobeCanvas.tsx",
+      "disposition": "marketing",
+      "baseOid": "189036432cb8560da472d4243ca9f83d7a694f17",
+      "candidateOid": "377b137ab8986370d4ba187534f1b6235b891fd8"
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceNetwork.tsx",
+      "disposition": "marketing",
+      "baseOid": "69fe7385b622a3df3ba39e58e588049f293472b7",
+      "candidateOid": "2424930a14b44bdece2d6708c9f5587a4f55c06d"
+    },
+    {
+      "path": "apps/marketing/web/src/components/EcosystemMap.tsx",
+      "disposition": "marketing",
+      "baseOid": "8eff1d616c96d4816805d93cc0213fb6f3cd44dd",
+      "candidateOid": "5b7eee82d160f1111789f4c147f40cc960625c14"
+    },
+    {
+      "path": "apps/marketing/web/src/components/FAQ.tsx",
+      "disposition": "marketing",
+      "baseOid": "5018d61480dec5385d32802d3b05aeab5e0ca80e",
+      "candidateOid": "5606e4061cd7ddc4bbe3435a2cfab6b74d9389f0"
+    },
+    {
+      "path": "apps/marketing/web/src/components/FinalCTA.tsx",
+      "disposition": "marketing",
+      "baseOid": "208fbb606316785961e04f8362f7eaaaf91f8cc6",
+      "candidateOid": "27b330ca1cea93457f123f8e49cb1d252ffc8a06"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Footer.tsx",
+      "disposition": "marketing",
+      "baseOid": "64cdec0df4fee4d15ee3e2444d5a1f7d9f75228b",
+      "candidateOid": "0bd994c4bf088b54fad51027e0bdad7ef4b55f1d"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Header.tsx",
+      "disposition": "marketing",
+      "baseOid": "acdba5c7944d4a1b4ec4f1397b07d698dba6c035",
+      "candidateOid": "b3a26544b76575e3dd300ffffde1c843593efca6"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Hero.tsx",
+      "disposition": "marketing",
+      "baseOid": "1a095f739aec19ca84ff528b32c60839427fd717",
+      "candidateOid": "d289ecbb86820492890fa93e258c87961d7e9e39"
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingHome.tsx",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "50318c9795e83b48524b934ff0316dbf6e8ae63b"
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingIllustration.tsx",
+      "disposition": "marketing",
+      "baseOid": "ffa1ac4ab9877ac6fef12a5d8e9e382890acaa41",
+      "candidateOid": "a5cc293a55ba70cd795b3d341a442af1ee635912"
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingMotionProvider.tsx",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "11eae0592cb54e8cd03992041f1f2c71f21b33a8"
+    },
+    {
+      "path": "apps/marketing/web/src/components/MerchantJourney.tsx",
+      "disposition": "marketing",
+      "baseOid": "b0030fc77ef3efd300df174ac2ee3551daeccd48",
+      "candidateOid": "4b2c3133c75869c64d341cafe78bfc986645c202"
+    },
+    {
+      "path": "apps/marketing/web/src/components/Pricing.tsx",
+      "disposition": "marketing",
+      "baseOid": "208d8671eb172c76e45d03cce9f21384c4d38b9d",
+      "candidateOid": "1fcd6dcf25b89ee1e20031232572a427818917d9"
+    },
+    {
+      "path": "apps/marketing/web/src/components/SiteTypes.tsx",
+      "disposition": "marketing",
+      "baseOid": "10ad5cb200d8b68e48e95bde0e73f87a82b785c8",
+      "candidateOid": "27cd710f4675f15dbf6cd60c62bc1e1fd4f5fe18"
+    },
+    {
+      "path": "apps/marketing/web/src/components/TrustIndicators.tsx",
+      "disposition": "marketing",
+      "baseOid": "b95e2f4d9bd5fb6ad95c96a9614cd3fed36fb0e4",
+      "candidateOid": "619738f316d5fc5d28b64ecf3fb7d5b1792d0459"
+    },
+    {
+      "path": "apps/marketing/web/src/components/contact/ContactForm.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "45c1747d98ebbbafcfed8d1c6c04e1dc23bcb991",
+      "candidateOid": "45c1747d98ebbbafcfed8d1c6c04e1dc23bcb991"
+    },
+    {
+      "path": "apps/marketing/web/src/components/contact/TurnstileWidget.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "68f26dd286a4407f8e4ad55850a6e8afb3cbe69b",
+      "candidateOid": "68f26dd286a4407f8e4ad55850a6e8afb3cbe69b"
+    },
+    {
+      "path": "apps/marketing/web/src/components/demo/DemoRequestForm.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "cbdbeeecc82e3097ae890c5ab525e6ff9b228b9a",
+      "candidateOid": "cbdbeeecc82e3097ae890c5ab525e6ff9b228b9a"
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/Copy.tsx",
+      "disposition": "marketing",
+      "baseOid": "812c13b89c01e6acb5ebb0de8c54e60498b56ada",
+      "candidateOid": "01ddac6f293d74d3977a8e2b76e9a7f745752a0e"
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/CopyProvider.tsx",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "7c9e9162703b397887e0d133692e3474e88cb87b"
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/LanguageSwitcher.tsx",
+      "disposition": "marketing",
+      "baseOid": "9bc6477a88b8263cb07d873369b7cc06dbf38231",
+      "candidateOid": "fa2213ec13d7158c9b00c89c76ecd1d3426cd9e4"
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/useCopy.ts",
+      "disposition": "marketing",
+      "baseOid": "2e8f3dace42ba674149403733c29e8aa16f029f5",
+      "candidateOid": "b3994edd537b6a7d15bfcca73fa15d4d1d84942a"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleBody.tsx",
+      "disposition": "marketing",
+      "baseOid": "0aaa169ed2b98f90d4e0a0798971bdb308f558ff",
+      "candidateOid": "e237d0a765c3d1a1f134d78bcbdb69329b12278f"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleDock.tsx",
+      "disposition": "marketing",
+      "baseOid": "c75f7bc4fa214b8352f296e725ea4ef91b9d9142",
+      "candidateOid": "3cf16cb887a461a371de737ea3ede0ad48d544ec"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleSectionVisual.tsx",
+      "disposition": "marketing",
+      "baseOid": "fdd2ac23df778a8f009fea16f1b5f8625ee5a914",
+      "candidateOid": "c148704dc9ef5282ab671b480811322708913799"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleSidebar.tsx",
+      "disposition": "marketing",
+      "baseOid": "45095953894c4fafb4932e97fa60377634fb64ea",
+      "candidateOid": "e9e669bb176d34990f1de131344e3bb8069e2305"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleVisualOverview.tsx",
+      "disposition": "marketing",
+      "baseOid": "61fc0c4074601340404f1899f2ad71dd030bd302",
+      "candidateOid": "fb0f4bc37ad44f30b04bdc37e802f1bf8cba28bf"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/BookmarkButton.tsx",
+      "disposition": "marketing",
+      "baseOid": "3d2531f8717a718fb597dc44200f9e6eedb4da09",
+      "candidateOid": "3c129a0b86faccd976d0fe90eb6a7146113608b8"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/CopyLinkButton.tsx",
+      "disposition": "marketing",
+      "baseOid": "9202be2999fdecb97497803958a0638623a9d54f",
+      "candidateOid": "6264841101da803484358f413d3862455b50ea19"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/LiquidGuide.tsx",
+      "disposition": "marketing",
+      "baseOid": "91040d4eb7d4092e331315d3a65f27ee7886519b",
+      "candidateOid": "5fb0d3828bf8844f40cba88efffd4d6cd1828c3e"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/PrevNextArticle.tsx",
+      "disposition": "marketing",
+      "baseOid": "69c43f385c3b7638c5ba240db6ef12a2ea1016f9",
+      "candidateOid": "8d8ec6cc2991dbc586d48ba145488f0c27540f4a"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/RecommendedArticles.tsx",
+      "disposition": "marketing",
+      "baseOid": "b256cd368b80c62f9be40840f85cad4e6d695197",
+      "candidateOid": "4718f7ad8207c6e5f798bb86dfa74989ce14fcc5"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ResourceArticleArtwork.tsx",
+      "disposition": "marketing",
+      "baseOid": "6a8a0e9174d725af0ad7cf819746d959b9e27644",
+      "candidateOid": "14d27656ddb5dc4723956000556554f2bb179133"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ThemeGuide.tsx",
+      "disposition": "marketing",
+      "baseOid": "a33c4ddbde07abc9aecdbd2a4ea16e11659b8f5f",
+      "candidateOid": "c0035aa6e5126176e05bcf7b57894202fd055a74"
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/theme-guide.module.css",
+      "disposition": "marketing",
+      "baseOid": "140ea5ebfdeecb0aef57f0879c3041234e08ac8f",
+      "candidateOid": "4863cd0ed94f8eed64963ecfc13fa2104db1e7b8"
+    },
+    {
+      "path": "apps/marketing/web/src/components/security/TurnstileWidget.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "92116af9a5af4b0954702ca2376824032d51ded7",
+      "candidateOid": "92116af9a5af4b0954702ca2376824032d51ded7"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/brand-assets.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "3683ab464212e6e3e5ee746cf962788a257aaeb8"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe-renderer.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "4857aa224371ed5bdd43dd70b08cf0aa4d3530f4"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe.ts",
+      "disposition": "marketing",
+      "baseOid": "2bd947d8af7c961bc9e29a88e76a661a173e8fe4",
+      "candidateOid": "664b98fe1e73a086539faffe1b171c1c054da05b"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe.worker.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "62151f01a356f15850e7570f525226230d2077ff"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/create-globe-worker.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "3e691a78edfa81a575bc18d8a359af7166d87822"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/globe-renderer-types.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "c9f71f9b61d1d7f33591d944d9e116e2f794eadf"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/article-content.ts",
+      "disposition": "marketing",
+      "baseOid": "87f3294c016b5d7ed8d5e10ecab0ea09013c4b56",
+      "candidateOid": "69084bb893038c885debdfd9490ab865db6d6163"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/article-summaries.json",
+      "disposition": "marketing",
+      "baseOid": "0ec02a4bb84ac205b33f23a52a2d2e9fc2d4482b",
+      "candidateOid": "599af1fa557a1bdf69cdb3b3f27f796ec11e00ac"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/ai-commerce-explained.json",
+      "disposition": "marketing",
+      "baseOid": "2b3ddfde7fbc9e013317cd257fbf423f739cc44f",
+      "candidateOid": "e6a3c4f1bd58412246657ca65628664900d6b7cc"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/ai-product-recommendations.json",
+      "disposition": "marketing",
+      "baseOid": "93acdb4b0637a46cca6b89182d694dc61ff163ea",
+      "candidateOid": "479ccf8a12ba15d43cadc14f1f0152163353e143"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/automating-operations-ai.json",
+      "disposition": "marketing",
+      "baseOid": "71541a709a009b9b10a5d99fac21a3212df0fb93",
+      "candidateOid": "ddcbd253126ad598d843cf3ce67747d1580cda09"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/building-first-letbuyy-app.json",
+      "disposition": "marketing",
+      "baseOid": "1c4db379bbc3154d3a14313397b4732071152202",
+      "candidateOid": "daaa49cb3e22fac04e2c9562a945291662ad9105"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/building-first-letbuyy-store.json",
+      "disposition": "marketing",
+      "baseOid": "e71f1ff623c06bb7b94b87e88a36cf229f88a024",
+      "candidateOid": "b1eecf17e26a4df5c033deca7eac530066670c49"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/commerce-copilot-guide.json",
+      "disposition": "marketing",
+      "baseOid": "8642efe6f483e18daee624e91e6c4e7457383322",
+      "candidateOid": "77adece863f95085122684890b4b1ee7a5c30874"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/custom-integrations-guide.json",
+      "disposition": "marketing",
+      "baseOid": "ba0cd6bcaeda44d07f8aa8998e45db0100356981",
+      "candidateOid": "41c4234caaf58a6e4c67601a51f81982642804c8"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/d2c-brand-launch-guide.json",
+      "disposition": "marketing",
+      "baseOid": "c150480f06549d39d81e63a9ef4b2edd7b21e57d",
+      "candidateOid": "09c0588f8f31a0fc06939696570819ed2113fb6f"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/email-marketing-ecommerce.json",
+      "disposition": "marketing",
+      "baseOid": "f18ab5922f07ed0c07f8a1b17f57015af365e25b",
+      "candidateOid": "00e36d792eaf91728cad2641978aee83c0a6600d"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/first-100-orders-guide.json",
+      "disposition": "marketing",
+      "baseOid": "733ef0a0157832b4ad9d0ff9f1ca5aec6f677b24",
+      "candidateOid": "cd4ba40d57c34c1294e3f6d28373b6a385293f04"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/gst-for-ecommerce-india.json",
+      "disposition": "marketing",
+      "baseOid": "336ee72e58a44cd94d11355f7cfc3aedbeccd21c",
+      "candidateOid": "377156a54362a62e61c84c7c55fa911d16cbe53b"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-product-reviews-increase-conversion.json",
+      "disposition": "marketing",
+      "baseOid": "4a87eb6b08115f31423cabb4373e2e87cc010f85",
+      "candidateOid": "b92a614d93b9cd6e4929a031ca28ae521247acf7"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-themes-work.json",
+      "disposition": "marketing",
+      "baseOid": "0862c0ce1e2114bcdad899572fcf489afeae0575",
+      "candidateOid": "9a2b2e0631f81dc885d0e8547f3057fc4aabd7e8"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-to-start-an-online-store-india.json",
+      "disposition": "marketing",
+      "baseOid": "9e10bcabc6fd976200301468cbb3e1614e279c81",
+      "candidateOid": "a4de6f86538a3b67bb30af12653f577f3010f596"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/introduction-to-apps.json",
+      "disposition": "marketing",
+      "baseOid": "74b536fcb8708e7385aa4eb2f25a01ea36a1d3e3",
+      "candidateOid": "8631e09c17c1612916cd432c74648ec601309d0d"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/inventory-management-guide.json",
+      "disposition": "marketing",
+      "baseOid": "4032ace5371ebfa2209158d6af89dbed43749d0f",
+      "candidateOid": "ebaaf59b8a5cdaf80f43c49881eeb0f7522452e5"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/invoicing-india-merchants.json",
+      "disposition": "marketing",
+      "baseOid": "1aa2a97f84a301e6db8b9a892ec80d2ed0ad8dc6",
+      "candidateOid": "2660484f10a69ad681f0c68ea4f06a3c39340372"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/letbuyy-api-getting-started.json",
+      "disposition": "marketing",
+      "baseOid": "70d86dd107b1b5f3cb9590054150eacffe7d9fa1",
+      "candidateOid": "c1c325b201d66d0736218fad18d5bd5b86eae670"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/letbuyy-platform-overview.json",
+      "disposition": "marketing",
+      "baseOid": "d28365953c2980f3707f1dea2a0b0b3719d7a4bf",
+      "candidateOid": "b15bf7f7c21d033f3074bc035e6e48122e571072"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/liquid-theming-guide.json",
+      "disposition": "marketing",
+      "baseOid": "2c315bec9b2e33e79b447821bdaf6db581807d44",
+      "candidateOid": "f787cfb6694486609b880353ebb3be325c26a3ea"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/merchant-web-guide.json",
+      "disposition": "marketing",
+      "baseOid": "9ae45cac5783eaf1103ea7a0e5674c3a1aac45db",
+      "candidateOid": "c01c9ff2c4e6bebae7cecce64322b29854a9a1c6"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/multi-warehouse-inventory.json",
+      "disposition": "marketing",
+      "baseOid": "7c7a035955f72553a04255fdb43375807dd61e05",
+      "candidateOid": "fab4dc56f11d8c8bc95b5a321da91125f2f36b43"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/order-fulfillment-guide.json",
+      "disposition": "marketing",
+      "baseOid": "4c810ea7a8e9a46f9e8bba0db9e240c606180c13",
+      "candidateOid": "07b0b81399e9413488a21bc717420f0ed8c736ad"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/product-page-optimization.json",
+      "disposition": "marketing",
+      "baseOid": "ed939bf12f0f2e25a8374bf797c64071f36d1200",
+      "candidateOid": "7d1541e1b10f1f440716748ec7c5c6f70673b9cb"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/razorpay-integration-guide.json",
+      "disposition": "marketing",
+      "baseOid": "954718180f342a92082f38aa47a25b0cf19172c3",
+      "candidateOid": "2dd5fcd137dfac98ec918af451b2227cee3aedd9"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/reducing-cart-abandonment.json",
+      "disposition": "marketing",
+      "baseOid": "fd0dcb3cac5be289128646eb2e03ca8486aafdd6",
+      "candidateOid": "6916830f23b2afdfaf8348808d21e2c9eaa54b5f"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/refunds-returns-policy-india.json",
+      "disposition": "marketing",
+      "baseOid": "008bd5b4e808d0835740649b8928169dc4134fa9",
+      "candidateOid": "d16dc6e3289a1f8086105a92e1609735e9783bc8"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/retention-strategies-india.json",
+      "disposition": "marketing",
+      "baseOid": "bf3571d98ee1c004c78f41bda2be3cbb7a5a909c",
+      "candidateOid": "39eb0373052d2d0901af24899cd71db06bc18bd6"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/shipping-india-guide.json",
+      "disposition": "marketing",
+      "baseOid": "c234445153e8cacbf09c6822c25e0ce7e52a10b4",
+      "candidateOid": "5a3e0306a7cf89c23ac6d458fcc1b60ec2bc97c8"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/social-commerce-india.json",
+      "disposition": "marketing",
+      "baseOid": "774455a6dabf1952eecb45ccd79d109e6d68ca33",
+      "candidateOid": "0cfc7e3c31542f024889557f5a79debc4c6cc5e2"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/store-seo-checklist.json",
+      "disposition": "marketing",
+      "baseOid": "65ce3ef779ff9f3aae82f28b316ccc5072f8a4cb",
+      "candidateOid": "4453000c350e0da6ec5bfef37ee9c2ce9a1f630f"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/understanding-fulfillment.json",
+      "disposition": "marketing",
+      "baseOid": "5c6f9cfad2a243340a62f16b41a76d5253fecb53",
+      "candidateOid": "5007284ce4124675e08f5fe0142989d6752ac8dd"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/upi-vs-cod-india.json",
+      "disposition": "marketing",
+      "baseOid": "762d42f13d93f6da710bd505a3ff09b0a28fe79a",
+      "candidateOid": "8bfa71cf326fe3e01248caef2f60b1b3a263c418"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/webhooks-complete-guide.json",
+      "disposition": "marketing",
+      "baseOid": "49bdc151d1cce6d3df468730a9da7c1a620c4a80",
+      "candidateOid": "573ed3910daba848dd2b89812d6e242482a99652"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/workflow-automation-merchants.json",
+      "disposition": "marketing",
+      "baseOid": "e06ca9ee21829239c43970e125e9c413b3e3d79b",
+      "candidateOid": "07f84a24b09ea2df7108bfddc433a15f13dbf4e4"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/ai-commerce-explained.json",
+      "disposition": "marketing",
+      "baseOid": "287195f26ac489985913ad70a18c46fbae7e50ee",
+      "candidateOid": "ecc2dd299a370752b575145d7e2abc901a4de5c9"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/ai-product-recommendations.json",
+      "disposition": "marketing",
+      "baseOid": "79eda638a7d1f8c56f79ad13d0e5595db28918ce",
+      "candidateOid": "96417d0b43867079918cb88d4f648d83c9d24c13"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/automating-operations-ai.json",
+      "disposition": "marketing",
+      "baseOid": "a2e3993cfde3e1b2ac243b318f856ba6b47297ec",
+      "candidateOid": "527dd7c11c35b937049e6bfa13b3e0d5311e8017"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/building-first-letbuyy-app.json",
+      "disposition": "marketing",
+      "baseOid": "665a8d058a270683721371580e63122c9becef21",
+      "candidateOid": "ef167a5d7ddc797369442d47b870e88b5b5fd999"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/building-first-letbuyy-store.json",
+      "disposition": "marketing",
+      "baseOid": "f0fb7c43927dc241fe9703f6412c72136c219664",
+      "candidateOid": "1cc59ad6cf962b0c1d2ffb1bd71385a57b5a94dc"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/commerce-copilot-guide.json",
+      "disposition": "marketing",
+      "baseOid": "d1f9702e415c4a5ea6c97d2a1d5ae69068fab8c9",
+      "candidateOid": "78e2ddf1bca23f248ac524b43650234da8744738"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/custom-integrations-guide.json",
+      "disposition": "marketing",
+      "baseOid": "dd8fc24e3fdf5185623cc3b2ef9397b4bf12ccf7",
+      "candidateOid": "705333995e585ca7862628b43e8233298077527b"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/d2c-brand-launch-guide.json",
+      "disposition": "marketing",
+      "baseOid": "2a6940a8fb48d2cf61460b3d453b0c7970186aaa",
+      "candidateOid": "6bd7fd29b850d68be2ff952ca67b1e5c4642a650"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/email-marketing-ecommerce.json",
+      "disposition": "marketing",
+      "baseOid": "710dfa1e23cadfd9a2641178e51f7eae6ccd85e9",
+      "candidateOid": "99c520256342b5a5686846b3e76bad428e7be1ce"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/first-100-orders-guide.json",
+      "disposition": "marketing",
+      "baseOid": "0a5d74b8ecc99e8f6fb8647245f2953d8f4523b7",
+      "candidateOid": "0b7ce2684512b01c29f34f0c492658d81ecbf45b"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/gst-for-ecommerce-india.json",
+      "disposition": "marketing",
+      "baseOid": "00198021df1a6c680c6e55c91ab4df834ef451e7",
+      "candidateOid": "76f6f719192ad2533f1adbc821bd06084115e8b3"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-product-reviews-increase-conversion.json",
+      "disposition": "marketing",
+      "baseOid": "284d5c20e4c3290694d3216b33e430b97c700e88",
+      "candidateOid": "cc9feea023e4b1180ae479041ec0ebb4ebbaf860"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-themes-work.json",
+      "disposition": "marketing",
+      "baseOid": "e3222ebf883367511f077ab018377d3ea9cd0b24",
+      "candidateOid": "82780a6d20ee96ef997b7c253e6ef4d0d62095be"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-to-start-an-online-store-india.json",
+      "disposition": "marketing",
+      "baseOid": "d6048b78ae47646f3b82a495b2a25921c5c5f72d",
+      "candidateOid": "355f36b259e2a7ee45b2be06822cc0016722ef89"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/introduction-to-apps.json",
+      "disposition": "marketing",
+      "baseOid": "73857ce2501a4326fdcaea3ae44abe718a1a1613",
+      "candidateOid": "3af8b1e0fa8cff6c3103ccf91621a22138342392"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/inventory-management-guide.json",
+      "disposition": "marketing",
+      "baseOid": "8b41a21b87bdbfbefa986eb0c02ee97302be0eed",
+      "candidateOid": "4b352573880d6112ab2acfbc421212866a7be5fe"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/invoicing-india-merchants.json",
+      "disposition": "marketing",
+      "baseOid": "88e86b8f0fb3abd12a822620df6505b5fe1529da",
+      "candidateOid": "a62ee4269b2c5251dbcc4cecfb69693f1afef70c"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/letbuyy-api-getting-started.json",
+      "disposition": "marketing",
+      "baseOid": "fa182719f28d3516b2fd5f4ec950b9eccd67604d",
+      "candidateOid": "a5716c2be58eaf6ccadffdc105f63a383ca68bc3"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/letbuyy-platform-overview.json",
+      "disposition": "marketing",
+      "baseOid": "c1aadce02b05f154116d09a0b1d8acc0a963b6ce",
+      "candidateOid": "8717f63df071235a705489012f24dfed929ea82e"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/liquid-theming-guide.json",
+      "disposition": "marketing",
+      "baseOid": "1769972f82e9d16cb5302d5cb8776447ed7af474",
+      "candidateOid": "48bdeba81e5a65c9b8b4c3155dce80614145161e"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/merchant-web-guide.json",
+      "disposition": "marketing",
+      "baseOid": "f67b34a3529404111c877afe6d956210d496319d",
+      "candidateOid": "7ddd74d32f4da9ccfe8f81831e3f2c16e5b251e5"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/multi-warehouse-inventory.json",
+      "disposition": "marketing",
+      "baseOid": "e443994e781f12e919aefafe67d4dc0a70a606b4",
+      "candidateOid": "c2f861a2fc36bc2007e9ae00fa324c1150fa5567"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/order-fulfillment-guide.json",
+      "disposition": "marketing",
+      "baseOid": "0da0c9614987bf38506400d122ec725b8b2d3c97",
+      "candidateOid": "36a2d66b064c6ebd9aac7d3240e1178eded98b5a"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/product-page-optimization.json",
+      "disposition": "marketing",
+      "baseOid": "29a45b8e42961976181203db3500ecc230d2d3bf",
+      "candidateOid": "46fe2de954452c4bbea1420f3dfecebe9fdab615"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/razorpay-integration-guide.json",
+      "disposition": "marketing",
+      "baseOid": "985788d0bb3db20f1a3e1dd59243245b46533ab3",
+      "candidateOid": "bfd4b95cd9fe91fa6e47683ef75b0d6eb566867c"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/reducing-cart-abandonment.json",
+      "disposition": "marketing",
+      "baseOid": "b14cdbd688d74beb7e498c8313b8974311544542",
+      "candidateOid": "1bcf3c476b71deded578052dd3ee245b044e947c"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/refunds-returns-policy-india.json",
+      "disposition": "marketing",
+      "baseOid": "43cef84213ef30196238e9ea826cc767cd56efa8",
+      "candidateOid": "4cc2c8545a59a341b557b899b8174f9f67a6a168"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/retention-strategies-india.json",
+      "disposition": "marketing",
+      "baseOid": "81050c7c616077268d63730e4937a805417d63d6",
+      "candidateOid": "3299e52e5d67bb0d13225d822b00b1fbbb0d17aa"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/shipping-india-guide.json",
+      "disposition": "marketing",
+      "baseOid": "542fd348e04eab33303ab88045323c8e2cd11f44",
+      "candidateOid": "879ca0b35ab7900faee6f2ebac1fcbaf9494155f"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/social-commerce-india.json",
+      "disposition": "marketing",
+      "baseOid": "eb579ebe474c51dedac0d42d45012fae25d1ade5",
+      "candidateOid": "7c0adc6d6765ac607ac2458ffd1346548720135b"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/store-seo-checklist.json",
+      "disposition": "marketing",
+      "baseOid": "9feae38a8a7dfadcda12df2ddf50e2ebfb9fe537",
+      "candidateOid": "5f16c9520f1985be8625ea6fc03990d2a086f2a6"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/understanding-fulfillment.json",
+      "disposition": "marketing",
+      "baseOid": "20a94050d725c11558afa59a52e46b91579912d7",
+      "candidateOid": "8a1a0c8494d101f8133e0af0efe2af3d5ed84c17"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/upi-vs-cod-india.json",
+      "disposition": "marketing",
+      "baseOid": "a0aa524df22ec0ad7bb078ae5407561bcdd8e1a2",
+      "candidateOid": "0da4eab4bda9f72e4d3a5aa80b72960f1c6ff027"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/webhooks-complete-guide.json",
+      "disposition": "marketing",
+      "baseOid": "fc7ce03b2c8effc94cf915cbe1012e99b14d35dd",
+      "candidateOid": "c45472d4dfd1f9ebdf7e393c492ce85040e271b9"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/workflow-automation-merchants.json",
+      "disposition": "marketing",
+      "baseOid": "da35cf58a615c3ca5172c41dc0a35635782b7c3d",
+      "candidateOid": "a4cb90b3cb86fa2acd407e079f4d7269fbf50a6e"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy-catalog.ts",
+      "disposition": "marketing",
+      "baseOid": "e3f3c59f1894a229045a540af7fa4c2c11c70d0c",
+      "candidateOid": "bf9b19f4e402cef689ba1fd6fb02beadfb4b9515"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy-format.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "ce875c578ec1682c89468be2533c91ba766e99ed"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy.ts",
+      "disposition": "marketing",
+      "baseOid": "c161407cc5b94ceba2cd024e31eb526f4d708472",
+      "candidateOid": "8afbe970c8c28807241f9484f2b49b76551bb643"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/dictionaries/en.ts",
+      "disposition": "marketing",
+      "baseOid": "13a4585e3b243c8a79fe5269d3347e423765981d",
+      "candidateOid": "642d015ee2794367dccf9262b34b0b7e4ce31b33"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/dictionaries/hi.ts",
+      "disposition": "marketing",
+      "baseOid": "e1369e043ebb46346f9499995e2799deffcc3743",
+      "candidateOid": "64efac31cf67e573b96058781e8341c4d5d013da"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/dictionaries/ta.ts",
+      "disposition": "marketing",
+      "baseOid": "2deec6dcca8c29bf8bfa11f77a01ea94ffb288cf",
+      "candidateOid": "696fc8a6fc60375855f3d3990a56978d599ab825"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/metadata.ts",
+      "disposition": "marketing",
+      "baseOid": "cc8235a7a1ec5f5aa17e8bf4ea65b7f51f0bf6f8",
+      "candidateOid": "a1e5900e64229293ee220186788e570d90076d71"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/platform-links.ts",
+      "disposition": "marketing",
+      "baseOid": "5c9c06014a14790144e44b55132538dcd7dafea6",
+      "candidateOid": "38335aa58983eeb62447a7f48a8caffac7504a3c"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/pricing.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "c2eaa7fe2281b275a966522385182aa95fc498b8"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/public-urls.ts",
+      "disposition": "marketing",
+      "baseOid": "d64eb47812f6ad3f5a82f690ce6dddea801a0d03",
+      "candidateOid": "148b6c9804db64e61eb46ac4ad5c2aacb1ce34bc"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/articles.ts",
+      "disposition": "marketing",
+      "baseOid": "e0a66425d87d4151d02aceef97109ff9a5016e52",
+      "candidateOid": "a989122a59a152c3904db23048558a927c8cb0b7"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/authors.ts",
+      "disposition": "marketing",
+      "baseOid": "8500642802860c1553396f01d64da9f62b5206f6",
+      "candidateOid": "7fc8ec7c864ea284842e70be269a85494575c1b7"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/changelog.ts",
+      "disposition": "marketing",
+      "baseOid": "a87f7a0164844f9d29c6373764dc091bc7c86c31",
+      "candidateOid": "bae75aaa7c1675852037e9a4282e1513ccb567dc"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/learning-paths.ts",
+      "disposition": "marketing",
+      "baseOid": "ab016a98d517ed65cc2b3f4a52fb4cedefb47bb4",
+      "candidateOid": "2cb78635c7e0b7c4dc361b5761fd4adb756e977c"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/reading-visuals.ts",
+      "disposition": "marketing",
+      "baseOid": "8f43b4329809180f92d46c4e316be7b3d183efa8",
+      "candidateOid": "5ce6b7d8760a184ac757093c84194dcad0132bfe"
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/types.ts",
+      "disposition": "marketing",
+      "baseOid": "57f71beba476b725783e41d47fba2c448186ca0b",
+      "candidateOid": "1e3ff84a6382cce3337e87a102e6227b2bb1f904"
+    },
+    {
+      "path": "apps/marketing/web/src/proxy.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "417bd635164e503b4dbd0eaf0f550f17bf6e4325"
+    },
+    {
+      "path": "config/eslint/boundary-baseline.json",
+      "disposition": "retained integration input",
+      "baseOid": "e671a41ed8ef24e24597ba4a10fc50f84b5c6f85",
+      "candidateOid": "e671a41ed8ef24e24597ba4a10fc50f84b5c6f85"
+    },
+    {
+      "path": "config/security/next-security-headers.ts",
+      "disposition": "prerequisite for build trial",
+      "baseOid": "669d2408d559ca91b3bcef1d525982aebac90966",
+      "candidateOid": "d1f868ba33b075d52126103af4ab0bb8cba49b23"
+    },
+    {
+      "path": "config/tailwind/letbuyy-tokens.css",
+      "disposition": "prerequisite for build trial",
+      "baseOid": "5b344a2fb1449763056a65b14e52a51cf10e3f24",
+      "candidateOid": "3e6455a06a084be5434db55fdb4a4a344114a757"
+    },
+    {
+      "path": "package.json",
+      "disposition": "retained integration input",
+      "baseOid": "6039eaa7881f7efe7f01ddd332f12c81b6ebb9a6",
+      "candidateOid": "6039eaa7881f7efe7f01ddd332f12c81b6ebb9a6"
+    },
+    {
+      "path": "packages/auth-core/package.json",
+      "disposition": "retained integration input",
+      "baseOid": "6d103ab984ea759ab409667e1fe4198ab50c144a",
+      "candidateOid": "6d103ab984ea759ab409667e1fe4198ab50c144a"
+    },
+    {
+      "path": "packages/auth-core/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "dbbcb5951da11f6d32cb4b164c50fb68585d9edf",
+      "candidateOid": "dbbcb5951da11f6d32cb4b164c50fb68585d9edf"
+    },
+    {
+      "path": "packages/auth-core/src/storefront-access.ts",
+      "disposition": "retained integration input",
+      "baseOid": "b23e401382eabcf55a1a1051ccf0778fadebc7ec",
+      "candidateOid": "b23e401382eabcf55a1a1051ccf0778fadebc7ec"
+    },
+    {
+      "path": "packages/billing-core/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "ccb2ea1d0e68a5dd24375c12c86dd08ec01e4f53",
+      "candidateOid": "ccb2ea1d0e68a5dd24375c12c86dd08ec01e4f53"
+    },
+    {
+      "path": "packages/billing-core/test/billing-core.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "c6b45f7610f513e029c8b14cc134bdef61e2a55e",
+      "candidateOid": "c6b45f7610f513e029c8b14cc134bdef61e2a55e"
+    },
+    {
+      "path": "packages/billing-core/test/payment-status.test.ts",
+      "disposition": "integration base",
+      "baseOid": null,
+      "candidateOid": null
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "60a13f82f8b185951a584023a1e07af9ef82488e",
+      "candidateOid": "60a13f82f8b185951a584023a1e07af9ef82488e"
+    },
+    {
+      "path": "packages/checkout-core/test/checkout-core.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "66218a3ee9eb7fb005c53bece06dbb95b1ec17e2",
+      "candidateOid": "66218a3ee9eb7fb005c53bece06dbb95b1ec17e2"
+    },
+    {
+      "path": "packages/checkout-core/test/shipping-tax-settings.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "d3c40b88f453fe88e484676f2e8c7b01198f6a3c",
+      "candidateOid": "d3c40b88f453fe88e484676f2e8c7b01198f6a3c"
+    },
+    {
+      "path": "packages/commerce-core/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "89ff8b4b167cbbf837f539417159de5c096a63b8",
+      "candidateOid": "89ff8b4b167cbbf837f539417159de5c096a63b8"
+    },
+    {
+      "path": "packages/event-core/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "a8a52e05b6b8346ce76248a7847291a5ac2d4c17",
+      "candidateOid": "a8a52e05b6b8346ce76248a7847291a5ac2d4c17"
+    },
+    {
+      "path": "packages/event-core/test/event-core.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "e9455ff94943b471ed16ca3d86c11a79e8bf942c",
+      "candidateOid": "e9455ff94943b471ed16ca3d86c11a79e8bf942c"
+    },
+    {
+      "path": "packages/notification-core/package.json",
+      "disposition": "retained integration input",
+      "baseOid": "b5a73f726d06f7f2b01b1c37bd3da43e2df0eb05",
+      "candidateOid": "b5a73f726d06f7f2b01b1c37bd3da43e2df0eb05"
+    },
+    {
+      "path": "packages/notification-core/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "16b272694845a96a744d11fde2d0ce921753ac56",
+      "candidateOid": "16b272694845a96a744d11fde2d0ce921753ac56"
+    },
+    {
+      "path": "packages/payments/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "ee505beadb9edb3a6482ab50b7fd31c84c9af03e",
+      "candidateOid": "ee505beadb9edb3a6482ab50b7fd31c84c9af03e"
+    },
+    {
+      "path": "packages/shared-types/package.json",
+      "disposition": "prerequisite for build trial",
+      "baseOid": "1063b20ece41a799ed45f62e374b23b1eb102cc4",
+      "candidateOid": "fc3c5ea5948e9704b198eb085c156db74ee7921d"
+    },
+    {
+      "path": "packages/shared-types/src/app-platform.ts",
+      "disposition": "retained integration input",
+      "baseOid": "db89b387f8f994af94b9e560b3aefd782d0714bb",
+      "candidateOid": "db89b387f8f994af94b9e560b3aefd782d0714bb"
+    },
+    {
+      "path": "packages/shared-types/src/console-billing.ts",
+      "disposition": "integration base",
+      "baseOid": null,
+      "candidateOid": null
+    },
+    {
+      "path": "packages/shared-types/src/console-support.ts",
+      "disposition": "integration base",
+      "baseOid": null,
+      "candidateOid": null
+    },
+    {
+      "path": "packages/shared-types/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "ae3822e6d238cd444cce59116a8f043bcc90fea0",
+      "candidateOid": "ae3822e6d238cd444cce59116a8f043bcc90fea0"
+    },
+    {
+      "path": "packages/shared-types/src/merchant-messages.ts",
+      "disposition": "integration base",
+      "baseOid": null,
+      "candidateOid": null
+    },
+    {
+      "path": "packages/shared-types/src/merchant-operations.ts",
+      "disposition": "integration base",
+      "baseOid": null,
+      "candidateOid": null
+    },
+    {
+      "path": "packages/tenant-core/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "63911f8cb446cb688a795a58017d5e38a3b74d92",
+      "candidateOid": "63911f8cb446cb688a795a58017d5e38a3b74d92"
+    },
+    {
+      "path": "packages/tenant-core/test/index.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "2fcbffd83bef4a4f2c3676f63ae744a562e3f31e",
+      "candidateOid": "2fcbffd83bef4a4f2c3676f63ae744a562e3f31e"
+    },
+    {
+      "path": "packages/theme-engine/examples/index.json",
+      "disposition": "retained integration input",
+      "baseOid": "f0f355a7584c4023737c5a664b0c62733d24d227",
+      "candidateOid": "f0f355a7584c4023737c5a664b0c62733d24d227"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/bundle.json",
+      "disposition": "retained integration input",
+      "baseOid": "df74e11a0455b36fafa1aaaf488d802ff5bc567b",
+      "candidateOid": "df74e11a0455b36fafa1aaaf488d802ff5bc567b"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/files/config/settings_data.json",
+      "disposition": "retained integration input",
+      "baseOid": "eba829e3666d578508dc92e5c65881915b73dfb5",
+      "candidateOid": "eba829e3666d578508dc92e5c65881915b73dfb5"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/manifest.json",
+      "disposition": "retained integration input",
+      "baseOid": "780e3b421a72dd929ddb11db0fa8c2928b6deacd",
+      "candidateOid": "780e3b421a72dd929ddb11db0fa8c2928b6deacd"
+    },
+    {
+      "path": "packages/theme-engine/examples/urban-kicks-liquid/bundle.json",
+      "disposition": "retained integration input",
+      "baseOid": "aad82e9093c187da18e5e436e37152d58a6f0435",
+      "candidateOid": "aad82e9093c187da18e5e436e37152d58a6f0435"
+    },
+    {
+      "path": "packages/theme-engine/examples/urban-kicks-liquid/files/config/settings_data.json",
+      "disposition": "retained integration input",
+      "baseOid": "eba829e3666d578508dc92e5c65881915b73dfb5",
+      "candidateOid": "eba829e3666d578508dc92e5c65881915b73dfb5"
+    },
+    {
+      "path": "packages/theme-engine/examples/urban-kicks-liquid/manifest.json",
+      "disposition": "retained integration input",
+      "baseOid": "11f15225232f5cd768b0ad1cf5f28512b963c3fa",
+      "candidateOid": "11f15225232f5cd768b0ad1cf5f28512b963c3fa"
+    },
+    {
+      "path": "packages/theme-engine/package.json",
+      "disposition": "retained integration input",
+      "baseOid": "076562e373f852051445843e19a8842f520bd72e",
+      "candidateOid": "076562e373f852051445843e19a8842f520bd72e"
+    },
+    {
+      "path": "packages/theme-engine/src/editor-bridge-protocol.ts",
+      "disposition": "retained integration input",
+      "baseOid": "7ba6dd7b3f2b9c14a34d395d8c9ab9a3a499a997",
+      "candidateOid": "7ba6dd7b3f2b9c14a34d395d8c9ab9a3a499a997"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-compositions.ts",
+      "disposition": "retained integration input",
+      "baseOid": "b6ec065030c0b9938b928d03b814a92784bd6d3f",
+      "candidateOid": "b6ec065030c0b9938b928d03b814a92784bd6d3f"
+    },
+    {
+      "path": "packages/theme-engine/src/experience-fonts.ts",
+      "disposition": "retained integration input",
+      "baseOid": "124148d4efa057b5c06004a6f8b3da0e0f56c27e",
+      "candidateOid": "124148d4efa057b5c06004a6f8b3da0e0f56c27e"
+    },
+    {
+      "path": "packages/theme-engine/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "3c9d0156760a911ec7e037d351920b137d1e1a0a",
+      "candidateOid": "3c9d0156760a911ec7e037d351920b137d1e1a0a"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "disposition": "retained integration input",
+      "baseOid": "28a20ab6af6564220b64b75152ca4356cc63e6c0",
+      "candidateOid": "28a20ab6af6564220b64b75152ca4356cc63e6c0"
+    },
+    {
+      "path": "packages/theme-engine/src/schema-field-extensions.ts",
+      "disposition": "retained integration input",
+      "baseOid": "b51a8d2c69bcf80cbc451e6420a4b47c8046471c",
+      "candidateOid": "b51a8d2c69bcf80cbc451e6420a4b47c8046471c"
+    },
+    {
+      "path": "packages/theme-engine/src/server-dom-runtime.ts",
+      "disposition": "retained integration input",
+      "baseOid": "02c8175c8d220f80f7d7ea6fe7b15afc5e7ff875",
+      "candidateOid": "02c8175c8d220f80f7d7ea6fe7b15afc5e7ff875"
+    },
+    {
+      "path": "packages/theme-engine/src/template-registry.ts",
+      "disposition": "retained integration input",
+      "baseOid": "b25dff314b30ae01b28372a06f61800b898706e9",
+      "candidateOid": "b25dff314b30ae01b28372a06f61800b898706e9"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "disposition": "retained integration input",
+      "baseOid": "4edea4dee32101976cc5f6a184a7eaf347e3777f",
+      "candidateOid": "4edea4dee32101976cc5f6a184a7eaf347e3777f"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle.ts",
+      "disposition": "retained integration input",
+      "baseOid": "d9e86a331e7cfe0e249f2a824aae55586791d0ea",
+      "candidateOid": "d9e86a331e7cfe0e249f2a824aae55586791d0ea"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-library-schemas.ts",
+      "disposition": "retained integration input",
+      "baseOid": "5f05194adbf723a6c74f42efa284617e1f111088",
+      "candidateOid": "5f05194adbf723a6c74f42efa284617e1f111088"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-presets.ts",
+      "disposition": "retained integration input",
+      "baseOid": "da46344d3ac3bf91cfcc49b3f884d0fb418a7b76",
+      "candidateOid": "da46344d3ac3bf91cfcc49b3f884d0fb418a7b76"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-registry.ts",
+      "disposition": "retained integration input",
+      "baseOid": "8fd2e5e2f9527e24f6364aad4f0f3b3e5c03a1f5",
+      "candidateOid": "8fd2e5e2f9527e24f6364aad4f0f3b3e5c03a1f5"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-renderer.ts",
+      "disposition": "retained integration input",
+      "baseOid": "0c343d011cccc22e895aaedda1d5ae1382223135",
+      "candidateOid": "0c343d011cccc22e895aaedda1d5ae1382223135"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-safe-update.ts",
+      "disposition": "retained integration input",
+      "baseOid": "5f1a64aeae3d4a17bdfd7938c2b7037face603f3",
+      "candidateOid": "5f1a64aeae3d4a17bdfd7938c2b7037face603f3"
+    },
+    {
+      "path": "packages/theme-engine/test/core-launch-compatibility.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "9eea712e76ce66dee5aa02b3c672285199ee71d0",
+      "candidateOid": "9eea712e76ce66dee5aa02b3c672285199ee71d0"
+    },
+    {
+      "path": "packages/theme-engine/test/experience-compositions.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "5303ea83249717b5f7dc0bbbb0415c868be6fc6b",
+      "candidateOid": "5303ea83249717b5f7dc0bbbb0415c868be6fc6b"
+    },
+    {
+      "path": "packages/theme-engine/test/liquid-render-benchmark.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "8fe5868d0352b299bb30189e1f0fd8391a5a3352",
+      "candidateOid": "8fe5868d0352b299bb30189e1f0fd8391a5a3352"
+    },
+    {
+      "path": "packages/theme-engine/test/schema-field-extensions.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "231ec02e4c967c403e31523b0c5f96e8f3b3d05a",
+      "candidateOid": "231ec02e4c967c403e31523b0c5f96e8f3b3d05a"
+    },
+    {
+      "path": "packages/theme-engine/test/theme-engine.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "6d73c54181e540ec7e68c6127cc211aa18bf5844",
+      "candidateOid": "6d73c54181e540ec7e68c6127cc211aa18bf5844"
+    },
+    {
+      "path": "packages/theme-engine/test/theme-presets.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "b1decc36a172006b588ddfe5aeeba2ce4a0e0b1e",
+      "candidateOid": "b1decc36a172006b588ddfe5aeeba2ce4a0e0b1e"
+    },
+    {
+      "path": "packages/theme-engine/test/theme-safe-update.test.ts",
+      "disposition": "retained integration input",
+      "baseOid": "ff92cc7f679e975c2eb745216377cf8f78abe9d7",
+      "candidateOid": "ff92cc7f679e975c2eb745216377cf8f78abe9d7"
+    },
+    {
+      "path": "packages/typescript/api-client/package.json",
+      "disposition": "prerequisite for build trial",
+      "baseOid": "4a9d60a5b4af33dc87fee95ffba12c1baa3c9e21",
+      "candidateOid": "4909bad5f57b166b0a2771580e1ba8fd44be834e"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "f23b216ce63de60c543e039366ab13585246bb2c",
+      "candidateOid": "f23b216ce63de60c543e039366ab13585246bb2c"
+    },
+    {
+      "path": "packages/typescript/api-client/src/origin.ts",
+      "disposition": "prerequisite for build trial",
+      "baseOid": null,
+      "candidateOid": "0abb961339140fe09fdc1c99ea8e2c7a49cb3ad7"
+    },
+    {
+      "path": "packages/typescript/api-client/tsconfig.json",
+      "disposition": "retained integration input",
+      "baseOid": "c18c4eef3e574b2b7c4c343875a4acb467bba38a",
+      "candidateOid": "c18c4eef3e574b2b7c4c343875a4acb467bba38a"
+    },
+    {
+      "path": "packages/typescript/ui/package.json",
+      "disposition": "retained integration input",
+      "baseOid": "783216a25b91f34d8662d721bf1394cbc6f35d2c",
+      "candidateOid": "783216a25b91f34d8662d721bf1394cbc6f35d2c"
+    },
+    {
+      "path": "packages/typescript/ui/snapshots/public-api.json",
+      "disposition": "retained integration input",
+      "baseOid": "6cea20bc12ff05966736b94fe0a1e4c3cd40c368",
+      "candidateOid": "6cea20bc12ff05966736b94fe0a1e4c3cd40c368"
+    },
+    {
+      "path": "packages/typescript/ui/snapshots/token-aliases.json",
+      "disposition": "retained integration input",
+      "baseOid": "5b6769b9b78f91ef250f5dccea64d74c1d30b2c6",
+      "candidateOid": "5b6769b9b78f91ef250f5dccea64d74c1d30b2c6"
+    },
+    {
+      "path": "packages/typescript/ui/snapshots/token-variables.json",
+      "disposition": "retained integration input",
+      "baseOid": "8c60d3065625691e06ffc2d6100d8b5b9c5cb530",
+      "candidateOid": "8c60d3065625691e06ffc2d6100d8b5b9c5cb530"
+    },
+    {
+      "path": "packages/typescript/ui/src/app-shell.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "4a2e1a918d2c7f0f84f2ea314882415aac966370",
+      "candidateOid": "4a2e1a918d2c7f0f84f2ea314882415aac966370"
+    },
+    {
+      "path": "packages/typescript/ui/src/breadcrumbs.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "cd6bcb45532814fcbfacfaa8f7fd85935968ca74",
+      "candidateOid": "cd6bcb45532814fcbfacfaa8f7fd85935968ca74"
+    },
+    {
+      "path": "packages/typescript/ui/src/button.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "d831ea9cf6d4141eda0af40b131e7ac68713c315",
+      "candidateOid": "d831ea9cf6d4141eda0af40b131e7ac68713c315"
+    },
+    {
+      "path": "packages/typescript/ui/src/component-catalog.stories.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "a372ef80c1b99f5932586ff0150acf08e43f363c",
+      "candidateOid": "a372ef80c1b99f5932586ff0150acf08e43f363c"
+    },
+    {
+      "path": "packages/typescript/ui/src/controls.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "7319b266ecda0297ce39c8fb2d514649db6fcee4",
+      "candidateOid": "7319b266ecda0297ce39c8fb2d514649db6fcee4"
+    },
+    {
+      "path": "packages/typescript/ui/src/design-tokens.stories.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "3d0054eff1e69ca8915c97fbed4d2f5a8933ca3e",
+      "candidateOid": "3d0054eff1e69ca8915c97fbed4d2f5a8933ca3e"
+    },
+    {
+      "path": "packages/typescript/ui/src/feedback.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "9b9127415e2bfa359ac6d897ca671eb0c3deb94d",
+      "candidateOid": "9b9127415e2bfa359ac6d897ca671eb0c3deb94d"
+    },
+    {
+      "path": "packages/typescript/ui/src/icons.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "b0c5d2c4f7ba357dd210426b79292a3a23d78281",
+      "candidateOid": "b0c5d2c4f7ba357dd210426b79292a3a23d78281"
+    },
+    {
+      "path": "packages/typescript/ui/src/index.ts",
+      "disposition": "retained integration input",
+      "baseOid": "7e1edf7d16beb84bfff36fd46fe3906d2a19493c",
+      "candidateOid": "7e1edf7d16beb84bfff36fd46fe3906d2a19493c"
+    },
+    {
+      "path": "packages/typescript/ui/src/internal-workspace.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "30735000305522565ded3bad80c55f9c1c9be04f",
+      "candidateOid": "30735000305522565ded3bad80c55f9c1c9be04f"
+    },
+    {
+      "path": "packages/typescript/ui/src/layout.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "962a4aa069d215ad12fd74f8fe9cd72bfe584e35",
+      "candidateOid": "962a4aa069d215ad12fd74f8fe9cd72bfe584e35"
+    },
+    {
+      "path": "packages/typescript/ui/src/merchant-experience.stories.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "c86e2495f4c1ce40190a73e12f29ed62d8ed1488",
+      "candidateOid": "c86e2495f4c1ce40190a73e12f29ed62d8ed1488"
+    },
+    {
+      "path": "packages/typescript/ui/src/navigation/app-navigation.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "585328f873b965570acea056c6f6ba56f7ad37d0",
+      "candidateOid": "585328f873b965570acea056c6f6ba56f7ad37d0"
+    },
+    {
+      "path": "packages/typescript/ui/src/overlays.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "766a161c559ae8c7f834aa44fb78ed4e19f96796",
+      "candidateOid": "766a161c559ae8c7f834aa44fb78ed4e19f96796"
+    },
+    {
+      "path": "packages/typescript/ui/src/primitives.stories.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "4cec22a80d212b296bed3a0b45407f83b0686e5c",
+      "candidateOid": "4cec22a80d212b296bed3a0b45407f83b0686e5c"
+    },
+    {
+      "path": "packages/typescript/ui/src/productivity.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "d701f16667c9ba77e0916cb3f32d058cbdd42bfa",
+      "candidateOid": "d701f16667c9ba77e0916cb3f32d058cbdd42bfa"
+    },
+    {
+      "path": "packages/typescript/ui/src/table.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "9affd72d9d417004bc1bc817df13e1fe56cd5724",
+      "candidateOid": "9affd72d9d417004bc1bc817df13e1fe56cd5724"
+    },
+    {
+      "path": "packages/typescript/ui/src/theme-provider.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "2678e6c8e321e1de2ce8dadcd52a2d583131c2c8",
+      "candidateOid": "2678e6c8e321e1de2ce8dadcd52a2d583131c2c8"
+    },
+    {
+      "path": "packages/typescript/ui/src/tokens.ts",
+      "disposition": "retained integration input",
+      "baseOid": "35879b4ac069d9ffb46f065095a39ef765553537",
+      "candidateOid": "35879b4ac069d9ffb46f065095a39ef765553537"
+    },
+    {
+      "path": "packages/typescript/ui/tests/components/foundation.test.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "a2267af2db6b383687c6d5b27129eebd42d40fc3",
+      "candidateOid": "a2267af2db6b383687c6d5b27129eebd42d40fc3"
+    },
+    {
+      "path": "packages/typescript/ui/tests/components/internal-workspace.test.tsx",
+      "disposition": "integration base",
+      "baseOid": null,
+      "candidateOid": null
+    },
+    {
+      "path": "packages/typescript/ui/tests/components/navigation-linked-parent.test.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "79e65d4521b60e3aca0562a6714e20df960ca764",
+      "candidateOid": "79e65d4521b60e3aca0562a6714e20df960ca764"
+    },
+    {
+      "path": "packages/typescript/ui/tests/components/theme-hydration.test.tsx",
+      "disposition": "retained integration input",
+      "baseOid": "214d3e1330fbc2a4502fe3c3155e0eb19e65b531",
+      "candidateOid": "214d3e1330fbc2a4502fe3c3155e0eb19e65b531"
+    },
+    {
+      "path": "packages/typescript/ui/tests/validators/ui-no-new-token-alias-validator.mjs",
+      "disposition": "retained integration input",
+      "baseOid": "54ac607dddc95115634afe1b6feedd3a26850b1a",
+      "candidateOid": "54ac607dddc95115634afe1b6feedd3a26850b1a"
+    },
+    {
+      "path": "packages/typescript/ui/tokens.json",
+      "disposition": "retained integration input",
+      "baseOid": "16dfbd670333e2d24d9582bf189c731bddbf49cb",
+      "candidateOid": "16dfbd670333e2d24d9582bf189c731bddbf49cb"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "disposition": "retained integration input",
+      "baseOid": "1a28f118fd2481ce3ddeb5fb6ee58eadf13c4efb",
+      "candidateOid": "1a28f118fd2481ce3ddeb5fb6ee58eadf13c4efb"
+    },
+    {
+      "path": "scripts/marketing/README.md",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "9c009b3c4de8426272c5e320eae956ece45a8c25"
+    },
+    {
+      "path": "scripts/marketing/performance-results.mts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "420071bc01b403f8ca0b2c70099e9e11e3226fd5"
+    },
+    {
+      "path": "scripts/marketing/prepare-inter-weight-subset.py",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "8f40831df2d435d2ea9eb7f871a4ab3e6bd93f21"
+    },
+    {
+      "path": "scripts/marketing/verify-performance.mjs",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "26ce245b45fd655091ef694f9ba3adcfeffce982"
+    },
+    {
+      "path": "tests/federation/marketing-site-auth-boundary.test.mjs",
+      "disposition": "marketing",
+      "baseOid": "b9d5cd290bdadb1f524a60faec382ea6899c5255",
+      "candidateOid": "d264225adbfbc44511bb219551ba671849205939"
+    },
+    {
+      "path": "tests/marketing/capability-artwork-priority.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "1d7ef186437ef4ab284fdff4d32e355ee6a0a1b7"
+    },
+    {
+      "path": "tests/marketing/copy-delivery.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "78347e30ef213a6cf0f2362c9472fbd0b0fa6a5e"
+    },
+    {
+      "path": "tests/marketing/directory-indexing.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "7dba110724d5c16a9e435050b08f866ce4ab1101"
+    },
+    {
+      "path": "tests/marketing/first-store-sequence.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "6b92c29541cf5488943331658a19a19d3db50adb"
+    },
+    {
+      "path": "tests/marketing/globe-renderer.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "f37d01436373599d78ae59b22e3f1d039b47cc44"
+    },
+    {
+      "path": "tests/marketing/locale-proxy.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "230638f7595be81d6b061f93cf8938b95e3cb31f"
+    },
+    {
+      "path": "tests/marketing/online-store-sequence.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "a7bce72a96f01d821a6c172d092825ef4390989f"
+    },
+    {
+      "path": "tests/marketing/performance-measurement.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "4c8858b3047b0986a0ffbd9ef67540e765e376df"
+    },
+    {
+      "path": "tests/marketing/pricing-delivery.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "7a6ec9c5a4f46543f7f2dad454c38ef7c171bc17"
+    },
+    {
+      "path": "tests/marketing/provenance-and-origins.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "6d72c62b25b8f067caf0022234a91902c436d3fa"
+    },
+    {
+      "path": "tests/marketing/reading-visuals.test.ts",
+      "disposition": "marketing",
+      "baseOid": "c6cbd45d00b9b97c5d5eafd83f9c0fbb8aa5fb98",
+      "candidateOid": "876f86bab3ab7b49bbbeec99529c777d83c69e35"
+    },
+    {
+      "path": "tests/marketing/security-policy.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "724330e40ac65127c0e574b18b7deee546bf5f37"
+    },
+    {
+      "path": "tests/marketing/seo-contracts.test.ts",
+      "disposition": "marketing",
+      "baseOid": null,
+      "candidateOid": "97ba7ef3b1867930cf25fbaadd3f410e9313e55d"
+    }
+  ],
+  "missing": []
+}

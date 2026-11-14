@@ -220,12 +220,7 @@ test('storefront render path selects locale and localizes bundle config', () => 
   const storeService = readFileSync(STOREFRONT_STORE_SERVICE_SOURCE, 'utf8');
   const storefrontRoute = readStorefrontRouteSource();
 
-  assert.match(storeService, /resolveStorefrontThemePresentation\(rawTemplateConfig, appearanceSettings, themeId, storeLocale\)/);
-  const presentationOwner = readFileSync('packages/theme-engine/src/index.ts', 'utf8');
-  assert.match(presentationOwner, /localizeThemeTemplateConfig\(resolvedTemplateConfig, storeLocale\)/);
-  const checkoutReader = readFileSync('services/api-gateway/src/lib/checkout-store-presentation.ts', 'utf8');
-  assert.match(checkoutReader, /resolveStorefrontThemePresentation/);
-  assert.match(checkoutReader, /row.locale\|\|'en-IN'/);
+  assert.match(storeService, /localizeThemeTemplateConfig\(resolvedTemplateConfig, storeLocale\)/);
   assert.match(storeService, /locale: storeLocale/);
   assert.match(storefrontRoute, /currency,locale,theme_id/);
 });

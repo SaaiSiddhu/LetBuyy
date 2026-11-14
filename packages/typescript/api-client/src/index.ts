@@ -1,12 +1,6 @@
-import type { ShippingCapabilities, ShippingProfile, CreateShippingProfileInput, UpdateShippingProfileInput } from '@letbuyy/shared-types';
-import {CollectionListQuerySchema,type CollectionListQueryInput} from '@letbuyy/shared-types';
-import { StorefrontDirectoryPayloadSchema, type StorefrontDirectoryPayload } from '@letbuyy/shared-types';
-import {CollectionListPageSchema} from '@letbuyy/shared-types';
-import { CheckoutDomainSetupSchema, type CheckoutDomainSetup } from '@letbuyy/shared-types';
-export type { CheckoutDomainSetup } from '@letbuyy/shared-types';
+import { LETBUYY_CANONICAL_API_BASE_URL } from './origin';
 export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
-import { PersonalizationReviewContextSchema, PersonalizationReviewQuerySchema, type PersonalizationReviewContext, type StorefrontDiscoveryQueryInput, type StorefrontDiscoveryMetadata } from '@letbuyy/shared-types';
-import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
+import { CollectionMembershipSnapshotSchema, StoreHealthSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
 import { createReelReviewSdk } from './reels';
 export { createReelReviewSdk } from './reels';
@@ -248,12 +242,8 @@ export interface LetbuyyApiClientOptions {
   token?: string | null;
   storeId?: string | null;
   headers?: HeadersInit;
-  /** Fresh request credentials, evaluated independently for every transport call. */
-  getHeaders?: () => HeadersInit | Promise<HeadersInit>;
   fetch?: typeof fetch;
 }
-
-type LetbuyyRequestCachePolicy = 'no-store';
 
 export interface LetbuyyRequestOptions {
   method?: HttpMethod;
@@ -267,7 +257,6 @@ export interface LetbuyyRequestOptions {
   versioned?: boolean;
   /** Preserve UTF-8 export bytes while retaining normal HTTP/error validation. */
   responseType?: 'json' | 'text';
-  cache?: LetbuyyRequestCachePolicy;
 }
 
 /** Allocate once per logical support action and retain across retry attempts. Sign identity afresh. */
@@ -327,11 +316,11 @@ function readProductionApiBaseUrlOverride(): string | undefined {
 /**
  * Silent production fallback for the API base URL. Overridable via the
  * `LETBUYY_PRODUCTION_API_BASE_URL` env var; defaults to the canonical
- * `letbuyy.com` apex. `letbuyy.com` remains a legacy routing alias during
- * launch cutover.
+ * API gateway origin. Shared with build-time browser access policy.
  */
 export const LETBUYY_PRODUCTION_API_BASE_URL =
-  readProductionApiBaseUrlOverride() ?? 'https://api.letbuyy.com/v1';
+  readProductionApiBaseUrlOverride() ?? LETBUYY_CANONICAL_API_BASE_URL;
+
 
 export interface LetbuyyApiBaseUrlOptions {
   apiVersionPath?: string;
@@ -541,8 +530,6 @@ export interface DomainConnectResult {
   domain: string;
   status: string;
   provider?: string | null;
-  role?: SiteDomainRole;
-  checkout?: CheckoutDomainSetup;
   records: {
     txt?: DomainDnsRecordHint;
     cname?: DomainDnsRecordHint;
@@ -554,14 +541,11 @@ export interface DomainConnectResult {
 export interface DomainVerifyResult {
   domain: string;
   status: string;
-  customer_verification?: CustomDomainHealth['customer_verification'];
   txt_verified?: boolean;
   cname_verified?: boolean;
   cname_target?: string;
   vercel?: JsonRecord;
   reason?: string;
-  checkout?: CheckoutDomainSetup;
-  provider_dns_records?: Array<{ type: 'TXT'; name: string; value: string }>;
 }
 export interface DomainVerificationEvent {
   id: string;
@@ -596,7 +580,6 @@ export interface DomainDeleteResult {
 
 export interface AppInstallationListQuery extends Pick<StoreScopedQuery, 'store_id'> {}
 export interface AppExtensionRegistrationUpdateInput extends JsonRecord {
-  store_id?: string;
   status: 'enabled' | 'disabled';
 }
 export interface AppStoreListQuery extends ListQuery {
@@ -1730,6 +1713,8 @@ export interface InternalSupportMessageInput extends JsonRecord {
 }
 
 export interface InternalSupportAssignInput extends JsonRecord {
+  expected_updated_at: string;
+  priority: SupportTicketPriority;
   assignee_id: string | null;
   reason: string;
 }
@@ -2069,6 +2054,7 @@ export interface InternalMerchantOverview extends JsonRecord {
   subscription: JsonRecord | null;
   subscriptions: JsonRecord[];
   commerce: {
+    sample_limit: number;
     order_count: number;
     paid_order_count: number;
     revenue_paise: number;
@@ -2077,6 +2063,8 @@ export interface InternalMerchantOverview extends JsonRecord {
   ecosystem: {
     installed_apps: JsonRecord[];
     active_theme: JsonRecord | null;
+    published_release: JsonRecord | null;
+    publication_consistent: boolean;
     theme_instances: JsonRecord[];
   };
   trust: {
@@ -2211,11 +2199,6 @@ export interface ProductListQuery extends StoreScopedQuery {
   category?: string;
   status?: ProductStatus | 'inactive' | 'all';
 }
-
-/** Table rows omit editor-only content and relational variant hydration. */
-export type ProductListSummary = Pick<Product,
-  'id' | 'name' | 'status' | 'stock' | 'price' | 'compare_price' | 'images' |
-  'category' | 'product_type' | 'vendor' | 'is_active' | 'created_at' | 'version'>;
 
 export interface ProductBarcodeLookupQuery extends QueryParams {
   store_id: string;
@@ -2553,7 +2536,6 @@ export interface SupplierMetricsRow extends JsonRecord {
 }
 
 export interface SupplierMetricsResult extends JsonRecord {
-  meta?: GatewayPaginationMeta;
   suppliers: SupplierMetricsRow[];
   schema_missing?: boolean;
 }
@@ -2567,7 +2549,6 @@ export interface WarehouseMetricsRow extends JsonRecord {
 }
 
 export interface WarehouseMetricsResult extends JsonRecord {
-  meta?: GatewayPaginationMeta;
   warehouses: WarehouseMetricsRow[];
   schema_missing?: boolean | string;
 }
@@ -2606,7 +2587,6 @@ export interface CustomerListQuery extends StoreScopedQuery {
   email?: string;
   phone?: string;
   has_orders?: boolean;
-  view?: 'all' | 'active' | 'has-orders' | 'high-value' | 'new';
 }
 
 export interface NotificationListQuery extends ListQuery {
@@ -2747,7 +2727,6 @@ export interface ThemeCatalogResponse {
   next_cursor?: string | null;
   total_is_exact?: boolean;
   current_theme: string | null;
-  current_theme_record?: ThemeCatalogItem | null;
   store_status: string | null;
 }
 
@@ -2889,27 +2868,15 @@ export type ThemeDeveloperListingResult = JsonRecord & {
   asset_scan_status: string;
 };
 
-export type StorefrontProductQuery = StorefrontDiscoveryQueryInput;
+export interface StorefrontProductQuery extends ListQuery {
+  category?: string;
+  collection?: string;
+  tag?: string;
+  country_of_origin?: string;
+}
 
 export type StorefrontStorePayload = Store & JsonRecord & {
   current_theme_release?: ThemeRelease | null;
-};
-
-export type StorefrontRenderRelease = {
-  id: string;
-  theme_id: string;
-  theme_instance_id: string | null;
-  theme_package_version_id: string | null;
-  release_version: number;
-  release_manifest: JsonRecord;
-  schema_manifest_version: string;
-  engine_version: string;
-  published_at: string | null;
-};
-export type StorefrontRenderStorePayload = Omit<StorefrontStorePayload, 'current_theme_release' | 'template_config'> & {
-  projection: 'render-v1';
-  template_config: JsonRecord;
-  current_theme_release: StorefrontRenderRelease | null;
 };
 
 export type StorefrontStoreStatusPayload = Partial<StorefrontStorePayload> & {
@@ -2936,20 +2903,6 @@ export type StorefrontContentPayload = JsonRecord & {
 
 export type StorefrontBlogPostPayload = BlogPost & JsonRecord;
 
-/** Private editor read; the server verifies the token, site and saved draft. */
-export type ThemePreviewContentQuery = {
-  resource: 'page' | 'article' | 'blog';
-  resource_id?: string;
-  page?: number;
-  limit?: number;
-};
-export type ThemePreviewContentPayload = {
-  resource: 'page' | 'article' | 'blog';
-  content: StorefrontContentPayload | null;
-  articles: StorefrontBlogPostPayload[];
-  pagination: { page: number; limit: number; has_more: boolean; total?: number; total_pages?: number };
-};
-
 export type StorefrontCollectionSummary = {
   id: string;
   title: string;
@@ -2973,7 +2926,6 @@ export type StorefrontCollectionPayload = {
   };
   products: Product[];
   total: number;
-  discovery?: StorefrontDiscoveryMetadata;
 };
 
 export type StorefrontLookupResult = JsonRecord & {
@@ -2987,7 +2939,15 @@ export type StorefrontLookupResult = JsonRecord & {
   };
 };
 
-export type { StorefrontDirectoryPayload } from '@letbuyy/shared-types';
+export type StorefrontDirectoryPayload = {
+  stores: JsonRecord[];
+  stats: {
+    totalStores: number;
+    totalThemes: number;
+    totalProducts: number;
+    totalOrders: number;
+  };
+};
 
 export interface StorefrontCouponValidationQuery extends QueryParams {
   code: string;
@@ -3183,9 +3143,12 @@ export type StorefrontProductReviewResult = {
 type NewRecord<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'created_by' | 'updated_by' | 'deleted_by'>>;
 
 export type CreateStoreInput = Pick<Store, 'name' | 'site_type'> & Partial<Pick<Store, 'subdomain' | 'tagline' | 'description' | 'currency' | 'locale' | 'timezone'>>;
-export type UpdateStoreInput = Partial<NewRecord<Store>> & { status?: StoreStatus }
-  & import('@letbuyy/shared-types').UpdateStorePaymentMethodsInput;
-export type SaveStorePaymentConfigInput = import('@letbuyy/shared-types').SaveStorePaymentConfigInput;
+export type UpdateStoreInput = Partial<NewRecord<Store>> & { status?: StoreStatus };
+export type SaveStorePaymentConfigInput = {
+  key_id: string;
+  key_secret: string;
+  test_mode?: boolean;
+};
 
 export type UpdateStoreLocalizationInput = {
   default_locale?: string;
@@ -3256,7 +3219,6 @@ export type UpdateCollectionInput = Partial<Pick<Collection, 'title' | 'descript
 export type CreateProductCategoryInput = Pick<ProductCategory, 'store_id' | 'name'> & NewRecord<ProductCategory>;
 export type UpdateProductCategoryInput = NewRecord<ProductCategory>;
 export type CreateGiftCardInput = Pick<GiftCard, 'store_id' | 'initial_value'> & {
-  idempotency_key?: string;
   currency?: string;
   expires_at?: string | null;
   recipient_email?: string | null;
@@ -3279,10 +3241,8 @@ export interface GiftCardLifecycleItem {
   redemption_count?: number;
 }
 export interface GiftCardIssued extends GiftCardLifecycleItem {
-  // Only a newly committed issuance reveals its plaintext code. An idempotent
-  // replay returns the existing card without a code the server cannot recover.
-  code?: string;
-  replayed?: boolean;
+  // The plaintext code is returned exactly once, at issuance.
+  code: string;
 }
 export interface GiftCardBalanceResult {
   found: boolean;
@@ -3317,7 +3277,10 @@ export type InventoryAdjustInput = {
   reason: InventoryAdjustmentReason;
   notes?: string | null;
 };
-export type ProductImportInput = import('@letbuyy/shared-types').ProductCsvImportInput;
+export type ProductImportInput = {
+  store_id: string;
+  csv: string;
+};
 export interface ExportJobSummary extends JsonRecord {
   id: string;
   type: 'products' | 'orders' | 'customers' | 'product_import';
@@ -3372,7 +3335,6 @@ export type ShippingLabelRate = {
 };
 export type ShippingLabelProviderModeResponse = {
   provider_mode: 'sandbox' | 'live';
-  capabilities: ShippingCapabilities;
 };
 export type CreatePayoutStatementInput = {
   store_id: string;
@@ -3424,19 +3386,11 @@ export type DisableTwoFactorInput = {
 export type ThemeInstallInput = {
   store_id: string;
   config_overrides?: JsonRecord;
-  expected_version?: string;
-  expected_package_id?: string;
-  expected_package_version_id?: string;
 };
 export type ThemeInstallResult = {
   installation: JsonRecord;
-  theme: Pick<Theme, 'id' | 'slug' | 'name'> & { version?: string };
-  release?: JsonRecord;
-  already_installed?: boolean;
-  theme_instance_id?: string;
-  installed_version?: string;
-  theme_package_id?: string;
-  theme_package_version_id?: string;
+  theme: Pick<Theme, 'id' | 'slug' | 'name'>;
+  release: JsonRecord;
 };
 export type ThemePurchaseOrderInput = {
   currency?: 'INR';
@@ -3522,8 +3476,6 @@ export type RollbackThemeReleaseInput = {
 };
 export type CreateOrderInput = Pick<Order, 'store_id' | 'line_items' | 'currency'> & NewRecord<Order>;
 export type StorefrontCreateOrderInput = {
-  /** Server quote comparison; never client-supplied money authority. */
-  expectedQuoteFingerprint?: string;
   customer: {
     name: string;
     email: string;
@@ -3795,8 +3747,9 @@ export type RecoverSubscriptionPaymentInput = {
 };
 
 // ── Billing payment methods (how the merchant pays LetBuyy) ──────────────────
-// Current billing mandate creation is a sandbox record, not a provider-issued
-// UPI AutoPay authorization. Live activation requires a separate verified flow.
+// A billing mandate is a Razorpay UPI AutoPay authorization. LetBuyy is not an
+// RBI-licensed payment aggregator, so card/UPI credentials are never stored here —
+// Razorpay (the licensed PA) holds them and we keep only the mandate reference.
 export type BillingMandate = {
   id: string;
   provider: string;
@@ -3812,9 +3765,10 @@ export type BillingMandate = {
 };
 export type CreateBillingMandateInput = {
   store_id: string;
-  plan_slug: 'launch' | 'growth' | 'scale' | 'commerce_os';
+  plan_slug: SubscriptionPlan['slug'];
   billing_period?: SubscriptionBillingPeriod;
   provider_mode?: 'sandbox' | 'live';
+  upi_vpa?: string;
   idempotency_key: string;
   metadata?: Record<string, unknown>;
 };
@@ -3963,7 +3917,6 @@ export class LetbuyyApiClient {
   private readonly defaultToken: string | null;
   private readonly defaultStoreId: string | null;
   private readonly defaultHeaders: HeadersInit | undefined;
-  private readonly getHeaders: LetbuyyApiClientOptions['getHeaders'];
 
   constructor(options: LetbuyyApiClientOptions) {
     if (!options.baseUrl.trim()) {
@@ -3981,7 +3934,6 @@ export class LetbuyyApiClient {
     this.defaultToken = options.token ?? null;
     this.defaultStoreId = options.storeId ?? null;
     this.defaultHeaders = options.headers;
-    this.getHeaders = options.getHeaders;
   }
 
   readonly graphql: LetbuyyGraphQLSdk = createLetbuyyGraphQLSdk(this);
@@ -3993,7 +3945,7 @@ export class LetbuyyApiClient {
     get: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Store>(`/stores/${encodePathSegment(id)}`, options),
     health: (id: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<StoreHealth>(`/stores/${encodePathSegment(id)}/health`, options),
+      this.requestData<StoreHealth>(`/stores/${encodePathSegment(id)}/health`, options).then(value => StoreHealthSchema.parse(value)),
     getBySubdomain: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Store>(`/stores/public/${encodePathSegment(subdomain)}`, options),
     getByHandle: (handle: string, options?: LetbuyyRequestOptions) =>
@@ -4011,8 +3963,6 @@ export class LetbuyyApiClient {
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, options),
       save: (id: string, input: SaveStorePaymentConfigInput, options?: LetbuyyRequestOptions) =>
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'POST', body: input }),
-      updateMethods: (id: string, input: import('@letbuyy/shared-types').UpdateStorePaymentMethodsInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'PATCH', body: input }),
     },
     localization: {
       get: (id: string, options?: LetbuyyRequestOptions) =>
@@ -4148,10 +4098,6 @@ export class LetbuyyApiClient {
 
   // Custom-domain lifecycle (migration 185). Paths target the gateway `/custom` router.
   readonly customDomains = {
-    checkout: async (query: DomainScopedQuery, options?: LetbuyyRequestOptions): Promise<CheckoutDomainSetup> =>
-      CheckoutDomainSetupSchema.parse(await this.requestData<unknown>('/custom/checkout-domain', { ...options, query })),
-    prepareCheckout: async (input: DomainScopedInput, options?: LetbuyyRequestOptions): Promise<CheckoutDomainSetup> =>
-      CheckoutDomainSetupSchema.parse(await this.requestData<unknown>('/custom/checkout-domain', { ...options, method: 'POST', body: input })),
     list: (query: DomainScopedQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<DomainListResult>('/custom/domains', { ...options, query }),
     connect: (input: DomainConnectInput, options?: LetbuyyRequestOptions) =>
@@ -4946,8 +4892,6 @@ export class LetbuyyApiClient {
   readonly products = {
     list: (query?: ProductListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Product>('/products', { ...options, query }),
-    listSummary: (query?: ProductListQuery, options?: LetbuyyRequestOptions) =>
-      this.requestPaginated<ProductListSummary>('/products', { ...options, query: { ...query, view: 'summary' } }),
     get: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Product>(`/products/${encodePathSegment(id)}`, options),
     create: (input: CreateProductInput, options?: LetbuyyRequestOptions) =>
@@ -4963,13 +4907,8 @@ export class LetbuyyApiClient {
     lookupBarcode: (query: ProductBarcodeLookupQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<ProductBarcodeLookupResult>('/products/barcode/lookup', { ...options, query }),
     collections: {
-      list: async (input: CollectionListQueryInput, options?: LetbuyyRequestOptions) => {
-        const query = CollectionListQuerySchema.parse(input);
-        const result = CollectionListPageSchema.parse(await this.request<unknown>('/products/collections', { ...options, query }));
-        if(result.meta.page!==query.page||result.meta.per_page!==query.limit||result.data.some(row=>row.store_id!==query.store_id))
-          throw new Error('Collection list context could not be confirmed.');
-        return result;
-      },
+      list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+        this.requestData<Collection[]>('/products/collections', { ...options, query }),
       create: (input: CreateCollectionInput, options?: LetbuyyRequestOptions) =>
         this.requestData<Collection>('/products/collections', { ...options, method: 'POST', body: input }),
       update: (id: string, input: UpdateCollectionInput, options?: LetbuyyRequestOptions) =>
@@ -4985,7 +4924,7 @@ export class LetbuyyApiClient {
       list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
         this.requestData<GiftCardLifecycleItem[]>('/products/gift-cards', { ...options, query }),
       create: (input: CreateGiftCardInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<GiftCardIssued>('/products/gift-cards', { ...options, method: 'POST', body: input, idempotencyKey: input.idempotency_key ?? options?.idempotencyKey }),
+        this.requestData<GiftCardIssued>('/products/gift-cards', { ...options, method: 'POST', body: input }),
       balance: (query: { store_id: string; code: string }, options?: LetbuyyRequestOptions) =>
         this.requestData<GiftCardBalanceResult>('/products/gift-cards/balance', { ...options, query }),
       transactions: (id: string, query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
@@ -5357,17 +5296,9 @@ export class LetbuyyApiClient {
   };
 
   readonly shipping = {
-    profiles: {
-      list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestSettingsList<ShippingProfile>('/shipping-tax/shipping/profiles', query, options),
-      create: (input: CreateShippingProfileInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<ShippingProfile>('/shipping-tax/shipping/profiles', { ...options, method: 'POST', body: input }),
-      update: (id: string, input: UpdateShippingProfileInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<ShippingProfile>(`/shipping-tax/shipping/profiles/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
-    },
     zones: {
       list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestSettingsList<ShippingZone>('/shipping-tax/shipping/zones', query, options),
+        this.requestData<ShippingZone[]>('/shipping-tax/shipping/zones', { ...options, query }),
       create: (input: CreateShippingZoneInput, options?: LetbuyyRequestOptions) =>
         this.requestData<ShippingZone>('/shipping-tax/shipping/zones', { ...options, method: 'POST', body: input }),
       update: (id: string, input: UpdateShippingZoneInput, options?: LetbuyyRequestOptions) =>
@@ -5377,7 +5308,7 @@ export class LetbuyyApiClient {
     },
     rates: {
       list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestSettingsList<ShippingRate>('/shipping-tax/shipping', query, options),
+        this.requestData<ShippingRate[]>('/shipping-tax/shipping', { ...options, query }),
       create: (input: CreateShippingRateInput, options?: LetbuyyRequestOptions) =>
         this.requestData<ShippingRate>('/shipping-tax/shipping', { ...options, method: 'POST', body: input }),
       update: (id: string, input: UpdateShippingRateInput, options?: LetbuyyRequestOptions) =>
@@ -5389,7 +5320,7 @@ export class LetbuyyApiClient {
 
   readonly taxes = {
     list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
-      this.requestSettingsList<TaxRate>('/shipping-tax/taxes', query, options),
+      this.requestData<TaxRate[]>('/shipping-tax/taxes', { ...options, query }),
     create: (input: CreateTaxRateInput, options?: LetbuyyRequestOptions) =>
       this.requestData<TaxRate>('/shipping-tax/taxes', { ...options, method: 'POST', body: input }),
     update: (id: string, input: UpdateTaxRateInput, options?: LetbuyyRequestOptions) =>
@@ -5402,7 +5333,7 @@ export class LetbuyyApiClient {
     list: (query?: ThemeListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Theme>('/themes', { ...options, query }),
     listCatalog: async (query?: ThemeListQuery, options?: LetbuyyRequestOptions): Promise<ThemeCatalogResponse> => {
-      const body = await this.request<GatewayResponse<ThemeCatalogItem[]> & { current_theme?: unknown; current_theme_record?: ThemeCatalogItem | null; store_status?: unknown }>(
+      const body = await this.request<GatewayResponse<ThemeCatalogItem[]> & { current_theme?: unknown; store_status?: unknown }>(
         '/themes',
         { ...options, query },
       );
@@ -5416,7 +5347,6 @@ export class LetbuyyApiClient {
         limit: numberValue(meta.per_page, data.length),
         has_more: Boolean(meta.has_next),
         current_theme: typeof body.current_theme === 'string' ? body.current_theme : null,
-        current_theme_record: body.current_theme_record || null,
         store_status: typeof body.store_status === 'string' ? body.store_status : null,
       };
     },
@@ -5591,54 +5521,34 @@ export class LetbuyyApiClient {
   };
 
   readonly storefront = {
-    personalizationReview: async (subdomain: string, productId: string, variantId: string | null, options?: LetbuyyRequestOptions): Promise<PersonalizationReviewContext> => {
-      if (variantId !== null && typeof variantId !== 'string') throw new Error('Supply an explicit variant UUID or null for personalization review.');
-      const query = PersonalizationReviewQuerySchema.parse(variantId === null ? {} : { variant_id: variantId });
-      const headers = new Headers(options?.headers);
-      headers.set('Cache-Control', 'no-store');
-      const context = PersonalizationReviewContextSchema.parse(await this.requestData<unknown>(`/storefront/${encodePathSegment(subdomain)}/products/${encodePathSegment(productId)}/personalization-review`, {
-        ...options, method: 'GET', body: undefined, query, headers, cache: 'no-store',
-      }));
-      if (context.product_id !== productId.toLowerCase() || context.variant_id !== (variantId?.toLowerCase() ?? null)) throw new Error('Personalization review identity does not match the requested product and variant.');
-      return context;
-    },
     lookup: (query: { q?: string; host?: string; subdomain?: string }, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontLookupResult>('/storefront/lookup', { ...options, query }),
     directory: (options?: LetbuyyRequestOptions) =>
-      this.requestData<StorefrontDirectoryPayload>('/storefront/directory', options).then(value => StorefrontDirectoryPayloadSchema.parse(value)),
+      this.requestData<StorefrontDirectoryPayload>('/storefront/directory', options),
     getStoreById: (storeId: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/store/${encodePathSegment(storeId)}`, options),
     getStore: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}`, options),
-    // Old Gateways ignore the query and return the legacy shape during rollout.
-    getRenderStore: (subdomain: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<StorefrontRenderStorePayload | StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}`, { ...options, query: { ...options?.query, projection: 'render-v1' } }),
     checkoutExtensions: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCheckoutExtensionRegistryResponse>(`/storefront/${encodePathSegment(subdomain)}/checkout/extensions`, options),
     status: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStoreStatusPayload>(`/storefront/${encodePathSegment(subdomain)}/status`, options),
     themePreview: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token } }),
-    themePreviewContent: (subdomain: string, token: string, query: ThemePreviewContentQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<ThemePreviewContentPayload>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { ...query, token } }),
     themePreviewCollections: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCollectionSummary[]>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token, resource: 'collections' } }),
-    themePreviewCollection: (subdomain: string, token: string, collectionId: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<StorefrontCollectionSummary>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token, resource: 'collections', collection_id: collectionId } }),
     browsePreviewCollections: (subdomain: string, token: string, cursor: StorefrontCollectionCursorQuery = {}, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCollectionPage>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { after: cursor.after, before: cursor.before, token, resource: 'collections', browse: '1' } }),
-    themePreviewProductPage: (subdomain: string, token: string, query: StorefrontProductQuery = {}, options?: LetbuyyRequestOptions) =>
-      this.requestPaginated<Product>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { ...query, token, resource: 'products', pagination: '1' } }, true),
     themePreviewProducts: (subdomain: string, token: string, productIds?: string[], options?: LetbuyyRequestOptions) =>
       this.requestData<Product[]>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, {
-        ...options, query: { ...options?.query, token, resource: 'products', ...(productIds ? { ids: productIds.join(',') } : {}) },
+        ...options, query: { token, resource: 'products', ...(productIds ? { ids: productIds.join(',') } : {}) },
       }),
     navigation: (subdomain: string, location: string, options?: LetbuyyRequestOptions) =>
       this.requestData<NavigationResponse>(`/storefront/${encodePathSegment(subdomain)}/navigation`, { ...options, query: { location } }),
     listProducts: (subdomain: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>
-      this.requestPaginated<Product>(`/storefront/${encodePathSegment(subdomain)}/products`, { ...options, query }, true),
+      this.requestPaginated<Product>(`/storefront/${encodePathSegment(subdomain)}/products`, { ...options, query }),
     listProductsByStoreId: (storeId: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>
-      this.requestPaginated<Product>(`/storefront/store/${encodePathSegment(storeId)}/products`, { ...options, query }, true),
+      this.requestPaginated<Product>(`/storefront/store/${encodePathSegment(storeId)}/products`, { ...options, query }),
     getProduct: (subdomain: string, slug: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Product>(`/storefront/${encodePathSegment(subdomain)}/products/${encodePathSegment(slug)}`, options),
     productsByIds: (subdomain: string, productIds: string[], options?: LetbuyyRequestOptions) =>
@@ -5725,7 +5635,6 @@ export class LetbuyyApiClient {
       token: options.token ?? this.defaultToken,
       storeId: options.storeId ?? this.defaultStoreId,
       headers: options.headers ?? this.defaultHeaders,
-      getHeaders: options.getHeaders ?? this.getHeaders,
       fetch: options.fetch ?? this.fetchImpl,
     });
   }
@@ -5734,28 +5643,13 @@ export class LetbuyyApiClient {
     return this.request<HealthResponse>('/health', { ...options, versioned: false });
   }
 
-  /** Settings screens need the complete bounded configuration, never a hidden first page.
-   * Explicit page requests remain paged; the default composes at most 1,000 records. */
-  private async requestSettingsList<T>(path: string, query: ShippingTaxListQuery, options?: LetbuyyRequestOptions): Promise<T[]> {
-    if (query.page !== undefined) return (await this.requestPaginated<T>(path, { ...options, query })).data;
-    const rows: T[] = [];
-    for (let page=1; page<=10; page++) {
-      const result = await this.requestPaginated<T>(path, { ...options, query: { ...query, page, limit: 100 } });
-      rows.push(...result.data);
-      if (!result.has_more) return rows;
-    }
-    throw new Error('Settings exceed the complete-view limit. Use the paginated settings API.');
-  }
-
   async requestData<T>(path: string, options?: LetbuyyRequestOptions): Promise<T> {
     const body = await this.request<GatewayResponse<T>>(path, options);
     return unwrapData<T>(body, 200, null);
   }
 
-  requestPaginated<T>(path: string, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<T>>;
-  requestPaginated<T>(path: string, options: LetbuyyRequestOptions | undefined, includeDiscovery: true): Promise<PaginatedResponse<T> & { discovery?: StorefrontDiscoveryMetadata }>;
-  async requestPaginated<T>(path: string, options?: LetbuyyRequestOptions, includeDiscovery = false): Promise<PaginatedResponse<T> & { discovery?: StorefrontDiscoveryMetadata }> {
-    const body = await this.request<GatewayResponse<T[]> & { discovery?: StorefrontDiscoveryMetadata }>(path, options);
+  async requestPaginated<T>(path: string, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<T>> {
+    const body = await this.request<GatewayResponse<T[]>>(path, options);
     const data = unwrapData<T[]>(body, 200, null);
     const meta = isRecord(body) && isRecord(body.meta) ? body.meta : {};
 
@@ -5767,19 +5661,17 @@ export class LetbuyyApiClient {
       has_more: Boolean(meta.has_next),
       next_cursor: typeof meta.next_cursor === 'string' ? meta.next_cursor : null,
       total_is_exact: Boolean(meta.total_is_exact),
-      ...(includeDiscovery && body.discovery && isRecord(body.discovery) ? { discovery: body.discovery } : {}),
     };
   }
 
   async request<T>(path: string, options: LetbuyyRequestOptions = {}): Promise<T> {
     const requestOptions = withAutomaticIdempotency(path, options);
     const url = this.buildUrl(path, requestOptions);
-    const headers = await this.buildHeaders(requestOptions);
+    const headers = this.buildHeaders(requestOptions);
     const init: RequestInit = {
       method: requestOptions.method ?? 'GET',
       headers,
       signal: requestOptions.signal,
-      ...(requestOptions.cache ? { cache: requestOptions.cache } : {}),
     };
 
     if (requestOptions.body !== undefined) {
@@ -5807,9 +5699,8 @@ export class LetbuyyApiClient {
     return (rawText === undefined ? body : rawText) as T;
   }
 
-  private async buildHeaders(options: LetbuyyRequestOptions): Promise<Headers> {
+  private buildHeaders(options: LetbuyyRequestOptions): Headers {
     const headers = new Headers(this.defaultHeaders);
-    if (this.getHeaders) copyHeaders(headers, await this.getHeaders());
     copyHeaders(headers, options.headers);
 
     const token = options.token ?? this.defaultToken;

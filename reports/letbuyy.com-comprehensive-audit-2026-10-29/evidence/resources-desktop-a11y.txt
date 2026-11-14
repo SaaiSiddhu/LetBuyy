@@ -1,0 +1,290 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "Main navigation":
+    - button "Why LetBuyy"
+    - button "Products"
+    - link "Themes":
+      - /url: /in/resources/platform/how-themes-work
+    - link "Apps":
+      - /url: /in/resources/platform/introduction-to-apps
+    - link "Developers":
+      - /url: /in/resources/developers
+    - link "Pricing":
+      - /url: /in/pricing
+  - button "Toggle theme"
+  - link "Log in":
+    - /url: https://accounts.letbuyy.com/lookup
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+- navigation "Resources navigation":
+  - link "Resources":
+    - /url: /in/resources
+  - link "All":
+    - /url: /in/resources
+  - link "Ecommerce":
+    - /url: /in/resources/ecommerce
+  - link "Growth":
+    - /url: /in/resources/growth
+  - link "Payments":
+    - /url: /in/resources/payments
+  - link "Operations":
+    - /url: /in/resources/operations
+  - link "AI Commerce":
+    - /url: /in/resources/ai-commerce
+  - link "Developers":
+    - /url: /in/resources/developers
+  - link "Changelog":
+    - /url: /in/resources/changelog
+  - button "Commerce updates"
+- main:
+  - region "A little know-how. A better business.":
+    - paragraph: THE LETBUYY RESOURCE LIBRARY
+    - heading "A little know-how. A better business." [level=1]
+    - paragraph: Practical reading for every part of running an online store in India. Start with a question. Leave with a next step.
+    - search:
+      - text: What are you working on?
+      - searchbox "What are you working on?"
+      - button "Search the resource library"
+    - paragraph:
+      - text: Explore
+      - link "UPI":
+        - /url: /in/resources/tag/upi
+      - link "GST":
+        - /url: /in/resources/tag/gst
+      - link "COD":
+        - /url: /in/resources/tag/cod
+      - link "Inventory":
+        - /url: /in/resources/tag/inventory
+    - text: 35 guides · 7 topics · Made for Indian merchants
+    - link "THE STARTING POINT How To Start an Online Store in India (2026 Guide) Everything you need to launch, sell, and grow — from GST registration to your first order. Read the guide 12 min read":
+      - /url: /in/resources/ecommerce/how-to-start-an-online-store-india
+      - paragraph: THE STARTING POINT
+      - heading "How To Start an Online Store in India (2026 Guide)" [level=2]
+      - paragraph: Everything you need to launch, sell, and grow — from GST registration to your first order.
+      - text: Read the guide 12 min read
+    - complementary "Small reads. Useful next steps.":
+      - paragraph: ON THE READING LIST
+      - heading "Small reads. Useful next steps." [level=2]
+      - list:
+        - listitem:
+          - 'link "01Payments · 9 min UPI vs COD: Which Payment Method Wins for Indian Stores"':
+            - /url: /in/resources/payments/upi-vs-cod-india
+            - text: 01Payments · 9 min
+            - strong: "UPI vs COD: Which Payment Method Wins for Indian Stores"
+        - listitem:
+          - link "02Growth · 10 min How to Get Your First 100 Orders":
+            - /url: /in/resources/growth/first-100-orders-guide
+            - text: 02Growth · 10 min
+            - strong: How to Get Your First 100 Orders
+        - listitem:
+          - 'link "03Operations · 10 min Inventory Management: From Chaos to Control"':
+            - /url: /in/resources/operations/inventory-management-guide
+            - text: 03Operations · 10 min
+            - strong: "Inventory Management: From Chaos to Control"
+  - region "What’s on your mind?":
+    - paragraph: FIND YOUR FOCUS
+    - heading "What’s on your mind?" [level=2]
+    - paragraph: Go straight to the part of your business you want to work on.
+    - link "Ecommerce Build a better store 5 guides":
+      - /url: /in/resources/ecommerce
+      - strong: Ecommerce
+      - text: Build a better store 5 guides
+    - link "Growth Find your next customer 5 guides":
+      - /url: /in/resources/growth
+      - strong: Growth
+      - text: Find your next customer 5 guides
+    - link "Payments Make sense of payments 5 guides":
+      - /url: /in/resources/payments
+      - strong: Payments
+      - text: Make sense of payments 5 guides
+    - link "Operations Keep orders moving 5 guides":
+      - /url: /in/resources/operations
+      - strong: Operations
+      - text: Keep orders moving 5 guides
+    - link "AI Commerce Explore commerce AI 5 guides":
+      - /url: /in/resources/ai-commerce
+      - strong: AI Commerce
+      - text: Explore commerce AI 5 guides
+    - link "Developers Work with the platform 5 guides":
+      - /url: /in/resources/developers
+      - strong: Developers
+      - text: Work with the platform 5 guides
+    - link "Platform Get to know LetBuyy 5 guides":
+      - /url: /in/resources/platform
+      - strong: Platform
+      - text: Get to know LetBuyy 5 guides
+    - link "What’s new at LetBuyy Browse the changelog":
+      - /url: /in/resources/changelog
+      - strong: What’s new at LetBuyy
+      - text: Browse the changelog
+  - region "A reading plan. For the road ahead.":
+    - paragraph: ONE STEP AT A TIME
+    - heading "A reading plan. For the road ahead." [level=2]
+    - paragraph: Not sure where to begin? Pick a goal and follow a short sequence of guides, at your own pace.
+    - text: No sign-up. Just start reading.
+    - img "An illustrated reading journey from a field guide to a storefront and first parcel."
+    - group:
+      - strong: 01 Start Selling Online
+      - text: 5 guides · 51 min · beginner
+      - paragraph: Set up your store, add products, and prepare for your first sale.
+      - list:
+        - listitem:
+          - link "GUIDE 01 · 12 min How To Start an Online Store in India (2026 Guide)":
+            - /url: /in/resources/ecommerce/how-to-start-an-online-store-india
+            - text: GUIDE 01 · 12 min
+            - strong: How To Start an Online Store in India (2026 Guide)
+        - listitem:
+          - 'link "GUIDE 02 · 9 min Product Page Optimization: The Complete Guide"':
+            - /url: /in/resources/ecommerce/product-page-optimization
+            - text: GUIDE 02 · 9 min
+            - strong: "Product Page Optimization: The Complete Guide"
+        - listitem:
+          - 'link "GUIDE 03 · 9 min UPI vs COD: Which Payment Method Wins for Indian Stores"':
+            - /url: /in/resources/payments/upi-vs-cod-india
+            - text: GUIDE 03 · 9 min
+            - strong: "UPI vs COD: Which Payment Method Wins for Indian Stores"
+        - listitem:
+          - link "GUIDE 04 · 10 min The Complete Store SEO Checklist for Indian Merchants":
+            - /url: /in/resources/ecommerce/store-seo-checklist
+            - text: GUIDE 04 · 10 min
+            - strong: The Complete Store SEO Checklist for Indian Merchants
+        - listitem:
+          - 'link "GUIDE 05 · 11 min Building Your First LetBuyy Store: A Complete Walkthrough"':
+            - /url: /in/resources/platform/building-first-letbuyy-store
+            - text: GUIDE 05 · 11 min
+            - strong: "Building Your First LetBuyy Store: A Complete Walkthrough"
+    - group:
+      - strong: 02 First 100 Orders
+      - text: 5 guides · 50 min · beginner
+    - group:
+      - strong: 03 Payments Mastery
+      - text: 5 guides · 44 min · intermediate
+    - group:
+      - strong: 04 Scale Your Operations
+      - text: 5 guides · 47 min · intermediate
+    - group:
+      - strong: 05 Developer Foundations
+      - text: 5 guides · 56 min · advanced
+  - region "More to get into.":
+    - paragraph: FROM THE LIBRARY
+    - heading "More to get into." [level=2]
+    - link "Browse all guides":
+      - /url: /in/resources/search
+    - article:
+      - 'link "Platform 10 min read The Merchant Control Plane: Your Commerce OS Dashboard Master every module — from products and orders to AI and analytics. Read article"':
+        - /url: /in/resources/platform/merchant-web-guide
+        - text: Platform 10 min read
+        - 'heading "The Merchant Control Plane: Your Commerce OS Dashboard" [level=3]'
+        - paragraph: Master every module — from products and orders to AI and analytics.
+        - text: Read article
+    - article:
+      - link "AI Commerce 10 min read The LetBuyy AI Copilot Guide Your AI business partner — always in your dashboard, always on. Read article":
+        - /url: /in/resources/ai-commerce/commerce-copilot-guide
+        - text: AI Commerce 10 min read
+        - heading "The LetBuyy AI Copilot Guide" [level=3]
+        - paragraph: Your AI business partner — always in your dashboard, always on.
+        - text: Read article
+    - article:
+      - 'link "Platform 8 min read LetBuyy Platform Overview: Everything in One Place The full map of LetBuyy''s commerce OS — what''s where and how it connects. Read article"':
+        - /url: /in/resources/platform/letbuyy-platform-overview
+        - text: Platform 8 min read
+        - 'heading "LetBuyy Platform Overview: Everything in One Place" [level=3]'
+        - paragraph: The full map of LetBuyy's commerce OS — what's where and how it connects.
+        - text: Read article
+    - paragraph: KEEP A GOOD THING GOING
+    - heading "A place in your reading routine." [level=2]
+    - paragraph: Follow new guides and platform updates.
+    - region "Commerce updates":
+      - paragraph: Email subscriptions are not available yet. Follow new guides with your RSS reader.
+      - link "Follow via RSS":
+        - /url: /in/resources/rss.xml
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.

@@ -1,4 +1,3 @@
-import { discoveryRouteQuery, scalarDiscoveryQuery } from '@/lib/theme-engine/discovery-route-query';
 import { StoreService } from '@/lib/store-service';
 import { notFound } from 'next/navigation';
 import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
@@ -11,17 +10,9 @@ import type { Metadata } from 'next';
 
 export const revalidate = 60;
 
-export async function generateMetadata({ params, searchParams }: {
-    params: Promise<{ subdomain: string }>;
-    searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
     const { subdomain } = await params;
-    const query = await searchParams;
-    discoveryRouteQuery(query);
-    const previewToken = await resolveThemePreviewToken(subdomain, query?.theme_preview_token);
-    const store = previewToken
-        ? await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken)
-        : await StoreService.getStoreBySubdomain(subdomain);
+    const store = await StoreService.getStoreBySubdomain(subdomain);
 
     if (!store) return { title: 'Collection Not Found' };
 
@@ -41,15 +32,15 @@ export default async function StorefrontProductsPage({
     searchParams,
 }: {
     params: Promise<{ subdomain: string }>;
-    searchParams?: Promise<Record<string, string | string[] | undefined>>;
+    searchParams?: Promise<{ theme_preview_token?: string; country_of_origin?: string; category?: string; search?: string; page?: string }>;
 }) {
     const { subdomain } = await params;
     const query = await searchParams;
-    const discoveryQuery = discoveryRouteQuery(query);
     const previewToken = await resolveThemePreviewToken(subdomain, query?.theme_preview_token);
-    const store = previewToken
+    const previewStore = previewToken
         ? await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken)
-        : await StoreService.getStoreBySubdomain(subdomain);
+        : null;
+    const store = previewStore || await StoreService.getStoreBySubdomain(subdomain);
 
     if (!store) return notFound();
 
@@ -58,15 +49,18 @@ export default async function StorefrontProductsPage({
         path: `/store/${subdomain}/products`,
         subdomain,
         resourceSlug: 'all-products',
-        discoveryQuery,
-        searchParams: scalarDiscoveryQuery(discoveryQuery),
+        searchParams: {
+            ...(query?.country_of_origin?.trim() ? { country_of_origin: query.country_of_origin.trim().slice(0, 100) } : {}),
+            ...(query?.category?.trim() ? { category: query.category.trim().slice(0, 100) } : {}),
+            ...(query?.search?.trim() ? { search: query.search.trim().slice(0, 100) } : {}),
+            ...(query?.page?.trim() ? { page: query.page.trim().slice(0, 6) } : {}),
+        },
         fallbackSections: [createProductListingFallbackSection('All Products')],
     });
     const sectionData = await buildSectionDataPlan({
         store,
         sections: renderPlan.template.sections,
         route: renderPlan.route,
-        previewToken,
     });
 
     return (
@@ -74,7 +68,6 @@ export default async function StorefrontProductsPage({
             store={store}
             plan={renderPlan}
             sectionData={sectionData}
-            discoveryPreviewToken={previewToken || undefined}
         />
     );
 }

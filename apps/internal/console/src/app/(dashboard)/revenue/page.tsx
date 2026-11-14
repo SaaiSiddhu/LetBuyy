@@ -55,7 +55,7 @@ export default async function RevenuePage() {
         <ConsoleWorkspace
             eyebrow="Revenue"
             title="Revenue"
-            description="Leadership billing view backed by versioned MRR, ARR, marketplace revenue, and payout-liability rollups."
+            description="Monitor recurring revenue, review billing records, and check the freshness of financial reports."
         >
             {summaryResult.error ? <ConsoleApiErrorPanel title="Summary API unavailable" message={summaryResult.error} /> : null}
             {mrrResult.error ? <ConsoleApiErrorPanel title="MRR rollups unavailable" message={mrrResult.error} /> : null}
@@ -69,8 +69,8 @@ export default async function RevenuePage() {
                     tone={latest ? freshnessTone(mrr?.freshness.stale) : 'warning'}
                 />
                 <LeadershipMetric label="ARR" value={latest ? formatMoneyFromPaise(latest.arr_paise) : 'Unavailable'} />
-                <LeadershipMetric label="Active subscriptions" value={`${latest?.active_subscriptions || summary?.active_subscriptions || 0}/${summary?.total_subscriptions || 0}`} />
-                <LeadershipMetric label="Logo churn" value={String(latest?.logo_churn_count || 0)} tone="warning" />
+                <LeadershipMetric label="Active subscriptions" value={summary ? `${summary.active_subscriptions}/${summary.total_subscriptions}` : 'Unavailable'} />
+                <LeadershipMetric label="Logo churn" value={latest ? String(latest.logo_churn_count) : 'Unavailable'} tone="warning" />
             </MetricGrid>
 
             {mrr?.freshness.stale ? (
@@ -81,10 +81,10 @@ export default async function RevenuePage() {
 
             <Panel title="Revenue Mix" description="Reconciles subscription MRR, app charges, theme purchases, and pending partner payout liability.">
                 <MetricGrid>
-                    <LeadershipMetric label="Subscription" value={formatMoneyFromPaise(latest?.subscription_revenue_paise || 0)} />
-                    <LeadershipMetric label="App marketplace" value={formatMoneyFromPaise(latest?.app_revenue_paise || 0)} />
-                    <LeadershipMetric label="Theme marketplace" value={formatMoneyFromPaise(latest?.theme_revenue_paise || 0)} />
-                    <LeadershipMetric label="Payout liability" value={formatMoneyFromPaise(latest?.partner_payout_liability_paise || 0)} tone="warning" />
+                    <LeadershipMetric label="Subscription" value={(latest ? formatMoneyFromPaise(latest.subscription_revenue_paise) : 'Unavailable')} />
+                    <LeadershipMetric label="App marketplace" value={(latest ? formatMoneyFromPaise(latest.app_revenue_paise) : 'Unavailable')} />
+                    <LeadershipMetric label="Theme marketplace" value={(latest ? formatMoneyFromPaise(latest.theme_revenue_paise) : 'Unavailable')} />
+                    <LeadershipMetric label="Payout liability" value={(latest ? formatMoneyFromPaise(latest.partner_payout_liability_paise) : 'Unavailable')} tone="warning" />
                 </MetricGrid>
             </Panel>
 

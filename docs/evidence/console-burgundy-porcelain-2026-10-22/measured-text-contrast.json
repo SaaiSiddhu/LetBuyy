@@ -1,0 +1,2794 @@
+{
+  "overviewLight": [
+    {
+      "selector": "#console-main h1",
+      "text": "Platform overview",
+      "ratio": 13.5003636708065
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Monitor merchant activity, revenue and the work that needs atten",
+      "ratio": 13.5003636708065
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Not recorded",
+      "ratio": 6.277672962666744
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Merchant stores",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Monthly recurring revenue",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Active subscriptions",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Platform users",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Open support tickets",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "SLA breaches",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "High-risk signals",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Open incidents",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "New signups",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Stores created",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Subscriptions created",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Signup → store",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "1 active stores · all time",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Awaiting a recorded revenue rollup",
+      "ratio": 7.090048300172369
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "0 total subscription records",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Registered identity records · all time",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "From the company-health rollup",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Support deadlines requiring attention",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Open the risk workspace to investigate",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Review ownership in incident response",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "3",
+      "ratio": 14.989593110366576
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "1",
+      "ratio": 14.989593110366576
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "0",
+      "ratio": 14.989593110366576
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Store creation as a share of signups",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Overview",
+      "ratio": 11.112617238092744
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Support",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Analytics",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Approvals",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Audit log",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Settings",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Merchants",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "People & access",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Finance",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Reviews & safety",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Operations",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 12.397074734053938
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong span",
+      "text": ".",
+      "ratio": 6.573301567154204
+    },
+    {
+      "selector": ".console-sidebar .console-brand small",
+      "text": "Internal operations",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-sidebar-footer",
+      "text": "Local workspaceAccess controlled · activity audited",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "View activity log",
+      "ratio": 8.481804659101186
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "View revenue",
+      "ratio": 9.417435247056801
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Review subscriptions",
+      "ratio": 8.906055058281618
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Explore analytics",
+      "ratio": 9.417435247056801
+    }
+  ],
+  "mobileLight": [
+    {
+      "selector": "#console-main h1",
+      "text": "Platform overview",
+      "ratio": 13.5003636708065
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Monitor merchant activity, revenue and the work that needs atten",
+      "ratio": 13.5003636708065
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Not recorded",
+      "ratio": 6.277672962666744
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Merchant stores",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Monthly recurring revenue",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Active subscriptions",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Platform users",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Open support tickets",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "SLA breaches",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "High-risk signals",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Open incidents",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "New signups",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Stores created",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Subscriptions created",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Signup → store",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "1 active stores · all time",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Awaiting a recorded revenue rollup",
+      "ratio": 7.090048300172369
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "0 total subscription records",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Registered identity records · all time",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "From the company-health rollup",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Support deadlines requiring attention",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Open the risk workspace to investigate",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Review ownership in incident response",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "3",
+      "ratio": 14.989593110366576
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "1",
+      "ratio": 14.989593110366576
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "0",
+      "ratio": 14.989593110366576
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Store creation as a share of signups",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-mobile-modal h2",
+      "text": "Navigation",
+      "ratio": 12.397074734053938
+    },
+    {
+      "selector": ".console-mobile-modal .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 12.397074734053938
+    },
+    {
+      "selector": ".console-mobile-modal .console-brand small",
+      "text": "Internal operations",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-mobile-group",
+      "text": "Home",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-mobile-group",
+      "text": "Business",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-mobile-group",
+      "text": "Platform",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Overview",
+      "ratio": 11.112617238092744
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Support",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Analytics",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Approvals",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Audit log",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Settings",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Merchants",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "People & access",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Finance",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Reviews & safety",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Operations",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-mobile-modal .console-search-trigger",
+      "text": "Find a workspace",
+      "ratio": 10.008568807979902
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "View activity log",
+      "ratio": 8.481804659101186
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "View revenue",
+      "ratio": 9.417435247056801
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Review subscriptions",
+      "ratio": 8.906055058281618
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Explore analytics",
+      "ratio": 9.417435247056801
+    }
+  ],
+  "overviewDark": [
+    {
+      "selector": "#console-main h1",
+      "text": "Platform overview",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Monitor merchant activity, revenue and the work that needs atten",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Not recorded",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Merchant stores",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Monthly recurring revenue",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Active subscriptions",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Platform users",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Open support tickets",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "SLA breaches",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "High-risk signals",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Open incidents",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "New signups",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Stores created",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Subscriptions created",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Signup → store",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "1 active stores · all time",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Awaiting a recorded revenue rollup",
+      "ratio": 7.704292173902049
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "0 total subscription records",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Registered identity records · all time",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "From the company-health rollup",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Support deadlines requiring attention",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Open the risk workspace to investigate",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Review ownership in incident response",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "3",
+      "ratio": 14.902339073190346
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "1",
+      "ratio": 14.902339073190346
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "0",
+      "ratio": 14.902339073190346
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Store creation as a share of signups",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Overview",
+      "ratio": 13.764600017709988
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Support",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Analytics",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Approvals",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Audit log",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Settings",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Merchants",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "People & access",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Finance",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Reviews & safety",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Operations",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 15.86921691299985
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong span",
+      "text": ".",
+      "ratio": 8.414335691402316
+    },
+    {
+      "selector": ".console-sidebar .console-brand small",
+      "text": "Internal operations",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar-footer",
+      "text": "Local workspaceAccess controlled · activity audited",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "View activity log",
+      "ratio": 8.781951411883473
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "View revenue",
+      "ratio": 7.901668005193396
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Review subscriptions",
+      "ratio": 8.422936598141812
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Explore analytics",
+      "ratio": 7.901668005193396
+    }
+  ],
+  "emptyDark": [
+    {
+      "selector": "#console-main h1",
+      "text": "Audit Logs",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Audit evidence contract required",
+      "ratio": 7.090048300172369
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Platform Console Mfa Verified",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "No audit logs matched",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3 + p",
+      "text": "syn-browser-consent-f13436c4-a4e2-426a-a0b2-d42fdb45fd17@example",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": "#console-main h3 + p",
+      "text": "Clear filters or search another actor, action, resource, or date",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Overview",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Support",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Analytics",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Approvals",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Audit log",
+      "ratio": 13.764600017709988
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Settings",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Merchants",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "People & access",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Finance",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Reviews & safety",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Operations",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 15.86921691299985
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong span",
+      "text": ".",
+      "ratio": 8.414335691402316
+    },
+    {
+      "selector": ".console-sidebar .console-brand small",
+      "text": "Internal operations",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar-footer",
+      "text": "Local workspaceAccess controlled · activity audited",
+      "ratio": 10.848387747608326
+    }
+  ],
+  "emptyLight": [
+    {
+      "selector": "#console-main h1",
+      "text": "Audit Logs",
+      "ratio": 13.5003636708065
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Audit evidence contract required",
+      "ratio": 7.090048300172369
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Platform Console Mfa Verified",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "No audit logs matched",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": "#console-main h3 + p",
+      "text": "syn-browser-consent-f13436c4-a4e2-426a-a0b2-d42fdb45fd17@example",
+      "ratio": 5.121434451648519
+    },
+    {
+      "selector": "#console-main h3 + p",
+      "text": "Clear filters or search another actor, action, resource, or date",
+      "ratio": 5.121434451648519
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Overview",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Support",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Analytics",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Approvals",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Audit log",
+      "ratio": 11.112617238092744
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Settings",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Merchants",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "People & access",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Finance",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Reviews & safety",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Operations",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 12.397074734053938
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong span",
+      "text": ".",
+      "ratio": 6.573301567154204
+    },
+    {
+      "selector": ".console-sidebar .console-brand small",
+      "text": "Internal operations",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-sidebar-footer",
+      "text": "Local workspaceAccess controlled · activity audited",
+      "ratio": 8.47478954937748
+    }
+  ],
+  "light": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 13.5003636708065
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Business details",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Delivery settings",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Published theme release",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Active catalog",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Payment acceptance",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Store publication",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Storefront domain",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 13.5003636708065
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.277672962666744
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.277672962666744
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.277672962666744
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.277672962666744
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.507812544919492
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag on",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 5.415504059296899
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 5.121434451648519
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 5.121434451648519
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 5.121434451648519
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 14.17563678857099
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "27 active product(s). Draft and archived products do not count. ",
+      "ratio": 5.121434451648519
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 5.121434451648519
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The current publication flags are enabled. This is not an extern",
+      "ratio": 5.121434451648519
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 5.121434451648519
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Overview",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Store directory",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Merchant profiles",
+      "ratio": 11.112617238092744
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Founding merchants",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Support",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Analytics",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Approvals",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Audit log",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Settings",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Merchants",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "People & access",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Finance",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Reviews & safety",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Operations",
+      "ratio": 8.823354693741136
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 12.397074734053938
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong span",
+      "text": ".",
+      "ratio": 6.573301567154204
+    },
+    {
+      "selector": ".console-sidebar .console-brand small",
+      "text": "Internal operations",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-sidebar-footer",
+      "text": "Local workspaceAccess controlled · activity audited",
+      "ratio": 8.47478954937748
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Help through support",
+      "ratio": 9.417435247056801
+    },
+    {
+      "selector": ".console-filterbar button[type=\"submit\"]",
+      "text": "Apply filters",
+      "ratio": 7.051892777936952
+    }
+  ],
+  "dark": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Business details",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Delivery settings",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Published theme release",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Active catalog",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Payment acceptance",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Store publication",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Storefront domain",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag on",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "27 active product(s). Draft and archived products do not count. ",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The current publication flags are enabled. This is not an extern",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Overview",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Store directory",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Merchant profiles",
+      "ratio": 13.764600017709988
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Founding merchants",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Support",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Analytics",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Approvals",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Audit log",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Settings",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Merchants",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "People & access",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Finance",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Reviews & safety",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Operations",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 15.86921691299985
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong span",
+      "text": ".",
+      "ratio": 8.414335691402316
+    },
+    {
+      "selector": ".console-sidebar .console-brand small",
+      "text": "Internal operations",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar-footer",
+      "text": "Local workspaceAccess controlled · activity audited",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Help through support",
+      "ratio": 7.901668005193396
+    },
+    {
+      "selector": ".console-filterbar button[type=\"submit\"]",
+      "text": "Apply filters",
+      "ratio": 7.051892777936952
+    }
+  ],
+  "mobileDark390": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Business details",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Delivery settings",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Published theme release",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Active catalog",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Payment acceptance",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Store publication",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Storefront domain",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag on",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "27 active product(s). Draft and archived products do not count. ",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The current publication flags are enabled. This is not an extern",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-mobile-modal h2",
+      "text": "Navigation",
+      "ratio": 15.86921691299985
+    },
+    {
+      "selector": ".console-mobile-modal .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 15.86921691299985
+    },
+    {
+      "selector": ".console-mobile-modal .console-brand small",
+      "text": "Internal operations",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-group",
+      "text": "Home",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-group",
+      "text": "Business",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-group",
+      "text": "Platform",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Overview",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Store directory",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Merchant profiles",
+      "ratio": 13.764600017709988
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Founding merchants",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Support",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Analytics",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Approvals",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Audit log",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Settings",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Merchants",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "People & access",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Finance",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Reviews & safety",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Operations",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal .console-search-trigger",
+      "text": "Find a workspace",
+      "ratio": 12.397074734053938
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Help through support",
+      "ratio": 7.901668005193396
+    },
+    {
+      "selector": ".console-filterbar button[type=\"submit\"]",
+      "text": "Apply filters",
+      "ratio": 7.051892777936952
+    }
+  ],
+  "mobileDark320": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Business details",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Delivery settings",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Published theme release",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Active catalog",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Payment acceptance",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Store publication",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Storefront domain",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag on",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "27 active product(s). Draft and archived products do not count. ",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The current publication flags are enabled. This is not an extern",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-mobile-modal h2",
+      "text": "Navigation",
+      "ratio": 15.86921691299985
+    },
+    {
+      "selector": ".console-mobile-modal .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 15.86921691299985
+    },
+    {
+      "selector": ".console-mobile-modal .console-brand small",
+      "text": "Internal operations",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-group",
+      "text": "Home",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-group",
+      "text": "Business",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-group",
+      "text": "Platform",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Overview",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Store directory",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Merchant profiles",
+      "ratio": 13.764600017709988
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Founding merchants",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Support",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Analytics",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Approvals",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Audit log",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav a",
+      "text": "Settings",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Merchants",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "People & access",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Finance",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Reviews & safety",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal nav button",
+      "text": "Operations",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-mobile-modal .console-search-trigger",
+      "text": "Find a workspace",
+      "ratio": 12.397074734053938
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Help through support",
+      "ratio": 7.901668005193396
+    },
+    {
+      "selector": ".console-filterbar button[type=\"submit\"]",
+      "text": "Apply filters",
+      "ratio": 7.051892777936952
+    }
+  ],
+  "restrictedDark": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Business details",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Delivery settings",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Published theme release",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Store publication",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Payment acceptance",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Storefront domain",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Restricted",
+      "ratio": 7.4463084284495
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Restricted",
+      "ratio": 7.4463084284495
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag off",
+      "ratio": 8.717861259004422
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The store is suspended. Contact support for review; publication ",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "27 active product(s). Draft and archived products do not count. ",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Overview",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Store directory",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Merchant profiles",
+      "ratio": 13.764600017709988
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Founding merchants",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Support",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Analytics",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Approvals",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Audit log",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Settings",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Merchants",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "People & access",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Finance",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Reviews & safety",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Operations",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 15.86921691299985
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong span",
+      "text": ".",
+      "ratio": 8.414335691402316
+    },
+    {
+      "selector": ".console-sidebar .console-brand small",
+      "text": "Internal operations",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar-footer",
+      "text": "Local workspaceAccess controlled · activity audited",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Help through support",
+      "ratio": 7.901668005193396
+    },
+    {
+      "selector": ".console-filterbar button[type=\"submit\"]",
+      "text": "Apply filters",
+      "ratio": 7.051892777936952
+    }
+  ],
+  "outageDark": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Business details",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Active catalog",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Delivery settings",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Published theme release",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Store publication",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": "#console-main h3",
+      "text": "Storefront domain",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 16.562530541419154
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Restricted",
+      "ratio": 7.4463084284495
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs checking",
+      "ratio": 8.360539925552505
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.715679722053571
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Restricted",
+      "ratio": 7.4463084284495
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.441980558686457
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag off",
+      "ratio": 8.717861259004422
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 7.958642880738442
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Catalog evidence is unavailable. Retry the check.",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Products",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The store is suspended. Contact support for review; publication ",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 15.885437998027038
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 8.483670074173396
+    },
+    {
+      "selector": ".console-error-panel h2",
+      "text": "Commerce records unavailable",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Overview",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Store directory",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Merchant profiles",
+      "ratio": 13.764600017709988
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Founding merchants",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Support",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Analytics",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Approvals",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Audit log",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav a",
+      "text": "Settings",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Merchants",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "People & access",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Finance",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Reviews & safety",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar nav button",
+      "text": "Operations",
+      "ratio": 10.91014018459636
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong",
+      "text": "LetBuyy.",
+      "ratio": 15.86921691299985
+    },
+    {
+      "selector": ".console-sidebar .console-brand strong span",
+      "text": ".",
+      "ratio": 8.414335691402316
+    },
+    {
+      "selector": ".console-sidebar .console-brand small",
+      "text": "Internal operations",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-sidebar-footer",
+      "text": "Local workspaceAccess controlled · activity audited",
+      "ratio": 10.848387747608326
+    },
+    {
+      "selector": ".console-overview-link",
+      "text": "Help through support",
+      "ratio": 7.901668005193396
+    },
+    {
+      "selector": ".console-filterbar button[type=\"submit\"]",
+      "text": "Apply filters",
+      "ratio": 7.051892777936952
+    }
+  ]
+}

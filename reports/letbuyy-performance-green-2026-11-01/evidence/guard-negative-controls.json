@@ -1,0 +1,16 @@
+{
+  "rows": [
+    {
+      "version": "legacy",
+      "exit_code": 0,
+      "uses_stale_snapshot": true
+    },
+    {
+      "version": "corrected",
+      "exit_code": 1,
+      "uses_stale_snapshot": true
+    }
+  ],
+  "legacy_false_positive_reproduced": true,
+  "corrected_guard_rejects_dirty_baseline": true
+}

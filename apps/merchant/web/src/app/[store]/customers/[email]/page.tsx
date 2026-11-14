@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
@@ -10,6 +8,7 @@ import {
     Banner,
     Button,
     Card,
+    EmptyState,
     MaterialIcon,
     Page,
     PageHeader,
@@ -18,7 +17,6 @@ import {
     useToast,
     Textarea,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import {
     formatInrCurrency,
     formatIndiaDate,
@@ -107,18 +105,15 @@ function readBoolean(row: Record<string, unknown>, key: string): boolean {
 }
 
 function readNumber(row: Record<string, unknown>, key: string): number {
-    const value = row[key]
-    if (value === null || value === undefined || value === '') return Number.NaN
-    const parsed = Number(value)
-    return Number.isFinite(parsed) ? parsed : Number.NaN
+    return Number(row[key] ?? 0)
 }
 
 function mapOrderRow(raw: Record<string, unknown>): OrderRow {
     return {
         id: readString(raw, 'id'),
         order_number: readString(raw, 'order_number'),
-        status: readString(raw, 'status') || 'unknown',
-        payment_status: readString(raw, 'payment_status') || 'unknown',
+        status: readString(raw, 'status') || 'pending',
+        payment_status: readString(raw, 'payment_status') || 'pending',
         fulfillment_status: readNullableString(raw, 'fulfillment_status'),
         total: readNumber(raw, 'total'),
         created_at: readString(raw, 'created_at'),
@@ -170,7 +165,7 @@ function mapCustomerDetail(raw: Record<string, unknown>): CustomerDetail {
         first_name: readNullableString(raw, 'first_name'),
         last_name: readNullableString(raw, 'last_name'),
         phone: readNullableString(raw, 'phone'),
-        status: readString(raw, 'status') || 'unknown',
+        status: readString(raw, 'status') || 'active',
         accepts_marketing: readBoolean(raw, 'accepts_marketing'),
         tags: Array.isArray(raw.tags) ? (raw.tags as string[]).filter(t => typeof t === 'string') : [],
         notes: readNullableString(raw, 'notes'),
@@ -257,9 +252,9 @@ function ProfileCard({ customer }: { customer: CustomerDetail }) {
                         <DetailRow label="Phone" value={customer.phone} />
                         <DetailRow
                             label="Total spent"
-                            value={Number.isFinite(customer.total_spent) ? formatInrCurrency(customer.total_spent) : '—'}
+                            value={formatInrCurrency(customer.total_spent) ?? '₹0'}
                         />
-                        <DetailRow label="Total orders" value={Number.isFinite(customer.order_count) ? String(customer.order_count) : '—'} />
+                        <DetailRow label="Total orders" value={String(customer.order_count)} />
                         <DetailRow
                             label="First order"
                             value={formatIndiaDate(customer.first_order, { emptyValue: '—' })}
@@ -292,7 +287,7 @@ function OrderHistoryCard({
         return (
             <Card>
                 <Section title="Order history">
-                    <EmptyState scene="customer-detail"
+                    <EmptyState
                         icon={<MaterialIcon name="shopping_bag" />}
                         title="No orders yet"
                         body="Orders placed by this customer will appear here."
@@ -347,7 +342,7 @@ function AddressesCard({ addresses }: { addresses: AddressRow[] }) {
         return (
             <Card>
                 <Section title="Addresses">
-                    <EmptyState scene="customer-detail"
+                    <EmptyState
                         icon={<MaterialIcon name="location_on" />}
                         title="No addresses saved"
                         body="Addresses saved by this customer will appear here."
@@ -474,7 +469,7 @@ function NotesCard({
                     {loadingNotes ? (
                         <Skeleton variant="text" lines={3} />
                     ) : notes.length === 0 ? (
-                        <EmptyState scene="customer-detail"
+                        <EmptyState
                             icon={<MaterialIcon name="sticky_note_2" />}
                             title="No notes yet"
                             body="Notes you add will appear here."
@@ -522,19 +517,16 @@ export default function CustomerDetailPage() {
     const [loadingNotes, setLoadingNotes] = useState(true)
     const [notesError, setNotesError] = useState<string | null>(null)
 
-    const beginLoadCustomer = useReadRequest(JSON.stringify([store, email]))
     const loadCustomer = useCallback(async () => {
-        const request = beginLoadCustomer()
         setLoading(true)
         setError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/customers/${encodeURIComponent(email)}`,
-                { cache: 'no-store', signal: request.signal },
+                { cache: 'no-store' },
             )
             const payload = await response.json().catch(() => null) as { data?: Record<string, unknown>; error?: unknown } | null
 
-            if (!request.isCurrent()) return
             if (!response.ok) {
                 if (response.status === 404) {
                     setError('Customer not found.')
@@ -553,26 +545,22 @@ export default function CustomerDetailPage() {
                 setError('Unexpected response from server.')
             }
         } catch {
-            if (!request.isCurrent()) return
             setError('Unable to load customer.')
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginLoadCustomer, email, store])
+    }, [email, store])
 
-    const beginLoadNotes = useReadRequest(JSON.stringify([store, email]))
     const loadNotes = useCallback(async () => {
-        const request = beginLoadNotes()
         setLoadingNotes(true)
         setNotesError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/customers/${encodeURIComponent(email)}/notes`,
-                { cache: 'no-store', signal: request.signal },
+                { cache: 'no-store' },
             )
             const payload = await response.json().catch(() => null) as { data?: unknown[] } | null
 
-            if (!request.isCurrent()) return
             if (!response.ok) {
                 setNotesError('Unable to load notes.')
                 return
@@ -583,12 +571,11 @@ export default function CustomerDetailPage() {
                 : []
             setNotes(rows)
         } catch {
-            if (!request.isCurrent()) return
             setNotesError('Unable to load notes.')
         } finally {
-            if (request.isCurrent()) setLoadingNotes(false)
+            setLoadingNotes(false)
         }
-    }, [beginLoadNotes, email, store])
+    }, [email, store])
 
     useEffect(() => {
         void loadCustomer()
@@ -611,8 +598,7 @@ export default function CustomerDetailPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="customers"
-                    recipe="record"
+                <PageHeader
                     eyebrow="Relationships"
                     title="Customer"
                     breadcrumbs={[
@@ -640,8 +626,7 @@ export default function CustomerDetailPage() {
     if (error || !customer) {
         return (
             <Page>
-                <PageHeader identity="customers"
-                    recipe="record"
+                <PageHeader
                     eyebrow="Relationships"
                     title="Customer"
                     breadcrumbs={[
@@ -652,7 +637,7 @@ export default function CustomerDetailPage() {
                 />
                 <Card>
                     <Section>
-                        <EmptyState scene="customer-detail"
+                        <EmptyState
                             icon={<MaterialIcon name="error" />}
                             title="Unable to load customer"
                             body={error ?? 'An unexpected error occurred.'}
@@ -676,8 +661,7 @@ export default function CustomerDetailPage() {
 
     return (
         <Page>
-            <PageHeader identity="customers"
-                recipe="record"
+            <PageHeader
                 eyebrow="Relationships"
                 title={customer.display_name || email}
                 description={customer.display_name !== email ? email : undefined}

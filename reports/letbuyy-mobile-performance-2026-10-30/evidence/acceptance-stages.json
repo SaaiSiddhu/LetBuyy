@@ -1,0 +1,51 @@
+[
+  {
+    "stage": "localized-mobile",
+    "started_at": "2026-10-30T00:18:29.276131+00:00",
+    "finished_at": "2026-10-30T00:21:33.865091+00:00",
+    "exit_code": 0,
+    "log": "acceptance-localized-mobile.log"
+  },
+  {
+    "stage": "devtools-mobile",
+    "started_at": "2026-10-30T00:21:33.865849+00:00",
+    "finished_at": "2026-10-30T00:24:34.976630+00:00",
+    "exit_code": 0,
+    "log": "acceptance-devtools-mobile.log"
+  },
+  {
+    "stage": "simulated-mobile-desktop",
+    "started_at": "2026-10-30T00:24:34.977030+00:00",
+    "finished_at": "2026-10-30T00:25:44.958418+00:00",
+    "exit_code": 0,
+    "log": "acceptance-simulated-mobile-desktop.log"
+  },
+  {
+    "stage": "http2-sensitivity",
+    "started_at": "2026-10-30T00:25:44.958820+00:00",
+    "finished_at": "2026-10-30T00:26:18.720631+00:00",
+    "exit_code": 0,
+    "log": "acceptance-http2-sensitivity.log"
+  },
+  {
+    "stage": "html-inventory",
+    "started_at": "2026-10-30T00:26:18.720964+00:00",
+    "finished_at": "2026-10-30T00:26:25.201946+00:00",
+    "exit_code": 0,
+    "log": "acceptance-html-inventory.log"
+  },
+  {
+    "stage": "browser",
+    "started_at": "2026-10-30T00:26:25.202258+00:00",
+    "finished_at": "2026-10-30T00:27:10.513946+00:00",
+    "exit_code": 0,
+    "log": "acceptance-browser.log"
+  },
+  {
+    "stage": "animation",
+    "started_at": "2026-10-30T00:27:10.514316+00:00",
+    "finished_at": "2026-10-30T00:28:03.268358+00:00",
+    "exit_code": 0,
+    "log": "acceptance-animation.log"
+  }
+]

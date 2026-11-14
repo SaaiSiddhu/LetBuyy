@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input, Table,
@@ -10,6 +8,7 @@ import { Button, Input, Table,
     BookOpen,
     Card,
     ConfirmDialog,
+    EmptyState,
     FileText,
     Page,
     PageHeader,
@@ -25,7 +24,6 @@ import { Button, Input, Table,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 import type { TableColumn } from '@letbuyy/ui'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
@@ -115,18 +113,15 @@ export default function PostsPage() {
     const [postToDelete, setPostToDelete] = useState<Post | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadPosts = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/posts?limit=100`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load blog posts'))
@@ -134,7 +129,6 @@ export default function PostsPage() {
 
             setPosts(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load blog posts'
             setPosts([])
             setLoadError(message)
@@ -144,9 +138,9 @@ export default function PostsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadPosts()
@@ -343,7 +337,7 @@ export default function PostsPage() {
 
     const renderPostTable = useCallback((items: Post[]) => (
         items.length === 0 ? (
-            <EmptyState scene="posts"
+            <EmptyState
                 icon={<BookOpen className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 title="No posts in this view"
                 body="Switch views or create a new post to start building your blog."
@@ -369,8 +363,7 @@ export default function PostsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="content"
-                    recipe="index"
+                <PageHeader
                     title="Blog posts"
                     description="Create, edit, and publish articles for your site."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Blog posts' }]}
@@ -386,8 +379,7 @@ export default function PostsPage() {
 
     return (
         <Page>
-            <PageHeader identity="content"
-                recipe="index"
+            <PageHeader
                 title="Blog posts"
                 description="Create, edit, and publish articles for your site."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Blog posts' }]}
@@ -545,7 +537,7 @@ export default function PostsPage() {
                     description="Filter, edit, and archive blog content."
                 >
                     {posts.length === 0 ? (
-                        <EmptyState scene="posts"
+                        <EmptyState
                             icon={<BookOpen className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No blog posts yet"
                             body="Publish announcements, product stories, guides, or portfolio updates from one place."

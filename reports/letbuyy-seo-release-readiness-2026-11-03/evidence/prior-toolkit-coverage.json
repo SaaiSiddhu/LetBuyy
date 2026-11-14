@@ -1,0 +1,503 @@
+[
+  {
+    "route": "doctor",
+    "applicable": true,
+    "why": "Core and browser readiness required",
+    "status": "executed",
+    "evidence": [
+      "evidence/runtime-doctor.json"
+    ],
+    "missing_prerequisites": "None",
+    "next_step": "Retain isolated runtime; rerun only if environment changes.",
+    "current_phase_status": "Executed",
+    "current_phase_evidence": "evidence/seo-doctor.json; core and browser ready"
+  },
+  {
+    "route": "setup",
+    "applicable": true,
+    "why": "Managed environment was absent; owner explicitly authorized repair/Chromium",
+    "status": "executed",
+    "evidence": [
+      "evidence/runtime-setup.json",
+      "evidence/runtime-doctor.json"
+    ],
+    "missing_prerequisites": "None",
+    "next_step": "Setup completed without relaxing requirements or global Python installation.",
+    "current_phase_status": "Not needed this phase",
+    "current_phase_evidence": "Existing isolated runtime reused; documented temporary font tooling isolated; no global dependency changes"
+  },
+  {
+    "route": "updates",
+    "applicable": true,
+    "why": "Current policy/feature claims and historical interpretation",
+    "status": "executed",
+    "evidence": [
+      "evidence/google-updates-ledger.json",
+      "evidence/primary-source-log.json"
+    ],
+    "missing_prerequisites": "No causal search-performance timeline",
+    "next_step": "Recheck live policies when implementing; correlate only if real trend data exists.",
+    "current_phase_status": "Prior audit evidence retained",
+    "current_phase_evidence": "No new update-impact claim; no search timeline available"
+  },
+  {
+    "route": "audit",
+    "applicable": true,
+    "why": "Whole live site request",
+    "status": "executed",
+    "evidence": [
+      "FULL-SEO-AUDIT.md",
+      "ISSUE-REGISTER.csv",
+      "URL-INVENTORY.csv"
+    ],
+    "missing_prerequisites": "Specified unmeasured categories remain explicit",
+    "next_step": "Implement approved backlog separately and compare after authorized release.",
+    "current_phase_status": "Executed local closeout",
+    "current_phase_evidence": "34 original issue dispositions;26 new/expanded claim groups; current acceptance"
+  },
+  {
+    "route": "page",
+    "applicable": true,
+    "why": "Homepage,pricing,category,article,tag,author,contact,legal,release/search/create templates reviewed in shared raw HTML; parent browser samples add rendered/mobile evidence.",
+    "status": "partially executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "No claim of exhaustive interaction/accessibility inspection; complete browser testing for untested interactions without unauthorized submissions.",
+    "next_step": "No claim of exhaustive interaction/accessibility inspection; complete browser testing for untested interactions without unauthorized submissions.",
+    "current_phase_status": "Executed, representative interactions",
+    "current_phase_evidence": "489 HTML routes,64 browser scenarios; not every interaction"
+  },
+  {
+    "route": "technical",
+    "applicable": true,
+    "why": "All shared inspected responses reviewed for directives, canonical/redirect consistency, raw rendering and graph. Intentional probes separated.",
+    "status": "executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Verify Google-selected canonicals/index coverage with authorized GSC; unavailable private logs are not replaced by guesses.",
+    "next_step": "Verify Google-selected canonicals/index coverage with authorized GSC; unavailable private logs are not replaced by guesses.",
+    "current_phase_status": "Executed locally",
+    "current_phase_evidence": "Origins/metadata/lang/schema/redirects/links/no-JS/404/production build"
+  },
+  {
+    "route": "content",
+    "applicable": true,
+    "why": "Existing public article library and material commercial/compliance claims",
+    "status": "executed",
+    "evidence": "findings/content-strategy.md; findings/content-issues.json; evidence/content-analysis.json",
+    "missing_prerequisites": "Real author/customer/claim provenance remains unverified",
+    "next_step": "Editorial owners verify provenance and sources; implement only after approval of factual changes",
+    "current_phase_status": "Executed local repo trace",
+    "current_phase_evidence": "Author/feature/release provenance; all35\u00d73 article content parity"
+  },
+  {
+    "route": "content-brief",
+    "applicable": true,
+    "why": "Existing launch/pricing/payment/tax pages have concrete correctness/task gaps",
+    "status": "executed",
+    "evidence": "CONTENT-AND-CLUSTER-PLAN.md: four detailed improve-mode briefs",
+    "missing_prerequisites": "Controlled top5 rankings, competitor word averages and numeric gap scores not measured",
+    "next_step": "Use consistent India query dataset and first-party query/page data when available; no new URL required now",
+    "current_phase_status": "Prior strategy retained",
+    "current_phase_evidence": "Existing evidence-backed briefs; no invented demand or additional filler pages"
+  },
+  {
+    "route": "schema",
+    "applicable": true,
+    "why": "Every captured JSON-LD block parsed; types/entity URL/offer/author semantics examined against primary docs; minimal truthful examples generated.",
+    "status": "partially executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Run actual Schema Markup Validator/Google Rich Results Test on the corrected representative pages; do not infer rich-result display.",
+    "next_step": "Run actual Schema Markup Validator/Google Rich Results Test on the corrected representative pages; do not infer rich-result display.",
+    "current_phase_status": "Executed locally; public validators pending",
+    "current_phase_evidence": "105 Article Organization entities and canonical identity checks; rich-result display unclaimed"
+  },
+  {
+    "route": "sitemap",
+    "applicable": true,
+    "why": "Live XML parsed; all listed URL quality and published-article coverage checked against shared inventory; lastmod and alternate relationships assessed.",
+    "status": "executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Revalidate final eligible URL inventory after corrections and check sitemap processing in GSC when available.",
+    "next_step": "Revalidate final eligible URL inventory after corrections and check sitemap processing in GSC when available.",
+    "current_phase_status": "Executed locally",
+    "current_phase_evidence": "192 entries;105 articles; feeds; six empty release pages excluded"
+  },
+  {
+    "route": "images",
+    "applicable": true,
+    "why": "Every captured image occurrence inventoried for alt/dimensions/loading/srcset; homepage priority pattern assessed.",
+    "status": "partially executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Complete byte/display-size matching for all distinct image assets and compare real LCP request waterfalls; parent sampled asset/browser outputs supplement.",
+    "next_step": "Complete byte/display-size matching for all distinct image assets and compare real LCP request waterfalls; parent sampled asset/browser outputs supplement.",
+    "current_phase_status": "Executed representative fixes",
+    "current_phase_evidence": "Pricing priority, responsive covers, lower-page lazy art, vector/font delivery; not every distinct asset measured"
+  },
+  {
+    "route": "geo",
+    "applicable": true,
+    "why": "Public educational and software-offer content can be discovered by search and AI systems.",
+    "status": "partially executed",
+    "evidence": [
+      "COMPETITOR-AND-AI-VISIBILITY.md",
+      "evidence/robots.txt",
+      "evidence/external/search-and-source-log.json"
+    ],
+    "missing_prerequisites": [
+      "Actual reproducible AI-answer/citation measurements",
+      "Verified crawler logs/CDN access"
+    ],
+    "next_step": "Correct extraction facts and entities; establish fixed query set with available authorized citation data. No special AI-file ranking claim.",
+    "current_phase_status": "Partial / readiness only",
+    "current_phase_evidence": "Organization/entity/content clarity improved; measured AI citations unavailable"
+  },
+  {
+    "route": "agentic",
+    "applicable": true,
+    "why": "Navigation, pricing, signup redirects and contact/demo journeys matter to browsing users and agents.",
+    "status": "partially executed",
+    "evidence": [
+      "evidence/agent-http.json",
+      "evidence/agent-ux.json",
+      "evidence/browser-samples.json",
+      "evidence/browser-performance.json"
+    ],
+    "missing_prerequisites": "Lighthouse Agentic Browsing X/N unavailable; real-agent log validation and consequential action testing absent.",
+    "next_step": "Use available saved manual/HTTP/heuristic checks; obtain real Lighthouse agentic results before reporting X/N. No special discovery file is required merely for ranking.",
+    "current_phase_status": "Partial / structure only",
+    "current_phase_evidence": "No-JS content, real links, labels and keyboard; no Agentic Browsing X/N or consequential action claim"
+  },
+  {
+    "route": "plan",
+    "applicable": true,
+    "why": "Business-specific prioritization can proceed from observed correctness/IA gaps",
+    "status": "executed",
+    "evidence": "CONTENT-AND-CLUSTER-PLAN.md; main PRIORITIZED-ACTION-PLAN.md",
+    "missing_prerequisites": "Measured performance/traffic targets and owner capacity unavailable",
+    "next_step": "Use outcome-based correctness batches; set quantitative business targets after baseline analytics access",
+    "current_phase_status": "Executed local closeout",
+    "current_phase_evidence": "Prior issue ordering plus exact remaining external/release steps"
+  },
+  {
+    "route": "cluster",
+    "applicable": true,
+    "why": "Resource library supports topic architecture and contextual links",
+    "status": "partially executed",
+    "evidence": "cluster-plan.json; cluster-map.html; internal-link-matrix.csv; CONTENT-AND-CLUSTER-PLAN.md",
+    "missing_prerequisites": "Consistent top10 organic URL datasets and keyword volumes unavailable",
+    "next_step": "Collect EnglishIndia device/location/time-controlled SERPs for36phrases; compute overlap before consolidation",
+    "current_phase_status": "Implemented contextual links; prior research retained",
+    "current_phase_evidence": "60 canonical body links /180 locale instances; controlled query/volume gaps remain"
+  },
+  {
+    "route": "sxo",
+    "applicable": true,
+    "why": "Software landing, pricing, signup/demo/contact and operational-guide journeys exist.",
+    "status": "partially executed",
+    "evidence": [
+      "COMPETITOR-AND-AI-VISIBILITY.md",
+      "evidence/crawl.json",
+      "findings/external-issues.json",
+      "evidence/browser-samples.json",
+      "evidence/signup-fetch.json",
+      "evidence/contact-controls.json"
+    ],
+    "missing_prerequisites": [
+      "Controlled top-10 SERP/PAA/ad data",
+      "Customer interviews/conversion analytics",
+      "Parent browser journey observations supplement this work"
+    ],
+    "next_step": "Combine parent browser observations with owned conversion baselines; validate qualified signup/demo starts after offer/category corrections.",
+    "current_phase_status": "Executed representative read-only journeys",
+    "current_phase_evidence": "Actual prices and important resource/navigation controls; no new paid signup/provider test"
+  },
+  {
+    "route": "drift",
+    "applicable": true,
+    "why": "Actual prior same-day production snapshot compared; packaged history and new baseline outputs preserved; portable observed-current baseline created.",
+    "status": "executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json",
+      "findings/drift.md",
+      "evidence/current-seo-baseline.json"
+    ],
+    "missing_prerequisites": "No older period exists in configured history; compare after an authorized release, without claiming historical ranking causation.",
+    "next_step": "No older period exists in configured history; compare after an authorized release, without claiming historical ranking causation.",
+    "current_phase_status": "Current baseline captured",
+    "current_phase_evidence": "Task-start\u2192current source hashes and final URL/lab baseline; not historical rank causality"
+  },
+  {
+    "route": "ecommerce",
+    "applicable": false,
+    "why": "Scoped origin markets software subscriptions and merchant education; it is not an inspected consumer product/SKU catalogue. Illustrative products do not establish a live store.",
+    "status": "not applicable",
+    "evidence": [
+      "evidence/crawl.json",
+      "COMPETITOR-AND-AI-VISIBILITY.md"
+    ],
+    "missing_prerequisites": [
+      "Separately scoped actual merchant storefront/product URLs and feed ownership"
+    ],
+    "next_step": "Apply Product/feed/variant/UCP checks to a real merchant property if later authorized; do not report their absence on this marketing origin as a defect.",
+    "current_phase_status": "Not applicable",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "programmatic",
+    "applicable": true,
+    "why": "Tag/category/author/locale templates create scaled page patterns",
+    "status": "partially executed",
+    "evidence": "CONTENT-AND-CLUSTER-PLAN.md: archive policy; main crawl technical analysis",
+    "missing_prerequisites": "Actual indexing/query data and complete information-gain review unavailable",
+    "next_step": "Review useful landing intents and discovery before changing indexation; do not apply word-count deletion",
+    "current_phase_status": "Partial / known templates",
+    "current_phase_evidence": "Unknown tag404, source-locked translations, category/tag metadata and eligible sitemap checked; real index/query data absent"
+  },
+  {
+    "route": "competitor-pages",
+    "applicable": true,
+    "why": "Overlapping store-builder commercial intent and an existing platform-comparison table; no dedicated comparison route found in current source route-tree check.",
+    "status": "executed",
+    "evidence": [
+      "COMPETITOR-AND-AI-VISIBILITY.md",
+      "evidence/external/competitor-comparison-data.json",
+      "evidence/external/search-and-source-log.json"
+    ],
+    "missing_prerequisites": [
+      "Geolocated SERP and actual query-demand data; product testing for behavioral comparisons"
+    ],
+    "next_step": "Upgrade the existing setup-guide comparison using primary sources; create a dedicated page only after demand/offer/availability verification.",
+    "current_phase_status": "Prior opportunities retained",
+    "current_phase_evidence": "No competitor product/results invented or comparison page created without evidence"
+  },
+  {
+    "route": "local",
+    "applicable": false,
+    "why": "Observed marketing model is national online software; contact/home/terms samples do not establish an eligible in-person location or service area. A correspondence address alone is insufficient.",
+    "status": "not applicable",
+    "evidence": [
+      "evidence/crawl.json",
+      "COMPETITOR-AND-AI-VISIBILITY.md",
+      "https://support.google.com/business/answer/13763036"
+    ],
+    "missing_prerequisites": [
+      "Evidence of a real eligible in-person business would change applicability"
+    ],
+    "next_step": "Do not create GBP/location schema/pages as an SEO checkbox; reassess only if an actual eligible customer-facing location is supplied.",
+    "current_phase_status": "Not applicable",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "maps",
+    "applicable": false,
+    "why": "No eligible local-business location was established for the audited SaaS marketing site.",
+    "status": "not applicable",
+    "evidence": [
+      "COMPETITOR-AND-AI-VISIBILITY.md"
+    ],
+    "missing_prerequisites": [
+      "Eligible verified location and authorized Maps/GBP data if business model changes"
+    ],
+    "next_step": "No geo-grid or Maps ranking recommendation for the observed model; avoid meaningless coordinates and invented local profiles.",
+    "current_phase_status": "Not applicable",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "hreflang",
+    "applicable": true,
+    "why": "All captured locale HTML and XML alternate sets checked for self/reciprocal/canonical agreement; all3languages represented.",
+    "status": "partially executed",
+    "evidence": [
+      "findings/technical.md",
+      "findings/technical-issues.json",
+      "evidence/technical-analysis.json"
+    ],
+    "missing_prerequisites": "Native-language editorial QA across all translated content and GSC locale/index behavior remain unverified.",
+    "next_step": "Native-language editorial QA across all translated content and GSC locale/index behavior remain unverified.",
+    "current_phase_status": "Executed local markup; human/field review pending",
+    "current_phase_evidence": "All locale paths checked; native editorial and search-engine selection not certified"
+  },
+  {
+    "route": "google",
+    "applicable": true,
+    "why": "Search/index/performance evidence relevant",
+    "status": "partially executed",
+    "evidence": [
+      "evidence/google-credential-status.json",
+      "evidence/pagespeed.json"
+    ],
+    "missing_prerequisites": "No configured GSC/GA4/API credentials; PSI mobile/desktop quota errors; no CrUX",
+    "next_step": "Provide read-only property access/export and available PSI quota; then run GSC/GA4/CrUX read commands without submissions.",
+    "current_phase_status": "Local Lighthouse only; first-party data unavailable",
+    "current_phase_evidence": "12 final lab runs and repeated throttle; no GSC/GA4/CrUX/INP claim"
+  },
+  {
+    "route": "backlinks",
+    "applicable": true,
+    "why": "External authority is relevant; one public candidate was discovered.",
+    "status": "partially executed",
+    "evidence": [
+      "evidence/external/known-backlinks-verified.json",
+      "evidence/commoncrawl.json",
+      "evidence/backlink-credential-status.txt"
+    ],
+    "missing_prerequisites": "Complete link/referring-domain inventories, competitor history and authority metrics unavailable. Common Crawl helper returned no matching record, but bounded streaming cannot establish definitive absence.",
+    "next_step": "Use owned GSC/Bing/provider exports; validate sampled links. Do not interpret one verified link as total count or Common Crawl nonmatch as proof of no authority.",
+    "current_phase_status": "Prior public evidence retained; private dataset unavailable",
+    "current_phase_evidence": "External legacy destinations require owner/provider evidence"
+  },
+  {
+    "route": "flow",
+    "applicable": true,
+    "why": "Find/Optimize/Win synthesis fits the observed product and trust/offer gaps",
+    "status": "executed",
+    "evidence": "CONTENT-AND-CLUSTER-PLAN.md: FLOW synthesis and exact attribution",
+    "missing_prerequisites": "Off-site evidence, first-party conversion data and local-business applicability not established",
+    "next_step": "Apply only supported stages; preserve attribution; no outreach or local-profile changes",
+    "current_phase_status": "Prior synthesis retained",
+    "current_phase_evidence": "Earlier FLOW attribution preserved in original report; no new attribution-free workflow claimed"
+  },
+  {
+    "route": "dataforseo",
+    "applicable": true,
+    "why": "Optional controlled SERP/keyword/backlink enrichment",
+    "status": "unavailable",
+    "evidence": [
+      "evidence/provider-presence.json",
+      "evidence/tool-discovery.json"
+    ],
+    "missing_prerequisites": "No connected DataForSEO tool; no established credential/backend/budget",
+    "next_step": "Connect an authorized read-capable provider and approve specific metered scope before calls; no paid credits consumed.",
+    "current_phase_status": "Unavailable / no new invocation",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "image-gen",
+    "applicable": true,
+    "why": "Audit-only asset plan useful; generation not required",
+    "status": "executed",
+    "evidence": [
+      "IMAGE-ASSET-PLAN.md"
+    ],
+    "missing_prerequisites": "Actual generation intentionally outside audit",
+    "next_step": "Reuse verified existing assets first; commission factual UI captures or proposed art only under a later generation request.",
+    "current_phase_status": "Plan retained; generation unnecessary",
+    "current_phase_evidence": "Existing asset plan retained; no new generated visual needed for these repairs"
+  },
+  {
+    "route": "firecrawl",
+    "applicable": true,
+    "why": "Optional firecrawl enrichment may add coverage",
+    "status": "unavailable",
+    "evidence": [
+      "evidence/tool-discovery.json",
+      "evidence/provider-presence.json"
+    ],
+    "missing_prerequisites": "No connected executable provider tools or established account entitlement/budget",
+    "next_step": "Connect configured read-only provider and approve any metered scope; then use workflow-specific documented endpoints.",
+    "current_phase_status": "Unavailable / no new invocation",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "ahrefs",
+    "applicable": true,
+    "why": "Optional ahrefs enrichment may add coverage",
+    "status": "unavailable",
+    "evidence": [
+      "evidence/tool-discovery.json",
+      "evidence/provider-presence.json"
+    ],
+    "missing_prerequisites": "No connected executable provider tools or established account entitlement/budget",
+    "next_step": "Connect configured read-only provider and approve any metered scope; then use workflow-specific documented endpoints.",
+    "current_phase_status": "Unavailable / no new invocation",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "bing",
+    "applicable": true,
+    "why": "Owned index/link evidence relevant; submissions prohibited",
+    "status": "unavailable",
+    "evidence": [
+      "evidence/backlink-credential-status.txt"
+    ],
+    "missing_prerequisites": "No Bing Webmaster credential or connected property access",
+    "next_step": "Supply authorized read access/property export; query links/index reports only. Do not submit IndexNow.",
+    "current_phase_status": "Unavailable / no new invocation",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "matomo",
+    "applicable": true,
+    "why": "Organic landing/conversion analytics could enrich conclusions",
+    "status": "unavailable",
+    "evidence": [
+      "evidence/matomo-credential-status.txt"
+    ],
+    "missing_prerequisites": "No instance URL/token/site configured",
+    "next_step": "Supply authorized read-only reporting configuration or exports; settings unchanged.",
+    "current_phase_status": "Unavailable / no new invocation",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "profound",
+    "applicable": true,
+    "why": "Optional profound enrichment may add coverage",
+    "status": "unavailable",
+    "evidence": [
+      "evidence/tool-discovery.json",
+      "evidence/provider-presence.json"
+    ],
+    "missing_prerequisites": "No connected executable provider tools or established account entitlement/budget",
+    "next_step": "Connect configured read-only provider and approve any metered scope; then use workflow-specific documented endpoints.",
+    "current_phase_status": "Unavailable / no new invocation",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "seranking",
+    "applicable": true,
+    "why": "Optional seranking enrichment may add coverage",
+    "status": "unavailable",
+    "evidence": [
+      "evidence/tool-discovery.json",
+      "evidence/provider-presence.json"
+    ],
+    "missing_prerequisites": "No connected executable provider tools or established account entitlement/budget",
+    "next_step": "Connect configured read-only provider and approve any metered scope; then use workflow-specific documented endpoints.",
+    "current_phase_status": "Unavailable / no new invocation",
+    "current_phase_evidence": "Prior applicability, prerequisites and exact next steps retained below"
+  },
+  {
+    "route": "unlighthouse",
+    "applicable": true,
+    "why": "Representative multi-page lab analysis requested",
+    "status": "unavailable",
+    "evidence": [
+      "evidence/unlighthouse-mobile.json"
+    ],
+    "missing_prerequisites": "Documented wrapper request4routes mobile timed out after240s, no route results",
+    "next_step": "Resolve npm/Unlighthouse runtime startup in scratch, then measure fixed representative mobile/desktop URLs; no score inferred.",
+    "current_phase_status": "Direct Lighthouse equivalent executed",
+    "current_phase_evidence": "Documented wrapper previously timed out; direct Lighthouse13.6.0 mobile/desktop and repeated actual throttle produced12 final page results; no claim wrapper succeeded"
+  }
+]

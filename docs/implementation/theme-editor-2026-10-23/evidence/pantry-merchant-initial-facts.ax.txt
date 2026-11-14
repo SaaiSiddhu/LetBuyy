@@ -1,3 +1,0 @@
-Browser tab: 10, Title: "LetBuyy Admin", URL: "http://admin.threadline-9cd50e893016.localhost:57225/syn-threadline-ui-d11a8917/products/7369995f-a9f9-44bb-8dee-bb0ab7b8e265".
-There has been no change in the accessibility tree.
-The focused UI element is 313 button (expanded) Facts for 750 g label only, Secondary Actions: Collapse

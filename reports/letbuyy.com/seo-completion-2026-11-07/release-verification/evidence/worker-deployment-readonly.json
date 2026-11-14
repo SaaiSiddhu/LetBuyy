@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-11-07T04:04:15.412Z",
+  "worker": "letbuyy-api",
+  "deployments": [
+    {
+      "id": "dbdb4489-7ba3-417e-8d11-2002c30e0503",
+      "createdOn": "2026-10-27T12:21:36.539654Z",
+      "versions": [
+        {
+          "id": "3656bdca-70a5-41d9-b303-c015620f8b2b",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "id": "403bc1bb-87ee-494b-938e-3737a375db1d",
+      "createdOn": "2026-10-27T13:07:03.264528Z",
+      "versions": [
+        {
+          "id": "8fe9b0f0-d5c4-4886-a741-4a43bf5beaf6",
+          "percentage": 100
+        }
+      ]
+    }
+  ]
+}

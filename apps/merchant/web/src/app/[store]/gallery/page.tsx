@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -10,6 +8,7 @@ import { Button,
     Banner,
     Card,
     ConfirmDialog,
+    EmptyState,
     FileText,
     Image as ImageIcon,
     Page,
@@ -21,7 +20,6 @@ import { Button,
     Upload,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 interface MediaItem {
@@ -97,18 +95,15 @@ export default function GalleryPage() {
     const [mediaToDelete, setMediaToDelete] = useState<MediaItem | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const load = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/media?limit=100`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load media'))
@@ -116,7 +111,6 @@ export default function GalleryPage() {
 
             setItems(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load media'
             setItems([])
             setLoadError(message)
@@ -126,9 +120,9 @@ export default function GalleryPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void load()
@@ -182,8 +176,7 @@ export default function GalleryPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="content"
-                    recipe="index"
+                <PageHeader
                     title="Gallery"
                     description="Manage media assets used across products, content, and storefront sections."
                     breadcrumbs={[{ label: 'Content' }, { label: 'Gallery' }]}
@@ -199,8 +192,7 @@ export default function GalleryPage() {
 
     return (
         <Page>
-            <PageHeader identity="content"
-                recipe="index"
+            <PageHeader
                 title="Gallery"
                 description="Manage media assets used across products, content, and storefront sections."
                 breadcrumbs={[{ label: 'Content' }, { label: 'Gallery' }]}
@@ -284,7 +276,7 @@ export default function GalleryPage() {
                     description="Files uploaded through products, blog posts, and other sections appear here for review and cleanup."
                 >
                     {items.length === 0 ? (
-                        <EmptyState scene="gallery"
+                        <EmptyState
                             icon={<ImageIcon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No media yet"
                             body="Upload images, videos, and documents through products, posts, pages, or theme settings. They will appear in this library."

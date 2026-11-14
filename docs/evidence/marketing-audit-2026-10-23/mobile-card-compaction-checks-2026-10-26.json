@@ -1,0 +1,225 @@
+{
+  "method": "Same-origin browser iframe with fixed CSS viewports; live DOM measurements. Not physical-device tests.",
+  "sizes": [
+    {
+      "size": "320,568",
+      "layout": {
+        "boxes": {
+          "#order-example": {
+            "h": 497.125,
+            "w": 280
+          },
+          ".how-sale-steps": {
+            "h": 329.59375,
+            "w": 278
+          },
+          ".mgj-chapter-nav": {
+            "h": 53,
+            "w": 278
+          },
+          ".mgj-explorer-workspace": {
+            "h": 586.6875,
+            "w": 280
+          },
+          ".mgj-stage-tabs": {
+            "h": 56.59375,
+            "w": 278
+          }
+        },
+        "minimumTabTarget": 55.59375,
+        "overflow": 0,
+        "width": 320
+      }
+    },
+    {
+      "size": "375,667",
+      "layout": {
+        "boxes": {
+          "#order-example": {
+            "h": 497.125,
+            "w": 335
+          },
+          ".how-sale-steps": {
+            "h": 329.59375,
+            "w": 333
+          },
+          ".mgj-chapter-nav": {
+            "h": 53,
+            "w": 333
+          },
+          ".mgj-explorer-workspace": {
+            "h": 496.8828125,
+            "w": 335
+          },
+          ".mgj-stage-tabs": {
+            "h": 56.59375,
+            "w": 333
+          }
+        },
+        "minimumTabTarget": 55.59375,
+        "overflow": 0,
+        "width": 375
+      }
+    },
+    {
+      "size": "390,844",
+      "layout": {
+        "boxes": {
+          "#order-example": {
+            "h": 497.125,
+            "w": 350
+          },
+          ".how-sale-steps": {
+            "h": 329.59375,
+            "w": 348
+          },
+          ".mgj-chapter-nav": {
+            "h": 53,
+            "w": 348
+          },
+          ".mgj-explorer-workspace": {
+            "h": 496.8828125,
+            "w": 350
+          },
+          ".mgj-stage-tabs": {
+            "h": 56.59375,
+            "w": 348
+          }
+        },
+        "minimumTabTarget": 55.59375,
+        "overflow": 0,
+        "width": 390
+      }
+    },
+    {
+      "size": "430,932",
+      "layout": {
+        "boxes": {
+          "#order-example": {
+            "h": 478.28125,
+            "w": 390
+          },
+          ".how-sale-steps": {
+            "h": 329.59375,
+            "w": 388
+          },
+          ".mgj-chapter-nav": {
+            "h": 53,
+            "w": 388
+          },
+          ".mgj-explorer-workspace": {
+            "h": 496.8828125,
+            "w": 390
+          },
+          ".mgj-stage-tabs": {
+            "h": 56.59375,
+            "w": 388
+          }
+        },
+        "minimumTabTarget": 55.59375,
+        "overflow": 0,
+        "width": 430
+      }
+    },
+    {
+      "size": "640,960",
+      "layout": {
+        "boxes": {
+          "#order-example": {
+            "h": 421.859375,
+            "w": 592
+          },
+          ".how-sale-steps": {
+            "h": 273.171875,
+            "w": 590
+          },
+          ".mgj-chapter-nav": {
+            "h": 53,
+            "w": 590
+          },
+          ".mgj-explorer-workspace": {
+            "h": 423.453125,
+            "w": 592
+          },
+          ".mgj-stage-tabs": {
+            "h": 56.59375,
+            "w": 590
+          }
+        },
+        "minimumTabTarget": 55.59375,
+        "overflow": 0,
+        "width": 640
+      }
+    },
+    {
+      "size": "1280,800",
+      "layout": {
+        "boxes": {
+          "#order-example": {
+            "h": 457.2578125,
+            "w": 1152
+          },
+          ".how-sale-steps": {
+            "h": 279.3828125,
+            "w": 1150
+          },
+          ".mgj-chapter-nav": {
+            "h": 69,
+            "w": 1150
+          },
+          ".mgj-explorer-workspace": {
+            "h": 667.1796875,
+            "w": 1152
+          },
+          ".mgj-stage-tabs": {
+            "h": 81,
+            "w": 1150
+          }
+        },
+        "minimumTabTarget": 80,
+        "overflow": 0,
+        "width": 1280
+      }
+    }
+  ],
+  "stages": [
+    {
+      "height": 496.8828125,
+      "overflow": 0,
+      "selected": "01Launch StoreLaunch",
+      "tasks": 3
+    },
+    {
+      "height": 496.8828125,
+      "overflow": 0,
+      "selected": "02First OrderSell",
+      "tasks": 3
+    },
+    {
+      "height": 496.8828125,
+      "overflow": 0,
+      "selected": "03Scale OperationsOperate",
+      "tasks": 3
+    },
+    {
+      "height": 496.8828125,
+      "overflow": 0,
+      "selected": "04Build BrandRetain",
+      "tasks": 3
+    },
+    {
+      "height": 496.8828125,
+      "overflow": 0,
+      "selected": "05EnterpriseExpand",
+      "tasks": 3
+    }
+  ],
+  "before429": {
+    "journeyHeight": 693.28998,
+    "orderHeight": 762.87329
+  },
+  "after429": {
+    "journeyHeight": 494.29691,
+    "orderHeight": 475.49481
+  }
+}

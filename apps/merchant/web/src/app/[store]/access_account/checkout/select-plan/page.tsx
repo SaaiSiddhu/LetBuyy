@@ -24,7 +24,7 @@ export default async function SelectPlanPage({ params }: PageProps) {
     const storeData = await getStoreForUser(store, user.id)
     if (!storeData) return notFound()
 
-    // The authorized site record determines which plan catalog applies.
+    // Determine site type (stores table may have site_type)
     const siteType = storeData.site_type || 'store'
 
     const apiClient = createMerchantApiClient()

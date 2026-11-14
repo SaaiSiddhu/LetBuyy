@@ -1,5 +1,5 @@
 import { getStorefrontRootDomain } from '@/lib/public-urls'
-import type { StorePaymentConfig } from '@letbuyy/api-client'
+import type { StoreHealth } from '@letbuyy/shared-types'
 
 export interface SetupStatus {
     primaryComplete: boolean
@@ -30,30 +30,18 @@ export function resolveDashboardDomain({
     return { domain, configured: domain !== null }
 }
 
-export function buildStoreSetupStatus({
-    productsTotal,
-    shippingZones,
-    paymentConfig,
-    themeCustomized,
-    domainConfigured,
-}: {
-    productsTotal: number | null
-    shippingZones: readonly unknown[] | null
-    paymentConfig: StorePaymentConfig | null
-    themeCustomized: boolean
-    domainConfigured: boolean
-}): SetupStatus {
-    const shippingCount = shippingZones?.length ?? 0
+export function buildStoreSetupStatus(health: StoreHealth | null): SetupStatus {
+    const check = (id: string) => health?.readiness.checks.find(c => c.id === id)
     return {
-        primaryComplete: (productsTotal ?? 0) > 0,
-        secondaryComplete: shippingCount > 0,
-        themeCustomized,
-        domainConfigured,
-        paymentConfigured: paymentConfig ? isPaymentConfigured(paymentConfig) : false,
-        hasShipping: shippingCount > 0,
-        primaryAvailable: productsTotal !== null,
-        shippingAvailable: shippingZones !== null,
-        paymentAvailable: paymentConfig !== null,
+        primaryComplete: check('catalog')?.status === 'ready',
+        primaryAvailable: Boolean(check('catalog') && check('catalog')?.status !== 'unknown'),
+        secondaryComplete: check('shipping')?.status === 'ready',
+        themeCustomized: check('theme')?.status === 'ready',
+        domainConfigured: check('domain')?.status === 'ready',
+        paymentConfigured: check('payments')?.status === 'ready',
+        paymentAvailable: Boolean(check('payments') && check('payments')?.status !== 'unknown'),
+        shippingAvailable: Boolean(check('shipping') && check('shipping')?.status !== 'unknown'),
+        hasShipping: check('shipping')?.status === 'ready',
     }
 }
 
@@ -73,15 +61,4 @@ export function buildPageSetupStatus({
         domainConfigured,
         primaryAvailable: pagesTotal !== null,
     }
-}
-
-export function isPaymentConfigured(config: StorePaymentConfig): boolean {
-    if (config.cod_enabled) return true
-    if (!config.online_payment_enabled) return false
-
-    const settings = config.payment_settings
-    if (settings?.mode === 'shared') return true
-
-    const razorpay = settings?.razorpay
-    return Boolean(razorpay?.secret_configured && razorpay?.verified)
 }

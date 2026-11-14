@@ -1,5 +1,3 @@
-'use client'
-
 import Copy from '@/components/i18n/Copy'
 
 import NewsletterAvailability from './NewsletterAvailability'
@@ -110,7 +108,7 @@ export default function ArticleSidebar({ author, related, authorArticleCount, au
           <p className="arc-related-hd"><Copy text={"Related guides"} /></p>
           {related.map(({ article: a, category: c }) => (
             <Link key={a.slug} href={`/resources/${a.category}/${a.slug}`} className="arc-rel-item">
-              <p className="arc-rel-cat" style={{ color: c.color }}>{c.label}</p>
+              <p className="arc-rel-cat" style={{ color: `color-mix(in srgb, ${c.color} 35%, var(--lb-color-text))` }}>{c.label}</p>
               <p className="arc-rel-title">{a.title}</p>
               <p className="arc-rel-meta">{a.readingTime} <Copy text={"min read"} /></p>
             </Link>

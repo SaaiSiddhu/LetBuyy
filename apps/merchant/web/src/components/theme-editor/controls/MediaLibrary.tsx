@@ -44,7 +44,7 @@
  *   onSelect(url) emits the CDN URL only; never touches section_definitions.
  *
  * ── Design ratchet ────────────────────────────────────────────────────────────
- *   Uses @letbuyy/ui (Button, Input; Lucide icons).
+ *   Uses @letbuyy/ui (Button, Input, MaterialIcon).
  *   --lb-* design tokens only (no raw px / rounded-[Npx]).
  *   Mobile-first 2-column grid, scales to 3+ on wider panels.
  *   en-IN locale for file-size display.
@@ -52,9 +52,8 @@
  *   No unsafe inner HTML injection; no Supabase direct.
  */
 
-import { CircleAlert, CirclePlay, CloudOff, Images, LoaderCircle, Search, Upload, X } from 'lucide-react'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
-import { Button, Input } from '@letbuyy/ui'
+import { Button, Input, MaterialIcon } from '@letbuyy/ui'
 import styles from './controls.module.css'
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -193,8 +192,6 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
     // ── Load media on mount and when search changes ───────────────────────
     useEffect(() => {
         let cancelled = false
-        const controller = new AbortController()
-        const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)])
         setLoadState('loading')
         setLoadError(null)
         setIsNotConnected(false)
@@ -208,13 +205,12 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 if (search.trim()) params.set('q', search.trim().slice(0, 200))
 
                 const res = await fetch(
-                    `/api/stores/${encodeURIComponent(storeName)}/themes/media-library?${params.toString()}`, { cache: 'no-store', signal }
+                    `/api/stores/${encodeURIComponent(storeName)}/themes/media-library?${params.toString()}`
                 )
 
                 if (cancelled) return
 
                 const json = await res.json().catch(() => ({ data: [] }))
-                if (cancelled) return
 
                 if (!res.ok) {
                     // NOT-CONNECTED: gateway route may not be deployed yet
@@ -248,7 +244,6 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
 
         return () => {
             cancelled = true
-            controller.abort()
             clearTimeout(timer)
         }
     }, [storeName, mediaType, search])
@@ -488,13 +483,13 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                         aria-label="Close media library"
                         onClick={onClose}
                     >
-                        <X  size={18} aria-hidden />
+                        <MaterialIcon name="close" size={18} aria-hidden />
                     </Button>
                 </div>
 
                 {/* Search */}
                 <div className={styles.mediaLibrarySearch}>
-                    <Search size={15} aria-hidden className={styles.searchIcon} />
+                    <MaterialIcon name="search" size={15} aria-hidden className={styles.searchIcon} />
                     <Input
                         unstyled
                         type="search"
@@ -511,13 +506,11 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                     <label
                         className={`te-field-upload-btn ${isUploading ? 'te-field-upload-btn--busy' : ''} ${styles.mediaUploadBtn}`}
                     >
-                        {isUploading ? <LoaderCircle
-
+                        <MaterialIcon
+                            name={isUploading ? 'hourglass_top' : 'cloud_upload'}
                             size={15}
-                            aria-hidden /> : <Upload
-
-                            size={15}
-                            aria-hidden />}
+                            aria-hidden
+                        />
                         {isUploading ? 'Uploading…' : 'Upload new'}
                         <Input
                             unstyled
@@ -551,7 +544,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                     {/* Upload error */}
                     {uploadError ? (
                         <p className={styles.mediaUploadError} role="alert">
-                            <CircleAlert size={12} aria-hidden />
+                            <MaterialIcon name="error" size={12} aria-hidden />
                             {' '}{uploadError}
                         </p>
                     ) : null}
@@ -560,7 +553,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 {/* NOT-CONNECTED badge */}
                 {isNotConnected ? (
                     <div className={styles.mediaNotConnected} aria-live="polite">
-                        <CloudOff size={13} aria-hidden />
+                        <MaterialIcon name="cloud_off" size={13} aria-hidden />
                         <span>
                             NOT-CONNECTED — media library gateway route not yet deployed.
                             Upload works; browsing existing media will be available once
@@ -572,7 +565,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 {/* Loading state */}
                 {loadState === 'loading' ? (
                     <div className={styles.mediaLibraryStatus} aria-live="polite">
-                        <LoaderCircle size={16} aria-hidden />
+                        <MaterialIcon name="hourglass_top" size={16} aria-hidden />
                         Loading media…
                     </div>
                 ) : null}
@@ -580,7 +573,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 {/* Error state */}
                 {loadState === 'error' ? (
                     <div className={`${styles.mediaLibraryStatus} ${styles.mediaLibraryStatusError}`} aria-live="assertive">
-                        <CircleAlert size={16} aria-hidden />
+                        <MaterialIcon name="error" size={16} aria-hidden />
                         {loadError ?? 'Failed to load media'}
                     </div>
                 ) : null}
@@ -588,7 +581,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 {/* Empty state */}
                 {loadState === 'loaded' && items.length === 0 && !isNotConnected ? (
                     <div className={styles.mediaLibraryStatus} aria-live="polite">
-                        <Images size={20} aria-hidden />
+                        <MaterialIcon name="photo_library" size={20} aria-hidden />
                         <span>
                             {search ? 'No media matches your search.' : 'No media uploaded yet.'}
                         </span>
@@ -636,7 +629,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                                 {/* Thumbnail */}
                                 {item.media_type === 'video' ? (
                                     <div className={styles.mediaThumbVideo}>
-                                        <CirclePlay size={24} aria-hidden />
+                                        <MaterialIcon name="play_circle" size={24} aria-hidden />
                                     </div>
                                 ) : (
                                     // eslint-disable-next-line @next/next/no-img-element

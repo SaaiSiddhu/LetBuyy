@@ -11,20 +11,16 @@ import {
     normalizeRequestHost,
     normalizeStoreRootDomain,
 } from '@letbuyy/tenant-core';
-import { DEFAULT_PLATFORM_DOMAIN, StoreAccessModeSchema } from '@letbuyy/shared-types';
+import { StoreAccessModeSchema } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { dnsAnswerMatchesTarget, getCustomDomainCnameTarget } from '../lib/custom-domain-config';
 import { screenCustomDomainClaim } from '../lib/custom-domain-abuse';
 import { readCustomDomainHealth } from '../lib/custom-domain-health';
-import { customDomainCustomerVerification } from '../lib/turnstile-domain';
 import { resolveDoh, resolveMxOrNsSnapshot } from '../lib/dns';
 import { dbErrorBody, getSupabaseAdmin, success } from '../lib/supabase';
 import { requireOwnedSite } from '../lib/tenant-context';
-import { storefrontHostBelongsToSite } from '../lib/storefront-visitor-access';
-import { AppError } from '../lib/errors';
-import { connectedDomainCheckoutPlan, getStoreCheckoutDomainSetup, prepareStoreCheckoutDomain } from '../lib/store-checkout-domain';
 import { hashStoreAccessPassword } from '../lib/store-access-password';
-import { attachVercelProjectDomain, readVercelDomainStatus, verifyVercelProjectDomain, vercelOwnershipRecords, VercelDomainConfigError } from '../lib/vercel-domains';
+import { attachVercelProjectDomain, readVercelDomainStatus, VercelDomainConfigError } from '../lib/vercel-domains';
 import { detectDnsProvider } from '../lib/domain-provider';
 import {
     findSiteDomain,
@@ -86,8 +82,7 @@ function getOwnZones(env: Env): string[] {
     return [
         normalizeStoreRootDomain(env.NEXT_PUBLIC_STORE_ROOT_DOMAIN),
         normalizeStoreRootDomain(env.STOREFRONT_ROOT_DOMAIN),
-        normalizeStoreRootDomain(DEFAULT_PLATFORM_DOMAIN),
-        ...(env.PLATFORM_ROOT_DOMAIN?.trim() ? [normalizeStoreRootDomain(env.PLATFORM_ROOT_DOMAIN)] : []),
+        normalizeStoreRootDomain(env.PLATFORM_ROOT_DOMAIN),
     ].filter((value, index, values) => value && values.indexOf(value) === index);
 }
 
@@ -116,7 +111,7 @@ function isPublicSuffixLikeDomain(domain: string): boolean {
 }
 
 function validateCustomDomain(domain: string, env: Env): string | null {
-    if (domain.length > 244) return 'Domain is too long to provision its secure checkout address';
+    if (domain.length > 255) return 'Domain is too long';
     if (domain === 'localhost' || domain.endsWith('.localhost') || isIpv4(domain) || domain.startsWith('[')) {
         return 'Infrastructure and local domains are not allowed';
     }
@@ -141,29 +136,6 @@ function randomToken(byteCount = 24): string {
     return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-customDomainsRouter.get('/checkout-domain', async (c) => {
-    const parsed = z.string().uuid().safeParse(c.req.query('site_id'));
-    if (!parsed.success) return c.json({ error: { code: 'VALIDATION', message: 'A valid site_id is required' } }, 400);
-    const { response } = await requireOwnedSite(c, parsed.data);
-    if (response) return response;
-    c.header('Cache-Control', 'no-store');
-    return c.json(success(await getStoreCheckoutDomainSetup(c, parsed.data)));
-});
-
-customDomainsRouter.post('/checkout-domain', async (c) => {
-    const parsed = z.object({ site_id: z.string().uuid() }).strict().safeParse(await c.req.json().catch(() => null));
-    const key = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key');
-    if (!parsed.success || !z.string().min(8).max(200).refine(value => value === value.trim() && !/[\u0000-\u001f\u007f]/.test(value)).safeParse(key).success)
-        return c.json({ error: { code: 'VALIDATION', message: 'A valid site_id and idempotency key are required' } }, 400);
-    const { response } = await requireOwnedSite(c, parsed.data.site_id);
-    if (response) return response;
-    c.header('Cache-Control', 'no-store');
-    // Exact derived hostname and DB/provider uniqueness are the operation key:
-    // a retry cannot create another domain or publish a storefront/theme.
-    const setup = await prepareStoreCheckoutDomain(c, parsed.data.site_id, { force: true });
-    return c.json(success(setup), setup.status === 'active' ? 200 : 202);
-});
-
 customDomainsRouter.post('/domains', async (c) => {
     const parsed = DomainRequestSchema.safeParse(await c.req.json().catch(() => null));
     if (!parsed.success) {
@@ -180,21 +152,18 @@ customDomainsRouter.post('/domains', async (c) => {
     const cnameTarget = getCustomDomainCnameTarget(c.env);
     const screening = await screenCustomDomainClaim(c.env, domain);
 
-    const { data: existing, error: claimError } = await db
+    const { data: existing } = await db
         .from('sites')
         .select('id, custom_domain, custom_domain_verification_token')
         .eq('custom_domain', domain)
         .is('deleted_at', null)
         .maybeSingle();
 
-    if (claimError) throw new AppError('Domain availability could not be checked. Please retry.', 503, 'DOMAIN_CHECK_UNAVAILABLE');
-
     if (existing && existing.id !== parsed.data.site_id) {
         return c.json({ error: { code: 'DOMAIN_TAKEN', message: 'Domain is already assigned to another store' } }, 409);
     }
 
-    const prior = await findSiteDomain(db, parsed.data.site_id, domain);
-    const verificationToken = prior?.verification_token || randomToken();
+    const verificationToken = randomToken();
     if (screening.action === 'reject') {
         await db.from('site_domain_reviews').insert({
             site_id: parsed.data.site_id,
@@ -209,6 +178,17 @@ customDomainsRouter.post('/domains', async (c) => {
         return c.json({ error: { code: 'DOMAIN_ABUSE_REJECTED', message: 'Domain requires trust-and-safety rejection before issuance' } }, 422);
     }
 
+    const { error } = await db
+        .from('sites')
+        .update({
+            custom_domain: domain,
+            custom_domain_status: screening.action === 'review' ? 'review' : 'pending',
+            custom_domain_verification_token: verificationToken,
+            updated_by: customUser?.id || null,
+        })
+        .eq('id', parsed.data.site_id);
+
+    if (error) return c.json(dbErrorBody(), 500);
     if (screening.action === 'review') {
         await db.from('site_domain_reviews').insert({
             site_id: parsed.data.site_id,
@@ -227,8 +207,8 @@ customDomainsRouter.post('/domains', async (c) => {
 
     // Multi-domain (migration 185) — best-effort; falls back to sites.custom_domain when absent.
     const provider = detectDnsProvider(dnsSnapshot.ns);
-    const connectStatus: SiteDomainStatus = prior?.status === 'active' ? 'active' : screening.action === 'review' ? 'review' : 'pending';
-    const saved = await upsertSiteDomain(db, {
+    const connectStatus: SiteDomainStatus = screening.action === 'review' ? 'review' : 'pending';
+    await upsertSiteDomain(db, {
         siteId: parsed.data.site_id,
         domain,
         status: connectStatus,
@@ -236,15 +216,7 @@ customDomainsRouter.post('/domains', async (c) => {
         provider,
         actorId: customUser?.id || null,
     });
-    if (!saved.ok || !saved.row) throw new AppError('Domain could not be reserved. Reload to check its current status.', 503, 'DOMAIN_RESERVATION_UNAVAILABLE');
-    const connectedRow = saved.row;
-    // Adding an alias must not replace a different primary domain. Promotion
-    // remains the existing explicit, atomic /primary command after verification.
-    if (connectedRow.role === 'primary') {
-        const sync = await db.from('sites').update({ custom_domain: domain, custom_domain_status: connectStatus,
-            custom_domain_verification_token: verificationToken, updated_by: customUser?.id || null }).eq('id', parsed.data.site_id);
-        if (sync.error) throw new AppError('Domain setup could not be saved. Please retry.', 503, 'DOMAIN_SYNC_UNAVAILABLE');
-    }
+    const connectedRow = await findSiteDomain(db, parsed.data.site_id, domain).catch(() => null);
     await recordDomainVerification(db, {
         siteId: parsed.data.site_id,
         siteDomainId: connectedRow?.id ?? null,
@@ -257,13 +229,12 @@ customDomainsRouter.post('/domains', async (c) => {
 
     return c.json(success({
         domain,
-        status: connectStatus,
-        role: connectedRow.role,
+        status: screening.action === 'review' ? 'review' : 'pending',
         provider,
-        checkout: await connectedDomainCheckoutPlan(c, parsed.data.site_id, domain),
         records: {
             txt: { name: `_letbuyy-challenge.${domain}`, value: verificationToken },
             cname: { name: domain, value: cnameTarget },
+            apex_alias: { name: apex, value: cnameTarget },
         },
         apex_mx_warning: dnsSnapshot.mx.length > 0,
         dns_snapshot: dnsSnapshot,
@@ -287,76 +258,63 @@ customDomainsRouter.post('/domains/verify', async (c) => {
     if (response) return response;
     const cnameTarget = getCustomDomainCnameTarget(c.env);
 
-    const row = await findSiteDomain(db, parsed.data.site_id, domain);
-    if (!row?.verification_token) {
+    const { data: site, error } = await db
+        .from('sites')
+        .select('id, custom_domain, custom_domain_status, custom_domain_verification_token')
+        .eq('id', parsed.data.site_id)
+        .maybeSingle();
+
+    if (error || !site || site.custom_domain !== domain || !site.custom_domain_verification_token) {
         return c.json({ error: { code: 'DOMAIN_NOT_PENDING', message: 'Domain has no pending ownership challenge' } }, 409);
     }
-    const updateStatus = async (status: SiteDomainStatus) => {
-        await patchSiteDomainStatus(db, parsed.data.site_id, domain, { status });
-        if (row.role === 'primary') {
-            const saved = await db.from('sites').update({ custom_domain_status: status }).eq('id', parsed.data.site_id).eq('custom_domain', domain);
-            if (saved.error) throw new AppError('Domain status could not be saved.', 503, 'DOMAIN_SYNC_UNAVAILABLE');
-        }
-    };
 
     const txtAnswers = await resolveDoh(`_letbuyy-challenge.${domain}`, 'TXT').catch(() => []);
-    const txtMatches = txtAnswers.filter((answer) => answer.includes(row.verification_token!));
+    const txtMatches = txtAnswers.filter((answer) => answer.includes(site.custom_domain_verification_token));
     if (txtMatches.length < 2) {
-        await updateStatus('pending');
-        return c.json(success({ domain, status: 'pending', txt_verified: false, reason: 'TXT_NOT_VERIFIED',
-            checkout: await connectedDomainCheckoutPlan(c, parsed.data.site_id, domain) }), 202);
+        await db.from('sites').update({ custom_domain_status: 'pending' }).eq('id', parsed.data.site_id);
+        return c.json({ success: false, status: 'pending', reason: 'TXT_NOT_VERIFIED' }, 202);
     }
-    if (row.status === 'review') {
-        return c.json(success({ domain, status: 'review', reason: 'TRUST_REVIEW_REQUIRED',
-            checkout: await connectedDomainCheckoutPlan(c, parsed.data.site_id, domain) }), 202);
+    if (site.custom_domain_status === 'review') {
+        return c.json({ success: false, status: 'review', reason: 'TRUST_REVIEW_REQUIRED' }, 202);
     }
 
-    await updateStatus('verifying');
+    await db.from('sites').update({ custom_domain_status: 'verifying' }).eq('id', parsed.data.site_id);
 
     const cnameAnswers = await resolveDoh(domain, 'CNAME').catch(() => []);
     const cnameActive = cnameAnswers.some((answer) => dnsAnswerMatchesTarget(answer, cnameTarget));
     if (!cnameActive) {
+        await db.from('sites').update({ custom_domain_status: 'verifying' }).eq('id', parsed.data.site_id);
         return c.json(success({
             domain,
             status: 'verifying',
             txt_verified: true,
             cname_verified: false,
             cname_target: cnameTarget,
-            checkout: await connectedDomainCheckoutPlan(c, parsed.data.site_id, domain),
         }));
     }
 
     try {
-        const attached = await attachVercelProjectDomain(c.env, domain);
-        if (attached?.verified !== true) {
-            try { await verifyVercelProjectDomain(c.env, domain); } catch { /* exact provider TXT instructions remain below until visible */ }
-        }
+        await attachVercelProjectDomain(c.env, domain);
     } catch (error) {
         const status = error instanceof VercelDomainConfigError ? error.status : 503;
         return c.json({
             error: {
                 code: error instanceof VercelDomainConfigError ? error.code : 'VERCEL_DOMAIN_ATTACH_FAILED',
-                message: 'LetBuyy could not finish connecting this domain. Please retry. If this continues, contact LetBuyy support.',
+                message: 'Custom-domain automation could not attach this domain. Check gateway Vercel configuration and retry.',
             },
         }, status as 400 | 401 | 403 | 409 | 429 | 500 | 503);
     }
 
     const vercel = await readVercelDomainStatus(c.env, domain);
-    const binding = vercel.projectDomain;
-    const exactBinding = binding?.name === domain && binding.projectId === c.env.VERCEL_STOREFRONT_PROJECT_ID
-        && binding.gitBranch == null && binding.customEnvironmentId == null && binding.redirect == null;
-    const status = !exactBinding || vercel.status === 'pending' ? 'verifying' : vercel.status;
-    await updateStatus(status);
+    const status = vercel.status === 'pending' ? 'verifying' : vercel.status;
+    await db.from('sites').update({ custom_domain_status: status }).eq('id', parsed.data.site_id);
 
     const verifiedRow = await findSiteDomain(db, parsed.data.site_id, domain).catch(() => null);
     const verifyProvider = await detectLiveProvider(domain).catch(() => null);
     await patchSiteDomainStatus(db, parsed.data.site_id, domain, {
         status: status as SiteDomainStatus,
-        ssl_status: status === 'active' ? 'active' : vercel.misconfigured ? 'error' : 'pending',
+        ssl_status: vercel.status === 'active' ? 'active' : vercel.misconfigured ? 'error' : 'pending',
         provider: verifyProvider,
-    });
-    const customerVerification = await customDomainCustomerVerification(c.env, parsed.data.site_id, domain, {
-        txt_verified: true, cname_verified: cnameActive, ssl_active: status === 'active',
     });
     await recordDomainVerification(db, {
         siteId: parsed.data.site_id,
@@ -366,24 +324,16 @@ customDomainsRouter.post('/domains/verify', async (c) => {
         status,
         txtVerified: true,
         cnameVerified: cnameActive,
-        sslActive: status === 'active',
-        result: { vercel: { status: vercel.status, misconfigured: vercel.misconfigured }, customer_verification: customerVerification },
+        sslActive: vercel.status === 'active',
+        result: { vercel: { status: vercel.status, misconfigured: vercel.misconfigured } },
     });
-
-    if (status === 'active' && row.role === 'primary') {
-        await prepareStoreCheckoutDomain(c, parsed.data.site_id, { reserveOnly: true });
-        c.executionCtx.waitUntil(prepareStoreCheckoutDomain(c, parsed.data.site_id).catch(() => undefined));
-    }
 
     return c.json(success({
         domain,
         status,
         txt_verified: true,
-        customer_verification: customerVerification,
         cname_verified: cnameActive,
         cname_target: cnameTarget,
-        provider_dns_records: vercelOwnershipRecords(vercel.projectDomain),
-        checkout: await connectedDomainCheckoutPlan(c, parsed.data.site_id, domain),
         vercel,
     }));
 });
@@ -396,19 +346,23 @@ customDomainsRouter.get('/domains/:domain/status', async (c) => {
     const { db, response } = await requireOwnedSite(c, siteId);
     if (response) return response;
 
-    const ownedDomain = await findSiteDomain(db, siteId, domain);
-    if (!ownedDomain) {
+    const { data: site, error } = await db
+        .from('sites')
+        .select('id, custom_domain, custom_domain_status, custom_domain_verification_token')
+        .eq('id', siteId)
+        .maybeSingle();
+
+    if (error || !site || site.custom_domain !== domain) {
         return c.json({ error: { code: 'DOMAIN_NOT_FOUND', message: 'Domain is not connected to this store' } }, 404);
     }
 
-    const [health, customerVerification] = await Promise.all([readCustomDomainHealth(c.env, {
+    const health = await readCustomDomainHealth(c.env, {
         siteId,
         domain,
-        status: ownedDomain.status,
-        verificationToken: ownedDomain.verification_token,
-    }), customDomainCustomerVerification(c.env, siteId, domain)]);
-    health.customer_verification = customerVerification;
-    if (ownedDomain.role === 'primary') await db.from('sites').update({ custom_domain_status: health.status }).eq('id', siteId).eq('custom_domain', domain);
+        status: site.custom_domain_status,
+        verificationToken: site.custom_domain_verification_token,
+    });
+    await db.from('sites').update({ custom_domain_status: health.status }).eq('id', siteId).eq('custom_domain', domain);
 
     // Multi-domain mirror (best-effort) — provider re-detected live from the apex
     // nameservers (NOT the resolved ALIAS target), so a registrar/NS change (e.g.
@@ -590,8 +544,6 @@ customDomainsRouter.post('/domains/:domain/primary', async (c) => {
         return c.json({ error: { code: 'SET_PRIMARY_REJECTED', message: result?.message || 'Domain cannot be made primary' } }, 409);
     }
     await recordDomainVerification(db, { siteId, domain, checkType: 'set_primary', status: 'active', checkedBy: customUser?.id || null });
-    await prepareStoreCheckoutDomain(c, siteId, { reserveOnly: true });
-    c.executionCtx.waitUntil(prepareStoreCheckoutDomain(c, siteId).catch(() => undefined));
     return c.json(success(result));
 });
 
@@ -636,17 +588,6 @@ customDomainsRouter.get('/domains/:domain/history', async (c) => {
     return c.json(success({ domain, connected: events !== null, events: events || [] }));
 });
 
-storeAccessRouter.get('/', async (c) => {
-    const siteId = z.uuid().safeParse(c.req.query('site_id'));
-    if (!siteId.success) return c.json({ error: { code: 'VALIDATION', message: 'A valid site_id is required' } }, 400);
-    const { db, response } = await requireOwnedSite(c, siteId.data);
-    if (response) return response;
-    const { data, error } = await db.from('sites').select('access_mode,access_message,access_password_hash,published,status').eq('id', siteId.data).single();
-    if (error || !data) return c.json(dbErrorBody(), 503);
-    return c.json(success({ access_mode: data.access_mode, access_message: data.access_message,
-        has_password: Boolean(data.access_password_hash), published: data.published, status: data.status }));
-});
-
 storeAccessRouter.put('/', async (c) => {
     const parsed = StoreAccessSchema.safeParse(await c.req.json().catch(() => null));
     if (!parsed.success) {
@@ -655,17 +596,26 @@ storeAccessRouter.put('/', async (c) => {
 
     const { db, customUser, response } = await requireOwnedSite(c, parsed.data.site_id);
     if (response) return response;
-    const passwordHash = parsed.data.password && parsed.data.access_mode === 'password'
-        ? await hashStoreAccessPassword(parsed.data.password, { signal: c.req.raw.signal }) : null;
-    const { data, error } = await db.rpc('set_owned_storefront_access_v1', {
-        p_actor: customUser?.id, p_site: parsed.data.site_id, p_bound_site: c.get('auth').user.storeId || null,
-        p_mode: parsed.data.access_mode, p_message: parsed.data.access_message || null, p_password_hash: passwordHash,
-    });
-    if (error?.code === '42501') return c.json({ error: { code: 'STORE_NOT_FOUND', message: 'Store not found or access denied' } }, 404);
-    if (error?.code === 'PT400') return c.json({ error: { code: 'PASSWORD_REQUIRED', message: 'Set a password before restricting access.' } }, 400);
-    if (error) return c.json(dbErrorBody(), 503);
-    return c.json(success(data));
+    if (parsed.data.access_mode === 'password' && !parsed.data.password) {
+        return c.json({ error: { code: 'PASSWORD_REQUIRED', message: 'Password mode requires a store password' } }, 400);
+    }
 
+    const accessPasswordHash = parsed.data.password
+        ? await hashStoreAccessPassword(parsed.data.password)
+        : parsed.data.access_mode === 'password'
+            ? undefined
+            : null;
+
+    const updatePayload: Record<string, unknown> = {
+        access_mode: parsed.data.access_mode,
+        access_message: parsed.data.access_message || null,
+        updated_by: customUser?.id || null,
+    };
+    if (accessPasswordHash !== undefined) updatePayload.access_password_hash = accessPasswordHash;
+
+    const { error } = await db.from('sites').update(updatePayload).eq('id', parsed.data.site_id);
+    if (error) return c.json(dbErrorBody(), 500);
+    return c.json(success({ site_id: parsed.data.site_id, access_mode: parsed.data.access_mode }));
 });
 
 storeAccessRouter.post('/preview-links', async (c) => {
@@ -685,17 +635,6 @@ storeAccessRouter.post('/preview-links', async (c) => {
     const jti = randomToken(16);
     const host = normalizeRequestHost(parsed.data.host) || parsed.data.host.toLowerCase();
     const scope = parsed.data.scope as StorefrontPreviewScope;
-    // Tenant is already known: keep the guarded client and explicit owned ID.
-    // Reuse the visitor verifier's host binding rather than opening an unguarded
-    // cross-store bootstrap lookup during an authenticated merchant command.
-    const { data: site, error: siteError } = await db.from('sites')
-        .select('id,subdomain,custom_domain,custom_domain_status')
-        .eq('id', parsed.data.site_id).is('deleted_at', null).maybeSingle();
-    if (siteError) throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
-    if (!site || !(await storefrontHostBelongsToSite(c, host, site))) {
-        return c.json({ error: { code: 'PREVIEW_HOST_MISMATCH', message: 'Preview host must belong to this store' } }, 400);
-    }
-    c.header('Cache-Control', 'no-store');
 
     const token = await createStorefrontPreviewToken({
         sid: parsed.data.site_id,

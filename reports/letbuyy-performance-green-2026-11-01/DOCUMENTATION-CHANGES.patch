@@ -1,0 +1,37 @@
+--- a/EXECUTION_LEDGER.md
++++ b/EXECUTION_LEDGER.md
+@@ -594,3 +594,16 @@
+ Marketing 205 and UI 53 tests,types,final production build,API snapshot 380,lint/stylelint pass (0 errors, 5 retained lint warnings). Same 18 pre-existing token-alias violations independently reproduced against unchanged recorded inputs; no waiver/palette change or whole-repo-green claim. Previous LCP/blocking warnings remain outside this UI-verification outcome. Five source/snapshot files changed;277 app source/config hashes match isolated final build crnqQUoGeKJdcGxRWXlNc;task-only patch and reverse dry-run preserve unrelated user work.
+ 
+ Evidence: [verification](reports/letbuyy-marketing-ui-2026-11-01/VERIFICATION.md),[source changes](reports/letbuyy-marketing-ui-2026-11-01/SOURCE-CHANGES.patch),[checks](reports/letbuyy-marketing-ui-2026-11-01/CHECKS.csv). Restored existing local Docker data services and started canonical local gateway/accounts for actual data/CTA reads; no seed/reset/migration,credential edit,provider send,commit/push/merge/deploy or indexing action. Normal 9006/9010/9002 remain running; only task-owned review listeners stopped.
++
++
++## 2026-11-01 — Local performance and token-alias follow-up
++
++Resolved the 18 shared-UI alias snapshot violations under the snapshot's intentional-update policy; protected groups now138. Existing palette token source is byte-identical, with no component-color workaround. Fixed the alias validator self-test's stale-baseline false positive: a clean baseline is now required and four independent added-alias/new-group mutations must be rejected. Added this self-test to validate:ui; replay evidence proves the original false positive and corrected rejection. UI53 tests, rule self-test,7 codemod fixtures,API380,variables371,aliases138+4 controls and UI types pass.
++
++Reduced observed Tamil layout blocking with Unicode-scoped local aliases preserving the actually selected TamilSangamMN regular and Bold medium/bold faces. Font binaries unchanged;375/1366 text/SVG geometry and PostScript mappings match baseline, including500 weight. Simulated absence of all3 local declarations still yields the original platform fallback/layout. Coalesced shared/resource CSS through existing webpack extraction; retained the home/resource split, all20 CSS files'14,942 original declarations/condition/keyframe ancestry and unchanged animation source. Added23 declarations; no CSS deletion. Improved responsive/lazy secondary guide artwork and pinned source aspect ratios after detecting/fixing subpixel resize shifts. Removed an unused helper/destructured props and equivalent footer-img lint warnings; marketing lint/stylelint now0 errors/0 warnings.
++
++Marketing205 tests,types,production build,applicable design-system governance and source whitespace checks pass. Exact final build qIzBUmU9wa-xByyOS0W5I matches276 marketing src/Next-config hashes. Rechecked489 known public URLs (477 HTML200,12 intentional308),192 global XML entries,105 localized article URLs,all RSS/resource XML counts and3 unknown404 controls; no checked missing articles,broken links/fragments or metadata errors. Final573 full-inventory/responsive browser cases plus48 template cases pass.102 unique visual comparisons after96 initial+16 repaired-image rechecks pass structural/copy/style tolerance;28 natural-scroll viewport comparisons,10 preserved-document SPA transitions,7 animation/navigation modes,actual touch swipe/vertical scrolling,carousel hover pause/resume,menu focus/bounds and invalid-first-step/back form journeys pass. No messages/accounts/payments submitted. Normal9006 rechecked12 desktop/mobile page cases;real4-plan API returns Launch199/Growth699 available and Scale/CommerceOS coming soon,100 slots remaining. Temporary review listeners9046–9049 stopped;normal9006/9010/9002 and database data remain running.
++
++Performance status is deliberately partial: all10 earlier observed mobile and3 desktop lab runs pass budgets; exact final4 observed mobile reruns pass (LCP1.99–2.20s,TBT51–98ms,CLS<=0.0025). Fresh task-start Tamil TBT280/448ms becomes98/60ms. **Two default simulated mobile LCP advisories remain OPEN**:pricing3.61s and first-store guide4.06s, despite observed2.03/2.20s. No threshold/audit waiver;ineffective or visually different diagnostics discarded. No all-performance-warnings-green,field CWV/INP,physical-device,Safari/Firefox,whole-monorepo or production acceptance claim. Existing Next middleware/proxy deprecation remains documented. More critical-delivery optimization is still local work;production/field acceptance needs separately authorized release/data access. No deploy,push,commit,credential edit,seed/reset/shared-DB/provider mutation,indexing or scheduling action.
++
++Evidence:[verification](reports/letbuyy-performance-green-2026-11-01/VERIFICATION.md),[HTML review](reports/letbuyy-performance-green-2026-11-01/REPORT.html),[task-only13-file source patch](reports/letbuyy-performance-green-2026-11-01/SOURCE-CHANGES.patch),[checks](reports/letbuyy-performance-green-2026-11-01/CHECKS.csv),[measurements](reports/letbuyy-performance-green-2026-11-01/PERFORMANCE-COMPARISON.csv). Reverse-patch dry-run passes on isolated copies. Earlier UI/performance reports retain their original outcomes with dated follow-up links;unrelated dirty-tree work preserved.
+--- a/reports/letbuyy-marketing-ui-2026-11-01/VERIFICATION.md
++++ b/reports/letbuyy-marketing-ui-2026-11-01/VERIFICATION.md
+@@ -1,4 +1,6 @@
+ # Marketing desktop/mobile verification — 1 November 2026
++
++> **1 November 2026 follow-up:** The 18 token-alias failures and observed Tamil blocking-time warnings have since been repaired and verified locally. Two default simulated mobile LCP advisories remain open. Current evidence and limitations: [performance and alias follow-up](../letbuyy-performance-green-2026-11-01/VERIFICATION.md). This dated note preserves the original results below.
+ 
+ The marketing site is running at [127.0.0.1:9006/in](http://127.0.0.1:9006/in). **The tested CSS split preserves the sampled design, typography, content, layouts and animations. Four existing interaction defects were repaired locally. Nothing was deployed.**
+ 
+--- a/reports/letbuyy-mobile-performance-2026-10-30/PERFORMANCE-VERIFICATION.md
++++ b/reports/letbuyy-mobile-performance-2026-10-30/PERFORMANCE-VERIFICATION.md
+@@ -1,4 +1,6 @@
+ # Local mobile performance verification — 30 October 2026
++
++> **1 November 2026 follow-up:** The 18 token-alias failures and observed Tamil blocking-time warnings have since been repaired and verified locally. Two default simulated mobile LCP advisories remain open. Current evidence and limitations: [performance and alias follow-up](../letbuyy-performance-green-2026-11-01/VERIFICATION.md). This dated note preserves the original results below.
+ 
+ Implemented and verified local marketing performance repairs on `codex/local-work-preserved-20261025` at `118209b4fde1b5a15313f4741bcac454690d15c8`. The final isolated production artifact is `Jt6Duvm2bymgmwpDPdjxY`; 447 captured source/assets/test/config files match the working tree. The task-only patch covers 41 changed files relative to the task-start dirty tree. Nothing was deployed.
+ 

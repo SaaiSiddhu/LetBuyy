@@ -229,7 +229,6 @@ h6 {
 }
 
 .btn-primary {
-    position: relative;
     background: var(--lb-component-button-primary-bg);
     color: var(--lb-component-button-primary-text);
     padding: 10px 24px;

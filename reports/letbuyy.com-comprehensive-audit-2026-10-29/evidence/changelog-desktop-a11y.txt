@@ -1,0 +1,275 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "Main navigation":
+    - button "Why LetBuyy"
+    - button "Products"
+    - link "Themes":
+      - /url: /in/resources/platform/how-themes-work
+    - link "Apps":
+      - /url: /in/resources/platform/introduction-to-apps
+    - link "Developers":
+      - /url: /in/resources/developers
+    - link "Pricing":
+      - /url: /in/pricing
+  - button "Toggle theme"
+  - link "Log in":
+    - /url: https://accounts.letbuyy.com/lookup
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+- navigation "Resources navigation":
+  - link "Resources":
+    - /url: /in/resources
+  - link "All":
+    - /url: /in/resources
+  - link "Ecommerce":
+    - /url: /in/resources/ecommerce
+  - link "Growth":
+    - /url: /in/resources/growth
+  - link "Payments":
+    - /url: /in/resources/payments
+  - link "Operations":
+    - /url: /in/resources/operations
+  - link "AI Commerce":
+    - /url: /in/resources/ai-commerce
+  - link "Developers":
+    - /url: /in/resources/developers
+  - link "Changelog":
+    - /url: /in/resources/changelog
+  - button "Commerce updates"
+- main:
+  - link "Resources":
+    - /url: /in/resources
+  - paragraph: A PRODUCT IN PROGRESS
+  - heading "Changelog Every update. A little more possibility." [level=1]
+  - paragraph: Every release, newest first. LetBuyy is in private beta — expect this list to move quickly.
+  - link "Explore the updates":
+    - /url: "#release-history"
+  - link "Follow via RSS":
+    - /url: /in/resources/rss.xml
+  - figure "Thoughtful changes, recorded along the way. Concept illustration.":
+    - img "An open release journal beside illustrated interface layers and a small parcel."
+    - text: Thoughtful changes, recorded along the way. Concept illustration.
+  - term: Releases so far
+  - definition: "9"
+  - term: Latest version
+  - definition: v1.9.0
+  - term: Latest release
+  - definition: 22 Jul 2026
+  - region "What changed.":
+    - paragraph: THE RELEASE JOURNAL
+    - heading "What changed." [level=2]
+    - paragraph: New features, thoughtful improvements and fixes along the way.
+    - group "Filter releases":
+      - button "All updates 9" [pressed]
+      - button "New features 6"
+      - button "Fixes 1"
+      - button "Security 1"
+      - button "Improvements 1"
+    - status: 9 releases · Newest first
+    - list:
+      - listitem:
+        - link "v1.9.0":
+          - /url: "#release-1-9-0"
+        - time: 22 Jul 2026
+        - text: New features Latest release
+        - article "Theme marketplace opens to partner submissions":
+          - text: PRODUCT UPDATE
+          - heading "Theme marketplace opens to partner submissions" [level=3]
+          - list:
+            - listitem: Added Design partners can now submit themes for review from the developer portal
+            - listitem: Added Every submission runs an automated safety check before it reaches a live store
+            - listitem: Improved Theme previews now render your own products instead of placeholder samples
+            - listitem: Improved Switching themes keeps your existing section settings where the layouts match
+      - listitem:
+        - link "v1.8.1":
+          - /url: "#release-1-8-1"
+        - time: 9 Jul 2026
+        - text: Fixes
+        - article "Checkout and GST invoice fixes":
+          - text: PRODUCT UPDATE
+          - heading "Checkout and GST invoice fixes" [level=3]
+          - list:
+            - listitem: Fixed Inter-state orders now show IGST correctly instead of splitting into CGST and SGST
+            - listitem: Fixed Double-tapping Place Order on a slow connection no longer creates a duplicate order
+            - listitem: Fixed COD confirmation messages now send reliably to numbers saved with a +91 prefix
+            - listitem: Improved The GST invoice PDF is now attached to the order confirmation email automatically
+      - listitem:
+        - link "v1.8.0":
+          - /url: "#release-1-8-0"
+        - time: 24 Jun 2026
+        - text: New features
+        - article "Gift cards and store credit":
+          - text: PRODUCT UPDATE
+          - heading "Gift cards and store credit" [level=3]
+          - list:
+            - listitem: Added Issue gift cards with a fixed value and an optional expiry date
+            - listitem: Added Buyers can apply a gift card at checkout alongside a coupon
+            - listitem: Added Refunds can be returned as store credit instead of to the original payment method
+            - listitem: Improved Gift card balances now appear on the customer profile with full redemption history
+      - listitem:
+        - link "v1.7.0":
+          - /url: "#release-1-7-0"
+        - time: 5 Jun 2026
+        - text: New features
+        - article "WhatsApp order updates":
+          - text: PRODUCT UPDATE
+          - heading "WhatsApp order updates" [level=3]
+          - list:
+            - listitem: Added Send order confirmation, shipping and delivery updates over WhatsApp
+            - listitem: Added Message templates in English and Hindi, editable per store
+            - listitem: Improved COD orders can now ask for a WhatsApp confirmation before they enter fulfilment
+      - listitem:
+        - link "v1.6.2":
+          - /url: "#release-1-6-2"
+        - time: 21 May 2026
+        - text: Security
+        - article "Account and payment hardening":
+          - text: PRODUCT UPDATE
+          - heading "Account and payment hardening" [level=3]
+          - list:
+            - listitem: Improved Payment provider callbacks are now verified with a timing-safe signature check
+            - listitem: Improved Store sign-in is rate limited to five attempts every fifteen minutes
+            - listitem: Improved Refunds and payouts now require a second confirmation step
+            - listitem: Fixed Signing out now ends the session on every device, not just the current one
+      - listitem:
+        - link "v1.6.0":
+          - /url: "#release-1-6-0"
+        - time: 6 May 2026
+        - text: New features
+        - article "Multi-location inventory (beta)":
+          - text: PRODUCT UPDATE
+          - heading "Multi-location inventory (beta)" [level=3]
+          - list:
+            - listitem: Added Hold stock across more than one warehouse or shop
+            - listitem: Added Orders route automatically to the location closest to the buyer
+            - listitem: Added Low stock alerts can be set per location
+            - listitem: Improved The inventory screen now shows stock split across all your locations
+      - listitem:
+        - link "v1.5.0":
+          - /url: "#release-1-5-0"
+        - time: 15 Apr 2026
+        - text: New features
+        - article "Custom domains":
+          - text: PRODUCT UPDATE
+          - heading "Custom domains" [level=3]
+          - list:
+            - listitem: Added Connect your own domain and we handle the SSL certificate
+            - listitem: Added Guided DNS setup with live verification while you wait
+            - listitem: Improved Certificates now renew on their own — nothing to remember
+      - listitem:
+        - link "v1.4.0":
+          - /url: "#release-1-4-0"
+        - time: 26 Mar 2026
+        - text: Improvements
+        - article "Faster checkout on Indian networks":
+          - text: PRODUCT UPDATE
+          - heading "Faster checkout on Indian networks" [level=3]
+          - list:
+            - listitem: Improved Checkout now loads in about half the time it used to on 4G
+            - listitem: Improved UPI apps installed on the buyer’s phone are detected and shown first
+            - listitem: Improved Address autofill now covers PIN codes across the country
+            - listitem: Fixed Switching between UPI and COD no longer clears the address already entered
+      - listitem:
+        - link "v1.3.0":
+          - /url: "#release-1-3-0"
+        - time: 10 Mar 2026
+        - text: New features
+        - article "Developer platform":
+          - text: PRODUCT UPDATE
+          - heading "Developer platform" [level=3]
+          - list:
+            - listitem: Added API keys with per-key permissions, issued from the developer portal
+            - listitem: Added Webhooks for order, payment and inventory events
+            - listitem: Added Failed webhooks retry automatically with a widening gap between attempts
+            - listitem: Improved A delivery log shows the last 500 attempts for each endpoint
+    - paragraph: That is the whole history so far — 9 releases since the private beta opened.
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.

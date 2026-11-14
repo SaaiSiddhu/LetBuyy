@@ -4,7 +4,6 @@ import { normalizeStoreRootDomain } from '@letbuyy/tenant-core';
 // ============================================================
 
 import { Hono } from 'hono';
-import { provisionFirstPartyStorefrontDomain } from '../lib/first-party-storefront-domain';
 import { z } from 'zod';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
@@ -133,8 +132,7 @@ router.get('/web-draft', async (c) => {
                 p_attempt_id: data.id,
                 p_store_id: ownedStore.id,
             });
-            const storefrontDomain = await provisionFirstPartyStorefrontDomain(c.env, ownedStore);
-            return c.json(success({ attempt: null, completed_store: ownedStore }, { meta: { storefront_domain: storefrontDomain } }));
+            return c.json(success({ attempt: null, completed_store: ownedStore }));
         }
     }
 
@@ -609,14 +607,13 @@ router.post('/:attemptId/complete', async (c) => {
         onboarding_completed: true,
     }).eq('id', customUser.id);
 
-    const storefrontDomain = await provisionFirstPartyStorefrontDomain(c.env, store);
     return c.json(success({
         store,
         urls: {
             admin: adminUrl(c.env, `/stores/${store.id}`),
             storefront: storefrontUrl(c.env, store.subdomain),
         },
-    }, { meta: { storefront_domain: storefrontDomain } }), 201);
+    }), 201);
 });
 
 // POST /onboarding/check-subdomain — Check subdomain availability

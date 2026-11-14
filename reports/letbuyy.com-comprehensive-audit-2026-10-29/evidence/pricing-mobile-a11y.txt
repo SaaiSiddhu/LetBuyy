@@ -1,0 +1,916 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+  - button "Open menu"
+- main:
+  - paragraph: Pricing
+  - heading "Simple, transparent pricing" [level=2]
+  - paragraph: Launch and Growth plans are live now. Scale and Commerce OS are coming soon. 0% transaction and platform fees — forever.
+  - paragraph: 🏆 Founding Merchant Program — 100 / 100 slots remaining
+  - paragraph: Lock the founding price for life. Lifetime price lock, founding badge, priority access, and early features.
+  - article:
+    - heading "Launch" [level=3]
+    - paragraph: Everything you need to start selling
+    - paragraph: ₹199/month
+    - paragraph: Regular ₹299 · Save ₹100/mo for life
+    - link "Start free trial":
+      - /url: https://accounts.letbuyy.com/signup
+    - list:
+      - listitem: 0% commission forever
+      - listitem: Unlimited products, orders & customers
+      - listitem: Online storefront + themes
+      - listitem: UPI, QR & COD
+      - listitem: GST tax invoices
+      - listitem: Free .letbuyy.com domain & hosting
+  - article:
+    - text: Most popular
+    - heading "Growth" [level=3]
+    - paragraph: Scale your store with advanced tools
+    - paragraph: ₹699/month
+    - paragraph: Regular ₹999 · Save ₹300/mo for life
+    - link "Start free trial":
+      - /url: https://accounts.letbuyy.com/signup
+    - list:
+      - listitem: Everything in Launch
+      - listitem: Custom domain + remove branding
+      - listitem: Inventory management
+      - listitem: Bulk product import
+      - listitem: Discount engine
+      - listitem: Customer segments
+  - article:
+    - text: Coming soon
+    - heading "Scale" [level=3]
+    - paragraph: For scaling, multi-channel businesses
+    - paragraph: Coming soon
+    - text: Coming soon
+    - list:
+      - listitem: Everything in Growth
+      - listitem: Multi-warehouse inventory
+      - listitem: Purchase orders
+      - listitem: Loyalty & gift cards
+      - listitem: Reviews & UGC
+      - listitem: Abandoned-checkout recovery
+  - article:
+    - text: Coming soon
+    - heading "Commerce OS" [level=3]
+    - paragraph: Your commerce operating system
+    - paragraph: Coming soon
+    - text: Coming soon
+    - list:
+      - listitem: Everything in Scale
+      - listitem: POS / in-person sales
+      - listitem: Multi-store management
+      - listitem: B2B catalogs (B2B + DTC)
+      - listitem: AI Copilot + LCIS intelligence
+      - listitem: Operations & Executive Center
+  - heading "Compare all plans" [level=2]
+  - table "Plan feature comparison":
+    - row "Only differences Launch Growth Most popular Scale Commerce OS":
+      - columnheader "Only differences":
+        - checkbox "Only differences"
+        - text: Only differences
+      - columnheader "Launch"
+      - columnheader "Growth Most popular"
+      - columnheader "Scale"
+      - columnheader "Commerce OS"
+    - rowgroup:
+      - text: Pricing
+      - row "Monthly price ₹299 ₹999 ₹2,499 ₹5,999":
+        - cell "Monthly price"
+        - cell "₹299"
+        - cell "₹999"
+        - cell "₹2,499"
+        - cell "₹5,999"
+      - row "Yearly price (per month) ₹249 ₹799 ₹1,999 ₹4,799":
+        - cell "Yearly price (per month)"
+        - cell "₹249"
+        - cell "₹799"
+        - cell "₹1,999"
+        - cell "₹4,799"
+      - row "Founding price ₹199 ₹699 — —":
+        - cell "Founding price"
+        - cell "₹199"
+        - cell "₹699"
+        - cell "—"
+        - cell "—"
+      - row "Platform commission 0% forever 0% forever 0% forever 0% forever":
+        - cell "Platform commission"
+        - cell "0% forever"
+        - cell "0% forever"
+        - cell "0% forever"
+        - cell "0% forever"
+      - row "Free trial 14 days 14 days 14 days 14 days":
+        - cell "Free trial"
+        - cell "14 days"
+        - cell "14 days"
+        - cell "14 days"
+        - cell "14 days"
+      - row "Setup fee ₹0 ₹0 ₹0 ₹0":
+        - cell "Setup fee"
+        - cell "₹0"
+        - cell "₹0"
+        - cell "₹0"
+        - cell "₹0"
+    - rowgroup:
+      - text: Core commerce
+      - row "Online storefront Full Full Full Full":
+        - cell "Online storefront"
+        - cell "Full"
+        - cell "Full"
+        - cell "Full"
+        - cell "Full"
+      - row "Themes & templates":
+        - cell "Themes & templates"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Unlimited products":
+        - cell "Unlimited products"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Unlimited orders":
+        - cell "Unlimited orders"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Unlimited customers":
+        - cell "Unlimited customers"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Staff accounts 1 3 10 25":
+        - cell "Staff accounts"
+        - cell "1"
+        - cell "3"
+        - cell "10"
+        - cell "25"
+      - row "Storage 1 GB 10 GB 50 GB 200 GB":
+        - cell "Storage"
+        - cell "1 GB"
+        - cell "10 GB"
+        - cell "50 GB"
+        - cell "200 GB"
+      - row "AI credits per month 50 250 1,000 5,000":
+        - cell "AI credits per month"
+        - cell "50"
+        - cell "250"
+        - cell "1,000"
+        - cell "5,000"
+    - rowgroup:
+      - text: Products
+      - row "Product variants":
+        - cell "Product variants"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Collections":
+        - cell "Collections"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Categories":
+        - cell "Categories"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Product media":
+        - cell "Product media"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Product reviews — —":
+        - cell "Product reviews"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "Custom data (metafields) —":
+        - cell "Custom data (metafields)"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Bulk product import —":
+        - cell "Bulk product import"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Purchase orders — —":
+        - cell "Purchase orders"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+    - rowgroup:
+      - text: Inventory
+      - row "Inventory tracking —":
+        - cell "Inventory tracking"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Adjustments & history —":
+        - cell "Adjustments & history"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Inventory locations — 1 Multiple Multiple":
+        - cell "Inventory locations"
+        - cell "—"
+        - cell "1"
+        - cell "Multiple"
+        - cell "Multiple"
+      - row "Multi-warehouse — —":
+        - cell "Multi-warehouse"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "Low-stock visibility —":
+        - cell "Low-stock visibility"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: Orders
+      - row "Order management":
+        - cell "Order management"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Draft orders —":
+        - cell "Draft orders"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Order notes & tags":
+        - cell "Order notes & tags"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Returns & refunds":
+        - cell "Returns & refunds"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "COD reconciliation —":
+        - cell "COD reconciliation"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Custom order ID format":
+        - cell "Custom order ID format"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: Payments
+      - row "Razorpay payments":
+        - cell "Razorpay payments"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "UPI payments":
+        - cell "UPI payments"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "QR payments":
+        - cell "QR payments"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Cash on delivery":
+        - cell "Cash on delivery"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "GST tax invoices":
+        - cell "GST tax invoices"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Gift cards — —":
+        - cell "Gift cards"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "Wallet & payouts":
+        - cell "Wallet & payouts"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "0% commission":
+        - cell "0% commission"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: Checkout
+      - row "Hosted checkout":
+        - cell "Hosted checkout"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Customer accounts":
+        - cell "Customer accounts"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Checkout customization Limited Limited Standard Full":
+        - cell "Checkout customization"
+        - cell "Limited"
+        - cell "Limited"
+        - cell "Standard"
+        - cell "Full"
+      - row "Abandoned-checkout recovery —":
+        - cell "Abandoned-checkout recovery"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: Marketing
+      - row "Coupons —":
+        - cell "Coupons"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Discount engine —":
+        - cell "Discount engine"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Customer segments —":
+        - cell "Customer segments"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Email campaigns —":
+        - cell "Email campaigns"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "WhatsApp commerce —":
+        - cell "WhatsApp commerce"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Marketing automations — Basic":
+        - cell "Marketing automations"
+        - cell "—"
+        - cell "Basic"
+        - cell
+        - cell
+      - row "Reviews & UGC — —":
+        - cell "Reviews & UGC"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "Blog":
+        - cell "Blog"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: Customers
+      - row "Customer profiles":
+        - cell "Customer profiles"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Notes & tags":
+        - cell "Notes & tags"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Saved addresses":
+        - cell "Saved addresses"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Customer segmentation —":
+        - cell "Customer segmentation"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Loyalty program — —":
+        - cell "Loyalty program"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+    - rowgroup:
+      - text: Shipping
+      - row "Shipping zones":
+        - cell "Shipping zones"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Shipping rates":
+        - cell "Shipping rates"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "GST on shipping":
+        - cell "GST on shipping"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Shipping labels —":
+        - cell "Shipping labels"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Order tracking":
+        - cell "Order tracking"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: Tax
+      - row "GST invoices":
+        - cell "GST invoices"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "GSTIN capture":
+        - cell "GSTIN capture"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "HSN codes":
+        - cell "HSN codes"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Tax-inclusive pricing":
+        - cell "Tax-inclusive pricing"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "GST state code":
+        - cell "GST state code"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: AI
+      - row "AI homepage builder":
+        - cell "AI homepage builder"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "AI product content —":
+        - cell "AI product content"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "AI SEO —":
+        - cell "AI SEO"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "AI marketing —":
+        - cell "AI marketing"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "AI Copilot — —":
+        - cell "AI Copilot"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "AI Operations — — —":
+        - cell "AI Operations"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "AI credits per month 50 250 1,000 5,000":
+        - cell "AI credits per month"
+        - cell "50"
+        - cell "250"
+        - cell "1,000"
+        - cell "5,000"
+    - rowgroup:
+      - text: Analytics
+      - row "Sales dashboard":
+        - cell "Sales dashboard"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Standard reports":
+        - cell "Standard reports"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Advanced reports —":
+        - cell "Advanced reports"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Executive Center — — —":
+        - cell "Executive Center"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "LCIS intelligence — — —":
+        - cell "LCIS intelligence"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+    - rowgroup:
+      - text: Operations
+      - row "Operations Center — — —":
+        - cell "Operations Center"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "Runbooks & incidents — — —":
+        - cell "Runbooks & incidents"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "Live operations — — —":
+        - cell "Live operations"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "Bulk operations —":
+        - cell "Bulk operations"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Enterprise automations — — —":
+        - cell "Enterprise automations"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+    - rowgroup:
+      - text: Domains
+      - row "Free .letbuyy.com address":
+        - cell "Free .letbuyy.com address"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Custom domain —":
+        - cell "Custom domain"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "Free SSL certificate":
+        - cell "Free SSL certificate"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Remove LetBuyy branding —":
+        - cell "Remove LetBuyy branding"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: Global commerce
+      - row "Storefront languages 1 3 All All":
+        - cell "Storefront languages"
+        - cell "1"
+        - cell "3"
+        - cell "All"
+        - cell "All"
+      - row "Default language":
+        - cell "Default language"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Markets — —":
+        - cell "Markets"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "Local currency display — —":
+        - cell "Local currency display"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+    - rowgroup:
+      - text: B2B
+      - row "B2B catalogs — — —":
+        - cell "B2B catalogs"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "B2B + DTC from one store — — —":
+        - cell "B2B + DTC from one store"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "Wholesale price lists — — —":
+        - cell "Wholesale price lists"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+    - rowgroup:
+      - text: Multi-store
+      - row "Multi-store management — — —":
+        - cell "Multi-store management"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "Centralized catalog — — —":
+        - cell "Centralized catalog"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "Store switching — — —":
+        - cell "Store switching"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+    - rowgroup:
+      - text: Security
+      - row "KYC verification":
+        - cell "KYC verification"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Two-factor authentication":
+        - cell "Two-factor authentication"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Passkeys":
+        - cell "Passkeys"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Users & permissions Standard Standard Standard Custom":
+        - cell "Users & permissions"
+        - cell "Standard"
+        - cell "Standard"
+        - cell "Standard"
+        - cell "Custom"
+      - row "Custom roles — — —":
+        - cell "Custom roles"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "Step-up verification":
+        - cell "Step-up verification"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "Policy pages":
+        - cell "Policy pages"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: Support
+      - row "Support channel Email Priority Priority + WhatsApp Dedicated manager":
+        - cell "Support channel"
+        - cell "Email"
+        - cell "Priority"
+        - cell "Priority + WhatsApp"
+        - cell "Dedicated manager"
+      - row "Onboarding Self-serve Guided Guided White-glove":
+        - cell "Onboarding"
+        - cell "Self-serve"
+        - cell "Guided"
+        - cell "Guided"
+        - cell "White-glove"
+      - row "Response priority Standard Priority Priority Highest":
+        - cell "Response priority"
+        - cell "Standard"
+        - cell "Priority"
+        - cell "Priority"
+        - cell "Highest"
+      - row "Dedicated success manager — — —":
+        - cell "Dedicated success manager"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+  - button "+ See all features"
+  - region "Everything you need to know before launching":
+    - paragraph: Frequently Asked Questions
+    - heading "Everything you need to know before launching" [level=2]
+    - paragraph: Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.
+    - complementary "Built for modern commerce":
+      - heading "Built for modern commerce" [level=3]
+      - list:
+        - listitem: No transaction commissions
+        - listitem: Indian payment ecosystem
+        - listitem: Custom domains supported
+        - listitem: Migration assistance available
+        - listitem: AI-native commerce platform
+      - term: AI capabilities
+      - definition: 50+
+      - term: Monitoring
+      - definition: 24/7
+      - term: Data ownership
+      - definition: 100%
+      - term: Commission
+      - definition: 0%
+    - heading "What is LetBuyy?" [level=3]:
+      - button "What is LetBuyy?" [expanded]
+    - region "What is LetBuyy?":
+      - paragraph: LetBuyy is an AI-native Commerce Operating System that helps businesses manage storefronts, products, inventory, orders, payments, customers, analytics, and operations from one platform.
+      - paragraph: Unlike traditional store builders, LetBuyy is designed to run the entire commerce business, not just the online store.
+    - heading "How is LetBuyy different from Shopify?" [level=3]:
+      - button "How is LetBuyy different from Shopify?"
+    - heading "Can I use my own custom domain?" [level=3]:
+      - button "Can I use my own custom domain?"
+    - heading "Which payment methods does LetBuyy support?" [level=3]:
+      - button "Which payment methods does LetBuyy support?"
+    - heading "Can I migrate from Shopify, WooCommerce, or another platform?" [level=3]:
+      - button "Can I migrate from Shopify, WooCommerce, or another platform?"
+    - heading "Is LetBuyy suitable for growing businesses?" [level=3]:
+      - button "Is LetBuyy suitable for growing businesses?"
+    - heading "Do you charge transaction commissions?" [level=3]:
+      - button "Do you charge transaction commissions?"
+    - heading "What happens after my free trial ends?" [level=3]:
+      - button "What happens after my free trial ends?"
+    - heading "Who owns my store data?" [level=3]:
+      - button "Who owns my store data?"
+  - heading "Start building with LetBuyy today." [level=2]
+  - paragraph: Launch your store, blog, or landing page in minutes.
+  - link "Get Started Free":
+    - /url: https://accounts.letbuyy.com/signup
+  - link "Request Demo":
+    - /url: /in/demo
+  - paragraph: No credit card required • Free forever plan available
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.
+- alert

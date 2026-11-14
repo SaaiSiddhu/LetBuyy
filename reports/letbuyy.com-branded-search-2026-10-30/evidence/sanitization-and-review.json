@@ -1,0 +1,9 @@
+{
+  "captured_at": "2026-10-29T18:56:10.933340+00:00",
+  "private_header_values": "Set-Cookie/Authorization excluded from saved response headers",
+  "public_personal_contacts": "Unnecessary app-listing personal contact fields omitted",
+  "potential_sensitive_pattern_scan": "No matched secret-key or saved sensitive-header patterns; not a guarantee of exhaustive secret detection",
+  "screenshot_privacy": "User signed-in Google screenshot not copied; only relevant text observations and original hash retained",
+  "independent_review": "Technical specialist checked core counts/evidence/causal limits; final added navigation record checked against its own three click results",
+  "app_changes": "None by this audit; only report folder and scratch scripts written"
+}

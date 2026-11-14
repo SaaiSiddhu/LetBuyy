@@ -1,8 +1,0 @@
-{
-  "path": "/private/tmp/theme-editor-prepare-candidate.py",
-  "beforeSha256": "7cd835ce6abd6f30997d3a4aa58a6d7fa8f0c154f762231713f440f83f8e55ce",
-  "sha256": "0857d4be9d84c73f3d5d7cb34b64fafab221df959370942eb1124ffda8971e93",
-  "change": "Skip installed Miniflare node_modules/.mf runtime cache. Existing .vite/.cache exclusions retained; source-parity/workspace-link guards unchanged.",
-  "syntax": "PASS; ast.parse only",
-  "candidates": "a/b/c remain non-runnable evidence; no copy or launch by coordinator."
-}

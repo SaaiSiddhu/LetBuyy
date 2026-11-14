@@ -1,0 +1,156 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+  - button "Open menu"
+- main:
+  - paragraph: LETBUYY SUPPORT
+  - heading "A clear next step. A little help along the way." [level=1]
+  - paragraph: Find a useful guide, talk to the team, or check an existing ticket. Start with the route that fits your question.
+  - link "Contact the team":
+    - /url: /in/contact#contact-form
+  - link "Browse help guides":
+    - /url: "#help-guides"
+  - region "Choose a support route":
+    - link "Find an answer Explore practical guides for setting up and running your store. Open the library":
+      - /url: /in/resources
+      - strong: Find an answer
+      - paragraph: Explore practical guides for setting up and running your store.
+      - text: Open the library
+    - link "Ask the team Choose a topic in the contact form and explain what you need. Write a message":
+      - /url: /in/contact#contact-form
+      - strong: Ask the team
+      - paragraph: Choose a topic in the contact form and explain what you need.
+      - text: Write a message
+    - link "Raise a concern Read the published grievance process and escalation information. View the process":
+      - /url: /in/legal/grievance
+      - strong: Raise a concern
+      - paragraph: Read the published grievance process and escalation information.
+      - text: View the process
+  - region "What are you working on?":
+    - heading "What are you working on?" [level=2]
+    - link "Search all guides":
+      - /url: /in/resources/search
+    - link "Start your store Store setup, products and launch.":
+      - /url: /in/resources/ecommerce
+      - strong: Start your store
+      - text: Store setup, products and launch.
+    - link "Payments and invoices UPI, COD, GST and billing guides.":
+      - /url: /in/resources/payments
+      - strong: Payments and invoices
+      - text: UPI, COD, GST and billing guides.
+    - link "Orders and delivery Stock, fulfillment and shipping.":
+      - /url: /in/resources/operations
+      - strong: Orders and delivery
+      - text: Stock, fulfillment and shipping.
+    - link "Themes and design Customise your storefront.":
+      - /url: /in/resources/platform/how-themes-work
+      - strong: Themes and design
+      - text: Customise your storefront.
+    - link "Developer help APIs, webhooks and integrations.":
+      - /url: /in/resources/developers
+      - strong: Developer help
+      - text: APIs, webhooks and integrations.
+    - link "AI commerce Understand the tools and use cases.":
+      - /url: /in/resources/ai-commerce
+      - strong: AI commerce
+      - text: Understand the tools and use cases.
+  - region "Check an existing ticket.":
+    - paragraph: ALREADY IN TOUCH?
+    - heading "Check an existing ticket." [level=2]
+    - paragraph: Use your ticket reference and the email address you used when contacting us.
+    - link "Prefer email?":
+      - /url: mailto:support@letbuyy.com
+    - link "Find your account":
+      - /url: https://accounts.letbuyy.com/lookup
+    - button "Already have a ticket reference?"
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.

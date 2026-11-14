@@ -1,0 +1,9 @@
+{
+  "captured_at": "2026-11-01T09:11:56.227206+00:00",
+  "source_files_checked": 424,
+  "mismatches": [],
+  "branch": "codex/local-work-preserved-20261025",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "root_source_unchanged_since_full_verification": true,
+  "new_trials_isolated_only": true
+}

@@ -2,10 +2,10 @@
 
 import { useCopy } from '@/components/i18n/useCopy'
 
-import Copy from '@/components/i18n/Copy'
-
 import Link from '@/components/i18n/LocaleLink'
 import { useEffect, useState } from 'react'
+import type { FoundingPlanPricing } from '@letbuyy/api-client'
+import type { PublicPricingData } from '@/lib/pricing'
 import { AlertCircle, Button, Check, ChevronUp, Input } from '@letbuyy/ui'
 import MarketingIllustration from './MarketingIllustration'
 import { getAccountsUrl } from '@/lib/public-urls'
@@ -24,31 +24,8 @@ interface CompareGroup {
     items: CompareItem[]
 }
 
-interface FoundingPlanView {
-    slug: string
-    name: string
-    tagline: string | null
-    is_popular: boolean
-    display_order: number
-    status: string
-    purchasable: boolean
-    regular_inr: number
-    founding_inr: number
-    savings_inr: number
-    has_founding: boolean
-    features: unknown[]
-    compare_features: CompareGroup[]
-}
-
-interface PricingData {
-    pricing?: { plans?: FoundingPlanView[] }
-    remaining?: {
-        remaining_slots?: number
-        total_slots?: number
-        active?: boolean
-        paused?: boolean
-    }
-}
+type FoundingPlanView = FoundingPlanPricing & { compare_features?: CompareGroup[] }
+type PricingData = PublicPricingData
 
 function PlanCardSkeleton() {
     return (
@@ -80,7 +57,7 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
 
     return (
         <section className="select-plan-compare-section">
-            <h2 className="select-plan-compare-title"><Copy text={"Compare all plans"} /></h2>
+            <h2 className="select-plan-compare-title">{t("Compare all plans")}</h2>
 
             <div className={`select-plan-compare-shell ${showAll ? 'is-expanded' : 'is-collapsed'}`}>
                 <div className="select-plan-compare-clip">
@@ -100,7 +77,7 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
                                     <span className="select-plan-switch" aria-hidden="true">
                                         <span className="select-plan-switch-thumb" />
                                     </span>
-                                    <span className="select-plan-switch-text"><Copy text={"Only differences"} /></span>
+                                    <span className="select-plan-switch-text">{t("Only differences")}</span>
                                 </label>
                             </div>
                             {plans.map(plan => (
@@ -109,9 +86,9 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
                                     className={`select-plan-compare-plan-head${plan.is_popular ? ' is-popular' : ''}`}
                                     role="columnheader"
                                 >
-                                    <span className="select-plan-compare-plan-name"><Copy text={plan.name} /></span>
+                                    <span className="select-plan-compare-plan-name">{t((plan.name) ?? '')}</span>
                                     {plan.is_popular && (
-                                        <span className="select-plan-compare-plan-badge"><Copy text={"Most popular"} /></span>
+                                        <span className="select-plan-compare-plan-badge">{t("Most popular")}</span>
                                     )}
                                 </div>
                             ))}
@@ -127,7 +104,7 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
                             if (items.length === 0) return null
                             return (
                                 <div key={gi} role="rowgroup">
-                                    <div className="select-plan-compare-category"><Copy text={group.category} /></div>
+                                    <div className="select-plan-compare-category">{t((group.category) ?? '')}</div>
                                     {items.map((item, ii) => (
                                         <div key={ii} className={rowCls} role="row">
                                             <div className="select-plan-compare-feature" role="cell">
@@ -135,7 +112,7 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
                                                     className="select-plan-compare-feature-label"
                                                     title={item.description ? t(item.description) : undefined}
                                                 >
-                                                    <Copy text={item.label} />
+                                                    {t((item.label) ?? '')}
                                                 </span>
                                             </div>
                                             {planSlugs.map(slug => {
@@ -151,7 +128,7 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
                                                         ) : val === false ? (
                                                             <span className="select-plan-compare-dash">—</span>
                                                         ) : (
-                                                            <span><Copy text={String(val)} /></span>
+                                                            <span>{t((String(val)) ?? '')}</span>
                                                         )}
                                                     </div>
                                                 )
@@ -175,8 +152,8 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
                         aria-expanded={showAll}
                     >
                         {showAll
-                            ? <><ChevronUp size={16} /> <Copy text={"See fewer features"} /></>
-                            : <><Copy text={"+ See all features"} /></>
+                            ? <><ChevronUp size={16} /> {t("See fewer features")}</>
+                            : <>{t("+ See all features")}</>
                         }
                     </Button>
                 </div>
@@ -185,47 +162,50 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
     )
 }
 
-export default function Pricing() {
+export default function Pricing({ initialData = null, headingLevel = 2 }: { initialData?: PublicPricingData | null; headingLevel?: 1 | 2 }) {
     const { t } = useCopy()
-    const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
-    const [data, setData] = useState<PricingData | null>(null)
+    const [state, setState] = useState<'loading' | 'ready' | 'error'>(initialData ? 'ready' : 'error')
+    const [data, setData] = useState<PricingData | null>(initialData)
 
+    const [retry, setRetry] = useState(0)
     useEffect(() => {
-        let active = true
-        fetch('/api/founding-pricing', { cache: 'no-store' })
+        if (retry === 0) return
+        const controller = new AbortController()
+        fetch('/api/founding-pricing', { cache: 'no-store', signal: controller.signal })
             .then(r => r.ok ? r.json() : Promise.reject(new Error('failed')))
-            .then(j => {
-                if (active) {
-                    setData((j?.data ?? null) as PricingData | null)
-                    setState('ready')
-                }
+            .then((j: { data: PricingData }) => {
+                if (!controller.signal.aborted) { setData(j.data); setState('ready') }
             })
-            .catch(() => { if (active) setState('error') })
-        return () => { active = false }
-    }, [])
+            .catch(() => { if (!controller.signal.aborted) setState('error') })
+        return () => controller.abort()
+    }, [retry])
+    const Heading = headingLevel === 1 ? 'h1' : 'h2'
+    const PlanHeading = headingLevel === 1 ? 'h2' : 'h3'
 
     const plans = (data?.pricing?.plans ?? []).slice().sort((a, b) => a.display_order - b.display_order)
-    const remaining = data?.remaining?.remaining_slots ?? 0
-    const total = data?.remaining?.total_slots ?? 100
-    const programActive = Boolean(data?.remaining?.active) && !data?.remaining?.paused && remaining > 0
+    const program = data?.remaining ?? data?.pricing.founding_program
+    const remaining = program?.remaining_slots ?? 0
+    const total = program?.total_slots ?? 0
+    const programActive = Boolean(program?.active) && !program?.paused && remaining > 0 && total >= remaining
 
     return (
         <section id="pricing" className="pricing pricing-comparison">
             <div className="container">
                 <div className="pricing-header">
-                    <p className="section-label"><Copy text={"Pricing"} /></p>
-                    <h2 className="section-title"><Copy text={"Simple, transparent pricing"} /></h2>
+                    <p className="section-label">{t("Pricing")}</p>
+                    <Heading className="section-title">{t("Simple, transparent pricing")}</Heading>
                     <p className="section-subtitle">
-                        <Copy text={"Launch and Growth plans are live now. Scale and Commerce OS are coming soon. 0% transaction and platform fees — forever."} /></p>
-                    <MarketingIllustration artwork="essentials" className="marketing-illustration--pricing" />
+                        {t("Compare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales.")}</p>
+                    <MarketingIllustration artwork="essentials" className="marketing-illustration--pricing" priority={headingLevel === 1} />
                 </div>
 
                 {state === 'error' ? (
                     <div className="pricing-unavailable">
                         <AlertCircle size={32} className="pricing-unavailable-icon" aria-hidden="true" />
-                        <p className="pricing-unavailable-msg"><Copy text={"Pricing is temporarily unavailable."} /></p>
+                        <p className="pricing-unavailable-msg" role="status">{t("Pricing is temporarily unavailable.")}</p>
+                        <Button unstyled type="button" className="btn btn-outline" onClick={() => { setState('loading'); setRetry(value => value + 1) }}>{t("Try again")}</Button>
                         <Link href={getAccountsUrl('/signup')} className="btn btn-primary">
-                            <Copy text={"Start free trial"} /></Link>
+                            {t("Review signup terms")}</Link>
                     </div>
                 ) : state === 'loading' ? (
                     <div className="pricing-plan-grid" aria-busy="true" aria-label={t("Loading plans")}>
@@ -238,18 +218,18 @@ export default function Pricing() {
                                 <AlertCircle className="pricing-approval-icon" aria-hidden="true" />
                                 <div>
                                     <p className="pricing-approval-title">
-                                        <Copy text={"🏆 Founding Merchant Program —"} />{' '}{remaining} / {total} <Copy text={"slots remaining"} /></p>
+                                        {t("🏆 Founding Merchant Program —")}{' '}{remaining} / {total} {t("slots remaining")}</p>
                                     <p className="pricing-approval-copy">
-                                        <Copy text={"Lock the founding price for life. Lifetime price lock, founding badge, priority access, and early features."} /></p>
+                                        {t("Lock the founding price for life. Lifetime price lock, founding badge, priority access, and early features.")}</p>
                                 </div>
                             </div>
                         )}
 
                         {plans.length === 0 ? (
                             <div className="pricing-unavailable">
-                                <p className="pricing-unavailable-msg"><Copy text={"Plans are being finalized. Sign up to get early access."} /></p>
+                                <p className="pricing-unavailable-msg">{t("Plans are being finalized. Sign up to get early access.")}</p>
                                 <Link href={getAccountsUrl('/signup')} className="btn btn-primary">
-                                    <Copy text={"Start free trial"} /></Link>
+                                    {t("Review signup terms")}</Link>
                             </div>
                         ) : (
                             <>
@@ -276,30 +256,30 @@ export default function Pricing() {
                                                     : plan.is_popular ? ' pricing-plan-card-header--popular'
                                                     : ' pricing-plan-card-header--empty'
                                                 }`}>
-                                                    <Copy text={comingSoon ? "Coming soon" : plan.is_popular ? "Most popular" : null} />
+                                                    {t((comingSoon ? "Coming soon" : plan.is_popular ? "Most popular" : null) ?? '')}
                                                 </div>
 
                                                 {/* Section 2 — plan name + tagline */}
                                                 <div className="pricing-plan-name-section">
-                                                    <h3 className="pricing-plan-name"><Copy text={plan.name} /></h3>
+                                                    <PlanHeading className="pricing-plan-name">{t((plan.name) ?? '')}</PlanHeading>
                                                     {plan.tagline && (
-                                                        <p className="pricing-plan-audience"><Copy text={plan.tagline} /></p>
+                                                        <p className="pricing-plan-audience">{t((plan.tagline) ?? '')}</p>
                                                     )}
                                                 </div>
 
                                                 {/* Section 3 — price */}
                                                 <div className="pricing-plan-price-section">
                                                     {comingSoon ? (
-                                                        <p className="pricing-plan-price pricing-plan-price--soon"><Copy text={"Coming soon"} /></p>
+                                                        <p className="pricing-plan-price pricing-plan-price--soon">{t("Coming soon")}</p>
                                                     ) : (
                                                         <>
                                                             <p className="pricing-plan-price">
                                                                 ₹{price.toLocaleString('en-IN')}
-                                                                <span className="pricing-plan-price-period"><Copy text={"/month"} /></span>
+                                                                <span className="pricing-plan-price-period">{t("/month")}</span>
                                                             </p>
                                                             {showFounding && (
                                                                 <p className="pricing-plan-note">
-                                                                    <Copy text={"Regular ₹"} />{plan.regular_inr.toLocaleString('en-IN')} <Copy text={"· Save ₹"} />{plan.savings_inr.toLocaleString('en-IN')}<Copy text={"/mo for life"} /></p>
+                                                                    {t("Regular ₹")}{plan.regular_inr.toLocaleString('en-IN')} {t("· Save ₹")}{plan.savings_inr.toLocaleString('en-IN')}{t("/mo for life")}</p>
                                                             )}
                                                         </>
                                                     )}
@@ -312,13 +292,13 @@ export default function Pricing() {
                                                             className="btn pricing-plan-cta btn-outline pricing-plan-cta--soon"
                                                             aria-disabled="true"
                                                         >
-                                                            <Copy text={"Coming soon"} /></span>
+                                                            {t("Coming soon")}</span>
                                                     ) : (
                                                         <Link
                                                             href={getAccountsUrl('/signup')}
                                                             className={`btn pricing-plan-cta ${plan.is_popular ? 'btn-primary' : 'btn-outline'}`}
                                                         >
-                                                            <Copy text={"Start free trial"} /></Link>
+                                                            {t("Review signup terms")}</Link>
                                                     )}
                                                 </div>
 
@@ -327,7 +307,7 @@ export default function Pricing() {
                                                     {plan.features.slice(0, 6).map((feature, idx) => (
                                                         <li key={idx} className="pricing-plan-highlight">
                                                             <Check className="pricing-plan-check" aria-hidden="true" />
-                                                            <Copy text={typeof feature === "string" ? feature : String(feature)} />
+                                                            {t((typeof feature === "string" ? feature : String(feature)) ?? '')}
                                                         </li>
                                                     ))}
                                                 </ul>

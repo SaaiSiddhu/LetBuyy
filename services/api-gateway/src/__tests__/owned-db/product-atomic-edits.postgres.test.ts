@@ -28,11 +28,6 @@ before(async () => {
     const file=(dir:string,name:string)=>readFileSync(new URL('../../../../../database/supabase/'+dir+'/'+name,import.meta.url),'utf8');
     assert.equal(psql('SELECT count(*) FROM inventory_adjustment_receipts;'),'0');
     assert.match(owned.psqlScriptExpectError(file('rollback','346_product_atomic_edits.rollback.sql')),/rollback346 refuses/);
-    // Retire the unused GST successors first; their guards correctly protect the writer.
-    owned.script(file('rollback','412_invoice_checkout_fact_parity.rollback.sql'));
-    owned.script(file('rollback','411_authoritative_checkout_gst.rollback.sql'));
-    owned.script(file('rollback','388_cart_order_fact_snapshots.rollback.sql'));
-    owned.script(file('rollback','385_product_variant_facts.rollback.sql'));
     owned.script(file('rollback','356_inventory_adjustment_receipts.rollback.sql'));
 
     for (const tenant of [site, other]) seedSyntheticTenant(psql, tenant);
@@ -380,15 +375,6 @@ test('safe rollback refuses a real owned prepared write transaction and restores
 });
 
 test('canonical commerce intent executes through the actual pooled SQL parameter transport', async () => {
-    // The earlier cases qualified the predecessor retirement; all behavior below
-    // runs with the currently assembled inventory, variant-fact and cart writers.
-    const restore=(name:string)=>owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/'+name,import.meta.url),'utf8'));
-    restore('356_inventory_adjustment_receipts.sql');
-    restore('385_product_variant_facts.sql');
-    restore('388_cart_order_fact_snapshots.sql');
-    restore('411_authoritative_checkout_gst.sql');
-    restore('412_invoice_checkout_fact_parity.sql');
-
     const metadata={note:'Synthetic "quotes", apostrophe\' and ₹',nested:[true,null,7]};
     const id=product(),plan=planProductMutation({name:'Synthetic pooled plan',metadata,version:version(id),idempotency_key:crypto.randomUUID()});
     const rows=await withTenantTx(gateway.env,{siteId:site.siteId,requestId:'syn-parameter-transport'},async sql=>{
@@ -619,7 +605,7 @@ test('tracking-disabled variants without stock references still retain their can
         '{"line1":"Fixture","city":"Bengaluru","state":"Karnataka","state_code":"29"}'::jsonb,
         '[{"product_id":"${id}","variant_id":"${variantId}","quantity":1}]'::jsonb,
         'cod',NULL,NULL,NULL,'standard','syn-non-stock-${id}',NULL,'syn-non-stock-${id}');`);
-    assert.match(checkoutError,/CART_FACT_REFERENCE_REQUIRED/);
+    assert.match(checkoutError,/inventory level not found for product/);
     assert.equal(psql(`SELECT count(*) FROM order_items WHERE variant_id='${variantId}';`),'0');
     const before=snapshot(id);
     const denied=await patch(id,{name:'Synthetic must roll back',variants:[]});
@@ -631,7 +617,8 @@ test('tracking-disabled variants without stock references still retain their can
 });
 
 test('intervening and concurrent canonical stock adjustments cannot be reset by a stale full form', async () => {
-    // The current356 writer was restored before the behavior cohort; do not admit it twice.
+    // Resume the latest successor for the real inventory command/race controls.
+    owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/356_inventory_adjustment_receipts.sql',import.meta.url),'utf8'));
     const id=product(), variantId=variant(id), old=version(id);
     assert.equal((await adjust(id,variantId,2)).status,200);
     assert.ok(version(id)>old,'canonical variant stock now invalidates the parent edit token');

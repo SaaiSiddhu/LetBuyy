@@ -1,0 +1,7 @@
+{
+  "isolatedOnly": true,
+  "mutation": "Remove only low fetch priority from decorative artwork",
+  "expectedBehavioralFailureObserved": true,
+  "sourceRestoredExactly": true,
+  "notACompileFailure": true
+}

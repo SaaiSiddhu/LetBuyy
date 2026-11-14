@@ -1,0 +1,12 @@
+{
+  "severity": {
+    "High": 1,
+    "Medium": 5,
+    "Low": 5
+  },
+  "state": {
+    "Confirmed": 8,
+    "Opportunity": 1,
+    "Needs verification": 2
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-11-01T05:21:01.047911+00:00",
+  "rows": [
+    {
+      "script": "final-interactions-touch-final.cjs",
+      "exit_code": 0
+    },
+    {
+      "script": "final-touch-final.cjs",
+      "exit_code": 0
+    },
+    {
+      "script": "final-carousel-motion.cjs",
+      "exit_code": 0
+    },
+    {
+      "script": "final-spa-local-api.cjs",
+      "exit_code": 0
+    },
+    {
+      "script": "final-menu-visual.cjs",
+      "exit_code": 0
+    },
+    {
+      "script": "final-scroll-visual.cjs",
+      "exit_code": 1
+    }
+  ]
+}

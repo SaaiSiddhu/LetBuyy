@@ -1,8 +1,5 @@
-import { DEFAULT_EMAIL_BRAND, renderEmailShell, heading, safeSubject } from './email';
 import { z } from 'zod';
 import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
-export { OrderEmailSnapshotSchema, OrderEmailDeliverySchema, OrderEmailDeliveryReceiptSchema, OrderEmailMessageSchema,
-  renderOrderLifecycleEmail, type OrderEmailSnapshot } from './order-email';
 
 export type NotificationChannel = 'whatsapp' | 'sms' | 'email' | 'push' | 'in_app';
 export type NotificationAudience = 'shopper' | 'customer' | 'merchant' | 'platform-employee' | 'platform-operator';
@@ -143,7 +140,7 @@ const DEFAULT_EMAIL_TEMPLATES: Record<string, { subject: string; body: string }>
   },
   order_cancelled: {
     subject: 'Order {{ order_number }} cancelled',
-    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello {{ customer.name }}, your order {{ order_number }} has been cancelled. Payment and refund updates, when applicable, are sent separately.</mj-text></mj-column></mj-section></mj-body></mjml>',
+    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello {{ customer.name }}, your order {{ order_number }} has been cancelled. If you were charged, your refund is being processed.</mj-text></mj-column></mj-section></mj-body></mjml>',
   },
   order_refunded: {
     subject: 'Refund issued for order {{ order_number }}',
@@ -205,10 +202,7 @@ export function renderEmailTemplate(input: z.infer<typeof EmailRenderSchema>): R
   };
   const subject = renderLiquidLike(parsed.subject || fallback.subject, parsed.context);
   const rawBody = renderLiquidLike(parsed.body || fallback.body, parsed.context);
-  const body = normalizeMjml(rawBody);
-  const html = parsed.body ? body : renderEmailShell(DEFAULT_EMAIL_BRAND, heading(subject) + body, {
-    preheader: safeSubject(subject), reason: 'This message relates to activity on your LetBuyy account or store.', category: 'transactional',
-  });
+  const html = normalizeMjml(rawBody);
 
   return {
     template_key: parsed.template_key,
@@ -523,5 +517,3 @@ export type NotificationDispatchInput = z.infer<typeof NotificationDispatchSchem
 export type NotificationSendInput = z.infer<typeof NotificationSendSchema>;
 export type EmailRenderInput = z.infer<typeof EmailRenderSchema>;
 export type EmailSendInput = z.infer<typeof EmailSendSchema>;
-
-export * from './worker-transport';

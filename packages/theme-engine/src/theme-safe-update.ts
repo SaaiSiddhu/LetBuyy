@@ -28,9 +28,8 @@
 //
 // VERSION FLOW:
 //   1. G4 gate  : isThemeBundleSchemaCompatible(nextBundle) — unknown/future → REJECT
-//   2. Direction: reject schema downgrades separately from package-edition order.
-//      Package version_number is the catalog ordinal; version is its display label.
-//      A no-op requires the same schema and the same package edition.
+//   2. Direction: compareSchemaVersions(next, current) — downgrade/unknown → REJECT
+//                 same-version → no-op (updatedDoc = currentDocument, diff empty)
 //   3. G migration : migrateThemeTemplateSchemasWithRegistry on current sections
 //   4. Merge    : per-section classify+carry forward merchant content
 //   5. parseThemeDocument: fail-closed final gate
@@ -63,7 +62,7 @@ import type { SectionModel, StoreTemplateConfig, ThemeSettings } from './index';
  */
 export class UpdateVersionRejectedError extends Error {
   readonly targetVersion: string;
-  readonly reason: 'unknown-version' | 'incompatible-compatibility-range' | 'unresolvable-direction' | 'package-mismatch';
+  readonly reason: 'unknown-version' | 'incompatible-compatibility-range' | 'unresolvable-direction';
 
   constructor(
     targetVersion: string,
@@ -145,14 +144,6 @@ export interface ThemeUpdateDiff {
   fromVersion: string;
   /** Bundle schema_version of the target bundle. */
   toVersion: string;
-  /** Package editions remain distinct even when their supported schema is unchanged. */
-  package: {
-    slug: string;
-    fromVersion: string;
-    toVersion: string;
-    fromVersionNumber: number;
-    toVersionNumber: number;
-  };
   /** Per-section diff entries across all templates. */
   sections: ThemeUpdateSectionDiff[];
   /**
@@ -519,26 +510,6 @@ function computeSectionUpdateDiff(
  *   schema_version direction cannot be resolved against the current document.
  * @throws UpdateDowngradeError when nextBundle would be a downgrade.
  */
-function updateDirection(current: ThemeDocument, next: LiquidThemePackageBundle): 0 | 1 {
-  if (!isThemeBundleSchemaCompatible(next)) throw new UpdateVersionRejectedError(next.schema_version, 'unknown-version');
-  const schemaDirection = compareSchemaVersions(next.schema_version, current.bundle_schema_version);
-  if (schemaDirection === null) throw new UpdateVersionRejectedError(next.schema_version, 'unresolvable-direction');
-  if (schemaDirection === -1) throw new UpdateDowngradeError(current.bundle_schema_version, next.schema_version);
-  if (next.package.slug !== current.package.slug) throw new UpdateVersionRejectedError(next.package.version, 'package-mismatch');
-  const from = current.package, to = next.package;
-  if (!Number.isSafeInteger(from.version_number) || !Number.isSafeInteger(to.version_number) || from.version_number < 1 || to.version_number < 1)
-    throw new UpdateVersionRejectedError(to.version, 'unresolvable-direction');
-  if (to.version_number < from.version_number) throw new UpdateDowngradeError(from.version, to.version);
-  if ((to.version_number === from.version_number) !== (to.version === from.version))
-    throw new UpdateVersionRejectedError(to.version, 'unresolvable-direction');
-  return schemaDirection === 1 || to.version_number > from.version_number ? 1 : 0;
-}
-
-function packageDiff(current: ThemeDocument, next: LiquidThemePackageBundle): ThemeUpdateDiff['package'] {
-  return { slug: current.package.slug, fromVersion: current.package.version, toVersion: next.package.version,
-    fromVersionNumber: current.package.version_number, toVersionNumber: next.package.version_number };
-}
-
 export function computeThemeUpdateDiff(
   currentDocument: ThemeDocument,
   nextBundle: LiquidThemePackageBundle,
@@ -546,14 +517,27 @@ export function computeThemeUpdateDiff(
   const fromVersion = currentDocument.bundle_schema_version;
   const toVersion = nextBundle.schema_version;
 
-  const direction = updateDirection(currentDocument, nextBundle);
+  // ── G4 gate ─────────────────────────────────────────────────────────────────
+  if (!isThemeBundleSchemaCompatible(nextBundle)) {
+    throw new UpdateVersionRejectedError(toVersion, 'unknown-version');
+  }
+
+  // ── Direction ───────────────────────────────────────────────────────────────
+  const direction = compareSchemaVersions(toVersion, fromVersion);
+
+  if (direction === null) {
+    throw new UpdateVersionRejectedError(toVersion, 'unresolvable-direction');
+  }
+
+  if (direction === -1) {
+    throw new UpdateDowngradeError(fromVersion, toVersion);
+  }
 
   // ── Same-version no-op ───────────────────────────────────────────────────────
   if (direction === 0) {
     return {
       fromVersion,
       toVersion,
-      package: packageDiff(currentDocument, nextBundle),
       sections: [],
       conflicts: [],
       requiresDuplicateBeforeApply: false,
@@ -632,7 +616,6 @@ export function computeThemeUpdateDiff(
   return {
     fromVersion,
     toVersion,
-    package: packageDiff(currentDocument, nextBundle),
     sections: allEntries,
     conflicts,
     requiresDuplicateBeforeApply: conflicts.length > 0,
@@ -678,15 +661,28 @@ export function planThemeSafeUpdate(input: {
   const fromVersion = currentDocument.bundle_schema_version;
   const toVersion = nextBundle.schema_version;
 
-  // G4 and independent schema/package direction checks precede any merge.
-  const direction = updateDirection(currentDocument, nextBundle);
+  // ── 1. G4 gate (MUST run before any mutation) ────────────────────────────────
+  // RISK-DUAL-N01 assertion: this check fires before any document mutation or DB write.
+  if (!isThemeBundleSchemaCompatible(nextBundle)) {
+    throw new UpdateVersionRejectedError(toVersion, 'unknown-version');
+  }
+
+  // ── 2. Direction check ───────────────────────────────────────────────────────
+  const direction = compareSchemaVersions(toVersion, fromVersion);
+
+  if (direction === null) {
+    throw new UpdateVersionRejectedError(toVersion, 'unresolvable-direction');
+  }
+
+  if (direction === -1) {
+    throw new UpdateDowngradeError(fromVersion, toVersion);
+  }
 
   // ── 3. Same-version no-op ────────────────────────────────────────────────────
   if (direction === 0) {
     const noop: ThemeUpdateDiff = {
       fromVersion,
       toVersion,
-      package: packageDiff(currentDocument, nextBundle),
       sections: [],
       conflicts: [],
       requiresDuplicateBeforeApply: false,
@@ -806,7 +802,6 @@ export function planThemeSafeUpdate(input: {
   const diff: ThemeUpdateDiff = {
     fromVersion,
     toVersion,
-    package: packageDiff(currentDocument, nextBundle),
     sections: allEntries,
     conflicts,
     requiresDuplicateBeforeApply: conflicts.length > 0,

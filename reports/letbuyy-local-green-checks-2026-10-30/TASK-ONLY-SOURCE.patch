@@ -1,0 +1,473 @@
+--- a/apps/marketing/web/src/components/CapabilityMap.tsx
++++ b/apps/marketing/web/src/components/CapabilityMap.tsx
+@@ -1155,7 +1155,7 @@
+                         <CommerceOSGraph activeId={activeId} onSelect={selectCapability} reduced={isReduced} />
+                         {!isReduced && (
+                             <Button unstyled type="button" className="cmap-motion-control" onClick={() => setPlaying(value => !value)}>
+-                                <Copy text={playing ? "Pause automatic module tour" : "Resume automatic module tour"} />
++                                <Copy text={playing ? "Pause automatic module tour" : "Continue automatic module tour"} />
+                             </Button>
+                         )}
+                     </div>
+--- a/apps/marketing/web/src/lib/i18n/copy-catalog.ts
++++ b/apps/marketing/web/src/lib/i18n/copy-catalog.ts
+@@ -36,7 +36,7 @@
+     'Read how LetBuyy storefront themes work.': ['जानें LetBuyy स्टोरफ़्रंट थीम कैसे काम करती हैं।', 'LetBuyy கடைமுக தீம்கள் செயல்படுவதை அறியுங்கள்.'], 'Learn about planned app integrations and platform capabilities.': ['योजनाबद्ध ऐप एकीकरण और प्लेटफ़ॉर्म क्षमताएँ जानें।', 'திட்டமிட்ட செயலி இணைப்புகள், தளத் திறன்களை அறியுங்கள்.'], 'Public guides for APIs, webhooks and integrations.': ['API, वेबहुक और एकीकरण की सार्वजनिक मार्गदर्शिकाएँ।', 'API, webhook, இணைப்புகளுக்கான பொது வழிகாட்டிகள்.'], 'Log in': ['लॉगिन करें', 'உள்நுழையவும்'], 'Merchant account lookup and sign-in.': ['व्यापारी खाता खोजें और लॉगिन करें।', 'வணிகர் கணக்கைத் தேடி உள்நுழையுங்கள்.'],
+     'THE PUBLIC DIRECTORY': ['सार्वजनिक निर्देशिका', 'பொது வழிகாட்டி'], 'Every page': ['हर पेज', 'ஒவ்வொரு பக்கமும்'], 'on LetBuyy.': ['LetBuyy पर।', 'LetBuyyஇல்.'], 'A complete, crawlable index of the LetBuyy marketing site, guide library and connected platform properties.': ['LetBuyy वेबसाइट, मार्गदर्शिका पुस्तकालय और जुड़े प्लेटफ़ॉर्म का पूरा, खोजने योग्य सूचकांक।', 'LetBuyy இணையதளம், வழிகாட்டி நூலகம், இணைந்த தளங்களின் முழுமையான அட்டவணை.'], 'Directory links': ['निर्देशिका लिंक', 'வழிகாட்டி இணைப்புகள்'], 'Sections': ['भाग', 'பகுதிகள்'], 'XML feeds': ['XML फ़ीड', 'XML ஊட்டங்கள்'], 'Explore the directory': ['निर्देशिका देखें', 'வழிகாட்டியை ஆராயுங்கள்'], 'links': ['लिंक', 'இணைப்புகள்'], 'FOR INDEXING TOOLS': ['इंडेक्सिंग टूल के लिए', 'அட்டவணைக் கருவிகளுக்காக'], 'Machine-readable': ['मशीन-पठनीय', 'இயந்திரம் படிக்கக்கூடியது'], 'For crawlers and indexing tools.': ['क्रॉलर और इंडेक्सिंग टूल के लिए।', 'தேடல் உலவிகள், அட்டவணைக் கருவிகளுக்காக.'], 'Home': ['होम', 'முகப்பு'], 'Platform overview': ['प्लेटफ़ॉर्म परिचय', 'தள அறிமுகம்'], 'Plans and commission': ['योजना और कमीशन', 'திட்டங்களும் கமிஷனும்'], 'Start a store': ['स्टोर शुरू करें', 'கடையைத் தொடங்குங்கள்'], 'Claim your subdomain': ['अपना सबडोमेन लें', 'துணை டொமைனைப் பெறுங்கள்'], 'Create account': ['खाता बनाएँ', 'கணக்கை உருவாக்கவும்'], 'Merchant sign-up': ['व्यापारी पंजीकरण', 'வணிகர் பதிவு'], 'Support and sales': ['सहायता और बिक्री', 'உதவியும் விற்பனையும்'], 'Support centre': ['सहायता केंद्र', 'உதவி மையம்'], 'Guides, contact and ticket lookup': ['मार्गदर्शिका, संपर्क और टिकट खोज', 'வழிகாட்டி, தொடர்பு, டிக்கெட் தேடல்'], 'All guides': ['सभी मार्गदर्शिकाएँ', 'அனைத்து வழிகாட்டிகளும்'], 'Release history': ['रिलीज़ इतिहास', 'வெளியீட்டு வரலாறு'], 'Version notes': ['संस्करण विवरण', 'பதிப்புக் குறிப்புகள்'], 'Find a guide': ['मार्गदर्शिका खोजें', 'வழிகாட்டியைக் கண்டறியவும்'], 'Legal library': ['कानूनी पुस्तकालय', 'சட்ட நூலகம்'], '{count} documents': ['{count} दस्तावेज़', '{count} ஆவணங்கள்'], 'Start here': ['यहाँ शुरू करें', 'இங்கே தொடங்குங்கள்'], 'The essentials, from exploring plans to getting help.': ['योजना जानने से सहायता पाने तक ज़रूरी बातें।', 'திட்டங்களை ஆராய்வதிலிருந்து உதவிவரை அடிப்படைகள்.'], 'Guides & resources': ['मार्गदर्शिका और संसाधन', 'வழிகாட்டிகளும் வளங்களும்'], 'Practical reading for every part of running a store.': ['स्टोर चलाने के हर हिस्से के लिए उपयोगी पठन।', 'கடையை நடத்தும் ஒவ்வொரு பகுதிக்கும் நடைமுறை வாசிப்பு.'], 'Guides and account entry points across LetBuyy.': ['LetBuyy की मार्गदर्शिकाएँ और खाता प्रवेश।', 'LetBuyy வழிகாட்டிகளும் கணக்கு நுழைவுகளும்.'], 'Legal': ['कानूनी', 'சட்டம்'], 'Policies, responsibilities and trust information.': ['नीतियाँ, ज़िम्मेदारियाँ और भरोसे की जानकारी।', 'கொள்கைகள், பொறுப்புகள், நம்பிக்கைத் தகவல்.'], 'Merchant workspace': ['व्यापारी कार्यस्थल', 'வணிகர் பணியிடம்'], 'Developer portal': ['डेवलपर पोर्टल', 'உருவாக்குநர் தளம்'], 'Identity and account access': ['पहचान और खाते की पहुँच', 'அடையாளமும் கணக்கு அணுகலும்'],
+     'FIND YOUR FOCUS': ['अपना विषय चुनें', 'கவனத்தைத் தேர்ந்தெடுங்கள்'], 'What’s on your mind?': ['आप क्या जानना चाहते हैं?', 'எதைப் பற்றி நினைக்கிறீர்கள்?'], 'Go straight to the part of your business': ['सीधे व्यवसाय के उस हिस्से पर जाएँ', 'வணிகத்தின் அந்தப் பகுதிக்குச் செல்லுங்கள்'], 'you want to work on.': ['जिस पर काम करना है।', 'நீங்கள் பணிபுரிய விரும்பும் பகுதி.'], 'What’s new at LetBuyy': ['LetBuyy में नया क्या है', 'LetBuyyஇல் புதிதாக என்ன'], 'Browse the changelog': ['बदलाव विवरण देखें', 'மாற்றப் பதிவைப் பார்க்கவும்'], 'Browse all guides': ['सभी मार्गदर्शिकाएँ देखें', 'அனைத்து வழிகாட்டிகளையும் பார்க்கவும்'], 'Read article': ['लेख पढ़ें', 'கட்டுரையைப் படிக்கவும்'], 'KEEP A GOOD THING GOING': ['सीखना जारी रखें', 'நல்லதைத் தொடருங்கள்'], 'A place in your reading routine.': ['पढ़ने की आदत का हिस्सा।', 'உங்கள் வாசிப்புப் பழக்கத்தில் ஓர் இடம்.'], 'Follow new guides and platform updates.': ['नई मार्गदर्शिकाएँ और अपडेट देखें।', 'புதிய வழிகாட்டிகள், தளப் புதுப்பிப்புகளைப் பின்தொடருங்கள்.'],
+-    'Pricing': ['कीमत', 'விலை'], 'Compare all plans': ['सभी योजनाओं की तुलना', 'அனைத்துத் திட்டங்களையும் ஒப்பிடுங்கள்'], 'Only differences': ['केवल अंतर', 'வேறுபாடுகள் மட்டும்'], 'Most popular': ['सबसे लोकप्रिय', 'மிகப் பிரபலமானது'], 'See fewer features': ['कम सुविधाएँ देखें', 'குறைந்த அம்சங்களைக் காணவும்'], '+ See all features': ['+ सभी सुविधाएँ देखें', '+ அனைத்து அம்சங்களையும் காணவும்'], 'Simple, transparent pricing': ['सरल और स्पष्ट कीमत', 'எளிய, வெளிப்படையான விலை'], 'Launch and Growth plans are live now. Scale and Commerce OS are coming soon. 0% transaction and platform fees — forever.': ['Launch और Growth उपलब्ध हैं। Scale और Commerce OS जल्द आएँगे। लेनदेन और प्लेटफ़ॉर्म शुल्क हमेशा 0%।', 'Launch, Growth இப்போது உள்ளன. Scale, Commerce OS விரைவில். பரிவர்த்தனை, தளக் கட்டணம் என்றும் 0%.'], 'Pricing is temporarily unavailable.': ['कीमत अभी उपलब्ध नहीं।', 'விலை தற்காலிகமாகக் கிடைக்கவில்லை.'], 'Start free trial': ['मुफ़्त परीक्षण शुरू करें', 'இலவசச் சோதனை தொடங்குங்கள்'], '🏆 Founding Merchant Program —': ['🏆 शुरुआती व्यापारी कार्यक्रम —', '🏆 தொடக்க வணிகர் திட்டம் —'], 'slots remaining': ['स्थान शेष', 'இடங்கள் மீதம்'], 'Lock the founding price for life. Lifetime price lock, founding badge, priority access, and early features.': ['शुरुआती कीमत जीवनभर तय करें। स्थायी दर, शुरुआती बैज, प्राथमिकता और नई सुविधाओं की जल्द पहुँच।', 'தொடக்க விலையை வாழ்நாள் முழுதும் உறுதிசெய்யுங்கள். நிலையான விலை, தொடக்கக் குறியீடு, முன்னுரிமை, புதிய அம்சங்களுக்கான முன் அணுகல்.'], 'Plans are being finalized. Sign up to get early access.': ['योजनाएँ तय हो रही हैं। शुरुआती पहुँच के लिए पंजीकरण करें।', 'திட்டங்கள் இறுதி செய்யப்படுகின்றன. முன் அணுகலுக்குப் பதிவு செய்யுங்கள்.'], 'Coming soon': ['जल्द आ रहा है', 'விரைவில்'], '/month': ['/माह', '/மாதம்'], 'Regular ₹': ['सामान्य ₹', 'வழக்கமான ₹'], '· Save ₹': ['· बचत ₹', '· சேமிப்பு ₹'], '/mo for life': ['/माह जीवनभर', '/மாதம் வாழ்நாள் முழுவதும்'], 'Pause automatic module tour': ['स्वचालित मॉड्यूल यात्रा रोकें', 'தானியங்கித் தொகுதி பயணத்தை நிறுத்தவும்'], 'Resume automatic module tour': ['स्वचालित मॉड्यूल यात्रा जारी करें', 'தானியங்கித் தொகுதி பயணத்தைத் தொடரவும்'], 'AI': ['AI', 'AI'], 'B2B': ['B2B', 'B2B'], 'Storefront': ['स्टोरफ़्रंट', 'கடைமுகம்'],
++    'Pricing': ['कीमत', 'விலை'], 'Compare all plans': ['सभी योजनाओं की तुलना', 'அனைத்துத் திட்டங்களையும் ஒப்பிடுங்கள்'], 'Only differences': ['केवल अंतर', 'வேறுபாடுகள் மட்டும்'], 'Most popular': ['सबसे लोकप्रिय', 'மிகப் பிரபலமானது'], 'See fewer features': ['कम सुविधाएँ देखें', 'குறைந்த அம்சங்களைக் காணவும்'], '+ See all features': ['+ सभी सुविधाएँ देखें', '+ அனைத்து அம்சங்களையும் காணவும்'], 'Simple, transparent pricing': ['सरल और स्पष्ट कीमत', 'எளிய, வெளிப்படையான விலை'], 'Launch and Growth plans are live now. Scale and Commerce OS are coming soon. 0% transaction and platform fees — forever.': ['Launch और Growth उपलब्ध हैं। Scale और Commerce OS जल्द आएँगे। लेनदेन और प्लेटफ़ॉर्म शुल्क हमेशा 0%।', 'Launch, Growth இப்போது உள்ளன. Scale, Commerce OS விரைவில். பரிவர்த்தனை, தளக் கட்டணம் என்றும் 0%.'], 'Pricing is temporarily unavailable.': ['कीमत अभी उपलब्ध नहीं।', 'விலை தற்காலிகமாகக் கிடைக்கவில்லை.'], 'Start free trial': ['मुफ़्त परीक्षण शुरू करें', 'இலவசச் சோதனை தொடங்குங்கள்'], '🏆 Founding Merchant Program —': ['🏆 शुरुआती व्यापारी कार्यक्रम —', '🏆 தொடக்க வணிகர் திட்டம் —'], 'slots remaining': ['स्थान शेष', 'இடங்கள் மீதம்'], 'Lock the founding price for life. Lifetime price lock, founding badge, priority access, and early features.': ['शुरुआती कीमत जीवनभर तय करें। स्थायी दर, शुरुआती बैज, प्राथमिकता और नई सुविधाओं की जल्द पहुँच।', 'தொடக்க விலையை வாழ்நாள் முழுதும் உறுதிசெய்யுங்கள். நிலையான விலை, தொடக்கக் குறியீடு, முன்னுரிமை, புதிய அம்சங்களுக்கான முன் அணுகல்.'], 'Plans are being finalized. Sign up to get early access.': ['योजनाएँ तय हो रही हैं। शुरुआती पहुँच के लिए पंजीकरण करें।', 'திட்டங்கள் இறுதி செய்யப்படுகின்றன. முன் அணுகலுக்குப் பதிவு செய்யுங்கள்.'], 'Coming soon': ['जल्द आ रहा है', 'விரைவில்'], '/month': ['/माह', '/மாதம்'], 'Regular ₹': ['सामान्य ₹', 'வழக்கமான ₹'], '· Save ₹': ['· बचत ₹', '· சேமிப்பு ₹'], '/mo for life': ['/माह जीवनभर', '/மாதம் வாழ்நாள் முழுவதும்'], 'Pause automatic module tour': ['स्वचालित मॉड्यूल यात्रा रोकें', 'தானியங்கித் தொகுதி பயணத்தை நிறுத்தவும்'], 'Continue automatic module tour': ['स्वचालित मॉड्यूल यात्रा जारी करें', 'தானியங்கித் தொகுதி பயணத்தைத் தொடரவும்'], 'AI': ['AI', 'AI'], 'B2B': ['B2B', 'B2B'], 'Storefront': ['स्टोरफ़्रंट', 'கடைமுகம்'],
+     'Create Your Site': ['अपनी साइट बनाएँ', 'உங்கள் தளத்தை உருவாக்குங்கள்'], 'Choose your site type and get started in minutes': ['साइट प्रकार चुनें और मिनटों में शुरू करें', 'தள வகையைத் தேர்ந்து நிமிடங்களில் தொடங்குங்கள்'], 'What are you building?': ['आप क्या बना रहे हैं?', 'எதை உருவாக்குகிறீர்கள்?'], 'Site Details': ['साइट विवरण', 'தள விவரங்கள்'], 'Site Name': ['साइट का नाम', 'தளப் பெயர்'], 'Subdomain': ['सबडोमेन', 'துணை டொமைன்'], 'Available': ['उपलब्ध', 'கிடைக்கிறது'], 'Already taken': ['पहले से लिया गया', 'ஏற்கெனவே எடுக்கப்பட்டது'], 'Create Site': ['साइट बनाएँ', 'தளம் உருவாக்கவும்'], 'Already have an account?': ['पहले से खाता है?', 'ஏற்கெனவே கணக்கு உள்ளதா?'], 'Sign in': ['लॉगिन करें', 'உள்நுழையவும்'], 'E-commerce Store': ['ईकॉमर्स स्टोर', 'மின்வணிகக் கடை'], 'Sell products with cart, checkout, and payments': ['कार्ट, चेकआउट और भुगतान के साथ उत्पाद बेचें', 'கார்ட், வாங்குதல், பணப்பரிவர்த்தனையுடன் பொருட்கள் விற்கவும்'], 'Landing Page': ['लैंडिंग पेज', 'அறிமுகப் பக்கம்'], 'Marketing page with forms and analytics': ['फ़ॉर्म और विश्लेषण वाला मार्केटिंग पेज', 'படிவம், பகுப்பாய்வுடன் சந்தைப்படுத்தல் பக்கம்'], 'My Awesome Store': ['मेरा शानदार स्टोर', 'எனது சிறந்த கடை'],
+     'A PRODUCT IN PROGRESS': ['आगे बढ़ता उत्पाद', 'வளரும் தயாரிப்பு'], 'Every update.': ['हर अपडेट।', 'ஒவ்வொரு புதுப்பிப்பும்.'], 'A little more possibility.': ['थोड़ी और संभावना।', 'மேலும் சிறிது வாய்ப்பு.'], 'Every release, newest first. LetBuyy is in private beta — expect this list to move quickly.': ['हर रिलीज़, नई पहले। LetBuyy निजी बीटा में है — यह सूची तेज़ी से बदलेगी।', 'ஒவ்வொரு வெளியீடும், புதியது முதலில். LetBuyy தனிப்பட்ட பீட்டாவில் உள்ளது — பட்டியல் விரைவாக மாறும்.'], 'Explore the updates': ['अपडेट देखें', 'புதுப்பிப்புகளை ஆராயுங்கள்'], 'Thoughtful changes, recorded along the way. Concept illustration.': ['सोच-समझकर किए बदलाव का रिकॉर्ड। अवधारणा चित्रण।', 'கவனமாகச் செய்த மாற்றங்களின் பதிவு. கருத்து விளக்கம்.'], 'Releases so far': ['अब तक की रिलीज़', 'இதுவரை வெளியீடுகள்'], 'Latest version': ['नया संस्करण', 'சமீபத்திய பதிப்பு'], 'Latest release': ['नई रिलीज़', 'சமீபத்திய வெளியீடு'], 'THE RELEASE JOURNAL': ['रिलीज़ विवरण', 'வெளியீட்டுப் பதிவு'], 'What changed.': ['क्या बदला।', 'என்ன மாறியது.'], 'New features, thoughtful improvements': ['नई सुविधाएँ, उपयोगी सुधार', 'புதிய அம்சங்கள், கவனமான மேம்பாடுகள்'], 'and fixes along the way.': ['और समस्याओं का समाधान।', 'மற்றும் பிழைத் திருத்தங்கள்.'], '· Newest first': ['· नई पहले', '· புதியது முதலில்'], 'PRODUCT UPDATE': ['उत्पाद अपडेट', 'தயாரிப்புப் புதுப்பிப்பு'], 'That is the whole history so far —': ['अब तक का पूरा विवरण —', 'இதுவரையிலான முழு வரலாறு —'], 'releases since the private beta opened.': ['रिलीज़, निजी बीटा शुरू होने के बाद।', 'வெளியீடுகள், தனிப்பட்ட பீட்டா தொடங்கியபின்.'], 'All updates': ['सभी अपडेट', 'அனைத்துப் புதுப்பிப்புகளும்'], 'New features': ['नई सुविधाएँ', 'புதிய அம்சங்கள்'], 'Improvements': ['सुधार', 'மேம்பாடுகள்'], 'Fixes': ['समाधान', 'திருத்தங்கள்'], 'Security': ['सुरक्षा', 'பாதுகாப்பு'], 'Breaking changes': ['बड़े परिवर्तन', 'பொருந்தாமை மாற்றங்கள்'], 'Added': ['जोड़ा गया', 'சேர்க்கப்பட்டது'], 'Improved': ['बेहतर हुआ', 'மேம்படுத்தப்பட்டது'], 'Fixed': ['ठीक हुआ', 'திருத்தப்பட்டது'], 'release': ['रिलीज़', 'வெளியீடு'], 'releases': ['रिलीज़', 'வெளியீடுகள்'], 'Releases': ['रिलीज़', 'வெளியீடுகள்'], 'Platform Releases': ['प्लेटफ़ॉर्म रिलीज़', 'தள வெளியீடுகள்'], 'Major milestones and platform-level changes. For granular patch notes, see the': ['बड़े पड़ाव और प्लेटफ़ॉर्म बदलाव। छोटे सुधारों के लिए देखें', 'முக்கிய மைல்கற்களும் தள மாற்றங்களும். விரிவான திருத்தங்களுக்கு பார்க்கவும்:'], 'Looking for patch-level changes?': ['छोटे सुधार देखना चाहते हैं?', 'சிறிய திருத்தங்களைத் தேடுகிறீர்களா?'], 'View full changelog →': ['पूरा बदलाव विवरण देखें →', 'முழு மாற்றப் பதிவைப் பார்க்கவும் →'], 'feature': ['नई सुविधा', 'புதிய அம்சம்'], 'fix': ['समाधान', 'திருத்தம்'], 'improvement': ['सुधार', 'மேம்பாடு'], 'security': ['सुरक्षा', 'பாதுகாப்பு'],
+     'Theme marketplace opens to partner submissions': ['थीम मार्केटप्लेस में पार्टनर आवेदन खुले', 'தீம் சந்தையில் கூட்டாளர் சமர்ப்பிப்பு தொடக்கம்'], 'Design partners can now submit themes for review from the developer portal': ['डिज़ाइन पार्टनर अब डेवलपर पोर्टल से थीम समीक्षा के लिए भेज सकते हैं', 'வடிவமைப்புக் கூட்டாளர்கள் உருவாக்குநர் தளத்தில் தீம்களை மதிப்பாய்வுக்குச் சமர்ப்பிக்கலாம்'], 'Every submission runs an automated safety check before it reaches a live store': ['स्टोर तक पहुँचने से पहले हर आवेदन की स्वचालित सुरक्षा जाँच होती है', 'கடையை அடையுமுன் ஒவ்வொரு சமர்ப்பிப்புக்கும் தானியங்கிப் பாதுகாப்புச் சோதனை'], 'Theme previews now render your own products instead of placeholder samples': ['थीम पूर्वावलोकन अब नमूने के बजाय आपके उत्पाद दिखाता है', 'தீம் முன்னோட்டம் மாதிரிக்குப் பதில் உங்கள் பொருட்களைக் காட்டுகிறது'], 'Switching themes keeps your existing section settings where the layouts match': ['लेआउट मिलने पर थीम बदलने से मौजूदा भाग की सेटिंग बनी रहती है', 'அமைப்பு பொருந்தினால் தீம் மாற்றும்போது பகுதி அமைப்புகள் தொடரும்'],
+--- a/config/governance/secret-scan-exceptions.json
++++ b/config/governance/secret-scan-exceptions.json
+@@ -804,6 +804,42 @@
+       "justification": "Public always-pass Turnstile transport fixture, identical to existing owned browser fixtures. No production anti-bot acceptance.",
+       "evidence": "tests/owned-db/native-core-storefront-browser.postgres.test.ts; native Worker/R2, owned PG and three production apps only; dev auth bypass false.",
+       "retire_when": "Remove when this exact fixture value leaves this exact file; review changes individually."
++    },
++    {
++      "path": "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts",
++      "kind": "hardcoded-assignment",
++      "sha256": "8a6e37c04d18678e82a669640f6407451550356c7a6a728ba16432866423e2d4",
++      "classification": "labelled-local-fixture",
++      "justification": "Labelled synthetic password for an owned disposable .invalid account; normal browser authentication, no real account credential.",
++      "evidence": "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts:60; exact value, owned fixture guard and synthetic account use reviewed on2026-10-30.",
++      "retire_when": "Remove when this exact fixture value or file is removed; any changed value requires a new exact review."
++    },
++    {
++      "path": "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts",
++      "kind": "hardcoded-assignment",
++      "sha256": "fb8f35129df87662c650ada12fd614f1b58dce4a37fdd7589ba3a6b9a78c0aae",
++      "classification": "public-sample-key",
++      "justification": "Published always-pass Turnstile test sample used only by this ownership-verified browser fixture; not a production credential.",
++      "evidence": "services/api-gateway/src/__tests__/owned-db/merchant-console-support-browser.postgres.test.ts:141; exact value, owned fixture guard and synthetic account use reviewed on2026-10-30.",
++      "retire_when": "Remove when this exact fixture value or file is removed; any changed value requires a new exact review."
++    },
++    {
++      "path": "tests/owned-db/merchant-account-messages-browser.postgres.test.ts",
++      "kind": "hardcoded-assignment",
++      "sha256": "8a6e37c04d18678e82a669640f6407451550356c7a6a728ba16432866423e2d4",
++      "classification": "labelled-local-fixture",
++      "justification": "Labelled synthetic password for an owned disposable .invalid account; normal browser authentication, no real account credential.",
++      "evidence": "tests/owned-db/merchant-account-messages-browser.postgres.test.ts:60; exact value, owned fixture guard and synthetic account use reviewed on2026-10-30.",
++      "retire_when": "Remove when this exact fixture value or file is removed; any changed value requires a new exact review."
++    },
++    {
++      "path": "tests/owned-db/merchant-account-messages-browser.postgres.test.ts",
++      "kind": "hardcoded-assignment",
++      "sha256": "fb8f35129df87662c650ada12fd614f1b58dce4a37fdd7589ba3a6b9a78c0aae",
++      "classification": "public-sample-key",
++      "justification": "Published always-pass Turnstile test sample used only by this ownership-verified browser fixture; not a production credential.",
++      "evidence": "tests/owned-db/merchant-account-messages-browser.postgres.test.ts:141; exact value, owned fixture guard and synthetic account use reviewed on2026-10-30.",
++      "retire_when": "Remove when this exact fixture value or file is removed; any changed value requires a new exact review."
+     }
+   ]
+ }
+--- a/scripts/validators/foundation-sql-policy-residue-validator.mjs
++++ b/scripts/validators/foundation-sql-policy-residue-validator.mjs
+@@ -32,7 +32,7 @@
+   return statement.match(/CREATE\s+POLICY\s+([^\s]+)\s+/i)?.[1] ?? "";
+ }
+ 
+-function classifyPolicy(file, statement) {
++function classifyPolicy(file, statement, source) {
+   const normalized = statement.replace(/\s+/g, " ").trim();
+   const name = policyName(statement);
+   const lowerName = name.toLowerCase();
+@@ -40,6 +40,23 @@
+ 
+   if (file.endsWith("database/supabase/migrations/000_baseline.sql")) {
+     return "baseline legacy residue superseded by additive RLS hardening and tenant validator";
++  }
++
++  // These platform-authoring tables are private function custody, not public
++  // tenant reads. Admit only the exact owner-role policies with FORCE RLS and
++  // the corresponding denial of every application role still present.
++  const custodyTables = {
++    platform_message_custody: 'merchant_announcements',
++    platform_message_receipt_custody: 'merchant_announcement_receipts',
++  };
++  const custodyTable = custodyTables[lowerName];
++  if (file === 'database/supabase/migrations/372_merchant_account_messages.sql' && custodyTable) {
++    if (new RegExp(`^CREATE POLICY ${lowerName} ON public\\.${custodyTable} TO postgres USING\\(true\\) WITH CHECK\\(true\\);$`, 'i').test(normalized)
++      && new RegExp(`ALTER TABLE public\\.${custodyTable} FORCE ROW LEVEL SECURITY;`, 'i').test(source)
++      && /REVOKE ALL ON public\.merchant_announcements,public\.merchant_announcement_receipts FROM PUBLIC,anon,authenticated,app_tenant,service_role;/i.test(source)) {
++      return 'exact private postgres custody policy with FORCE RLS and application-role revocation';
++    }
++    return null;
+   }
+ 
+   if (
+@@ -82,7 +99,7 @@
+     const statement = match[0];
+     if (!truePolicyPattern.test(statement)) continue;
+ 
+-    const classification = classifyPolicy(file, statement);
++    const classification = classifyPolicy(file, statement, source);
+     classifiedCount += 1;
+     reporter.assert(
+       Boolean(classification),
+--- a/scripts/validators/marketing-dead-twin-validator.mjs
++++ b/scripts/validators/marketing-dead-twin-validator.mjs
+@@ -30,6 +30,14 @@
+ }
+ 
+ const pageSource = readFile("apps/marketing/web/src/app/[locale]/page.tsx");
++const compositionSource = readFile("apps/marketing/web/src/components/MarketingHome.tsx");
++const liveSource = pageSource + "\n" + compositionSource;
++reporter.assert(
++  pageSource.includes("@/components/MarketingHome") && /await loadPublicPricing\(\)/.test(pageSource)
++    && /<MarketingHome pricing=\{<Pricing initialData=\{initialData\}/.test(pageSource)
++    && compositionSource.includes("{pricing}"),
++  "marketing homepage must pass server-loaded Pricing into the live client composition",
++);
+ for (const liveComponent of [
+   "Header",
+   "Hero",
+@@ -43,7 +51,7 @@
+   "Footer",
+ ]) {
+   reporter.assert(
+-    pageSource.includes(`@/components/${liveComponent}`),
++    liveSource.includes(`@/components/${liveComponent}`),
+     `marketing homepage must keep using live ${liveComponent} component`,
+   );
+ }
+@@ -60,7 +68,7 @@
+   "Capabilities",
+ ]) {
+   reporter.assert(
+-    !pageSource.includes(`@/components/${deadComponent}`),
++    !liveSource.includes(`@/components/${deadComponent}`),
+     `marketing homepage must not import archived ${deadComponent} twin`,
+   );
+ }
+--- a/scripts/validators/route-ownership-validator.mjs
++++ b/scripts/validators/route-ownership-validator.mjs
+@@ -195,10 +195,9 @@
+ // These paths use an actual imported guard rather than one of the legacy text
+ // signals above. Recognize only direct, ordered calls and exact query bindings;
+ // a comment, unused import, callback, swallowed error or presumed mount is not proof.
+-function canonicalCall(call, sourceFile, filePath, exportName, modulePath, contextName, handler) {
+-  if (!call || !ts.isCallExpression(call) || !ts.isIdentifier(call.expression) ||
+-      !call.arguments[0] || !ts.isIdentifier(call.arguments[0]) || call.arguments[0].text !== contextName) return false;
+-  const localName = call.expression.text;
++function canonicalIdentifier(identifier, sourceFile, filePath, exportName, modulePath, handler) {
++  if (!identifier || !ts.isIdentifier(identifier)) return false;
++  const localName = identifier.text;
+   let shadowed = false;
+   function check(node) {
+     if ((ts.isVariableDeclaration(node) || ts.isFunctionDeclaration(node) || ts.isParameter(node)) &&
+@@ -231,6 +230,55 @@
+       !element.isTypeOnly && !statement.importClause.isTypeOnly && element.name.text === localName &&
+       (element.propertyName ?? element.name).text === exportName);
+   });
++}
++
++function canonicalCall(call, sourceFile, filePath, exportName, modulePath, contextName, handler) {
++  return call && ts.isCallExpression(call) && call.arguments[0] && ts.isIdentifier(call.arguments[0])
++    && call.arguments[0].text === contextName
++    && canonicalIdentifier(call.expression, sourceFile, filePath, exportName, modulePath, handler);
++}
++
++// Console operators may inspect tenants by permission; this is not tenant ownership.
++// Prove the actual ordered per-route middleware and its canonical imports. Neither
++// helper names in comments nor arbitrary local/mount-level callbacks are sufficient.
++function canonicalConsoleMiddlewareGuard(sourceFile, filePath, route, handler) {
++  const handlerIndex = route.arguments.indexOf(handler);
++  const middleware = route.arguments.slice(1, handlerIndex);
++  // Additional callbacks could replace the bound identity or change context
++  // after authorization. Only the reviewed binder/permission pair is admitted.
++  if (middleware.length !== 2) return false;
++  let bound = false;
++  const permissionFactory = expression => ts.isCallExpression(expression)
++    && expression.arguments.length === 1 && ts.isStringLiteral(expression.arguments[0])
++    && /^[a-z]+:[a-z]+$/.test(expression.arguments[0].text)
++    && canonicalIdentifier(expression.expression, sourceFile, filePath, 'consolePermission',
++      'identity-foundation/console-approval-repository', handler);
++  for (const argument of middleware) {
++    if (canonicalIdentifier(argument, sourceFile, filePath, 'bindConsoleOperatorIdentity',
++        'identity-foundation/console-session-repository', handler)) {
++      bound = true;
++      continue;
++    }
++    if (!bound) continue;
++    if (permissionFactory(argument)) return true;
++    if (!ts.isIdentifier(argument)) continue;
++    // A module-level const alias is allowed only when it cannot be shadowed at
++    // registration. It must still originate from the canonical permission factory.
++    let shadowed = false;
++    for (let scope = route.parent; scope && scope !== sourceFile; scope = scope.parent) {
++      if ((scope.parameters ?? []).some(p => ts.isIdentifier(p.name) && p.name.text === argument.text)) shadowed = true;
++      if (ts.isBlock(scope) && scope.statements.some(statement =>
++        ts.isVariableStatement(statement) && statement.declarationList.declarations.some(d => ts.isIdentifier(d.name) && d.name.text === argument.text)
++        || ts.isFunctionDeclaration(statement) && statement.name?.text === argument.text)) shadowed = true;
++    }
++    if (shadowed) continue;
++    for (const statement of sourceFile.statements) {
++      if (!ts.isVariableStatement(statement) || !(statement.declarationList.flags & ts.NodeFlags.Const)) continue;
++      if (statement.declarationList.declarations.some(d => ts.isIdentifier(d.name) && d.name.text === argument.text
++          && d.initializer && permissionFactory(d.initializer))) return true;
++    }
++  }
++  return false;
+ }
+ 
+ function boundedCanonicalGuard(sourceFile, filePath, handler) {
+@@ -395,6 +443,7 @@
+           containsTenantTable(handlerText) &&
+           !containsGuard(handlerText) &&
+           !boundedCanonicalGuard(sourceFile, filePath, handler) &&
++          !canonicalConsoleMiddlewareGuard(sourceFile, filePath, node, handler) &&
+           !explicitAllowlist.has(key)
+         ) {
+           const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+--- a/services/api-gateway/src/__tests__/orders-data-integrity.test.ts
++++ b/services/api-gateway/src/__tests__/orders-data-integrity.test.ts
+@@ -21,16 +21,21 @@
+     assert.doesNotMatch(routeSource, /store_id:\s*body\./);
+ });
+ 
+-test('merchant order line-item edits recalculate totals server-side', () => {
++test('placed order line-item changes remain forbidden after tenant and staff authorization', () => {
+     const routeSource = source('routes/orders.ts');
++    const start = routeSource.indexOf("router.patch('/:id/line-items'");
++    const end = routeSource.indexOf("router.patch('/:id'", start + 1);
++    assert.ok(start >= 0 && end > start, 'the immutable placed-order boundary must exist');
++    const handler = routeSource.slice(start, end);
+ 
+-    assert.match(routeSource, /router\.patch\('\/:id\/line-items'/);
+-    assert.match(routeSource, /UpdateOrderLineItemsSchema/);
+-    assert.match(routeSource, /resolveTenantContextForOrder\(c,\s*orderId\)/);
+-    assert.match(routeSource, /scope:\s*`orders\.line_items:\$\{orderId\}`/);
+-    assert.match(routeSource, /\.from\('order_items'\)[\s\S]+\.select\('total'\)/);
+-    assert.match(routeSource, /subtotal\s*=\s*\(\(activeLines \|\| \[\]\)/);
+-    assert.doesNotMatch(routeSource, /client_total|body\.total|body\.subtotal/);
++    assert.match(handler, /validate\('json', UpdateOrderLineItemsSchema\)/);
++    assert.match(handler, /resolveTenantContextForOrder\(c,\s*c\.req\.param\('id'\)\)/);
++    assert.match(handler, /assertStaffPermission\(c,\s*tenant\.siteId,\s*tenant\.userId,\s*'orders:write'\)/);
++    assert.match(handler, /if \(staffBlock\) return staffBlock/);
++    assert.match(handler, /throw new AppError\([\s\S]*409,\s*'ORDER_SNAPSHOT_IMMUTABLE'/);
++    assert.ok(handler.indexOf('resolveTenantContextForOrder') < handler.indexOf('assertStaffPermission'));
++    assert.ok(handler.indexOf('assertStaffPermission') < handler.indexOf('throw new AppError'));
++    assert.doesNotMatch(handler, /\.from\(|\.(?:insert|update|upsert|delete)\(|client_total|body\.total|body\.subtotal/);
+ });
+ 
+ test('merchant packing slips render from owned order data', () => {
+--- a/services/api-gateway/src/__tests__/owned-db/console-page-authority.postgres.test.ts
++++ b/services/api-gateway/src/__tests__/owned-db/console-page-authority.postgres.test.ts
+@@ -5,6 +5,32 @@
+ import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
+ const owned = requireOwnedDatabase();
+ const reads = ['/analytics/mrr','/analytics/funnels','/analytics/cohorts','/analytics/company-health','/settings','/users','/employees','/audit-logs','/compliance/retention-policy','/compliance/audit-exports'];
++
++test('Console transport rejects missing, malformed and mismatched credentials even with a live human session', async () => {
++    const f = await consoleFixture(owned), actor = await f.actor();
++    const path = '/v1/internal/console/settings';
++    assert.equal((await f.gateway.request(path, { headers: actor.headers })).status, 200, 'positive live-session control');
++    const bridge = actor.headers.Authorization.slice('Bearer '.length);
++    const rows = () => owned.psql('SELECT (SELECT count(*) FROM principals),(SELECT count(*) FROM sessions_v2),(SELECT count(*) FROM audit_logs);');
++    const before = rows();
++    for (const authorization of [null, '', 'Basic '+bridge, 'Bearer x', 'Bearer '+bridge+'x', 'Bearer '+bridge.slice(0,-1)+(bridge.endsWith('x')?'y':'x')]) {
++        const headers = new Headers(actor.headers);
++        if (authorization === null) headers.delete('Authorization'); else headers.set('Authorization', authorization);
++        const result = await f.gateway.request(path, { headers });
++        assert.equal(result.status, 401, result.text);
++        assert.equal(result.json?.error.code, authorization?.startsWith('Bearer ') ? 'UNAUTHORIZED' : 'INTERNAL_CREDENTIAL_REQUIRED');
++        assert.equal(rows(), before, 'rejected transport must not create identity or audit state');
++    }
++    const unavailable = await f.gateway.request(path, { headers: actor.headers }, { ...f.env, PLATFORM_CONSOLE_API_TOKEN: '' });
++    assert.equal(unavailable.status, 503, unavailable.text);
++    assert.equal(unavailable.json?.error.code, 'CONSOLE_TOKEN_NOT_CONFIGURED');
++    assert.equal(rows(), before);
++    const headerTransport = new Headers(actor.headers);
++    headerTransport.delete('Authorization'); headerTransport.set('X-Platform-Console-Token', bridge);
++    assert.equal((await f.gateway.request(path, { headers: headerTransport })).json?.error.code, 'INTERNAL_CREDENTIAL_REQUIRED');
++    headerTransport.set('X-Internal-API-Secret', String(f.env.INTERNAL_API_SECRET));
++    assert.equal((await f.gateway.request(path, { headers: headerTransport })).status, 200);
++});
+ 
+ test('every private read requires a live human session, not just a Console bridge', async () => {
+     const f = await consoleFixture(owned), actor = await f.actor();
+--- a/tests/contracts/custom-domains.test.ts
++++ b/tests/contracts/custom-domains.test.ts
+@@ -83,18 +83,34 @@
+ test('custom-domain health exposes DNS, SSL, and renewal state to mobile', () => {
+   const sharedTypes = read('packages/shared-types/src/index.ts');
+   const route = read('services/api-gateway/src/routes/custom-domains.ts');
+-  const stores = read('services/api-gateway/src/routes/stores.ts');
+   const mobileService = read('apps/merchant/mobile/lib/services/custom_domains.dart');
+   const mobileScreen = read('apps/merchant/mobile/lib/screens/settings/domain_settings_screen.dart');
+ 
+   assert.match(sharedTypes, /CustomDomainHealthSchema/);
+   assert.match(route, /readCustomDomainHealth\(c\.env/);
+   assert.match(route, /success\(\{ \.\.\.health, (?:provider, )?vercel: health\.vercel, health \}\)/);
+-  assert.match(stores, /readCustomDomainHealth\(c\.env/);
+-  assert.match(stores, /dns_verified/);
+-  assert.match(stores, /renewal_status/);
+   assert.match(mobileService, /class DomainHealthSnapshot/);
+   assert.match(mobileService, /customDomains\.health/);
+   assert.match(mobileScreen, /Domain health/);
+   assert.match(mobileScreen, /Renewal/);
+ });
++
++test('store readiness reads owned saved domain evidence without running domain verification', () => {
++  const stores = read('services/api-gateway/src/routes/stores.ts');
++  const adapter = read('services/api-gateway/src/execution/store-health.adapter.ts');
++  const start = stores.indexOf("router.get('/:id/health'");
++  const end = stores.indexOf("router.post('/:id/payment-config'", start + 1);
++  assert.ok(start >= 0 && end > start, 'the store readiness boundary must exist');
++  const handler = stores.slice(start, end);
++
++  assert.match(handler, /c\.header\('Cache-Control', 'no-store'\)/);
++  assert.match(handler, /\.eq\('id', storeId\)[\s\S]*ownedByCustomUserFilter\(customUser\.id\)/);
++  assert.match(handler, /new StoreHealthAdapter\(db, Boolean\(c\.env\.PAYMENT_CONFIG_ENCRYPTION_KEY\)\)\.read\(storeId\)/);
++  assert.match(adapter, /StoreHealthSchema\.parse/);
++  assert.match(adapter, /\.from\('site_domains'\)[\s\S]*\.eq\('site_id', siteId\)\.eq\('domain', s\.custom_domain \|\| ''\)/);
++  assert.match(adapter, /\.from\('site_domain_verifications'\)[\s\S]*\.eq\('site_id', siteId\)\.eq\('domain', s\.custom_domain \|\| ''\)/);
++  assert.match(adapter, /checked <= now\.getTime\(\) && now\.getTime\(\) - checked <= DAY/);
++  assert.match(adapter, /v\?\.txt_verified === true && v\.cname_verified === true && v\.ssl_active === true/);
++  assert.match(adapter, /domain_freshness_hours: 24/);
++  assert.doesNotMatch(handler + adapter, /readCustomDomainHealth\(|\bfetch\(|\.(?:insert|update|upsert|delete)\(/);
++});
+--- a/tests/contracts/ops-plane-auth-hardening.test.ts
++++ b/tests/contracts/ops-plane-auth-hardening.test.ts
+@@ -8,6 +8,7 @@
+ const repoRoot = join(testDir, '../..');
+ const cryptoPath = join(repoRoot, 'services/api-gateway/src/lib/crypto.ts');
+ const internalConsolePath = join(repoRoot, 'services/api-gateway/src/routes/internal-console.ts');
++const consoleBridgePath = join(repoRoot, 'services/api-gateway/src/identity-foundation/console-bridge.ts');
+ const internalSecretPath = join(repoRoot, 'services/api-gateway/src/lib/internal-secret.ts');
+ const exportRoutePath = join(repoRoot, 'services/api-gateway/src/routes/export.ts');
+ const appAuthPath = join(repoRoot, 'services/api-gateway/src/middleware/app-auth.ts');
+@@ -24,11 +25,20 @@
+ test('internal console and internal API secrets use timing-safe text comparison', () => {
+     const crypto = read(cryptoPath);
+     const internalConsole = read(internalConsolePath);
++    const consoleBridge = read(consoleBridgePath);
+     const internalSecret = read(internalSecretPath);
+     const exportRoute = read(exportRoutePath);
+ 
+     assert.match(crypto, /export function timingSafeEqualText/);
+-    assert.match(internalConsole, /timingSafeEqualText\(token,\s*expectedToken\)/);
++    assert.match(internalConsole, /import \{ consoleBridge \} from '\.\.\/identity-foundation\/console-bridge'/);
++    assert.match(internalConsole, /router\.use\('\*', consoleBridge\)/);
++    assert.ok(internalConsole.indexOf("router.use('*', consoleBridge)") < internalConsole.indexOf('router.route('));
++    assert.match(consoleBridge, /import \{ timingSafeEqualText \} from '\.\.\/lib\/crypto'/);
++    assert.match(consoleBridge, /const expected = c\.env\.PLATFORM_CONSOLE_API_TOKEN/);
++    assert.match(consoleBridge, /if \(!expected\) return c\.json\([\s\S]*503\)/);
++    assert.match(consoleBridge, /if \(!token \|\| !timingSafeEqualText\(token, expected\)\) return c\.json\([\s\S]*401\)/);
++    assert.ok(consoleBridge.indexOf('timingSafeEqualText(token, expected)') < consoleBridge.indexOf('await next()'));
++    assert.doesNotMatch(consoleBridge, /token\s*(?:!==|===)\s*expected|function timingSafeEqualText/);
+     assert.doesNotMatch(internalConsole, /token\s*!==\s*expectedToken/);
+     assert.match(internalSecret, /const provided = req\.header\('X-Internal-API-Secret'\)/);
+     assert.match(internalSecret, /secrets\.some\(\(secret\) => timingSafeEqualText\(provided,\s*secret\)\)/);
+--- a/tests/governance/current-source-guard-contracts.test.mjs
++++ b/tests/governance/current-source-guard-contracts.test.mjs
+@@ -0,0 +1,49 @@
++// Exercise the actual validators in owned source fixtures. Unsafe variants must
++// stay red; the current composition/private-custody source must remain admitted.
++import assert from 'node:assert/strict';
++import test from 'node:test';
++import {mkdtempSync,mkdirSync,readFileSync,writeFileSync,rmSync} from 'node:fs';
++import {tmpdir} from 'node:os';
++import {dirname,join} from 'node:path';
++import {fileURLToPath} from 'node:url';
++import {spawnSync} from 'node:child_process';
++const root=fileURLToPath(new URL('../../',import.meta.url));
++function run(validator,files){
++ const fixture=mkdtempSync(join(tmpdir(),'letbuyy-source-guard-'));
++ try{
++  for(const[path,source]of Object.entries(files)){const target=join(fixture,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,source);}
++  const result=spawnSync(process.execPath,[join(root,'scripts/validators',validator)],{cwd:fixture,encoding:'utf8',timeout:15000});
++  assert.ok(result.status===0||result.status===1,result.stderr);return result;
++ }finally{rmSync(fixture,{recursive:true,force:true});}
++}
++const read=path=>readFileSync(join(root,path),'utf8');
++const migration='database/supabase/migrations/372_merchant_account_messages.sql';
++const custody=read(migration);
++test('policy classifier accepts the exact private owner custody with FORCE RLS and denied app roles',()=>{
++ const result=run('foundation-sql-policy-residue-validator.mjs',{[migration]:custody});assert.equal(result.status,0,result.stderr);
++});
++for(const role of ['PUBLIC','anon','authenticated','app_tenant','service_role'])test('private custody classification rejects broader '+role+' authority',()=>{
++ const changed=custody.replaceAll('TO postgres USING(true)',`TO ${role} USING(true)`);assert.notEqual(changed,custody);
++ const result=run('foundation-sql-policy-residue-validator.mjs',{[migration]:changed});assert.equal(result.status,1,result.stdout);
++});
++for(const [name,mutate]of [
++ ['missing forced RLS',s=>s.replaceAll('FORCE ROW LEVEL SECURITY','ENABLE ROW LEVEL SECURITY')],
++ ['missing application-role revocation',s=>s.replace('REVOKE ALL ON public.merchant_announcements,public.merchant_announcement_receipts FROM PUBLIC,anon,authenticated,app_tenant,service_role;','')],
++ ['same policy on a foreign table',s=>s.replace('CREATE POLICY platform_message_custody ON public.merchant_announcements','CREATE POLICY platform_message_custody ON public.unreviewed_table')],
++])test('private custody classification rejects '+name,()=>{
++ const changed=mutate(custody);assert.notEqual(changed,custody);assert.equal(run('foundation-sql-policy-residue-validator.mjs',{[migration]:changed}).status,1);
++});
++const page='apps/marketing/web/src/app/[locale]/page.tsx',composition='apps/marketing/web/src/components/MarketingHome.tsx';
++const marketing={[page]:read(page),[composition]:read(composition)};
++for(const name of ['Navbar','HeroSection','FeaturesSection','PricingSection','TestimonialsSection','Testimonials','CTASection','SocialProof','Capabilities'])marketing[`docs/archive/dead-code/marketing-site/components/${name}.tsx`]='// Owned fixture archive marker\n';
++test('marketing validator admits server pricing supplied to the live client composition',()=>{
++ const result=run('marketing-dead-twin-validator.mjs',marketing);assert.equal(result.status,0,result.stderr);
++});
++for(const [name,path,mutate]of [
++ ['archived twin in client composition',composition,s=>s+"\nimport Dead from '@/components/TestimonialsSection';\n"],
++ ['missing live Header',composition,s=>s.replace("import Header from '@/components/Header'",'')],
++ ['missing server pricing read',page,s=>s.replace('await loadPublicPricing()','null')],
++ ['missing composed pricing slot',composition,s=>s.replace('{pricing}','{null}')],
++])test('marketing composition validator rejects '+name,()=>{
++ const changed=mutate(marketing[path]);assert.notEqual(changed,marketing[path]);assert.equal(run('marketing-dead-twin-validator.mjs',{...marketing,[path]:changed}).status,1);
++});
+--- a/tests/governance/governance-source-traversal.test.mjs
++++ b/tests/governance/governance-source-traversal.test.mjs
+@@ -96,17 +96,17 @@
+ const customerGate = "const session = getCustomerSession(c); if (!session) return c.json({}, 401);";
+ const customerQuery = "await db.from('store_customers').select('id').eq('id', session.customerId).eq('store_id', session.storeId);";
+ 
+-function ownershipFixture(imports, body, wrap = source => source) {
++function ownershipFixture(imports, body, wrap = source => source, middleware = '') {
+     const dir = mkdtempSync(join(tmpdir(), 'letbuyy-route-guard-'));
+     try {
+-        for (const relative of ['identity-foundation/console-approval-repository.ts', 'middleware/customer-session.ts']) {
++        for (const relative of ['identity-foundation/console-approval-repository.ts', 'identity-foundation/console-session-repository.ts', 'middleware/customer-session.ts']) {
+             const dest = join(dir, 'services/api-gateway/src', relative);
+             mkdirSync(dirname(dest), { recursive: true });
+             copyFileSync(fileURLToPath(new URL(`../../services/api-gateway/src/${relative}`, import.meta.url)), dest);
+         }
+         const route = join(dir, 'services/api-gateway/src/routes/arbitrary.ts');
+         mkdirSync(dirname(route), { recursive: true });
+-        writeFileSync(route, `${imports}\n${wrap(`router.get('/synthetic', async (c) => { ${body} });`)}\n`);
++        writeFileSync(route, `${imports}\n${wrap(`router.get('/synthetic', ${middleware ? middleware + ', ' : ''}async (c) => { ${body} });`)}\n`);
+         const result = spawnSync(process.execPath, [ownershipValidator], { cwd: dir, encoding: 'utf8', timeout: 10000 });
+         assert.ok(result.status === 0 || result.status === 1, result.stderr);
+         return result;
+@@ -190,3 +190,31 @@
+         }
+     } finally { rmSync(dir, { recursive: true, force: true }); }
+ });
++
++
++const consoleMiddlewareImports = "import { bindConsoleOperatorIdentity as bind } from '../identity-foundation/console-session-repository'; import { consolePermission as permit } from '../identity-foundation/console-approval-repository';";
++const guardedTenantRead = "await db.from('sites').select('id');";
++for (const [name, imports, middleware] of [
++    ['inline canonical middleware', consoleMiddlewareImports, "bind, permit('merchant:view')"],
++    ['const permission alias', consoleMiddlewareImports + " const operatorGuard = permit('merchant:view');", 'bind, operatorGuard'],
++]) test(`ownership admits ${name} only with a bound operator`, () => {
++    assert.equal(ownershipFixture(imports, guardedTenantRead, undefined, middleware).status, 0);
++});
++for (const [name, imports, middleware, wrap] of [
++    ['missing binder', consoleMiddlewareImports, "permit('merchant:view')"],
++    ['missing permission', consoleMiddlewareImports, 'bind'],
++    ['reversed middleware', consoleMiddlewareImports, "permit('merchant:view'), bind"],
++    ['extra callback between identity and permission', consoleMiddlewareImports, "bind, arbitraryCallback, permit('merchant:view')"],
++    ['extra callback after permission', consoleMiddlewareImports, "bind, permit('merchant:view'), arbitraryCallback"],
++    ['unused middleware import', consoleMiddlewareImports, ''],
++    ['unbound local binder', "const bind = fake; import { consolePermission as permit } from '../identity-foundation/console-approval-repository';", "bind, permit('merchant:view')"],
++    ['wrong middleware permission import', consoleMiddlewareImports.replace('console-approval-repository', 'untrusted'), "bind, permit('merchant:view')"],
++    ['empty middleware permission', consoleMiddlewareImports, "bind, permit('')"],
++    ['permission hidden in callback', consoleMiddlewareImports, "bind, async () => permit('merchant:view')"],
++    ['mutable middleware alias', consoleMiddlewareImports + " let operatorGuard = permit('merchant:view');", 'bind, operatorGuard'],
++    ['shadowed middleware alias', consoleMiddlewareImports + " const operatorGuard = permit('merchant:view');", 'bind, operatorGuard', source => `function register(operatorGuard) { ${source} }`],
++    ['shadowed middleware factory', consoleMiddlewareImports, "bind, permit('merchant:view')", source => `function register(permit) { ${source} }`],
++]) test(`ownership refuses ${name}`, () => {
++    const result = ownershipFixture(imports, guardedTenantRead, wrap, middleware);
++    assert.equal(result.status, 1, result.stdout); assert.match(result.stderr, /tenant-table handlers without an ownership/);
++});

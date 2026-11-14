@@ -1,7 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -9,6 +7,7 @@ import {
     Banner,
     Button,
     Card,
+    EmptyState,
     Input,
     Page,
     PageHeader,
@@ -19,7 +18,6 @@ import {
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 // ── analytics KPI types ───────────────────────────────────────────────────────
@@ -146,32 +144,26 @@ export default function InventoryHistoryPage() {
     const [analyticsLoading, setAnalyticsLoading] = useState(true)
 
     useEffect(() => {
-        let retired = false
-        const controller = new AbortController()
         async function fetchAnalytics() {
             setAnalyticsLoading(true)
             try {
                 const res = await fetch(
-                    `/api/stores/${encodeURIComponent(store)}/inventory/analytics`, { cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]) }
+                    `/api/stores/${encodeURIComponent(store)}/inventory/analytics`
                 )
                 if (!res.ok) return
                 const json = (await res.json()) as { data?: InventoryAnalytics }
-                if (!retired && json.data) setAnalytics(json.data)
+                if (json.data) setAnalytics(json.data)
             } catch {
                 // analytics is best-effort — don't block the page
             } finally {
-                if (!retired) setAnalyticsLoading(false)
+                setAnalyticsLoading(false)
             }
         }
-        setAnalytics(null)
         void fetchAnalytics()
-        return () => { retired = true; controller.abort() }
     }, [store])
 
-    const beginRead = useReadRequest(store)
     const fetchHistory = useCallback(
         async (currentPage: number, currentProductFilter: string) => {
-            const request = beginRead()
             setLoading(true)
             setError(null)
             try {
@@ -185,7 +177,7 @@ export default function InventoryHistoryPage() {
                     url.searchParams.set('product_id', currentProductFilter.trim())
                 }
 
-                const res = await fetch(url.toString(), { cache: 'no-store', signal: request.signal })
+                const res = await fetch(url.toString())
                 const json = (await res.json()) as {
                     data?: unknown[]
                     meta?: PageMeta
@@ -193,7 +185,6 @@ export default function InventoryHistoryPage() {
                     message?: string
                 }
 
-                if (!request.isCurrent()) return
                 if (!res.ok) {
                     const msg =
                         typeof json.error === 'string'
@@ -217,21 +208,20 @@ export default function InventoryHistoryPage() {
                     }
                 )
             } catch (err) {
-                if (!request.isCurrent()) return
                 const msg = err instanceof Error ? err.message : 'Unknown error'
                 setError(msg)
                 notify({ title: 'Error', description: msg })
             } finally {
-                if (request.isCurrent()) setLoading(false)
+                setLoading(false)
             }
         },
-        [store, notify, beginRead]
+        [store, notify]
     )
 
     useEffect(() => {
-        setPage(1)
-        void fetchHistory(1, '')
-    }, [fetchHistory])
+        void fetchHistory(page, productFilter)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     function handleSearch() {
         setPage(1)
@@ -265,8 +255,7 @@ export default function InventoryHistoryPage() {
 
     return (
         <Page>
-            <PageHeader identity="products"
-                recipe="index"
+            <PageHeader
                 title="Inventory History"
                 description="Movement and adjustment records for your products"
             />
@@ -426,7 +415,7 @@ export default function InventoryHistoryPage() {
                         </div>
                     ) : !error && rows.length === 0 ? (
                         <div className="p-[var(--lb-space-6)]">
-                            <EmptyState scene="inventory-history"
+                            <EmptyState
                                 kind="inventory"
                                 title="No adjustment records"
                                 body={

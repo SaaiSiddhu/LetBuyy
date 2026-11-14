@@ -1,0 +1,725 @@
+{
+  "light": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 15.948597086079287
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 15.948597086079287
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.367237188363559
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.367237188363559
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.367237188363559
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.367237188363559
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 4.566867389143417
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 17.73971700407407
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 17.73971700407407
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 17.73971700407407
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 17.73971700407407
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag on",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 17.73971700407407
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 17.73971700407407
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 17.73971700407407
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "27 active product(s). Draft and archived products do not count. ",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The current publication flags are enabled. This is not an extern",
+      "ratio": 4.834490081424352
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 4.834490081424352
+    }
+  ],
+  "dark": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 19.43403109819847
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 19.43403109819847
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag on",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "27 active product(s). Draft and archived products do not count. ",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The current publication flags are enabled. This is not an extern",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 13.13828564744978
+    }
+  ],
+  "restrictedDark": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 19.43403109819847
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 19.43403109819847
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Restricted",
+      "ratio": 7.815456317350526
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Restricted",
+      "ratio": 7.815456317350526
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "active",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag off",
+      "ratio": 10.277540382438922
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The store is suspended. Contact support for review; publication ",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "27 active product(s). Draft and archived products do not count. ",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 13.13828564744978
+    }
+  ],
+  "outageDark": [
+    {
+      "selector": "#console-main h1",
+      "text": "Synthetic ui-refinement",
+      "ratio": 19.43403109819847
+    },
+    {
+      "selector": ".console-workspace > header > p:last-child",
+      "text": "Review store readiness, effective SaaS limits, catalog and order",
+      "ratio": 19.43403109819847
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Restricted",
+      "ratio": 7.815456317350526
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs checking",
+      "ratio": 8.323993060182987
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Needs attention",
+      "ratio": 6.786158712285567
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Restricted",
+      "ratio": 7.815456317350526
+    },
+    {
+      "selector": ".console-status-pill",
+      "text": "Complete",
+      "ratio": 6.541672893849158
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Store status",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Products",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Orders",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:first-child",
+      "text": "Effective plan",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "Published flag off",
+      "ratio": 10.277540382438922
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted products",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "All undeleted orders",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-metric > p:last-child",
+      "text": "store",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a business contact and complete the business address in Gene",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → General",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Catalog evidence is unavailable. Retry the check.",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Products",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Add a delivery zone and an active delivery rate.",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Settings → Shipping",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "No current published theme release. Open Themes and publish a re",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "The store is suspended. Contact support for review; publication ",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Guide merchant to Online store → Themes",
+      "ratio": 19.50644178642935
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "Cash on delivery is enabled. Online payments: sandbox or not con",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-check-copy > p",
+      "text": "A default LetBuyy subdomain is assigned. A custom domain is opti",
+      "ratio": 13.13828564744978
+    },
+    {
+      "selector": ".console-error-panel h2",
+      "text": "Commerce records unavailable",
+      "ratio": 6.786158712285567
+    }
+  ]
+}

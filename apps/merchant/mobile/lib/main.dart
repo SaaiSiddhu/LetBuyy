@@ -8,8 +8,6 @@ import 'package:provider/provider.dart';
 
 import 'config/app_config.dart';
 import 'app/app.dart';
-import 'app/routes.dart';
-import 'services/native_push_service.dart';
 import 'app/store_context.dart';
 import 'services/api_client.dart';
 import 'services/cache_service.dart';
@@ -84,41 +82,10 @@ void main() {
         mobileBffBaseUrl: AppConfig.bffBaseUrl,
         turnstileTokenProvider: () => AppConfig.turnstileToken,
       );
-      final nativePush = NativePushService(
-        actorId: () => authService.currentUser?.id,
-        openInbox: () => merchantNavigatorKey.currentState?.pushNamed(
-          AppRoutes.notifications,
-        ),
-      );
-      try {
-        await nativePush.initialize();
-      } catch (_) {
-        /* Optional delivery configuration must not block login. */
-      }
       final pushService = PushService(
         api: apiClient,
-        tokenProvider: nativePush.acquireToken,
+        tokenProvider: () => AppConfig.mobilePushDeviceToken,
       );
-      nativePush.listen(
-        registerToken: () => pushService.registerCurrentDeviceToken(
-          deviceName: 'LetBuyy Merchant Android',
-        ),
-      );
-      authService.beforeSignOut = () async {
-        await nativePush.bindActor(null);
-        final registration = pushService.lastAttempt;
-        try {
-          if (registration != null)
-            await pushService.unregisterDeviceToken(registration.token);
-        } catch (_) {
-          /* Local actor fence still blocks stale notification display. */
-        } finally {
-          // Invalidate provider token even if an offline backend cannot unregister.
-          try {
-            await nativePush.clearDevice();
-          } catch (_) {}
-        }
-      };
       const appBadgeService = AppBadgeService();
       final storeService = StoreService(api: apiClient, cache: cacheService);
       storeContext = StoreContext(storeService: storeService);
@@ -152,9 +119,6 @@ void main() {
         );
       });
       authService.authStateChanges.listen((state) {
-        unawaited(
-          nativePush.bindActor(state.session?.user.id).catchError((_) {}),
-        );
         // This listener survives named routes replacing AuthWrapper. Never
         // reuse another account's store picker or private store snapshots.
         unawaited(storeContext.bindActor(state.session?.user.id));
@@ -305,7 +269,6 @@ void main() {
             ChangeNotifierProvider<PlatformBlockedService>(
               create: (_) => PlatformBlockedService(),
             ),
-            Provider<NativePushService>.value(value: nativePush),
             ChangeNotifierProvider<PushService>.value(value: pushService),
             ChangeNotifierProvider<AnalyticsService>(
               create: (_) => AnalyticsService(api: apiClient),
@@ -338,9 +301,6 @@ void main() {
           child: const StoreBuilderApp(),
         ),
       );
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        unawaited(nativePush.openInitialNotification().catchError((_) {}));
-      });
     },
     (error, stackTrace) {
       final service = crashReportingService;

@@ -1,0 +1,5259 @@
+{
+  "summary": {
+    "capturedAt": "2026-11-03T10:37:21.717765+00:00",
+    "htmlPages": 477,
+    "jsonldBlocks": 690,
+    "errors": [],
+    "noindexUrlsInXml": [],
+    "passed": true
+  },
+  "rows": [
+    {
+      "path": "/in",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/contact",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 2,
+      "canonical": [
+        "http://localhost:9006/in-hi/contact"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/create",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/create"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/demo",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/demo"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/acceptable-use",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/acceptable-use"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/api-terms",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/api-terms"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/billing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/billing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/cookies",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/cookies"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/data-processing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/data-processing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/grievance",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/grievance"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/intellectual-property",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/intellectual-property"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/marketplace",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/marketplace"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/payouts",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/payouts"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/privacy",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/privacy"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/refunds",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/refunds"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/security",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/security"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/shipping",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/shipping"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/subprocessors",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/subprocessors"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/legal/terms",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/legal/terms"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/pricing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/pricing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ai-commerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/ai-commerce-explained",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ai-commerce/ai-commerce-explained"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/ai-product-recommendations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ai-commerce/ai-product-recommendations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/automating-operations-ai",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ai-commerce/automating-operations-ai"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/commerce-copilot-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ai-commerce/commerce-copilot-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ai-commerce/workflow-automation-merchants",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ai-commerce/workflow-automation-merchants"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/authors/letbuyy-team",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/authors/letbuyy-team"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/changelog",
+      "robots": "noindex, follow",
+      "googlebot": "",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/changelog"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/developers"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/building-first-letbuyy-app",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/developers/building-first-letbuyy-app"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/custom-integrations-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/developers/custom-integrations-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/letbuyy-api-getting-started",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/developers/letbuyy-api-getting-started"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/liquid-theming-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/developers/liquid-theming-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/developers/webhooks-complete-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/developers/webhooks-complete-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ecommerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/how-product-reviews-increase-conversion",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ecommerce/how-product-reviews-increase-conversion"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/how-to-start-an-online-store-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ecommerce/how-to-start-an-online-store-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/product-page-optimization",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ecommerce/product-page-optimization"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/reducing-cart-abandonment",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ecommerce/reducing-cart-abandonment"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/ecommerce/store-seo-checklist",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/ecommerce/store-seo-checklist"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/growth"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/d2c-brand-launch-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/growth/d2c-brand-launch-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/email-marketing-ecommerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/growth/email-marketing-ecommerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/first-100-orders-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/growth/first-100-orders-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/retention-strategies-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/growth/retention-strategies-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/growth/social-commerce-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/growth/social-commerce-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/operations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/inventory-management-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/operations/inventory-management-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/multi-warehouse-inventory",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/operations/multi-warehouse-inventory"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/order-fulfillment-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/operations/order-fulfillment-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/shipping-india-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/operations/shipping-india-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/operations/understanding-fulfillment",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/operations/understanding-fulfillment"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/payments"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/gst-for-ecommerce-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/payments/gst-for-ecommerce-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/invoicing-india-merchants",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/payments/invoicing-india-merchants"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/razorpay-integration-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/payments/razorpay-integration-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/refunds-returns-policy-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/payments/refunds-returns-policy-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/payments/upi-vs-cod-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/payments/upi-vs-cod-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/platform"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/platform/building-first-letbuyy-store"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/how-themes-work",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/platform/how-themes-work"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/introduction-to-apps",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/platform/introduction-to-apps"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/letbuyy-platform-overview",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/platform/letbuyy-platform-overview"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/platform/merchant-web-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/platform/merchant-web-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/releases",
+      "robots": "noindex, follow",
+      "googlebot": "",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/releases"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/search",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/search"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/3pl",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/3pl"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/ai",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/ai"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/api",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/api"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/apps",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/apps"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/architecture",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/architecture"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/authentication",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/authentication"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/automation",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/automation"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/b2b",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/b2b"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/beginners",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/beginners"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/brand",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/brand"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/cart",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/cart"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/cod",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/cod"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/commerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/commerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/compliance",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/compliance"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/conversion",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/conversion"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/copilot",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/copilot"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/copywriting",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/copywriting"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/courier",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/courier"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/customer-service",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/customer-service"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/customization",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/customization"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/d2c",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/d2c"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/developers",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/developers"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/efficiency",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/efficiency"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/email",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/email"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/erp",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/erp"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/events",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/events"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/fulfillment",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/fulfillment"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/future",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/future"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/getting-started",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/getting-started"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/google",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/google"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/growth",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/growth"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/gst",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/gst"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/instagram",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/instagram"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/integration",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/integration"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/integrations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/integrations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/inventory",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/inventory"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/invoicing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/invoicing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/launch",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/launch"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/letbuyy",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/letbuyy"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/liquid",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/liquid"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/list-building",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/list-building"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/logistics",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/logistics"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/loyalty",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/loyalty"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/ltv",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/ltv"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/marketing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/marketing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/marketplace",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/marketplace"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/merchant-dashboard",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/merchant-dashboard"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/multi-location",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/multi-location"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/oauth",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/oauth"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/operations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/operations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/orders",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/orders"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/organic",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/organic"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/overview",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/overview"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/payments",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/payments"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/personalization",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/personalization"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/platform",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/platform"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/policy",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/policy"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/product",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/product"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/product-pages",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/product-pages"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/razorpay",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/razorpay"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/recommendations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/recommendations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/recovery",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/recovery"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/refunds",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/refunds"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/repeat-purchase",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/repeat-purchase"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/retention",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/retention"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/returns",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/returns"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/reviews",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/reviews"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/scaling",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/scaling"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/seo",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/seo"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/setup",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/setup"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/shipping",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/shipping"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/social-commerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/social-commerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/social-media",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/social-media"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/social-proof",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/social-proof"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/stock",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/stock"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/store-setup",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/store-setup"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/storefront",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/storefront"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/tax",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/tax"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/technical-seo",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/technical-seo"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/themes",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/themes"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/trust",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/trust"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/upi",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/upi"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/ux",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/ux"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/walkthrough",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/walkthrough"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/warehouse",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/warehouse"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/webhooks",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/webhooks"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/whatsapp",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/whatsapp"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/resources/tag/workflows",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/resources/tag/workflows"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/sitemap",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/sitemap"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-hi/support",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-hi/support"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/contact",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 2,
+      "canonical": [
+        "http://localhost:9006/in-ta/contact"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/create",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/create"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/demo",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/demo"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/acceptable-use",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/acceptable-use"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/api-terms",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/api-terms"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/billing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/billing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/cookies",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/cookies"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/data-processing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/data-processing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/grievance",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/grievance"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/intellectual-property",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/intellectual-property"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/marketplace",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/marketplace"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/payouts",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/payouts"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/privacy",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/privacy"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/refunds",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/refunds"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/security",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/security"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/shipping",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/shipping"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/subprocessors",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/subprocessors"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/legal/terms",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/legal/terms"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/pricing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/pricing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ai-commerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/ai-commerce-explained",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ai-commerce/ai-commerce-explained"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/ai-product-recommendations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ai-commerce/ai-product-recommendations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/automating-operations-ai",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ai-commerce/automating-operations-ai"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/commerce-copilot-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ai-commerce/commerce-copilot-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ai-commerce/workflow-automation-merchants",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ai-commerce/workflow-automation-merchants"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/authors/letbuyy-team",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/authors/letbuyy-team"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/changelog",
+      "robots": "noindex, follow",
+      "googlebot": "",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/changelog"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/developers"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/building-first-letbuyy-app",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/developers/building-first-letbuyy-app"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/custom-integrations-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/developers/custom-integrations-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/letbuyy-api-getting-started",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/developers/letbuyy-api-getting-started"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/liquid-theming-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/developers/liquid-theming-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/developers/webhooks-complete-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/developers/webhooks-complete-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ecommerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/how-product-reviews-increase-conversion",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ecommerce/how-product-reviews-increase-conversion"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/how-to-start-an-online-store-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ecommerce/how-to-start-an-online-store-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/product-page-optimization",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ecommerce/product-page-optimization"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/reducing-cart-abandonment",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ecommerce/reducing-cart-abandonment"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/ecommerce/store-seo-checklist",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/ecommerce/store-seo-checklist"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/growth"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/d2c-brand-launch-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/growth/d2c-brand-launch-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/email-marketing-ecommerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/growth/email-marketing-ecommerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/first-100-orders-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/growth/first-100-orders-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/retention-strategies-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/growth/retention-strategies-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/growth/social-commerce-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/growth/social-commerce-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/operations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/inventory-management-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/operations/inventory-management-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/multi-warehouse-inventory",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/operations/multi-warehouse-inventory"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/order-fulfillment-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/operations/order-fulfillment-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/shipping-india-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/operations/shipping-india-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/operations/understanding-fulfillment",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/operations/understanding-fulfillment"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/payments"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/gst-for-ecommerce-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/payments/gst-for-ecommerce-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/invoicing-india-merchants",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/payments/invoicing-india-merchants"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/razorpay-integration-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/payments/razorpay-integration-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/refunds-returns-policy-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/payments/refunds-returns-policy-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/payments/upi-vs-cod-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/payments/upi-vs-cod-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/platform"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/platform/building-first-letbuyy-store"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/how-themes-work",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/platform/how-themes-work"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/introduction-to-apps",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/platform/introduction-to-apps"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/letbuyy-platform-overview",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/platform/letbuyy-platform-overview"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/platform/merchant-web-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/platform/merchant-web-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/releases",
+      "robots": "noindex, follow",
+      "googlebot": "",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/releases"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/search",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/search"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/3pl",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/3pl"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/ai",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/ai"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/api",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/api"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/apps",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/apps"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/architecture",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/architecture"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/authentication",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/authentication"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/automation",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/automation"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/b2b",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/b2b"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/beginners",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/beginners"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/brand",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/brand"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/cart",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/cart"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/cod",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/cod"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/commerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/commerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/compliance",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/compliance"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/conversion",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/conversion"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/copilot",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/copilot"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/copywriting",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/copywriting"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/courier",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/courier"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/customer-service",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/customer-service"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/customization",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/customization"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/d2c",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/d2c"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/developers",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/developers"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/efficiency",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/efficiency"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/email",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/email"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/erp",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/erp"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/events",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/events"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/fulfillment",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/fulfillment"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/future",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/future"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/getting-started",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/getting-started"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/google",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/google"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/growth",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/growth"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/gst",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/gst"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/instagram",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/instagram"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/integration",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/integration"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/integrations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/integrations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/inventory",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/inventory"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/invoicing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/invoicing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/launch",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/launch"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/letbuyy",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/letbuyy"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/liquid",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/liquid"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/list-building",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/list-building"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/logistics",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/logistics"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/loyalty",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/loyalty"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/ltv",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/ltv"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/marketing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/marketing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/marketplace",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/marketplace"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/merchant-dashboard",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/merchant-dashboard"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/multi-location",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/multi-location"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/oauth",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/oauth"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/operations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/operations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/orders",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/orders"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/organic",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/organic"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/overview",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/overview"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/payments",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/payments"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/personalization",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/personalization"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/platform",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/platform"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/policy",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/policy"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/product",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/product"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/product-pages",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/product-pages"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/razorpay",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/razorpay"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/recommendations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/recommendations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/recovery",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/recovery"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/refunds",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/refunds"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/repeat-purchase",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/repeat-purchase"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/retention",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/retention"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/returns",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/returns"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/reviews",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/reviews"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/scaling",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/scaling"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/seo",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/seo"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/setup",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/setup"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/shipping",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/shipping"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/social-commerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/social-commerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/social-media",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/social-media"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/social-proof",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/social-proof"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/stock",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/stock"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/store-setup",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/store-setup"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/storefront",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/storefront"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/tax",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/tax"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/technical-seo",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/technical-seo"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/themes",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/themes"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/trust",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/trust"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/upi",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/upi"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/ux",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/ux"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/walkthrough",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/walkthrough"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/warehouse",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/warehouse"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/webhooks",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/webhooks"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/whatsapp",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/whatsapp"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/resources/tag/workflows",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/resources/tag/workflows"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/sitemap",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/sitemap"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in-ta/support",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in-ta/support"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/contact",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 2,
+      "canonical": [
+        "http://localhost:9006/in/contact"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/create",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/create"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/demo",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/demo"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/acceptable-use",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/acceptable-use"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/api-terms",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/api-terms"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/billing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/billing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/cookies",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/cookies"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/data-processing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/data-processing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/grievance",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/grievance"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/intellectual-property",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/intellectual-property"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/marketplace",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/marketplace"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/payouts",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/payouts"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/privacy",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/privacy"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/refunds",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/refunds"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/security",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/security"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/shipping",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/shipping"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/subprocessors",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/subprocessors"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/legal/terms",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/legal/terms"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/pricing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/pricing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/ai-commerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/ai-commerce-explained",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ai-commerce/ai-commerce-explained"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/ai-product-recommendations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ai-commerce/ai-product-recommendations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/automating-operations-ai",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ai-commerce/automating-operations-ai"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/commerce-copilot-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ai-commerce/commerce-copilot-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ai-commerce/workflow-automation-merchants",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ai-commerce/workflow-automation-merchants"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/authors/letbuyy-team",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/authors/letbuyy-team"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/changelog",
+      "robots": "noindex, follow",
+      "googlebot": "",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/changelog"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/developers"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/building-first-letbuyy-app",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/developers/building-first-letbuyy-app"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/custom-integrations-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/developers/custom-integrations-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/letbuyy-api-getting-started",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/developers/letbuyy-api-getting-started"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/liquid-theming-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/developers/liquid-theming-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/developers/webhooks-complete-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/developers/webhooks-complete-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/ecommerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce/how-product-reviews-increase-conversion",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ecommerce/how-product-reviews-increase-conversion"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce/how-to-start-an-online-store-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ecommerce/how-to-start-an-online-store-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce/product-page-optimization",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ecommerce/product-page-optimization"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce/reducing-cart-abandonment",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ecommerce/reducing-cart-abandonment"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/ecommerce/store-seo-checklist",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/ecommerce/store-seo-checklist"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/growth"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/d2c-brand-launch-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/growth/d2c-brand-launch-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/email-marketing-ecommerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/growth/email-marketing-ecommerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/first-100-orders-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/growth/first-100-orders-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/retention-strategies-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/growth/retention-strategies-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/growth/social-commerce-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/growth/social-commerce-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/operations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/inventory-management-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/operations/inventory-management-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/multi-warehouse-inventory",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/operations/multi-warehouse-inventory"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/order-fulfillment-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/operations/order-fulfillment-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/shipping-india-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/operations/shipping-india-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/operations/understanding-fulfillment",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/operations/understanding-fulfillment"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/payments"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/gst-for-ecommerce-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/payments/gst-for-ecommerce-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/invoicing-india-merchants",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/payments/invoicing-india-merchants"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/razorpay-integration-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/payments/razorpay-integration-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/refunds-returns-policy-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/payments/refunds-returns-policy-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/payments/upi-vs-cod-india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/payments/upi-vs-cod-india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/platform"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/platform/building-first-letbuyy-store"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/how-themes-work",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/platform/how-themes-work"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/introduction-to-apps",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/platform/introduction-to-apps"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/letbuyy-platform-overview",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/platform/letbuyy-platform-overview"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/platform/merchant-web-guide",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 3,
+      "canonical": [
+        "http://localhost:9006/in/resources/platform/merchant-web-guide"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/releases",
+      "robots": "noindex, follow",
+      "googlebot": "",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/releases"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/search",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/search"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/3pl",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/3pl"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/ai",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/ai"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/api",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/api"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/apps",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/apps"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/architecture",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/architecture"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/authentication",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/authentication"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/automation",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/automation"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/b2b",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/b2b"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/beginners",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/beginners"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/brand",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/brand"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/cart",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/cart"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/cod",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/cod"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/commerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/commerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/compliance",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/compliance"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/conversion",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/conversion"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/copilot",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/copilot"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/copywriting",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/copywriting"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/courier",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/courier"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/customer-service",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/customer-service"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/customization",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/customization"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/d2c",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/d2c"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/developers",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/developers"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/efficiency",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/efficiency"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/email",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/email"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/erp",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/erp"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/events",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/events"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/fulfillment",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/fulfillment"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/future",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/future"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/getting-started",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/getting-started"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/google",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/google"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/growth",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/growth"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/gst",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/gst"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/india",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/india"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/instagram",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/instagram"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/integration",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/integration"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/integrations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/integrations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/inventory",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/inventory"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/invoicing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/invoicing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/launch",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/launch"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/letbuyy",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/letbuyy"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/liquid",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/liquid"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/list-building",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/list-building"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/logistics",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/logistics"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/loyalty",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/loyalty"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/ltv",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/ltv"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/marketing",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/marketing"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/marketplace",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/marketplace"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/merchant-dashboard",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/merchant-dashboard"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/multi-location",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/multi-location"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/oauth",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/oauth"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/operations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/operations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/orders",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/orders"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/organic",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/organic"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/overview",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/overview"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/payments",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/payments"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/personalization",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/personalization"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/platform",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/platform"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/policy",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/policy"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/product",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/product"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/product-pages",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/product-pages"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/razorpay",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/razorpay"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/recommendations",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/recommendations"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/recovery",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/recovery"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/refunds",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/refunds"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/repeat-purchase",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/repeat-purchase"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/retention",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/retention"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/returns",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/returns"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/reviews",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/reviews"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/scaling",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/scaling"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/seo",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/seo"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/setup",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/setup"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/shipping",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/shipping"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/social-commerce",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/social-commerce"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/social-media",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/social-media"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/social-proof",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/social-proof"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/stock",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/stock"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/store-setup",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/store-setup"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/storefront",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/storefront"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/tax",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/tax"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/technical-seo",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/technical-seo"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/themes",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/themes"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/trust",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/trust"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/upi",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/upi"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/ux",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/ux"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/walkthrough",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/walkthrough"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/warehouse",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/warehouse"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/webhooks",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/webhooks"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/whatsapp",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/whatsapp"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/resources/tag/workflows",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/resources/tag/workflows"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/sitemap",
+      "robots": "noindex, follow",
+      "googlebot": "noindex, follow",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/sitemap"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/in/support",
+      "robots": "index, follow",
+      "googlebot": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "headerRobots": "",
+      "jsonldBlocks": 1,
+      "canonical": [
+        "http://localhost:9006/in/support"
+      ],
+      "errors": []
+    }
+  ]
+}

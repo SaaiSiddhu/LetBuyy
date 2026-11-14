@@ -1,0 +1,31 @@
+{
+  "events": [
+    {
+      "type": "pointerdown",
+      "button": 0,
+      "primary": true,
+      "x": 290,
+      "y": 215.078125,
+      "target": "cmap-panel-visual"
+    },
+    {
+      "type": "pointermove",
+      "button": -1,
+      "primary": true,
+      "x": 268.75,
+      "y": 215.078125,
+      "target": "cmap-panel-visual"
+    },
+    {
+      "type": "pointercancel",
+      "button": 0,
+      "primary": true,
+      "x": 0,
+      "y": 0,
+      "target": "cmap-panel-visual"
+    }
+  ],
+  "scrollY": 1129,
+  "active": "Storefront: Storefronts",
+  "touchAction": "pan-y pinch-zoom"
+}

@@ -19,6 +19,9 @@ import styles from './sitemap.module.css'
 const sourceMetadata: Metadata = {
     title: 'LetBuyy Sitemap',
     description: 'Public sitemap for LetBuyy, including guides, themes, apps, developer docs, pricing, and account entry points.',
+    // A visitor directory remains available, while search landings use the
+    // actual product, support and resource pages. Do not block it in robots.txt.
+    robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
     alternates: {
         canonical: '/sitemap',
     },

@@ -1,0 +1,60 @@
+{
+  "captured_at": "2026-11-07T02:59:40.140909+00:00",
+  "endpoint": "/v9/projects/marketing-site/domains",
+  "method": "GET",
+  "exit_code": 0,
+  "read_only": true,
+  "domains": [
+    {
+      "name": "staging.letbuyy.com",
+      "verified": true,
+      "redirect": null,
+      "gitBranch": "staging",
+      "customEnvironmentId": null
+    },
+    {
+      "name": "letbuyy.com",
+      "verified": true,
+      "redirect": "www.letbuyy.com",
+      "redirectStatusCode": 308,
+      "gitBranch": null,
+      "customEnvironmentId": null
+    },
+    {
+      "name": "www.letbuyy.com",
+      "verified": true,
+      "redirect": null,
+      "redirectStatusCode": null,
+      "gitBranch": null,
+      "customEnvironmentId": null
+    },
+    {
+      "name": "letbuyy.store",
+      "verified": true,
+      "redirect": "www.letbuyy.store",
+      "redirectStatusCode": 308,
+      "gitBranch": null,
+      "customEnvironmentId": null
+    },
+    {
+      "name": "www.letbuyy.store",
+      "verified": true,
+      "redirect": null,
+      "redirectStatusCode": null,
+      "gitBranch": null,
+      "customEnvironmentId": null
+    },
+    {
+      "name": "marketing-site-five-sigma.vercel.app",
+      "verified": true,
+      "redirect": null,
+      "gitBranch": null,
+      "customEnvironmentId": null
+    }
+  ],
+  "pagination": {
+    "count": 6,
+    "next": null,
+    "prev": 1780987656032
+  }
+}

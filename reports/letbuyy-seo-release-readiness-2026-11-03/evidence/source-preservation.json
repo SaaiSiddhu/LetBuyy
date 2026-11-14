@@ -1,0 +1,2791 @@
+{
+  "capturedAt": "2026-11-03T03:11:56.426568+00:00",
+  "checkedFiles": 463,
+  "changedPaths": [
+    "apps/marketing/web/src/app/[locale]/create/page.tsx"
+  ],
+  "unchangedCssFiles": 21,
+  "publicAssetsUnchanged": true,
+  "candidateBuildId": "Ryxk-DUGYcrhz_m14T_ny",
+  "files": [
+    {
+      "path": "apps/marketing/web/src/app/[locale]/contact/page.tsx",
+      "sha256": "4241e88b8b05372dc2d97e0d81cf3834c525c4664883b6f8d425f790e7230bf3",
+      "currentSha256": "4241e88b8b05372dc2d97e0d81cf3834c525c4664883b6f8d425f790e7230bf3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/create/layout.tsx",
+      "sha256": "6b4c38ca6daf977fb6c444f7dd4e2184cccf46f7fdf648678493bc37bcaac821",
+      "currentSha256": "6b4c38ca6daf977fb6c444f7dd4e2184cccf46f7fdf648678493bc37bcaac821",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/create/page.tsx",
+      "sha256": "506467f132a29d3193a847e79530be8136eaf48830cb8080ebfe4bab233c749e",
+      "currentSha256": "9f6ae6c76509c0afdec66ab43ee74c50e65f8a98820d97db30426b8ca17004aa",
+      "unchanged": false
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/demo/page.tsx",
+      "sha256": "4c3ae3c5669b08910088a7caaae807d82bf60239170d0388a096893bd8a99703",
+      "currentSha256": "4c3ae3c5669b08910088a7caaae807d82bf60239170d0388a096893bd8a99703",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/layout.tsx",
+      "sha256": "a0172fecdc0a75d2045bc3cad49c3c43c2408daad0227615511dea1dce1f3424",
+      "currentSha256": "a0172fecdc0a75d2045bc3cad49c3c43c2408daad0227615511dea1dce1f3424",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/legal/[slug]/page.tsx",
+      "sha256": "5f8769c963bf9116c8046bac2aaf3ee14482eb7d6c819eff172f26d140698d79",
+      "currentSha256": "5f8769c963bf9116c8046bac2aaf3ee14482eb7d6c819eff172f26d140698d79",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/legal/page.tsx",
+      "sha256": "9152aebe4ec78d3caeb87f2d2e8ae67c87711eb4a4efcbf5600fc8ae1b68833b",
+      "currentSha256": "9152aebe4ec78d3caeb87f2d2e8ae67c87711eb4a4efcbf5600fc8ae1b68833b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/page.tsx",
+      "sha256": "089427d34a6cb8454f0cad550950aff675eb8d3c8d008261929d24f7fcfab447",
+      "currentSha256": "089427d34a6cb8454f0cad550950aff675eb8d3c8d008261929d24f7fcfab447",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/pricing/page.tsx",
+      "sha256": "c7aa9ce36ba316a9cbaea4627c7c58d0bc3600b8e5e0d0ff8ca11eb5040bc771",
+      "currentSha256": "c7aa9ce36ba316a9cbaea4627c7c58d0bc3600b8e5e0d0ff8ca11eb5040bc771",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/[slug]/page.tsx",
+      "sha256": "0a4efdb3cbc2828cc59f9812332cf553d17af3ecf2b6a9268ac1328f4e18b9c8",
+      "currentSha256": "0a4efdb3cbc2828cc59f9812332cf553d17af3ecf2b6a9268ac1328f4e18b9c8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/category-illustrated.module.css",
+      "sha256": "ca816eef758333ef5a529a0d27cb5cc9de5678394c7088f019428c180db4a14f",
+      "currentSha256": "ca816eef758333ef5a529a0d27cb5cc9de5678394c7088f019428c180db4a14f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/page.tsx",
+      "sha256": "e68d7364eb1271aecec0aebcdcc0b3058f51868ddd0acebca28fa781644fc7e4",
+      "currentSha256": "e68d7364eb1271aecec0aebcdcc0b3058f51868ddd0acebca28fa781644fc7e4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/authors/[slug]/page.tsx",
+      "sha256": "9dec05069a6e6cbb82235a9a8a4ce0ae1131734302b79d8a0a7f1aba717a7788",
+      "currentSha256": "9dec05069a6e6cbb82235a9a8a4ce0ae1131734302b79d8a0a7f1aba717a7788",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/changelog/page.tsx",
+      "sha256": "deef330b654757192f22d8c1851d528b12bd2ee75a15b03f609b377518d8a1f6",
+      "currentSha256": "deef330b654757192f22d8c1851d528b12bd2ee75a15b03f609b377518d8a1f6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/layout.tsx",
+      "sha256": "37b2a8dd1b275165b6fd9fcdf323188740169d19feec73e04297bede13271d3b",
+      "currentSha256": "37b2a8dd1b275165b6fd9fcdf323188740169d19feec73e04297bede13271d3b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/page.tsx",
+      "sha256": "0bfdfe20746de5fd7c38be75d5411c4270d72ec98a36cc3f7141e0f1fdfc0e76",
+      "currentSha256": "0bfdfe20746de5fd7c38be75d5411c4270d72ec98a36cc3f7141e0f1fdfc0e76",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/releases/page.tsx",
+      "sha256": "a813da970a4179117a5de52166d18b0c204559724cfe4681086c35b369082bbb",
+      "currentSha256": "a813da970a4179117a5de52166d18b0c204559724cfe4681086c35b369082bbb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/resources-home.module.css",
+      "sha256": "a6801d9e2a3d46f6a9e9e0e852378a0ad52ebc9e1aab0c3e111679571b1bfb67",
+      "currentSha256": "a6801d9e2a3d46f6a9e9e0e852378a0ad52ebc9e1aab0c3e111679571b1bfb67",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/rss.xml/route.ts",
+      "sha256": "c184751cffc524b8f5f1eb2033b9c81eee49866f0c2b901f37d8be54cf8a9d16",
+      "currentSha256": "c184751cffc524b8f5f1eb2033b9c81eee49866f0c2b901f37d8be54cf8a9d16",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/search/layout.tsx",
+      "sha256": "d0a701707edcf2bd028927b9b8fe15ebd429658b1eb304e33045f2a7765f3549",
+      "currentSha256": "d0a701707edcf2bd028927b9b8fe15ebd429658b1eb304e33045f2a7765f3549",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/search/page.tsx",
+      "sha256": "bd7cdc7cb7aa143d17bfa857ac3d4e0d769b63bb8bff342cad94a7e9931e2004",
+      "currentSha256": "bd7cdc7cb7aa143d17bfa857ac3d4e0d769b63bb8bff342cad94a7e9931e2004",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/sitemap.xml/route.ts",
+      "sha256": "cf5d617eb4aafdd9a82d90318949b0d85b8e02fcc9e2f0e7db94f1f80b106015",
+      "currentSha256": "cf5d617eb4aafdd9a82d90318949b0d85b8e02fcc9e2f0e7db94f1f80b106015",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/tag/[tag]/page.tsx",
+      "sha256": "51b108a5357fade91d628a789f75483e40805cf5fcf0dd082fd718232b4bf7f1",
+      "currentSha256": "51b108a5357fade91d628a789f75483e40805cf5fcf0dd082fd718232b4bf7f1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/signup/page.tsx",
+      "sha256": "a1b6652b01af20f229a713e5a5a03c51d8eb56cfc47f5b888352845405aa7426",
+      "currentSha256": "a1b6652b01af20f229a713e5a5a03c51d8eb56cfc47f5b888352845405aa7426",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/sitemap/page.tsx",
+      "sha256": "40651a0038a92fa016dff460ed47dfb4c1a8633dbf5e44d2441f9f7424a5a9f5",
+      "currentSha256": "40651a0038a92fa016dff460ed47dfb4c1a8633dbf5e44d2441f9f7424a5a9f5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/sitemap/sitemap.module.css",
+      "sha256": "34c0c5a781784798f994df1308778d9429c1fc32ed8025acf3022f01d95bca7d",
+      "currentSha256": "34c0c5a781784798f994df1308778d9429c1fc32ed8025acf3022f01d95bca7d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/support/page.tsx",
+      "sha256": "33ed6bee3a0772471001716676b8376bfcc99206198a03d17d0a5a304e133daf",
+      "currentSha256": "33ed6bee3a0772471001716676b8376bfcc99206198a03d17d0a5a304e133daf",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/api/founding-pricing/route.ts",
+      "sha256": "1043e272044a01a7af5555486aaf868a4094cfee9f303e4b4ee37043d6ae04fc",
+      "currentSha256": "1043e272044a01a7af5555486aaf868a4094cfee9f303e4b4ee37043d6ae04fc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/favicon.ico",
+      "sha256": "c127bed18d23b23c1fa6e6ef7144e9bfb4fb82afa8da1a4f217c0c4f9634e512",
+      "currentSha256": "c127bed18d23b23c1fa6e6ef7144e9bfb4fb82afa8da1a4f217c0c4f9634e512",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "sha256": "e2de7c6c61df5b89c47df3a2f3dcd5999f6e6b5d686b41f308342c590663cd50",
+      "currentSha256": "e2de7c6c61df5b89c47df3a2f3dcd5999f6e6b5d686b41f308342c590663cd50",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "sha256": "77923e1c6b5cb17abb707eb143ba69cae3d44b26ab892eff3c396345fab0bfd4",
+      "currentSha256": "77923e1c6b5cb17abb707eb143ba69cae3d44b26ab892eff3c396345fab0bfd4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/how-it-works.css",
+      "sha256": "62e25060f9823f77deda7b647b471109ccefc006982769bf92125d67af3e54ae",
+      "currentSha256": "62e25060f9823f77deda7b647b471109ccefc006982769bf92125d67af3e54ae",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/layout.tsx",
+      "sha256": "d05fb8984090accc91f2965b07107b9ccb3bee54e959fdbdd90f5d8a62d28fa2",
+      "currentSha256": "d05fb8984090accc91f2965b07107b9ccb3bee54e959fdbdd90f5d8a62d28fa2",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/locale-typography.css",
+      "sha256": "8e8ec11eee5e768d79b8862f40cb66098cde149bf8dade236bc09b85c440196e",
+      "currentSha256": "8e8ec11eee5e768d79b8862f40cb66098cde149bf8dade236bc09b85c440196e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "sha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+      "currentSha256": "26fcfbee76c443465a98e99e0be277d544e5715595eeb5d75991f3c8cfe02ed5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/robots.ts",
+      "sha256": "0ad23b32d9d43445e8c7edcdb311f5937a0077af01620177b7a19cf7cac9f465",
+      "currentSha256": "0ad23b32d9d43445e8c7edcdb311f5937a0077af01620177b7a19cf7cac9f465",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/sitemap.ts",
+      "sha256": "2323230c3fadf4b84fb8c913364127c27a40c37e1a544db087cc7f5de8c3fca9",
+      "currentSha256": "2323230c3fadf4b84fb8c913364127c27a40c37e1a544db087cc7f5de8c3fca9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/BrandGlyphs.tsx",
+      "sha256": "d95363596adb5e93d51e3213a1afc317c6a2e3a6f4a50a55692ec8b0856df983",
+      "currentSha256": "d95363596adb5e93d51e3213a1afc317c6a2e3a6f4a50a55692ec8b0856df983",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/BrandLogo.tsx",
+      "sha256": "07982d583043886cd34e0f1580aca2f0303d47b55050863db0ca47841d42f7f2",
+      "currentSha256": "07982d583043886cd34e0f1580aca2f0303d47b55050863db0ca47841d42f7f2",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/CapabilityArtwork.tsx",
+      "sha256": "449db581a1b4689159578a39db61aa8f81a95ab96e3fb7c9970616ab1d283d50",
+      "currentSha256": "449db581a1b4689159578a39db61aa8f81a95ab96e3fb7c9970616ab1d283d50",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/CapabilityMap.tsx",
+      "sha256": "0b9d6171bacaf83c4e3fb7cce64fc410371aa2e8b510584a86d00a37784ca08c",
+      "currentSha256": "0b9d6171bacaf83c4e3fb7cce64fc410371aa2e8b510584a86d00a37784ca08c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceGlobe.tsx",
+      "sha256": "89a9b4e8c0f2b27a9efa552b4303d920af0883882c9a7129bbc0a26d39e1419a",
+      "currentSha256": "89a9b4e8c0f2b27a9efa552b4303d920af0883882c9a7129bbc0a26d39e1419a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceGlobeCanvas.tsx",
+      "sha256": "e8b374e01ab7583636c219af65e6fb0d1097b2706954363d825702285261c231",
+      "currentSha256": "e8b374e01ab7583636c219af65e6fb0d1097b2706954363d825702285261c231",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/CommerceNetwork.tsx",
+      "sha256": "fcb814b61543ec232c29521a392b5d31fb779187ad38a2fa09c5c65437104016",
+      "currentSha256": "fcb814b61543ec232c29521a392b5d31fb779187ad38a2fa09c5c65437104016",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/EcosystemMap.tsx",
+      "sha256": "a9ed5b9bdb1040b8866d515533b88679890111ba8453886049345ebc3dadc41d",
+      "currentSha256": "a9ed5b9bdb1040b8866d515533b88679890111ba8453886049345ebc3dadc41d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/FAQ.tsx",
+      "sha256": "10ea97dddaaac807c72bf1c89429c1eab6d1d45400b3433d2fa3c92d37516aa1",
+      "currentSha256": "10ea97dddaaac807c72bf1c89429c1eab6d1d45400b3433d2fa3c92d37516aa1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/Features.tsx",
+      "sha256": "6b32e371a8931bec8dc89cd09b73bb72a7a8c0ae2c673f2ef9ce7c5bae920952",
+      "currentSha256": "6b32e371a8931bec8dc89cd09b73bb72a7a8c0ae2c673f2ef9ce7c5bae920952",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/FinalCTA.tsx",
+      "sha256": "0109834dc00c9f0457968d0a2404ed4daf7a4027463e42462e2deaab73c9c08a",
+      "currentSha256": "0109834dc00c9f0457968d0a2404ed4daf7a4027463e42462e2deaab73c9c08a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/Footer.tsx",
+      "sha256": "851fd4ab202887dd95510adc8c441ed6cbb5ed0182e90448bc1bb1dfc120e69a",
+      "currentSha256": "851fd4ab202887dd95510adc8c441ed6cbb5ed0182e90448bc1bb1dfc120e69a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/Header.tsx",
+      "sha256": "29edaf1e3ff3d0dadfe3227927c646497c9f2488f69ded0413efa6a014d4e28f",
+      "currentSha256": "29edaf1e3ff3d0dadfe3227927c646497c9f2488f69ded0413efa6a014d4e28f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/Hero.tsx",
+      "sha256": "96f08ff46c50c0b457e6fbdd223edecf524cf29df1c44b3b179c36f2a22423a8",
+      "currentSha256": "96f08ff46c50c0b457e6fbdd223edecf524cf29df1c44b3b179c36f2a22423a8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/LottieGlobeEnding.tsx",
+      "sha256": "0cdfcb095bc2a302f2757c800091f6ffd0458cc281b54b28845e6fb68271d9bf",
+      "currentSha256": "0cdfcb095bc2a302f2757c800091f6ffd0458cc281b54b28845e6fb68271d9bf",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingHome.tsx",
+      "sha256": "107edde837d1f01ff879192facfaed2a03462129f9e98691c5f0cc15900de06f",
+      "currentSha256": "107edde837d1f01ff879192facfaed2a03462129f9e98691c5f0cc15900de06f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingIllustration.tsx",
+      "sha256": "b1c1b2b693af41478ce218cbdd99911eab349ae3afa181b8559b75c9c82f9cbd",
+      "currentSha256": "b1c1b2b693af41478ce218cbdd99911eab349ae3afa181b8559b75c9c82f9cbd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingMotionProvider.tsx",
+      "sha256": "234fb0b463b888df9bac62f7934d53d3e9ad712186f7cb5645209b8b4032eb8e",
+      "currentSha256": "234fb0b463b888df9bac62f7934d53d3e9ad712186f7cb5645209b8b4032eb8e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/MerchantJourney.tsx",
+      "sha256": "f78de38de46bace2aa41d9e071893605b5e3b1f0e20fd161536370070e832a01",
+      "currentSha256": "f78de38de46bace2aa41d9e071893605b5e3b1f0e20fd161536370070e832a01",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/PlatformDirectory.tsx",
+      "sha256": "7868c8c45cc051413d0505bdcd9c1e94783ac0e7f0e21e628912b5d4df65981f",
+      "currentSha256": "7868c8c45cc051413d0505bdcd9c1e94783ac0e7f0e21e628912b5d4df65981f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/Pricing.tsx",
+      "sha256": "6663c3726d6f82a553b9284c91cd924682041b246b8126ac1600a07e46cebf6c",
+      "currentSha256": "6663c3726d6f82a553b9284c91cd924682041b246b8126ac1600a07e46cebf6c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/SiteTypes.tsx",
+      "sha256": "9a35720401b25259512daac43fd0f37fd67483ea46b147152d43254846ed509c",
+      "currentSha256": "9a35720401b25259512daac43fd0f37fd67483ea46b147152d43254846ed509c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/TrustIndicators.tsx",
+      "sha256": "dfc875ae084f312f685c223db070d0634ed81d05b065abc1703cf245e4145a21",
+      "currentSha256": "dfc875ae084f312f685c223db070d0634ed81d05b065abc1703cf245e4145a21",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/contact/ContactForm.tsx",
+      "sha256": "5df48e62eaebbad99888c257cdf116f3adb3841854e7db72663f19550d4d45de",
+      "currentSha256": "5df48e62eaebbad99888c257cdf116f3adb3841854e7db72663f19550d4d45de",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/contact/TicketLookup.tsx",
+      "sha256": "5314ced7fe43812f6b9a52cf20ed7f45985ae2835c6ee47d5f645fa13aeaf544",
+      "currentSha256": "5314ced7fe43812f6b9a52cf20ed7f45985ae2835c6ee47d5f645fa13aeaf544",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/contact/TurnstileWidget.tsx",
+      "sha256": "65074d82673bde843b949e3046d9d13958aa4ebe3f93fefeb0ab3cd9c1545ce4",
+      "currentSha256": "65074d82673bde843b949e3046d9d13958aa4ebe3f93fefeb0ab3cd9c1545ce4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/demo/DemoRequestForm.tsx",
+      "sha256": "9811d2a24d7d5a1bbdf7947bc8d4848b699bdd0f328189e564177b9904bc2c35",
+      "currentSha256": "9811d2a24d7d5a1bbdf7947bc8d4848b699bdd0f328189e564177b9904bc2c35",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/final-cta.module.css",
+      "sha256": "47c08d2facb86e49838074e6c0ffb18687bb6c238b623607a044f47c4c68e214",
+      "currentSha256": "47c08d2facb86e49838074e6c0ffb18687bb6c238b623607a044f47c4c68e214",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/header-featured-art.module.css",
+      "sha256": "a74befaf9288acc46ca456995ad8710a966dc7184e8b9df450140fdbaedcbcbe",
+      "currentSha256": "a74befaf9288acc46ca456995ad8710a966dc7184e8b9df450140fdbaedcbcbe",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/Copy.tsx",
+      "sha256": "cfb4c8dfbc1931cd8ded464cc0cfb2f66a24c3bba8f95c5741e706836c5b0218",
+      "currentSha256": "cfb4c8dfbc1931cd8ded464cc0cfb2f66a24c3bba8f95c5741e706836c5b0218",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/CopyProvider.tsx",
+      "sha256": "52ac523e88077993e8d0b6c645a30840cb63ef9609f98a267be8a5d69be8168e",
+      "currentSha256": "52ac523e88077993e8d0b6c645a30840cb63ef9609f98a267be8a5d69be8168e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/LanguageSwitcher.tsx",
+      "sha256": "3245c85a2f432e7978c3f5c8346e1854e92890a91a2a56f391b21210e77999d7",
+      "currentSha256": "3245c85a2f432e7978c3f5c8346e1854e92890a91a2a56f391b21210e77999d7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/LocaleHtmlLang.tsx",
+      "sha256": "b29a6dc6ea45c1bd1718ec0988ff0bea5ef1d6d91cd624854e63ecad1e586668",
+      "currentSha256": "b29a6dc6ea45c1bd1718ec0988ff0bea5ef1d6d91cd624854e63ecad1e586668",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/LocaleLink.tsx",
+      "sha256": "1a0e7b8ae775202b83be2ae158f1209cba29331f9ddb2ab3fa625a1b54978194",
+      "currentSha256": "1a0e7b8ae775202b83be2ae158f1209cba29331f9ddb2ab3fa625a1b54978194",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/UntranslatedNotice.tsx",
+      "sha256": "6c6cc4d7941a130791dc5760924388aeba5d02270c403e01bf040f80ee2cd0fe",
+      "currentSha256": "6c6cc4d7941a130791dc5760924388aeba5d02270c403e01bf040f80ee2cd0fe",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/i18n/useCopy.ts",
+      "sha256": "358176db8f8154302ed3330688a2abdc66cb317c3ce64857110f6b640c5b3add",
+      "currentSha256": "358176db8f8154302ed3330688a2abdc66cb317c3ce64857110f6b640c5b3add",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/legal/GrievanceOfficerCard.tsx",
+      "sha256": "5d2292a5c050675211c7186025f792aa5fa7fc5503ba1545924e6e996781d8b0",
+      "currentSha256": "5d2292a5c050675211c7186025f792aa5fa7fc5503ba1545924e6e996781d8b0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/legal/LegalContents.tsx",
+      "sha256": "fbcea74fc0782b98e76b186c6fca5ab51127344a612f53a314e87f0140a18f49",
+      "currentSha256": "fbcea74fc0782b98e76b186c6fca5ab51127344a612f53a314e87f0140a18f49",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/legal/LegalStatusBanner.tsx",
+      "sha256": "0c675934c975ef4319a1d39cf35366850ba3066a8bb9ff146283b686ac163aa8",
+      "currentSha256": "0c675934c975ef4319a1d39cf35366850ba3066a8bb9ff146283b686ac163aa8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/legal/legal-layout.module.css",
+      "sha256": "c35704c40c2d09b41e834ee42a35ccb39bdab85549a53bd09ccd55e8b1a921ef",
+      "currentSha256": "c35704c40c2d09b41e834ee42a35ccb39bdab85549a53bd09ccd55e8b1a921ef",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/platform-surfaces.module.css",
+      "sha256": "11b8532b9d0386f3488eb416e3c8d8fbeed1ada784c6de63a09a66f553b68d76",
+      "currentSha256": "11b8532b9d0386f3488eb416e3c8d8fbeed1ada784c6de63a09a66f553b68d76",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleBody.tsx",
+      "sha256": "c8c44b4164d281da307446184ff9249fe32c72170c865dc38e9bca0a29f6488e",
+      "currentSha256": "c8c44b4164d281da307446184ff9249fe32c72170c865dc38e9bca0a29f6488e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleCard.tsx",
+      "sha256": "93a4af4582989d67790af3815f155a9f72973c0e36a54b525e07d0435aa01653",
+      "currentSha256": "93a4af4582989d67790af3815f155a9f72973c0e36a54b525e07d0435aa01653",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleCompletionBanner.tsx",
+      "sha256": "defd2e59b0a81d0f268925475b2dab694cd25313f4bdb8a95734b012d4ebb9a1",
+      "currentSha256": "defd2e59b0a81d0f268925475b2dab694cd25313f4bdb8a95734b012d4ebb9a1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleDock.tsx",
+      "sha256": "87d7084fff1a25004477843a377c06c8194f3d171c10d5f1eecdd0694677f521",
+      "currentSha256": "87d7084fff1a25004477843a377c06c8194f3d171c10d5f1eecdd0694677f521",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleSectionVisual.tsx",
+      "sha256": "ea4f36dda2f12f96297d17ec7ee47f975ee8a1ae6f47156175877d32e2e09171",
+      "currentSha256": "ea4f36dda2f12f96297d17ec7ee47f975ee8a1ae6f47156175877d32e2e09171",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleSidebar.tsx",
+      "sha256": "358f883d82c5eba68976dc6e7ed83b46e69a53698cecac8df9f0eff55d445e1a",
+      "currentSha256": "358f883d82c5eba68976dc6e7ed83b46e69a53698cecac8df9f0eff55d445e1a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ArticleVisualOverview.tsx",
+      "sha256": "39612095c7911ffc768699c513bde9472b850ae5186bd531fd5b7ee24318f333",
+      "currentSha256": "39612095c7911ffc768699c513bde9472b850ae5186bd531fd5b7ee24318f333",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/BookmarkButton.tsx",
+      "sha256": "f294e9729668dfa8f725af92d8e672c95bf93353823a82cb9938eb0115b34127",
+      "currentSha256": "f294e9729668dfa8f725af92d8e672c95bf93353823a82cb9938eb0115b34127",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/CategoryNav.tsx",
+      "sha256": "e355a60f99be449eb2a4bd17c3b5fc0557c7f10577549ae580a8e3162d349e49",
+      "currentSha256": "e355a60f99be449eb2a4bd17c3b5fc0557c7f10577549ae580a8e3162d349e49",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ChangelogReleases.tsx",
+      "sha256": "edf12451c28547a2028655734e3e783272244728f978d5f524e784165b075270",
+      "currentSha256": "edf12451c28547a2028655734e3e783272244728f978d5f524e784165b075270",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/CopyLinkButton.tsx",
+      "sha256": "039908802d160f3f5a10b0010eb5de8d0b23ecc89f44a9a64540db018bbb0175",
+      "currentSha256": "039908802d160f3f5a10b0010eb5de8d0b23ecc89f44a9a64540db018bbb0175",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/HeadingAnchor.tsx",
+      "sha256": "9559142adb223640ac0537606539c76584e48732aa05c926d032d0c33155ff78",
+      "currentSha256": "9559142adb223640ac0537606539c76584e48732aa05c926d032d0c33155ff78",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/LiquidGuide.tsx",
+      "sha256": "1e7348e708b0ccf8987c0e96f779bc9d9a9b3b84df29df2e3749ee872d904055",
+      "currentSha256": "1e7348e708b0ccf8987c0e96f779bc9d9a9b3b84df29df2e3749ee872d904055",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/MobileTOC.tsx",
+      "sha256": "0a971e5251b5e3b54f23204c2e376b097fe54c9aaa7d4dbc33d1d9cd5ea69f9b",
+      "currentSha256": "0a971e5251b5e3b54f23204c2e376b097fe54c9aaa7d4dbc33d1d9cd5ea69f9b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/NewsletterAvailability.tsx",
+      "sha256": "a4bfb23af71c89fe93f92c3caa3524101268f35843c905a5cbe21fda25c16eae",
+      "currentSha256": "a4bfb23af71c89fe93f92c3caa3524101268f35843c905a5cbe21fda25c16eae",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/NewsletterCTA.tsx",
+      "sha256": "105dab6e2a7d0069338951ddadad2751993820569be994cd1d9c6621f3788f9a",
+      "currentSha256": "105dab6e2a7d0069338951ddadad2751993820569be994cd1d9c6621f3788f9a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/NewsletterInline.tsx",
+      "sha256": "fd184266f86dfce314d6351d7a3dc148e7a4b70632923a98af63116e010796b8",
+      "currentSha256": "fd184266f86dfce314d6351d7a3dc148e7a4b70632923a98af63116e010796b8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/NewsletterModal.tsx",
+      "sha256": "0f0a004a982bb620e5a736181f43bd2bb31fc9bc49cd176449fbea5a888dbba4",
+      "currentSha256": "0f0a004a982bb620e5a736181f43bd2bb31fc9bc49cd176449fbea5a888dbba4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/PostArticleNewsletter.tsx",
+      "sha256": "92b61da76ad6a20166f57f2a171cf9b3d55f733fe061fd553d9b6d01887372fc",
+      "currentSha256": "92b61da76ad6a20166f57f2a171cf9b3d55f733fe061fd553d9b6d01887372fc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/PrevNextArticle.tsx",
+      "sha256": "0a3ff7efc67ade3c0a27ca4b01ff9259f32f1117f6cfebb3fedb49db6f57ac6e",
+      "currentSha256": "0a3ff7efc67ade3c0a27ca4b01ff9259f32f1117f6cfebb3fedb49db6f57ac6e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ReadingProgress.tsx",
+      "sha256": "13f01667c1095e7b6d0a9212f114d6cb72ee7a428eaa8f575dde79e115a5f7c6",
+      "currentSha256": "13f01667c1095e7b6d0a9212f114d6cb72ee7a428eaa8f575dde79e115a5f7c6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/RecommendedArticles.tsx",
+      "sha256": "c30723a7bb4bcf4306655a62cb03eaf170296f2eb973e013ef40994545944ec8",
+      "currentSha256": "c30723a7bb4bcf4306655a62cb03eaf170296f2eb973e013ef40994545944ec8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ResourceArticleArtwork.tsx",
+      "sha256": "b1f6408db2ca1d8272857f20118850f7e877acb182c54d6fc6ebec61748b4c9b",
+      "currentSha256": "b1f6408db2ca1d8272857f20118850f7e877acb182c54d6fc6ebec61748b4c9b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ResourcesNav.tsx",
+      "sha256": "53d6fd9ef9b7dd300e50f41bdfbf09f19e02f9d0512a6c88b41e7725f359874b",
+      "currentSha256": "53d6fd9ef9b7dd300e50f41bdfbf09f19e02f9d0512a6c88b41e7725f359874b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ResourcesScrollRestoration.tsx",
+      "sha256": "740dedb35107d49531af347c1c058f8fb55b08b4f3213e1138ae875e7fa2ccab",
+      "currentSha256": "740dedb35107d49531af347c1c058f8fb55b08b4f3213e1138ae875e7fa2ccab",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/SeriesNav.tsx",
+      "sha256": "f78877e9c4f64d74039cd797f7e4de4d4c5f9c8fed97e2a47c0bdccf538be21e",
+      "currentSha256": "f78877e9c4f64d74039cd797f7e4de4d4c5f9c8fed97e2a47c0bdccf538be21e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/TableOfContents.tsx",
+      "sha256": "2d52648fb54731d7866d03b910a7d28e7dde1f24811ec0bc229dce57a349efa5",
+      "currentSha256": "2d52648fb54731d7866d03b910a7d28e7dde1f24811ec0bc229dce57a349efa5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/ThemeGuide.tsx",
+      "sha256": "e57378ab01d32c3cc778f5c6ab4bb67a33d930ef0aa169a5681189d237d7d567",
+      "currentSha256": "e57378ab01d32c3cc778f5c6ab4bb67a33d930ef0aa169a5681189d237d7d567",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-section-visual.module.css",
+      "sha256": "04b0b33213bd47a92c10eed18a146863f85aca079835898294e489b2d02e8d63",
+      "currentSha256": "04b0b33213bd47a92c10eed18a146863f85aca079835898294e489b2d02e8d63",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-visual-overview.module.css",
+      "sha256": "bceaa87f9cbc4331d30d776bb1b20e2e91d45d0e4b72441c0c4bd4e2d96f7d7a",
+      "currentSha256": "bceaa87f9cbc4331d30d776bb1b20e2e91d45d0e4b72441c0c4bd4e2d96f7d7a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/changelog.module.css",
+      "sha256": "e202bec9ec797f384f648dec7cc760656f0ac938ec8b13b9f343c370b0c3d180",
+      "currentSha256": "e202bec9ec797f384f648dec7cc760656f0ac938ec8b13b9f343c370b0c3d180",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/liquid-guide.module.css",
+      "sha256": "3073a7695d31802bea7c6158f859067208a28bca600eaafbf747e9456bfbcc73",
+      "currentSha256": "3073a7695d31802bea7c6158f859067208a28bca600eaafbf747e9456bfbcc73",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-artwork.module.css",
+      "sha256": "8c13b6c30c8c50471deb40dfe5b20e22869d6b2be6ea563d4c759d0caa73417a",
+      "currentSha256": "8c13b6c30c8c50471deb40dfe5b20e22869d6b2be6ea563d4c759d0caa73417a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-list-visuals.module.css",
+      "sha256": "e6d3ac5a62e59dfb803f1b01e5ee376573a3899f01f87a72a37cf593bf5d5054",
+      "currentSha256": "e6d3ac5a62e59dfb803f1b01e5ee376573a3899f01f87a72a37cf593bf5d5054",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/theme-guide.module.css",
+      "sha256": "7eb8b3bdcfbd18194cf77fb8b96b4073bdc86518e154639ab51ec6aafc5464d8",
+      "currentSha256": "7eb8b3bdcfbd18194cf77fb8b96b4073bdc86518e154639ab51ec6aafc5464d8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/security/TurnstileWidget.tsx",
+      "sha256": "dda79b2612192ac7a87055e4cf440161a9acf0c6136ee003315b6cbb7e6b21ef",
+      "currentSha256": "dda79b2612192ac7a87055e4cf440161a9acf0c6136ee003315b6cbb7e6b21ef",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/support/SupportIllustration.tsx",
+      "sha256": "00743d76668c4cf360c1b24facb0a32d0213b428de6eb95e166a9a243eb831eb",
+      "currentSha256": "00743d76668c4cf360c1b24facb0a32d0213b428de6eb95e166a9a243eb831eb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/support/support-experience.module.css",
+      "sha256": "ac9506f560a259809f723887b0ee6cb75e9a9f8abe04b28b7ffc51043d4ee644",
+      "currentSha256": "ac9506f560a259809f723887b0ee6cb75e9a9f8abe04b28b7ffc51043d4ee644",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/app-downloads.ts",
+      "sha256": "5b2fbf976b4df1f4022b2a2438492b5966d785678685c4ba66db8df982c3a1b7",
+      "currentSha256": "5b2fbf976b4df1f4022b2a2438492b5966d785678685c4ba66db8df982c3a1b7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/brand-assets.ts",
+      "sha256": "bdc0d7c882eb275af9c7a512c872be5bead4daea40436b804128cd4dfdb90417",
+      "currentSha256": "bdc0d7c882eb275af9c7a512c872be5bead4daea40436b804128cd4dfdb90417",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/capability-preview-layout.ts",
+      "sha256": "ec65b2e276a4cbd38d60c2149376f2c25c84b003114189e33c5d796facb16072",
+      "currentSha256": "ec65b2e276a4cbd38d60c2149376f2c25c84b003114189e33c5d796facb16072",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/capability-tour.ts",
+      "sha256": "eaaefa4fdbb599cc63a6d82421991640ea967ca599b527fdc3c5c68e66bc6bf4",
+      "currentSha256": "eaaefa4fdbb599cc63a6d82421991640ea967ca599b527fdc3c5c68e66bc6bf4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe-renderer.ts",
+      "sha256": "a1cf87cc4b3a9859d4ecd8dc1e56411025db09678e71bf286da356b25557d5d4",
+      "currentSha256": "a1cf87cc4b3a9859d4ecd8dc1e56411025db09678e71bf286da356b25557d5d4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe.ts",
+      "sha256": "8859fcca53d5e0d94f658e19dcc5adbfb0cf0356c7546c4f4dc4d00ae3689e96",
+      "currentSha256": "8859fcca53d5e0d94f658e19dcc5adbfb0cf0356c7546c4f4dc4d00ae3689e96",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/commerce-globe.worker.ts",
+      "sha256": "63a1a390e398903c969d41430445c7fc101b5958cebe8509198776cf17573c51",
+      "currentSha256": "63a1a390e398903c969d41430445c7fc101b5958cebe8509198776cf17573c51",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/create-globe-worker.ts",
+      "sha256": "a34363d675db09d6659cf215e6eba4139df7de9caa72230276c0fbfb2dfb3f0f",
+      "currentSha256": "a34363d675db09d6659cf215e6eba4139df7de9caa72230276c0fbfb2dfb3f0f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/demo/fields.ts",
+      "sha256": "ce54d5cfc551afbcce18b76fe1d45f607b5925efde7d1e8a68dbcc770a8d1411",
+      "currentSha256": "ce54d5cfc551afbcce18b76fe1d45f607b5925efde7d1e8a68dbcc770a8d1411",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/globe-finale.ts",
+      "sha256": "eb456ac67772dbdb95070385ef568817d9aa55c228d0d180e4fa8480eec5f29f",
+      "currentSha256": "eb456ac67772dbdb95070385ef568817d9aa55c228d0d180e4fa8480eec5f29f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/globe-renderer-types.ts",
+      "sha256": "010d213ab4b251c62c0fa2f295aa639113c95eecde744246a0810809fb402270",
+      "currentSha256": "010d213ab4b251c62c0fa2f295aa639113c95eecde744246a0810809fb402270",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/article-catalog.ts",
+      "sha256": "d000f7488223e9162021b13b68ed5038b5d7aef09d953666c9b6d9e538329e82",
+      "currentSha256": "d000f7488223e9162021b13b68ed5038b5d7aef09d953666c9b6d9e538329e82",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/article-content.ts",
+      "sha256": "180da91a7c291e3d1298564f171e193fa419da7fc1d9d08abd62ea152f6c2840",
+      "currentSha256": "180da91a7c291e3d1298564f171e193fa419da7fc1d9d08abd62ea152f6c2840",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/article-summaries.json",
+      "sha256": "1d1674c6d00e3311e92b16e4b5c46b063d8bad44942966407d46d2161b25a8ef",
+      "currentSha256": "1d1674c6d00e3311e92b16e4b5c46b063d8bad44942966407d46d2161b25a8ef",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/article-summary.ts",
+      "sha256": "0709ea83ef36cf74989bc7bd8f1d5c6c9e29572a28524021809fa3c75af72d98",
+      "currentSha256": "0709ea83ef36cf74989bc7bd8f1d5c6c9e29572a28524021809fa3c75af72d98",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/ai-commerce-explained.json",
+      "sha256": "36e06976cfaf7dbd2a67db2e6033c9e914338f6f4739ef0bc268dbbb65792ef1",
+      "currentSha256": "36e06976cfaf7dbd2a67db2e6033c9e914338f6f4739ef0bc268dbbb65792ef1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/ai-product-recommendations.json",
+      "sha256": "31cc0c5fb5f06e73114b018cc6016f67ea0d1b8efb21a87bd143bd2c38ab2094",
+      "currentSha256": "31cc0c5fb5f06e73114b018cc6016f67ea0d1b8efb21a87bd143bd2c38ab2094",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/automating-operations-ai.json",
+      "sha256": "0b4cb0ca0008bf48832c8dd5367dbb305d93995892d34566dec781dbdc23b94a",
+      "currentSha256": "0b4cb0ca0008bf48832c8dd5367dbb305d93995892d34566dec781dbdc23b94a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/building-first-letbuyy-app.json",
+      "sha256": "2baa78182ec0e320527c6463a263a9b2e8436556db9499e4a77ded24026c8bff",
+      "currentSha256": "2baa78182ec0e320527c6463a263a9b2e8436556db9499e4a77ded24026c8bff",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/building-first-letbuyy-store.json",
+      "sha256": "ab3472a40106bf3e0883399c27ba93c7c3ffee34de48f690f827f0b75364af5d",
+      "currentSha256": "ab3472a40106bf3e0883399c27ba93c7c3ffee34de48f690f827f0b75364af5d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/commerce-copilot-guide.json",
+      "sha256": "efcc60361c01d5d7b170438557635e7264f80b3a84ebeed2f91d533f7a002083",
+      "currentSha256": "efcc60361c01d5d7b170438557635e7264f80b3a84ebeed2f91d533f7a002083",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/custom-integrations-guide.json",
+      "sha256": "849edb716150d05f6c3c824d7ec34d7bb650f3839d95c1b72b27cedb4f3b129b",
+      "currentSha256": "849edb716150d05f6c3c824d7ec34d7bb650f3839d95c1b72b27cedb4f3b129b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/d2c-brand-launch-guide.json",
+      "sha256": "d1bbb415412cebdda0d56b7cc926bd725082c9c35dfe830e2b45d7251255d9bf",
+      "currentSha256": "d1bbb415412cebdda0d56b7cc926bd725082c9c35dfe830e2b45d7251255d9bf",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/email-marketing-ecommerce.json",
+      "sha256": "b519bb6a0f9aa948446f5f40da7b83e365d498af0122c86c845fdbe192cf9053",
+      "currentSha256": "b519bb6a0f9aa948446f5f40da7b83e365d498af0122c86c845fdbe192cf9053",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/first-100-orders-guide.json",
+      "sha256": "8f125484a66ac588e9cd72fbe6e93393701e4e0da1132d33d7c14f7347725ba6",
+      "currentSha256": "8f125484a66ac588e9cd72fbe6e93393701e4e0da1132d33d7c14f7347725ba6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/gst-for-ecommerce-india.json",
+      "sha256": "7cde3229314ca47623d48b46bf698f166f2c05645fc368ff69a7693a36ea6f55",
+      "currentSha256": "7cde3229314ca47623d48b46bf698f166f2c05645fc368ff69a7693a36ea6f55",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-product-reviews-increase-conversion.json",
+      "sha256": "b4977cdb4b4fb4320b107ea8f158e4d1a460b74256f36924c039c9bc63aa4270",
+      "currentSha256": "b4977cdb4b4fb4320b107ea8f158e4d1a460b74256f36924c039c9bc63aa4270",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-themes-work.json",
+      "sha256": "19a67e162f8419ff64fa539b044843c5d1991267d66a0a9c017dc75431eeae09",
+      "currentSha256": "19a67e162f8419ff64fa539b044843c5d1991267d66a0a9c017dc75431eeae09",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/how-to-start-an-online-store-india.json",
+      "sha256": "2b1f76a9ef2400882abcddf7ee30e882fb2585374d3718273ff70eda569e6f09",
+      "currentSha256": "2b1f76a9ef2400882abcddf7ee30e882fb2585374d3718273ff70eda569e6f09",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/introduction-to-apps.json",
+      "sha256": "026ab39e3325d8cf1adc94fb4f478030776a6d55021a17732a0dfe7ad8862543",
+      "currentSha256": "026ab39e3325d8cf1adc94fb4f478030776a6d55021a17732a0dfe7ad8862543",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/inventory-management-guide.json",
+      "sha256": "969aa554260e77c072b84faba1419a576872e7d838d168b5a49ef262debb76d3",
+      "currentSha256": "969aa554260e77c072b84faba1419a576872e7d838d168b5a49ef262debb76d3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/invoicing-india-merchants.json",
+      "sha256": "5000cc626a7e4274a4abad45630f79a5127cfcfe9f7b4170db5078365e33b659",
+      "currentSha256": "5000cc626a7e4274a4abad45630f79a5127cfcfe9f7b4170db5078365e33b659",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/letbuyy-api-getting-started.json",
+      "sha256": "6b1bd7530f76a0e4b14b64f2d344798cc7d0cbfac1c29e80c0c4dedcb11998d3",
+      "currentSha256": "6b1bd7530f76a0e4b14b64f2d344798cc7d0cbfac1c29e80c0c4dedcb11998d3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/letbuyy-platform-overview.json",
+      "sha256": "7493a02d91b04446f4b3bc98e1300ffaa1deaa274864e7695155e01bbcf6e187",
+      "currentSha256": "7493a02d91b04446f4b3bc98e1300ffaa1deaa274864e7695155e01bbcf6e187",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/liquid-theming-guide.json",
+      "sha256": "0354d1c833662fbf61390e62614b6c56523f6e5c8402ff50d832a29cd2c2a906",
+      "currentSha256": "0354d1c833662fbf61390e62614b6c56523f6e5c8402ff50d832a29cd2c2a906",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/merchant-web-guide.json",
+      "sha256": "d0bb9e3e56f17f8f28a6d4a33037329e8789ca2445c35dd795be6b492fe1f85f",
+      "currentSha256": "d0bb9e3e56f17f8f28a6d4a33037329e8789ca2445c35dd795be6b492fe1f85f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/multi-warehouse-inventory.json",
+      "sha256": "2b8608b755a60c1d00d7d920e9783aeb57fbdfcad4dbb596b85e905f440dacff",
+      "currentSha256": "2b8608b755a60c1d00d7d920e9783aeb57fbdfcad4dbb596b85e905f440dacff",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/order-fulfillment-guide.json",
+      "sha256": "ba1666c77613be10c04dc6623406ac2fff56be408a06fb710115a40b056117ff",
+      "currentSha256": "ba1666c77613be10c04dc6623406ac2fff56be408a06fb710115a40b056117ff",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/product-page-optimization.json",
+      "sha256": "e96e0989f27290524a097b7a4ed5c53ac275a595d1b10ee9ddf2b47f62d3b7f5",
+      "currentSha256": "e96e0989f27290524a097b7a4ed5c53ac275a595d1b10ee9ddf2b47f62d3b7f5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/razorpay-integration-guide.json",
+      "sha256": "48ad1a91e52f762467687fb95246b238e7ce81fd829a6c22266649215665896f",
+      "currentSha256": "48ad1a91e52f762467687fb95246b238e7ce81fd829a6c22266649215665896f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/reducing-cart-abandonment.json",
+      "sha256": "4452391377053b4db51308c8b83659fe6cd9817c2fe7456cb74e1d55e89f3fc6",
+      "currentSha256": "4452391377053b4db51308c8b83659fe6cd9817c2fe7456cb74e1d55e89f3fc6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/refunds-returns-policy-india.json",
+      "sha256": "64af1b4ed5899cfe04fa154f13b02f0b8d569f4078f5ad70eb1fd101509b800e",
+      "currentSha256": "64af1b4ed5899cfe04fa154f13b02f0b8d569f4078f5ad70eb1fd101509b800e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/retention-strategies-india.json",
+      "sha256": "709cbedbcb28baf215dbc9e9223a441d5ea293fb9c33a27746bf08d42daf8a4f",
+      "currentSha256": "709cbedbcb28baf215dbc9e9223a441d5ea293fb9c33a27746bf08d42daf8a4f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/shipping-india-guide.json",
+      "sha256": "149eab24a866c63896cd68aa22e627a21782870b9d5ae49965ef86d69fdea41c",
+      "currentSha256": "149eab24a866c63896cd68aa22e627a21782870b9d5ae49965ef86d69fdea41c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/social-commerce-india.json",
+      "sha256": "91ee7f4273d63c4715d29db24dda9e7f81f5abea1c9c2d711a6bc5ac35417930",
+      "currentSha256": "91ee7f4273d63c4715d29db24dda9e7f81f5abea1c9c2d711a6bc5ac35417930",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/store-seo-checklist.json",
+      "sha256": "7846d435109451c23e03355627d6b66c0f5bf3356504d2c29fe332d08fe356cb",
+      "currentSha256": "7846d435109451c23e03355627d6b66c0f5bf3356504d2c29fe332d08fe356cb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/understanding-fulfillment.json",
+      "sha256": "29c22015a1ad3dbfbb8d312bc96a740e470fb865073bf51ad56dd1722fb082ef",
+      "currentSha256": "29c22015a1ad3dbfbb8d312bc96a740e470fb865073bf51ad56dd1722fb082ef",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/upi-vs-cod-india.json",
+      "sha256": "fb7d96ee6f7d8576743bb85455a81d01bb2923a6bdd97377023d521eed6f7f13",
+      "currentSha256": "fb7d96ee6f7d8576743bb85455a81d01bb2923a6bdd97377023d521eed6f7f13",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/webhooks-complete-guide.json",
+      "sha256": "deddfc6c69ce984f119bb655b44fd09cb600745c38f1ecf61cbd2f4afe47f410",
+      "currentSha256": "deddfc6c69ce984f119bb655b44fd09cb600745c38f1ecf61cbd2f4afe47f410",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/articles/workflow-automation-merchants.json",
+      "sha256": "ee34f6e2814ca440afb2d1028ace79c7764dbf832e11d0b0a187c22b5dac7d35",
+      "currentSha256": "ee34f6e2814ca440afb2d1028ace79c7764dbf832e11d0b0a187c22b5dac7d35",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/acceptable-use.json",
+      "sha256": "a1bd4a4783633e57d8ce7021c34754aa29e6419ebcefcdd8f511f1a18c0ac3a3",
+      "currentSha256": "a1bd4a4783633e57d8ce7021c34754aa29e6419ebcefcdd8f511f1a18c0ac3a3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/api-terms.json",
+      "sha256": "fa91e8b64462f5293b53eafc18a45690a9a866f3d3c1a16dde762b675be7363c",
+      "currentSha256": "fa91e8b64462f5293b53eafc18a45690a9a866f3d3c1a16dde762b675be7363c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/billing.json",
+      "sha256": "7170fbcbc1e84475ed23360cc4d6347338b6854b4404d4e40545c37a158a12bc",
+      "currentSha256": "7170fbcbc1e84475ed23360cc4d6347338b6854b4404d4e40545c37a158a12bc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/cookies.json",
+      "sha256": "6d3cadaa337e4321ac5ab17078ed3c133ca297473bc1a4fc426c8076435b7ac5",
+      "currentSha256": "6d3cadaa337e4321ac5ab17078ed3c133ca297473bc1a4fc426c8076435b7ac5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/data-processing.json",
+      "sha256": "0d362d47132499338514322bf62d2f93d0a8887f4515a2042ee2e9ed21a4ecf9",
+      "currentSha256": "0d362d47132499338514322bf62d2f93d0a8887f4515a2042ee2e9ed21a4ecf9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/grievance.json",
+      "sha256": "30877ff1b01308a155c2d6f5371632a1c12853d4d05366caf93b0d23a71df09a",
+      "currentSha256": "30877ff1b01308a155c2d6f5371632a1c12853d4d05366caf93b0d23a71df09a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/intellectual-property.json",
+      "sha256": "8c17043779246cafc0302f2a806c3fc6376676d392d5e8329e89f2a895de28c4",
+      "currentSha256": "8c17043779246cafc0302f2a806c3fc6376676d392d5e8329e89f2a895de28c4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/marketplace.json",
+      "sha256": "df7206896b8e24755ca5623f4603df7328de74f0db208df12a7e86b8d3828fb7",
+      "currentSha256": "df7206896b8e24755ca5623f4603df7328de74f0db208df12a7e86b8d3828fb7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/payouts.json",
+      "sha256": "8427fcecbda306bb92e2cc5f0387b804466a6531cabc030d7f0a9d1e24c3a340",
+      "currentSha256": "8427fcecbda306bb92e2cc5f0387b804466a6531cabc030d7f0a9d1e24c3a340",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/privacy.json",
+      "sha256": "9001d7cd1e38ebb26c7539996dc6d2248e648cb3b552df030e042dd2365a5b00",
+      "currentSha256": "9001d7cd1e38ebb26c7539996dc6d2248e648cb3b552df030e042dd2365a5b00",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/refunds.json",
+      "sha256": "325a7c526c9e1d42687f77258c073912c2e78eb1ebfc3283830911be18141b41",
+      "currentSha256": "325a7c526c9e1d42687f77258c073912c2e78eb1ebfc3283830911be18141b41",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/security.json",
+      "sha256": "8c916f992b379e26b9e898bbb14a73d62feff1df27e1f8dc1d4a70fab0fafc2e",
+      "currentSha256": "8c916f992b379e26b9e898bbb14a73d62feff1df27e1f8dc1d4a70fab0fafc2e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/shipping.json",
+      "sha256": "fd881c24b7219cc90ff1ed78c8abe6225d190fdafc74b75184983a3a5e466a8d",
+      "currentSha256": "fd881c24b7219cc90ff1ed78c8abe6225d190fdafc74b75184983a3a5e466a8d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/subprocessors.json",
+      "sha256": "4478ef7e32b83ca32ff0c98ae41942cad31a1b34df9e52e5a808dcc162b6cba3",
+      "currentSha256": "4478ef7e32b83ca32ff0c98ae41942cad31a1b34df9e52e5a808dcc162b6cba3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/hi/legal/terms.json",
+      "sha256": "429b3b38e293f2e82fa108a5024f20fed067404b6623c5fd64438deb79908f0e",
+      "currentSha256": "429b3b38e293f2e82fa108a5024f20fed067404b6623c5fd64438deb79908f0e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/ai-commerce-explained.json",
+      "sha256": "974e82c78c27f4d5ed7f5ea4a259607b9b937605b2e727417d3c22afe0fb2794",
+      "currentSha256": "974e82c78c27f4d5ed7f5ea4a259607b9b937605b2e727417d3c22afe0fb2794",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/ai-product-recommendations.json",
+      "sha256": "e008ecb11e1fdd6d4a362c33b3cfbdfc47661808d1e69b335db22e3ef0bc64b2",
+      "currentSha256": "e008ecb11e1fdd6d4a362c33b3cfbdfc47661808d1e69b335db22e3ef0bc64b2",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/automating-operations-ai.json",
+      "sha256": "0832dfed65c24807a88c01e8984543c6f65a948f27c945f77283309cc242d966",
+      "currentSha256": "0832dfed65c24807a88c01e8984543c6f65a948f27c945f77283309cc242d966",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/building-first-letbuyy-app.json",
+      "sha256": "056bee340daaea5b4c8a29563dbc5385bed4425ae66ade0c99d30741ad6adece",
+      "currentSha256": "056bee340daaea5b4c8a29563dbc5385bed4425ae66ade0c99d30741ad6adece",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/building-first-letbuyy-store.json",
+      "sha256": "1b5adbd9e7652d19f8522ba3804f1c9bb82d23c6f8b03f003e89e30b68dfb378",
+      "currentSha256": "1b5adbd9e7652d19f8522ba3804f1c9bb82d23c6f8b03f003e89e30b68dfb378",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/commerce-copilot-guide.json",
+      "sha256": "826a4e2676eacab3a1ecc5003ec88445306078a3ca34beafff1c0114b5cbe83d",
+      "currentSha256": "826a4e2676eacab3a1ecc5003ec88445306078a3ca34beafff1c0114b5cbe83d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/custom-integrations-guide.json",
+      "sha256": "da5754fb707f5e0da694ef6e65410ebc71ebf10621ef7be86f0a82225385577f",
+      "currentSha256": "da5754fb707f5e0da694ef6e65410ebc71ebf10621ef7be86f0a82225385577f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/d2c-brand-launch-guide.json",
+      "sha256": "d28b7df05c5afcbc5d0d0bf91eaf5c36d39a032a4772cee440a39f617da0ef11",
+      "currentSha256": "d28b7df05c5afcbc5d0d0bf91eaf5c36d39a032a4772cee440a39f617da0ef11",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/email-marketing-ecommerce.json",
+      "sha256": "919b9e3ba9cbb5c44bd70e6d944d59c2605cb5d3e8301f3fd667690c3dafd557",
+      "currentSha256": "919b9e3ba9cbb5c44bd70e6d944d59c2605cb5d3e8301f3fd667690c3dafd557",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/first-100-orders-guide.json",
+      "sha256": "be8524b8425a6647ef9dcc8f9523c76442b260b32bdec15d9bf1bda4e347f269",
+      "currentSha256": "be8524b8425a6647ef9dcc8f9523c76442b260b32bdec15d9bf1bda4e347f269",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/gst-for-ecommerce-india.json",
+      "sha256": "f98cab5be07a6a98bbcf5da5346ec50d46990198216e794020e8238146be6c53",
+      "currentSha256": "f98cab5be07a6a98bbcf5da5346ec50d46990198216e794020e8238146be6c53",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-product-reviews-increase-conversion.json",
+      "sha256": "42d4e3430b252bf457f94f8be12c819b461250902b6480c7b548e470e6acfbd8",
+      "currentSha256": "42d4e3430b252bf457f94f8be12c819b461250902b6480c7b548e470e6acfbd8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-themes-work.json",
+      "sha256": "152f660ab84138e9283cd62d5d400598ef86a4d0909a2413d85f74f67de7cbcc",
+      "currentSha256": "152f660ab84138e9283cd62d5d400598ef86a4d0909a2413d85f74f67de7cbcc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/how-to-start-an-online-store-india.json",
+      "sha256": "eeeee8397d1be0f958b3b543f29b3fe5f241e64333597240e7ffa1c5d0cd47ca",
+      "currentSha256": "eeeee8397d1be0f958b3b543f29b3fe5f241e64333597240e7ffa1c5d0cd47ca",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/introduction-to-apps.json",
+      "sha256": "1a3c66b08e1b67a816386b764d08bf8ab6f0ecb42ffce0f373e209eae1729c42",
+      "currentSha256": "1a3c66b08e1b67a816386b764d08bf8ab6f0ecb42ffce0f373e209eae1729c42",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/inventory-management-guide.json",
+      "sha256": "6a93ad218c498126ee42dc82b4d6ca7960ca801f5de37bb5605c537d71c158c0",
+      "currentSha256": "6a93ad218c498126ee42dc82b4d6ca7960ca801f5de37bb5605c537d71c158c0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/invoicing-india-merchants.json",
+      "sha256": "4f149be915048b0a7a8e261fbd280bb487ef99bc88a03e13633a74f846a5faad",
+      "currentSha256": "4f149be915048b0a7a8e261fbd280bb487ef99bc88a03e13633a74f846a5faad",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/letbuyy-api-getting-started.json",
+      "sha256": "ef2faea053f9d1e828860da7022b000dc159680c2812bfec39b8d93e6c800001",
+      "currentSha256": "ef2faea053f9d1e828860da7022b000dc159680c2812bfec39b8d93e6c800001",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/letbuyy-platform-overview.json",
+      "sha256": "3bc8ae5e175ede14e7f3a4aca9231a860f39601a5df226d77164031120f52a75",
+      "currentSha256": "3bc8ae5e175ede14e7f3a4aca9231a860f39601a5df226d77164031120f52a75",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/liquid-theming-guide.json",
+      "sha256": "e6261c252e0d4fcfbba471b1aa98d059f939233cf0cdb5e6b84973d9fec8e001",
+      "currentSha256": "e6261c252e0d4fcfbba471b1aa98d059f939233cf0cdb5e6b84973d9fec8e001",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/merchant-web-guide.json",
+      "sha256": "ab5b741ab58fa9b38de0454b65a5fafd70ee4801dfb3d01a58cfd8b0d58890f1",
+      "currentSha256": "ab5b741ab58fa9b38de0454b65a5fafd70ee4801dfb3d01a58cfd8b0d58890f1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/multi-warehouse-inventory.json",
+      "sha256": "46dffb202e775fa8f5de6f25867d3d273a870884d2a656c536d01d8b97955ee4",
+      "currentSha256": "46dffb202e775fa8f5de6f25867d3d273a870884d2a656c536d01d8b97955ee4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/order-fulfillment-guide.json",
+      "sha256": "f9f3f674c844789f1be4bed97e8c963836fe7137f9a179d16d25c38035e4d1af",
+      "currentSha256": "f9f3f674c844789f1be4bed97e8c963836fe7137f9a179d16d25c38035e4d1af",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/product-page-optimization.json",
+      "sha256": "7a18e23868cac6362670efc90a1eb1905396fc45d140a261060e08f0259c1236",
+      "currentSha256": "7a18e23868cac6362670efc90a1eb1905396fc45d140a261060e08f0259c1236",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/razorpay-integration-guide.json",
+      "sha256": "f93eb4faf37af2da9f24be91dec459a3a4f10a26dbbc5a3a38a145a4a55d95b0",
+      "currentSha256": "f93eb4faf37af2da9f24be91dec459a3a4f10a26dbbc5a3a38a145a4a55d95b0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/reducing-cart-abandonment.json",
+      "sha256": "bbdf775c16e3ca10c673347422231137b3ebe5ff27d67166a8e8ea228716210f",
+      "currentSha256": "bbdf775c16e3ca10c673347422231137b3ebe5ff27d67166a8e8ea228716210f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/refunds-returns-policy-india.json",
+      "sha256": "aee9fb479c3e5b864811a13a1e6c7a29e7214ab4081feeb88a112e887b23b345",
+      "currentSha256": "aee9fb479c3e5b864811a13a1e6c7a29e7214ab4081feeb88a112e887b23b345",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/retention-strategies-india.json",
+      "sha256": "b26f8ab37755ec16ed7bfcf4d334015304ff46b3c3d778349dc7951b9d52cedc",
+      "currentSha256": "b26f8ab37755ec16ed7bfcf4d334015304ff46b3c3d778349dc7951b9d52cedc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/shipping-india-guide.json",
+      "sha256": "b5eb1af2b4b81abbbae1b97551ab095e5e479d5336d122d8b16be719e5d4ea01",
+      "currentSha256": "b5eb1af2b4b81abbbae1b97551ab095e5e479d5336d122d8b16be719e5d4ea01",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/social-commerce-india.json",
+      "sha256": "19ca18985e62c26922a527e2d32d02d88a7199811ca35ab996fed7813a90c755",
+      "currentSha256": "19ca18985e62c26922a527e2d32d02d88a7199811ca35ab996fed7813a90c755",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/store-seo-checklist.json",
+      "sha256": "a2641652746515fd296bb804bd95c2a4d00af1c607b702fae4dd9c146e4e24ad",
+      "currentSha256": "a2641652746515fd296bb804bd95c2a4d00af1c607b702fae4dd9c146e4e24ad",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/understanding-fulfillment.json",
+      "sha256": "6fadbbe7e4d8d56ae03b5193769c4dd571d433dd398f2b4b895133a122812d59",
+      "currentSha256": "6fadbbe7e4d8d56ae03b5193769c4dd571d433dd398f2b4b895133a122812d59",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/upi-vs-cod-india.json",
+      "sha256": "52082a43f4265b0549282dc59fb36cf2b10f050dc52ad545540075f128d73e3a",
+      "currentSha256": "52082a43f4265b0549282dc59fb36cf2b10f050dc52ad545540075f128d73e3a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/webhooks-complete-guide.json",
+      "sha256": "34fc18765a0492dca5a6bc22e1427720f1d68dbaa67f20f59e413fb7e4b69e30",
+      "currentSha256": "34fc18765a0492dca5a6bc22e1427720f1d68dbaa67f20f59e413fb7e4b69e30",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/articles/workflow-automation-merchants.json",
+      "sha256": "7d3ac9203e920ed899af72f6626762822b7e00499a16b0e92cd1b9b36f0a6995",
+      "currentSha256": "7d3ac9203e920ed899af72f6626762822b7e00499a16b0e92cd1b9b36f0a6995",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/acceptable-use.json",
+      "sha256": "f9188d5250ab44877f038efbd9d03ec62ea6575d02ba7be45e43aa60502f58fa",
+      "currentSha256": "f9188d5250ab44877f038efbd9d03ec62ea6575d02ba7be45e43aa60502f58fa",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/api-terms.json",
+      "sha256": "e3f019cdae71b32449fa8c0b98d7c492b7db18ba114521d41e10bca25ae35b36",
+      "currentSha256": "e3f019cdae71b32449fa8c0b98d7c492b7db18ba114521d41e10bca25ae35b36",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/billing.json",
+      "sha256": "579257d265541d534f6288a1f80e6fe01df976de6f078865e407961550b2dcb6",
+      "currentSha256": "579257d265541d534f6288a1f80e6fe01df976de6f078865e407961550b2dcb6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/cookies.json",
+      "sha256": "4abafa2979318f6058f230e462294086a6f9742c8f3d4f8f3f1c05fa763290f8",
+      "currentSha256": "4abafa2979318f6058f230e462294086a6f9742c8f3d4f8f3f1c05fa763290f8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/data-processing.json",
+      "sha256": "eafac2bdfe69de73c5714bbe5340608882b13ceba5b4a7f944e27a4a0c3e6aed",
+      "currentSha256": "eafac2bdfe69de73c5714bbe5340608882b13ceba5b4a7f944e27a4a0c3e6aed",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/grievance.json",
+      "sha256": "591343871e7eebf9ffa3a2ffb6bf3dd0d6bae47e79e5a15c0518dee02c20091e",
+      "currentSha256": "591343871e7eebf9ffa3a2ffb6bf3dd0d6bae47e79e5a15c0518dee02c20091e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/intellectual-property.json",
+      "sha256": "85aa213367b13558109052438648056f7d872e2f54743a93a95cca325d649dfb",
+      "currentSha256": "85aa213367b13558109052438648056f7d872e2f54743a93a95cca325d649dfb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/marketplace.json",
+      "sha256": "ca4940359aa05d046824e9e8457bb2f6c8c7e9fdff483ab3a81b79700cf63857",
+      "currentSha256": "ca4940359aa05d046824e9e8457bb2f6c8c7e9fdff483ab3a81b79700cf63857",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/payouts.json",
+      "sha256": "2c11d305a0da40a84fcf5014315808d5aba47c0d899a272ac32f12b5f799760e",
+      "currentSha256": "2c11d305a0da40a84fcf5014315808d5aba47c0d899a272ac32f12b5f799760e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/privacy.json",
+      "sha256": "da0e05588453caa6ba1c14be7539903a1b7f443977b0c3ccc4716238cee6c891",
+      "currentSha256": "da0e05588453caa6ba1c14be7539903a1b7f443977b0c3ccc4716238cee6c891",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/refunds.json",
+      "sha256": "f66bff8f07ffe9aedf370a4d555120581baa52521c9a1cfa9063c5b342dc554d",
+      "currentSha256": "f66bff8f07ffe9aedf370a4d555120581baa52521c9a1cfa9063c5b342dc554d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/security.json",
+      "sha256": "8957b4d69d7b89dcc18f98cc277351346de12106cd085b93e1ca86a214d923d2",
+      "currentSha256": "8957b4d69d7b89dcc18f98cc277351346de12106cd085b93e1ca86a214d923d2",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/shipping.json",
+      "sha256": "8ea3042f61f2bd01087df88f0da6c3e0594ab9df570ea399eda81b8ea85f0ea3",
+      "currentSha256": "8ea3042f61f2bd01087df88f0da6c3e0594ab9df570ea399eda81b8ea85f0ea3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/subprocessors.json",
+      "sha256": "b36a737b3541a3a43d9be11ca0d82609c61168fa81aeda114f6cf09a38a65ef5",
+      "currentSha256": "b36a737b3541a3a43d9be11ca0d82609c61168fa81aeda114f6cf09a38a65ef5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/content/ta/legal/terms.json",
+      "sha256": "4b082afd1206bcdb17a98f5cdf968cfd7a0dfd0b28d13bf95a25d4f36ba1fb90",
+      "currentSha256": "4b082afd1206bcdb17a98f5cdf968cfd7a0dfd0b28d13bf95a25d4f36ba1fb90",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy-catalog.ts",
+      "sha256": "1a8a904e2df716e6699786e8235dbfb593c5dcf9145d29f4c4372327eb3078e0",
+      "currentSha256": "1a8a904e2df716e6699786e8235dbfb593c5dcf9145d29f4c4372327eb3078e0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy-format.ts",
+      "sha256": "11a85925509e4a9effeb87b07a1874a27988a12e67f42015507cc42642cf6a78",
+      "currentSha256": "11a85925509e4a9effeb87b07a1874a27988a12e67f42015507cc42642cf6a78",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/copy.ts",
+      "sha256": "d880434f1b906fd8543d33718e6ca09d6e0b0ac497577797e06ead55f7f65bff",
+      "currentSha256": "d880434f1b906fd8543d33718e6ca09d6e0b0ac497577797e06ead55f7f65bff",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/dictionaries/en.ts",
+      "sha256": "0463e973372ac76c0b89d83569a4b533821e87cbb76a990781a6796eba42e2fe",
+      "currentSha256": "0463e973372ac76c0b89d83569a4b533821e87cbb76a990781a6796eba42e2fe",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/dictionaries/hi.ts",
+      "sha256": "ba6405eb613d1f5294eedb377485264b658c543eead5b33be00037889e7ee3cf",
+      "currentSha256": "ba6405eb613d1f5294eedb377485264b658c543eead5b33be00037889e7ee3cf",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/dictionaries/ta.ts",
+      "sha256": "5e477ae8f2c20f7ce87391710633b6588e84152555d5f3b94da95361d28c9aeb",
+      "currentSha256": "5e477ae8f2c20f7ce87391710633b6588e84152555d5f3b94da95361d28c9aeb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/index.ts",
+      "sha256": "05dc63567b7cbc754a6b667fcdecb862873b1ac46044f0ce32218c3f79aa614b",
+      "currentSha256": "05dc63567b7cbc754a6b667fcdecb862873b1ac46044f0ce32218c3f79aa614b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/legal-content.ts",
+      "sha256": "2276631d48196c3b0db3e54cc664bfc7a642f79007b00a1b11348f85961fba30",
+      "currentSha256": "2276631d48196c3b0db3e54cc664bfc7a642f79007b00a1b11348f85961fba30",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/locales.ts",
+      "sha256": "cf6946753795c55a67b5494d14f09d7ab874b0f71b8ec94aec508e776b3e61d6",
+      "currentSha256": "cf6946753795c55a67b5494d14f09d7ab874b0f71b8ec94aec508e776b3e61d6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/metadata.ts",
+      "sha256": "9789ce90be063ae666fab8da74426a99f58172b02aee61d4a1bd951665c9e70d",
+      "currentSha256": "9789ce90be063ae666fab8da74426a99f58172b02aee61d4a1bd951665c9e70d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/resource-metadata.ts",
+      "sha256": "595af7d08591e9d34370011e4f2c07507ea0a065d23c09287b89d96452585690",
+      "currentSha256": "595af7d08591e9d34370011e4f2c07507ea0a065d23c09287b89d96452585690",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/response-time.ts",
+      "sha256": "f3726ad7968b7b86e30736f2f09ae022b992439966a98a36c8bee0f8656861ef",
+      "currentSha256": "f3726ad7968b7b86e30736f2f09ae022b992439966a98a36c8bee0f8656861ef",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/i18n/routing.ts",
+      "sha256": "bbcaba16d1173ff049b8eea1f43627aeea118af9e2a43cf679ee8f0598bedfc1",
+      "currentSha256": "bbcaba16d1173ff049b8eea1f43627aeea118af9e2a43cf679ee8f0598bedfc1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/journey-tab-navigation.ts",
+      "sha256": "9d599f2ea59da5502e4686e11c7f029079f4668e36395d18af71f1fcadc91391",
+      "currentSha256": "9d599f2ea59da5502e4686e11c7f029079f4668e36395d18af71f1fcadc91391",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/legal/content/agreements.ts",
+      "sha256": "61ac3e69d1f4f053b834608d2eb0772f6c2700b98fa81dbd5c7dedfc1f27522c",
+      "currentSha256": "61ac3e69d1f4f053b834608d2eb0772f6c2700b98fa81dbd5c7dedfc1f27522c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/legal/content/data.ts",
+      "sha256": "feaa81a278b88e74e23a7097051a74f3bccb3319d00fe3fd4adfd9e35a440a13",
+      "currentSha256": "feaa81a278b88e74e23a7097051a74f3bccb3319d00fe3fd4adfd9e35a440a13",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/legal/content/money.ts",
+      "sha256": "dc394c60dce7b61d7157fc600f21aa2ca21f488d00aa92744ca832ba08b81e19",
+      "currentSha256": "dc394c60dce7b61d7157fc600f21aa2ca21f488d00aa92744ca832ba08b81e19",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/legal/content/trust.ts",
+      "sha256": "f755544ee7e4ebf357408e867f18d9bb3ba585ac698531b247a1387db11b9c21",
+      "currentSha256": "f755544ee7e4ebf357408e867f18d9bb3ba585ac698531b247a1387db11b9c21",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/legal/documents.ts",
+      "sha256": "7dfff798288c5926172208ef9cdca7e78dd2eee309c47fe02580d5a83bf21a11",
+      "currentSha256": "7dfff798288c5926172208ef9cdca7e78dd2eee309c47fe02580d5a83bf21a11",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/legal/entity.ts",
+      "sha256": "8bbd87f5e1e023fc70bec4378e2202d0a0fa8eff147a88df04fd1d8149f036c1",
+      "currentSha256": "8bbd87f5e1e023fc70bec4378e2202d0a0fa8eff147a88df04fd1d8149f036c1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/legal/format.ts",
+      "sha256": "7ef001065d12f8d3824ea4cd737af9f5bc9a804861f7d15e95f173eadb35d9ee",
+      "currentSha256": "7ef001065d12f8d3824ea4cd737af9f5bc9a804861f7d15e95f173eadb35d9ee",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/legal/types.ts",
+      "sha256": "3d35b81c19e54c9507d77d00572d3e0d0d66a352c97e311e96a8b27be88f9132",
+      "currentSha256": "3d35b81c19e54c9507d77d00572d3e0d0d66a352c97e311e96a8b27be88f9132",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/platform-links.ts",
+      "sha256": "0ed7f0dd165ab4b01cf48ab638d41a43fe86ecd8eb2247321b2c7865f2baaa43",
+      "currentSha256": "0ed7f0dd165ab4b01cf48ab638d41a43fe86ecd8eb2247321b2c7865f2baaa43",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/pricing.ts",
+      "sha256": "54a5a53f59c3705875f00e4f8c2abfefb0c3e65f4de62753cfdd4822febfb62b",
+      "currentSha256": "54a5a53f59c3705875f00e4f8c2abfefb0c3e65f4de62753cfdd4822febfb62b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/public-urls.ts",
+      "sha256": "7f0ba7ba717c7823331ce5a521b665367b57f741e03f74db177b50ad30dc7354",
+      "currentSha256": "7f0ba7ba717c7823331ce5a521b665367b57f741e03f74db177b50ad30dc7354",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/articles.ts",
+      "sha256": "050dfb56bfc4e679d4ad6cd1219b6a2f2c039dda7d27bdbcc3c4d6b2dbfc9016",
+      "currentSha256": "050dfb56bfc4e679d4ad6cd1219b6a2f2c039dda7d27bdbcc3c4d6b2dbfc9016",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/artwork.ts",
+      "sha256": "30942b73b3c9530d22e755547dd07e7c315e3bf9c122d10deff8a74713cff08a",
+      "currentSha256": "30942b73b3c9530d22e755547dd07e7c315e3bf9c122d10deff8a74713cff08a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/authors.ts",
+      "sha256": "ca5cff2c97b083835f4c92a5eff84dc2b9102017d5e2bb59a1dbbf87438c220e",
+      "currentSha256": "ca5cff2c97b083835f4c92a5eff84dc2b9102017d5e2bb59a1dbbf87438c220e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/categories.ts",
+      "sha256": "9b4a181089d6a29c904c44c5de8aa94c093afd13c3f1895a55cf5d92b7a22abe",
+      "currentSha256": "9b4a181089d6a29c904c44c5de8aa94c093afd13c3f1895a55cf5d92b7a22abe",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/category-icons.tsx",
+      "sha256": "e6b0314a413dc2320516087f4dee7b89f2fa8df6cd0e6a1c618daf634cc282bc",
+      "currentSha256": "e6b0314a413dc2320516087f4dee7b89f2fa8df6cd0e6a1c618daf634cc282bc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/changelog-presentation.ts",
+      "sha256": "4d7816ac497de6390b7fa4fbd0ed831caa1e5f4655697a30c81a32255aee2eac",
+      "currentSha256": "4d7816ac497de6390b7fa4fbd0ed831caa1e5f4655697a30c81a32255aee2eac",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/changelog.ts",
+      "sha256": "ab6e092e2550e5c24e1be24291605a2b987cc6307f22f92fed2b5762355709e1",
+      "currentSha256": "ab6e092e2550e5c24e1be24291605a2b987cc6307f22f92fed2b5762355709e1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/headings.ts",
+      "sha256": "f21bc5fb3c869c8ae1b161ac6238f35498a6a0ba4d0cfbdc6ad819764987db4e",
+      "currentSha256": "f21bc5fb3c869c8ae1b161ac6238f35498a6a0ba4d0cfbdc6ad819764987db4e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/learning-path-articles.ts",
+      "sha256": "26d2a3ff948a7bd93de891cbb945abbec21af1402b954b24d048376861840a14",
+      "currentSha256": "26d2a3ff948a7bd93de891cbb945abbec21af1402b954b24d048376861840a14",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/learning-paths.ts",
+      "sha256": "ee538f828cc46b5f68a4b89875554e906ea1d29677a2ecbe2ce9213f96e21b86",
+      "currentSha256": "ee538f828cc46b5f68a4b89875554e906ea1d29677a2ecbe2ce9213f96e21b86",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/reading-visuals.ts",
+      "sha256": "e4468b091b0890151cfe571d3acbf81a35f0672c3919172d8f90ad0ecd7cca9d",
+      "currentSha256": "e4468b091b0890151cfe571d3acbf81a35f0672c3919172d8f90ad0ecd7cca9d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/resource-search.ts",
+      "sha256": "5f795f227cb6e960b430ebf661c831e43363df2320751f9e4c53fb931872abee",
+      "currentSha256": "5f795f227cb6e960b430ebf661c831e43363df2320751f9e4c53fb931872abee",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/section-visuals.ts",
+      "sha256": "71f0a00433aa85b012679dc77f3bfc60312eca535e9862811590d01d29a3d196",
+      "currentSha256": "71f0a00433aa85b012679dc77f3bfc60312eca535e9862811590d01d29a3d196",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/toc-scroll.ts",
+      "sha256": "c5213950a92186ed967cc811d183d0617b15b5eb762785bdbb144c0702243237",
+      "currentSha256": "c5213950a92186ed967cc811d183d0617b15b5eb762785bdbb144c0702243237",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/types.ts",
+      "sha256": "5578d779c8e074d55920492170ba0b980529fd9611a8c7508b6e7d15ffc0ea03",
+      "currentSha256": "5578d779c8e074d55920492170ba0b980529fd9611a8c7508b6e7d15ffc0ea03",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/resources/utils.ts",
+      "sha256": "de557c07406fa0a8cefdc16336c051946c279143acccd8106bb0fdc367f1a565",
+      "currentSha256": "de557c07406fa0a8cefdc16336c051946c279143acccd8106bb0fdc367f1a565",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/reveal-accordion-item.ts",
+      "sha256": "f140d7e12d36ee43ed813a19fcfbfa76d4806c09873dc55288bcd6fb9c34e070",
+      "currentSha256": "f140d7e12d36ee43ed813a19fcfbfa76d4806c09873dc55288bcd6fb9c34e070",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/lib/smooth-scroll.ts",
+      "sha256": "a1d002a8b80e4ff710783e7c600b7300dbc23b14a5e74dfc89eece7856da3f98",
+      "currentSha256": "a1d002a8b80e4ff710783e7c600b7300dbc23b14a5e74dfc89eece7856da3f98",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/middleware.ts",
+      "sha256": "1c45a1bb34d6ab7f898bd1b4f2b923834d3fba93d98a99eed7af4da189246a80",
+      "currentSha256": "1c45a1bb34d6ab7f898bd1b4f2b923834d3fba93d98a99eed7af4da189246a80",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/animations/README.md",
+      "sha256": "0b6cbc2fe16d31e917a76aac983f6b3cc0572d60704c5524883eb69a6f18783b",
+      "currentSha256": "0b6cbc2fe16d31e917a76aac983f6b3cc0572d60704c5524883eb69a6f18783b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/animations/letbuyy-finale-v1.json",
+      "sha256": "492ed022663065a2b4be9acc9d97df493339db5a0c6e1e8d2faf15498a44a36c",
+      "currentSha256": "492ed022663065a2b4be9acc9d97df493339db5a0c6e1e8d2faf15498a44a36c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/assets/legal/privacy-choices.svg",
+      "sha256": "77fd2927f13e51537d7ac447b9360b45c92ea0462f4e8d31479abb7adab72cce",
+      "currentSha256": "77fd2927f13e51537d7ac447b9360b45c92ea0462f4e8d31479abb7adab72cce",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-Marketing-400-900.woff2",
+      "sha256": "4333e5b1fdb186a15ab1fce785e288ee3253393ae9b7e18c4bb5e3e23326881d",
+      "currentSha256": "4333e5b1fdb186a15ab1fce785e288ee3253393ae9b7e18c4bb5e3e23326881d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-OFL.txt",
+      "sha256": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57",
+      "currentSha256": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-Variable-Marketing.woff2",
+      "sha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+      "currentSha256": "fa71e4e77e1eb58e9a5781e102d49b540b0839bb8b0c6b87e7441308ed2347f9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/Inter-Variable.woff2",
+      "sha256": "693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3",
+      "currentSha256": "693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/fonts/README.md",
+      "sha256": "389dea9a133971a5bf2980e44abf73869d6f14a2c4f8c75b47e901b78f9c5871",
+      "currentSha256": "389dea9a133971a5bf2980e44abf73869d6f14a2c4f8c75b47e901b78f9c5871",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/hero-commerce-workspace.jpg",
+      "sha256": "5c7babf8cb10efa8ce166358f9494226a6ea1d276c77f45dee94b43e92d90d44",
+      "currentSha256": "5c7babf8cb10efa8ce166358f9494226a6ea1d276c77f45dee94b43e92d90d44",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-apple-touch-v3.png",
+      "sha256": "1976bc446f79c9230adaf5e270e9127775adbed9df75d3c766e5fdabd55b8049",
+      "currentSha256": "1976bc446f79c9230adaf5e270e9127775adbed9df75d3c766e5fdabd55b8049",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-logo-512.png",
+      "sha256": "7bb438e9d14faa1fe87b4b033c969027d0a543f726e82be35a82ec541e1a2a3c",
+      "currentSha256": "7bb438e9d14faa1fe87b4b033c969027d0a543f726e82be35a82ec541e1a2a3c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-logo-dark.svg",
+      "sha256": "9d8a3691db07cb3cdde3e7325d3194777cec78bce20954f6014a05c25ca15220",
+      "currentSha256": "9d8a3691db07cb3cdde3e7325d3194777cec78bce20954f6014a05c25ca15220",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-logo-light.svg",
+      "sha256": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+      "currentSha256": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-mark.svg",
+      "sha256": "df9895119345de77a5d94512d6e6e94207eeb1c298052a9e9b1d731d3deadd72",
+      "currentSha256": "df9895119345de77a5d94512d6e6e94207eeb1c298052a9e9b1d731d3deadd72",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-signature-dark-v2.svg",
+      "sha256": "fe63159ec67912047d92339e0594ff5012b9df8822ccaaa63aab1c4792ec5f81",
+      "currentSha256": "fe63159ec67912047d92339e0594ff5012b9df8822ccaaa63aab1c4792ec5f81",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-signature-light-v2.svg",
+      "sha256": "819c9f5f56565924811f58f693b2d56fe672b5e3f0326bd7f748b8af174c0787",
+      "currentSha256": "819c9f5f56565924811f58f693b2d56fe672b5e3f0326bd7f748b8af174c0787",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-store-logo-dark-v3.svg",
+      "sha256": "e90a7fd7f33a35ac599fc9c47acc606743c613e581a02476d0e0989d98f7d374",
+      "currentSha256": "e90a7fd7f33a35ac599fc9c47acc606743c613e581a02476d0e0989d98f7d374",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-store-logo-light-v3.svg",
+      "sha256": "231b5d9375384ee0fc1c46c88a8c1470508224a0de30cfb312130358cf8fa4a9",
+      "currentSha256": "231b5d9375384ee0fc1c46c88a8c1470508224a0de30cfb312130358cf8fa4a9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-store-mark-v3.svg",
+      "sha256": "d2f77e95d6ad779b6f960deff49c4c0bc8153e0fe1ae095981b6af604a173ffd",
+      "currentSha256": "d2f77e95d6ad779b6f960deff49c4c0bc8153e0fe1ae095981b6af604a173ffd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/icons/letbuyy-studio-dark.svg",
+      "sha256": "08aec2f798683332abe92361a547e36197565a7a585fcb3b71d9dba7a4ebadd9",
+      "currentSha256": "08aec2f798683332abe92361a547e36197565a7a585fcb3b71d9dba7a4ebadd9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/ai-scene-v1.webp",
+      "sha256": "4d77b22c596cba72a61b4bbe535f88412f8da7973694fdaf6982088d8a867463",
+      "currentSha256": "4d77b22c596cba72a61b4bbe535f88412f8da7973694fdaf6982088d8a867463",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/ai-v1.png",
+      "sha256": "d89b9de7e85069d91a9b07db0052bd2fda3a68f61664df3895647182a7724f5e",
+      "currentSha256": "d89b9de7e85069d91a9b07db0052bd2fda3a68f61664df3895647182a7724f5e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/analytics-scene-v1.webp",
+      "sha256": "cddf548cc4e46db3f2bb3b4e616fb06250ff56b1ecc2c670bf35c4a029042586",
+      "currentSha256": "cddf548cc4e46db3f2bb3b4e616fb06250ff56b1ecc2c670bf35c4a029042586",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/analytics-v1.png",
+      "sha256": "48f93454313739889a12d0f1fc501664186fd9fa88477aeaf1ee84f73788b39c",
+      "currentSha256": "48f93454313739889a12d0f1fc501664186fd9fa88477aeaf1ee84f73788b39c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/b2b-scene-v1.webp",
+      "sha256": "842d697b7ad5217970fb6a6be3f8e5405ff7fe8e040f7c345af0f02d3aa4d8fe",
+      "currentSha256": "842d697b7ad5217970fb6a6be3f8e5405ff7fe8e040f7c345af0f02d3aa4d8fe",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/b2b-v1.png",
+      "sha256": "2033828983182b8850bf980e4a1f0130d5d995981dc9de5abbb1047004c6aee5",
+      "currentSha256": "2033828983182b8850bf980e4a1f0130d5d995981dc9de5abbb1047004c6aee5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/catalog-scene-v1.webp",
+      "sha256": "7121ae3a6f468ff22c255cf8d8cb001c5b42c3ad9fb394e8700922dc93edc0da",
+      "currentSha256": "7121ae3a6f468ff22c255cf8d8cb001c5b42c3ad9fb394e8700922dc93edc0da",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/customers-scene-v1.webp",
+      "sha256": "e7c5e506cb9d109f1ac9312144f41ece3349d6dec9bb619d3116242d0d2d4d19",
+      "currentSha256": "e7c5e506cb9d109f1ac9312144f41ece3349d6dec9bb619d3116242d0d2d4d19",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/customers-v1.png",
+      "sha256": "fe1e31880637123fa3e887b8d08e31feb46e1c20fbfa2c1d9d61b7e6e735e69a",
+      "currentSha256": "fe1e31880637123fa3e887b8d08e31feb46e1c20fbfa2c1d9d61b7e6e735e69a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/icons/ai-v2.webp",
+      "sha256": "a87150b1e89b99d688e99ec97c6ed8dd25fcf4c24a7d0fb7804234c954ac3e11",
+      "currentSha256": "a87150b1e89b99d688e99ec97c6ed8dd25fcf4c24a7d0fb7804234c954ac3e11",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/icons/analytics-v2.webp",
+      "sha256": "d964de1d73842966907d3fdd545644876ba01691560352d4c62433afb06936f1",
+      "currentSha256": "d964de1d73842966907d3fdd545644876ba01691560352d4c62433afb06936f1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/icons/b2b-v2.webp",
+      "sha256": "5bbf7c0d28d75ff8d6d01495abc9c45ad38c49c1ee8ee8753a44a4dfb28f0836",
+      "currentSha256": "5bbf7c0d28d75ff8d6d01495abc9c45ad38c49c1ee8ee8753a44a4dfb28f0836",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/icons/customers-v2.webp",
+      "sha256": "acf083b3af860bc5f0db00a3c334fdd1ddbcc0d68a39814e7ea7d1fc5793c7b5",
+      "currentSha256": "acf083b3af860bc5f0db00a3c334fdd1ddbcc0d68a39814e7ea7d1fc5793c7b5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/icons/inventory-v2.webp",
+      "sha256": "970a92e3ba6506cd57b57fd1ea02ef2086dbc64f2d607693dd2b9c2e94855f8d",
+      "currentSha256": "970a92e3ba6506cd57b57fd1ea02ef2086dbc64f2d607693dd2b9c2e94855f8d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/icons/orders-v2.webp",
+      "sha256": "58902eaf031f96da09a8064a4113718b8d1cf143b0614957d4e973ef3b777f10",
+      "currentSha256": "58902eaf031f96da09a8064a4113718b8d1cf143b0614957d4e973ef3b777f10",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/icons/payments-v2.webp",
+      "sha256": "2a185c022994aef9a76bde28c3ad00e7cca9c53e294616442575e9fa874b8e98",
+      "currentSha256": "2a185c022994aef9a76bde28c3ad00e7cca9c53e294616442575e9fa874b8e98",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/icons/storefronts-v2.webp",
+      "sha256": "6ceb7ccb8fc1577a1182d7c0bb98c8f9261a67c26e0953821364238195e40e19",
+      "currentSha256": "6ceb7ccb8fc1577a1182d7c0bb98c8f9261a67c26e0953821364238195e40e19",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/inventory-scene-v1.webp",
+      "sha256": "69b1525bb0db2da490876ee6d3d90de6635dbacfcac02e27ba795f0217c1535b",
+      "currentSha256": "69b1525bb0db2da490876ee6d3d90de6635dbacfcac02e27ba795f0217c1535b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/inventory-v1.png",
+      "sha256": "e4af7608c2f5e08f6abae23cd3c3e3406704f453912bf6f9c24de0feead28381",
+      "currentSha256": "e4af7608c2f5e08f6abae23cd3c3e3406704f453912bf6f9c24de0feead28381",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/orders-scene-v1.webp",
+      "sha256": "b74ff17714da28b7eb4fb9819b099556b4b096b7e00762c2f013293730c79950",
+      "currentSha256": "b74ff17714da28b7eb4fb9819b099556b4b096b7e00762c2f013293730c79950",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/orders-v1.png",
+      "sha256": "8b60351fe718c36518f03451028f8e349971caca3724539f7dbee47bd110376e",
+      "currentSha256": "8b60351fe718c36518f03451028f8e349971caca3724539f7dbee47bd110376e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/payments-scene-v1.webp",
+      "sha256": "201dd351d6fbb0de6d07725eca644d52df0539ea3307cd69593ce103850478bb",
+      "currentSha256": "201dd351d6fbb0de6d07725eca644d52df0539ea3307cd69593ce103850478bb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/payments-v1.png",
+      "sha256": "a10c375d28e9d8e7c552cf8fb7ff4e6199f4dbee373c136039216a06277495ee",
+      "currentSha256": "a10c375d28e9d8e7c552cf8fb7ff4e6199f4dbee373c136039216a06277495ee",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/product-cap-v1.webp",
+      "sha256": "515b02337338399244fa0bcc4f517e14148fffe05b187e3c5d248c94a838e7fc",
+      "currentSha256": "515b02337338399244fa0bcc4f517e14148fffe05b187e3c5d248c94a838e7fc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/product-hoodie-v1.webp",
+      "sha256": "1648cbcf2acd1fd0448c764180590d7ec2e62ebce4a5207a7e5f7a72f351ff22",
+      "currentSha256": "1648cbcf2acd1fd0448c764180590d7ec2e62ebce4a5207a7e5f7a72f351ff22",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/product-jogger-v1.webp",
+      "sha256": "b4ee57c2672752a42a114a7ce8f9ab444a828f6a4c1e1964bbcf5b50ae9bfd29",
+      "currentSha256": "b4ee57c2672752a42a114a7ce8f9ab444a828f6a4c1e1964bbcf5b50ae9bfd29",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/product-sneaker-v1.webp",
+      "sha256": "271bbe0ed62beb2a56a3f1becd82d90d9399fafc6b488606ea5540f3f0ab9884",
+      "currentSha256": "271bbe0ed62beb2a56a3f1becd82d90d9399fafc6b488606ea5540f3f0ab9884",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/product-tee-v1.webp",
+      "sha256": "e014e92454d4b8aa366052122ff871283b38fb6a9060c0a4c2a8888052bc2c44",
+      "currentSha256": "e014e92454d4b8aa366052122ff871283b38fb6a9060c0a4c2a8888052bc2c44",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/capabilities/storefronts-v1.png",
+      "sha256": "3d617643612507bdff068459a785351bd0bc4cad6cd51d87df749e3e77d6af68",
+      "currentSha256": "3d617643612507bdff068459a785351bd0bc4cad6cd51d87df749e3e77d6af68",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/commerce-essentials-v1.png",
+      "sha256": "40e1f14fc0c70022f754304a5f649fa446365bb903743bff6580d2d6180c3d43",
+      "currentSha256": "40e1f14fc0c70022f754304a5f649fa446365bb903743bff6580d2d6180c3d43",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/commerce-launch-v1.png",
+      "sha256": "52fe93713d964d46551cc438a8d0f1fb4b4de8bc51a1d6f0f23cda49aa4c3f8a",
+      "currentSha256": "52fe93713d964d46551cc438a8d0f1fb4b4de8bc51a1d6f0f23cda49aa4c3f8a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/artwork-manifest.json",
+      "sha256": "7076b8777f44e29d434e666cfc17a77b89a4d456bbdad802cb3607805cc4b543",
+      "currentSha256": "7076b8777f44e29d434e666cfc17a77b89a4d456bbdad802cb3607805cc4b543",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/build-store-v1.webp",
+      "sha256": "542bfa67f2f46f06fe4406853667c3e736531224a7ab6e5cd4f4594e6fb6196e",
+      "currentSha256": "542bfa67f2f46f06fe4406853667c3e736531224a7ab6e5cd4f4594e6fb6196e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/everyday-merchant-v1.webp",
+      "sha256": "fdbadb3801818b7283ef77329baa9b0dfe1156dcaee972f013e04da2bcbc797e",
+      "currentSha256": "fdbadb3801818b7283ef77329baa9b0dfe1156dcaee972f013e04da2bcbc797e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/fulfill-order-v1.webp",
+      "sha256": "418476b641048af34a607495bdf3d361d15ec8c3debfc2bd1473ac8555192320",
+      "currentSha256": "418476b641048af34a607495bdf3d361d15ec8c3debfc2bd1473ac8555192320",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/grow-customers-v1.webp",
+      "sha256": "81088a0cca58dc00ed7776f334865edbcd14751bc883b5067ca52f491bb54ce7",
+      "currentSha256": "81088a0cca58dc00ed7776f334865edbcd14751bc883b5067ca52f491bb54ce7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/order-story-background-v1.webp",
+      "sha256": "bcf28d3a0b76d417f0b41bbf22bf400c6ccd333a7f2affb08683079a55a4a476",
+      "currentSha256": "bcf28d3a0b76d417f0b41bbf22bf400c6ccd333a7f2affb08683079a55a4a476",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/step-delivery-v1.webp",
+      "sha256": "7c7c53b54b1152424e728ef2f041a214beec816db22edfd830f9ed3b20db2493",
+      "currentSha256": "7c7c53b54b1152424e728ef2f041a214beec816db22edfd830f9ed3b20db2493",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/step-order-v1.webp",
+      "sha256": "49f88d5389ea91e694b0cdb4c81e79fdb51c8c37fd1b02199e06db57ed147eb4",
+      "currentSha256": "49f88d5389ea91e694b0cdb4c81e79fdb51c8c37fd1b02199e06db57ed147eb4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/step-payment-v1.webp",
+      "sha256": "a4261985eb82fad2c835429d87ed5baf513b65cd72c7e301dbea9be46b854e1a",
+      "currentSha256": "a4261985eb82fad2c835429d87ed5baf513b65cd72c7e301dbea9be46b854e1a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/how-it-works/step-stock-v1.webp",
+      "sha256": "9c307a2a4e5818d214f9780f1e1b12f1ba438ab5897bcfabedb953f3180fcfad",
+      "currentSha256": "9c307a2a4e5818d214f9780f1e1b12f1ba438ab5897bcfabedb953f3180fcfad",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/brand-illustration-v2.webp",
+      "sha256": "6ecf1820722770f5c4233f6c99d0117338216b87514da9c83f4a022c5635c700",
+      "currentSha256": "6ecf1820722770f5c4233f6c99d0117338216b87514da9c83f4a022c5635c700",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/brand-story-v1.webp",
+      "sha256": "f607243de656f499bc8f0a98b959e4575acc389562b643fd2ed1634331d49561",
+      "currentSha256": "f607243de656f499bc8f0a98b959e4575acc389562b643fd2ed1634331d49561",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/enterprise-illustration-v2.webp",
+      "sha256": "06808e25a2430c009f7a4a49ff5d1aa19603f5d9c5852ec5eaf1cd766cfb0eef",
+      "currentSha256": "06808e25a2430c009f7a4a49ff5d1aa19603f5d9c5852ec5eaf1cd766cfb0eef",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/enterprise-story-v1.webp",
+      "sha256": "17e8ef914a04f7b5a5c3ac64a1db33ad23566f2555ddf98685508c0c2c5d6689",
+      "currentSha256": "17e8ef914a04f7b5a5c3ac64a1db33ad23566f2555ddf98685508c0c2c5d6689",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/first-order-illustration-v2.webp",
+      "sha256": "f7891a6f6bf2a522645084165c9225c8f68bde28365602bed419beef4aab10cd",
+      "currentSha256": "f7891a6f6bf2a522645084165c9225c8f68bde28365602bed419beef4aab10cd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/first-order-story-v1.webp",
+      "sha256": "3a7f86bf3067df3b4bf78740f954fd7607d7628c1c5eac36141aa89189df2361",
+      "currentSha256": "3a7f86bf3067df3b4bf78740f954fd7607d7628c1c5eac36141aa89189df2361",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/growth-artwork-manifest.json",
+      "sha256": "5384aec4fb65f9ecc60bf7c3e44f7f66228fa35416583eafbf3e6623586d1bc8",
+      "currentSha256": "5384aec4fb65f9ecc60bf7c3e44f7f66228fa35416583eafbf3e6623586d1bc8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/growth-background-v1.webp",
+      "sha256": "13b357f020200854076900775f90e8bf89f2b1c7595e80fb7afdd39cdbdd3dd8",
+      "currentSha256": "13b357f020200854076900775f90e8bf89f2b1c7595e80fb7afdd39cdbdd3dd8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/growth-commerce-v1.webp",
+      "sha256": "afa7940044127b1620c006296c5d83e94f2459b1ae338879f8474ebbe09ddbf4",
+      "currentSha256": "afa7940044127b1620c006296c5d83e94f2459b1ae338879f8474ebbe09ddbf4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/growth-commerce-v2.webp",
+      "sha256": "085b27ac656c4ffaf5e631fcbb20d899478e0f574b289b84d26f46682f07a515",
+      "currentSha256": "085b27ac656c4ffaf5e631fcbb20d899478e0f574b289b84d26f46682f07a515",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/launch-story-v1.webp",
+      "sha256": "484e59eca93765fe4dbf9afcc325e6c34b8f64f09b6ae28dff4a7ad82b6fe5fb",
+      "currentSha256": "484e59eca93765fe4dbf9afcc325e6c34b8f64f09b6ae28dff4a7ad82b6fe5fb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/scale-illustration-v2.webp",
+      "sha256": "4cb0824a57e84d665126aef7af0488d1222866f587565671f3cd584cf311467b",
+      "currentSha256": "4cb0824a57e84d665126aef7af0488d1222866f587565671f3cd584cf311467b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/scale-story-v1.webp",
+      "sha256": "96936e2d463749d1f65e075801987eb8cc62bd3341f79260b065d4ac7858b79b",
+      "currentSha256": "96936e2d463749d1f65e075801987eb8cc62bd3341f79260b065d4ac7858b79b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/journey/stage-artwork-manifest.json",
+      "sha256": "7f2de3def0cb79bbd1fe5d5383b5ad1cab69995ea2b418f0ab80beaa713bb38f",
+      "currentSha256": "7f2de3def0cb79bbd1fe5d5383b5ad1cab69995ea2b418f0ab80beaa713bb38f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/merchant-support-v1.png",
+      "sha256": "87dadc1c7c62600d880c34677206e778cb83b73ebb60a5ab14d029e65b1021cd",
+      "currentSha256": "87dadc1c7c62600d880c34677206e778cb83b73ebb60a5ab14d029e65b1021cd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resource-library-v1.png",
+      "sha256": "88de3726a7ab0de221a1f8b8829b5a974ee58489886fffd3b18088432e649ab7",
+      "currentSha256": "88de3726a7ab0de221a1f8b8829b5a974ee58489886fffd3b18088432e649ab7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/ai-commerce-studio-v1.webp",
+      "sha256": "b7ac1d94e15c58e580b486ab698562dde5beac0880ad415d159073fcfbf4809e",
+      "currentSha256": "b7ac1d94e15c58e580b486ab698562dde5beac0880ad415d159073fcfbf4809e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/ai-copilot-studio-v1.webp",
+      "sha256": "e468e48239bd97de98e7c700b2e55576ba8e213904867a1aaea094e7e3fe53a3",
+      "currentSha256": "e468e48239bd97de98e7c700b2e55576ba8e213904867a1aaea094e7e3fe53a3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/ai-operations-studio-v1.webp",
+      "sha256": "b2a5709eb28e93a7b13ac3c2454eea3fb517fce52446f7fd53504b7af478b77c",
+      "currentSha256": "b2a5709eb28e93a7b13ac3c2454eea3fb517fce52446f7fd53504b7af478b77c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/ai-recommendations-studio-v1.webp",
+      "sha256": "77f5e6c87d86af74faeda651588c668e117c1a4be268bbac9bc91d99dc5c5bea",
+      "currentSha256": "77f5e6c87d86af74faeda651588c668e117c1a4be268bbac9bc91d99dc5c5bea",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/ai-workflow-studio-v1.webp",
+      "sha256": "db53132c728256d05e00f1a28a2a0006f8b8a89f750c7a7e94226a14d1db91f3",
+      "currentSha256": "db53132c728256d05e00f1a28a2a0006f8b8a89f750c7a7e94226a14d1db91f3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/changelog-journal-v1.webp",
+      "sha256": "0fb839a8a1396b15c6004bd9b6907c9c4371482242235788c46e00cdfd64d81c",
+      "currentSha256": "0fb839a8a1396b15c6004bd9b6907c9c4371482242235788c46e00cdfd64d81c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/developer-api-studio-v1.webp",
+      "sha256": "dc1408a3c1fd6abd285ccd8dc0f9aa822140f258e1f0e7ea5e53cf659e26d794",
+      "currentSha256": "dc1408a3c1fd6abd285ccd8dc0f9aa822140f258e1f0e7ea5e53cf659e26d794",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/developer-integrations-studio-v1.webp",
+      "sha256": "16361ba437e701feb7dab3f9fe00d690dae6ace3c715f7f23802a3e05a0a53d9",
+      "currentSha256": "16361ba437e701feb7dab3f9fe00d690dae6ace3c715f7f23802a3e05a0a53d9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/developer-webhooks-studio-v1.webp",
+      "sha256": "2bf188cf4e9fd0df81b2d9851e129cc3f26d40a571aedccbe34695b15d177c78",
+      "currentSha256": "2bf188cf4e9fd0df81b2d9851e129cc3f26d40a571aedccbe34695b15d177c78",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/guide-apps-v1.webp",
+      "sha256": "2a776dae944c6bf036573e20e39062317caf8db44e354959fb5e13951acd83e2",
+      "currentSha256": "2a776dae944c6bf036573e20e39062317caf8db44e354959fb5e13951acd83e2",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/guide-first-store-v1.webp",
+      "sha256": "22c5615c0a33026d1d528cf2a530d6a75445996c0edf7287f8fd0b1444a20bc9",
+      "currentSha256": "22c5615c0a33026d1d528cf2a530d6a75445996c0edf7287f8fd0b1444a20bc9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/guide-liquid-v1.webp",
+      "sha256": "015727af1fa9851ed4d09c16084fdba7da4c4f54a7ed4e600d0027f9f17fcda8",
+      "currentSha256": "015727af1fa9851ed4d09c16084fdba7da4c4f54a7ed4e600d0027f9f17fcda8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/reading-customer-lifecycle-v1.webp",
+      "sha256": "45604e8caa2d63b05863c54166966f3334752f2987cc79639bdcee6f16399c16",
+      "currentSha256": "45604e8caa2d63b05863c54166966f3334752f2987cc79639bdcee6f16399c16",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/reading-developer-connections-v1.webp",
+      "sha256": "949d58829c4bca5a6882541c29d2b72379d18420d63de573d80230992ea25722",
+      "currentSha256": "949d58829c4bca5a6882541c29d2b72379d18420d63de573d80230992ea25722",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/reading-fulfillment-v1.webp",
+      "sha256": "abd222b0665fb8a14686c869188a227b37ce8ee7107d0d4a4dd22f6cd65d4502",
+      "currentSha256": "abd222b0665fb8a14686c869188a227b37ce8ee7107d0d4a4dd22f6cd65d4502",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/reading-growth-audience-v1.webp",
+      "sha256": "fca6337d9b971fba32de82dc5093637cb5cba1691d3b19d7dff2fb5c94f7923b",
+      "currentSha256": "fca6337d9b971fba32de82dc5093637cb5cba1691d3b19d7dff2fb5c94f7923b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/reading-learning-journey-v1.webp",
+      "sha256": "3b450258967fde8d3fb4960f2cb2880152f2cef6ab32234d6558a5a2e020d831",
+      "currentSha256": "3b450258967fde8d3fb4960f2cb2880152f2cef6ab32234d6558a5a2e020d831",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/reading-payments-choice-v1.webp",
+      "sha256": "4ba48d8b10057d8707ab040d611099446003656ae2d77283d996c74288cec152",
+      "currentSha256": "4ba48d8b10057d8707ab040d611099446003656ae2d77283d996c74288cec152",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/reading-returns-care-v1.webp",
+      "sha256": "65164c741098fafe3fa276efabf5d543b22dffdf04b02cd2b336c966e172da81",
+      "currentSha256": "65164c741098fafe3fa276efabf5d543b22dffdf04b02cd2b336c966e172da81",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/reading-search-discovery-v1.webp",
+      "sha256": "adbd58b293ab0b474424d2591f6f819ff83a6db18f945aa50006b07d2ad5f592",
+      "currentSha256": "adbd58b293ab0b474424d2591f6f819ff83a6db18f945aa50006b07d2ad5f592",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/reading-tax-documents-v1.webp",
+      "sha256": "18d956723f6b84bb950e12062a4399343002ad21b059fe70328a8d5a65a69591",
+      "currentSha256": "18d956723f6b84bb950e12062a4399343002ad21b059fe70328a8d5a65a69591",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/section-hero-v1.webp",
+      "sha256": "0d45bc83c3c9cc80fcb8771903051a969b099d32d8f269a45eb71d4c3c0896b4",
+      "currentSha256": "0d45bc83c3c9cc80fcb8771903051a969b099d32d8f269a45eb71d4c3c0896b4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/section-image-text-v1.webp",
+      "sha256": "1d9298f5b79f255550bad479c13983896d37a0f3d4f12b6f7a429a02564f5868",
+      "currentSha256": "1d9298f5b79f255550bad479c13983896d37a0f3d4f12b6f7a429a02564f5868",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/section-newsletter-v1.webp",
+      "sha256": "fb571ec20992bea721d4a7a1e0171b5015fd81fa4d63619be65433c8efca0eb4",
+      "currentSha256": "fb571ec20992bea721d4a7a1e0171b5015fd81fa4d63619be65433c8efca0eb4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/section-products-v1.webp",
+      "sha256": "5a80d02a42f51cc6d989abeed192b258d02deb19e69ea4a1ea574f08702bf7e3",
+      "currentSha256": "5a80d02a42f51cc6d989abeed192b258d02deb19e69ea4a1ea574f08702bf7e3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/theme-custom-v1.webp",
+      "sha256": "2e1cd37bd646f6093919317d4a10e3a52a8eb308e5536a6a589ab160335b6851",
+      "currentSha256": "2e1cd37bd646f6093919317d4a10e3a52a8eb308e5536a6a589ab160335b6851",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/theme-free-v1.webp",
+      "sha256": "b382bb88815de85b09c91260d2972d064afd7843ef83c64a086cf30965fb399b",
+      "currentSha256": "b382bb88815de85b09c91260d2972d064afd7843ef83c64a086cf30965fb399b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/theme-marketplace-v1.webp",
+      "sha256": "a317ae4b5a008b342c50e44fa5b447d2a7f343d44a2cbb319f98d1d8bb5b316a",
+      "currentSha256": "a317ae4b5a008b342c50e44fa5b447d2a7f343d44a2cbb319f98d1d8bb5b316a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-commerce-studio-v1.webp",
+      "sha256": "48688c7c2d652412b62117a04e822b766ea107d94a8504e0cd5a6e91cb03cec3",
+      "currentSha256": "48688c7c2d652412b62117a04e822b766ea107d94a8504e0cd5a6e91cb03cec3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-copilot-studio-v1.webp",
+      "sha256": "94278c09e7bee45960ce8c3701f4d1f9bdbfb2f08f45b8975d05fbcbd19d858b",
+      "currentSha256": "94278c09e7bee45960ce8c3701f4d1f9bdbfb2f08f45b8975d05fbcbd19d858b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-operations-studio-v1.webp",
+      "sha256": "ab5be1237ccad17de94aee43a8054f6401c86c71e1381805754bdcc41172cc1d",
+      "currentSha256": "ab5be1237ccad17de94aee43a8054f6401c86c71e1381805754bdcc41172cc1d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-recommendations-studio-v1.webp",
+      "sha256": "f9daa91b84a61a5d5f49916261f0acd44b7124901d2fd4118572905f70fd6280",
+      "currentSha256": "f9daa91b84a61a5d5f49916261f0acd44b7124901d2fd4118572905f70fd6280",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-scene-v1.webp",
+      "sha256": "4c1d66d05bc10ac51f8167436683a1595fb48c3d9399f825a9a0d99e31cf820a",
+      "currentSha256": "4c1d66d05bc10ac51f8167436683a1595fb48c3d9399f825a9a0d99e31cf820a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/ai-workflow-studio-v1.webp",
+      "sha256": "998d4ac33266b1d0f247ffb98ab8f3263646a52bc437ceefaf5bd599b3908045",
+      "currentSha256": "998d4ac33266b1d0f247ffb98ab8f3263646a52bc437ceefaf5bd599b3908045",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/developer-api-studio-v1.webp",
+      "sha256": "5640f935d747c2633b4a871c0039c8142903bca8736eee5eed9b9be110e2da01",
+      "currentSha256": "5640f935d747c2633b4a871c0039c8142903bca8736eee5eed9b9be110e2da01",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/developer-integrations-studio-v1.webp",
+      "sha256": "64be7510bd16d97dde2ba7f3bec8ab1868fb3fff46da84265bb105ccd7f5f55e",
+      "currentSha256": "64be7510bd16d97dde2ba7f3bec8ab1868fb3fff46da84265bb105ccd7f5f55e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/developer-webhooks-studio-v1.webp",
+      "sha256": "d6cc3600d38703059da14ab775efb1d2545e574722b525035d2b85ebbbb239a9",
+      "currentSha256": "d6cc3600d38703059da14ab775efb1d2545e574722b525035d2b85ebbbb239a9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/guide-apps-v1.webp",
+      "sha256": "34442ebd545c396987bb7d37ad6783bc8fa54fad766a5a4fa2fa4f8512aa6a11",
+      "currentSha256": "34442ebd545c396987bb7d37ad6783bc8fa54fad766a5a4fa2fa4f8512aa6a11",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/guide-first-store-v1.webp",
+      "sha256": "2b53d124d58a252ef0f2709a0c4c891748905875bd09955fe7a7e28c75482ee9",
+      "currentSha256": "2b53d124d58a252ef0f2709a0c4c891748905875bd09955fe7a7e28c75482ee9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/guide-liquid-v1.webp",
+      "sha256": "2acd1d65ca83dd4f2be60b1deec9474f0909326e3082103fddd61a27d5088936",
+      "currentSha256": "2acd1d65ca83dd4f2be60b1deec9474f0909326e3082103fddd61a27d5088936",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/inventory-scene-v1.webp",
+      "sha256": "f19ce622813d524b3e4da3339ed1537ada6bb7693964a45e81a7ccf027ab106d",
+      "currentSha256": "f19ce622813d524b3e4da3339ed1537ada6bb7693964a45e81a7ccf027ab106d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-customer-lifecycle-v1.webp",
+      "sha256": "2df8fbd2e55c056141d6e81de4080855bfe88fe8cae7030aa870aafd744168fb",
+      "currentSha256": "2df8fbd2e55c056141d6e81de4080855bfe88fe8cae7030aa870aafd744168fb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-developer-connections-v1.webp",
+      "sha256": "f413857286c168113a8cfdf107dfbf46ad5c5e1361fb8068c5f6585326bdb5a4",
+      "currentSha256": "f413857286c168113a8cfdf107dfbf46ad5c5e1361fb8068c5f6585326bdb5a4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-fulfillment-v1.webp",
+      "sha256": "d13ece7c4d9948b3dfc1c9643ce49fc6263477dec65b7f0f9b36973cafb8ecd8",
+      "currentSha256": "d13ece7c4d9948b3dfc1c9643ce49fc6263477dec65b7f0f9b36973cafb8ecd8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-growth-audience-v1.webp",
+      "sha256": "1c5925a6747e40ff56231229141dcad0c9a489b49c22476deda8036e54883e8f",
+      "currentSha256": "1c5925a6747e40ff56231229141dcad0c9a489b49c22476deda8036e54883e8f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-learning-journey-v1.webp",
+      "sha256": "7121414f5356739e90e983ee8a1e8f8188242982babfd86239c05d9d8c307558",
+      "currentSha256": "7121414f5356739e90e983ee8a1e8f8188242982babfd86239c05d9d8c307558",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-payments-choice-v1.webp",
+      "sha256": "71a12b0c944eee22f876b64f0d67dfb18f88431d2e5362a0f7cec43a8b91cfa4",
+      "currentSha256": "71a12b0c944eee22f876b64f0d67dfb18f88431d2e5362a0f7cec43a8b91cfa4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-returns-care-v1.webp",
+      "sha256": "e5bae8f95edc38f6c451f4af66dc9b9f1c7933f1e9c71a725a52b73d19770b86",
+      "currentSha256": "e5bae8f95edc38f6c451f4af66dc9b9f1c7933f1e9c71a725a52b73d19770b86",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-search-discovery-v1.webp",
+      "sha256": "e8dd19d12f04bf305b80fd2d70e5fb41625774ed34e194aad472913765cc4f42",
+      "currentSha256": "e8dd19d12f04bf305b80fd2d70e5fb41625774ed34e194aad472913765cc4f42",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/reading-tax-documents-v1.webp",
+      "sha256": "c33772f9c8615886f019fbb8e5a9631c77ffbb22e323ebbddcf3c8556e754a55",
+      "currentSha256": "c33772f9c8615886f019fbb8e5a9631c77ffbb22e323ebbddcf3c8556e754a55",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/section-newsletter-v1.webp",
+      "sha256": "a1242715f9154206fbe24d7034232d30ef4460a9ecb46d62f55f85704f643249",
+      "currentSha256": "a1242715f9154206fbe24d7034232d30ef4460a9ecb46d62f55f85704f643249",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/section-products-v1.webp",
+      "sha256": "9ad5c7072e0e9a18cb6f828dbd1a210dd27c28a3f0b410250d732bc37eff0845",
+      "currentSha256": "9ad5c7072e0e9a18cb6f828dbd1a210dd27c28a3f0b410250d732bc37eff0845",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/resources/thumbnails/theme-custom-v1.webp",
+      "sha256": "2ebb4fcc920aa967511f1109bbbec8b41563c4dbd596be1c95cc069ebfeaef11",
+      "currentSha256": "2ebb4fcc920aa967511f1109bbbec8b41563c4dbd596be1c95cc069ebfeaef11",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/sitemap-directory-studio-v1.webp",
+      "sha256": "8c093ba9d1ead402d4da5a8b3c994f2178c282980b45d3b087f38a206e01014b",
+      "currentSha256": "8c093ba9d1ead402d4da5a8b3c994f2178c282980b45d3b087f38a206e01014b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/storefront/urban-kicks-hero-v1.webp",
+      "sha256": "c18c09da8f65585d46cb60203a02d37148ff00e7ffea33a859f0367e512c55e4",
+      "currentSha256": "c18c09da8f65585d46cb60203a02d37148ff00e7ffea33a859f0367e512c55e4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/storefront/urban-kicks-products-v1.webp",
+      "sha256": "2b8c28aa8d2aa1d96efe3d50919ea2bf2ff1335c57eccb1e9f5b124dfd394eae",
+      "currentSha256": "2b8c28aa8d2aa1d96efe3d50919ea2bf2ff1335c57eccb1e9f5b124dfd394eae",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/storefront-launch-cta-v1.webp",
+      "sha256": "54af8c13526990499946a5e0dc06b700c64c186dbccc952828799a405f1ff312",
+      "currentSha256": "54af8c13526990499946a5e0dc06b700c64c186dbccc952828799a405f1ff312",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/support/contact-conversation-studio-v1.webp",
+      "sha256": "faf81029697d91bdb3c578d477c7a76fca75e78b0ab6eee580bf18451f0184cc",
+      "currentSha256": "faf81029697d91bdb3c578d477c7a76fca75e78b0ab6eee580bf18451f0184cc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/support/grievance-care-studio-v1.webp",
+      "sha256": "c3deed119f726458e097ce0d530ac3489b1d9112c9128ede7a8c1a3168c5e116",
+      "currentSha256": "c3deed119f726458e097ce0d530ac3489b1d9112c9128ede7a8c1a3168c5e116",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/support/security-data-studio-v1.webp",
+      "sha256": "0568d2e1a00105544aff6b3266e8379fbefc036daf97168eb65d56fe03c7b39c",
+      "currentSha256": "0568d2e1a00105544aff6b3266e8379fbefc036daf97168eb65d56fe03c7b39c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/support/support-care-studio-v1.webp",
+      "sha256": "0dc9de1dd112fd6c43e48ad77f0b54217c8900c72ffe16f5e058a60a4353d525",
+      "currentSha256": "0dc9de1dd112fd6c43e48ad77f0b54217c8900c72ffe16f5e058a60a4353d525",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/surfaces/surface-apps-v1.webp",
+      "sha256": "f909db0fc200a2b7ca6f1afbf67db93886d6fac7325ea2cd61321052b483a412",
+      "currentSha256": "f909db0fc200a2b7ca6f1afbf67db93886d6fac7325ea2cd61321052b483a412",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/surfaces/surface-developers-v1.webp",
+      "sha256": "2271334e688686a69228ec9ab8c59986419ced672cecc55d9ba9c6de68770cc9",
+      "currentSha256": "2271334e688686a69228ec9ab8c59986419ced672cecc55d9ba9c6de68770cc9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/surfaces/surface-pricing-v1.webp",
+      "sha256": "6e941f3267cd278293ed9ea1616fa847fe4e592da09a1d5f370d65f8ca6d5b3d",
+      "currentSha256": "6e941f3267cd278293ed9ea1616fa847fe4e592da09a1d5f370d65f8ca6d5b3d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/surfaces/surface-themes-v1.webp",
+      "sha256": "4f3c61f271445d13483b74da8f2927627b122b0f3ee092c6731c619df7360303",
+      "currentSha256": "4f3c61f271445d13483b74da8f2927627b122b0f3ee092c6731c619df7360303",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/maps/earth-land-dots-v1.json",
+      "sha256": "e1f1ab8ba13fcd0bc9e8b0f0bb665f7a327167e17184733a93fda45fbaa77de8",
+      "currentSha256": "e1f1ab8ba13fcd0bc9e8b0f0bb665f7a327167e17184733a93fda45fbaa77de8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/maps/india-states-v1.json",
+      "sha256": "ee601b48d6d9c8cfe38afc8fd39d1819241aafa99e56f2e55842daddac3996b1",
+      "currentSha256": "ee601b48d6d9c8cfe38afc8fd39d1819241aafa99e56f2e55842daddac3996b1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/public/og/letbuyy-default.png",
+      "sha256": "2f4de326b3b125471cb3e95cb9d6ea56eba36e82b6bc36010b4553fda238a91f",
+      "currentSha256": "2f4de326b3b125471cb3e95cb9d6ea56eba36e82b6bc36010b4553fda238a91f",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/app-shell.tsx",
+      "sha256": "6967e6c8640531891a6108cd824420c4783b69bf976990eaabcdc9cd99631119",
+      "currentSha256": "6967e6c8640531891a6108cd824420c4783b69bf976990eaabcdc9cd99631119",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/breadcrumbs.tsx",
+      "sha256": "b5818cfaa2fb215b31a8e9ac3f4721f2ce33efe0a8006bdea30f7f9b88de15f8",
+      "currentSha256": "b5818cfaa2fb215b31a8e9ac3f4721f2ce33efe0a8006bdea30f7f9b88de15f8",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/button.tsx",
+      "sha256": "2c458eb513330b132e1a5f0c6caf8af79a42dd58dfb74cb1f25d09f59b0a1a9b",
+      "currentSha256": "2c458eb513330b132e1a5f0c6caf8af79a42dd58dfb74cb1f25d09f59b0a1a9b",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/component-catalog.stories.tsx",
+      "sha256": "0ac281e6dbfab2858957b21d75070521f576be3169e67804836e981fae44a6f6",
+      "currentSha256": "0ac281e6dbfab2858957b21d75070521f576be3169e67804836e981fae44a6f6",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/controls.tsx",
+      "sha256": "d8fc443e675755b36cd09799ef558ac34775e9a45eb0aa59cf8df6d86c3c56e8",
+      "currentSha256": "d8fc443e675755b36cd09799ef558ac34775e9a45eb0aa59cf8df6d86c3c56e8",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/deprecations.ts",
+      "sha256": "8f998bc701394019c1dcb87a14478c5f4347ed95813d349888f2e12d2b165681",
+      "currentSha256": "8f998bc701394019c1dcb87a14478c5f4347ed95813d349888f2e12d2b165681",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/design-system-root.tsx",
+      "sha256": "43182eec48b2860e69176e0d5dfdf76a53d53fa469e2f4678ea606b312b429c9",
+      "currentSha256": "43182eec48b2860e69176e0d5dfdf76a53d53fa469e2f4678ea606b312b429c9",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/design-tokens.stories.tsx",
+      "sha256": "a820a89730eee75607dfb692b91dbb212de94dda857f41f071f3d49668416b4e",
+      "currentSha256": "a820a89730eee75607dfb692b91dbb212de94dda857f41f071f3d49668416b4e",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/feedback.tsx",
+      "sha256": "08dd016e809a39304fccb96246e4e1601bcfaeb98a4d5128392a1931be51a00a",
+      "currentSha256": "08dd016e809a39304fccb96246e4e1601bcfaeb98a4d5128392a1931be51a00a",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/fonts.ts",
+      "sha256": "c4bf965cbd55365fb79a588632045df09ffb79b84fd1d4ad0a19a51422b38675",
+      "currentSha256": "c4bf965cbd55365fb79a588632045df09ffb79b84fd1d4ad0a19a51422b38675",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/formatting.ts",
+      "sha256": "32b5c6697ba358f67c0b80e7bcfedcb8d99cda674dd2a02124a9d8d962ee58cc",
+      "currentSha256": "32b5c6697ba358f67c0b80e7bcfedcb8d99cda674dd2a02124a9d8d962ee58cc",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/foundation-primitives.stories.tsx",
+      "sha256": "7d7fb4375d8c3ae5420083d4ddd204e9f7d7be60f7bcbfeedfc5c4a6cf48eaa8",
+      "currentSha256": "7d7fb4375d8c3ae5420083d4ddd204e9f7d7be60f7bcbfeedfc5c4a6cf48eaa8",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/governance.stories.tsx",
+      "sha256": "6459bd843e571abf317c0e229affba0efe9f1e55706d863b4fd667266471afd1",
+      "currentSha256": "6459bd843e571abf317c0e229affba0efe9f1e55706d863b4fd667266471afd1",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/icons.tsx",
+      "sha256": "bf64e3510d69169e76914c66a3ce60dfdd41758310f9d15c7f7710ccfb29c133",
+      "currentSha256": "bf64e3510d69169e76914c66a3ce60dfdd41758310f9d15c7f7710ccfb29c133",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/index.ts",
+      "sha256": "2b9034ddb6b23ed392ef4aa0d4b88214393b3523cf873a2f81702ee6960f3e32",
+      "currentSha256": "2b9034ddb6b23ed392ef4aa0d4b88214393b3523cf873a2f81702ee6960f3e32",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/input.tsx",
+      "sha256": "f470b7465b29cf79b66f8ae8b45e2fbefcb79985f9777b0d17cdfc7684bee6dc",
+      "currentSha256": "f470b7465b29cf79b66f8ae8b45e2fbefcb79985f9777b0d17cdfc7684bee6dc",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/internal-workspace.tsx",
+      "sha256": "90fa7f069e7dc9d8e83b1d0f183f2c02defd0d81d880c26ce721f6c4a41d43af",
+      "currentSha256": "90fa7f069e7dc9d8e83b1d0f183f2c02defd0d81d880c26ce721f6c4a41d43af",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/layout.tsx",
+      "sha256": "43a4ecb75e3b813af7821ae019b97bd7f0e583fd669af5ac84c1654a665e70cb",
+      "currentSha256": "43a4ecb75e3b813af7821ae019b97bd7f0e583fd669af5ac84c1654a665e70cb",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/logging.ts",
+      "sha256": "bb4278d9c8b0ff60b012a536feb9bd467d4c019f702bdad26d6f4c8824668781",
+      "currentSha256": "bb4278d9c8b0ff60b012a536feb9bd467d4c019f702bdad26d6f4c8824668781",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/marketplace.tsx",
+      "sha256": "77bc968d1c398c263cb7b70b9a9edb75a3ced7b6c18a302d20fa9cee5b73aeb2",
+      "currentSha256": "77bc968d1c398c263cb7b70b9a9edb75a3ced7b6c18a302d20fa9cee5b73aeb2",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/merchant-experience.stories.tsx",
+      "sha256": "242bb8fdc7df4927d28b924936d2aa44055f4db781dc44953b3df272683f9df2",
+      "currentSha256": "242bb8fdc7df4927d28b924936d2aa44055f4db781dc44953b3df272683f9df2",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/navigation/app-navigation.tsx",
+      "sha256": "5fe32f103ed2797bc606fc7806cc9c992b407040ddf422b55747ba082b204f71",
+      "currentSha256": "5fe32f103ed2797bc606fc7806cc9c992b407040ddf422b55747ba082b204f71",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/navigation/index.ts",
+      "sha256": "150766507ab0ad8288497e4260fd52bcc2a4324a5f68d0b4e462fb7e62112bd0",
+      "currentSha256": "150766507ab0ad8288497e4260fd52bcc2a4324a5f68d0b4e462fb7e62112bd0",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/overlay-hooks.ts",
+      "sha256": "bc3ea7c856d008fb4245bd3644b17850c42eb594702165941069a08e15c21db1",
+      "currentSha256": "bc3ea7c856d008fb4245bd3644b17850c42eb594702165941069a08e15c21db1",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/overlays.tsx",
+      "sha256": "cda4226c8535d4f14dbd3dff09bd2c000b493109693fc8be14afdf417076efdd",
+      "currentSha256": "cda4226c8535d4f14dbd3dff09bd2c000b493109693fc8be14afdf417076efdd",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/preview-helpers.tsx",
+      "sha256": "926faa2664d29402f57e77010d3eab3c4d2f83828d6ef119322642500ad21157",
+      "currentSha256": "926faa2664d29402f57e77010d3eab3c4d2f83828d6ef119322642500ad21157",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/preview.tsx",
+      "sha256": "8f3f210042efb14ebc74c1f005755df6b5dc70cdb170946010567b7b07f45a61",
+      "currentSha256": "8f3f210042efb14ebc74c1f005755df6b5dc70cdb170946010567b7b07f45a61",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/primitives.stories.tsx",
+      "sha256": "38f47437a67a65d2425ce9fcac06aa609b74d31eab4b4e330ced180054b0aee5",
+      "currentSha256": "38f47437a67a65d2425ce9fcac06aa609b74d31eab4b4e330ced180054b0aee5",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/primitives.tsx",
+      "sha256": "0cb2cd2089aa1e18eb3b65351d9e99c257ec4e91ac730a7bf541bb82141d2773",
+      "currentSha256": "0cb2cd2089aa1e18eb3b65351d9e99c257ec4e91ac730a7bf541bb82141d2773",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/productivity.tsx",
+      "sha256": "76aca7e89c9866a9609b4c0a0cb187c1488820e015a8f8d1f26b7bfaefae4e4b",
+      "currentSha256": "76aca7e89c9866a9609b4c0a0cb187c1488820e015a8f8d1f26b7bfaefae4e4b",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/sidebar-navigation.stories.tsx",
+      "sha256": "a9d9e9f4ef99e338c0c59b86967821f63659a9e4bd0fa13ec8c35486f15978c8",
+      "currentSha256": "a9d9e9f4ef99e338c0c59b86967821f63659a9e4bd0fa13ec8c35486f15978c8",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/storybook.css",
+      "sha256": "f973ef459dec2800c82994dd33087ba52269598c014437e10d960ac95239173d",
+      "currentSha256": "f973ef459dec2800c82994dd33087ba52269598c014437e10d960ac95239173d",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/table.stories.tsx",
+      "sha256": "6ed25f1862c34c81c3c7157b845f97159158d2083480b3e786af5b45e48d39e7",
+      "currentSha256": "6ed25f1862c34c81c3c7157b845f97159158d2083480b3e786af5b45e48d39e7",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/table.tsx",
+      "sha256": "f12630c874fe45ce9661145da08b16c4d034a6d759cae017ed73dd7c89011d6e",
+      "currentSha256": "f12630c874fe45ce9661145da08b16c4d034a6d759cae017ed73dd7c89011d6e",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/theme-provider.tsx",
+      "sha256": "179e5899253ed327351aa896805552d8ea34895515c927e99b75b91df8cf8b5c",
+      "currentSha256": "179e5899253ed327351aa896805552d8ea34895515c927e99b75b91df8cf8b5c",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/theme-toggle-button.tsx",
+      "sha256": "d811614168983120ab209e5339f7a4c1f5cefe036fc71d3fd60469b1223ce37e",
+      "currentSha256": "d811614168983120ab209e5339f7a4c1f5cefe036fc71d3fd60469b1223ce37e",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/token-style-boundary.tsx",
+      "sha256": "4f246cdb1dc6f1be93edfe9728e01923c0b9d855d40995e76790dfe9cd20ff15",
+      "currentSha256": "4f246cdb1dc6f1be93edfe9728e01923c0b9d855d40995e76790dfe9cd20ff15",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/tokens.ts",
+      "sha256": "8ff2db3531e54247b63d4d897d002c60db6c4abb80516c5f1e9470f672aeaaad",
+      "currentSha256": "8ff2db3531e54247b63d4d897d002c60db6c4abb80516c5f1e9470f672aeaaad",
+      "unchanged": true
+    },
+    {
+      "path": "packages/typescript/ui/src/utils.ts",
+      "sha256": "c871fd27e3bb7a0fb7ff9859298acf1f150d97d4f14e560210d3d037aa2656f0",
+      "currentSha256": "c871fd27e3bb7a0fb7ff9859298acf1f150d97d4f14e560210d3d037aa2656f0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/next.config.ts",
+      "sha256": "ecbe6c629d3784bba5dae681fc47cdd68b42ac217ecd19355c0b5c629348d4dd",
+      "currentSha256": "ecbe6c629d3784bba5dae681fc47cdd68b42ac217ecd19355c0b5c629348d4dd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/package.json",
+      "sha256": "578b1dfa784edab7c49fbd9aa6bd6cffd3cbc561769760e1e6dc2ce97f454f3b",
+      "currentSha256": "578b1dfa784edab7c49fbd9aa6bd6cffd3cbc561769760e1e6dc2ce97f454f3b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/vercel.json",
+      "sha256": "3b7ca5fe02f83ec5c9c29b262af5d498c9427041da4ad26a0121859f1bb8d463",
+      "currentSha256": "3b7ca5fe02f83ec5c9c29b262af5d498c9427041da4ad26a0121859f1bb8d463",
+      "unchanged": true
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "7d0c64eda7358607007930b57d6abcc11c3a150664a1667bccbad1e251fd5a63",
+      "currentSha256": "7d0c64eda7358607007930b57d6abcc11c3a150664a1667bccbad1e251fd5a63",
+      "unchanged": true
+    }
+  ],
+  "unchangedMarketingCssFiles": 20
+}

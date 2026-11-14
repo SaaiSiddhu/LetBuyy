@@ -1,0 +1,662 @@
+--- a/apps/marketing/web/src/app/layout.tsx
++++ b/apps/marketing/web/src/app/layout.tsx
+@@ -17,6 +17,9 @@
+   variable: "--font-letbuyy-sans",
+   display: "swap",
+   weight: "100 900",
++  // Resolve the observed native Tamil faces directly, retaining their existing
++  // weight mapping. Platforms without those local faces keep the usual stack.
++  fallback: ["LetBuyy Tamil Fallback"],
+   // Match the subset's actual cmap so Indic text uses its existing fallback
+   // immediately instead of waiting for an inapplicable Latin font swap.
+   declarations: [{
+--- a/apps/marketing/web/src/app/globals.css
++++ b/apps/marketing/web/src/app/globals.css
+@@ -2,6 +2,37 @@
+ @import "../../../../../config/tailwind/letbuyy-tokens.css";
+ @import './how-it-works.css';
+ @source "../../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
++
++/* These are local faces already selected by Chromium on macOS, not downloads.
++   The existing system fallback uses the bold face for medium Tamil text too;
++   declare that mapping explicitly to retain the rendered design while avoiding
++   repeated platform-wide fallback searches. Missing faces fall through normally. */
++@font-face {
++  font-family: 'LetBuyy Tamil Fallback';
++  src: local('TamilSangamMN');
++  font-style: normal;
++  font-weight: normal;
++  font-display: swap;
++  unicode-range: U+0B80-0BFF;
++}
++@font-face {
++  font-family: 'LetBuyy Tamil Fallback';
++  src: local('TamilSangamMN-Bold');
++  font-style: normal;
++  /* Font-face descriptors require a static weight, not an element token. */
++  /* stylelint-disable-next-line declaration-property-value-disallowed-list */
++  font-weight: 500;
++  font-display: swap;
++  unicode-range: U+0B80-0BFF;
++}
++@font-face {
++  font-family: 'LetBuyy Tamil Fallback';
++  src: local('TamilSangamMN-Bold');
++  font-style: normal;
++  font-weight: bold;
++  font-display: swap;
++  unicode-range: U+0B80-0BFF;
++}
+ 
+ /* ======================================
+    SECTION RHYTHM
+@@ -10544,6 +10575,17 @@
+ /* Keep server-rendered content discoverable while the browser skips layout and
+    paint for distant homepage sections. Remember actual sizes after first view. */
+ @supports (content-visibility: auto) {
++  /* The standalone pricing route also contains the full comparison and FAQ.
++     Keep that content in SSR, but avoid shaping every offscreen cell twice
++     while the primary font loads. Native scrolling/find/focus reveal it. */
++  .select-plan-compare-section,
++  .marketing-site main > .faq {
++    content-visibility: auto;
++  }
++
++  .select-plan-compare-section { contain-intrinsic-block-size: auto 570px; }
++  .marketing-site main > .faq { contain-intrinsic-block-size: auto 1100px; }
++
+   .marketing-home > :is(.mgj, .how-it-works, .pricing, .faq, .ecosystem, .final-cta) {
+     content-visibility: auto;
+   }
+@@ -10558,6 +10600,7 @@
+   }
+ 
+   @media (max-width: 767px) {
++    .marketing-site main > .faq { contain-intrinsic-block-size: auto 1600px; }
+     .marketing-home > .mgj { contain-intrinsic-block-size: auto 850px; }
+     .marketing-home > .how-it-works { contain-intrinsic-block-size: auto 3600px; }
+     .marketing-home > .faq { contain-intrinsic-block-size: auto 1600px; }
+--- a/apps/marketing/web/src/components/Footer.tsx
++++ b/apps/marketing/web/src/components/Footer.tsx
+@@ -3,6 +3,7 @@
+ import { useCopy } from '@/components/i18n/useCopy'
+ 
+ import { useRef, useState } from 'react'
++import Image from 'next/image'
+ import Link from '@/components/i18n/LocaleLink'
+ import {
+     Button,
+@@ -189,7 +190,7 @@
+                             onClick={openPrivacyChoices}
+                         >
+                             <span>{dict.footer.privacyChoices}</span>
+-                            <img src={privacyChoicesIconUrl} alt="" width="32" height="16" aria-hidden="true" />
++                            <Image src={privacyChoicesIconUrl} alt="" width={32} height={16} loading="lazy" unoptimized aria-hidden="true" />
+                         </Button>
+                     </nav>
+ 
+@@ -212,7 +213,7 @@
+ 
+             <Modal className="marketing-dialog" open={privacyPanelOpen} onClose={() => setPrivacyPanelOpen(false)} title={dict.footer.privacyChoices} returnFocusRef={privacyReturnRef}>
+                     <div>
+-                        <img className="footer-privacy-icon" src={privacyChoicesIconUrl} alt="" width="48" height="24" aria-hidden="true" />
++                        <Image className="footer-privacy-icon" src={privacyChoicesIconUrl} alt="" width={48} height={24} unoptimized aria-hidden="true" />
+                         {privacyError && <p role="alert">{t((privacyError) ?? '')}</p>}
+                         <p>
+                             {dict.footer.privacyIntro}
+--- a/apps/marketing/web/src/components/CapabilityMap.tsx
++++ b/apps/marketing/web/src/components/CapabilityMap.tsx
+@@ -539,46 +539,6 @@
+ 
+ // ── Sub-components ─────────────────────────────────────────────────────────────
+ 
+-function ConnectedModules({
+-    connections,
+-    onNavigate,
+-}: {
+-    connections: CapabilityId[]
+-    onNavigate: (id: CapabilityId) => void
+-}) {
+-    const { t } = useCopy()
+-    return (
+-        <div className="cmap-connected">
+-            <span className="cmap-connected-label">Connected modules</span>
+-            <div className="cmap-connected-chips">
+-                {connections.map(id => {
+-                    const cap = CAPABILITIES.find(c => c.id === id)!
+-                    const Icon = cap.icon
+-                    return (
+-                        <Button
+-                            unstyled
+-                            key={id}
+-                            type="button"
+-                            className="cmap-connected-chip"
+-                            style={{ '--cmap-accent': cap.accentColor } as CmapVars}
+-                            onClick={() => onNavigate(id)}
+-                            aria-label={t("Explore {label}", { label: t(cap.label) })}
+-                        >
+-                            <span style={{ color: cap.accentColor }} aria-hidden="true">
+-                                {cap.materialName
+-                                    ? <Sparkles width={12} height={12} aria-hidden="true" />
+-                                    : Icon ? <Icon width={12} height={12} strokeWidth={2} /> : null
+-                                }
+-                            </span>
+-                            <Copy text={cap.label} />
+-                        </Button>
+-                    )
+-                })}
+-            </div>
+-        </div>
+-    )
+-}
+-
+ function CapabilityInfo({ cap, artwork = true }: { cap: Capability; artwork?: boolean }) {
+     const { t } = useCopy()
+     return (
+--- a/apps/marketing/web/src/components/resources/theme-guide.module.css
++++ b/apps/marketing/web/src/components/resources/theme-guide.module.css
+@@ -17,7 +17,8 @@
+ .heroArtwork { min-width: 0; margin: var(--lb-space-7) 0 0; }
+ .heroArtCanvas { position: relative; isolation: isolate; padding: var(--lb-space-6) 0 var(--lb-space-4); border-radius: var(--lb-radius-xl); background: radial-gradient(ellipse at center, color-mix(in srgb, var(--lb-color-primary) 12%, transparent), transparent 70%); }
+ .artIndex { display: block; color: var(--lb-color-text-subdued); font-size: calc(var(--lb-font-size-caption) * .8); letter-spacing: .13em; text-align: center; }
+-.heroImage { display: block; width: 100%; height: auto; object-fit: contain; }
++/* Retain the source canvas ratio when responsive encoders round its height. */
++.heroImage { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: contain; }
+ .artNote { position: absolute; left: 0; bottom: 18%; display: flex; align-items: center; gap: var(--lb-space-3); padding: var(--lb-space-3) var(--lb-space-4); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-md); background: var(--lb-color-surface); color: var(--lb-color-primary-text); box-shadow: 0 8px 32px color-mix(in srgb, var(--lb-color-text) 8%, transparent); font-size: var(--lb-font-size-caption); line-height: 1.5; }
+ .artNote strong { color: var(--lb-color-text); font-weight: var(--lb-font-weight-medium); }
+ .artSwatches { display: flex; justify-content: center; gap: var(--lb-space-2); }
+--- a/apps/marketing/web/src/components/resources/LiquidGuide.tsx
++++ b/apps/marketing/web/src/components/resources/LiquidGuide.tsx
+@@ -37,7 +37,7 @@
+ function SectionIllustrations() {
+   return (
+     <div className={styles.sectionGallery}>
+-      {[SECTION_ARTWORK[0], SECTION_ARTWORK[2]].map(art => <figure key={art.src}><Image src={art.src} alt="" width={1536} height={1024} sizes="(max-width: 600px) 90vw, 420px" loading="eager" unoptimized /><figcaption><LayoutGrid size={15} aria-hidden="true" /><Copy text={art.label} /><span><Copy text={"Configurable section illustration"} /></span></figcaption></figure>)}
++      {[SECTION_ARTWORK[0], SECTION_ARTWORK[2]].map(art => <figure key={art.src}><Image src={art.src} alt="" width={1536} height={1024} style={{ aspectRatio: '3 / 2' }} sizes="(max-width: 600px) 90vw, 420px" loading="lazy" fetchPriority="low" /><figcaption><LayoutGrid size={15} aria-hidden="true" /><Copy text={art.label} /><span><Copy text={"Configurable section illustration"} /></span></figcaption></figure>)}
+     </div>
+   )
+ }
+--- a/apps/marketing/web/src/components/resources/ArticleSectionVisual.tsx
++++ b/apps/marketing/web/src/components/resources/ArticleSectionVisual.tsx
+@@ -9,7 +9,8 @@
+ export default function ArticleSectionVisual({ visual }: { visual: SectionVisual }) {
+   const { t } = useCopy()
+   return <figure className={styles.figure} data-section-visual>
+-    <Image src={visual.src} alt={t(visual.alt)} width={visual.width} height={visual.height} sizes="(max-width: 767px) 85vw, 560px" loading="eager" unoptimized />
++    {/* Keep the source canvas ratio when responsive encoders round dimensions. */}
++    <Image src={visual.src} alt={t(visual.alt)} width={visual.width} height={visual.height} style={{ aspectRatio: `${visual.width} / ${visual.height}` }} sizes="(max-width: 767px) 85vw, 560px" loading="lazy" fetchPriority="low" />
+     <figcaption><span className={styles.label}><Copy text={visual.label} /></span><span><Copy text={visual.caption} /></span><small><Copy text={"Concept illustration"} /></small></figcaption>
+   </figure>
+ }
+--- a/apps/marketing/web/src/components/resources/BookmarkButton.tsx
++++ b/apps/marketing/web/src/components/resources/BookmarkButton.tsx
+@@ -11,7 +11,7 @@
+   category: string
+ }
+ 
+-export default function BookmarkButton({ slug, title, category }: Props) {
++export default function BookmarkButton({ slug }: Props) {
+   const { t } = useCopy()
+   const [saved, setSaved] = useState(() => {
+     if (typeof window === 'undefined') return false
+--- a/apps/marketing/web/src/components/resources/ThemeGuide.tsx
++++ b/apps/marketing/web/src/components/resources/ThemeGuide.tsx
+@@ -14,7 +14,7 @@
+ function StorefrontStudy({ variant = 0 }: { variant?: number }) {
+   return (
+     <div className={styles.study} aria-hidden="true">
+-      <Image src={STOREFRONTS[variant % STOREFRONTS.length]} alt="" width={1536} height={1024} sizes="(max-width: 699px) 90vw, 480px" loading="eager" unoptimized />
++      <Image src={STOREFRONTS[variant % STOREFRONTS.length]} alt="" width={1536} height={1024} style={{ aspectRatio: '3 / 2' }} sizes="(max-width: 699px) 90vw, 480px" loading="lazy" fetchPriority="low" />
+     </div>
+   )
+ }
+@@ -24,7 +24,7 @@
+     <figure className={styles.heroArtwork}>
+       <div className={styles.heroArtCanvas} aria-hidden="true">
+         <span className={styles.artIndex}><Copy text={"THE STOREFRONT DESIGN STUDIO"} /></span>
+-        <Image src={THEME_ARTWORK.custom} alt="" width={1536} height={1024} sizes="(max-width: 700px) 90vw, 520px" priority unoptimized className={styles.heroImage} />
++        <Image src={THEME_ARTWORK.custom} alt="" width={1536} height={1024} sizes="(max-width: 700px) 90vw, 520px" priority className={styles.heroImage} />
+         <div className={styles.artNote}><Palette size={16} /><span><Copy text={"Your brand."} /><br /><strong><Copy text={"Every detail."} /></strong></span></div>
+         <div className={styles.artSwatches}><i /><i /><i /><i /><i /></div>
+       </div>
+@@ -52,7 +52,7 @@
+   return (
+     <div className={styles.sectionIllustration} aria-hidden="true">
+       {SECTION_ARTWORK.map(({ label, src }, index) => (
+-        <div className={styles.sectionTile} key={label}><span>{String(index + 1).padStart(2, '0')}<LayoutGrid size={15} /></span><div className={styles.sectionArtwork}><Image src={src} alt="" width={1536} height={1024} sizes="(max-width: 699px) 45vw, 260px" loading="eager" unoptimized /></div><b><Copy text={label} /></b></div>
++        <div className={styles.sectionTile} key={label}><span>{String(index + 1).padStart(2, '0')}<LayoutGrid size={15} /></span><div className={styles.sectionArtwork}><Image src={src} alt="" width={1536} height={1024} style={{ aspectRatio: '3 / 2' }} sizes="(max-width: 699px) 45vw, 260px" loading="lazy" fetchPriority="low" /></div><b><Copy text={label} /></b></div>
+       ))}
+     </div>
+   )
+--- a/apps/marketing/web/next.config.ts
++++ b/apps/marketing/web/next.config.ts
+@@ -29,7 +29,18 @@
+   "tailwind-merge": resolve(appRoot, "../../node_modules/.pnpm/node_modules/tailwind-merge"),
+ };
+ 
++type CssExtractionModule = {
++  resource?: string;
++  nameForCondition?: () => string | null;
++  identifier?: () => string;
++};
++
+ type WebpackResolveConfig = {
++  optimization?: {
++    splitChunks?: false | {
++      cacheGroups?: Record<string, unknown>;
++    };
++  };
+   resolve?: {
+     modules?: string[];
+   };
+@@ -38,6 +49,9 @@
+ const nextConfig: NextConfig = {
+   // The development badge overlaps the mobile article Contents control.
+   devIndicators: false,
++  // Keep the shell's tiny font/locale/module styles in one cacheable request.
++  // Explicit groups below retain separate home and resource delivery.
++  experimental: { cssChunking: false },
+   transpilePackages: workspacePackages,
+   images: {
+     formats: ['image/avif', 'image/webp'],
+@@ -48,12 +62,38 @@
+     root: workspaceRoot,
+     resolveAlias: workspacePackageAliases,
+   },
+-  webpack(config: WebpackResolveConfig) {
++  webpack(config: WebpackResolveConfig, { dev, isServer }) {
+     const modules = config.resolve?.modules ?? [];
+     config.resolve = {
+       ...config.resolve,
+       modules: [...modules, workspaceModules],
+     };
++    if (!dev && !isServer && config.optimization?.splitChunks) {
++      const split = config.optimization.splitChunks;
++      const resource = (module: CssExtractionModule) =>
++        module.nameForCondition?.() ?? module.resource ?? module.identifier?.() ?? '';
++      split.cacheGroups = {
++        ...split.cacheGroups,
++        marketingSharedStyles: {
++          type: 'css/mini-extract',
++          name: 'marketing-shared',
++          chunks: 'all',
++          enforce: true,
++          priority: 40,
++          test: (module: CssExtractionModule) =>
++            /src\/app\/(globals|locale-typography)\.css|src\/components\/(?:header-featured-art|final-cta)\.module\.css|next\/font\/local\/target\.css/.test(resource(module)),
++        },
++        marketingResourceStyles: {
++          type: 'css/mini-extract',
++          name: 'marketing-resources',
++          chunks: 'all',
++          enforce: true,
++          priority: 30,
++          test: (module: CssExtractionModule) =>
++            /src\/app\/resources\.css|src\/components\/resources\/.*\.module\.css/.test(resource(module)),
++        },
++      };
++    }
+     return config;
+   },
+   async headers() {
+--- a/packages/typescript/ui/snapshots/token-aliases.json
++++ b/packages/typescript/ui/snapshots/token-aliases.json
+@@ -5,10 +5,22 @@
+   "themes": {
+     "light": [
+       {
++        "value": "#0a0912",
++        "variables": [
++          "--lb-color-background-dark",
++          "--lb-primitive-color-ink-950"
++        ]
++      },
++      {
++        "value": "#0d0b16",
++        "variables": [
++          "--lb-color-surface-dark",
++          "--lb-primitive-color-ink-850"
++        ]
++      },
++      {
+         "value": "#111827",
+         "variables": [
+-          "--lb-color-background-dark",
+-          "--lb-color-surface-dark",
+           "--lb-color-text",
+           "--lb-color-text-primary-light",
+           "--lb-component-button-secondary-text",
+@@ -31,6 +43,14 @@
+         ]
+       },
+       {
++        "value": "#16A34A",
++        "variables": [
++          "--lb-component-badge-solid-success-bg",
++          "--lb-component-banner-solid-success-bg",
++          "--lb-component-toast-success-bg"
++        ]
++      },
++      {
+         "value": "#1D4ED8",
+         "variables": [
+           "--lb-component-banner-info-text",
+@@ -55,9 +75,16 @@
+         ]
+       },
+       {
++        "value": "#2563EB",
++        "variables": [
++          "--lb-component-badge-solid-info-bg",
++          "--lb-component-banner-solid-info-bg",
++          "--lb-component-toast-info-bg"
++        ]
++      },
++      {
+         "value": "#334155",
+         "variables": [
+-          "--lb-color-border-dark",
+           "--lb-color-border-strong",
+           "--lb-primitive-color-slate-700",
+           "--lb-semantic-border-strong"
+@@ -171,9 +198,20 @@
+         ]
+       },
+       {
++        "value": "#D97706",
++        "variables": [
++          "--lb-component-badge-solid-warning-bg",
++          "--lb-component-banner-solid-warning-bg",
++          "--lb-component-toast-warning-bg"
++        ]
++      },
++      {
+         "value": "#DC2626",
+         "variables": [
+           "--lb-color-critical-hover",
++          "--lb-component-badge-solid-danger-bg",
++          "--lb-component-banner-solid-danger-bg",
++          "--lb-component-toast-danger-bg",
+           "--lb-primitive-color-red-600"
+         ]
+       },
+@@ -293,11 +331,15 @@
+           "--lb-color-surface-raised",
+           "--lb-color-text-inverse",
+           "--lb-color-text-primary-dark",
++          "--lb-component-badge-solid-text",
++          "--lb-component-banner-solid-action-text",
++          "--lb-component-banner-solid-text",
+           "--lb-component-button-primary-text",
+           "--lb-component-card-bg",
+           "--lb-component-empty-state-bg",
+           "--lb-component-input-bg",
+           "--lb-component-table-bg",
++          "--lb-component-toast-text",
+           "--lb-primitive-color-white",
+           "--lb-semantic-background-card",
+           "--lb-semantic-background-header",
+@@ -636,62 +678,88 @@
+         ]
+       },
+       {
+-        "value": "#0A0F1A",
+-        "variables": [
+-          "--lb-color-surface-subdued",
+-          "--lb-primitive-color-slate-950",
+-          "--lb-semantic-background-subdued"
+-        ]
+-      },
+-      {
+-        "value": "#0F172A",
+-        "variables": [
+-          "--lb-color-sidebar",
+-          "--lb-component-sidebar-bg",
+-          "--lb-primitive-color-slate-900",
+-          "--lb-semantic-background-sidebar",
+-          "--lb-sidebar-bg"
+-        ]
+-      },
+-      {
+-        "value": "#111827",
++        "value": "#0a0912",
+         "variables": [
+           "--lb-color-background",
+           "--lb-color-background-dark",
+           "--lb-color-bg",
++          "--lb-color-surface-subdued",
++          "--lb-content-bg",
++          "--lb-primitive-color-ink-950",
++          "--lb-semantic-background-page",
++          "--lb-semantic-background-subdued"
++        ]
++      },
++      {
++        "value": "#0d0b15",
++        "variables": [
++          "--lb-color-sidebar",
++          "--lb-component-sidebar-bg",
++          "--lb-primitive-color-ink-900",
++          "--lb-semantic-background-sidebar",
++          "--lb-sidebar-bg"
++        ]
++      },
++      {
++        "value": "#0d0b16",
++        "variables": [
+           "--lb-color-header",
+           "--lb-color-surface",
+           "--lb-color-surface-dark",
+-          "--lb-color-text-inverse",
+-          "--lb-color-text-primary-light",
+           "--lb-component-button-secondary-bg",
+           "--lb-component-input-bg",
+           "--lb-component-table-header-bg",
+           "--lb-component-table-row-hover-bg",
+-          "--lb-content-bg",
++          "--lb-primitive-color-ink-850",
++          "--lb-semantic-background-header",
++          "--lb-semantic-background-surface",
++          "--lb-semantic-button-secondary-bg"
++        ]
++      },
++      {
++        "value": "#111827",
++        "variables": [
++          "--lb-color-text-inverse",
++          "--lb-color-text-primary-light",
+           "--lb-primitive-color-gray-900",
+-          "--lb-semantic-background-header",
+-          "--lb-semantic-background-page",
+-          "--lb-semantic-background-surface",
+-          "--lb-semantic-button-secondary-bg",
+           "--lb-semantic-text-inverse"
+         ]
+       },
+       {
+-        "value": "#1F2937",
++        "value": "#15131f",
+         "variables": [
+           "--lb-card-bg",
+           "--lb-color-card",
+-          "--lb-color-surface-raised",
+           "--lb-component-button-secondary-hover",
+           "--lb-component-card-bg",
+           "--lb-component-empty-state-bg",
+           "--lb-component-table-bg",
++          "--lb-primitive-color-ink-800",
++          "--lb-semantic-background-card",
++          "--lb-semantic-button-secondary-hover"
++        ]
++      },
++      {
++        "value": "#16A34A",
++        "variables": [
++          "--lb-component-badge-solid-success-bg",
++          "--lb-component-banner-solid-success-bg",
++          "--lb-component-toast-success-bg"
++        ]
++      },
++      {
++        "value": "#1b1827",
++        "variables": [
++          "--lb-color-surface-raised",
++          "--lb-primitive-color-ink-700",
++          "--lb-semantic-background-raised"
++        ]
++      },
++      {
++        "value": "#1F2937",
++        "variables": [
+           "--lb-primitive-color-gray-800",
+-          "--lb-primitive-color-slate-850",
+-          "--lb-semantic-background-card",
+-          "--lb-semantic-background-raised",
+-          "--lb-semantic-button-secondary-hover"
++          "--lb-primitive-color-slate-850"
+         ]
+       },
+       {
+@@ -706,20 +774,11 @@
+         ]
+       },
+       {
+-        "value": "#334155",
+-        "variables": [
+-          "--lb-color-border",
+-          "--lb-color-border-dark",
+-          "--lb-component-button-secondary-border",
+-          "--lb-component-card-border",
+-          "--lb-component-empty-state-border",
+-          "--lb-component-input-border",
+-          "--lb-component-sidebar-border",
+-          "--lb-component-table-border",
+-          "--lb-primitive-color-slate-700",
+-          "--lb-semantic-border-default",
+-          "--lb-semantic-border-subtle",
+-          "--lb-semantic-button-secondary-border"
++        "value": "#2563EB",
++        "variables": [
++          "--lb-component-badge-solid-info-bg",
++          "--lb-component-banner-solid-info-bg",
++          "--lb-component-toast-info-bg"
+         ]
+       },
+       {
+@@ -846,9 +905,20 @@
+         ]
+       },
+       {
++        "value": "#D97706",
++        "variables": [
++          "--lb-component-badge-solid-warning-bg",
++          "--lb-component-banner-solid-warning-bg",
++          "--lb-component-toast-warning-bg"
++        ]
++      },
++      {
+         "value": "#DC2626",
+         "variables": [
+           "--lb-color-critical-hover",
++          "--lb-component-badge-solid-danger-bg",
++          "--lb-component-banner-solid-danger-bg",
++          "--lb-component-toast-danger-bg",
+           "--lb-primitive-color-red-600"
+         ]
+       },
+@@ -903,6 +973,9 @@
+           "--lb-color-surface-light",
+           "--lb-color-text",
+           "--lb-color-text-primary-dark",
++          "--lb-component-badge-solid-text",
++          "--lb-component-banner-solid-action-text",
++          "--lb-component-banner-solid-text",
+           "--lb-component-button-primary-text",
+           "--lb-component-button-secondary-text",
+           "--lb-component-card-text",
+@@ -911,6 +984,7 @@
+           "--lb-component-page-header-icon-text",
+           "--lb-component-sidebar-active-text",
+           "--lb-component-table-text",
++          "--lb-component-toast-text",
+           "--lb-primitive-color-white",
+           "--lb-semantic-button-primary-text",
+           "--lb-semantic-button-secondary-text"
+@@ -1181,6 +1255,22 @@
+         ]
+       },
+       {
++        "value": "rgba(139, 92, 246, 0.18)",
++        "variables": [
++          "--lb-color-border",
++          "--lb-color-border-dark",
++          "--lb-component-button-secondary-border",
++          "--lb-component-card-border",
++          "--lb-component-empty-state-border",
++          "--lb-component-input-border",
++          "--lb-component-sidebar-border",
++          "--lb-component-table-border",
++          "--lb-semantic-border-default",
++          "--lb-semantic-border-subtle",
++          "--lb-semantic-button-secondary-border"
++        ]
++      },
++      {
+         "value": "transparent",
+         "variables": [
+           "--lb-component-page-header-icon-bg",
+--- a/packages/typescript/ui/tests/validators/ui-no-new-token-alias-validator.mjs
++++ b/packages/typescript/ui/tests/validators/ui-no-new-token-alias-validator.mjs
+@@ -129,18 +129,32 @@
+ const expectedSnapshot = readSnapshot();
+ 
+ if (selfTest) {
+-    const [theme, groups] = Object.entries(currentSnapshot.themes)[0] ?? [];
+-    if (!theme || !groups?.[0]) {
+-        throw new Error('Token alias validator self-test failed: no duplicate-value group exists to mutate.');
++    const baselineViolations = findViolations(expectedSnapshot, currentSnapshot);
++    if (baselineViolations.length > 0) {
++        throw new Error(`Token alias validator self-test requires a clean baseline:\n${baselineViolations.join('\n')}`);
+     }
+ 
+-    const mutatedSnapshot = structuredClone(currentSnapshot);
+-    mutatedSnapshot.themes[theme][0].variables.push('--lb-self-test-new-alias');
+-    const violations = findViolations(expectedSnapshot, mutatedSnapshot);
+-    if (violations.length === 0) {
+-        throw new Error('Token alias validator self-test failed: simulated alias growth did not fail.');
++    let tested = 0;
++    for (const [theme, groups] of Object.entries(currentSnapshot.themes)) {
++        if (!groups.length) throw new Error(`No duplicate-value groups to test in ${theme}.`);
++        // Test both rejection paths independently. A stale real snapshot must
++        // never make a broken mutation check look successful.
++        const addedAlias = structuredClone(currentSnapshot);
++        addedAlias.themes[theme][0].variables.push('--lb-self-test-new-alias');
++        const newGroup = structuredClone(currentSnapshot);
++        newGroup.themes[theme].push({
++            value: '__self_test_unique_value__',
++            variables: ['--lb-self-test-first', '--lb-self-test-second'],
++        });
++        for (const [mutated, marker] of [[addedAlias, '--lb-self-test-new-alias'], [newGroup, '__self_test_unique_value__']]) {
++            const violations = findViolations(expectedSnapshot, mutated);
++            if (violations.length !== 1 || !violations[0].startsWith(`${theme}:`) || !violations[0].includes(marker)) {
++                throw new Error(`Token alias validator self-test failed for ${theme}: ${JSON.stringify(violations)}`);
++            }
++            tested++;
++        }
+     }
+-    console.log(`Token alias validator self-test passed; simulated alias growth detected: ${violations[0]}`);
++    console.log(`Token alias validator self-test passed (${tested} independent alias/group mutations rejected).`);
+     process.exit(0);
+ }
+ 
+--- a/packages/typescript/ui/package.json
++++ b/packages/typescript/ui/package.json
+@@ -49,7 +49,7 @@
+     "validate:aliases": "node tests/validators/ui-no-new-token-alias-validator.mjs",
+     "validate:api": "node tests/validators/ui-public-api-snapshot-validator.mjs",
+     "validate:tokens": "node tests/validators/ui-token-variable-snapshot-validator.mjs",
+-    "validate:ui": "pnpm test && pnpm test:eslint-rules && pnpm test:codemods && pnpm validate:api && pnpm validate:tokens && pnpm validate:aliases",
++    "validate:ui": "pnpm test && pnpm test:eslint-rules && pnpm test:codemods && pnpm validate:api && pnpm validate:tokens && pnpm validate:aliases && pnpm validate:aliases --self-test",
+     "typecheck": "tsc --noEmit",
+     "storybook": "storybook dev --port 6006 --no-open",
+     "build-storybook": "storybook build",

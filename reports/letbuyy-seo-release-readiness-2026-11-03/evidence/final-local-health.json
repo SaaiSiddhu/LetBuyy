@@ -1,0 +1,94 @@
+{
+  "capturedAt": "2026-11-03T03:23:14.559473+00:00",
+  "buildId": "tG7TW1sIGL_gn9Q4-AFXP",
+  "rows": [
+    {
+      "url": "http://127.0.0.1:9006/in/create",
+      "status": 200,
+      "mainCount": 1,
+      "robots": "noindex, follow",
+      "canonical": "http://localhost:9006/in/create"
+    },
+    {
+      "url": "http://127.0.0.1:9006/in-hi/create",
+      "status": 200,
+      "mainCount": 1,
+      "robots": "noindex, follow",
+      "canonical": "http://localhost:9006/in-hi/create"
+    },
+    {
+      "url": "http://127.0.0.1:9006/in-ta/create",
+      "status": 200,
+      "mainCount": 1,
+      "robots": "noindex, follow",
+      "canonical": "http://localhost:9006/in-ta/create"
+    },
+    {
+      "url": "http://127.0.0.1:9006/in/pricing",
+      "status": 200,
+      "mainCount": 1,
+      "robots": "index, follow",
+      "canonical": "http://localhost:9006/in/pricing"
+    },
+    {
+      "url": "http://127.0.0.1:9006/in/resources/platform/building-first-letbuyy-store",
+      "status": 200,
+      "mainCount": 1,
+      "robots": "index, follow",
+      "canonical": "http://localhost:9006/in/resources/platform/building-first-letbuyy-store"
+    },
+    {
+      "url": "http://127.0.0.1:9010/v1/pricing",
+      "status": 200,
+      "bytes": 76636
+    },
+    {
+      "url": "http://127.0.0.1:9006/api/founding-pricing",
+      "status": 200,
+      "bytes": 76731
+    },
+    {
+      "url": "http://127.0.0.1:9002/signup",
+      "status": 200,
+      "bytes": 225001
+    }
+  ],
+  "publicPlans": [
+    {
+      "slug": "launch",
+      "name": "Launch",
+      "status": "available",
+      "purchasable": true,
+      "regular_inr": 299,
+      "founding_inr": 199,
+      "has_founding": true
+    },
+    {
+      "slug": "growth",
+      "name": "Growth",
+      "status": "available",
+      "purchasable": true,
+      "regular_inr": 999,
+      "founding_inr": 699,
+      "has_founding": true
+    },
+    {
+      "slug": "scale",
+      "name": "Scale",
+      "status": "coming_soon",
+      "purchasable": false,
+      "regular_inr": 2499,
+      "founding_inr": 2499,
+      "has_founding": false
+    },
+    {
+      "slug": "commerce_os",
+      "name": "Commerce OS",
+      "status": "coming_soon",
+      "purchasable": false,
+      "regular_inr": 5999,
+      "founding_inr": 5999,
+      "has_founding": false
+    }
+  ]
+}

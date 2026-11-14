@@ -1,0 +1,10 @@
+{
+  "file": "apps/marketing/web/src/components/CapabilityMap.tsx",
+  "removed_local_component": "AccordionItem",
+  "removed_subtree": ".cmap-mobile-accordion",
+  "same_canonical_carousel_retained": true,
+  "intrinsic_size_probes_retained": true,
+  "stylesheet_definitions_retained": true,
+  "deleted_files": [],
+  "removed_source_bytes": 4466
+}

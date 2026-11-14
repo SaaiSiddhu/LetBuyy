@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { getSupabaseAdmin, getSupabaseUser, paginated, success } from '../lib/supabase';
+import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
 import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
 import { isAppStoreUuid as isUuid } from '@letbuyy/shared-types';
@@ -25,6 +25,7 @@ import {
     decorateAppsWithParityData,
     decorateCollectionWithSections,
     decorateCollectionsWithSections,
+    decorateReviewsWithProvenance,
     getCategoryFeatureGroups,
     getFeatureFilteredAppIds,
     normalizeFeatureHandles,
@@ -820,37 +821,24 @@ router.get('/apps/:id', async (c) => {
 // GET /app-store/apps/:id/reviews — List reviews
 router.get('/apps/:id/reviews', async (c) => {
     const appId = c.req.param('id');
-    const page = normalizePositiveInt(c.req.query('page'), 1, 10000);
-    const limit = normalizePositiveInt(c.req.query('limit'), 20, 50);
+    const page = parseInt(c.req.query('page') || '1');
+    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 50);
     const offset = (page - 1) * limit;
-    // Public published reviews use the anonymous RLS policy, never an unscoped
-    // service-role read of tenant-owned review and moderation records.
-    const db = getSupabaseUser(c, c.env.SUPABASE_ANON_KEY);
-    let appQuery = db.from('marketplace_apps').select('id').eq('status', 'published').is('deleted_at', null);
-    appQuery = isUuid(appId) ? appQuery.eq('id', appId) : appQuery.eq('slug', appId);
-    const { data: app, error: appError } = await appQuery.maybeSingle();
-    if (appError) {
-        return c.json({ error: { code: 'APP_REVIEWS_UNAVAILABLE', message: 'App reviews are temporarily unavailable' } }, 503);
-    }
-    if (!app) return c.json({ error: { code: 'NOT_FOUND', message: 'App not found' } }, 404);
+    const db = getSupabaseAdmin(c);
 
     const { data, error, count } = await db
         .from('app_reviews')
-        .select('id, app_id, user_name, rating, title, body, helpful_count, is_verified, verified_installation_id, developer_reply, developer_replied_at, created_at, updated_at', { count: 'exact' })
-        .eq('app_id', app.id)
+        .select('*, app_review_proofs(id, review_id, app_id, site_id, installation_id, proof_type, proof_status, source, external_reference, metadata, created_at)', { count: 'exact' })
+        .eq('app_id', appId)
         .eq('status', 'published')
-        .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
     if (error) {
-        return c.json({ error: { code: 'APP_REVIEWS_UNAVAILABLE', message: 'App reviews are temporarily unavailable' } }, 503);
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    const enrichedReviews = (data || []).map(({ verified_installation_id, ...review }) => ({
-        ...review,
-        is_verified: Boolean(review.is_verified || verified_installation_id),
-    }));
+    const enrichedReviews = await decorateReviewsWithProvenance(db, (data || []) as AppStoreRecord[]);
     return c.json(paginated(enrichedReviews, count || 0, page, limit));
 });
 

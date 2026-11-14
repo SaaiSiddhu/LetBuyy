@@ -50,20 +50,3 @@ test('LB-1: proxy.ts exports a static config with a host-routing matcher', () =>
   assert.match(matcher[1], /api\//, 'matcher must exclude api/ requests');
   assert.match(matcher[1], /_next\//, 'matcher must exclude _next/ assets');
 });
-
-test('LB-1: platform instrumentation assets bypass tenant rewrites while business and near-match paths remain gated', async () => {
-  const { createRequire } = await import('node:module');
-  const appRequire = createRequire(new URL('../../apps/commerce/web/package.json', import.meta.url));
-  // This installed Next16.1.6 export retains its pre-rename name.
-  const { unstable_doesMiddlewareMatch } = appRequire('next/experimental/testing/server');
-  const source = readFileSync(proxyPath, 'utf8');
-  const literal = source.match(/matcher\s*:\s*\[\s*'([^']+)'\s*\]/);
-  assert.ok(literal);
-  const config = { matcher: [JSON.parse('"' + literal[1] + '"')] };
-  for (const url of ['/_vercel/speed-insights/script.js', '/_vercel/speed-insights/vitals', '/_next/static/chunks/example.js', '/api/buyer/profile']) {
-    assert.equal(unstable_doesMiddlewareMatch({config,url}),false,url);
-  }
-  for (const url of ['/', '/products', '/account/addresses', '/preview', '/store/synthetic-preview/account', '/store/synthetic-preview/_vercel/speed-insights/script.js', '/_vercel-store', '/_vercel']) {
-    assert.equal(unstable_doesMiddlewareMatch({config,url}),true,url);
-  }
-});

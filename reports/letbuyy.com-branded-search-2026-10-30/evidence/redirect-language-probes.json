@@ -1,0 +1,308 @@
+[
+  {
+    "url": "https://letbuyy.com/in",
+    "request_headers": {},
+    "captured_at": "2026-10-29T18:38:29.791106+00:00",
+    "status": 308,
+    "response_headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-type": "text/html",
+      "date": "Thu, 29 Oct 2026 18:38:30 GMT",
+      "location": "https://www.letbuyy.com/in",
+      "refresh": "0;url=https://www.letbuyy.com/in",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=63072000",
+      "x-vercel-id": "bom1::gjjd4-1793299110056-ad8677dc5478",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "f9c81cf5f19c5404e630cdc0d82880db60012d1ce93256e59f0c21c598977f4c",
+    "bytes": 140
+  },
+  {
+    "url": "http://www.letbuyy.com/in",
+    "request_headers": {},
+    "captured_at": "2026-10-29T18:38:31.387612+00:00",
+    "status": 308,
+    "response_headers": {
+      "content-type": "text/plain",
+      "location": "https://www.letbuyy.com/in",
+      "refresh": "0;url=https://www.letbuyy.com/in",
+      "server": "Vercel"
+    },
+    "sha256": "cd23991b4e02a17e5a224a1f8265c5a187ab366b40b8f8a14608371feb8f6e25",
+    "bytes": 14
+  },
+  {
+    "url": "http://letbuyy.com/in",
+    "request_headers": {},
+    "captured_at": "2026-10-29T18:38:32.531296+00:00",
+    "status": 308,
+    "response_headers": {
+      "content-type": "text/plain",
+      "location": "https://letbuyy.com/in",
+      "refresh": "0;url=https://letbuyy.com/in",
+      "server": "Vercel"
+    },
+    "sha256": "cd23991b4e02a17e5a224a1f8265c5a187ab366b40b8f8a14608371feb8f6e25",
+    "bytes": 14
+  },
+  {
+    "url": "https://www.letbuyy.com/",
+    "request_headers": {},
+    "captured_at": "2026-10-29T18:38:33.747851+00:00",
+    "status": 307,
+    "response_headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html",
+      "date": "Thu, 29 Oct 2026 18:38:33 GMT",
+      "location": "/in",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-vercel-id": "bom1::bthss-1793299113935-c87573207207",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "004f312c99a5a291eb57ed60e29b6748b9d03f4eb2cd210a9c4664f393c075a4",
+    "bytes": 117
+  },
+  {
+    "url": "https://www.letbuyy.com/",
+    "request_headers": {
+      "Accept-Language": "en-IN,en;q=0.9"
+    },
+    "captured_at": "2026-10-29T18:38:34.985459+00:00",
+    "status": 307,
+    "response_headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html",
+      "date": "Thu, 29 Oct 2026 18:38:35 GMT",
+      "location": "/in",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-vercel-id": "bom1::mqfbl-1793299115154-0ab9d4f27860",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "004f312c99a5a291eb57ed60e29b6748b9d03f4eb2cd210a9c4664f393c075a4",
+    "bytes": 117
+  },
+  {
+    "url": "https://www.letbuyy.com/",
+    "request_headers": {
+      "Accept-Language": "hi-IN,hi;q=0.9"
+    },
+    "captured_at": "2026-10-29T18:38:36.211401+00:00",
+    "status": 307,
+    "response_headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html",
+      "date": "Thu, 29 Oct 2026 18:38:36 GMT",
+      "location": "/in-hi",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-vercel-id": "bom1::n5lbj-1793299116451-d8a7f137e22f",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "7450edc2209fbd3e8562c52194233d61e2b9140965722283722f6e2c848f9e7f",
+    "bytes": 120
+  },
+  {
+    "url": "https://www.letbuyy.com/",
+    "request_headers": {
+      "Accept-Language": "ta-IN,ta;q=0.9"
+    },
+    "captured_at": "2026-10-29T18:38:37.614473+00:00",
+    "status": 307,
+    "response_headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html",
+      "date": "Thu, 29 Oct 2026 18:38:37 GMT",
+      "location": "/in-ta",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-vercel-id": "bom1::2s9qz-1793299117814-0dd3de209bb6",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "49092bd2940af1927e2e4550e8897739a7fba8e17ec60476790cd49b9510a033",
+    "bytes": 120
+  },
+  {
+    "url": "https://www.letbuyy.com/pricing",
+    "request_headers": {
+      "Accept-Language": "hi-IN,hi;q=0.9"
+    },
+    "captured_at": "2026-10-29T18:38:38.864499+00:00",
+    "status": 307,
+    "response_headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html",
+      "date": "Thu, 29 Oct 2026 18:38:39 GMT",
+      "location": "/in-hi/pricing",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-vercel-id": "bom1::5rp6m-1793299119064-f7bb5829eecb",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "e62124b4f77f6279234b68f34b2a1fd556bfbbba031c8626a26d73fb598fe9ad",
+    "bytes": 128
+  },
+  {
+    "url": "https://www.letbuyy.com/in",
+    "request_headers": {
+      "Accept-Language": "ta-IN,ta;q=0.9"
+    },
+    "captured_at": "2026-10-29T18:38:40.114160+00:00",
+    "status": 200,
+    "response_headers": {
+      "access-control-allow-origin": "*",
+      "age": "3019",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 18:38:40 GMT",
+      "etag": "W/\"9607c46a74ff37d43038d932bd2b8eae\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/in",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::mjcf8-1793299120304-3f18b5ec8f29",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "09cfe724155d2563f6f3b8a4a612d43fd59618f122325bcf82b53be30a31a340",
+    "bytes": 339643
+  },
+  {
+    "url": "https://www.letbuyy.com/in-hi",
+    "request_headers": {
+      "Accept-Language": "en-IN,en;q=0.9"
+    },
+    "captured_at": "2026-10-29T18:38:41.414465+00:00",
+    "status": 200,
+    "response_headers": {
+      "access-control-allow-origin": "*",
+      "age": "2357",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 18:38:41 GMT",
+      "etag": "W/\"6c5e8daffb7d9d84666525374313f68e\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/in-hi",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::twdtf-1793299121584-035bc1c55587",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "3a3bee7f188f895a2b46ec6b85d82b6da6fd43c47cce769eb6df4bde3e818024",
+    "bytes": 356804
+  },
+  {
+    "url": "https://www.letbuyy.com/in",
+    "request_headers": {
+      "User-Agent": "Googlebot"
+    },
+    "captured_at": "2026-10-29T18:38:42.693075+00:00",
+    "status": 200,
+    "response_headers": {
+      "access-control-allow-origin": "*",
+      "age": "3022",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 18:38:43 GMT",
+      "etag": "W/\"9607c46a74ff37d43038d932bd2b8eae\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/in",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::fch79-1793299123759-dbad5f1d6755",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "09cfe724155d2563f6f3b8a4a612d43fd59618f122325bcf82b53be30a31a340",
+    "bytes": 339643
+  },
+  {
+    "url": "https://www.letbuyy.com/in",
+    "request_headers": {
+      "User-Agent": "Googlebot-Image"
+    },
+    "captured_at": "2026-10-29T18:38:44.879629+00:00",
+    "status": 200,
+    "response_headers": {
+      "access-control-allow-origin": "*",
+      "age": "3024",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-encoding": "gzip",
+      "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com https://lumberjack.razorpay.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://challenges.cloudflare.com https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 29 Oct 2026 18:38:45 GMT",
+      "etag": "W/\"9607c46a74ff37d43038d932bd2b8eae\"",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-matched-path": "/in",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "bom1::ldjxq-1793299125523-cce19a884c83",
+      "transfer-encoding": "chunked"
+    },
+    "sha256": "09cfe724155d2563f6f3b8a4a612d43fd59618f122325bcf82b53be30a31a340",
+    "bytes": 339643
+  }
+]

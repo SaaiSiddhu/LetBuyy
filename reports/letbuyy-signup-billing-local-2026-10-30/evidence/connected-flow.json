@@ -1,0 +1,49 @@
+{
+  "billing": {
+    "providerFixtureOnly": true,
+    "realLocalCatalogParity": true,
+    "seededAccount": false,
+    "signupToOnboarding": true,
+    "annualQuoteMinor": 238800,
+    "billingProofs": [
+      {
+        "plan": "launch",
+        "amount_minor": 19900,
+        "invoice_count": 1
+      },
+      {
+        "plan": "growth",
+        "amount_minor": 69900,
+        "invoice_count": 2
+      }
+    ],
+    "mandate": {
+      "plan": "growth",
+      "amount_minor": 69900,
+      "mode": "sandbox"
+    },
+    "cancelledRetainsInvoices": true,
+    "billingScreenshot": "connected-billing.png"
+  },
+  "signup": {
+    "providerFixtureOnly": true,
+    "seededAccount": false,
+    "normalSignup": true,
+    "wrongOtpDenied": true,
+    "normalPasswordAndOnboarding": true,
+    "emailFailureThenRetry": true,
+    "unboundPasswordDenied": true,
+    "otpReplayDenied": true,
+    "passwordReplayDenied": true,
+    "mailCount": 5,
+    "store": {
+      "count": 1,
+      "theme": "letbuyy-core",
+      "status": "draft",
+      "trial_days": 14
+    },
+    "screenshot": "connected-dashboard.png"
+  },
+  "captured_at": "2026-10-29T20:29:23.908830+00:00",
+  "application_journey_passed": true
+}

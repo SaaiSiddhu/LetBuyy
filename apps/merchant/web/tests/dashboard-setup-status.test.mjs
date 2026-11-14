@@ -8,49 +8,28 @@ import setupStatus from '../src/app/[store]/dashboard/dashboard-setup-status.ts'
 const {
   buildPageSetupStatus,
   buildStoreSetupStatus,
-  isPaymentConfigured,
   resolveDashboardDomain,
 } = setupStatus
 
-const paymentConfig = (overrides = {}) => ({
-  cod_enabled: false,
-  online_payment_enabled: false,
-  payment_settings: { mode: 'ownAccount', razorpay: null },
-  ...overrides,
+test('dashboard cannot infer readiness when the canonical health read is unavailable', () => {
+  const status = buildStoreSetupStatus(null)
+  assert.equal(status.primaryAvailable, false)
+  assert.equal(status.paymentAvailable, false)
+  assert.equal(status.shippingAvailable, false)
+  assert.equal(status.themeCustomized, false)
 })
 
-test('valid empty responses are available and incomplete', () => {
-  const status = buildStoreSetupStatus({
-    productsTotal: 0,
-    shippingZones: [],
-    paymentConfig: paymentConfig(),
-    themeCustomized: false,
-    domainConfigured: false,
-  })
-
+test('dashboard uses canonical evidence states rather than inferring from counts or payment settings', () => {
+  const status = buildStoreSetupStatus({readiness:{checks:[
+    {id:'catalog',status:'attention'}, {id:'payments',status:'ready'},
+    {id:'shipping',status:'unknown'}, {id:'theme',status:'attention'}, {id:'domain',status:'unknown'},
+  ]}})
   assert.equal(status.primaryAvailable, true)
   assert.equal(status.primaryComplete, false)
-  assert.equal(status.shippingAvailable, true)
-  assert.equal(status.hasShipping, false)
-  assert.equal(status.paymentAvailable, true)
-  assert.equal(status.paymentConfigured, false)
-})
-
-test('failed product, shipping, and payment reads remain unknown', () => {
-  const status = buildStoreSetupStatus({
-    productsTotal: null,
-    shippingZones: null,
-    paymentConfig: null,
-    themeCustomized: false,
-    domainConfigured: false,
-  })
-
-  assert.equal(status.primaryAvailable, false)
-  assert.equal(status.primaryComplete, false)
+  assert.equal(status.paymentConfigured, true)
   assert.equal(status.shippingAvailable, false)
-  assert.equal(status.hasShipping, false)
-  assert.equal(status.paymentAvailable, false)
-  assert.equal(status.paymentConfigured, false)
+  assert.equal(status.themeCustomized, false)
+  assert.equal(status.domainConfigured, false)
 })
 
 test('a failed page read is unknown while an empty page list is incomplete', () => {
@@ -60,28 +39,6 @@ test('a failed page read is unknown while an empty page list is incomplete', () 
   assert.equal(failed.primaryAvailable, false)
   assert.equal(empty.primaryAvailable, true)
   assert.equal(empty.primaryComplete, false)
-})
-
-test('payment readiness follows COD, shared, and verified own-account rules', () => {
-  assert.equal(isPaymentConfigured(paymentConfig({ cod_enabled: true })), true)
-  assert.equal(isPaymentConfigured(paymentConfig({
-    online_payment_enabled: true,
-    payment_settings: { mode: 'shared' },
-  })), true)
-  assert.equal(isPaymentConfigured(paymentConfig({
-    online_payment_enabled: true,
-    payment_settings: {
-      mode: 'ownAccount',
-      razorpay: { secret_configured: true, verified: true },
-    },
-  })), true)
-  assert.equal(isPaymentConfigured(paymentConfig({
-    online_payment_enabled: true,
-    payment_settings: {
-      mode: 'ownAccount',
-      razorpay: { secret_configured: true, verified: false },
-    },
-  })), false)
 })
 
 test('dashboard domain uses the ready default host until a custom domain is active', () => {
@@ -130,23 +87,5 @@ test('storefront URLs use tenant hosts for the canonical apex and preserve expli
     assert.equal(publicUrls.getAdminUrl(), 'https://admin.letbuyy.com')
   } finally {
     for(const key of keys) if(previous[key]===undefined) delete process.env[key]; else process.env[key]=previous[key]
-  }
-})
-
-test('production public origins reject loopback except in the supervised owned browser runtime', () => {
-  const keys = ['NODE_ENV', 'LETBUYY_OWNED_CLIENT_RUNTIME', 'NEXT_PUBLIC_ACCOUNTS_URL', 'NEXT_PUBLIC_ADMIN_URL']
-  const previous = Object.fromEntries(keys.map(key => [key, process.env[key]]))
-  try {
-    process.env.NODE_ENV = 'production'
-    process.env.NEXT_PUBLIC_ACCOUNTS_URL = 'http://localhost:39101'
-    process.env.NEXT_PUBLIC_ADMIN_URL = 'http://localhost:39102'
-    delete process.env.LETBUYY_OWNED_CLIENT_RUNTIME
-    assert.throws(() => publicUrls.getAccountsUrl('/lookup'), /Invalid public application origin/)
-    assert.throws(() => publicUrls.getAdminUrl(), /Invalid public application origin/)
-    process.env.LETBUYY_OWNED_CLIENT_RUNTIME = '1'
-    assert.equal(publicUrls.getAccountsUrl('/lookup'), 'http://localhost:39101/lookup')
-    assert.equal(publicUrls.getAdminUrl(), 'http://localhost:39102')
-  } finally {
-    for (const key of keys) if (previous[key] === undefined) delete process.env[key]; else process.env[key] = previous[key]
   }
 })

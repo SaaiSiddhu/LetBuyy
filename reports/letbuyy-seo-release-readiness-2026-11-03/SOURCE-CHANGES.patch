@@ -1,0 +1,311 @@
+--- a/apps/marketing/web/src/app/[locale]/create/page.tsx
++++ b/apps/marketing/web/src/app/[locale]/create/page.tsx
+@@ -83,7 +83,7 @@
+     }
+ 
+     return (
+-        <div className="flex min-h-screen items-center justify-center bg-page p-4">
++        <main className="flex min-h-screen items-center justify-center bg-page p-4">
+             <div className="w-full max-w-2xl space-y-8 rounded-2xl border border-line bg-surface p-8 shadow-sm">
+                 {/* Header */}
+                 <div className="text-center">
+@@ -225,6 +225,6 @@
+                         <Copy text={"Sign in"} /></Link>
+                 </p>
+             </div>
+-        </div>
++        </main>
+     )
+ }
+--- a/apps/marketing/web/next.config.ts
++++ b/apps/marketing/web/next.config.ts
+@@ -4,6 +4,9 @@
+ import { fileURLToPath } from "node:url";
+ 
+ const requireFromConfig = createRequire(import.meta.url);
++const { LETBUYY_CANONICAL_API_BASE_URL } = requireFromConfig(
++  '@letbuyy/api-client/origin',
++) as typeof import('@letbuyy/api-client/origin');
+ const { createSecurityHeaders } = requireFromConfig(
+   "../../../config/security/next-security-headers.ts",
+ ) as typeof import("../../../config/security/next-security-headers");
+@@ -109,7 +112,11 @@
+     return config;
+   },
+   async headers() {
+-    return [{ source: '/:path*', headers: createSecurityHeaders() }];
++    // Browser forms and the pricing retry use this same canonical API fallback
++    // when no public API environment variable is set. Keep CSP consistent.
++    return [{ source: '/:path*', headers: createSecurityHeaders({
++      connectOrigins: [LETBUYY_CANONICAL_API_BASE_URL],
++    }) }];
+   },
+   async redirects() {
+     /* The flat policy URLs are the ones people type and the ones other sites
+--- a/config/security/next-security-headers.ts
++++ b/config/security/next-security-headers.ts
+@@ -1,6 +1,8 @@
+ export type SecurityHeaderOptions = {
+   frameAncestors?: string[];
+   reportOnly?: boolean;
++  /** Explicit application API URLs; added only to connect-src. */
++  connectOrigins?: string[];
+ };
+ 
+ function splitOrigins(value: string | undefined): string[] {
+@@ -43,6 +45,14 @@
+   return Array.from(new Set(values.filter(Boolean)));
+ }
+ 
++function explicitConnectOrigin(value: string): string {
++  const url = new URL(value);
++  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hostname.includes('*')) {
++    throw new Error('Additional CSP connect origins must be explicit HTTP(S) URLs without credentials');
++  }
++  return url.origin;
++}
++
+ function isDevelopmentRuntime(): boolean {
+   return process.env.NODE_ENV !== 'production';
+ }
+@@ -66,7 +76,7 @@
+   // lumberjack.razorpay.com is Razorpay's own telemetry/fraud-signal beacon (checkout.js posts to
+   // /v2/logz throughout the checkout flow) — connect-src only, never a script or frame origin.
+   const razorpayConnectOnly = ['https://lumberjack.razorpay.com'];
+-  const connectSrc = unique(["'self'", ...origins, 'https://*.supabase.co', 'wss://*.supabase.co', ...razorpayOrigins, ...razorpayConnectOnly]);
++  const connectSrc = unique(["'self'", ...origins, ...(options.connectOrigins ?? []).map(explicitConnectOrigin), 'https://*.supabase.co', 'wss://*.supabase.co', ...razorpayOrigins, ...razorpayConnectOnly]);
+   const imgSrc = unique(["'self'", 'data:', 'blob:', 'https:', ...origins]);
+   const scriptSrc = unique([
+     "'self'",
+--- a/packages/typescript/api-client/src/index.ts
++++ b/packages/typescript/api-client/src/index.ts
+@@ -1,3 +1,4 @@
++import { LETBUYY_CANONICAL_API_BASE_URL } from './origin';
+ export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
+ import { CollectionMembershipSnapshotSchema, StoreHealthSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
+ import { createLetbuyyGraphQLSdk } from './graphql';
+@@ -315,11 +316,11 @@
+ /**
+  * Silent production fallback for the API base URL. Overridable via the
+  * `LETBUYY_PRODUCTION_API_BASE_URL` env var; defaults to the canonical
+- * `letbuyy.com` apex. `letbuyy.com` remains a legacy routing alias during
+- * launch cutover.
++ * API gateway origin. Shared with build-time browser access policy.
+  */
+ export const LETBUYY_PRODUCTION_API_BASE_URL =
+-  readProductionApiBaseUrlOverride() ?? 'https://api.letbuyy.com/v1';
++  readProductionApiBaseUrlOverride() ?? LETBUYY_CANONICAL_API_BASE_URL;
++
+ 
+ export interface LetbuyyApiBaseUrlOptions {
+   apiVersionPath?: string;
+--- a/packages/typescript/api-client/package.json
++++ b/packages/typescript/api-client/package.json
+@@ -5,7 +5,8 @@
+   "main": "./src/index.ts",
+   "types": "./src/index.ts",
+   "exports": {
+-    ".": "./src/index.ts"
++    ".": "./src/index.ts",
++    "./origin": "./src/origin.ts"
+   },
+   "scripts": {
+     "build": "tsc -b",
+--- /dev/null
++++ b/packages/typescript/api-client/src/origin.ts
+@@ -0,0 +1,2 @@
++/** Canonical public gateway fallback, shared by the API client and build policies. */
++export const LETBUYY_CANONICAL_API_BASE_URL = 'https://api.letbuyy.com/v1';
+--- /dev/null
++++ b/tests/marketing/security-policy.test.ts
+@@ -0,0 +1,62 @@
++import assert from 'node:assert/strict'
++import test from 'node:test'
++import nextConfig from '../../apps/marketing/web/next.config'
++import { createContentSecurityPolicy } from '../../config/security/next-security-headers'
++
++const originVariables = [
++    'NEXT_PUBLIC_APP_URL', 'NEXT_PUBLIC_ACCOUNTS_URL', 'NEXT_PUBLIC_ADMIN_URL',
++    'NEXT_PUBLIC_API_URL', 'NEXT_PUBLIC_API_BASE_URL', 'NEXT_PUBLIC_STOREFRONT_URL',
++    'NEXT_PUBLIC_THEME_MARKETPLACE_URL', 'NEXT_PUBLIC_APP_MARKETPLACE_URL',
++    'NEXT_PUBLIC_DEVELOPER_PORTAL_URL', 'CORS_CREDENTIAL_ORIGINS',
++] as const
++
++async function withOrigins(run: () => Promise<void>) {
++    const saved = Object.fromEntries(originVariables.map(key => [key, process.env[key]]))
++    try {
++        for (const key of originVariables) delete process.env[key]
++        await run()
++    } finally {
++        for (const key of originVariables) {
++            if (saved[key] === undefined) delete process.env[key]
++            else process.env[key] = saved[key]
++        }
++    }
++}
++
++async function directives() {
++    assert.equal(typeof nextConfig.headers, 'function')
++    const entries = await nextConfig.headers!()
++    const policy = entries.flatMap(entry => entry.headers)
++        .find(header => header.key === 'Content-Security-Policy')?.value
++    assert.ok(policy)
++    return new Map(policy.split(';').map(part => {
++        const [name, ...sources] = part.trim().split(/\s+/)
++        return [name, sources]
++    }))
++}
++
++test('marketing permits its canonical browser API fallback when no URL env is configured', async () => withOrigins(async () => {
++    const policy = await directives()
++    assert.ok(policy.get('connect-src')?.includes('https://api.letbuyy.com'))
++    assert.ok(!policy.get('script-src')?.includes('https://api.letbuyy.com'))
++    assert.ok(!policy.get('frame-src')?.includes('https://api.letbuyy.com'))
++    assert.ok(!policy.get('connect-src')?.includes('*'))
++    assert.ok(!policy.get('connect-src')?.includes('https://*.letbuyy.com'))
++}))
++
++test('marketing allows the configured local API origin across versioned request paths', async () => withOrigins(async () => {
++    process.env.NEXT_PUBLIC_API_URL = 'http://127.0.0.1:9010/v1'
++    const policy = await directives()
++    assert.ok(policy.get('connect-src')?.includes('http://127.0.0.1:9010'))
++    assert.ok(!policy.get('connect-src')?.includes('http://127.0.0.1:9010/v1'))
++    assert.ok(!policy.get('connect-src')?.includes('https://unrelated.example.invalid'))
++    assert.deepEqual(policy.get('object-src'), ["'none'"])
++    assert.deepEqual(policy.get('form-action'), ["'self'"])
++}))
++
++test('additional API access cannot introduce wildcard, credentialed or non-HTTP sources', () => {
++    for (const origin of ['*', 'https:', 'https://*.example.invalid', 'data:text/plain,no', 'https://user:secret@example.invalid']) {
++        assert.throws(() => createContentSecurityPolicy({ connectOrigins: [origin] }))
++    }
++    assert.match(createContentSecurityPolicy({ connectOrigins: ['https://gateway.example.invalid/v1'] }), /connect-src[^;]*https:\/\/gateway\.example\.invalid(?: |;)/)
++})
+--- a/apps/marketing/web/src/lib/resources/articles.ts
++++ b/apps/marketing/web/src/lib/resources/articles.ts
+@@ -2399,7 +2399,7 @@
+     description: "Create an email account and draft store, add products, review themes and complete setup before testing publication.",
+     author: "letbuyy-team",
+     publishedAt: '2026-05-28',
+-    updatedAt: "2026-10-30",
++    updatedAt: "2026-11-03",
+     tags: ['getting-started', 'platform', 'store-setup', 'walkthrough'],
+     readingTime: 11,
+     featured: true,
+@@ -2424,7 +2424,8 @@
+   },
+   {
+     "type": "h2",
+-    "text": "4. Add Your First Product"
++    "id": "4-add-your-first-product",
++    "text": "2. Add Your First Product"
+   },
+   {
+     "type": "p",
+@@ -2440,7 +2441,8 @@
+   },
+   {
+     "type": "h2",
+-    "text": "5. Configure Payments"
++    "id": "5-configure-payments",
++    "text": "4. Configure Payments"
+   },
+   {
+     "type": "p",
+@@ -2448,7 +2450,8 @@
+   },
+   {
+     "type": "h2",
+-    "text": "8. Publish and Test"
++    "id": "8-publish-and-test",
++    "text": "5. Publish and Test"
+   },
+   {
+     "type": "p",
+--- a/apps/marketing/web/src/lib/i18n/content/hi/articles/building-first-letbuyy-store.json
++++ b/apps/marketing/web/src/lib/i18n/content/hi/articles/building-first-letbuyy-store.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceHash": "a9befd78893266043d0add5ea6a7a6b159aae3b6ea9c45d7d25dd825ccdd6338",
++  "sourceHash": "6046bca563b40e2b83b51d6e5a7b38267785d77bb91518ae0320d6f5abfd2d4d",
+   "values": [
+     "अपना पहला LetBuyy स्टोर बनाएँ: पूरा मार्गदर्शन",
+     "ईमेल खाता और ड्राफ्ट स्टोर बनाएँ, उत्पाद जोड़ें, थीम और सेटअप जाँचकर प्रकाशन का परीक्षण करें।",
+@@ -8,13 +8,13 @@
+     "व्यापारी नियंत्रण केंद्र: आपका वाणिज्य OS डैशबोर्ड",
+     "1. अपना खाता बनाएँ",
+     "ईमेल साइनअप फ़ॉर्म में ईमेल कोड सत्यापित करें और पासवर्ड बनाएँ। ऑनबोर्डिंग में ऑनलाइन स्टोर, नाम, सबडोमेन और उद्योग चुनें। स्टोर ड्राफ्ट के रूप में शुरू होता है।",
+-    "4. पहला उत्पाद जोड़ें",
++    "2. पहला उत्पाद जोड़ें",
+     "Products में Add product खोलें। सत्यापित विवरण, कीमत, वेरिएंट, चित्र और स्टॉक भरें। खरीदारों के लिए उपलब्ध करने से पहले सहेजा उत्पाद और स्टोरफ़्रंट प्रीव्यू जाँचें।",
+     "3. थीम चुनें",
+     "Online Store → Themes में खाते के लिए वास्तव में उपलब्ध थीम देखें। संपादक खोलें, ड्राफ्ट सहेजें और प्रीव्यू करें। अवधारणा चित्रों को खरीदे जा सकने वाले थीम का कैटलॉग न मानें।",
+-    "5. भुगतान सेट करें",
++    "4. भुगतान सेट करें",
+     "खरीदार भुगतान के लिए Settings → Payments खोलें। व्यापारी सदस्यता भुगतान अलग Money/Billing और योजना चयन में है। पहले वैध टेस्ट क्रेडेंशियल उपयोग करें; पूर्वापेक्षाएँ और पूर्ण जाँच पूरी होने पर ही लाइव सेवा लें।",
+-    "8. प्रकाशित करें और जाँचें",
++    "5. प्रकाशित करें और जाँचें",
+     "कानूनी व्यावसायिक पहचान, बिल पता, लागू कर सेटिंग, डिलीवरी कवरेज और नीतियाँ पूरी करें। डैशबोर्ड चेकलिस्ट अपनाएँ। प्रकाशित यात्रा और सूचना डिलीवरी अलग जाँचें; तय लॉन्च समय, शिपिंग दर या भुगतान मंजूरी का वादा नहीं है।",
+     "उपलब्धता आपकी योजना, अनुमतियों और प्रदाता सेटअप पर निर्भर है। काम करती स्क्रीन या सैंडबॉक्स परिणाम लाइव सेवा की उपलब्धता का प्रमाण नहीं है।"
+   ]
+--- a/apps/marketing/web/src/lib/i18n/content/ta/articles/building-first-letbuyy-store.json
++++ b/apps/marketing/web/src/lib/i18n/content/ta/articles/building-first-letbuyy-store.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceHash": "a9befd78893266043d0add5ea6a7a6b159aae3b6ea9c45d7d25dd825ccdd6338",
++  "sourceHash": "6046bca563b40e2b83b51d6e5a7b38267785d77bb91518ae0320d6f5abfd2d4d",
+   "values": [
+     "உங்கள் முதல் LetBuyy கடை: முழு நடைமுறை வழிகாட்டி",
+     "மின்னஞ்சல் கணக்கு, வரைவுக் கடை உருவாக்கி, பொருட்கள், தீம், அமைப்பை முடித்து வெளியீட்டைச் சோதிக்கவும்.",
+@@ -8,13 +8,13 @@
+     "வணிகர் கட்டுப்பாட்டு மையம்: உங்கள் வணிக இயங்குதளப் பலகை",
+     "1. கணக்கை உருவாக்கவும்",
+     "மின்னஞ்சல் பதிவுப் படிவத்தில் குறியீட்டைச் சரிபார்த்துக் கடவுச்சொல் அமைக்கவும். அறிமுகப் படிகளில் இணையக் கடை, பெயர், துணைக் களம், துறையைத் தேர்ந்தெடுக்கவும். கடை வரைவாகத் தொடங்குகிறது.",
+-    "4. முதல் தயாரிப்பைச் சேர்க்கவும்",
++    "2. முதல் தயாரிப்பைச் சேர்க்கவும்",
+     "Products பகுதியில் Add product திறந்து விவரம், விலை, வகைகள், படங்கள், இருப்பை உள்ளிடவும். வாங்குபவருக்கு வழங்குமுன் சேமித்த பொருளையும் கடை முன்னோட்டத்தையும் சரிபார்க்கவும்.",
+     "3. தீமைத் தேர்ந்தெடுக்கவும்",
+     "Online Store → Themesஇல் உங்கள் கணக்கில் கிடைக்கும் தீம்களைப் பார்க்கவும். திருத்தியைத் திறந்து வரைவைச் சேமித்து முன்னோட்டம் பார்க்கவும். விளக்கப் படங்கள் வாங்கக்கூடிய தீம் பட்டியல் அல்ல.",
+-    "5. பணப்பரிவர்த்தனையை அமைக்கவும்",
++    "4. பணப்பரிவர்த்தனையை அமைக்கவும்",
+     "வாங்குபவர் கட்டணத்திற்கு Settings → Payments திறக்கவும். வணிகர் சந்தா கட்டணம் Money/Billing, திட்டத் தேர்வில் தனியாக உள்ளது. முதலில் வழங்குநரின் செல்லுபடியான சோதனை விசைகளுடன் சோதித்து, தேவைகள் நிறைவேறிய பிறகே நேரடி சேவையைப் பயன்படுத்தவும்.",
+-    "8. வெளியிட்டு சோதிக்கவும்",
++    "5. வெளியிட்டு சோதிக்கவும்",
+     "சட்டப்பூர்வ வணிக விவரம், விலைப்பட்டியல் முகவரி, வரி, விநியோகப் பகுதி, கொள்கைகளை முடிக்கவும். முகப்புச் சரிபார்ப்புப் பட்டியலைப் பின்பற்றவும். வெளியிட்ட பயணம், அறிவிப்புகளைத் தனித்தனியாகச் சோதிக்கவும்; நேரம், கட்டணம், ஒப்புதல் உறுதியில்லை.",
+     "கிடைக்கும் நிலை உங்கள் திட்டம், அனுமதிகள், வழங்குநர் அமைப்பைப் பொறுத்தது. இயங்கும் திரையோ சோதனை முடிவோ நேரடிச் சேவை கிடைப்பதை உறுதிப்படுத்தாது."
+   ]
+--- /dev/null
++++ b/tests/marketing/first-store-sequence.test.ts
+@@ -0,0 +1,16 @@
++import assert from 'node:assert/strict'
++import test from 'node:test'
++import { ARTICLES } from '../../apps/marketing/web/src/lib/resources/articles'
++import { localizeArticleContent } from '../../apps/marketing/web/src/lib/i18n/article-content'
++import { resourceHeadingId } from '../../apps/marketing/web/src/lib/resources/headings'
++
++const source = ARTICLES.find(article => article.slug === 'building-first-letbuyy-store')!
++const anchors = ['1-create-your-account', '4-add-your-first-product', '3-select-a-theme', '5-configure-payments', '8-publish-and-test']
++for (const language of ['en', 'hi', 'ta']) {
++    test(`${language}: first-store steps follow reading order without breaking existing section links`, () => {
++        const article = language === 'en' ? source : localizeArticleContent(source, language).article
++        const headings = article.body.filter(block => block.type === 'h2')
++        assert.deepEqual(headings.map(block => Number(block.text.match(/^(\d+)\./)?.[1])), [1, 2, 3, 4, 5])
++        assert.deepEqual(headings.map(block => block.id ?? resourceHeadingId(block.text)), anchors)
++    })
++}
+--- a/tests/marketing/reading-visuals.test.ts
++++ b/tests/marketing/reading-visuals.test.ts
+@@ -1,3 +1,4 @@
++import { resourceHeadingId } from '../../apps/marketing/web/src/lib/resources/headings'
+ import assert from 'node:assert/strict'
+ import test from 'node:test'
+ import { existsSync, statSync } from 'node:fs'
+@@ -36,7 +37,7 @@
+       continue
+     }
+     assert.equal(Object.keys(visuals).length, 2, article.slug)
+-    const headings = article.body.filter(block => block.type === 'h2').map(block => block.text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))
++    const headings = article.body.filter(block => block.type === 'h2').map(block => block.id ?? resourceHeadingId(block.text))
+     for (const [target, visual] of Object.entries(visuals)) {
+       assert.ok(headings.includes(target), `${article.slug}: missing section ${target}`)
+       assert.ok(statSync(resolve('apps/marketing/web/public', visual.src.slice(1))).size > 1000)

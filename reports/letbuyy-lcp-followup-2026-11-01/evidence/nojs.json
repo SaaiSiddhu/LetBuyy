@@ -1,0 +1,50 @@
+[
+  {
+    "port": 9049,
+    "path": "/in",
+    "header_visible": true,
+    "footer_visible": true,
+    "h1": "More than a store.\nYour Commerce OS.",
+    "links": 34
+  },
+  {
+    "port": 9049,
+    "path": "/in/pricing",
+    "header_visible": true,
+    "footer_visible": true,
+    "h1": "Simple, transparent pricing",
+    "links": 34
+  },
+  {
+    "port": 9049,
+    "path": "/in/resources/platform/building-first-letbuyy-store",
+    "header_visible": true,
+    "footer_visible": true,
+    "h1": "Building Your First LetBuyy Store: A Complete Walkthrough",
+    "links": 43
+  },
+  {
+    "port": 9048,
+    "path": "/in",
+    "header_visible": true,
+    "footer_visible": true,
+    "h1": "More than a store.\nYour Commerce OS.",
+    "links": 34
+  },
+  {
+    "port": 9048,
+    "path": "/in/pricing",
+    "header_visible": true,
+    "footer_visible": true,
+    "h1": "Simple, transparent pricing",
+    "links": 34
+  },
+  {
+    "port": 9048,
+    "path": "/in/resources/platform/building-first-letbuyy-store",
+    "header_visible": true,
+    "footer_visible": true,
+    "h1": "Building Your First LetBuyy Store: A Complete Walkthrough",
+    "links": 43
+  }
+]

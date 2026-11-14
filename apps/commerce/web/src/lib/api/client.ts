@@ -1,5 +1,5 @@
 import 'server-only';
-import { cookies,headers as currentRequestHeaders } from 'next/headers';
+import { cookies } from 'next/headers';
 import {
     LETBUYY_PRODUCTION_API_BASE_URL,
     apiClientInputToLetbuyyApiPath,
@@ -13,8 +13,6 @@ import {
     createLetbuyyInternalAppHeaders,
     getLetbuyyInternalAuthSecret,
     LETBUYY_CUSTOMER_SESSION_COOKIE,
-    LETBUYY_STOREFRONT_GATE_COOKIE,
-    LETBUYY_STOREFRONT_PREVIEW_COOKIE,
 } from '@letbuyy/auth-core';
 
 export { isStorefrontInternalOnlyPath };
@@ -54,17 +52,6 @@ export async function storefrontApiFetch(path: string, init: StorefrontApiFetchI
         if (customerSession) {
             headers.set('X-LetBuyy-Customer-Session', customerSession);
         }
-    }
-    if(cleanPath.startsWith('/storefront/')){
-        // Host-only HTTP-only visitor proofs cross only the server -> canonical
-        // Gateway hop. A missing request context supplies no visitor authority.
-        try{
-            const jar=await cookies();
-            const incoming=await currentRequestHeaders();
-            for(const [cookie,header]of [[LETBUYY_STOREFRONT_GATE_COOKIE,'X-LetBuyy-Storefront-Gate'],[LETBUYY_STOREFRONT_PREVIEW_COOKIE,'X-LetBuyy-Storefront-Preview']]as const){
-                const value=jar.get(cookie)?.value||incoming.get(header);if(value)headers.set(header,value);
-            }
-        }catch{/* anonymous requests outside an active Next request have no proof */}
     }
     if (isStorefrontInternalOnlyPath(cleanPath)) {
         await signStorefrontInternalRequest(headers);

@@ -1,0 +1,702 @@
+{
+  "basis": "Final build Jt6Duvm2bymgmwpDPdjxY, first actual DevTools-throttled Tamil homepage run; diagnostic attribution, not proof of sole causality",
+  "source": "localized-devtools/tamil-home.json",
+  "observations": {
+    "long-tasks": {
+      "numericValue": null,
+      "displayValue": "6 long tasks found",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "startTime",
+            "valueType": "ms",
+            "granularity": 1,
+            "label": "Start Time"
+          },
+          {
+            "key": "duration",
+            "valueType": "ms",
+            "granularity": 1,
+            "label": "Duration"
+          }
+        ],
+        "items": [
+          {
+            "url": "http://127.0.0.1:9039/in-ta",
+            "duration": 251.787,
+            "startTime": 2082.54
+          },
+          {
+            "url": "http://127.0.0.1:9039/in-ta",
+            "duration": 116.195,
+            "startTime": 1729.349
+          },
+          {
+            "url": "http://127.0.0.1:9039/in-ta",
+            "duration": 110.19,
+            "startTime": 1606.792
+          },
+          {
+            "url": "http://127.0.0.1:9039/_next/static/chunks/a5cb4e8f-07b3aad854a6cdb6.js",
+            "duration": 93.773,
+            "startTime": 4068.244
+          },
+          {
+            "url": "http://127.0.0.1:9039/_next/static/chunks/app/%5Blocale%5D/page-a1cc999a4c067ac9.js",
+            "duration": 72.659,
+            "startTime": 5655.704
+          },
+          {
+            "url": "http://127.0.0.1:9039/_next/static/chunks/app/layout-480259d99212ff64.js",
+            "duration": 50.286,
+            "startTime": 4417.868
+          }
+        ],
+        "sortedBy": [
+          "duration"
+        ],
+        "skipSumming": [
+          "startTime"
+        ],
+        "debugData": {
+          "type": "debugdata",
+          "urls": [
+            "http://127.0.0.1:9039/in-ta",
+            "http://127.0.0.1:9039/_next/static/chunks/a5cb4e8f-07b3aad854a6cdb6.js",
+            "http://127.0.0.1:9039/_next/static/chunks/app/%5Blocale%5D/page-a1cc999a4c067ac9.js",
+            "http://127.0.0.1:9039/_next/static/chunks/app/layout-480259d99212ff64.js"
+          ],
+          "tasks": [
+            {
+              "urlIndex": 0,
+              "startTime": 2082.5,
+              "duration": 251.8,
+              "other": 0.9,
+              "styleLayout": 250.9
+            },
+            {
+              "urlIndex": 0,
+              "startTime": 1729.3,
+              "duration": 116.2,
+              "other": 3,
+              "paintCompositeRender": 10.6,
+              "scriptEvaluation": 1.4,
+              "styleLayout": 101.1
+            },
+            {
+              "urlIndex": 0,
+              "startTime": 1606.8,
+              "duration": 110.2,
+              "other": 2.9,
+              "paintCompositeRender": 3.9,
+              "scriptEvaluation": 0,
+              "styleLayout": 103.5
+            },
+            {
+              "urlIndex": 1,
+              "startTime": 4068.2,
+              "duration": 93.8,
+              "other": 0.1,
+              "scriptEvaluation": 77.9,
+              "scriptParseCompile": 15.9
+            },
+            {
+              "urlIndex": 2,
+              "startTime": 5655.7,
+              "duration": 72.7,
+              "other": 2.7,
+              "paintCompositeRender": 0.6,
+              "scriptEvaluation": 68.1,
+              "styleLayout": 1.3
+            },
+            {
+              "urlIndex": 3,
+              "startTime": 4417.9,
+              "duration": 50.3,
+              "other": 0.4,
+              "scriptEvaluation": 49.8,
+              "scriptParseCompile": 0.1
+            }
+          ]
+        }
+      }
+    },
+    "mainthread-work-breakdown": {
+      "numericValue": 5099.871999999578,
+      "displayValue": "5.1 s",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "groupLabel",
+            "valueType": "text",
+            "label": "Category"
+          },
+          {
+            "key": "duration",
+            "valueType": "ms",
+            "granularity": 1,
+            "label": "Time Spent"
+          }
+        ],
+        "items": [
+          {
+            "group": "scriptEvaluation",
+            "groupLabel": "Script Evaluation",
+            "duration": 1786.5069999996845
+          },
+          {
+            "group": "other",
+            "groupLabel": "Other",
+            "duration": 1600.7639999999158
+          },
+          {
+            "group": "styleLayout",
+            "groupLabel": "Style & Layout",
+            "duration": 1092.0799999999992
+          },
+          {
+            "group": "paintCompositeRender",
+            "groupLabel": "Rendering",
+            "duration": 412.0919999999792
+          },
+          {
+            "group": "scriptParseCompile",
+            "groupLabel": "Script Parsing & Compilation",
+            "duration": 107.489
+          },
+          {
+            "group": "parseHTML",
+            "groupLabel": "Parse HTML & CSS",
+            "duration": 53.268
+          },
+          {
+            "group": "garbageCollection",
+            "groupLabel": "Garbage Collection",
+            "duration": 47.67199999999995
+          }
+        ],
+        "sortedBy": [
+          "duration"
+        ]
+      }
+    },
+    "render-blocking-insight": {
+      "numericValue": 1366,
+      "displayValue": "Est savings of 1,370 ms",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Transfer Size"
+          },
+          {
+            "key": "wastedMs",
+            "valueType": "timespanMs",
+            "label": "Duration"
+          }
+        ],
+        "items": [
+          {
+            "url": "http://127.0.0.1:9039/_next/static/css/4099679658edd4ed.css",
+            "totalBytes": 53933,
+            "wastedMs": 1478
+          },
+          {
+            "url": "http://127.0.0.1:9039/_next/static/css/ccc2dc94b8f2f977.css",
+            "totalBytes": 13054,
+            "wastedMs": 1028
+          },
+          {
+            "url": "http://127.0.0.1:9039/_next/static/css/09bc8be7b7a016ac.css",
+            "totalBytes": 6703,
+            "wastedMs": 1028
+          },
+          {
+            "url": "http://127.0.0.1:9039/_next/static/css/a40e3bf3e20fcbbe.css",
+            "totalBytes": 1542,
+            "wastedMs": 878
+          },
+          {
+            "url": "http://127.0.0.1:9039/_next/static/css/0470366bb3fef02b.css",
+            "totalBytes": 1867,
+            "wastedMs": 728
+          }
+        ]
+      }
+    },
+    "lcp-breakdown-insight": {
+      "numericValue": null,
+      "displayValue": null,
+      "details": {
+        "type": "list",
+        "items": [
+          {
+            "type": "table",
+            "headings": [
+              {
+                "key": "label",
+                "valueType": "text",
+                "label": "Subpart"
+              },
+              {
+                "key": "duration",
+                "valueType": "ms",
+                "label": "Duration"
+              }
+            ],
+            "items": [
+              {
+                "subpart": "timeToFirstByte",
+                "label": "Time to first byte",
+                "duration": 44.893
+              },
+              {
+                "subpart": "elementRenderDelay",
+                "label": "Element render delay",
+                "duration": 1699.51
+              }
+            ]
+          },
+          {
+            "type": "node",
+            "lhId": "page-0-P",
+            "path": "1,HTML,1,BODY,2,DIV,0,DIV,1,MAIN,0,SECTION,2,DIV,0,DIV,2,P",
+            "selector": "section.hero > div.container > div.hero-copy > p.hero-subtitle",
+            "boundingRect": {
+              "top": 528,
+              "bottom": 587,
+              "left": 20,
+              "right": 392,
+              "width": 372,
+              "height": 59
+            },
+            "snippet": "<p class=\"hero-subtitle\">",
+            "nodeLabel": "உங்கள் இந்திய வணிகத்திற்கான இணையக் கடையை உருவாக்கி ஒரே வணிகர் பணியிடத்தில் தயாரிப்புகளையும் ஆர்டர்களையும் நிர்வகியுங்கள்."
+          }
+        ]
+      }
+    },
+    "document-latency-insight": {
+      "numericValue": 0,
+      "displayValue": null,
+      "details": {
+        "type": "checklist",
+        "items": {
+          "noRedirects": {
+            "label": "Avoids redirects",
+            "value": true
+          },
+          "serverResponseIsFast": {
+            "label": "Server responds quickly (observed 43 ms)",
+            "value": true
+          },
+          "usesCompression": {
+            "label": "Applies text compression",
+            "value": true
+          }
+        },
+        "debugData": {
+          "type": "debugdata",
+          "redirectDuration": 0,
+          "serverResponseTime": 43,
+          "uncompressedResponseBytes": 0,
+          "wastedBytes": 0
+        }
+      }
+    }
+  },
+  "inference": "Largest long task is style/layout before main application-script tasks; it is not worker drawing. Font-blocking was diagnostic only, not an accepted design change. Native-script text/cascade profiling remains local work.",
+  "other_final_lab_sources": {
+    "pricing-mobile": {
+      "method": "Default simulated mobile; insight breakdown values are observed unthrottled trace values, not the modeled LCP subparts",
+      "lcp_ms": 3797.5835,
+      "tbt_ms": 19.5,
+      "sources": {
+        "lcp-breakdown-insight": {
+          "numericValue": null,
+          "details": {
+            "type": "list",
+            "items": [
+              {
+                "type": "table",
+                "headings": [
+                  {
+                    "key": "label",
+                    "valueType": "text",
+                    "label": "Subpart"
+                  },
+                  {
+                    "key": "duration",
+                    "valueType": "ms",
+                    "label": "Duration"
+                  }
+                ],
+                "items": [
+                  {
+                    "subpart": "timeToFirstByte",
+                    "label": "Time to first byte",
+                    "duration": 31.669
+                  },
+                  {
+                    "subpart": "resourceLoadDelay",
+                    "label": "Resource load delay",
+                    "duration": 6.249
+                  },
+                  {
+                    "subpart": "resourceLoadDuration",
+                    "label": "Resource load duration",
+                    "duration": 4.433
+                  },
+                  {
+                    "subpart": "elementRenderDelay",
+                    "label": "Element render delay",
+                    "duration": 76.669
+                  }
+                ]
+              },
+              {
+                "type": "node",
+                "lhId": "page-0-IMG",
+                "path": "1,HTML,1,BODY,2,DIV,0,DIV,1,MAIN,0,SECTION,0,DIV,0,DIV,3,DIV,0,IMG",
+                "selector": "div.container > div.pricing-header > div.marketing-illustration > img",
+                "boundingRect": {
+                  "top": 253,
+                  "bottom": 467,
+                  "left": 46,
+                  "right": 366,
+                  "width": 320,
+                  "height": 213
+                },
+                "snippet": "<img alt=\"\" fetchpriority=\"high\" loading=\"eager\" width=\"1536\" height=\"1024\" decoding=\"async\" data-nimg=\"1\" style=\"color:transparent\" sizes=\"(max-width: 640px) 80vw, 448px\" srcset=\"/_next/image?url=%2Fillustrations%2Fcommerce-essentials-v1.png&amp;w=640&amp;q=75 …\" src=\"http://127.0.0.1:9039/_next/image?url=%2Fillustrations%2Fcommerce-essentia…\">",
+                "nodeLabel": "div.container > div.pricing-header > div.marketing-illustration > img"
+              }
+            ]
+          }
+        },
+        "lcp-discovery-insight": {
+          "numericValue": 0,
+          "details": {
+            "type": "list",
+            "items": [
+              {
+                "type": "checklist",
+                "items": {
+                  "priorityHinted": {
+                    "label": "fetchpriority=high applied",
+                    "value": true
+                  },
+                  "requestDiscoverable": {
+                    "label": "Request is discoverable in initial document",
+                    "value": true
+                  },
+                  "eagerlyLoaded": {
+                    "label": "LCP resources shouldn’t use loading=lazy",
+                    "value": true
+                  }
+                }
+              },
+              {
+                "type": "node",
+                "lhId": "page-0-IMG",
+                "path": "1,HTML,1,BODY,2,DIV,0,DIV,1,MAIN,0,SECTION,0,DIV,0,DIV,3,DIV,0,IMG",
+                "selector": "div.container > div.pricing-header > div.marketing-illustration > img",
+                "boundingRect": {
+                  "top": 253,
+                  "bottom": 467,
+                  "left": 46,
+                  "right": 366,
+                  "width": 320,
+                  "height": 213
+                },
+                "snippet": "<img alt=\"\" fetchpriority=\"high\" loading=\"eager\" width=\"1536\" height=\"1024\" decoding=\"async\" data-nimg=\"1\" style=\"color:transparent\" sizes=\"(max-width: 640px) 80vw, 448px\" srcset=\"/_next/image?url=%2Fillustrations%2Fcommerce-essentials-v1.png&amp;w=640&amp;q=75 …\" src=\"http://127.0.0.1:9039/_next/image?url=%2Fillustrations%2Fcommerce-essentia…\">",
+                "nodeLabel": "div.container > div.pricing-header > div.marketing-illustration > img"
+              }
+            ]
+          }
+        },
+        "render-blocking-insight": {
+          "numericValue": 676,
+          "details": {
+            "type": "table",
+            "headings": [
+              {
+                "key": "url",
+                "valueType": "url",
+                "label": "URL"
+              },
+              {
+                "key": "totalBytes",
+                "valueType": "bytes",
+                "label": "Transfer Size"
+              },
+              {
+                "key": "wastedMs",
+                "valueType": "timespanMs",
+                "label": "Duration"
+              }
+            ],
+            "items": [
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/4099679658edd4ed.css",
+                "totalBytes": 53933,
+                "wastedMs": 752
+              },
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/09bc8be7b7a016ac.css",
+                "totalBytes": 6703,
+                "wastedMs": 302
+              },
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/0470366bb3fef02b.css",
+                "totalBytes": 1867,
+                "wastedMs": 152
+              },
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/a40e3bf3e20fcbbe.css",
+                "totalBytes": 1542,
+                "wastedMs": 302
+              }
+            ]
+          }
+        },
+        "document-latency-insight": {
+          "numericValue": 0,
+          "details": {
+            "type": "checklist",
+            "items": {
+              "noRedirects": {
+                "label": "Avoids redirects",
+                "value": true
+              },
+              "serverResponseIsFast": {
+                "label": "Server responds quickly (observed 30 ms)",
+                "value": true
+              },
+              "usesCompression": {
+                "label": "Applies text compression",
+                "value": true
+              }
+            },
+            "debugData": {
+              "type": "debugdata",
+              "redirectDuration": 0,
+              "serverResponseTime": 30,
+              "uncompressedResponseBytes": 0,
+              "wastedBytes": 0
+            }
+          }
+        }
+      }
+    },
+    "setup-guide-mobile": {
+      "method": "Default simulated mobile; insight breakdown values are observed unthrottled trace values, not the modeled LCP subparts",
+      "lcp_ms": 4788.098,
+      "tbt_ms": 17,
+      "sources": {
+        "lcp-breakdown-insight": {
+          "numericValue": null,
+          "details": {
+            "type": "list",
+            "items": [
+              {
+                "type": "table",
+                "headings": [
+                  {
+                    "key": "label",
+                    "valueType": "text",
+                    "label": "Subpart"
+                  },
+                  {
+                    "key": "duration",
+                    "valueType": "ms",
+                    "label": "Duration"
+                  }
+                ],
+                "items": [
+                  {
+                    "subpart": "timeToFirstByte",
+                    "label": "Time to first byte",
+                    "duration": 17.002
+                  },
+                  {
+                    "subpart": "resourceLoadDelay",
+                    "label": "Resource load delay",
+                    "duration": 6.611
+                  },
+                  {
+                    "subpart": "resourceLoadDuration",
+                    "label": "Resource load duration",
+                    "duration": 3.049
+                  },
+                  {
+                    "subpart": "elementRenderDelay",
+                    "label": "Element render delay",
+                    "duration": 73.619
+                  }
+                ]
+              },
+              {
+                "type": "node",
+                "lhId": "page-0-IMG",
+                "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,2,MAIN,3,DIV,0,DIV,1,MAIN,0,HEADER,5,SECTION,1,FIGURE,0,DIV,0,IMG",
+                "selector": "section.article-visual-overview_overview__rTWnQ > figure.article-visual-overview_figure__4Lr6L > div.article-visual-overview_canvas__TSu14 > img",
+                "boundingRect": {
+                  "top": 665,
+                  "bottom": 874,
+                  "left": 20,
+                  "right": 392,
+                  "width": 372,
+                  "height": 209
+                },
+                "snippet": "<img alt=\"A storefront on a laptop and phone beside products and a launch checklist.\" fetchpriority=\"high\" loading=\"eager\" width=\"1536\" height=\"1024\" decoding=\"async\" data-nimg=\"1\" style=\"color:transparent\" sizes=\"(max-width: 767px) 90vw, 760px\" srcset=\"/_next/image?url=%2Fillustrations%2Fresources%2Fguide-first-store-v1.webp&amp;…\" src=\"http://127.0.0.1:9039/_next/image?url=%2Fillustrations%2Fresources%2Fguide…\">",
+                "nodeLabel": "A storefront on a laptop and phone beside products and a launch checklist."
+              }
+            ]
+          }
+        },
+        "lcp-discovery-insight": {
+          "numericValue": 0,
+          "details": {
+            "type": "list",
+            "items": [
+              {
+                "type": "checklist",
+                "items": {
+                  "priorityHinted": {
+                    "label": "fetchpriority=high applied",
+                    "value": true
+                  },
+                  "requestDiscoverable": {
+                    "label": "Request is discoverable in initial document",
+                    "value": true
+                  },
+                  "eagerlyLoaded": {
+                    "label": "LCP resources shouldn’t use loading=lazy",
+                    "value": true
+                  }
+                }
+              },
+              {
+                "type": "node",
+                "lhId": "page-0-IMG",
+                "path": "1,HTML,1,BODY,2,DIV,0,DIV,0,DIV,2,MAIN,3,DIV,0,DIV,1,MAIN,0,HEADER,5,SECTION,1,FIGURE,0,DIV,0,IMG",
+                "selector": "section.article-visual-overview_overview__rTWnQ > figure.article-visual-overview_figure__4Lr6L > div.article-visual-overview_canvas__TSu14 > img",
+                "boundingRect": {
+                  "top": 665,
+                  "bottom": 874,
+                  "left": 20,
+                  "right": 392,
+                  "width": 372,
+                  "height": 209
+                },
+                "snippet": "<img alt=\"A storefront on a laptop and phone beside products and a launch checklist.\" fetchpriority=\"high\" loading=\"eager\" width=\"1536\" height=\"1024\" decoding=\"async\" data-nimg=\"1\" style=\"color:transparent\" sizes=\"(max-width: 767px) 90vw, 760px\" srcset=\"/_next/image?url=%2Fillustrations%2Fresources%2Fguide-first-store-v1.webp&amp;…\" src=\"http://127.0.0.1:9039/_next/image?url=%2Fillustrations%2Fresources%2Fguide…\">",
+                "nodeLabel": "A storefront on a laptop and phone beside products and a launch checklist."
+              }
+            ]
+          }
+        },
+        "render-blocking-insight": {
+          "numericValue": 857,
+          "details": {
+            "type": "table",
+            "headings": [
+              {
+                "key": "url",
+                "valueType": "url",
+                "label": "URL"
+              },
+              {
+                "key": "totalBytes",
+                "valueType": "bytes",
+                "label": "Transfer Size"
+              },
+              {
+                "key": "wastedMs",
+                "valueType": "timespanMs",
+                "label": "Duration"
+              }
+            ],
+            "items": [
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/4099679658edd4ed.css",
+                "totalBytes": 53933,
+                "wastedMs": 902
+              },
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/7ca4a0ea6015c426.css",
+                "totalBytes": 11565,
+                "wastedMs": 602
+              },
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/09bc8be7b7a016ac.css",
+                "totalBytes": 6703,
+                "wastedMs": 452
+              },
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/141d9cd5473cfb91.css",
+                "totalBytes": 4274,
+                "wastedMs": 302
+              },
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/26008953488318fa.css",
+                "totalBytes": 7295,
+                "wastedMs": 302
+              },
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/a40e3bf3e20fcbbe.css",
+                "totalBytes": 1542,
+                "wastedMs": 302
+              },
+              {
+                "url": "http://127.0.0.1:9039/_next/static/css/0470366bb3fef02b.css",
+                "totalBytes": 1867,
+                "wastedMs": 152
+              }
+            ]
+          }
+        },
+        "document-latency-insight": {
+          "numericValue": 0,
+          "details": {
+            "type": "checklist",
+            "items": {
+              "noRedirects": {
+                "label": "Avoids redirects",
+                "value": true
+              },
+              "serverResponseIsFast": {
+                "label": "Server responds quickly (observed 15 ms)",
+                "value": true
+              },
+              "usesCompression": {
+                "label": "Applies text compression",
+                "value": true
+              }
+            },
+            "debugData": {
+              "type": "debugdata",
+              "redirectDuration": 0,
+              "serverResponseTime": 15,
+              "uncompressedResponseBytes": 0,
+              "wastedBytes": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

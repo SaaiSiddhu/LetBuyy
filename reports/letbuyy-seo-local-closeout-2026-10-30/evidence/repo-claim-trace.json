@@ -1,0 +1,266 @@
+{
+  "captured_at": "2026-10-29T21:55:09.599994+00:00",
+  "method": "Public claim to active UI/route/guard/contract/governance trace; no inference that source presence proves production availability",
+  "rows": [
+    {
+      "claim_id": "PROV-01",
+      "scope": "Four former author profiles / 35 articles in three languages",
+      "previous_claim": "Personal bylines, employment at Meesho/Nykaa, eight years experience, GST consultant credentials and results for 200 brands",
+      "repo_evidence": "apps/marketing/web/src/lib/resources/authors.ts:4; Task-start authors.ts retained by hash in source lineage; repository search found marketing/audit copies and a UI placeholder, not independent provenance",
+      "assessment": "Not substantiated by inspected repository",
+      "local_correction": "Remove four named personas and professional claims; attribute responsibility to LetBuyy as Organization; 12 locale-preserving 308 redirects to publisher profile",
+      "verification": "All article authors resolve to publisher; source-locked translations; all 12 redirects and 105 Article entities verified",
+      "external_dependency": "Restore a named byline only with real identity, contribution, consent and role/credential evidence"
+    },
+    {
+      "claim_id": "PROV-02",
+      "scope": "Organization profile in three languages",
+      "previous_claim": "Team of merchants/experts building India's best commerce OS",
+      "repo_evidence": "apps/marketing/web/src/lib/resources/authors.ts:4",
+      "assessment": "Unsubstantiated expertise and superlative",
+      "local_correction": "Describe publisher responsibility and documentation scope; remove person-to-company social-profile misattribution",
+      "verification": "Profile HTML, matching Article Organization identity and translation tests",
+      "external_dependency": "None for the local correction"
+    },
+    {
+      "claim_id": "FEAT-01",
+      "scope": "First-store guide and launch pillar",
+      "previous_claim": "Phone/Google signup, mobile OTP and automatic live store after signup",
+      "repo_evidence": "apps/platform/identity/src/app/signup/page.tsx; apps/platform/identity/src/app/api/auth/signup/route.ts; tests/owned-db/merchant-public-signup-browser.postgres.test.ts",
+      "assessment": "Contradicted by current email verification / password / draft-store flow",
+      "local_correction": "Describe email code, password, onboarding, draft store and separate setup / publication checks",
+      "verification": "Repository trace; article/summary/locale parity; production browser and HTML checks",
+      "external_dependency": "Real inbox delivery and production account acceptance are separate provider checks"
+    },
+    {
+      "claim_id": "FEAT-02",
+      "scope": "Theme guides, launch pillar and navigation",
+      "previous_claim": "40+ named purchasable themes and a live third-party marketplace",
+      "repo_evidence": "apps/merchant/web/src/app/[store]/online-store/themes/page.tsx; services/api-gateway/src/routes/themes.ts; GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md:25",
+      "assessment": "Catalog size/third-party availability not substantiated",
+      "local_correction": "Use the account catalog and supported theme editor; label visual theme studies as concepts; do not promise invented theme counts",
+      "verification": "Rendered theme guide in EN/HI/TA at both widths",
+      "external_dependency": "Actual catalog entitlement, release availability and any future author/partner program require owner/provider facts"
+    },
+    {
+      "claim_id": "FEAT-03",
+      "scope": "Two app guides, developer guide and shared navigation",
+      "previous_claim": "Public app store, app submission workflow, App Bridge availability and 5–10 day review SLA",
+      "repo_evidence": "services/api-gateway/src/index.ts:756; services/api-gateway/src/middleware/appPlatformKillSwitch.ts",
+      "assessment": "Public third-party app platform is a gated deferred seam",
+      "local_correction": "Explicit deferred status; replace fabricated install/OAuth submission instructions with integration planning and support prerequisites",
+      "verification": "Unit refusal contract, raw/rendered guide copy and localized links",
+      "external_dependency": "Activation is an owner/architecture decision; do not request credentials merely to revive a forbidden/deferred runtime"
+    },
+    {
+      "claim_id": "FEAT-04",
+      "scope": "Five AI articles, FAQ and capability map",
+      "previous_claim": "50+ AI capabilities, demand forecasts, fraud scoring, dynamic pricing and autonomy",
+      "repo_evidence": "services/api-gateway/src/routes/ai.ts:150; apps/merchant/web/src/app/[store]/ai/page.tsx; GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md:126",
+      "assessment": "Broad promises not established in active verified path; fraud ML explicitly out of envelope",
+      "local_correction": "Describe content tools, credits, provider mode and review; remove numeric capability total and unsupported predictions",
+      "verification": "Content regression checks and rendered samples; no model activation performed",
+      "external_dependency": "Real model credentials, configured provider, consent, credits and separately measured results are needed for provider acceptance"
+    },
+    {
+      "claim_id": "FEAT-05",
+      "scope": "Copilot guide and mock examples",
+      "previous_claim": "AI reads all records/90 days and guarantees conversion or restock outcomes",
+      "repo_evidence": "services/api-gateway/src/routes/ai.ts:150; services/api-gateway/src/routes/ai.ts:916",
+      "assessment": "Scope and outcome claims not substantiated",
+      "local_correction": "Explain actor/store/tool scope; remove learned-model/training claims and conversion forecasts; identify example drafts as un-applied",
+      "verification": "Content and schema review; example data explicitly labelled",
+      "external_dependency": "None for the local correction"
+    },
+    {
+      "claim_id": "FEAT-06",
+      "scope": "Merchant/Copilot guides",
+      "previous_claim": "Cmd/Ctrl+K always opens AI Copilot",
+      "repo_evidence": "apps/merchant/web/src/components/CommandPalette.tsx; apps/merchant/web/src/components/merchantNavigation.ts:66",
+      "assessment": "Navigation palette is not universal AI authority",
+      "local_correction": "Describe navigation separately from AI Studio and available tools",
+      "verification": "Source trace plus article parity",
+      "external_dependency": "None for the local correction"
+    },
+    {
+      "claim_id": "FEAT-07",
+      "scope": "Multi-location and inventory guides",
+      "previous_claim": "Unlimited warehouses and automatic nearest-warehouse selection",
+      "repo_evidence": "apps/merchant/web/src/app/[store]/products/locations/page.tsx; apps/merchant/web/src/app/[store]/products/transfers/page.tsx; services/api-gateway/src/routes/inventory.ts",
+      "assessment": "Locations/transfers exist; unlimited/nearest-routing promise not proven",
+      "local_correction": "Use current plan limits, location records and explicit transfer/receipt verification",
+      "verification": "Repo trace and localized article checks",
+      "external_dependency": "Production plan limits and enabled fulfillment behavior must be confirmed per account"
+    },
+    {
+      "claim_id": "FEAT-08",
+      "scope": "Fulfillment/shipping guides and header",
+      "previous_claim": "Every confirmed order automatically books a native named courier and supplies tracking/messages",
+      "repo_evidence": "services/api-gateway/src/routes/shipping.ts; services/api-gateway/src/routes/orders.ts",
+      "assessment": "Provider setup and external effects are separate from order persistence",
+      "local_correction": "State courier/serviceability/booking prerequisites; verify returned label and message delivery separately; remove direct universal carrier promise",
+      "verification": "Corrected EN/HI/TA body and shared navigation",
+      "external_dependency": "Courier account, credentials, serviceability, rates, real label and message-delivery evidence"
+    },
+    {
+      "claim_id": "FEAT-09",
+      "scope": "Payment/setup guides and header/FAQ",
+      "previous_claim": "UPI/cards/EMI ready immediately, fixed KYC timings and automatic live approval",
+      "repo_evidence": "apps/merchant/web/src/app/[store]/settings/payments/page.tsx; services/api-gateway/src/lib/provider-payment-verification.ts",
+      "assessment": "Configured capability is not live provider acceptance",
+      "local_correction": "Distinguish buyer payments from subscription billing; require valid test keys and provider eligibility; remove setup-time promises",
+      "verification": "Source trace; live catalog rendering remains independent of provider payment acceptance",
+      "external_dependency": "Valid test/live provider account and actual end-to-end acceptance; existing test keys returned401 in separate preflight"
+    },
+    {
+      "claim_id": "FEAT-10",
+      "scope": "Tax/invoice content and shared promises",
+      "previous_claim": "Every order has a compliant invoice/email attachment; entering GSTIN guarantees compliance",
+      "repo_evidence": "services/api-gateway/src/lib/subscription-checkout-source.ts:158; packages/billing-core/src/index.ts:1475",
+      "assessment": "False universality / provider and tax prerequisites omitted",
+      "local_correction": "Use conditional supplier/recipient/tax setup, actual record verification and qualified advice; remove automatic attachment/eligibility guarantee",
+      "verification": "All locale bodies and tax-guide source references checked",
+      "external_dependency": "Actual approved supplier/recipient facts, tax professional review and real delivery evidence"
+    },
+    {
+      "claim_id": "FEAT-11",
+      "scope": "API getting-started guide",
+      "previous_claim": "Public key issuance, generic PUT endpoints, invented uniform limits and cursor contract",
+      "repo_evidence": "services/api-gateway/src/routes/products.ts:991; services/api-gateway/src/index.ts:756; services/api-gateway/src/middleware/idempotency.ts:111",
+      "assessment": "Generic examples disagree with active routes or gated access",
+      "local_correction": "Describe approved scoped access, actual products PATCH/nested collections, route-specific pagination and stable retry intent; remove guessed executable examples",
+      "verification": "Content regression and complete339 root contracts; no privileged API requests made",
+      "external_dependency": "None for the local correction"
+    },
+    {
+      "claim_id": "FEAT-12",
+      "scope": "Webhook guide",
+      "previous_claim": "Guaranteed event ordering, fixed retry/event lists and universal registration/signature contract",
+      "repo_evidence": "services/webhook-service/src/index.ts; services/api-gateway/src/index.ts:756",
+      "assessment": "Provider callbacks and outbound app integrations conflated",
+      "local_correction": "Separate contracts; explain raw-body signatures, duplicate identity and failure recovery without claiming public install workflow",
+      "verification": "Article parsing, local links and source trace",
+      "external_dependency": "Actual configured provider callback delivery needs reachable test endpoint and provider account access"
+    },
+    {
+      "claim_id": "FEAT-13",
+      "scope": "Workflow / automation guides",
+      "previous_claim": "Drag-and-drop builder, broadcasts, customer re-engagement and automatic refund approval are all available",
+      "repo_evidence": "apps/merchant/web/src/components/merchantNavigation.ts:66; services/api-gateway/src/routes/ai.ts:150; GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md:88",
+      "assessment": "Not established; WhatsApp scope explicitly bounded",
+      "local_correction": "Describe supported order-lifecycle/COD setup, planning and synthetic recipient tests; withdraw general builder/broadcast promises",
+      "verification": "Source trace and localized content checks",
+      "external_dependency": "Actual messaging provider approval/templates/consent and owner-approved workflow availability"
+    },
+    {
+      "claim_id": "FEAT-14",
+      "scope": "Social commerce and custom integration guides",
+      "previous_claim": "One-click Meta catalog sync and certified plug-and-play Tally/Sheets/courier connectors",
+      "repo_evidence": "services/api-gateway/src/index.ts:756; apps/merchant/web/src/components/merchantNavigation.ts:66",
+      "assessment": "Integration ideas were presented as delivered public contracts",
+      "local_correction": "Explicit planning language, data mapping and permissions; require external account eligibility and support contract",
+      "verification": "Content/summary consistency in105 localized articles",
+      "external_dependency": "Third-party account eligibility, supported connector contract and actual integration acceptance"
+    },
+    {
+      "claim_id": "FEAT-15",
+      "scope": "Liquid guide",
+      "previous_claim": "Universal React/Liquid hybrid fallback, all customer history, image_url resizing and non-Liquid comments",
+      "repo_evidence": "packages/theme-engine/src/theme-renderer.ts:1034; packages/theme-engine/src/theme-bundle.ts:973",
+      "assessment": "Guide exceeds supported template contract",
+      "local_correction": "Remove hybrid/PII/resize assumptions; use Liquid comment syntax and bounded actual object context",
+      "verification": "Source trace, escaped code rendering and translated shape regression; no renderer source changed",
+      "external_dependency": "None for the local correction"
+    },
+    {
+      "claim_id": "FEAT-16",
+      "scope": "Header, learning paths, metadata and CTA/trust surfaces",
+      "previous_claim": "Universal delivery, instant payment readiness, always-open safety and guaranteed sales/compliance outcomes",
+      "repo_evidence": "apps/merchant/web/src/components/merchantNavigation.ts:66; services/api-gateway/src/lib/subscription-checkout-source.ts:158; apps/marketing/web/src/lib/i18n/locales.ts:13",
+      "assessment": "Unmeasured or setup-dependent promises",
+      "local_correction": "Replace with actual task/setup descriptions; retain factual0% commission commitment and existing verified trial policy; India-only current country statement",
+      "verification": "Raw/rendered EN/HI/TA and metadata checks",
+      "external_dependency": "None for the local correction"
+    },
+    {
+      "claim_id": "HIST-01",
+      "scope": "Changelog and Releases",
+      "previous_claim": "Nine dated product releases including live partner marketplace and measured speed gains",
+      "repo_evidence": "apps/marketing/web/src/lib/resources/changelog.ts; No matching v1.* release tags were returned; old hardcoded entries had no located release attestation",
+      "assessment": "Publication provenance not found; implementation alone is not a release record",
+      "local_correction": "Withdraw nine records; useful empty state, explicit noindex and exclusion from XML until verified records exist",
+      "verification": "Six locale pages serve200/noindex; no dereference of missing latest entry; sitemap excludes all six",
+      "external_dependency": "Owner-verified version/date/release evidence before publishing actual release history"
+    },
+    {
+      "claim_id": "LINK-01",
+      "scope": "All35 articles in three languages",
+      "previous_claim": "Missing contextual prerequisite/next-step links",
+      "repo_evidence": "apps/marketing/web/src/lib/resources/articles.ts:4; apps/marketing/web/src/components/resources/ArticleBody.tsx:59",
+      "assessment": "Local architecture/content opportunity",
+      "local_correction": "60 canonical internal body references /180 localized instances; labels translated and included in source hash; existing renderer reused",
+      "verification": "Every link resolves to a real guide, correct locale and title; no broken internal fragments in489-route set",
+      "external_dependency": "None for the local correction"
+    },
+    {
+      "claim_id": "TECH-ORIGIN-01",
+      "scope": "Metadata, schema, sitemap and public links",
+      "previous_claim": "Missing configuration can produce preview/browser-dependent canonical origins",
+      "repo_evidence": "apps/marketing/web/src/lib/public-urls.ts:138",
+      "assessment": "Reproduced preventable configuration risk",
+      "local_correction": "Stable canonical fallback; normalized explicit origins; refuse malformed/credentialed schemes; correct development Accounts fallback9002",
+      "verification": "Server/browser/preview/missing/invalid configuration negative tests",
+      "external_dependency": "Confirm the intended production NEXT_PUBLIC_MARKETING_URL and public API origins at release; no deployment settings changed"
+    },
+    {
+      "claim_id": "PERF-01",
+      "scope": "Homepage capability heading",
+      "previous_claim": "Meaningful heading initially invisible until hydration/in-view animation",
+      "repo_evidence": "apps/marketing/web/src/components/CapabilityMap.tsx:1119",
+      "assessment": "Observed no-JS/render delay and mobile LCP consequence",
+      "local_correction": "Render heading visible from first response; retain other interaction and motion controls",
+      "verification": "No-JS browser checks and repeated local Lighthouse; lab data only",
+      "external_dependency": "Production field CrUX/INP and actual edge/origin performance after separately authorized release"
+    },
+    {
+      "claim_id": "PERF-02",
+      "scope": "Pricing and article hero images",
+      "previous_claim": "Lazy/low-priority hero and full-size mobile article illustration",
+      "repo_evidence": "apps/marketing/web/src/components/MarketingIllustration.tsx:28; apps/marketing/web/src/components/resources/ArticleVisualOverview.tsx:50; apps/marketing/web/src/components/resources/ResourceArticleArtwork.tsx:16",
+      "assessment": "Measured discovery/responsive-delivery opportunity",
+      "local_correction": "Eager/high-priority pricing page hero; responsive optimized article covers; keep below-fold CTA/ecosystem art lazy",
+      "verification": "Actual image request/size/discovery evidence and repeated mobile Lighthouse; no field CWV claim",
+      "external_dependency": "Hosted image optimizer/CDN/cache behavior and real-user measurements need release/field access"
+    },
+    {
+      "claim_id": "A11Y-01",
+      "scope": "Pricing, resource buttons, responsive journey, graph and locale controls",
+      "previous_claim": "Contrast, missing Contents name, mismatched visible/accessibility labels and skipped pricing heading level",
+      "repo_evidence": "apps/marketing/web/src/app/globals.css:2897; apps/marketing/web/src/components/resources/ArticleDock.tsx:132; apps/marketing/web/src/components/MerchantJourney.tsx:112; apps/marketing/web/src/components/i18n/LanguageSwitcher.tsx:43",
+      "assessment": "Confirmed in representative Lighthouse / browser inspection",
+      "local_correction": "Darker existing purple token, matching native/explicit names, proper H2 plan names under pricing H1 and keyboard-preserving controls",
+      "verification": "EN/HI/TA desktop/mobile browser matrix plus representative Lighthouse; no comprehensive assistive-technology certification",
+      "external_dependency": "Native-language and assistive-technology review remain human validation"
+    },
+    {
+      "claim_id": "PERF-03",
+      "scope": "Homepage closing brand mark",
+      "previous_claim": "Late decorative closing IMG became a20.646s LCP candidate in actual throttled observation",
+      "repo_evidence": "apps/marketing/web/src/components/CommerceGlobeCanvas.tsx; public/icons/letbuyy-store-mark-v3.svg",
+      "assessment": "Measured lab discovery problem",
+      "local_correction": "Reference existing canonical SVG through native SVG use; preserve globe timeline, lettering, mark geometry and dimensions",
+      "verification": "Actual DevTools throttled repeats; visual element captures inspected. Exact pixel comparison failed due to rasterization/shadow differences and is retained honestly alongside accepted visual review.",
+      "external_dependency": "Production browser/field behavior after an authorized release"
+    },
+    {
+      "claim_id": "PERF-04",
+      "scope": "Inter font and Mono preload",
+      "previous_claim": "Marketing loads full352240-byte Inter font; Mono preloaded despite sparse use",
+      "repo_evidence": "apps/marketing/web/src/app/layout.tsx; public/fonts/README.md",
+      "assessment": "Measured font-delivery opportunity",
+      "local_correction": "201620-byte Inter subset with current supported characters, variable axes, metrics, sampled outlines and license metadata preserved; original retained; Mono not preloaded",
+      "verification": "font-proof.json; same viewport layout and type visually reviewed; production build and locale browser matrix",
+      "external_dependency": "New future copy with characters outside this subset needs font coverage review; current Hindi/Tamil fallback behavior retained"
+    }
+  ]
+}

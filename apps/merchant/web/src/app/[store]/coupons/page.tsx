@@ -1,8 +1,7 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import type { Coupon as SharedCoupon } from '@letbuyy/shared-types'
 import { Button, Input, Table,
@@ -10,6 +9,7 @@ import { Button, Input, Table,
     Banner,
     Card,
     ConfirmDialog,
+    EmptyState,
     IndianRupee,
     Page,
     PageHeader,
@@ -23,7 +23,6 @@ import { Button, Input, Table,
     Trash2,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 type CouponDiscountKind = SharedCoupon['type'] | 'fixed_amount'
@@ -117,18 +116,15 @@ export default function CouponsPage() {
     const expiredCoupons = useMemo(() => coupons.filter((coupon) => isExpired(coupon)).length, [coupons])
     const totalUses = useMemo(() => coupons.reduce((total, coupon) => total + (coupon.used_count || 0), 0), [coupons])
 
-    const beginRead = useReadRequest(store)
     const loadCoupons = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/coupons?status=all&limit=100`, {
-                cache: 'no-store', signal: request.signal,
+                cache: 'no-store',
             })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load coupons'))
@@ -136,7 +132,6 @@ export default function CouponsPage() {
 
             setCoupons(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load coupons'
             setLoadError(message)
             notify({
@@ -145,9 +140,9 @@ export default function CouponsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadCoupons()
@@ -321,8 +316,7 @@ export default function CouponsPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="marketing"
-                    recipe="index"
+                <PageHeader
                     title="Coupons"
                     description="Create and manage discount codes for checkout promotions."
                     breadcrumbs={[{ label: 'Marketing' }, { label: 'Coupons' }]}
@@ -338,8 +332,7 @@ export default function CouponsPage() {
 
     return (
         <Page>
-            <PageHeader identity="marketing"
-                recipe="index"
+            <PageHeader
                 title="Coupons"
                 description="Create and manage discount codes for checkout promotions."
                 breadcrumbs={[{ label: 'Marketing' }, { label: 'Coupons' }]}
@@ -502,7 +495,16 @@ export default function CouponsPage() {
                     description="Toggle status, edit eligibility, or remove expired discounts."
                 >
                     {coupons.length === 0 && !showForm ? (
-                        <EmptyState scene="coupons"
+                        <EmptyState
+                            illustration={
+                                <Image
+                                    src="/Emptystate Illustration/Coupons.png"
+                                    alt=""
+                                    width={200}
+                                    height={200}
+                                    aria-hidden="true"
+                                />
+                            }
                             title="No coupons yet"
                             body="Create discount codes to offer promotions to your customers."
                             primaryAction={<Button onClick={startCreate}><Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Create coupon</Button>}

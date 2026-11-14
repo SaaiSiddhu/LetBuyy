@@ -130,9 +130,6 @@ const colorTokens = {
     teal500: token('color.primitive.teal.500'),
 };
 
-// Export the admin primitives for deliberate consumers; do not change the mobile theme.
-for (const step of Object.keys(dtcg.color.primitive.brandInk ?? {})) colorTokens[`brandInk${step}`] = token(`color.primitive.brandInk.${step}`);
-
 const primitiveLines = Object.entries(colorTokens)
     .map(([name, value]) => `  static const ${name} = ${hexToDart(value)};`)
     .join('\n');

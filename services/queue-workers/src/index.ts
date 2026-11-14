@@ -1,11 +1,9 @@
-import { createBoundDomainReconcileHeaders, domainReconcileEnvironment } from '@letbuyy/auth-core';
 import { insertSupabaseRows, upsertSupabaseRows, type SupabaseServiceEnv } from '@letbuyy/infrastructure/supabase-adapter';
 import {
   writeRuntimeTelemetryDataPoint,
   type RuntimeTelemetryDatasetBinding,
 } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
-import { formatEmailSender } from '@letbuyy/notification-core/email';
 import { consumePlatformQueuesForCloudflareQueue, consumeNotificationJobs, consumeLoyaltyRefundJobs } from './platform-queue-consumer';
 import type { PushProviderEnv } from './push-dispatcher';
 import { processComplianceDeliveries, runComplianceAuditExportDryRun } from './compliance';
@@ -66,7 +64,6 @@ export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   MONEY_LEDGER_RECONCILIATION_BATCH_LIMIT?: string;
   API_GATEWAY_SERVICE?: Fetcher;
   INTERNAL_API_SECRET?: string;
-  DOMAIN_RECONCILE_REQUEST_SECRET?: string;
   QUEUE_TENANT_ENVELOPE_SECRET?: string;
   CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
   RESEND_API_KEY?: string;
@@ -486,7 +483,7 @@ function resendConfigured(env: Env): boolean {
   return Boolean(key && !key.toLowerCase().includes('placeholder') && !key.toLowerCase().includes('skip_needs_human'));
 }
 
-export async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDelivery[]): Promise<void> {
+async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDelivery[]): Promise<void> {
   for (const delivery of deliveries) {
     if (delivery.status === 'dead-lettered' || !isTransactionalEmailJob(delivery.input.jobType)) continue;
     const payload = emailPayload(delivery.input.payload);
@@ -504,20 +501,19 @@ export async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQu
         store_id: payload.storeId || delivery.input.siteId,
         request_id: delivery.input.requestId,
       });
-      throw new QueueProcessingError('Transactional email provider is not configured', { deterministic: false });
+      continue;
     }
 
     const result = await sendResendEmail({
       apiKey: env.RESEND_API_KEY!,
-      from: formatEmailSender(env.RESEND_FROM_EMAIL),
+      from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
       to: payload.to,
       subject: payload.subject,
       text: payload.text,
       html: payload.html,
-      idempotencyKey: delivery.input.idempotencyKey,
     });
 
-    if (!result.success || !result.messageId) {
+    if (!result.success) {
       throw new QueueProcessingError(result.error || 'Resend order confirmation failed', { deterministic: false });
     }
 
@@ -533,7 +529,7 @@ export async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQu
   }
 }
 
-export async function triggerCustomDomainReconciler(env: Env, cron: string): Promise<void> {
+async function triggerCustomDomainReconciler(env: Env, cron: string): Promise<void> {
   if (!env.API_GATEWAY_SERVICE || !env.INTERNAL_API_SECRET) {
     writeQueueLog('error', {
       route: 'scheduled.custom_domain_reconciler',
@@ -542,37 +538,24 @@ export async function triggerCustomDomainReconciler(env: Env, cron: string): Pro
     return;
   }
 
-  const environment = domainReconcileEnvironment(env);
-  if (!environment || !env.DOMAIN_RECONCILE_REQUEST_SECRET) {
-    writeQueueLog('error', { route: 'scheduled.custom_domain_reconciler', status: 'missing-signing-secret-or-environment' });
-    return;
-  }
   const url = new URL('https://queue-workers.internal/v1/internal/custom-domain-reconcile/run');
   if (env.CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT) {
     url.searchParams.set('limit', env.CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT);
   }
 
-  const bodyText = '{}';
-  const signed = await createBoundDomainReconcileHeaders({ secret: env.DOMAIN_RECONCILE_REQUEST_SECRET,
-    environment, method: 'POST', url: url.toString(), body: bodyText });
   const response = await env.API_GATEWAY_SERVICE.fetch(new Request(url.toString(), {
-    method: 'POST', body: bodyText, redirect: 'manual', signal: AbortSignal.timeout(60_000),
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-Internal-API-Secret': env.INTERNAL_API_SECRET,
       'X-Request-ID': `custom-domain-reconcile:${cron}:${Date.now()}`,
-      ...signed,
     },
   }));
 
   const body = await response.json().catch(() => null) as unknown;
-  const data = (body as { data?: { deferred?: boolean; results?: unknown[] } } | null)?.data;
-  const accepted = response.ok && body !== null && typeof body === 'object' && 'success' in body && body.success === true;
-  const partial = data?.deferred === true || (Array.isArray(data?.results) && data.results.some(result =>
-    result !== null && typeof result === 'object' && 'status' in result && result.status === null));
-  writeQueueLog(accepted && !partial ? 'info' : 'error', {
+  writeQueueLog(response.ok ? 'info' : 'error', {
     route: 'scheduled.custom_domain_reconciler',
-    status: !accepted ? 'failed' : partial ? 'partial' : 'completed',
+    status: response.ok ? 'completed' : 'failed',
     response_status: response.status,
     result: body,
   });
@@ -593,6 +576,8 @@ export default {
     const deliveries = await normalizeDeliveries(env, batch);
 
     try {
+      await persistQueueBatch(env, deliveries);
+      await recordQueueBatchMetric(env, batch, deliveries);
       let platformQueueResult: unknown = [];
 
       try {
@@ -622,11 +607,6 @@ export default {
       const executiveAnalyticsResult = await processExecutiveAnalyticsDeliveries(env, deliveries);
       const incidentCommandResult = await processIncidentCommandDeliveries(env, deliveries);
 
-      // A completed delivery is evidence of a completed effect, not receipt of
-      // its queue envelope. Failed mail must stay retryable without a false
-      // completed audit row. Provider idempotency covers an uncertain audit/ACK.
-      await persistQueueBatch(env, deliveries);
-      await recordQueueBatchMetric(env, batch, deliveries);
       for (const delivery of deliveries) delivery.message.ack();
       writeQueueLog('info', {
         queue_name: batch.queue,
@@ -661,13 +641,7 @@ export default {
     ctx.waitUntil(consumeLoyaltyRefundJobs(env, `scheduled:loyalty-refunds:${cron}:${Date.now()}`)
       .then(result => writeQueueLog('info', { route: 'scheduled.loyalty_refunds', result }))
       .catch(() => writeQueueLog('error', { route: 'scheduled.loyalty_refunds', status: 'unavailable' })));
-    if (cron === '* * * * *') {
-      // Reuse the existing minute trigger. At most2 routing domains per5-minute
-      // tick keeps the bounded Hobby rollout within its HTTPS readiness lease.
-      if (Math.floor((controller.scheduledTime || Date.now()) / 60_000) % 5 === 0)
-        ctx.waitUntil(triggerCustomDomainReconciler(env, cron));
-      return;
-    }
+    if (cron === '* * * * *') return;
     ctx.waitUntil(triggerCustomDomainReconciler(env, cron));
     ctx.waitUntil(
       runInventoryReservationSweeper(env, {

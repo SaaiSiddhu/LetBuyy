@@ -1,8 +1,0 @@
-.page { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--lb-space-6); padding: var(--lb-space-6); background: var(--lb-color-surface-subdued); color: var(--lb-color-text); }
-.card { width: 100%; max-width: 28rem; padding: var(--lb-space-8); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-lg); background: var(--lb-color-surface); box-shadow: var(--lb-shadow-sm); text-align: center; }
-.icon { display: inline-flex; padding: var(--lb-space-3); background: var(--lb-color-primary-subtle); color: var(--lb-color-primary); border-radius: var(--lb-radius-lg); margin-bottom: var(--lb-space-4); }
-.eyebrow { margin: 0 0 var(--lb-space-2); color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-caption); font-weight: var(--lb-font-weight-medium); }
-.card h1 { margin: 0; font-size: var(--lb-font-size-h2); line-height: var(--lb-line-height-heading); overflow-wrap: anywhere; }
-.message { color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-body); line-height: var(--lb-line-height-body); margin: var(--lb-space-4) 0; white-space: pre-wrap; }
-.brand { color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-caption); text-decoration: none; }
-@media(max-width: 480px) { .page { padding: var(--lb-space-4); } .card { padding: var(--lb-space-6); } }

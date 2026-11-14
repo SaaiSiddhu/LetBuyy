@@ -8,6 +8,7 @@ const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
 const cryptoPath = join(repoRoot, 'services/api-gateway/src/lib/crypto.ts');
 const internalConsolePath = join(repoRoot, 'services/api-gateway/src/routes/internal-console.ts');
+const consoleBridgePath = join(repoRoot, 'services/api-gateway/src/identity-foundation/console-bridge.ts');
 const internalSecretPath = join(repoRoot, 'services/api-gateway/src/lib/internal-secret.ts');
 const exportRoutePath = join(repoRoot, 'services/api-gateway/src/routes/export.ts');
 const appAuthPath = join(repoRoot, 'services/api-gateway/src/middleware/app-auth.ts');
@@ -24,11 +25,20 @@ function read(path: string): string {
 test('internal console and internal API secrets use timing-safe text comparison', () => {
     const crypto = read(cryptoPath);
     const internalConsole = read(internalConsolePath);
+    const consoleBridge = read(consoleBridgePath);
     const internalSecret = read(internalSecretPath);
     const exportRoute = read(exportRoutePath);
 
     assert.match(crypto, /export function timingSafeEqualText/);
-    assert.match(internalConsole, /timingSafeEqualText\(token,\s*expectedToken\)/);
+    assert.match(internalConsole, /import \{ consoleBridge \} from '\.\.\/identity-foundation\/console-bridge'/);
+    assert.match(internalConsole, /router\.use\('\*', consoleBridge\)/);
+    assert.ok(internalConsole.indexOf("router.use('*', consoleBridge)") < internalConsole.indexOf('router.route('));
+    assert.match(consoleBridge, /import \{ timingSafeEqualText \} from '\.\.\/lib\/crypto'/);
+    assert.match(consoleBridge, /const expected = c\.env\.PLATFORM_CONSOLE_API_TOKEN/);
+    assert.match(consoleBridge, /if \(!expected\) return c\.json\([\s\S]*503\)/);
+    assert.match(consoleBridge, /if \(!token \|\| !timingSafeEqualText\(token, expected\)\) return c\.json\([\s\S]*401\)/);
+    assert.ok(consoleBridge.indexOf('timingSafeEqualText(token, expected)') < consoleBridge.indexOf('await next()'));
+    assert.doesNotMatch(consoleBridge, /token\s*(?:!==|===)\s*expected|function timingSafeEqualText/);
     assert.doesNotMatch(internalConsole, /token\s*!==\s*expectedToken/);
     assert.match(internalSecret, /const provided = req\.header\('X-Internal-API-Secret'\)/);
     assert.match(internalSecret, /secrets\.some\(\(secret\) => timingSafeEqualText\(provided,\s*secret\)\)/);

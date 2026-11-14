@@ -1,0 +1,92 @@
+{
+  "captured_at": "2026-11-07T02:36:56.540236+00:00",
+  "method": "Direct native CUA of the owner current Google Chrome profile; not a substituted browser profile",
+  "google_sessions": {
+    "firebase": {
+      "selected_project": "letbuy-y",
+      "state": "Authenticated project overview observed",
+      "plan": "Spark",
+      "registered_apps": 9
+    },
+    "search_console": {
+      "selected_property": "sc-domain:letbuyy.com",
+      "state": "Authenticated Generative AI Beta report observed",
+      "impressions": 73,
+      "selected_range_control": "16 months",
+      "visible_chart_span": "18 May–4 November 2026",
+      "limitations": "Not a downloaded export or comparable window to November 3 baseline; no citation/click/conversion count inferred."
+    }
+  },
+  "cloudflare": {
+    "initial_observation": {
+      "state": "Sign in to Cloudflare page observed",
+      "dns_records_accessible": false,
+      "mutations": false
+    },
+    "current_state": "Authenticated after owner login; relevant .com records and redirect inventory read",
+    "dns_records_accessible": true,
+    "mutations": false,
+    "evidence": "cloudflare-current-dns.json"
+  },
+  "local_checks": [
+    {
+      "surface": "pricing",
+      "mode": "normal desktop window",
+      "verified": [
+        "healthy real Launch/Growth prices and coming-soon plans",
+        "comparison expanded to See fewer features",
+        "Only differences changed checkbox state and removed equal rows"
+      ]
+    },
+    {
+      "surface": "first-store guide",
+      "mode": "normal desktop window",
+      "verified": [
+        "article renders",
+        "correct five numbered steps"
+      ]
+    },
+    {
+      "surface": "first-store guide",
+      "mode": "Chrome iPhone 16 emulation 393x852",
+      "verified": [
+        "responsive guide visible without observed clipping in sampled viewport",
+        "visible contents icon opens five-step drawer",
+        "Configure Payments closes drawer and jumps to section"
+      ]
+    },
+    {
+      "surface": "pricing",
+      "mode": "Chrome iPhone 16 emulation 393x852",
+      "verified": [
+        "page and plan headings render",
+        "Open menu changes to Close menu and exposes pricing navigation"
+      ]
+    },
+    {
+      "surface": "Accounts signup",
+      "mode": "Chrome iPhone 16 emulation 393x852",
+      "verified": [
+        "signup page renders",
+        "Continue disabled initially",
+        "Apple explicitly unavailable",
+        "Google button visible",
+        "Cloudflare test widget loads"
+      ],
+      "limits": "No signup submission, authentication success, database mutation, billing or PSP acceptance claimed."
+    },
+    {
+      "surface": "first-store guide",
+      "mode": "normal Chrome window",
+      "verified": [
+        "Selecting Configure Payments from Contents displays the actual section heading and its content below the sticky resources navigation"
+      ]
+    }
+  ],
+  "settings": "Device toolbar was toggled off and DevTools close invoked after local checks. No hosted state was modified.",
+  "limits": [
+    "No frame-by-frame animation comparison in native Chrome",
+    "No physical iPhone/Android or assistive-technology pass",
+    "No native Safari/Firefox pass"
+  ]
+}

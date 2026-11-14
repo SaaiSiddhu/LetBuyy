@@ -1,0 +1,67 @@
+{
+  "captured_at": "2026-10-29T19:32:43.071352+00:00",
+  "rows": [
+    {
+      "path": "/",
+      "request_headers": {
+        "Accept-Language": "hi-IN,hi;q=0.9"
+      },
+      "status": 307,
+      "location": "/in-hi",
+      "root_lang": null,
+      "cache_control": "private, no-store",
+      "vary": "Accept-Language, Cookie",
+      "passed": true
+    },
+    {
+      "path": "/",
+      "request_headers": {
+        "Accept-Language": "ta-IN,ta;q=0.9"
+      },
+      "status": 307,
+      "location": "/in-ta",
+      "root_lang": null,
+      "cache_control": "private, no-store",
+      "vary": "Accept-Language, Cookie",
+      "passed": true
+    },
+    {
+      "path": "/",
+      "request_headers": {
+        "Accept-Language": "en-IN,en;q=0.9"
+      },
+      "status": 307,
+      "location": "/in",
+      "root_lang": null,
+      "cache_control": "private, no-store",
+      "vary": "Accept-Language, Cookie",
+      "passed": true
+    },
+    {
+      "path": "/in",
+      "request_headers": {
+        "Accept-Language": "ta-IN,ta;q=0.9"
+      },
+      "status": 200,
+      "location": "",
+      "root_lang": "en",
+      "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "passed": true
+    },
+    {
+      "path": "/in-ta",
+      "request_headers": {
+        "x-letbuyy-locale": "in",
+        "Accept-Language": "en-IN"
+      },
+      "status": 200,
+      "location": "",
+      "root_lang": "ta",
+      "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

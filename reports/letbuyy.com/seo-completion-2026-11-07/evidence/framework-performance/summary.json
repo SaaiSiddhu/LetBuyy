@@ -1,0 +1,30 @@
+{
+  "capturedAt": "2026-11-07T02:42:03.983Z",
+  "scope": "Single diagnostic sample per variant/page; cannot close acceptance",
+  "rows": [
+    {
+      "variant": "next-16.4.5",
+      "page": "pricing",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "runtimeError": null,
+      "lcpMs": 2928.6146249999997,
+      "tbtMs": 36.5,
+      "cls": 0,
+      "scriptBytes": 242281,
+      "lighthouseVersion": "13.6.0"
+    },
+    {
+      "variant": "next-16.4.5",
+      "page": "guide",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "runtimeError": null,
+      "lcpMs": 3907.4880000000003,
+      "tbtMs": 28.5,
+      "cls": 0,
+      "scriptBytes": 248579,
+      "lighthouseVersion": "13.6.0"
+    }
+  ]
+}

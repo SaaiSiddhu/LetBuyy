@@ -1,0 +1,113 @@
+{
+  "capturedAt": "2026-11-02T18:31:12.117Z",
+  "rows": [
+    {
+      "locale": "in",
+      "width": 375,
+      "scheme": "light",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in",
+      "width": 375,
+      "scheme": "dark",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "scheme": "light",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in",
+      "width": 1366,
+      "scheme": "dark",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "scheme": "light",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in-hi",
+      "width": 375,
+      "scheme": "dark",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "scheme": "light",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in-hi",
+      "width": 1366,
+      "scheme": "dark",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "scheme": "light",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in-ta",
+      "width": 375,
+      "scheme": "dark",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "scheme": "light",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    },
+    {
+      "locale": "in-ta",
+      "width": 1366,
+      "scheme": "dark",
+      "equal": true,
+      "beforeMainCount": 2,
+      "afterMainCount": 1,
+      "afterArticleTag": "ARTICLE"
+    }
+  ]
+}

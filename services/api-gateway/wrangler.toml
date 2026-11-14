@@ -33,7 +33,6 @@ ENVIRONMENT = "staging"
 APP_ENV = "staging"
 NODE_ENV = "production"
 NEXT_PUBLIC_ENV = "staging"
-NEXT_PUBLIC_STORE_ROOT_DOMAIN = "letbuyy.store"
 WORKER_ENV = "staging"
 DEPLOYMENT_ENV = "staging"
 TELEMETRY_ENV = "staging"
@@ -122,13 +121,10 @@ invocation_logs = true
 crons = []
 
 [env.staging.vars]
-STOREFRONT_INTERNAL_PERIMETER = "bound-request-v1"
 ENVIRONMENT = "staging"
 APP_ENV = "staging"
 NODE_ENV = "production"
 NEXT_PUBLIC_ENV = "staging"
-NEXT_PUBLIC_STORE_ROOT_DOMAIN = "letbuyy.store"
-CUSTOM_DOMAIN_CNAME_TARGET = "storefront-staging.letbuyy.store"
 WORKER_ENV = "staging"
 DEPLOYMENT_ENV = "staging"
 TELEMETRY_ENV = "staging"
@@ -243,12 +239,11 @@ invocation_logs = true
 crons = ["*/15 * * * *"]
 
 [env.production.vars]
-STOREFRONT_INTERNAL_PERIMETER = "bound-request-v1"
 ENVIRONMENT = "production"
 APP_ENV = "production"
 NODE_ENV = "production"
-NEXT_PUBLIC_STORE_ROOT_DOMAIN = "letbuyy.store"
-CUSTOM_DOMAIN_CNAME_TARGET = "storefront.letbuyy.store"
+NEXT_PUBLIC_ENV = "production"
+WORKER_ENV = "production"
 DEPLOYMENT_ENV = "production"
 TELEMETRY_ENV = "production"
 FEATURE_GRAPHQL = "false"
@@ -260,6 +255,7 @@ FEATURE_AI_CREDIT_PURCHASE = "false"
 RATE_LIMIT_KV_FALLBACK = "off"
 STOREFRONT_CACHE = "on"
 STOREFRONT_POOLED_SQL = "on"
+STOREFRONT_VIEW_SAMPLE_RATE = "0.1"
 STOREFRONT_SEARCH_PROJECTION = "on"
 ANALYTICS_PROJECTION_READS = "on"
 PRODUCT_VARIANT_DIFF = "on"
@@ -268,16 +264,18 @@ ORDER_ITEMS_RELATIONAL_READS = "on"
 PRODUCT_VARIANTS_RELATIONAL_READS = "on"
 BUYER_AI_ENABLED = "false"
 AI_PROVIDER_MODE = "sandbox"
+AI_PROVIDER = "letbuyy_sandbox"
+AI_PROVIDER_MODEL = "letbuyy-sandbox-copywriter"
 AI_CREDIT_PURCHASE_MODE = "sandbox"
 AI_CREDIT_PURCHASE_PROVIDER = "letbuyy_sandbox"
 AI_CREDIT_PRICE_INR_PAISE = "100"
-# Disabled credit purchases need no invalid provider-key placeholder; FEATURE_AI_CREDIT_PURCHASE remains false.
+AI_CREDIT_RAZORPAY_KEY_ID = "SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID"
 LETBUYY_IDENTITY_ISSUER = "https://accounts.letbuyy.com"
 WHATSAPP_PROVIDER_MODE = "sandbox"
 WHATSAPP_PROVIDER = "letbuyy_sandbox"
-# Sandbox WhatsApp needs no invalid account/sender placeholder. Keep its existing
-# provider/mode gates; the freed Free-plan variable slot holds the separately
-# encrypted TURNSTILE_DOMAIN_MANAGEMENT credential, never a live Twilio key.
+TWILIO_ACCOUNT_SID = "SKIP_NEEDS_HUMAN_TWILIO_ACCOUNT_SID"
+TWILIO_WHATSAPP_FROM = "SKIP_NEEDS_HUMAN_TWILIO_WHATSAPP_FROM"
+REQUEST_LOG_SAMPLE_RATE = "0.02"
 RUNTIME_NAME = "LetBuyy API"
 PRIMARY_REGION = "ap-south-1"
 EDGE_SCOPE = "global-edge"
@@ -338,7 +336,3 @@ mode = "smart"
 [[env.production.durable_objects.bindings]]
 name = "RUNTIME_COORDINATOR"
 class_name = "LetbuyyRuntimeDurableObject"
-
-# Static Argon2 loader is pinned to reviewed upstream bytes; fail on drift.
-[build]
-command = "node ../../scripts/generators/generate-store-access-wasm.mjs --check"

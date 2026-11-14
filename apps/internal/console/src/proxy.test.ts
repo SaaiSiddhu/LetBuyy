@@ -130,9 +130,11 @@ test('a revoked operator cannot complete MFA on their old session either -- /mfa
 
 test('an unauthenticated request to a protected path is redirected to login, independent of the allowlist', async () => {
     await withEnv({ PLATFORM_CONSOLE_SESSION_SECRET: SESSION_SECRET, PLATFORM_CONSOLE_ALLOWED_EMAILS: 'active-operator@example.test' }, async () => {
-        const res = await proxy(await requestFor('/dashboard'));
-        assert.equal(res.status, 307);
-        assert.ok(res.headers.get('location')?.includes('/login') || res.headers.get('location')?.includes('/lookup'));
+        for (const path of ['/dashboard','/support','/merchants/0e4851f5-2c96-416d-ae42-25fe5ff01ea4/billing']) {
+            const res = await proxy(await requestFor(path));
+            assert.equal(res.status, 307);
+            assert.equal(res.headers.get('location'), BASE_URL+'/login', 'operators must enter the Console flow, never merchant lookup');
+        }
     });
 });
 

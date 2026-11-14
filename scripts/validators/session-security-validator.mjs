@@ -49,6 +49,13 @@ function printed(file, node) {
 function functionBody(file, name) {
   return printed(file, tree(file).statements.find(n => ts.isFunctionDeclaration(n) && n.name?.text === name)?.body);
 }
+function middlewareBody(file, name) {
+  const declaration = tree(file).statements.filter(ts.isVariableStatement)
+    .flatMap(n => [...n.declarationList.declarations]).find(n => n.name.getText(tree(file)) === name);
+  const call = declaration?.initializer;
+  return ts.isCallExpression(call ?? {}) && call.expression.getText(tree(file)) === 'createMiddleware'
+    ? printed(file, call.arguments.find(n => ts.isArrowFunction(n) || ts.isFunctionExpression(n))?.body) : '';
+}
 function routeBody(file, method, route, receiver = 'router') {
   const call = tree(file).statements.filter(ts.isExpressionStatement).map(n => n.expression).find(n => ts.isCallExpression(n) && ts.isPropertyAccessExpression(n.expression)
     && n.expression.expression.getText(tree(file)) === receiver && n.expression.name.text === method
@@ -364,9 +371,15 @@ reporter.assert(imported(operatorGatewayFile, ['verifyInternalAppRequest'], '../
   && imported(operatorGatewayFile, ['completeConsoleMfa'], '../execution/console-mfa-execution.adapter'),
 'operator Gateway must import the actual transport guard and durable MFA adapter');
 const consoleRouterFile = 'services/api-gateway/src/routes/internal-console.ts';
-requires(routeBody(consoleRouterFile, 'use', '*'), [
-  'const expectedToken = c.env.PLATFORM_CONSOLE_API_TOKEN', 'if (!expectedToken)',
-  'if (!token || !timingSafeEqualText(token, expectedToken))', 'await next()',
+const consoleBridgeFile = 'services/api-gateway/src/identity-foundation/console-bridge.ts';
+reporter.assert(imported(consoleRouterFile, ['consoleBridge'], '../identity-foundation/console-bridge')
+  && mount(consoleRouterFile, 'router', 'use', '*', 'consoleBridge') >= 0
+  && imported(consoleBridgeFile, ['createMiddleware'], 'hono/factory')
+  && imported(consoleBridgeFile, ['timingSafeEqualText'], '../lib/crypto'),
+'Console compatibility router must mount its actual service transport guard');
+requires(middlewareBody(consoleBridgeFile, 'consoleBridge'), [
+  'const expected = c.env.PLATFORM_CONSOLE_API_TOKEN', 'if (!expected) return c.json(',
+  'if (!token || !timingSafeEqualText(token, expected)) return c.json(', 'await next()',
 ], 'Console compatibility router must retain its fail-closed service transport gate');
 reporter.assert(mount(consoleRouterFile, 'router', 'use', '*') >= 0
   && mount(consoleRouterFile, 'router', 'use', '*') < mount(consoleRouterFile, 'router', 'route', '/sessions', 'internalConsoleSessionsRouter'),

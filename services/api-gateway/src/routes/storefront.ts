@@ -1,5 +1,3 @@
-import { StorefrontDiscoveryQuerySchema, type StorefrontDiscoveryQuery, type StorefrontDiscoveryMetadata } from '@letbuyy/commerce-core';
-import { STOREFRONT_DISCOVERY_RPC, storefrontDiscoveryRpcArgs, readStorefrontDiscoveryPayload } from '../lib/storefront-discovery';
 // ============================================================
 // STOREFRONT (PUBLIC) — Unauthenticated APIs (Doc 10/09 §21)
 // ============================================================
@@ -7,7 +5,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
-import { toPublicProduct, toPublicVariant, withPublicPriceObservation, type PublicPriceObservation } from '../lib/public-product-view';
+import { toPublicVariant, withPublicPriceObservation, type PublicPriceObservation } from '../lib/public-product-view';
 import {
     cachedJson,
     storefrontRequestCacheKey,
@@ -20,10 +18,10 @@ import {
     type StorefrontProductReviewsQueryInput,
 } from '../schemas/review.schema';
 import { registerStorefrontInternalPaymentRoutes } from './storefront/internal-payment-routes';
-import { registerStorefrontPublicRoutes, type StorefrontThemeReleaseReadOptions } from './storefront/public-routes';
-import { AppError } from '../lib/errors';
+import { registerStorefrontPublicRoutes } from './storefront/public-routes';
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { enqueueOrderConfirmationEmail } from '../lib/order-confirmation-email';
 import { signQueueTenantEnvelope } from '../lib/queue-tenant-envelope';
 import {
     getCustomerSession,
@@ -328,8 +326,23 @@ async function emitStorefrontOrderPaidEvent(
         actorId: null,
     });
 
-    // Migration402 captures the email intent in the payment transaction.
-
+    if (input.env) {
+        await enqueueOrderConfirmationEmail(input.env, db, {
+            orderId: order.id || input.orderId,
+            storeId,
+            requestId: input.requestId,
+            idempotencyKey: input.idempotencyKey,
+        }).catch((error) => {
+            console.error(JSON.stringify({
+                level: 'error',
+                event: 'storefront_order_confirmation_email_dispatch_failed',
+                order_id: order.id || input.orderId,
+                store_id: storeId,
+                request_id: input.requestId,
+                error: error instanceof Error ? error.message : 'unknown error',
+            }));
+        });
+    }
 }
 
 const STOREFRONT_SITE_SELECT: string =
@@ -341,9 +354,9 @@ const STOREFRONT_SITE_COMPAT_SELECT: string =
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =
-    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,importer_details,display_order,created_at,updated_at,seo_title,seo_description,metadata';
+    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,importer_details,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_COMPAT: string =
-    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,display_order,created_at,updated_at,seo_title,seo_description,metadata';
+    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_MINIMAL: string =
     'id,store_id,name,description,images,price,category,tags,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',variants', '');
@@ -363,7 +376,6 @@ type PublicProductQueryOptions = {
     search?: string;
     countryOfOrigin?: string;
     paginated?: boolean;
-    discovery?: StorefrontDiscoveryQuery;
 };
 
 type SqlRecord = Record<string, unknown>;
@@ -374,7 +386,6 @@ type PublicProductQueryResult = {
     data: PublicProductRow[];
     count: number;
     error: DatabaseErrorLike;
-    discovery?: StorefrontDiscoveryMetadata;
 };
 
 type SearchDocumentProductResult = {
@@ -398,7 +409,6 @@ type PublicProductVariantRow = {
     option3?: string | null;
     image_url?: string | null;
     position?: number | string | null;
-    metadata?: unknown;
 };
 
 type StorefrontOrderItemRow = {
@@ -482,7 +492,6 @@ function publicProductVariantView(row: PublicProductVariantRow): Record<string, 
         option3: storefrontString(row.option3),
         image_url: storefrontString(row.image_url),
         position: storefrontNumber(row.position) ?? 0,
-        metadata: row.metadata,
     });
 }
 
@@ -498,7 +507,7 @@ async function hydratePublicProductVariants(c: AppContext, products: PublicProdu
     if (productVariantRelationalReadsEnabled(c.env)) {
         const { data, error } = await db
             .from('product_variants')
-            .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position, metadata')
+            .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
             .in('product_id', Array.from(new Set(productIds)))
             .order('position', { ascending: true });
 
@@ -643,14 +652,14 @@ async function hydrateStorefrontOrderItems(c: AppContext, orders: SqlRecord[]): 
 function productRowWithoutCount(row: ProductSqlRow): SqlRecord {
     const normalized = normalizeSqlRecord(row);
     delete normalized.__total_count;
-    return toPublicProduct(normalized);
+    return normalized;
 }
 
 function publicProductRows(value: unknown): PublicProductRow[] {
     if (!Array.isArray(value)) return [];
     return value.filter((row): row is PublicProductRow => {
         return Boolean(row) && typeof row === 'object' && !Array.isArray(row);
-    }).map(row => toPublicProduct(row));
+    });
 }
 
 function searchDocumentTerm(value: string | undefined): string | null {
@@ -713,23 +722,49 @@ async function querySearchDocumentProductIds(
 // store_name are each unique within their own column but never against each other, so matching
 // either column can select two different tenants for one handle and return an arbitrary row —
 // a cross-tenant read. subdomain is NOT NULL and unique, so equality is single-valued; every
-// a verified absence stays absent; transport/schema errors use the bounded REST
-// compatibility path and remain unavailable if that independent read also fails.
-async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): Promise<PublishedStoreRecord | null | undefined> {
+// other outcome (no row, more than one row, query error) resolves to "store not found".
+async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): Promise<PublishedStoreRecord | null> {
     const sql = getPooledSql(c.env);
-    if (!sql) return undefined;
-    const rows = await sql.unsafe<{ payload: PublishedStoreRecord | null }[]>(
-        'select public.read_published_storefront_site_v1($1, true) as payload', [handle]);
-    return rows[0]?.payload || null;
+    if (!sql) return null;
+    const rows = await sql.unsafe<PublishedStoreRecord[]>(
+        'select id from sites where subdomain = $1 and status = $2 and deleted_at is null limit 1',
+        [handle, 'published'],
+    ).catch(() => []);
+    return normalizeSqlRecords(rows)[0] || null;
 }
 
-async function loadCurrentThemeReleaseFromPooledSql(c: AppContext, storeId: string, options: StorefrontThemeReleaseReadOptions): Promise<StorefrontThemeReleaseRecord | null | undefined> {
+async function loadSiteByHandleFromPooledSql(c: AppContext, handle: string): Promise<StorefrontSiteRecord | null> {
     const sql = getPooledSql(c.env);
-    if (!sql) return undefined;
-    const rows = await sql.unsafe<{ payload: StorefrontThemeReleaseRecord | null }[]>(
-        'select public.read_published_storefront_release_v1($1, $2, $3, $4) as payload',
-        [storeId, options.releaseId || null, options.releaseVersion ?? null, options.projection || 'legacy']);
-    return rows[0]?.payload || null;
+    if (!sql) return null;
+    const rows = await sql.unsafe<StorefrontSiteRecord[]>(
+        `select ${STOREFRONT_SITE_RELEASE_SELECT}
+         from sites
+         where subdomain = $1
+           and status = $2
+           and deleted_at is null
+         limit 1`,
+        [handle, 'published'],
+    ).catch(() => []);
+    return normalizeSqlRecords(rows)[0] || null;
+}
+
+async function loadCurrentThemeReleaseFromPooledSql(c: AppContext, storeId: string): Promise<StorefrontThemeReleaseRecord | null> {
+    const sql = getPooledSql(c.env);
+    if (!sql) return null;
+    const rows = await sql.unsafe<StorefrontThemeReleaseRecord[]>(
+        `select id, theme_id, theme_instance_id, theme_package_version_id, release_version, release_config, release_manifest,
+                template_snapshot, settings_snapshot, asset_manifest, cache_manifest, data_binding_manifest,
+                schema_manifest_version, engine_version, published_at
+         from theme_releases
+         where store_id = $1
+           and is_current = true
+           and release_status = $2
+           and deleted_at is null
+         order by release_version desc
+         limit 1`,
+        [storeId, 'published'],
+    ).catch(() => []);
+    return normalizeSqlRecords(rows)[0] || null;
 }
 
 async function queryPublicProductsFromPooledSql(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult | null> {
@@ -794,18 +829,15 @@ async function loadPublishedStore(c: AppContext, subdomain: string): Promise<Pub
     const handle = normalizeStorefrontHandle(subdomain);
     if (!handle) return null;
 
-    try {
-        const pooledStore = await loadPublishedStoreFromPooledSql(c, handle);
-        if (pooledStore !== undefined) return pooledStore;
-    } catch { /* bounded REST compatibility fallback; a verified absence stays absent */ }
+    const pooledStore = await loadPublishedStoreFromPooledSql(c, handle);
+    if (pooledStore) return pooledStore;
 
     const selectStore = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('sites')
             .select('id')
             .eq('subdomain', handle)
-            .eq('status', 'published')
-            .not('published', 'is', false);
+            .eq('status', 'published');
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -813,10 +845,9 @@ async function loadPublishedStore(c: AppContext, subdomain: string): Promise<Pub
     let { data: store, error } = await selectStore(true).maybeSingle();
 
     if (isSchemaMismatchError(error)) {
-        ({ data: store, error } = await selectStore(false).maybeSingle());
+        ({ data: store } = await selectStore(false).maybeSingle());
     }
 
-    if (error) throw new AppError('Storefront is unavailable', 503, 'STOREFRONT_UNAVAILABLE');
     return store as PublishedStoreRecord | null;
 }
 
@@ -827,8 +858,7 @@ async function loadPublishedStoreById(c: AppContext, storeId: string): Promise<P
             .from('sites')
             .select('id')
             .eq('id', storeId)
-            .eq('status', 'published')
-            .not('published', 'is', false);
+            .eq('status', 'published');
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -836,10 +866,9 @@ async function loadPublishedStoreById(c: AppContext, storeId: string): Promise<P
     let { data: store, error } = await selectStore(true).maybeSingle();
 
     if (isSchemaMismatchError(error)) {
-        ({ data: store, error } = await selectStore(false).maybeSingle());
+        ({ data: store } = await selectStore(false).maybeSingle());
     }
 
-    if (error) throw new AppError('Storefront is unavailable', 503, 'STOREFRONT_UNAVAILABLE');
     return store as PublishedStoreRecord | null;
 }
 
@@ -852,10 +881,10 @@ async function loadSiteByHandle(
     if (!normalized) return null;
 
     const db = getSupabaseAdmin(c);
-    // This row carries permission, tenant identity and the current publication
-    // pointer as well as content. General SQL query-cache results cannot be its
-    // authority. Keep this bounded handle read current; immutable release reads
-    // and the content Cache API remain available after admission.
+    if (options.publishedOnly) {
+        const pooledSite = await loadSiteByHandleFromPooledSql(c, normalized);
+        if (pooledSite) return pooledSite;
+    }
 
     const selectSite = (selectFields: string, includeDeletedAtFilter: boolean) => {
         let query = db
@@ -884,60 +913,42 @@ async function loadSiteByHandle(
     }
 
     if (isSchemaMismatchError(error)) {
-        ({ data, error } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, false).maybeSingle());
+        ({ data } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, false).maybeSingle());
     }
 
-    if (error) throw new AppError('Storefront is unavailable', 503, 'STOREFRONT_UNAVAILABLE');
     return (data as StorefrontSiteRecord | null) || null;
 }
 
-async function loadCurrentThemeRelease(c: AppContext, storeId: string, options: StorefrontThemeReleaseReadOptions = {}): Promise<StorefrontThemeReleaseRecord | null> {
-    const unavailable = () => new AppError('Published theme is unavailable', 503, 'PUBLICATION_UNAVAILABLE');
-    if (options.releaseId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.releaseId)) throw unavailable();
-    const checked = (row: StorefrontThemeReleaseRecord | null) => {
-        if (options.releaseId && (!row || row.id !== options.releaseId
-            || (options.releaseVersion != null && row.release_version !== options.releaseVersion))) throw unavailable();
-        return row;
-    };
-    let pooled: StorefrontThemeReleaseRecord | null | undefined;
-    try { if(!c.get('storefrontVisitorGrant')?.preview)pooled = await loadCurrentThemeReleaseFromPooledSql(c, storeId, options); }
-    catch { /* one independently verified REST fallback; errors there remain unavailable */ }
-    if (pooled !== undefined) return checked(pooled);
-
+async function loadCurrentThemeRelease(c: AppContext, storeId: string): Promise<StorefrontThemeReleaseRecord | null> {
     const db = getSupabaseAdmin(c);
-    const baseQuery = (fields: string, includeDeleted: boolean, selectedId?: string) => {
-        let query = db.from('theme_releases').select(fields).eq('store_id', storeId);
-        const id = options.releaseId || selectedId;
-        if (id) {
-            query = query.eq('id', id).in('release_status', ['published', 'superseded']);
-            if (options.releaseId) query = query.not('published_at', 'is', null);
-        } else query = query.eq('is_current', true).eq('release_status', 'published');
-        if (includeDeleted) query = query.is('deleted_at', null);
+    const pooledRelease = await loadCurrentThemeReleaseFromPooledSql(c, storeId);
+    if (pooledRelease) return pooledRelease;
+
+    const baseQuery = (select: string, includeDeletedAtFilter: boolean) => {
+        let query = db
+            .from('theme_releases')
+            .select(select)
+            .eq('store_id', storeId)
+            .eq('is_current', true)
+            .eq('release_status', 'published');
+
+        if (includeDeletedAtFilter) query = query.is('deleted_at', null);
         return query.order('release_version', { ascending: false }).limit(1);
     };
-    const metadata = 'id,theme_id,theme_instance_id,theme_package_version_id,release_version,release_manifest,schema_manifest_version,engine_version,published_at';
-    const fields = options.projection === 'render-v1' ? metadata + ',template_snapshot'
-        : metadata + ',release_config,template_snapshot,settings_snapshot,asset_manifest,cache_manifest,data_binding_manifest';
-    const legacyFields = 'id,theme_id,release_version,release_config,published_at';
-    let includeDeleted = true;
-    let { data, error } = await baseQuery(fields, includeDeleted).maybeSingle();
-    if (error && isSchemaMismatchError(error)) {
-        includeDeleted = !isMissingColumnError(error, 'deleted_at');
-        ({ data, error } = await baseQuery(legacyFields, includeDeleted).maybeSingle());
-        if (error && includeDeleted && isMissingColumnError(error, 'deleted_at')) {
-            includeDeleted = false;
-            ({ data, error } = await baseQuery(legacyFields, includeDeleted).maybeSingle());
-        }
+
+    const extendedSelect = 'id, theme_id, theme_instance_id, theme_package_version_id, release_version, release_config, release_manifest, template_snapshot, settings_snapshot, asset_manifest, cache_manifest, data_binding_manifest, schema_manifest_version, engine_version, published_at';
+    const legacySelect = 'id, theme_id, release_version, release_config, published_at';
+    let { data, error } = await baseQuery(extendedSelect, true).maybeSingle();
+
+    if (error || !data) {
+        ({ data, error } = await baseQuery(legacySelect, true).maybeSingle());
     }
-    if (error) throw unavailable();
-    let row = (data as unknown as StorefrontThemeReleaseRecord | null) || null;
-    // Snapshot wins even when empty; only a falsy snapshot needs legacy config.
-    if (row && options.projection === 'render-v1' && !row.template_snapshot && row.release_config === undefined) {
-        const fallback = await baseQuery('id,release_config', includeDeleted, row.id).maybeSingle();
-        if (fallback.error || !fallback.data) throw unavailable();
-        row = { ...row, release_config: (fallback.data as unknown as StorefrontThemeReleaseRecord).release_config };
+
+    if (error || !data) {
+        ({ data } = await baseQuery(legacySelect, false).maybeSingle());
     }
-    return checked(row);
+
+    return (data as StorefrontThemeReleaseRecord | null) || null;
 }
 
 function appBlockFromRegistryRegistration(registration: Record<string, unknown>): AppBlockInstance | null {
@@ -1116,14 +1127,82 @@ async function loadLegacyStorefrontAppBlocks(c: AppContext, storeId: string): Pr
 }
 
 async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult> {
-    const query = options.discovery ?? StorefrontDiscoveryQuerySchema.parse({
-        page: options.page, limit: options.limit, search: options.search,
-        category: options.category, country_of_origin: options.countryOfOrigin,
-    });
-    const result = await getSupabaseAdmin(c).rpc(STOREFRONT_DISCOVERY_RPC, storefrontDiscoveryRpcArgs(storeId, query, options.ids));
-    if (result.error) return { data: [], count: 0, error: result.error };
-    const payload = readStorefrontDiscoveryPayload(result.data, query);
-    return { ...payload, data: await hydratePublicProductVariants(c, publicProductRows(payload.data)), error: null };
+    const db = getSupabaseAdmin(c);
+    if (options.search && !options.countryOfOrigin && storefrontSearchIndexReadsEnabled(c.env)) {
+        const projected = await querySearchDocumentProductIds(c, storeId, options);
+        if (projected) {
+            if (projected.ids.length === 0) return { data: [], count: 0, error: null };
+
+            const hydrated = await queryPublicProducts(c, storeId, {
+                ...options,
+                ids: projected.ids,
+                limit: projected.ids.length,
+                paginated: false,
+                search: undefined,
+            });
+
+            return {
+                data: sortProductsBySearchDocumentIds(hydrated.data, projected.ids),
+                count: projected.count,
+                error: hydrated.error,
+            };
+        }
+    }
+
+    const pooledResult = await queryPublicProductsFromPooledSql(c, storeId, options);
+    if (pooledResult) {
+        return {
+            ...pooledResult,
+            data: await hydratePublicProductVariants(c, pooledResult.data),
+        };
+    }
+
+    const relationalProductVariants = productVariantRelationalReadsEnabled(c.env);
+    const attempts = [
+        { select: relationalProductVariants ? PRODUCT_SELECT_FULL_RELATIONAL : PRODUCT_SELECT_FULL, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
+        { select: relationalProductVariants ? PRODUCT_SELECT_COMPAT_RELATIONAL : PRODUCT_SELECT_COMPAT, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
+        { select: relationalProductVariants ? PRODUCT_SELECT_COMPAT_RELATIONAL : PRODUCT_SELECT_COMPAT, useDeletedAt: false, useActive: true, orderBy: 'display_order' },
+        { select: PRODUCT_SELECT_MINIMAL, useDeletedAt: false, useActive: false, orderBy: 'created_at' },
+    ];
+    let lastError: DatabaseErrorLike = null;
+
+    for (const attempt of attempts) {
+        if (options.countryOfOrigin && !attempt.select.includes('country_of_origin')) continue;
+        let query = options.paginated
+            ? db.from('products').select(attempt.select, { count: 'exact' })
+            : db.from('products').select(attempt.select);
+
+        query = query.eq('store_id', storeId);
+        if (attempt.useActive) query = query.eq('is_active', true);
+        if (attempt.useDeletedAt) query = query.is('deleted_at', null);
+        if (options.ids?.length) query = query.in('id', options.ids);
+        if (options.category && attempt.select.includes('category')) query = query.eq('category', options.category);
+        if (options.search && attempt.select.includes('name')) query = query.ilike('name', `%${options.search}%`);
+        if (options.countryOfOrigin) {
+            const origin = options.countryOfOrigin.trim().replace(/[\\%_]/g, (match) => `\\${match}`);
+            query = query.ilike('country_of_origin', origin);
+        }
+        query = query.order(attempt.orderBy, { ascending: true });
+
+        const offset = ((options.page || 1) - 1) * options.limit;
+        const result = options.paginated
+            ? await query.range(offset, offset + options.limit - 1)
+            : await query.limit(options.limit);
+
+        if (!result.error) {
+            const data = publicProductRows(result.data);
+            return {
+                data: await hydratePublicProductVariants(c, data),
+                count: result.count || data.length,
+                error: null,
+            };
+        }
+
+        lastError = result.error;
+        if (!isSchemaMismatchError(result.error)) break;
+    }
+
+    return { data: [], count: 0, error: lastError };
 }
 
 function normalizePublicRouteToken(value: string): string | null {

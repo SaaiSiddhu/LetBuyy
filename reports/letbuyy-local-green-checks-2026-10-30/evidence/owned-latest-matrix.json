@@ -1,0 +1,517 @@
+{
+  "method": "Latest successful result per suite; initial Console case had an overly specific error-code expectation at the outer perimeter; corrected case rerun through real worker. Other runtime inputs unchanged. Original red attempt retained.",
+  "suites": [
+    {
+      "name": "billing-mandate-intent.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/billing-mandate-intent.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 5.4,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_billing_mandate_intent_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1.3,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-3",
+        "upstreamPort": 64673,
+        "proxyPort": 64674
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 194,
+        "refused": 0,
+        "upstreamErrors": 2
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "console-page-authority.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/console-page-authority.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-52962-mvu0mt2a-fc97c4",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 29.9,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_console_page_authority_postgres",
+      "templateSeconds": 23.3,
+      "provisionSeconds": 1,
+      "rest": {
+        "container": "letbuyy-exec-c74ea8e3bc64-rest-1",
+        "upstreamPort": 65106,
+        "proxyPort": 65107
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 431,
+        "refused": 0,
+        "upstreamErrors": 1
+      },
+      "receipt": "console-final.json"
+    },
+    {
+      "name": "merchant-operations-priorities.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-operations-priorities.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 6.6,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_merchant_operations_priorities_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-9",
+        "upstreamPort": 64858,
+        "proxyPort": 64859
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 346,
+        "refused": 0,
+        "upstreamErrors": 1
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "platform-console-session.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/platform-console-session.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 7.5,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_platform_console_session_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-12",
+        "upstreamPort": 65065,
+        "proxyPort": 65066
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 180,
+        "refused": 0,
+        "upstreamErrors": 1
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "store-creation-idempotency.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/store-creation-idempotency.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 3.3,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_store_creation_idempotency_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1.2,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-4",
+        "upstreamPort": 64693,
+        "proxyPort": 64694
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 86,
+        "refused": 0,
+        "upstreamErrors": 2
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "store-readiness-health.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/store-readiness-health.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 6.2,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_store_readiness_health_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1.2,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-10",
+        "upstreamPort": 64898,
+        "proxyPort": 64899
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 238,
+        "refused": 0,
+        "upstreamErrors": 2
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "subscription-checkout-browser.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 89,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_subscription_checkout_browser_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1.2,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-2",
+        "upstreamPort": 63247,
+        "proxyPort": 63249
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 1239,
+        "refused": 0,
+        "upstreamErrors": 2
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "subscription-payment-ownership.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-payment-ownership.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 11.9,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_subscription_payment_ownership_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1.2,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-6",
+        "upstreamPort": 64738,
+        "proxyPort": 64739
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 125,
+        "refused": 0,
+        "upstreamErrors": 2
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "subscription-single-activation.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-single-activation.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 46,
+      "pass": 46,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 42.7,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_subscription_single_activation_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-7",
+        "upstreamPort": 64758,
+        "proxyPort": 64759
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 1118,
+        "refused": 0,
+        "upstreamErrors": 1
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "verification-token-redemption.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/verification-token-redemption.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 2.3,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_verification_token_redemption_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-5",
+        "upstreamPort": 64716,
+        "proxyPort": 64717
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 23,
+        "refused": 0,
+        "upstreamErrors": 1
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "merchant-public-signup-browser.postgres",
+      "path": "tests/owned-db/merchant-public-signup-browser.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 151.2,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_merchant_public_signup_browser_postgres",
+      "templateSeconds": 59.2,
+      "provisionSeconds": 2,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-1",
+        "upstreamPort": 62180,
+        "proxyPort": 62181
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 1808,
+        "refused": 0,
+        "upstreamErrors": 2
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "subscription-tax-gross-conservation.postgres",
+      "path": "tests/owned-db/subscription-tax-gross-conservation.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39801-mvu0eofh-9610d9",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 20.1,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_subscription_tax_gross_conservation_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-294337267bc0-rest-8",
+        "upstreamPort": 64820,
+        "proxyPort": 64821
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 715,
+        "refused": 0,
+        "upstreamErrors": 1
+      },
+      "receipt": "owned-initial.json"
+    },
+    {
+      "name": "merchant-account-messages.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-account-messages.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-54759-mvu0pggt-a96ce1",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 30.8,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_merchant_account_messages_postgres",
+      "templateSeconds": 23.7,
+      "provisionSeconds": 1,
+      "rest": {
+        "container": "letbuyy-exec-8605d74bef2c-rest-1",
+        "upstreamPort": 65227,
+        "proxyPort": 65228
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 258,
+        "refused": 0,
+        "upstreamErrors": 1
+      },
+      "receipt": "custody-final.json"
+    }
+  ],
+  "suite_count": 13,
+  "pass": 120,
+  "fail": 0,
+  "skipped": 0,
+  "passed": true
+}

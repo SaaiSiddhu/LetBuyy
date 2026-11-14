@@ -1,0 +1,85 @@
+[
+  {
+    "path": "apps/marketing/web/next.config.ts",
+    "new_file": false,
+    "before_sha256": "6f0320662941f637b93b52f156b682b06a9e5c77726f19004302657a42a9ab09",
+    "after_sha256": "ecbe6c629d3784bba5dae681fc47cdd68b42ac217ecd19355c0b5c629348d4dd"
+  },
+  {
+    "path": "apps/marketing/web/src/app/layout.tsx",
+    "new_file": false,
+    "before_sha256": "10dbae1ebca5fbb8ac7e97a0fc926b01a6b3e0db8fcc2a4a79bc68129cf49faa",
+    "after_sha256": "d05fb8984090accc91f2965b07107b9ccb3bee54e959fdbdd90f5d8a62d28fa2"
+  },
+  {
+    "path": "apps/marketing/web/src/app/[locale]/layout.tsx",
+    "new_file": false,
+    "before_sha256": "b1ca5b82c3e2ac99a37eac72f59a895bf53472e3571d3d8d3126a5d04f2388e1",
+    "after_sha256": "a0172fecdc0a75d2045bc3cad49c3c43c2408daad0227615511dea1dce1f3424"
+  },
+  {
+    "path": "apps/marketing/web/src/components/i18n/CopyProvider.tsx",
+    "new_file": false,
+    "before_sha256": "d6a8b6b5ef5340349261202716a95ad58e8e8868c2a488736d8749bf39e29299",
+    "after_sha256": "52ac523e88077993e8d0b6c645a30840cb63ef9609f98a267be8a5d69be8168e"
+  },
+  {
+    "path": "apps/marketing/web/src/components/Header.tsx",
+    "new_file": false,
+    "before_sha256": "abb595eb9b131d192e760151e806eb7b3a09aca15a777da0ca08d0668bc11914",
+    "after_sha256": "29edaf1e3ff3d0dadfe3227927c646497c9f2488f69ded0413efa6a014d4e28f"
+  },
+  {
+    "path": "apps/marketing/web/src/components/Footer.tsx",
+    "new_file": false,
+    "before_sha256": "cdbbbec70a2eceae7661b2d5e0d411e728bafc14d17542efa844d904f02cfde6",
+    "after_sha256": "851fd4ab202887dd95510adc8c441ed6cbb5ed0182e90448bc1bb1dfc120e69a"
+  },
+  {
+    "path": "apps/marketing/web/src/components/FinalCTA.tsx",
+    "new_file": false,
+    "before_sha256": "019134cf20009993e74e068fef6b9fbaf0ccbf8da285cf08d87bb0984bf92ede",
+    "after_sha256": "0109834dc00c9f0457968d0a2404ed4daf7a4027463e42462e2deaab73c9c08a"
+  },
+  {
+    "path": "apps/marketing/web/src/components/resources/ArticleSidebar.tsx",
+    "new_file": false,
+    "before_sha256": "8ffbd15362e01f8fc672d2c8a0fefa7b33a680c3984485f9dee7bf0dc567e99e",
+    "after_sha256": "358f883d82c5eba68976dc6e7ed83b46e69a53698cecac8df9f0eff55d445e1a"
+  },
+  {
+    "path": "apps/marketing/web/src/lib/pricing.ts",
+    "new_file": false,
+    "before_sha256": "5211a4aad8e1cf1048ded89242e211f0ba9cc4eb11ec10ad93e49e9b099bb632",
+    "after_sha256": "54a5a53f59c3705875f00e4f8c2abfefb0c3e65f4de62753cfdd4822febfb62b"
+  },
+  {
+    "path": "apps/marketing/web/public/fonts/README.md",
+    "new_file": false,
+    "before_sha256": "b30ba6732957afb159c638783bdf4840a7fe52f392616bc6a06de7a89a3914fb",
+    "after_sha256": "389dea9a133971a5bf2980e44abf73869d6f14a2c4f8c75b47e901b78f9c5871"
+  },
+  {
+    "path": "packages/typescript/ui/src/icons.tsx",
+    "new_file": false,
+    "before_sha256": "da2e7d5b6daf8742be0a6c2d10f65c6a7f718e7aaad01f5f670f3d20987e0641",
+    "after_sha256": "bf64e3510d69169e76914c66a3ce60dfdd41758310f9d15c7f7710ccfb29c133"
+  },
+  {
+    "path": "tests/marketing/pricing-delivery.test.ts",
+    "new_file": false,
+    "before_sha256": "568be7e7d371f85809ab20cbb5ddede7451a523fb866149dc80a8ba9f573fa2f",
+    "after_sha256": "59eb7d8296da9110b1aebed6b00c04206960f18f05200feac4428d105d7ad1c1"
+  },
+  {
+    "path": "scripts/marketing/prepare-inter-weight-subset.py",
+    "new_file": true,
+    "before_sha256": null,
+    "after_sha256": "2223a17a1391156ed2e891fd349fa17a6b598c6b6530c693ed01985f682ea399"
+  },
+  {
+    "path": "apps/marketing/web/public/fonts/Inter-Marketing-400-900.woff2",
+    "new_file": true,
+    "after_sha256": "4333e5b1fdb186a15ab1fce785e288ee3253393ae9b7e18c4bb5e3e23326881d"
+  }
+]

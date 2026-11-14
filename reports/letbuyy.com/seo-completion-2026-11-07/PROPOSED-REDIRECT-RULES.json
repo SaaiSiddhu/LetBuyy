@@ -1,0 +1,39 @@
+{
+  "name": "Proposed LetBuyy legacy public entry redirects",
+  "kind": "zone",
+  "phase": "http_request_dynamic_redirect",
+  "rules": [
+    {
+      "ref": "letbuyy_legacy_seller_root",
+      "description": "Proposed exact legacy public root redirect",
+      "expression": "(http.host eq \"seller.letbuyy.com\") and http.request.uri.path eq \"/\" and http.request.method in {\"GET\" \"HEAD\"}",
+      "action": "redirect",
+      "enabled": false,
+      "action_parameters": {
+        "from_value": {
+          "target_url": {
+            "value": "https://accounts.letbuyy.com/lookup"
+          },
+          "status_code": 301,
+          "preserve_query_string": false
+        }
+      }
+    },
+    {
+      "ref": "letbuyy_legacy_developer_roots",
+      "description": "Proposed exact legacy public root redirect",
+      "expression": "(http.host in {\"developer.letbuyy.com\" \"developers.letbuyy.com\"}) and http.request.uri.path eq \"/\" and http.request.method in {\"GET\" \"HEAD\"}",
+      "action": "redirect",
+      "enabled": false,
+      "action_parameters": {
+        "from_value": {
+          "target_url": {
+            "value": "https://www.letbuyy.com/in/resources/developers"
+          },
+          "status_code": 301,
+          "preserve_query_string": false
+        }
+      }
+    }
+  ]
+}

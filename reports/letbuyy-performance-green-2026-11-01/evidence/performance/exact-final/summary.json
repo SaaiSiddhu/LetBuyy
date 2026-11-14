@@ -1,0 +1,115 @@
+{
+  "timestamp": "2026-11-01T05:33:53.718940+00:00",
+  "build_id": "qIzBUmU9wa-xByyOS0W5I",
+  "scope": "Exact final artifact; cold Lighthouse mobile. DevTools observed network/CPU runs and default simulated models reported separately. Not field CWV or physical devices. Budgets LCP<=2500ms TBT<=200ms CLS<=0.1.",
+  "rows": [
+    {
+      "name": "ta-home",
+      "path": "/in-ta",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "lcp_ms": 1991.943,
+      "tbt_ms": 98.03399999999988,
+      "cls": 0,
+      "scores": {
+        "performance": 0.95,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "runtime_error": null,
+      "measured_budget_pass": true
+    },
+    {
+      "name": "ta-pricing",
+      "path": "/in-ta/pricing",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "lcp_ms": 2041.288,
+      "tbt_ms": 59.64499999999998,
+      "cls": 0.000119,
+      "scores": {
+        "performance": 0.97,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "runtime_error": null,
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-pricing",
+      "path": "/in/pricing",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "lcp_ms": 2031.603,
+      "tbt_ms": 52.44199999999955,
+      "cls": 0.002438,
+      "scores": {
+        "performance": 0.97,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "runtime_error": null,
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-guide",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "method": "devtools",
+      "device": "mobile",
+      "exit_code": 0,
+      "lcp_ms": 2199.069,
+      "tbt_ms": 51.00700000000006,
+      "cls": 0,
+      "scores": {
+        "performance": 0.97,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "runtime_error": null,
+      "measured_budget_pass": true
+    },
+    {
+      "name": "en-pricing-model",
+      "path": "/in/pricing",
+      "method": "simulate",
+      "device": "mobile",
+      "exit_code": 0,
+      "lcp_ms": 3608.985,
+      "tbt_ms": 20,
+      "cls": 0,
+      "scores": {
+        "performance": 0.9,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "runtime_error": null,
+      "measured_budget_pass": false
+    },
+    {
+      "name": "en-guide-model",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "method": "simulate",
+      "device": "mobile",
+      "exit_code": 0,
+      "lcp_ms": 4057.16,
+      "tbt_ms": 38,
+      "cls": 0,
+      "scores": {
+        "performance": 0.87,
+        "accessibility": 1,
+        "best-practices": 1,
+        "seo": 1
+      },
+      "runtime_error": null,
+      "measured_budget_pass": false
+    }
+  ]
+}

@@ -1,0 +1,380 @@
+{
+  "audit_date": "2026-10-29",
+  "timezone": "Asia/Kolkata",
+  "target_url": "https://www.letbuyy.com/in",
+  "scope": "English India public marketing site graph, plus discovery and limited locale samples",
+  "summary": {
+    "health_score": null,
+    "score_status": "withheld",
+    "business_type": "India-focused B2B commerce SaaS / online store builder",
+    "top_findings": [
+      "Canonical URLs disagree with locale routing",
+      "GST guide contains outdated or overgeneralized tax guidance",
+      "Free-plan and capability claims conflict across the site",
+      "XML sitemap omits the entire discovered article library",
+      "Pricing depends on client rendering and lacks a primary heading"
+    ],
+    "quick_wins": [
+      "Fix the existing canonical URL helper for affected resource templates.",
+      "Remove unsupported free-forever offer claims after confirming the actual offer.",
+      "Add the 35 published English articles to a canonical-only sitemap.",
+      "Give pricing a descriptive title and primary heading.",
+      "Correct the 1.7%→4.6% percentage calculation and synchronized headline."
+    ],
+    "critical_issues_confirmed": 0,
+    "scoring_note": "No aggregate or numeric category scores: performance unavailable and authority/indexation/conversion/citation inputs missing. Missing inputs were neither zeroed nor passed."
+  },
+  "measurement": {
+    "crawl_url_attempts": 171,
+    "english_html_200": 163,
+    "english_articles": 35,
+    "tag_pages": 89,
+    "sitemap_total_urls": 99,
+    "sitemap_english_urls": 33,
+    "english_articles_in_sitemap": 0,
+    "locale_stripped_canonicals": 101,
+    "other_nonself_canonicals": 2,
+    "schema_json_parse_errors": 0,
+    "image_elements": 1471,
+    "img_missing_alt_attribute": 0,
+    "img_empty_alt": 1369,
+    "lighthouse": null,
+    "lighthouse_agentic_fraction": null,
+    "crux": null,
+    "gsc": null,
+    "ga4": null,
+    "backlinks": null,
+    "ai_citations": null
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": null,
+      "measurement_status": "partial qualitative",
+      "what_works": [
+        "Measured: HTTP status, robots, sitemap contents, canonicals and initial HTML. The core site is accessible; no blanket homepage noindex was found. HTTPS, HSTS, nosniff and CSP headers are present. The observed 307 root/pricing/resources redirects are functional, not broken links. Google-selected canonicals, actual index coverage and historical crawl behavior are unavailable."
+      ],
+      "findings": [
+        {
+          "id": "SEO-01",
+          "category": "Technical SEO",
+          "severity": "High",
+          "title": "Canonical URLs disagree with locale routing",
+          "description": "101 English pages (7 resource categories, 89 tags, 5 authors) declare canonicals with /in removed. For example /in/resources/payments declares https://www.letbuyy.com/resources/payments. Three representative category/tag/author targets returned 307 to the corresponding /in page, which declares the redirecting URL again. Separately, /in/create has distinct content and H1 Create Your Site but inherits the homepage title/description and canonical; /in/resources/search also canonicalizes to the homepage. Evidence: page-inventory.csv, evidence/canonical-targets.json, evidence/analysis-summary.json.",
+          "evidence": "101 English pages (7 resource categories, 89 tags, 5 authors) declare canonicals with /in removed. For example /in/resources/payments declares https://www.letbuyy.com/resources/payments. Three representative category/tag/author targets returned 307 to the corresponding /in page, which declares the redirecting URL again. Separately, /in/create has distinct content and H1 Create Your Site but inherits the homepage title/description and canonical; /in/resources/search also canonicalizes to the homepage. Evidence: page-inventory.csv, evidence/canonical-targets.json, evidence/analysis-summary.json.",
+          "recommendation": "Use the final, intended indexable locale URL consistently in canonicals, navigation, structured data and sitemaps. Give /in/create its own metadata and canonical if it is intended as an organic landing page; otherwise make its consolidation explicit. Treat internal search separately, as SEO-07 describes. Keep homepage and article self-canonicals that already work.",
+          "dependencies": "Agree which archives and creation pages should be indexed; reuse the existing URL/locale metadata utilities, without adding a parallel SEO system.",
+          "validation": "Recrawl every affected route: each intended indexable URL has one absolute self-canonical returning 200 with no redirect. Inspect sample Google-selected canonicals in Search Console when access is available.",
+          "leading_indicator": "Count of intended indexable pages whose declared canonical redirects or differs from their final URL: target 0.",
+          "failure_check": "Failure is any remaining locale-stripped canonical or Google selecting an unintended canonical after recrawl; do not treat changed HTML alone as proof of indexing."
+        },
+        {
+          "id": "SEO-04",
+          "category": "Technical SEO",
+          "severity": "High",
+          "title": "XML sitemap omits the entire discovered article library",
+          "description": "/sitemap.xml contains 99 URLs, 33 per locale; all 35 discovered English article URLs are absent. Categories and internal links make them crawlable, so omission is not proof that they are unindexed. All 99 lastmod values are 2026-06-04 although sampled article/release content has later displayed dates. /in/create and /in/resources/search are listed despite canonicalizing to the homepage. Robots also declares three satellite sitemaps (themes/apps/developer) that failed DNS resolution in this audit.",
+          "evidence": "/sitemap.xml contains 99 URLs, 33 per locale; all 35 discovered English article URLs are absent. Categories and internal links make them crawlable, so omission is not proof that they are unindexed. All 99 lastmod values are 2026-06-04 although sampled article/release content has later displayed dates. /in/create and /in/resources/search are listed despite canonicalizing to the homepage. Robots also declares three satellite sitemaps (themes/apps/developer) that failed DNS resolution in this audit.",
+          "recommendation": "Generate sitemap entries from the existing published article registry and locale availability; include only canonical, indexable final URLs. Use real significant modification dates or omit untrustworthy lastmod values. Remove search/alias URLs as appropriate. Confirm ownership/DNS intent and remove stale satellite sitemap declarations; keep frozen services dormant.",
+          "dependencies": "SEO-01 and SEO-07 canonical/indexing decisions; trustworthy published/modified fields. Do not include all archive/filter URLs automatically.",
+          "validation": "Expected published English article set minus sitemap article set is empty; every sitemap URL returns 200, is indexable and agrees with its canonical. Validate locale alternates. Recheck all declared sitemap endpoints from another resolver, and inspect sitemap processing in Search Console when connected.",
+          "leading_indicator": "Eligible English articles represented: target 35/35 for the current crawl; invalid/redirecting/noncanonical sitemap URLs: target 0.",
+          "failure_check": "Failure is a new published article omitted again, a blanket build-time lastmod refresh, or continuing declarations of confirmed retired hosts."
+        },
+        {
+          "id": "SEO-07",
+          "category": "Technical SEO",
+          "severity": "Medium",
+          "title": "Search and tag archives need an intentional indexing policy",
+          "description": "The crawl found 89 indexable English tag pages for 35 articles. Their raw main text ranges from 92 to 232 whitespace-delimited tokens including headings/cards. /in/resources/search is index, follow, appears in the sitemap, has no H1 and canonicalizes to the homepage. Tag canonicals also have the locale problem in SEO-01. Counts/lengths are diagnostics, not a Google minimum or proof of a penalty.",
+          "evidence": "The crawl found 89 indexable English tag pages for 35 articles. Their raw main text ranges from 92 to 232 whitespace-delimited tokens including headings/cards. /in/resources/search is index, follow, appears in the sitemap, has no H1 and canonicalizes to the homepage. Tag canonicals also have the locale problem in SEO-01. Counts/lengths are diagnostics, not a Google minimum or proof of a penalty.",
+          "recommendation": "Keep useful category/tag hubs that serve a distinct need and enrich their descriptions/curation. Consolidate overlapping tags or use noindex for low-value navigation archives where appropriate. Normally exclude internal search results from indexing and sitemaps, with a deliberate canonical policy. Preserve crawlable links to articles. Do not apply noindex solely because a page is short.",
+          "dependencies": "Article coverage and internal-link inventory; Search Console impressions/canonical data before broad pruning.",
+          "validation": "Recrawl both kept and excluded archive classes; ensure all 35 articles remain internally reachable and important hubs remain indexable. Validate noindex in HTML rather than blocking crawler access to the directive.",
+          "leading_indicator": "Approved archive/indexing policy applied consistently; orphaned published articles: target 0.",
+          "failure_check": "Failure is removing useful landing pages or making article discovery depend solely on search/filter controls."
+        }
+      ]
+    },
+    {
+      "name": "Content Quality",
+      "score": null,
+      "measurement_status": "partial qualitative",
+      "what_works": [
+        "Measured: all English initial HTML; detailed review focused on homepage, pricing, app guide, GST guide and reviews guide. Visible bylines, author pages and update dates exist. Author employment/qualifications and actual product readiness are unverified. Do not equate word count, publication dates or a biography with demonstrated expertise."
+      ],
+      "findings": [
+        {
+          "id": "SEO-02",
+          "category": "Content Quality",
+          "severity": "High",
+          "title": "GST guide contains outdated or overgeneralized tax guidance",
+          "description": "/in/resources/payments/gst-for-ecommerce-india says marketplace TCS is 1% and marketplace GST registration is mandatory regardless of turnover. The GST Council July 2024 newsletter documents a reduction from 1% to 0.5%; Notification 34/2023 provides a conditional registration exemption for qualifying intra-state goods sellers through ecommerce operators. The page provides no linked official editorial sources. Both sampled Tamil/Hindi versions repeat the substantive guidance. This audit establishes conflicts with official material, not a comprehensive legal opinion on every rate or exception.",
+          "evidence": "/in/resources/payments/gst-for-ecommerce-india says marketplace TCS is 1% and marketplace GST registration is mandatory regardless of turnover. The GST Council July 2024 newsletter documents a reduction from 1% to 0.5%; Notification 34/2023 provides a conditional registration exemption for qualifying intra-state goods sellers through ecommerce operators. The page provides no linked official editorial sources. Both sampled Tamil/Hindi versions repeat the substantive guidance. This audit establishes conflicts with official material, not a comprehensive legal opinion on every rate or exception.",
+          "recommendation": "Review the guide and its translations with a qualified tax reviewer; correct TCS, registration exceptions, category-rate tables and filing schedules against applicable current notifications. Add inline primary sources, effective dates, real reviewer attribution and a meaningful reviewed date. Review adjacent GST/invoicing guides for propagation.",
+          "dependencies": "Current official notifications and a real qualified reviewer; do not invent credentials or replace business policy.",
+          "validation": "Every tax rate, threshold and mandatory statement has a supporting current primary source and applicable conditions; verify all three language versions together.",
+          "leading_indicator": "Number of unresolved factual conflicts in sampled compliance guides: target 0; percentage of tax claims with dated official sources.",
+          "failure_check": "Failure is retained blanket advice contradicted by a source, or translations still repeating the removed claim."
+        },
+        {
+          "id": "SEO-06",
+          "category": "Content Quality",
+          "severity": "Medium",
+          "title": "Numerical growth claims lack sources; one contains a calculation error",
+          "description": "/in/resources/ecommerce/how-product-reviews-increase-conversion says conversion changes from 1.7% to 4.6% and calls it a 270% lift. The relative increase is (4.6−1.7)/1.7 ≈170.6%; 4.6 is about 270.6% of the original. The article also asserts a 3x WhatsApp response advantage without an editorial source link. None of the 35 English articles contains an external non-social/non-profile reference link under the documented link heuristic; absence of links is not proof every statement is false.",
+          "evidence": "/in/resources/ecommerce/how-product-reviews-increase-conversion says conversion changes from 1.7% to 4.6% and calls it a 270% lift. The relative increase is (4.6−1.7)/1.7 ≈170.6%; 4.6 is about 270.6% of the original. The article also asserts a 3x WhatsApp response advantage without an editorial source link. None of the 35 English articles contains an external non-social/non-profile reference link under the documented link heuristic; absence of links is not proof every statement is false.",
+          "recommendation": "Correct the percentage and headline, or replace the claim with faithfully scoped original research. Attribute study population, date, method and limitations; do not generalize global samples to Indian merchants without support. Source material performance/comparison claims and verify genuine author credentials. Keep team authors as an organization where appropriate.",
+          "dependencies": "Access to the actual underlying research or owned measurement; genuine editorial ownership.",
+          "validation": "Recompute every displayed comparison; verify that citations support the exact claim and geography. Check synchronized titles, summaries, schema and translations.",
+          "leading_indicator": "Material numerical claims with verifiable sources and correct calculations; target 0 unsupported claims in priority guides.",
+          "failure_check": "Failure is a corrected body retaining an inaccurate 270% headline, or a source that discusses a different outcome/sample."
+        }
+      ]
+    },
+    {
+      "name": "On-Page SEO",
+      "score": null,
+      "measurement_status": "partial qualitative",
+      "what_works": [
+        "Measured: all titles/descriptions/headings plus desktop/mobile homepage and rendered pricing. All 163 English HTML pages have a meta description and canonical. Two title-duplication groups and one exact description-duplication group were observed; no broad duplicate-description epidemic was found. Duplicate cases are /in vs /in/create and resource index vs search. /in/pricing and /in/resources/search have no H1."
+      ],
+      "findings": [
+        {
+          "id": "SEO-05",
+          "category": "On-Page SEO",
+          "severity": "Medium",
+          "title": "Pricing depends on client rendering and lacks a primary heading",
+          "description": "/in/pricing returned 200 with title Pricing, no H1, and no visible rupee-denominated plan prices in initial main HTML. Its later rendered DOM contained the paid plans and comparison table, but still no H1. Homepage pricing likewise populated after client loading. Initial browser snapshots briefly showed no plan cards. This does not prove Google fails to render the prices.",
+          "evidence": "/in/pricing returned 200 with title Pricing, no H1, and no visible rupee-denominated plan prices in initial main HTML. Its later rendered DOM contained the paid plans and comparison table, but still no H1. Homepage pricing likewise populated after client loading. Initial browser snapshots briefly showed no plan cards. This does not prove Google fails to render the prices.",
+          "recommendation": "Render public plan names, prices, trial conditions and availability in initial HTML using the existing pricing authority, with an honest fallback if unavailable. Use an H1 for the pricing page’s main heading and a specific title such as LetBuyy Pricing — Plans for Indian Online Stores. Preserve availability labels for future plans.",
+          "dependencies": "SEO-03 confirmed commercial facts; existing pricing data/cache contract.",
+          "validation": "Fetch with JavaScript disabled and confirm visible actual plan prices and conditions, then compare to hydrated values. Verify exactly one meaningful H1. Test loading/failure behavior without a false success state.",
+          "leading_indicator": "Public pricing facts present in initial HTML and matching the hydrated page; missing-H1 count on commercial landing pages: target 0.",
+          "failure_check": "Failure is raw markup containing only a loading placeholder or schema prices disagreeing with visible prices."
+        },
+        {
+          "id": "SEO-08",
+          "category": "On-Page SEO",
+          "severity": "Medium",
+          "title": "Homepage category and India intent can be clearer",
+          "description": "/in title is LetBuyy — India-first commerce operating system | LetBuyy; H1 is More than a store. Your Commerce OS. The description already says online store in India with UPI/COD/GST. A focused web-search sample for online store builder India UPI GST zero commission returned product/home/feature landing pages emphasizing store creation, local payments and price. This is an intent hypothesis, not a geolocated Google ranking study. At the measured 390×844 viewport the H1 began near y=432 and the Start Free CTA near y=577, after the illustration.",
+          "evidence": "/in title is LetBuyy — India-first commerce operating system | LetBuyy; H1 is More than a store. Your Commerce OS. The description already says online store in India with UPI/COD/GST. A focused web-search sample for online store builder India UPI GST zero commission returned product/home/feature landing pages emphasizing store creation, local payments and price. This is an intent hypothesis, not a geolocated Google ranking study. At the measured 390×844 viewport the H1 began near y=432 and the Start Free CTA near y=577, after the illustration.",
+          "recommendation": "Keep the Commerce OS positioning but add plain buyer vocabulary near the main heading: online store builder for Indian businesses, UPI/COD, and the approved subscription/trial terms. Consider title Online Store Builder in India, 0% Commission | LetBuyy. Reduce duplicated brand text. On mobile, test moving the main promise and action ahead of the large illustration without changing the established visual identity.",
+          "dependencies": "SEO-03 truthful pricing; actual Search Console query/CTR and conversion baseline before claiming a lift.",
+          "validation": "Confirm raw/rendered/mobile copy agreement, no overflow and accessible actions. Compare query-relevant CTR and engaged signup starts on adequate data, accounting for query mix.",
+          "leading_indicator": "Qualified non-brand impressions/CTR and homepage-to-signup starts when measurable; no ranking target is promised.",
+          "failure_check": "Failure is more clicks with fewer qualified signup starts, or a title promising capabilities not generally available."
+        }
+      ]
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": null,
+      "measurement_status": "partial qualitative",
+      "what_works": [
+        "Measured: JSON syntax/types and sampled semantic consistency, not Google rich-result eligibility. Every English page includes Organization/WebSite/SoftwareApplication in a global graph; all 35 articles also have Article and BreadcrumbList. Zero JSON parse errors. Software application rich-result requirements must be checked independently; do not manufacture ratings. FAQ rich results were retired in 2026 per the current Google update ledger, so adding FAQ schema is not a recommended Google rich-result quick win."
+      ],
+      "findings": [
+        {
+          "id": "SEO-03",
+          "category": "Schema / Structured Data",
+          "severity": "High",
+          "title": "Free-plan and capability claims conflict across the site",
+          "description": "The global JSON-LD on all 163 English HTML pages contains SoftwareApplication.offers.price=\"0\" and describes a free launch tier. Homepage/pricing CTAs also claim a free-forever plan, while rendered pricing displays Launch at ₹199/month founding price (₹299 regular), Growth at ₹699 (₹999 regular), and a 14-day trial. The app-marketplace guide describes browsing/installing reviewed apps, while /in/legal/terms says public publishing surfaces are not open. Homepage/FAQ mentions AI/B2B and 50+ AI capabilities, while the Commerce OS plan labels AI Copilot/B2B coming soon. These are observed inconsistencies; actual provider readiness and paid signup behavior were not tested.",
+          "evidence": "The global JSON-LD on all 163 English HTML pages contains SoftwareApplication.offers.price=\"0\" and describes a free launch tier. Homepage/pricing CTAs also claim a free-forever plan, while rendered pricing displays Launch at ₹199/month founding price (₹299 regular), Growth at ₹699 (₹999 regular), and a 14-day trial. The app-marketplace guide describes browsing/installing reviewed apps, while /in/legal/terms says public publishing surfaces are not open. Homepage/FAQ mentions AI/B2B and 50+ AI capabilities, while the Commerce OS plan labels AI Copilot/B2B coming soon. These are observed inconsistencies; actual provider readiness and paid signup behavior were not tested.",
+          "recommendation": "Reconcile the published offer and availability against the approved product/pricing source. Distinguish zero platform commission, free trial, any genuine free plan, paid subscription and third-party charges. Generate visible copy and offers from that same existing source. Remove or correct unsupported free-offer markup and qualify planned/provider-dependent capabilities. Correct promises rather than activating a dormant marketplace to satisfy copy.",
+          "dependencies": "Approved commercial and feature-availability facts. Preserve the project’s 0% storefront transaction-fee rule; the audit does not authorize new rates or marketplace activation (WIN-R4, NEVER-R3/R5).",
+          "validation": "Compare raw HTML, hydrated pricing, CTA copy, FAQ, legal text and JSON-LD for the same offer. Validate syntax and run Google Rich Results Test; valid JSON alone is not rich-result eligibility. Never invent reviews/ratings to obtain eligibility.",
+          "leading_indicator": "Count of contradictory offer/feature statements across the sampled surfaces: target 0.",
+          "failure_check": "Failure is price=0 without a corresponding genuine visible free offer, or a guide representing a closed/planned capability as generally available."
+        },
+        {
+          "id": "SEO-09",
+          "category": "Schema / Structured Data",
+          "severity": "Medium",
+          "title": "Article entities use relative URLs and omit useful image/author connections",
+          "description": "All 35 article pages include parseable Article and BreadcrumbList JSON-LD. In sampled articles, mainEntityOfPage.@id is /resources/... without the locale, publisher.logo.url is relative, and breadcrumb items use /resources and /resources/<category>. Article.image and author.url are absent in these samples despite visible illustrations and author pages. Team authors are represented as Person. JSON parsing found no syntax errors across the 163 English pages; no full schema validator or rich-results eligibility test was run.",
+          "evidence": "All 35 article pages include parseable Article and BreadcrumbList JSON-LD. In sampled articles, mainEntityOfPage.@id is /resources/... without the locale, publisher.logo.url is relative, and breadcrumb items use /resources and /resources/<category>. Article.image and author.url are absent in these samples despite visible illustrations and author pages. Team authors are represented as Person. JSON parsing found no syntax errors across the 163 English pages; no full schema validator or rich-results eligibility test was run.",
+          "recommendation": "Use absolute final locale URLs for article IDs and breadcrumbs, absolute accessible image/logo URLs, and real linked author identities. Add a relevant visible representative article image where accurate. Model the editorial team as Organization. Keep the existing Organization/WebSite entities; avoid multiplying SEO components.",
+          "dependencies": "SEO-01 canonical URL policy; real author and image facts.",
+          "validation": "Parse all JSON-LD, validate sampled pages in Schema Markup Validator/Google Rich Results Test, and dereference the final entity/image URLs. Check that markup describes visible content.",
+          "leading_indicator": "Article identity URLs matching the canonical: target 35/35; representative article image and genuine author connections present.",
+          "failure_check": "Failure is structurally valid JSON with redirecting or incorrect entities, or fabricated author/rating data."
+        }
+      ]
+    },
+    {
+      "name": "Performance (CWV)",
+      "score": null,
+      "measurement_status": "unavailable",
+      "what_works": [
+        "Unavailable: PageSpeed Insights returned quota exceeded. No field LCP/INP/CLS, local Lighthouse score, Lighthouse version or Agentic Browsing X/N. The source observations below are optimization hypotheses; network fetch timings are not CWV. The absent skill runtime was not installed because setup/dependency repair was not requested."
+      ],
+      "findings": [
+        {
+          "id": "SEO-10",
+          "category": "Performance (CWV)",
+          "severity": "Medium",
+          "title": "Measure and reduce unnecessary early image work",
+          "description": "Raw homepage HTML includes 16 image preload links and 22 loading=eager image elements, including capability and lower-page surface art. Decoded homepage HTML is 339,643 bytes; the compressed crawl response transferred 40,805 bytes. Three measured image assets returned 200: storefront illustration 107,040 bytes, bottom CTA 128,004 bytes, social image 52,770 bytes. Public PageSpeed Insights returned HTTP/API 429 RESOURCE_EXHAUSTED; LCP, INP, CLS, Lighthouse score and Agentic Browsing X/N are unavailable.",
+          "evidence": "Raw homepage HTML includes 16 image preload links and 22 loading=eager image elements, including capability and lower-page surface art. Decoded homepage HTML is 339,643 bytes; the compressed crawl response transferred 40,805 bytes. Three measured image assets returned 200: storefront illustration 107,040 bytes, bottom CTA 128,004 bytes, social image 52,770 bytes. Public PageSpeed Insights returned HTTP/API 429 RESOURCE_EXHAUSTED; LCP, INP, CLS, Lighthouse score and Agentic Browsing X/N are unavailable.",
+          "recommendation": "Obtain a successful mobile/desktop Lighthouse lab run and CrUX/Search Console field data first. Reserve early preloads/eager fetching for actual critical above-fold content, lazy-load lower sections and serve appropriately sized variants. Profile animated illustration CPU/motion costs. Treat any speed improvement as a hypothesis until measured.",
+          "dependencies": "Available PageSpeed quota or an authorized local lab runner; CrUX/RUM field access if there is enough traffic.",
+          "validation": "Compare equivalent before/after lab runs and field LCP/INP/CLS separately; verify no new layout shift, visual break or delayed hero asset. Do not infer CWV from HTTP fetch time or HTML size.",
+          "leading_indicator": "Critical-request/image bytes before LCP, followed by measured LCP/INP/CLS when available.",
+          "failure_check": "Failure is reducing preload count without improving measured experience, or causing late hero rendering."
+        }
+      ]
+    },
+    {
+      "name": "Images",
+      "score": null,
+      "measurement_status": "partial qualitative",
+      "what_works": [
+        "Measured: image HTML attributes site-wide, rendered homepage images, and four public image downloads. Modern WebP illustrations, SVG logos, lazy loading and explicit dimensions are present. No image element omitted alt. Decorative empty alt is legitimate. The 512×512 organization PNG is 225,263 bytes, but it is not the same as the header SVG and should not be treated as a large above-fold request without a network trace."
+      ],
+      "findings": [
+        {
+          "id": "SEO-11",
+          "category": "Images",
+          "severity": "Low",
+          "title": "Complete social-preview metadata",
+          "description": "Homepage has twitter:card=summary_large_image and twitter:image, but its raw and rendered metadata lack og:image, og:url and og:type. The declared social image is accessible at 1200×630, 52,770 bytes. Organization logo returns 200 at 512×512. All 1,471 img occurrences across English pages have an alt attribute; 1,369 are empty, frequently decorative/repeated UI art. Homepage has 53 img elements with empty alt; empty alt is not automatically an accessibility defect.",
+          "evidence": "Homepage has twitter:card=summary_large_image and twitter:image, but its raw and rendered metadata lack og:image, og:url and og:type. The declared social image is accessible at 1200×630, 52,770 bytes. Organization logo returns 200 at 512×512. All 1,471 img occurrences across English pages have an alt attribute; 1,369 are empty, frequently decorative/repeated UI art. Homepage has 53 img elements with empty alt; empty alt is not automatically an accessibility defect.",
+          "recommendation": "Add a coherent Open Graph image, final page URL and appropriate type, with descriptive image metadata where useful. Keep empty alt on decorative/redundant illustrations; audit meaningful article/tutorial screenshots for descriptive alternatives. Use responsive variants where originals greatly exceed display size.",
+          "dependencies": "Existing page metadata utility and canonical URL policy.",
+          "validation": "Inspect server HTML and a social preview debugger; manually verify representative meaningful images against their context and accessible name.",
+          "leading_indicator": "Intended preview image and canonical URL rendered by preview consumers; meaningful images without alternatives: target 0.",
+          "failure_check": "Failure is decorating every image with repetitive keyword alt text or declaring an inaccessible preview image."
+        }
+      ]
+    },
+    {
+      "name": "AI Search Readiness",
+      "score": null,
+      "measurement_status": "partial qualitative",
+      "what_works": [
+        "Partial manual assessment only. Training access: wildcard robots permits public /in paths; no specific group. Search access: same wildcard policy; no separate search-robot denial observed. User-triggered agent access: same wildcard policy; no end-to-end agent action tested. This does not certify CDN/WAF access for every bot. Agentic Browsing fraction and local Agent-UX heuristic were not measured. Optional discovery-file absence is not a failure."
+      ],
+      "findings": [
+        {
+          "id": "SEO-12",
+          "category": "AI Search Readiness",
+          "severity": "Info",
+          "title": "Machine access is open; special AI files are optional",
+          "description": "robots.txt has one wildcard group allowing / and disallowing /signup; no named training/search/agent groups were observed. /llms.txt returned 404. Initial HTML contains substantial page/article content; pricing is the important client-rendered exception. Navigation, named CTAs, tabs, FAQ controls and responsive menu appeared in the browser accessibility tree. No UA spoofing matrix, action submission, WebMCP inventory or Lighthouse agentic suite was executed.",
+          "evidence": "robots.txt has one wildcard group allowing / and disallowing /signup; no named training/search/agent groups were observed. /llms.txt returned 404. Initial HTML contains substantial page/article content; pricing is the important client-rendered exception. Navigation, named CTAs, tabs, FAQ controls and responsive menu appeared in the browser accessibility tree. No UA spoofing matrix, action submission, WebMCP inventory or Lighthouse agentic suite was executed.",
+          "recommendation": "Prioritize truthful, source-linked answers and consistent canonical entities over new discovery files. If the owner wants a distinct training/search/user-agent policy, document it separately and verify current crawler tokens before changing robots. An optional llms.txt may help selected consumers, but is not required for Google AI features and has no guaranteed citation benefit.",
+          "dependencies": "SEO-01/02/03/05; an explicit owner policy for any crawler-access change.",
+          "validation": "Recheck actual crawler access/server logs and primary crawler documentation before policy edits; measure real citations only with a reproducible query set and available tools.",
+          "leading_indicator": "Priority answers present in initial HTML and backed by primary sources; actual citations remain unmeasured.",
+          "failure_check": "Failure is treating an optional file as a ranking requirement or claiming visibility from robots access alone."
+        }
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {
+        "name": "Phase 1: correctness",
+        "timeframe": "Next 1–3 working days",
+        "items": [
+          "SEO-01",
+          "SEO-02",
+          "SEO-03"
+        ]
+      },
+      {
+        "name": "Phase 2: crawl and page signals",
+        "timeframe": "Within one week",
+        "items": [
+          "SEO-04",
+          "SEO-05",
+          "SEO-09"
+        ]
+      },
+      {
+        "name": "Phase 3: content and experience",
+        "timeframe": "Weeks 2–4",
+        "items": [
+          "SEO-06",
+          "SEO-07",
+          "SEO-08",
+          "SEO-11"
+        ]
+      },
+      {
+        "name": "Phase 4: measurement and iteration",
+        "timeframe": "When measurement access is available; then after recrawl",
+        "items": [
+          "SEO-10",
+          "SEO-12"
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/",
+    "crawl": "evidence/crawl.json",
+    "inventory": "page-inventory.csv"
+  },
+  "sources": [
+    {
+      "title": "Google: canonical consolidation",
+      "url": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls"
+    },
+    {
+      "title": "Google: sitemap construction and lastmod",
+      "url": "https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap"
+    },
+    {
+      "title": "Google: localized versions",
+      "url": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "title": "Google: structured data policy",
+      "url": "https://developers.google.com/search/docs/appearance/structured-data/sd-policies"
+    },
+    {
+      "title": "Google: software application markup",
+      "url": "https://developers.google.com/search/docs/appearance/structured-data/software-app"
+    },
+    {
+      "title": "Google: AI features and ordinary SEO requirements",
+      "url": "https://developers.google.com/search/docs/appearance/ai-features"
+    },
+    {
+      "title": "Google: title links",
+      "url": "https://developers.google.com/search/docs/appearance/title-link"
+    },
+    {
+      "title": "Google: documentation updates, FAQ rich-result retirement in 2026",
+      "url": "https://developers.google.com/search/updates"
+    },
+    {
+      "title": "GST Council: July 2024 newsletter, TCS reduction",
+      "url": "https://gstcouncil.gov.in/sites/default/files/2024-08/july_newsletter.pdf"
+    },
+    {
+      "title": "CBIC/GST Council: Notification 34/2023, conditional registration exemption",
+      "url": "https://gstcouncil.gov.in/sites/default/files/2024-05/gst-ct-34-2023.pdf"
+    }
+  ],
+  "limits": [
+    "No Google-selected canonical/index coverage",
+    "No traffic, rank or backlink inventory",
+    "No successful lab or field CWV",
+    "No end-to-end signup/conversion",
+    "Limited locale sample",
+    "No paid provider calls",
+    "Public DNS failures require independent confirmation"
+  ],
+  "checks": {
+    "governance_plan": "passed exit 0",
+    "architecture_validator": "passed exit 0",
+    "full_governance": "not run, contains unrelated generated-artifact cleanup",
+    "source_code_changes": false
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "DATAFORSEO_LOGIN": false,
+  "DATAFORSEO_PASSWORD": false,
+  "FIRECRAWL_API_KEY": false,
+  "AHREFS_API_KEY": false,
+  "SERANKING_API_KEY": false,
+  "PROFOUND_API_KEY": false,
+  "BING_WEBMASTER_API_KEY": false,
+  "GOOGLE_API_KEY": false,
+  "MATOMO_API_TOKEN": false
+}

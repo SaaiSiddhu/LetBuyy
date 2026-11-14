@@ -1,8 +1,5 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-import type { AIUsageRecord } from '@letbuyy/shared-types'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Table,
@@ -11,6 +8,7 @@ import { Button, Table,
     Banner,
     Card,
     Edit3,
+    EmptyState,
     FileText,
     Image as ImageIcon,
     Mail,
@@ -26,12 +24,23 @@ import { Button, Table,
     type TableColumn,
     useToast,
 } from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDayMonthTime as formatDate } from '@letbuyy/ui/formatting'
 
-type AiUsageRow = Pick<AIUsageRecord, 'id' | 'feature' | 'credits_used'> & {
-    tokens: number | null
-    created_at: string | null
+interface AiUsage {
+    id: string
+    feature: string
+    input_tokens: number
+    output_tokens: number
+    credits_used: number
+    created_at: string
+}
+
+interface AiUsageRow {
+    id: string
+    feature: string
+    tokens: number
+    credits_used: number
+    created_at: string
 }
 
 interface Credits {
@@ -48,34 +57,34 @@ const aiFeatures = [
         description: 'Auto-generate compelling product descriptions.',
     },
     {
-        key: 'seo_meta',
+        key: 'seo_content',
         icon: Search,
         label: 'SEO content',
         description: 'Generate meta titles, descriptions, and keywords.',
     },
     {
-        key: 'blog_post',
+        key: 'blog_draft',
         icon: Edit3,
         label: 'Blog drafts',
         description: 'Create blog post outlines and first drafts.',
     },
     {
-        key: 'social_copy',
+        key: 'social_media',
         icon: Share2,
         label: 'Social posts',
         description: 'Write social media captions and posts.',
     },
     {
-        key: 'email_campaign',
+        key: 'email_copy',
         icon: Mail,
         label: 'Email copy',
         description: 'Draft marketing emails and newsletters.',
     },
     {
-        key: 'ad_copy',
+        key: 'image_alt',
         icon: ImageIcon,
-        label: 'Ad copy',
-        description: 'Draft campaign ad copy.',
+        label: 'Image alt text',
+        description: 'Generate accessible alt text for product images.',
     },
 ]
 
@@ -101,21 +110,18 @@ function formatFeature(value: string) {
 export default function AiStudioPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
-    const [credits, setCredits] = useState<Credits | null>(null)
-    const [usage, setUsage] = useState<AIUsageRecord[]>([])
+    const [credits, setCredits] = useState<Credits>({ total: 0, used: 0, remaining: 0 })
+    const [usage, setUsage] = useState<AiUsage[]>([])
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
 
-    const beginRead = useReadRequest(store)
     const loadAiStudio = useCallback(async () => {
-        const request = beginRead()
         setLoading(true)
         setLoadError(null)
 
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/ai`, { cache: 'no-store', signal: request.signal })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/ai`, { cache: 'no-store' })
             const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load AI Studio'))
@@ -123,22 +129,16 @@ export default function AiStudioPage() {
 
             const creditData = payload?.data?.credits
             if (creditData) {
-                const amounts = [creditData.plan_credits, creditData.bonus_credits, creditData.total_purchased].map(Number)
-                if (!amounts.every((value) => Number.isFinite(value) && value >= 0)) throw new Error('AI credit information is unavailable')
-                const total = amounts.reduce((sum, value) => sum + value, 0)
-                const used = Number(creditData.total_used)
-                const remaining = Number(creditData.balance)
-                if (![total, used, remaining].every((value) => Number.isFinite(value) && value >= 0)) throw new Error('AI credit information is unavailable')
-                setCredits({ total, used, remaining })
+                const total = Number(creditData.total_credits ?? creditData.plan_credits ?? creditData.balance ?? 0)
+                const used = Number(creditData.used_credits ?? creditData.total_used ?? 0)
+                setCredits({ total, used, remaining: Math.max(0, total - used) })
             } else {
-                throw new Error('AI credit information is unavailable')
+                setCredits({ total: 0, used: 0, remaining: 0 })
             }
-            if (!Array.isArray(payload?.data?.usage)) throw new Error('AI usage information is unavailable')
-            setUsage(payload.data.usage)
+            setUsage(Array.isArray(payload?.data?.usage) ? payload.data.usage : [])
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load AI Studio'
-            setCredits(null)
+            setCredits({ total: 0, used: 0, remaining: 0 })
             setUsage([])
             setLoadError(message)
             notify({
@@ -147,23 +147,22 @@ export default function AiStudioPage() {
                 variant: 'critical',
             })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => {
         void loadAiStudio()
     }, [loadAiStudio])
 
-    const percentUsed = credits && credits.total > 0 ? Math.round((credits.used / credits.total) * 100) : 0
+    const percentUsed = credits.total > 0 ? Math.round((credits.used / credits.total) * 100) : 0
     const usageRows = useMemo<AiUsageRow[]>(
         () => usage.map((item) => ({
             id: item.id,
             feature: item.feature,
-            tokens: typeof item.tokens_input === 'number' && typeof item.tokens_output === 'number'
-                ? item.tokens_input + item.tokens_output : null,
+            tokens: item.input_tokens + item.output_tokens,
             credits_used: item.credits_used,
-            created_at: item.created_at || null,
+            created_at: item.created_at,
         })),
         [usage],
     )
@@ -182,7 +181,7 @@ export default function AiStudioPage() {
             header: 'Tokens',
             render: (row) => (
                 <span className="text-[var(--lb-color-text-subdued)]">
-                    {row.tokens === null ? '—' : row.tokens.toLocaleString('en-IN')}
+                    {row.tokens.toLocaleString('en-IN')}
                 </span>
             ),
         },
@@ -196,7 +195,7 @@ export default function AiStudioPage() {
             header: 'Date',
             render: (row) => (
                 <span className="text-[var(--lb-color-text-subdued)]">
-                    {row.created_at ? formatDate(row.created_at) : '—'}
+                    {formatDate(row.created_at || new Date().toISOString())}
                 </span>
             ),
         },
@@ -205,8 +204,7 @@ export default function AiStudioPage() {
     if (loading) {
         return (
             <Page>
-                <PageHeader identity="settings"
-                    recipe="index"
+                <PageHeader
                     title="AI Studio"
                     description="Monitor AI credits and the tools available to speed up merchant content work."
                     breadcrumbs={[{ label: 'Store' }, { label: 'AI Studio' }]}
@@ -227,8 +225,7 @@ export default function AiStudioPage() {
 
     return (
         <Page>
-            <PageHeader identity="settings"
-                recipe="index"
+            <PageHeader
                 title="AI Studio"
                 description="Monitor AI credits and the tools available to speed up merchant content work."
                 breadcrumbs={[{ label: 'Store' }, { label: 'AI Studio' }]}
@@ -251,7 +248,7 @@ export default function AiStudioPage() {
                 </Banner>
             )}
 
-            {credits && <div className="grid gap-[var(--lb-space-4)] md:grid-cols-3">
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-3">
                 <MetricCard
                     label="Credits remaining"
                     value={credits.remaining.toLocaleString('en-IN')}
@@ -267,12 +264,12 @@ export default function AiStudioPage() {
                 <MetricCard
                     label="Recent generations"
                     value={usage.length.toLocaleString('en-IN')}
-                    delta="Latest 20 AI usage events"
+                    delta="Last 100 AI usage events"
                     deltaTone="neutral"
                 />
-            </div>}
+            </div>
 
-            {credits && <Card>
+            <Card>
                 <Section
                     title="AI credits"
                     description="Track consumption before merchants start generating product, SEO, and campaign copy."
@@ -287,9 +284,9 @@ export default function AiStudioPage() {
                         {percentUsed}% used - {credits.used.toLocaleString('en-IN')} credits consumed.
                     </p>
                 </Section>
-            </Card>}
+            </Card>
 
-            {credits && <Card>
+            <Card>
                 <Section
                     title="AI tools"
                     description="Content helpers available to this store through the existing AI Studio surface."
@@ -310,7 +307,7 @@ export default function AiStudioPage() {
                                             <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
                                                 {feature.label}
                                             </h3>
-                                            <Badge label="Content type" variant="default" />
+                                            <Badge label="Available" variant="success" />
                                         </div>
                                         <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                             {feature.description}
@@ -321,9 +318,9 @@ export default function AiStudioPage() {
                         })}
                     </div>
                 </Section>
-            </Card>}
+            </Card>
 
-            {credits && <Card>
+            <Card>
                 <Section
                     title="Recent usage"
                     description="A record of the latest AI generations and credit consumption."
@@ -335,20 +332,20 @@ export default function AiStudioPage() {
                             emptyMessage="No AI usage yet"
                         />
                     ) : (
-                        <EmptyState scene="ai"
+                        <EmptyState
                             icon={<Activity className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             title="No AI usage yet"
-                            body="AI generations will appear here after you use a supported content tool."
+                            body="AI generations will appear here after merchants use product copy, SEO, blog, social, email, or image alt text tools."
                             secondaryAction={(
                                 <span className="inline-flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                     <Sparkles className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                    No generations recorded
+                                    Ready for first generation
                                 </span>
                             )}
                         />
                     )}
                 </Section>
-            </Card>}
+            </Card>
         </Page>
     )
 }

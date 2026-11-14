@@ -1,0 +1,17 @@
+{
+  "contents_button_rect": {
+    "x": 19,
+    "y": 852.2257080078125,
+    "width": 38,
+    "height": 38
+  },
+  "hit_tag": "NEXTJS-PORTAL",
+  "portal_buttons": [
+    {
+      "text": "",
+      "label": "Open Next.js Dev Tools"
+    }
+  ],
+  "portal_dialogs": [],
+  "console_errors": []
+}

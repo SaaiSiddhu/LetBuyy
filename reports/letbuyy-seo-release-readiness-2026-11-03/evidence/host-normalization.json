@@ -1,0 +1,80 @@
+[
+  {
+    "url": "http://letbuyy.com/in",
+    "capturedAt": "2026-11-03T03:10:59.177102+00:00",
+    "status": 308,
+    "location": "https://letbuyy.com/in",
+    "redirectChain": [
+      {
+        "status": 308,
+        "from": "http://letbuyy.com/in",
+        "to": "https://letbuyy.com/in"
+      }
+    ]
+  },
+  {
+    "url": "https://letbuyy.com/in",
+    "capturedAt": "2026-11-03T03:10:59.292394+00:00",
+    "status": 308,
+    "location": "https://www.letbuyy.com/in",
+    "redirectChain": [
+      {
+        "status": 308,
+        "from": "https://letbuyy.com/in",
+        "to": "https://www.letbuyy.com/in"
+      }
+    ]
+  },
+  {
+    "url": "http://www.letbuyy.com/in",
+    "capturedAt": "2026-11-03T03:10:59.526008+00:00",
+    "status": 308,
+    "location": "https://www.letbuyy.com/in",
+    "redirectChain": [
+      {
+        "status": 308,
+        "from": "http://www.letbuyy.com/in",
+        "to": "https://www.letbuyy.com/in"
+      }
+    ]
+  },
+  {
+    "url": "https://www.letbuyy.store/in",
+    "capturedAt": "2026-11-03T03:10:59.652897+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.store/in",
+    "redirectChain": [],
+    "canonical": [
+      "https://www.letbuyy.com/in"
+    ],
+    "robots": [
+      "index, follow"
+    ]
+  },
+  {
+    "url": "https://www.letbuyy.store/in/pricing",
+    "capturedAt": "2026-11-03T03:11:00.290039+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.store/in/pricing",
+    "redirectChain": [],
+    "canonical": [
+      "https://www.letbuyy.com/in/pricing"
+    ],
+    "robots": [
+      "index, follow"
+    ]
+  },
+  {
+    "url": "https://www.letbuyy.store/in/resources/tag/commerce",
+    "capturedAt": "2026-11-03T03:11:00.806795+00:00",
+    "status": 200,
+    "finalUrl": "https://www.letbuyy.store/in/resources/tag/commerce",
+    "redirectChain": [],
+    "canonical": [
+      "https://www.letbuyy.com/resources/tag/commerce"
+    ],
+    "robots": [
+      "index, follow"
+    ]
+  }
+]

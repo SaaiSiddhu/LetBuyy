@@ -18,21 +18,6 @@ let sequence = 0;
 const key = () => `owned-intent-${++sequence}`;
 const config = heading => ({ themeSettings: {}, sections: { template: [{ id: 'owned', heading }] } });
 
-test('publication and reopening a published theme can seed an identical draft for private preview', async () => {
-    const snapshot = config('Published heading'), calls = [];
-    const send = async intent => { calls.push(structuredClone(intent)); return ack(intent.baseVersion + 1); };
-    const client = new ThemeDraftClient(1, send, snapshot, true, key);
-    await client.publish(async () => ack(2));
-    assert.equal(client.hasDraft, false);
-    await client.save(snapshot, undefined, true);
-    assert.equal(client.hasDraft, true);
-    assert.equal(calls[0].baseVersion, 2);
-    const reopened = new ThemeDraftClient(7, send, snapshot, false, key);
-    await reopened.save(snapshot, undefined, true);
-    assert.equal(reopened.hasDraft, true);
-    assert.equal(calls[1].baseVersion, 7);
-});
-
 test('autosave and manual save serialize exact bases instead of conflicting with themselves', async () => {
     const calls = [], a = deferred(), b = deferred();
     const client = new ThemeDraftClient(0, intent => { calls.push(structuredClone(intent)); return calls.length === 1 ? a.promise : b.promise; }, config('initial'), false, key);

@@ -1,0 +1,29 @@
+{
+  "capturedAt": "2026-11-03T08:21:27.262197+00:00",
+  "name": "treeshake",
+  "method": "Default mobile Lighthouse simulation; diagnostics cannot close acceptance",
+  "rows": [
+    {
+      "page": "pricing",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "lcpMs": 2878.198,
+      "tbtMs": 11.5,
+      "cls": 0,
+      "scriptBytes": 219984,
+      "scriptRequests": 10,
+      "lighthouseVersion": "13.6.0"
+    },
+    {
+      "page": "guide",
+      "role": "diagnostic-only",
+      "exitCode": 0,
+      "lcpMs": 3354.7974999999997,
+      "tbtMs": 0,
+      "cls": 0,
+      "scriptBytes": 226984,
+      "scriptRequests": 10,
+      "lighthouseVersion": "13.6.0"
+    }
+  ]
+}

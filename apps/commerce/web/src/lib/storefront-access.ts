@@ -1,6 +1,5 @@
 import 'server-only';
 import { readStorefrontApiBaseUrl } from './api/base-url';
-import { storefrontInternalHeaders, STOREFRONT_INTERNAL_TIMEOUT_MS } from './storefront-internal-headers';
 
 export interface StorefrontAccessContext {
   site_id: string;
@@ -21,12 +20,21 @@ export function getGatewayBaseUrl(): string {
   return value.replace(/\/+$/, '').replace(/\/v1$/, '');
 }
 
+export function getInternalHeaders(): HeadersInit {
+  const secret = process.env.INTERNAL_API_SECRET;
+  if (!secret) {
+    throw new Error('INTERNAL_API_SECRET is required for storefront access');
+  }
+  return {
+    'content-type': 'application/json',
+    'x-internal-api-secret': secret,
+  };
+}
+
 export async function resolveStorefrontAccessContext(host: string): Promise<StorefrontAccessContext | null> {
-  const url = `${getGatewayBaseUrl()}/v1/internal/store-access/resolve?host=${encodeURIComponent(host)}`;
-  const response = await fetch(url, {
-    headers: await storefrontInternalHeaders('GET', url),
+  const response = await fetch(`${getGatewayBaseUrl()}/v1/internal/store-access/resolve?host=${encodeURIComponent(host)}`, {
+    headers: getInternalHeaders(),
     cache: 'no-store',
-    signal: AbortSignal.timeout(STOREFRONT_INTERNAL_TIMEOUT_MS),
   });
   if (response.status === 404) return null;
   if (!response.ok) {
@@ -42,14 +50,16 @@ export async function verifyStorePassword(input: {
   password: string;
   ip?: string | null;
 }): Promise<boolean> {
-  const url = `${getGatewayBaseUrl()}/v1/internal/store-access/verify`;
-  const body = JSON.stringify({ site_id: input.siteId, host: input.host, password: input.password, ip: input.ip || null });
-  const response = await fetch(url, {
+  const response = await fetch(`${getGatewayBaseUrl()}/v1/internal/store-access/verify`, {
     method: 'POST',
-    headers: await storefrontInternalHeaders('POST', url, body),
-    body,
+    headers: getInternalHeaders(),
+    body: JSON.stringify({
+      site_id: input.siteId,
+      host: input.host,
+      password: input.password,
+      ip: input.ip || null,
+    }),
     cache: 'no-store',
-    signal: AbortSignal.timeout(STOREFRONT_INTERNAL_TIMEOUT_MS),
   });
   return response.ok;
 }

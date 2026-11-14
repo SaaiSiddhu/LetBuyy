@@ -1,0 +1,122 @@
+[
+  {
+    "route": "competitor-pages",
+    "applicable": true,
+    "why": "Overlapping store-builder commercial intent and an existing platform-comparison table; no dedicated comparison route found in current source route-tree check.",
+    "status": "executed",
+    "evidence": [
+      "COMPETITOR-AND-AI-VISIBILITY.md",
+      "evidence/external/competitor-comparison-data.json",
+      "evidence/external/search-and-source-log.json"
+    ],
+    "missing_prerequisites": [
+      "Geolocated SERP and actual query-demand data; product testing for behavioral comparisons"
+    ],
+    "next_step": "Upgrade the existing setup-guide comparison using primary sources; create a dedicated page only after demand/offer/availability verification."
+  },
+  {
+    "route": "sxo",
+    "applicable": true,
+    "why": "Software landing, pricing, signup/demo/contact and operational-guide journeys exist.",
+    "status": "partially executed",
+    "evidence": [
+      "COMPETITOR-AND-AI-VISIBILITY.md",
+      "evidence/crawl.json",
+      "findings/external-issues.json"
+    ],
+    "missing_prerequisites": [
+      "Controlled top-10 SERP/PAA/ad data",
+      "Customer interviews/conversion analytics",
+      "Parent browser journey observations supplement this work"
+    ],
+    "next_step": "Combine parent browser observations with owned conversion baselines; validate qualified signup/demo starts after offer/category corrections."
+  },
+  {
+    "route": "geo",
+    "applicable": true,
+    "why": "Public educational and software-offer content can be discovered by search and AI systems.",
+    "status": "partially executed",
+    "evidence": [
+      "COMPETITOR-AND-AI-VISIBILITY.md",
+      "evidence/robots.txt",
+      "evidence/external/search-and-source-log.json"
+    ],
+    "missing_prerequisites": [
+      "Actual reproducible AI-answer/citation measurements",
+      "Verified crawler logs/CDN access"
+    ],
+    "next_step": "Correct extraction facts and entities; establish fixed query set with available authorized citation data. No special AI-file ranking claim."
+  },
+  {
+    "route": "agentic",
+    "applicable": true,
+    "why": "Navigation, pricing, signup redirects and contact/demo journeys matter to browsing users and agents.",
+    "status": "partially executed",
+    "evidence": [
+      "COMPETITOR-AND-AI-VISIBILITY.md",
+      "evidence/robots.txt"
+    ],
+    "missing_prerequisites": [
+      "Parent-owned browser tree/heuristic/Lighthouse results are separate",
+      "No consequential form submission performed"
+    ],
+    "next_step": "Merge parent measured browser/Lighthouse evidence; keep heuristic, X/N and manual observations distinct; verify primary content and accessible names without submitting actions."
+  },
+  {
+    "route": "backlinks",
+    "applicable": true,
+    "why": "External authority is relevant; one public candidate was discovered.",
+    "status": "partially executed",
+    "evidence": [
+      "evidence/external/known-backlinks-verified.json",
+      "COMPETITOR-AND-AI-VISIBILITY.md"
+    ],
+    "missing_prerequisites": [
+      "Complete referring-domain/link inventory, historical snapshots and comparable competitor data",
+      "Parent auth/Common Crawl result remains separate"
+    ],
+    "next_step": "Use configured authorized provider/property exports if available; retain one-link verification as a selected sample and never infer total backlink counts."
+  },
+  {
+    "route": "local",
+    "applicable": false,
+    "why": "Observed marketing model is national online software; contact/home/terms samples do not establish an eligible in-person location or service area. A correspondence address alone is insufficient.",
+    "status": "not applicable",
+    "evidence": [
+      "evidence/crawl.json",
+      "COMPETITOR-AND-AI-VISIBILITY.md",
+      "https://support.google.com/business/answer/13763036"
+    ],
+    "missing_prerequisites": [
+      "Evidence of a real eligible in-person business would change applicability"
+    ],
+    "next_step": "Do not create GBP/location schema/pages as an SEO checkbox; reassess only if an actual eligible customer-facing location is supplied."
+  },
+  {
+    "route": "maps",
+    "applicable": false,
+    "why": "No eligible local-business location was established for the audited SaaS marketing site.",
+    "status": "not applicable",
+    "evidence": [
+      "COMPETITOR-AND-AI-VISIBILITY.md"
+    ],
+    "missing_prerequisites": [
+      "Eligible verified location and authorized Maps/GBP data if business model changes"
+    ],
+    "next_step": "No geo-grid or Maps ranking recommendation for the observed model; avoid meaningless coordinates and invented local profiles."
+  },
+  {
+    "route": "ecommerce",
+    "applicable": false,
+    "why": "Scoped origin markets software subscriptions and merchant education; it is not an inspected consumer product/SKU catalogue. Illustrative products do not establish a live store.",
+    "status": "not applicable",
+    "evidence": [
+      "evidence/crawl.json",
+      "COMPETITOR-AND-AI-VISIBILITY.md"
+    ],
+    "missing_prerequisites": [
+      "Separately scoped actual merchant storefront/product URLs and feed ownership"
+    ],
+    "next_step": "Apply Product/feed/variant/UCP checks to a real merchant property if later authorized; do not report their absence on this marketing origin as a defect."
+  }
+]

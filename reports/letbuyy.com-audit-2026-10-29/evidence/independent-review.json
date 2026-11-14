@@ -1,0 +1,118 @@
+{
+  "saved_evidence_recomputed": {
+    "english_html_pages": 163,
+    "locale_stripped_canonicals": 101,
+    "all_canonical_mismatches": 103,
+    "articles": 35,
+    "articles_missing_sitemap": 35,
+    "sitemap_entries": 99,
+    "software_offer_count": 163,
+    "all_software_offers_zero": true,
+    "missing_h1": [
+      {
+        "url": "https://www.letbuyy.com/in/pricing",
+        "h1": 0
+      },
+      {
+        "url": "https://www.letbuyy.com/in/resources/search",
+        "h1": 0
+      }
+    ],
+    "json_errors": []
+  },
+  "fresh_spot_checks": {
+    "local-home": {
+      "canonical": [
+        "http://localhost:9006/in"
+      ],
+      "h1_count": 1,
+      "og": {
+        "og:title": "LetBuyy \u2014 India-first commerce operating system",
+        "og:description": "Launch an online store in India with UPI, cash on delivery, GST invoices and shipping built in. 0% commission on your sales.",
+        "og:locale": "en_IN",
+        "og:image": "http://localhost:9006/og/letbuyy-default.png?v=3",
+        "og:image:width": "1200",
+        "og:image:height": "630",
+        "og:image:alt": "LetBuyy \u2014 India-first commerce operating system"
+      },
+      "software_offers": [
+        {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "INR",
+          "description": "Free launch tier available with 0% transaction and platform fees."
+        }
+      ]
+    },
+    "local-category": {
+      "canonical": [
+        "http://localhost:9006/resources/payments"
+      ],
+      "h1_count": 1,
+      "og": {
+        "og:title": "Payments \u2014 LetBuyy Resources | LetBuyy Resources",
+        "og:description": "UPI, COD, GST compliance, invoicing, settlements, and building trust with Indian buyers.",
+        "og:site_name": "LetBuyy",
+        "og:locale": "en_IN",
+        "og:image": "http://localhost:9006/og/letbuyy-default.png?v=3",
+        "og:image:width": "1200",
+        "og:image:height": "630",
+        "og:image:alt": "LetBuyy \u2014 India-first commerce operating system",
+        "og:type": "website"
+      },
+      "software_offers": [
+        {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "INR",
+          "description": "Free launch tier available with 0% transaction and platform fees."
+        }
+      ]
+    },
+    "local-pricing": {
+      "canonical": [
+        "http://localhost:9006/in/pricing"
+      ],
+      "h1_count": 0,
+      "og": {
+        "og:title": "LetBuyy pricing \u2014 Launch from \u20b9299/month",
+        "og:description": "Launch and Growth plans available now. Scale and Commerce OS coming soon. 0% commission forever. India-first commerce platform.",
+        "og:url": "http://localhost:9006/pricing",
+        "og:locale": "en_IN",
+        "og:image": "http://localhost:9006/og/letbuyy-default.png?v=3",
+        "og:image:width": "1200",
+        "og:image:height": "630",
+        "og:image:alt": "LetBuyy \u2014 India-first commerce operating system"
+      },
+      "software_offers": [
+        {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "INR",
+          "description": "Free launch tier available with 0% transaction and platform fees."
+        }
+      ]
+    },
+    "live-home": {
+      "canonical": [
+        "https://www.letbuyy.com/in"
+      ],
+      "h1_count": 1,
+      "og": {
+        "og:title": "LetBuyy \u2014 India-first commerce operating system",
+        "og:description": "Launch an online store in India with UPI, cash on delivery, GST invoices and shipping built in. 0% commission on your sales.",
+        "og:locale": "en_IN"
+      },
+      "software_offers": [
+        {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "INR",
+          "description": "Free launch tier available with 0% transaction and platform fees."
+        }
+      ]
+    }
+  },
+  "local_sitemap_entries": 99,
+  "relative_lift_1_7_to_4_6": 170.5882
+}

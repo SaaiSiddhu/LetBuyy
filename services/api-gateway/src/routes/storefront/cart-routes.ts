@@ -1,4 +1,3 @@
-import { authorizeFreshStorefrontPurchase, issueHostedStorefrontAdmission, resolveCheckoutRecoverySite } from '../../lib/storefront-visitor-access';
 import { Hono, type Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../../index';
@@ -6,24 +5,14 @@ import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { hmacSha256Hex, sha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
-import { normalizeStorefrontHandle, type PublishedStoreRecord } from '@letbuyy/tenant-core';
-import { CommerceChannelSchema, type CommerceChannel } from '@letbuyy/shared-types';
-import { centralCheckoutOrigin, checkoutOriginForStore } from '../../lib/store-checkout-domain';
+import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
+import { CommerceChannelSchema, DEFAULT_PLATFORM_DOMAIN, type CommerceChannel } from '@letbuyy/shared-types';
 import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { authenticateStorefrontBuyerSession, getStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
-import { acceptCartProductFacts, loadCartFactSources, type CartFactAcceptance } from '../../lib/cart-product-facts';
-import { PersonalizationReviewContextSchema, PersonalizationReviewQuerySchema, personalizationReviewFingerprint, readPersonalizationFacts, type PersonalizationCartDraft, type ProductFactSnapshot } from '@letbuyy/commerce-core';
-import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import {
     canonicalCheckoutCartBinding,
-    canonicalCheckoutBuyerBinding,
     canonicalCheckoutHandoffPayload,
-    LETBUYY_CHECKOUT_ORIGIN_VERSION_HEADER,
     StorefrontCartLineInputSchema,
-    StorefrontCartRevisionSchema,
-    StorefrontConfiguredLineEditRequestSchema,
-    configuredLineEditInputs,
-    type StorefrontConfiguredLineEdit,
 } from '@letbuyy/checkout-core';
 
 type AppContext = Context<{ Bindings: Env }>;
@@ -54,7 +43,6 @@ const StorefrontCartMutationSchema = z.object({
     channel: CommerceChannelSchema.unwrap().optional(),
     lines: z.array(StorefrontCartLineInputSchema).max(250).default([]),
     coupon_codes: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
-    expected_updated_at: StorefrontCartRevisionSchema.optional(),
 }).strict();
 
 const StorefrontCartBuyerIdentitySchema = z.object({
@@ -85,12 +73,6 @@ type StorefrontServerCartLine = {
     currency: string;
     properties: Record<string, unknown>;
     line_total: number;
-    personalization?: PersonalizationCartDraft;
-    niche_snapshot?: ProductFactSnapshot;
-    product_version?: number;
-    configuration_fingerprint?: string | null;
-    snapshot_fingerprint?: string;
-    catalog_source?: CartFactAcceptance['catalog_source'];
 };
 
 type StorefrontServerCart = {
@@ -221,25 +203,19 @@ function cartFromRow(row: DbRecord): StorefrontServerCart {
     };
 }
 
-/** Provenance is private to server cart acceptance and the locked order writer. */
-function publicCart(cart: StorefrontServerCart): StorefrontServerCart {
-    return { ...cart, lines: cart.lines.map(({ catalog_source: _source, ...line }) => line) };
-}
-
-async function loadCartByToken(c: AppContext, storeId: string, cartToken: string, includeClosed = false): Promise<{ cart: StorefrontServerCart | null; error: unknown }> {
-    c.header('Cache-Control', 'no-store');
+async function loadCartByToken(c: AppContext, storeId: string, cartToken: string): Promise<{ cart: StorefrontServerCart | null; error: unknown }> {
     const db = getSupabaseAdmin(c);
-    let query = db.from('carts').select(CART_SELECT)
-        .eq('store_id', storeId).eq('session_id', cartToken).is('deleted_at', null);
-    if (!includeClosed) query = query.eq('status', 'active');
-    const { data, error } = await query.maybeSingle();
+    const { data, error } = await db
+        .from('carts')
+        .select(CART_SELECT)
+        .eq('store_id', storeId)
+        .eq('session_id', cartToken)
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .maybeSingle();
 
     if (error) return { cart: null, error };
-    const cart = data ? cartFromRow(data as unknown as DbRecord) : null;
-    // The random token identifies a cart; it cannot retire current storefront
-    // policy. Marketplace origin comes from the stored row, never body.channel.
-    if (cart && cart.sales_origin === 'storefront') await authorizeFreshStorefrontPurchase(c, storeId);
-    return { cart, error: null };
+    return { cart: data ? cartFromRow(data as unknown as DbRecord) : null, error: null };
 }
 
 async function hydrateCartLines(
@@ -249,8 +225,17 @@ async function hydrateCartLines(
     salesOrigin: SalesOrigin,
     queryPublicProducts: StorefrontCartRouteDependencies['queryPublicProducts'],
 ): Promise<{ lines: StorefrontServerCartLine[]; error?: Response }> {
-    // Review each draft against canonical rows BEFORE deriving a merge key.
-    const mergedLines = lines;
+    const quantities = new Map<string, StorefrontCartLineInput>();
+    for (const line of lines) {
+        const id = lineId(line);
+        const existing = quantities.get(id);
+        quantities.set(id, {
+            ...line,
+            quantity: Math.min((existing?.quantity || 0) + line.quantity, 99),
+        });
+    }
+
+    const mergedLines = Array.from(quantities.values());
     if (mergedLines.length === 0) return { lines: [] };
 
     if (salesOrigin === 'marketplace') {
@@ -262,8 +247,7 @@ async function hydrateCartLines(
         }
 
         const db = getSupabaseAdmin(c);
-        const listingLines = [...new Map(mergedLines.map(line => [`${line.product_id}:${line.marketplace_listing_id}`, line])).values()];
-        const listingChecks = await Promise.all(listingLines.map(async (line) => {
+        const listingChecks = await Promise.all(mergedLines.map(async (line) => {
             const { data, error } = await db.rpc('marketplace_listing_detail', {
                 p_listing_id: line.marketplace_listing_id,
             });
@@ -327,56 +311,30 @@ async function hydrateCartLines(
         return { lines: [], error: c.json({ success: false, error: { code: 'VARIANT_NOT_FOUND', message: 'A selected variant is unavailable for this product.' } }, 400) };
     }
 
-    let sources: Awaited<ReturnType<typeof loadCartFactSources>>;
-    try { sources = await loadCartFactSources(c.env, store.id, requestId(c), productIds); }
-    catch { return { lines: [], error: c.json(dbFailureBody(), 503) }; }
-    const acceptedLines = new Map<string, StorefrontServerCartLine>();
-    const stockByKey = new Map<string, number>();
-    for (const line of mergedLines) {
-            const source = sources.get(line.product_id);
-            if (!source) return { lines: [], error: c.json({ success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'A cart product is unavailable.' } }, 409) };
-            const accepted = await acceptCartProductFacts(source, line.variant_id || null, line.personalization);
-            if (!('prepared' in accepted)) return { lines: [], error: c.json({ success: false, error: accepted.error }, 409) };
-            const { prepared } = accepted;
-            const key = `${lineId(line)}${prepared.configuration_fingerprint ? `:${prepared.configuration_fingerprint}` : ''}`;
-            const quantity = Math.min((acceptedLines.get(key)?.quantity || 0) + line.quantity, 99);
+    return {
+        lines: mergedLines.map((line) => {
             const product = productsById.get(line.product_id) || {};
             const variant = line.variant_id ? variantsFor(product).find(row => row.id === line.variant_id) : undefined;
             const unitPrice = variant && variant.price != null ? numberValue(variant.price) : numberValue(product.price);
             const title = stringValue(product.name) || 'Product';
 
-            acceptedLines.set(key, {
-                id: key,
+            return {
+                id: lineId(line),
                 product_id: line.product_id,
                 variant_id: line.variant_id || null,
                 marketplace_listing_id: line.marketplace_listing_id || null,
                 title,
                 sku: stringValue(product.sku),
                 image_url: imageUrl(product),
-                quantity,
+                quantity: line.quantity,
                 unit_price: unitPrice,
                 compare_price: numberValue(product.compare_at_price) || null,
                 currency: currencyValue(product),
                 properties: line.properties,
-                line_total: unitPrice * quantity,
-                ...(line.personalization ? { personalization: line.personalization } : {}),
-                niche_snapshot: prepared.snapshot,
-                product_version: prepared.product_version,
-                configuration_fingerprint: prepared.configuration_fingerprint,
-                snapshot_fingerprint: prepared.snapshot_fingerprint,
-                catalog_source: accepted.catalog_source,
-            });
-            stockByKey.set(`${line.product_id}:${line.variant_id || ''}`, accepted.available);
-    }
-    const quantities = new Map<string, number>();
-    for (const line of acceptedLines.values()) {
-        const key = `${line.product_id}:${line.variant_id || ''}`;
-        quantities.set(key, (quantities.get(key) || 0) + line.quantity);
-    }
-    if ([...quantities].some(([key, quantity]) => quantity > Math.min(99, stockByKey.get(key) || 0))) {
-        return { lines: [], error: c.json({ success: false, error: { code: 'INSUFFICIENT_INVENTORY', message: 'The combined quantity for a selected product exceeds current availability.' } }, 409) };
-    }
-    return { lines: [...acceptedLines.values()] };
+                line_total: unitPrice * line.quantity,
+            };
+        }),
+    };
 }
 
 function requestId(c: AppContext): string {
@@ -390,8 +348,19 @@ function cartLinesToInput(lines: StorefrontServerCartLine[]): StorefrontCartLine
         marketplace_listing_id: line.marketplace_listing_id || null,
         quantity: line.quantity,
         properties: line.properties || {},
-        ...(line.personalization ? { personalization: line.personalization } : {}),
     }));
+}
+
+function checkoutOrigin(c: AppContext): string {
+    const explicit = c.env.CHECKOUT_ORIGIN || c.env.NEXT_PUBLIC_STOREFRONT_URL || c.env.STOREFRONT_BASE_URL;
+    if (explicit) return explicit.trim().replace(/\/+$/, '');
+
+    const rawDomain = c.env.LETBUYY_PLATFORM_DOMAIN
+        || c.env.NEXT_PUBLIC_PLATFORM_DOMAIN
+        || c.env.PLATFORM_ROOT_DOMAIN
+        || DEFAULT_PLATFORM_DOMAIN;
+    const domain = rawDomain.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/^\.+|\.+$/g, '');
+    return `https://checkout.${domain || DEFAULT_PLATFORM_DOMAIN}`;
 }
 
 function checkoutSigningSecret(c: AppContext): string | null {
@@ -424,21 +393,6 @@ async function createCheckoutHandoff(
         couponCodes: cart.coupon_codes,
         lines: cart.lines,
     }));
-    // Only the already verified storefront session may mint this delegated
-    // continuity proof. Never take its identity from a request body or query.
-    const mintingBuyer = bindBuyer ? getStorefrontBuyerSession(c) : null;
-    if (bindBuyer && (!mintingBuyer || mintingBuyer.siteId !== store.id)) {
-        return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A storefront sign-in is required.' } }, 401);
-    }
-    const buyerBindingDigest = mintingBuyer ? await sha256Hex(canonicalCheckoutBuyerBinding({
-        siteId: store.id, cartId: cart.id, cartToken: cart.cart_token, channel: cart.channel,
-        expiresAt, cartContentDigest, buyerAccountId: mintingBuyer.buyerAccountId,
-        buyerSessionEpoch: mintingBuyer.sessionEpoch,
-    })) : undefined;
-    // Rolling release: old web adapters keep their existing short-lived central
-    // capability. The current Commerce adapter explicitly requests origin v2.
-    const originBound = c.req.header(LETBUYY_CHECKOUT_ORIGIN_VERSION_HEADER) === '2';
-    const checkoutOrigin = originBound ? await checkoutOriginForStore(c, store.id) : centralCheckoutOrigin(c.env);
     const signaturePayload = canonicalCheckoutHandoffPayload({
         siteId: store.id,
         cartId: cart.id,
@@ -446,14 +400,11 @@ async function createCheckoutHandoff(
         channel: cart.channel,
         expiresAt,
         cartContentDigest,
-        buyerBindingDigest,
-        checkoutOrigin: originBound ? checkoutOrigin : undefined,
         couponCodes: cart.coupon_codes,
         lines: cart.lines,
     });
     const signature = await hmacSha256Hex(secret, signaturePayload);
-    const checkoutUrl = new URL('/checkout', checkoutOrigin);
-    if (originBound) checkoutUrl.searchParams.set('checkout_origin', checkoutOrigin);
+    const checkoutUrl = new URL('/checkout', checkoutOrigin(c));
     checkoutUrl.searchParams.set('site_id', store.id);
     checkoutUrl.searchParams.set('cart_id', cart.id);
     checkoutUrl.searchParams.set('cart_token', cart.cart_token);
@@ -461,7 +412,6 @@ async function createCheckoutHandoff(
     checkoutUrl.searchParams.set('expires_at', expiresAt);
     checkoutUrl.searchParams.set('cart_digest', cartContentDigest);
     checkoutUrl.searchParams.set('signature', signature);
-    if (buyerBindingDigest) checkoutUrl.searchParams.set('buyer_binding', buyerBindingDigest);
 
     if (bindBuyer) {
         const buyer = getStorefrontBuyerSession(c);
@@ -487,30 +437,21 @@ async function createCheckoutHandoff(
         }
     }
 
-    const accessAdmission = cart.sales_origin === 'storefront'
-        ? await issueHostedStorefrontAdmission(c, store.id, signature, Math.floor(Date.parse(expiresAt) / 1000))
-        : null;
     const db = getSupabaseAdmin(c);
-    const { data: persistedHandoff, error } = await db
+    const { error } = await db
         .from('carts')
         .update({
             checkout_handoff: {
-                storefront_admission: accessAdmission,
                 checkout_url: checkoutUrl.toString(),
-                ...(originBound ? { checkout_origin: checkoutOrigin } : {}),
                 expires_at: expiresAt,
                 signed_at: new Date().toISOString(),
                 channel: cart.channel,
                 cart_content_digest: cartContentDigest,
-                buyer_binding: mintingBuyer ? { buyer_account_id: mintingBuyer.buyerAccountId,
-                    session_epoch: mintingBuyer.sessionEpoch, digest: buyerBindingDigest } : null,
             },
         })
         .eq('store_id', store.id)
-        .eq('id', cart.id)
-        .select('id')
-        .maybeSingle();
-    if (error || !persistedHandoff) return c.json({ success: false, error: { code: 'CHECKOUT_UNAVAILABLE', message: 'Secure checkout is temporarily unavailable.' } }, 503);
+        .eq('id', cart.id);
+    if (error) return c.json(dbFailureBody(), 500);
 
     return c.json(success({
         checkout_url: checkoutUrl.toString(),
@@ -593,45 +534,6 @@ async function enqueueAbandonmentCheck(c: AppContext, cart: StorefrontServerCart
     });
 }
 
-async function authorizeBoundCartWriter(c: AppContext, siteId: string, cart: StorefrontServerCart): Promise<Response | null> {
-    const { data, error } = await getSupabaseAdmin(c).from('checkout_sessions').select('buyer_account_id')
-        .eq('site_id', siteId).eq('cart_id', cart.id).is('deleted_at', null).maybeSingle();
-    if (error) return c.json(dbFailureBody(), 503);
-    const owner = data && stringValue((data as DbRecord).buyer_account_id);
-    if (!owner) return null;
-    const token = c.req.header(LETBUYY_STOREFRONT_SESSION_HEADER);
-    if (!token) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Sign in at this store to change this saved cart.' } }, 401);
-    const denied = await authenticateStorefrontBuyerSession(c, token, siteId);
-    if (denied) return denied;
-    return getStorefrontBuyerSession(c)?.buyerAccountId === owner ? null
-        : c.json({ success: false, error: { code: 'CART_OWNER_CONFLICT', message: 'This saved cart belongs to another buyer.' } }, 403);
-}
-
-async function writeAcknowledgedStorefrontCart(c: AppContext, cart: StorefrontServerCart, payload: DbRecord) {
-    const buyer = getStorefrontBuyerSession(c);
-    const db = getSupabaseAdmin(c);
-    const result = await db.rpc('write_storefront_cart', {
-        p_site_id: cart.store_id, p_cart_id: cart.id, p_cart_token: cart.cart_token,
-        p_expected_updated_at: cart.updated_at, p_payload: payload,
-        p_buyer_account_id: buyer?.buyerAccountId || null, p_buyer_session_epoch: buyer?.sessionEpoch ?? null,
-    });
-    const reply = result.data && typeof result.data === 'object' && !Array.isArray(result.data) ? result.data as DbRecord : null;
-    let refusal = reply?.outcome === 'refused' ? stringValue(reply.code) : null;
-    if (refusal === 'CART_REVISION_CONFLICT' || refusal === 'CART_ALREADY_CHECKING_OUT') {
-        // Conversion also advances the revision and retains its checkout lock.
-        // Preserve the public closed-cart
-        // conflict after that race; this scoped read never retries the write or
-        // reopens a cart whose conversion already committed.
-        const { data: current, error } = await db.from('carts').select('status')
-            .eq('store_id', cart.store_id).eq('id', cart.id).eq('session_id', cart.cart_token)
-            .is('deleted_at', null).maybeSingle();
-        if (error) return { error, data: null, refusal: null };
-        if (current && current.status !== 'active') refusal = 'CART_STATE_CONFLICT';
-    }
-    return { error: result.error, data: reply?.outcome === 'committed' && reply.cart && typeof reply.cart === 'object' ? reply.cart as DbRecord : null,
-        refusal };
-}
-
 async function persistCart(
     c: AppContext,
     store: PublishedStoreRecord,
@@ -640,27 +542,6 @@ async function persistCart(
     salesOrigin: SalesOrigin,
     queryPublicProducts: StorefrontCartRouteDependencies['queryPublicProducts'],
 ): Promise<Response> {
-    if (salesOrigin === 'storefront') await authorizeFreshStorefrontPurchase(c, store.id);
-    const existing = await loadCartByToken(c, store.id, cartToken, true);
-    if (existing.error) return c.json(dbFailureBody(), 500);
-    if (existing.cart && existing.cart.status !== 'active') {
-        return c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'A completed or closed cart cannot be changed. Start a new cart for another purchase.' } }, 409);
-    }
-    if (existing.cart && existing.cart.sales_origin !== salesOrigin) {
-        return c.json({ success: false, error: { code: 'SALES_ORIGIN_IMMUTABLE', message: 'A cart cannot change its sales origin.' } }, 409);
-    }
-    if (existing.cart && salesOrigin === 'storefront') {
-        const ownerDenied = await authorizeBoundCartWriter(c, store.id, existing.cart);
-        if (ownerDenied) return ownerDenied;
-    }
-    // Personalized whole-cart writers must name the acknowledged base. Otherwise
-    // an old tab can erase an atomic configured-line edit after it has committed.
-    if (existing.cart && salesOrigin === 'storefront'
-        && (input.expected_updated_at !== undefined || existing.cart.lines.some(line => line.personalization) || input.lines.some(line => line.personalization))
-        && input.expected_updated_at !== existing.cart.updated_at) {
-        return c.json({ success: false, error: { code: 'CART_REVISION_CONFLICT', message: 'Reload your saved cart before changing it.' } }, 409);
-    }
-
     const hydrated = await hydrateCartLines(c, store, input.lines, salesOrigin, queryPublicProducts);
     if (hydrated.error) return hydrated.error;
 
@@ -672,39 +553,34 @@ async function persistCart(
         sales_origin: salesOrigin,
         session_id: cartToken,
         items: hydrated.lines,
-        fact_acceptance_version: 1,
         coupon_code: input.coupon_codes[0] || null,
+        status: 'active',
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     };
 
+    const existing = await loadCartByToken(c, store.id, cartToken);
+    if (existing.error) return c.json(dbFailureBody(), 500);
+    if (existing.cart && existing.cart.sales_origin !== salesOrigin) {
+        return c.json({ success: false, error: { code: 'SALES_ORIGIN_IMMUTABLE', message: 'A cart cannot change its sales origin.' } }, 409);
+    }
     payload.channel = input.channel || existing.cart?.channel || 'web';
 
     const db = getSupabaseAdmin(c);
-    const result = existing.cart && salesOrigin === 'storefront'
-        ? await writeAcknowledgedStorefrontCart(c, existing.cart, payload)
-        : existing.cart
+    const result = existing.cart
         ? await db
             .from('carts')
             .update(payload)
             .eq('store_id', store.id)
             .eq('session_id', cartToken)
-            .eq('id', existing.cart.id)
-            .eq('status', 'active')
-            .eq('updated_at', existing.cart.updated_at)
-            .is('deleted_at', null)
             .select(CART_SELECT)
-            .maybeSingle()
+            .single()
         : await db
             .from('carts')
-            .insert({ ...payload, status: 'active', session_id: cartToken })
+            .insert({ ...payload, session_id: cartToken })
             .select(CART_SELECT)
             .single();
 
-    if ('refusal' in result && result.refusal) return c.json({ success: false, error: { code: result.refusal, message: 'The saved cart changed or belongs to another buyer. Reload it before continuing.' } }, result.refusal === 'CART_OWNER_CONFLICT' ? 403 : 409);
-    if (result.error) return c.json(dbFailureBody(), 500);
-    if (!result.data) return existing.cart
-        ? c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'Cart changed before it could be updated.' } }, 409)
-        : c.json(dbFailureBody(), 500);
+    if (result.error || !result.data) return c.json(dbFailureBody(), 500);
     const cart = cartFromRow(result.data as unknown as DbRecord);
     if (!existing.cart) {
         await emitCartEvent(c, cart, 'cart.created', `cart.created:${store.id}:${cart.id}`);
@@ -713,176 +589,7 @@ async function persistCart(
         await emitCartEvent(c, cart, 'cart.email_captured', `cart.email_captured:${store.id}:${cart.id}:${cart.buyer_email}`);
         await enqueueAbandonmentCheck(c, cart);
     }
-    return c.json(success(publicCart(cart)), existing.cart ? 200 : 201);
-}
-
-/** Preflight and commit use the SAME canonical DB function. The durable receipt
- * is read before current catalog hydration, so lost acknowledgements recover
- * even after a later catalog change. Native qualification is required for SQL. */
-async function persistConfiguredLineEdit(c: AppContext, store: PublishedStoreRecord, token: string,
-    command: StorefrontConfiguredLineEdit, queryPublicProducts: StorefrontCartRouteDependencies['queryPublicProducts']): Promise<Response> {
-    const auth = c.req.header(LETBUYY_STOREFRONT_SESSION_HEADER);
-    if (!auth) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Sign in at this store before editing a saved configuration.' } }, 401);
-    const denied = await authenticateStorefrontBuyerSession(c, auth, store.id);
-    if (denied) return denied;
-    const buyer = getStorefrontBuyerSession(c)!;
-    const loaded = await loadCartByToken(c, store.id, token, true);
-    if (loaded.error) return c.json(dbFailureBody(), 503);
-    if (!loaded.cart) return c.json({ success: false, error: { code: 'CART_NOT_FOUND', message: 'Saved cart unavailable.' } }, 404);
-    const db = getSupabaseAdmin(c);
-    const args = { p_site_id: store.id, p_cart_id: loaded.cart.id, p_cart_token: token,
-        p_expected_updated_at: command.expected_updated_at, p_line_id: command.line_id,
-        p_operation_key: command.operation_key,
-        p_request_hash: await sha256Hex(canonicalizeExecutionPayload({ site_id: store.id, cart_id: loaded.cart.id,
-            buyer_account_id: buyer.buyerAccountId, command })),
-        p_buyer_account_id: buyer.buyerAccountId, p_buyer_session_epoch: buyer.sessionEpoch };
-    const invoke = async (replacement: StorefrontServerCartLine | null) => {
-        const result = await db.rpc('edit_storefront_configured_cart_line', { ...args, p_replacement: replacement });
-        if (result.error || !result.data || typeof result.data !== 'object' || Array.isArray(result.data)) return null;
-        return result.data as DbRecord;
-    };
-    const respond = (result: DbRecord | null): Response => {
-        if (!result) return c.json(dbFailureBody(), 503);
-        if (result.outcome === 'committed' && result.cart && typeof result.cart === 'object') {
-            const receipt = result.receipt && typeof result.receipt === 'object' ? result.receipt as DbRecord : {};
-            return c.json(success({ ...publicCart(cartFromRow(result.cart as DbRecord)), edit_receipt: {
-                operation_key: stringValue(receipt.operation_key), accepted_updated_at: stringValue(receipt.accepted_updated_at),
-            } }));
-        }
-        const code = stringValue(result.code) || 'CART_EDIT_RECONCILIATION_REQUIRED';
-        return c.json({ success: false, error: { code, message: 'This edit was not accepted. Your saved cart is preserved; reload it before reviewing again.' } }, code === 'CART_OWNER_CONFLICT' ? 403 : 409);
-    };
-    const before = await invoke(null);
-    if (!before || before.outcome !== 'ready') return respond(before);
-    if (!before.cart || typeof before.cart !== 'object') return respond(null);
-    const cart = cartFromRow(before.cart as DbRecord);
-    const input = configuredLineEditInputs(cart.lines, command);
-    if (!input) return c.json({ success: false, error: { code: 'CART_LINE_MISSING', message: 'The original configured line has changed. Your saved cart is preserved.' } }, 409);
-    const hydrated = await hydrateCartLines(c, store, input, 'storefront', queryPublicProducts);
-    if (hydrated.error) return hydrated.error;
-    const original = cart.lines.find(line => line.id === command.line_id)!;
-    const draft = command.replacement.personalization;
-    const replacement = hydrated.lines.find(line => line.product_id === original.product_id
-        && (line.variant_id ?? null) === command.replacement.variant_id
-        && line.personalization && line.personalization.text === draft.text && line.personalization.method_id === draft.method_id
-        && line.personalization.style_id === draft.style_id && line.personalization.placement_id === draft.placement_id);
-    if (!replacement) return respond(null);
-    // The DB performs the one replacement/optional merge from its locked old row.
-    // Do not send an entire editable cart or double-count a merged sibling.
-    return respond(await invoke({ ...replacement, quantity: original.quantity, line_total: original.quantity * replacement.unit_price,
-        properties: { ...replacement.properties, ...Object.fromEntries(Object.entries(replacement.catalog_source?.selected_options || {}).filter(([, value]) => typeof value === 'string')) } }));
-}
-
-/** Capability-bound receipt planner, separate from live storefront admission.
- * A store lookup never authorizes a read: the exact site+cart token must select
- * one cart first, then only that cart's session/order can contribute a receipt.
- * No identity/contact/address/payment metadata is projected. */
-async function readCheckoutRecoveryReceipt(c:AppContext,subdomain:string,rawToken:string,normalizeToken:(value:string)=>string|null):Promise<Response>{
-        const handle = normalizeStorefrontHandle(subdomain);
-        if (!handle) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-        // Recovery returns only the already committed cart/order receipt below.
-        // Store publication/navigation mode cannot erase that independent capability.
-        const store = await resolveCheckoutRecoverySite(c, handle);
-        c.header('Cache-Control', 'no-store');
-        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
-        const cartToken = normalizeToken(rawToken);
-        if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
-
-        const db = getSupabaseAdmin(c);
-        const { data: carts, error: cartError } = await db
-            .from('carts')
-            .select('id, store_id, session_id, status, deleted_at')
-            .eq('store_id', store.id)
-            .eq('session_id', cartToken)
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(2);
-        if (cartError) return c.json(dbFailureBody(), 500);
-        if (!carts || carts.length === 0) {
-            return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
-        }
-        if (carts.length > 1) {
-            return c.json({ success: false, error: { code: 'CART_REFERENCE_AMBIGUOUS', message: 'Checkout status needs support review.' } }, 409);
-        }
-
-        const cart = carts[0] as { id: string; status: string };
-        const { data: session, error: sessionError } = await db
-            .from('checkout_sessions')
-            .select('checkout_state, order_id, payment_method, payment_intent')
-            .eq('site_id', store.id)
-            .eq('cart_id', cart.id)
-            .is('deleted_at', null)
-            .maybeSingle();
-        if (sessionError) return c.json(dbFailureBody(), 500);
-
-        const observed = session as { checkout_state?: string; order_id?: string | null; payment_method?: string | null; payment_intent?: DbRecord | null } | null;
-        let state = observed?.checkout_state || null;
-        const orderId = observed?.order_id || null;
-        let order: { id: string; order_number: string; total: number; currency: string; status: string } | null = null;
-        if (state === 'completed' && orderId) {
-            const { data, error } = await db
-                .from('orders')
-                .select('id, order_number, total, currency, status')
-                .eq('store_id', store.id)
-                .eq('id', orderId)
-                .is('deleted_at', null)
-                .maybeSingle();
-            if (error) return c.json(dbFailureBody(), 500);
-            order = data as typeof order;
-        }
-
-        // A verified provider callback can commit the money/order before the
-        // browser acknowledgement, including after its purchase handoff expires.
-        // Recover only that existing receipt from the canonical capture. This
-        // read never extends a purchase capability, creates an order or payment,
-        // changes checkout state, or retires an unknown/pending attempt.
-        const intent = observed?.payment_intent;
-        if (!order && cart.status === 'converted' && ['payment_intent', 'confirming'].includes(state || '')
-            && observed?.payment_method === 'razorpay' && intent?.provider === 'razorpay'
-            && z.string().uuid().safeParse(intent.order_id).success
-            && typeof intent.provider_order_id === 'string' && intent.provider_order_id
-            && typeof intent.amount_minor === 'number' && Number.isSafeInteger(intent.amount_minor) && intent.amount_minor > 0
-            && intent.currency === 'INR') {
-            const { data: paid, error: paidError } = await db.from('orders')
-                .select('id, order_number, total, currency, status, payment_status, payment_id')
-                .eq('store_id', store.id).eq('id', String(intent.order_id)).is('deleted_at', null).maybeSingle();
-            if (paidError) return c.json(dbFailureBody(), 500);
-            if (paid && paid.payment_status === 'paid' && paid.currency === 'INR'
-                && ['confirmed', 'processing', 'shipped', 'delivered'].includes(String(paid.status))
-                && typeof paid.payment_id === 'string' && paid.payment_id
-                && Math.round(Number(paid.total) * 100) === intent.amount_minor) {
-                const { data: payment, error: paymentError } = await db.from('payment_transactions')
-                    .select('id, amount, currency').eq('store_id', store.id).eq('order_id', paid.id)
-                    .eq('gateway', 'razorpay').eq('provider_order_id', intent.provider_order_id)
-                    .eq('provider_payment_id', paid.payment_id).eq('status', 'captured').is('deleted_at', null).maybeSingle();
-                if (paymentError) return c.json(dbFailureBody(), 500);
-                if (payment && payment.currency === 'INR' && Math.round(Number(payment.amount) * 100) === intent.amount_minor) {
-                    const { data: capture, error: captureError } = await db.from('ledger_transactions').select('id')
-                        .eq('site_id', store.id).eq('source_type', 'payment_capture')
-                        .eq('source_id', `razorpay:${paid.payment_id}`).is('deleted_at', null).maybeSingle();
-                    if (captureError) return c.json(dbFailureBody(), 500);
-                    if (capture) {
-                        const { data: entries, error: entriesError } = await db.from('ledger_entries').select('side, amount_minor')
-                            .eq('site_id', store.id).eq('transaction_id', capture.id).is('deleted_at', null).limit(3);
-                        if (entriesError) return c.json(dbFailureBody(), 500);
-                        const expected = String(intent.amount_minor);
-                        if (entries?.length === 2
-                            && entries.filter(entry => entry.side === 'debit' && String(entry.amount_minor) === expected).length === 1
-                            && entries.filter(entry => entry.side === 'credit' && String(entry.amount_minor) === expected).length === 1) {
-                            state = 'completed';
-                            order = { id: paid.id, order_number: paid.order_number, total: paid.total, currency: paid.currency, status: paid.status };
-                        }
-                    }
-                }
-            }
-        }
-
-        return c.json(success({
-            cart_status: cart.status,
-            checkout_state: state,
-            ...(order ? { order } : {}),
-        }));
+    return c.json(success(cart), existing.cart ? 200 : 201);
 }
 
 export function registerStorefrontCartRoutes(
@@ -894,40 +601,6 @@ export function registerStorefrontCartRoutes(
         queryPublicProducts,
         normalizePublicRouteToken,
     } = dependencies;
-
-    router.get('/:subdomain/products/:productId/personalization-review', async (c) => {
-        c.header('Cache-Control', 'no-store');
-        const identity = z.string().uuid().safeParse(c.req.param('productId'));
-        const query = PersonalizationReviewQuerySchema.safeParse(c.req.query());
-        if (!identity.success || !query.success || (c.req.queries('variant_id')?.length || 0) > 1) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Supply a product UUID and a single canonical variant UUID when required.' } }, 400);
-        }
-        const store = await loadPublishedStore(c, c.req.param('subdomain'));
-        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-        await authorizeFreshStorefrontPurchase(c, store.id);
-        const productId = identity.data.toLowerCase();
-        const visible = await queryPublicProducts(c, store.id, { limit: 1, paginated: false, ids: [productId] });
-        if (visible.error) return c.json(dbFailureBody(), 503);
-        if (!visible.data.some(product => product.id === productId)) return c.json({ success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product is unavailable.' } }, 404);
-        let sources: Awaited<ReturnType<typeof loadCartFactSources>>;
-        try { sources = await loadCartFactSources(c.env, store.id, requestId(c), [productId]); }
-        catch { return c.json(dbFailureBody(), 503); }
-        const source = sources.get(productId);
-        if (!source) return c.json({ success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product is unavailable.' } }, 404);
-        const variants = Array.isArray(source.variants) ? source.variants as DbRecord[] : [];
-        const variantId = query.data.variant_id ?? null;
-        if (variants.length && !variantId) return c.json({ success: false, error: { code: 'VARIANT_REQUIRED', message: 'Select a current variant before reviewing.' } }, 409);
-        if (variantId && !variants.some(variant => variant.id === variantId)) return c.json({ success: false, error: { code: 'VARIANT_NOT_FOUND', message: 'The selected variant is unavailable for this product.' } }, 404);
-        const inventory = Array.isArray(source.inventory) ? source.inventory as DbRecord[] : [];
-        if (numberValue(inventory.find(level => (level.variant_id ?? null) === variantId)?.available) < 1) return c.json({ success: false, error: { code: 'VARIANT_UNAVAILABLE', message: 'The selected product is currently unavailable.' } }, 409);
-        const metadata = source.metadata && typeof source.metadata === 'object' && !Array.isArray(source.metadata) ? source.metadata as DbRecord : {};
-        const facts = readPersonalizationFacts(metadata);
-        if (!facts) return c.json({ success: false, error: { code: 'PERSONALIZATION_UNAVAILABLE', message: 'Personalization is currently unavailable for this product.' } }, 409);
-        const fingerprint = await personalizationReviewFingerprint({ product_id: productId, variant_id: variantId, product_version: source.version, facts });
-        const context = PersonalizationReviewContextSchema.safeParse({ product_id: productId, variant_id: variantId, facts, facts_revision: facts.revision, review_fingerprint: fingerprint });
-        if (!context.success) return c.json(dbFailureBody(), 503);
-        return c.json(success(context.data));
-    });
 
     router.post('/:subdomain/cart', validate('json', StorefrontCartMutationSchema), async (c) => {
         const store = await loadPublishedStore(c, c.req.param('subdomain'));
@@ -973,18 +646,17 @@ export function registerStorefrontCartRoutes(
         const { cart, error } = await loadCartByToken(c, store.id, cartToken);
         if (error) return c.json(dbFailureBody(), 500);
         if (!cart) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
-        return c.json(success(publicCart(cart)));
+        return c.json(success(cart));
     });
 
-    router.patch('/:subdomain/cart/:cartToken', validate('json', z.union([StorefrontConfiguredLineEditRequestSchema, StorefrontCartMutationSchema])), async (c) => {
+    router.patch('/:subdomain/cart/:cartToken', validate('json', StorefrontCartMutationSchema), async (c) => {
         const store = await loadPublishedStore(c, c.req.param('subdomain'));
         if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
 
         const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
         if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
 
-        const body = c.get('validatedBody') as StorefrontCartMutationInput | { line_edit: StorefrontConfiguredLineEdit };
-        if ('line_edit' in body) return persistConfiguredLineEdit(c, store, cartToken, body.line_edit, queryPublicProducts);
+        const body = c.get('validatedBody') as StorefrontCartMutationInput;
         return persistCart(c, store, cartToken, body, 'storefront', queryPublicProducts);
     });
 
@@ -1002,7 +674,6 @@ export function registerStorefrontCartRoutes(
         const body = c.get('validatedBody') as z.infer<typeof StorefrontCartBuyerIdentitySchema>;
         return persistCart(c, store, cartToken, {
             cart_token: cartToken,
-            expected_updated_at: existing.cart.updated_at || undefined,
             customer_id: body.customer_id || existing.cart.customer_id || null,
             buyer_email: body.buyer_email || existing.cart.buyer_email || null,
             channel: body.channel || existing.cart.channel,
@@ -1025,7 +696,6 @@ export function registerStorefrontCartRoutes(
         const body = c.get('validatedBody') as z.infer<typeof StorefrontCartDiscountCodesSchema>;
         return persistCart(c, store, cartToken, {
             cart_token: cartToken,
-            expected_updated_at: existing.cart.updated_at || undefined,
             customer_id: existing.cart.customer_id || null,
             buyer_email: existing.cart.buyer_email || null,
             channel: existing.cart.channel,
@@ -1074,7 +744,59 @@ export function registerStorefrontCartRoutes(
     // The marketplace mobile app uses it after resume to distinguish an unsubmitted cart from an
     // order that committed just before the app was closed or lost its response.
     router.get('/:subdomain/cart/:cartToken/checkout-status', async (c) => {
-        return readCheckoutRecoveryReceipt(c, c.req.param('subdomain'), c.req.param('cartToken'), normalizePublicRouteToken);
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
+        if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
+
+        const db = getSupabaseAdmin(c);
+        const { data: carts, error: cartError } = await db
+            .from('carts')
+            .select('id, store_id, session_id, status, deleted_at')
+            .eq('store_id', store.id)
+            .eq('session_id', cartToken)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(2);
+        if (cartError) return c.json(dbFailureBody(), 500);
+        if (!carts || carts.length === 0) {
+            return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
+        }
+        if (carts.length > 1) {
+            return c.json({ success: false, error: { code: 'CART_REFERENCE_AMBIGUOUS', message: 'Checkout status needs support review.' } }, 409);
+        }
+
+        const cart = carts[0] as { id: string; status: string };
+        const { data: session, error: sessionError } = await db
+            .from('checkout_sessions')
+            .select('checkout_state, order_id')
+            .eq('site_id', store.id)
+            .eq('cart_id', cart.id)
+            .is('deleted_at', null)
+            .maybeSingle();
+        if (sessionError) return c.json(dbFailureBody(), 500);
+
+        const state = (session as { checkout_state?: string; order_id?: string | null } | null)?.checkout_state || null;
+        const orderId = (session as { order_id?: string | null } | null)?.order_id || null;
+        let order: { id: string; order_number: string; total: number; currency: string; status: string } | null = null;
+        if (state === 'completed' && orderId) {
+            const { data, error } = await db
+                .from('orders')
+                .select('id, order_number, total, currency, status')
+                .eq('store_id', store.id)
+                .eq('id', orderId)
+                .is('deleted_at', null)
+                .maybeSingle();
+            if (error) return c.json(dbFailureBody(), 500);
+            order = data as typeof order;
+        }
+
+        return c.json(success({
+            cart_status: cart.status,
+            checkout_state: state,
+            ...(order ? { order } : {}),
+        }));
     });
 
     router.delete('/:subdomain/cart/:cartToken', async (c) => {
@@ -1084,30 +806,20 @@ export function registerStorefrontCartRoutes(
         const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
         if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
 
-        const existing = await loadCartByToken(c, store.id, cartToken, true);
-        if (existing.error) return c.json(dbFailureBody(), 503);
-        if (!existing.cart) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
-        if (existing.cart.sales_origin === 'storefront') {
-            const ownerDenied = await authorizeBoundCartWriter(c, store.id, existing.cart);
-            if (ownerDenied) return ownerDenied;
-        }
-        const clearRevision = c.req.query('expected_updated_at');
-        if ((clearRevision !== undefined || existing.cart.lines.some(line => line.personalization))
-            && clearRevision !== existing.cart.updated_at) {
-            return c.json({ success: false, error: { code: 'CART_REVISION_CONFLICT', message: 'Reload your saved cart before clearing it.' } }, 409);
-        }
-        if (existing.cart.status !== 'active') return c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'A completed or closed cart cannot be cleared.' } }, 409);
-        // A conversion can commit after the read. Only an active matching row
-        // may be cleared; never write status=active or acknowledge a lost race.
-        const result = existing.cart.sales_origin === 'storefront'
-            ? await writeAcknowledgedStorefrontCart(c, existing.cart, { items: [], coupon_code: null })
-            : await getSupabaseAdmin(c).from('carts').update({ items: [], coupon_code: null })
-                .eq('store_id', store.id).eq('id', existing.cart.id).eq('session_id', cartToken)
-                .eq('status', 'active').eq('updated_at', existing.cart.updated_at).is('deleted_at', null).select(CART_SELECT).maybeSingle();
-        if ('refusal' in result && result.refusal) return c.json({ success: false, error: { code: result.refusal, message: 'Reload this saved cart before clearing it.' } }, result.refusal === 'CART_OWNER_CONFLICT' ? 403 : 409);
-        const { data, error } = result;
-        if (error) return c.json(dbFailureBody(), 503);
-        if (!data) return c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'Cart changed before it could be cleared.' } }, 409);
-        return c.json(success(publicCart(cartFromRow(data as unknown as DbRecord))));
+        const db = getSupabaseAdmin(c);
+        const { data, error } = await db
+            .from('carts')
+            .update({
+                items: [],
+                coupon_code: null,
+                status: 'active',
+            })
+            .eq('store_id', store.id)
+            .eq('session_id', cartToken)
+            .select(CART_SELECT)
+            .single();
+
+        if (error || !data) return c.json(dbFailureBody(), 500);
+        return c.json(success(cartFromRow(data as unknown as DbRecord)));
     });
 }

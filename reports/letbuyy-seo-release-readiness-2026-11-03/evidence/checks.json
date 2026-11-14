@@ -1,0 +1,58 @@
+{
+  "capturedAt": "2026-11-03T02:33:36.113367+00:00",
+  "rows": [
+    {
+      "name": "marketing-tests",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "test"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "marketing-typecheck",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "typecheck"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "marketing-lint",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "lint"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "final-root-production-build",
+      "command": [
+        "pnpm",
+        "--dir",
+        "apps/marketing/web",
+        "build"
+      ],
+      "exitCode": 0,
+      "evidence": "evidence/root-production-build.log",
+      "buildId": "tG7TW1sIGL_gn9Q4-AFXP"
+    },
+    {
+      "name": "ui-validation",
+      "command": [
+        "pnpm",
+        "--dir",
+        "packages/typescript/ui",
+        "validate:ui"
+      ],
+      "exitCode": 0,
+      "evidence": "evidence/ui-validation.log"
+    }
+  ]
+}

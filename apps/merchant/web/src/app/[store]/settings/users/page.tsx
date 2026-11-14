@@ -1,13 +1,8 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
-    Section,
-    Card,
     Avatar,
     Badge,
     Banner,
@@ -159,28 +154,24 @@ export default function UsersSettingsPage() {
     const [employeeToRemove, setEmployeeToRemove] = useState<Employee | null>(null)
     const [removingId, setRemovingId] = useState<string | null>(null)
 
-    const beginRead = useReadRequest(store)
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users`, { cache: 'no-store', signal: request.signal })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users`, { cache: 'no-store' })
             const payload = (await response.json().catch(() => null)) as StaffPayload | null
-            if (!request.isCurrent()) return
             if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to load staff members'))
             const data = isRecord(payload?.data) ? payload.data : {}
             setEmployees(normalizeEmployees(data.employees))
             setLimit(normalizeLimit(data.limit))
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load staff members'
             setLoadError(message)
             notify({ title: 'Staff could not load', description: message, variant: 'critical' })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => { void loadData() }, [loadData])
 
@@ -308,13 +299,13 @@ export default function UsersSettingsPage() {
 
     if (loading) {
         return (
-            <SettingsPane navigationKey="users" title="Users and permissions" description="Add staff and control who can access this store." store={store}>
+            <SettingsPane title="Users and permissions" description="Add staff and control who can access this store." store={store}>
                 <div className="settings-general-stack">
                     {[1, 2, 3].map((i) => (
-                        <Card key={i}>
-                            <Section><Skeleton variant="text" lines={1} /></Section>
+                        <div key={i} className="settings-home-card">
+                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
                             <div className="settings-form-body"><Skeleton variant="text" lines={2} /></div>
-                        </Card>
+                        </div>
                     ))}
                 </div>
             </SettingsPane>
@@ -326,7 +317,6 @@ export default function UsersSettingsPage() {
     return (
         <>
             <SettingsPane
-                navigationKey="users"
                 title="Users and permissions"
                 description="Add staff and control who can access this store."
                 store={store}
@@ -400,8 +390,9 @@ export default function UsersSettingsPage() {
                 </div>
 
                 {/* ── Store owner ───────────────────────────────────────────── */}
-                <Section variant="grouped" title="Store owner" >
-
+                <div className="settings-home-card">
+                    <div className="settings-home-section-label">Store owner</div>
+                    <div className="settings-form-body">
                         <div className="settings-general-hint">The store owner has full access to every setting, workflow, and billing action.</div>
                         <div className="users-staff-row">
                             <span className="users-staff-avatar"><Crown className="letbuyy-icon" aria-hidden="true" /></span>
@@ -411,12 +402,13 @@ export default function UsersSettingsPage() {
                             </div>
                             <Badge label="Primary owner" variant="success" />
                         </div>
-
-                </Section>
+                    </div>
+                </div>
 
                 {/* ── Staff ─────────────────────────────────────────────────── */}
-                <Section variant="grouped" title="Staff" >
-
+                <div className="settings-home-card">
+                    <div className="settings-home-section-label">Staff</div>
+                    <div className="settings-form-body">
                         <div className="settings-general-hint">
                             Staff help manage store operations based on their assigned role.{' '}
                             {!limit ? 'Staff plan capacity is temporarily unavailable.' : isUnlimited ? 'Your plan includes unlimited staff.' : `Your ${limit?.plan_name || 'plan'} includes ${staffLimit} staff ${staffLimit === 1 ? 'account' : 'accounts'}.`}
@@ -424,7 +416,7 @@ export default function UsersSettingsPage() {
 
                         {employees.length === 0 ? (
                             <div className="users-empty">
-                                <MerchantEmptyArtwork scene="staff" compact />
+                                <span className="users-empty-icon"><Users className="letbuyy-icon" aria-hidden="true" /></span>
                                 <div className="users-empty-copy">
                                     <span className="users-empty-title">No staff members yet</span>
                                     <span className="users-empty-desc">Add team members when you are ready to share product, order, or fulfilment work.</span>
@@ -481,12 +473,13 @@ export default function UsersSettingsPage() {
                                 </div>
                             </div>
                         )}
-
-                </Section>
+                    </div>
+                </div>
 
                 {/* ── Roles & permissions reference ─────────────────────────── */}
-                <Section variant="grouped" title="Roles &amp; permissions" >
-
+                <div className="settings-home-card">
+                    <div className="settings-home-section-label">Roles &amp; permissions</div>
+                    <div className="settings-form-body">
                         <div className="settings-general-hint">
                             Each role is a preset bundle of permissions. Assign the role that matches what a teammate needs to do.
                         </div>
@@ -509,8 +502,8 @@ export default function UsersSettingsPage() {
                                 )
                             })}
                         </div>
-
-                </Section>
+                    </div>
+                </div>
             </SettingsPane>
 
             {/* ── Add staff modal ───────────────────────────────────────────── */}

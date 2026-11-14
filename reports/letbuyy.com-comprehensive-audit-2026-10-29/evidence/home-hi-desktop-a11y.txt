@@ -1,0 +1,1088 @@
+- banner:
+  - link "LetBuyy होम":
+    - /url: /in-hi
+    - img "LetBuyy"
+  - navigation "मुख्य नेविगेशन":
+    - button "LetBuyy क्यों"
+    - button "प्रोडक्ट"
+    - link "थीम":
+      - /url: /in-hi/resources/platform/how-themes-work
+    - link "ऐप्स":
+      - /url: /in-hi/resources/platform/introduction-to-apps
+    - link "डेवलपर":
+      - /url: /in-hi/resources/developers
+    - link "कीमत":
+      - /url: /in-hi/pricing
+  - button "Toggle theme"
+  - link "लॉग इन":
+    - /url: https://accounts.letbuyy.com/lookup
+  - link "मुफ़्त शुरू करें":
+    - /url: https://accounts.letbuyy.com/signup
+- main:
+  - text: कॉमर्स ऑपरेटिंग सिस्टम
+  - heading "स्टोर से बढ़कर। आपका कॉमर्स OS।" [level=1]
+  - paragraph: आधुनिक कॉमर्स के एक ही प्लेटफ़ॉर्म से स्टोरफ़्रंट, स्टॉक, ऑर्डर, भुगतान, विश्लेषण, AI, B2B और संचालन चलाएँ।
+  - link "मुफ़्त शुरू करें":
+    - /url: https://accounts.letbuyy.com/signup
+  - link "क्षमताएँ देखें":
+    - /url: "#capabilities"
+  - list "प्लेटफ़ॉर्म के वादे":
+    - listitem: हमेशा 0% कमीशन
+    - listitem: UPI अंतर्निहित
+    - listitem: GST के लिए तैयार
+    - listitem: AI संचालित
+    - listitem: भारत के लिए बना
+  - strong: 0%
+  - text: हमेशा शून्य कमीशन
+  - strong: 14 दिन
+  - text: मुफ़्त परीक्षण
+  - strong: UPI+COD
+  - text: भुगतान तैयार
+  - strong: कॉमर्स
+  - text: OS प्लेटफ़ॉर्म
+  - figure "तमिलनाडु से भारत और दुनिया तक स्टोर बनाने की उदाहरण यात्रा":
+    - text: "एक बार चलने वाला उदाहरण: तमिलनाडु का नक्शा भारत और फिर बिंदुओं वाले ग्लोब में बदलता है। भारत, पाकिस्तान, चीन, जापान और अन्य महाद्वीपों पर स्टोर दिखते हैं। अंत में बिंदु फैलते हैं और “LetBuyy — दुनिया भर में बेचें” शीर्षक हल्की झिलमिलाहट के बाद स्थिर होता है। कम गति पसंद करने वालों को बिना ऐनिमेशन अंतिम शीर्षक दिखता है। यह दोबारा नहीं चलता। यह उदाहरण है, लाइव व्यापारी डेटा नहीं। रोकने के लिए चित्र पर होवर या फ़ोकस करें।"
+    - status
+  - paragraph: कॉमर्स OS क्षमता मानचित्र
+  - heading "आपके व्यवसाय की हर ज़रूरत। एक ऑपरेटिंग सिस्टम।" [level=2]
+  - paragraph: एक प्लेटफ़ॉर्म से स्टोरफ़्रंट, ऑर्डर, स्टॉक, भुगतान, विश्लेषण, AI, B2B और संचालन चलाएँ।
+  - complementary:
+    - group "कॉमर्स OS मॉड्यूल मानचित्र":
+      - text: COMMERCE OS
+      - button "स्टोरफ़्रंट" [pressed]
+      - button "ऑर्डर"
+      - button "स्टॉक"
+      - button "भुगतान"
+      - button "ग्राहक"
+      - button "विश्लेषण"
+      - button "AI ऑपरेटर और ऑटोमेशन": AI
+      - button "B2B और थोक": B2B
+    - button "स्वचालित मॉड्यूल यात्रा रोकें"
+  - region "कॉमर्स क्षमता कार्ड":
+    - text: बाएँ-दाएँ स्वाइप करें, तीर वाली कुंजी दबाएँ या मानचित्र में मॉड्यूल चुनें। छूने पर अपने आप बदलना रुकता है। स्टोरफ़्रंट आपका ब्रांड, हर जगह लाइव
+    - paragraph: कस्टम डोमेन, थीम और हर स्क्रीन के अनुकूल उत्पाद पेज वाला ब्रांडेड स्टोरफ़्रंट शुरू करें — स्टॉक और ऑर्डर से तुरंत जुड़ा हुआ।
+    - list "स्टोरफ़्रंट की सुविधाएँ":
+      - listitem: कस्टम डोमेन और SSL
+      - listitem: मोबाइल-केंद्रित थीम
+      - listitem: SEO के लिए तैयार पेज
+  - region "पहले दिन से अगले बड़े कदम तक।":
+    - paragraph: व्यापारी विकास यात्रा
+    - heading "पहले दिन से अगले बड़े कदम तक।" [level=2]
+    - paragraph: बढ़ते व्यवसाय के पाँच चरण और हर चरण के लिए LetBuyy टूल जानें।
+    - tablist "व्यवसाय विकास चरण चुनें":
+      - tab "01. स्टोर शुरू करें" [selected]: स्टोर शुरू करें
+      - tab "02. पहला ऑर्डर": पहला ऑर्डर
+      - tab "03. संचालन बढ़ाएँ": संचालन बढ़ाएँ
+      - tab "04. ब्रांड बनाएँ": ब्रांड बनाएँ
+      - tab "05. बड़ा व्यवसाय": बड़ा व्यवसाय
+    - tabpanel "01. स्टोर शुरू करें":
+      - paragraph: स्टोरफ़्रंट + थीम
+      - heading "अपनी पहचान दें। फिर शुरुआत करें।" [level=3]
+      - paragraph: अपने उत्पादों का स्टोरफ़्रंट बनाएँ जो आपके व्यवसाय की पहचान दिखाए। ज़रूरी चीज़ों से शुरू करें और तैयार होने पर प्रकाशित करें।
+      - 'list "आप क्या कर सकते हैं: स्टोर शुरू करें"':
+        - listitem:
+          - heading "स्टोरफ़्रंट को रूप दें" [level=4]
+          - paragraph: थीम चुनें, ब्रांड पहचान बदलें और अलग स्क्रीन पर देखें।
+        - listitem:
+          - heading "कैटलॉग तैयार करें" [level=4]
+          - paragraph: उत्पाद चित्र, कीमत, साइज़ और उपलब्ध स्टॉक जोड़ें।
+        - listitem:
+          - heading "खोजना आसान बनाएँ" [level=4]
+          - paragraph: LetBuyy पता इस्तेमाल करें या योग्य कस्टम डोमेन जोड़ें।
+    - navigation "व्यवसाय के चरण देखें":
+      - button "पिछला" [disabled]
+      - text: 01 / 05
+      - button "अगला चरण"
+    - paragraph: टूल आपकी योजना और सेटअप पर निर्भर हैं। भुगतान, शिपिंग और ईमेल भेजने के लिए संबंधित प्रदाता जोड़ना आवश्यक है।
+  - region "अपना स्टोर बनाएँ। पूरा व्यवसाय चलाएँ।":
+    - paragraph: LetBuyy कैसे काम करता है
+    - heading "अपना स्टोर बनाएँ। पूरा व्यवसाय चलाएँ।" [level=2]
+    - paragraph: LetBuyy आपकी ऑनलाइन दुकान, ऑर्डर और ग्राहक टूल एक कार्यस्थल में लाता है। शुरुआत से अगले संग्रह तक ये ऐसे मदद करते हैं।
+    - list "From creating your store to growing your business":
+      - listitem:
+        - text: "01"
+        - paragraph: अपनी पहचान दें
+        - heading "आपके उत्पाद। आपका ऑनलाइन स्टोर।" [level=3]
+        - paragraph: अपनी ब्रांड पहचान के साथ फ़ोन, टैबलेट और कंप्यूटर पर काम करने वाला ऑनलाइन स्टोर बनाएँ।
+        - list:
+          - listitem: थीम चुनें और अपनी पहचान दें।
+          - listitem: उत्पाद चित्र, कीमत, साइज़ और स्टॉक जोड़ें।
+          - listitem: स्टोर देखें, डोमेन जोड़ें और प्रकाशित करें।
+        - link "स्टोरफ़्रंट थीम देखें":
+          - /url: /in-hi/resources/platform/how-themes-work
+      - listitem:
+        - text: "02"
+        - paragraph: बिक्री शुरू करें
+        - heading "ग्राहक की कार्ट से पैक किए ऑर्डर तक।" [level=3]
+        - paragraph: स्टोर लिंक साझा करें। ग्राहक उत्पाद देखकर खरीदें, फिर कार्यस्थल से हर ऑर्डर सँभालें।
+        - list:
+          - listitem: सक्षम किए भुगतान विकल्प दें।
+          - listitem: खरीद, भुगतान स्थिति और स्टॉक साथ देखें।
+          - listitem: शिपमेंट तैयार करें, ट्रैकिंग जोड़ें और वापसी सँभालें।
+        - link "ऑर्डर पूर्ति का तरीका जानें":
+          - /url: /in-hi/resources/operations/order-fulfillment-guide
+      - listitem:
+        - text: "03"
+        - paragraph: ग्राहकों को वापस लाएँ
+        - heading "पहली खरीद को रिश्ते में बदलें।" [level=3]
+        - paragraph: खरीदार समझें, अगला संग्रह साझा करें और बिक्री रिपोर्ट से अगला कदम तय करें।
+        - list:
+          - listitem: ग्राहक प्रोफ़ाइल और खरीद इतिहास देखें।
+          - listitem: सदस्य ग्राहकों के ईमेल अभियान बनाएँ।
+          - listitem: अगली योजना के लिए ऑर्डर और राजस्व देखें।
+        - link "ईमेल मार्केटिंग मार्गदर्शिका पढ़ें":
+          - /url: /in-hi/resources/growth/email-marketing-ecommerce
+    - paragraph: भुगतान, शिपिंग और ईमेल विकल्प योजना, खाते के सेटअप और प्रदाताओं पर निर्भर हैं।
+    - region "एक टी-शर्ट बिकी। अगले कदम, एक साथ।":
+      - text: रोज़ का उदाहरण
+      - heading "एक टी-शर्ट बिकी। अगले कदम, एक साथ।" [level=3]
+      - paragraph: ग्राहक ने आपके स्टोर से नेवी टी-शर्ट खरीदी। सभी ऑर्डर विवरण के साथ आगे का काम देखें।
+      - list "Managing an example T-shirt order":
+        - listitem:
+          - heading "ऑर्डर देखें" [level=4]
+          - paragraph: उत्पाद, खरीदार और डिलीवरी विवरण एक साथ।
+        - listitem:
+          - heading "भुगतान जाँचें" [level=4]
+          - paragraph: भुगतान हो चुका, लंबित या COD है, जानें।
+        - listitem:
+          - heading "स्टॉक सही रखें" [level=4]
+          - paragraph: अगली बिक्री से पहले उपलब्ध मात्रा देखें।
+        - listitem:
+          - heading "डिलीवरी तैयार करें" [level=4]
+          - paragraph: ऑर्डर पैक करें और शिपमेंट स्थिति अपडेट रखें।
+    - heading "आपके दिन के काम में इसका मतलब?" [level=3]
+    - paragraph: ज़रूरी काम से शुरुआत करें।
+    - group: नया ऑर्डर आता है
+    - group: भुगतान जाँचना है
+    - group: ग्राहक को रिफ़ंड चाहिए
+    - group: उत्पाद का स्टॉक कम है
+    - group: नया संग्रह साझा करना है
+    - group: कमाई समझनी है
+  - paragraph: कीमत
+  - heading "सरल और स्पष्ट कीमत" [level=2]
+  - paragraph: Launch और Growth उपलब्ध हैं। Scale और Commerce OS जल्द आएँगे। लेनदेन और प्लेटफ़ॉर्म शुल्क हमेशा 0%।
+  - paragraph: 🏆 शुरुआती व्यापारी कार्यक्रम — 100 / 100 स्थान शेष
+  - paragraph: शुरुआती कीमत जीवनभर तय करें। स्थायी दर, शुरुआती बैज, प्राथमिकता और नई सुविधाओं की जल्द पहुँच।
+  - article:
+    - heading "शुरुआत" [level=3]
+    - paragraph: बिक्री शुरू करने की हर ज़रूरत
+    - paragraph: ₹199/माह
+    - paragraph: सामान्य ₹299 · बचत ₹100/माह जीवनभर
+    - link "मुफ़्त परीक्षण शुरू करें":
+      - /url: https://accounts.letbuyy.com/signup
+    - list:
+      - listitem: हमेशा 0% कमीशन
+      - listitem: असीमित उत्पाद, ऑर्डर और ग्राहक
+      - listitem: ऑनलाइन स्टोरफ़्रंट और थीम
+      - listitem: UPI, QR और COD
+      - listitem: GST कर इनवॉइस
+      - listitem: मुफ़्त .letbuyy.com डोमेन और होस्टिंग
+  - article:
+    - text: सबसे लोकप्रिय
+    - heading "विकास" [level=3]
+    - paragraph: उन्नत टूल से स्टोर बढ़ाएँ
+    - paragraph: ₹699/माह
+    - paragraph: सामान्य ₹999 · बचत ₹300/माह जीवनभर
+    - link "मुफ़्त परीक्षण शुरू करें":
+      - /url: https://accounts.letbuyy.com/signup
+    - list:
+      - listitem: Launch की सभी सुविधाएँ
+      - listitem: कस्टम डोमेन और ब्रांडिंग हटाना
+      - listitem: स्टॉक प्रबंधन
+      - listitem: एक साथ उत्पाद आयात
+      - listitem: छूट इंजन
+      - listitem: ग्राहक समूह
+  - article:
+    - text: जल्द आ रहा है
+    - heading "विस्तार" [level=3]
+    - paragraph: बढ़ते, कई माध्यम वाले व्यवसाय के लिए
+    - paragraph: जल्द आ रहा है
+    - text: जल्द आ रहा है
+    - list:
+      - listitem: Growth की सभी सुविधाएँ
+      - listitem: कई गोदाम का स्टॉक
+      - listitem: खरीद ऑर्डर
+      - listitem: वफ़ादारी और गिफ़्ट कार्ड
+      - listitem: समीक्षा और ग्राहक सामग्री
+      - listitem: छूटी खरीद की रिकवरी
+  - article:
+    - text: जल्द आ रहा है
+    - heading "Commerce OS" [level=3]
+    - paragraph: आपका कॉमर्स ऑपरेटिंग सिस्टम
+    - paragraph: जल्द आ रहा है
+    - text: जल्द आ रहा है
+    - list:
+      - listitem: Scale की सभी सुविधाएँ
+      - listitem: POS / आमने-सामने बिक्री
+      - listitem: कई स्टोर का प्रबंधन
+      - listitem: B2B कैटलॉग (B2B + DTC)
+      - listitem: AI सहायक और LCIS जानकारी
+      - listitem: संचालन और कार्यकारी केंद्र
+  - heading "सभी योजनाओं की तुलना" [level=2]
+  - table "योजना सुविधाओं की तुलना":
+    - row "केवल अंतर शुरुआत विकास सबसे लोकप्रिय विस्तार Commerce OS":
+      - columnheader "केवल अंतर":
+        - checkbox "केवल अंतर"
+        - text: केवल अंतर
+      - columnheader "शुरुआत"
+      - columnheader "विकास सबसे लोकप्रिय"
+      - columnheader "विस्तार"
+      - columnheader "Commerce OS"
+    - rowgroup:
+      - text: कीमत
+      - row "मासिक कीमत ₹299 ₹999 ₹2,499 ₹5,999":
+        - cell "मासिक कीमत"
+        - cell "₹299"
+        - cell "₹999"
+        - cell "₹2,499"
+        - cell "₹5,999"
+      - row "सालाना कीमत (प्रति माह) ₹249 ₹799 ₹1,999 ₹4,799":
+        - cell "सालाना कीमत (प्रति माह)"
+        - cell "₹249"
+        - cell "₹799"
+        - cell "₹1,999"
+        - cell "₹4,799"
+      - row "शुरुआती कीमत ₹199 ₹699 — —":
+        - cell "शुरुआती कीमत"
+        - cell "₹199"
+        - cell "₹699"
+        - cell "—"
+        - cell "—"
+      - row "प्लेटफ़ॉर्म कमीशन हमेशा 0% हमेशा 0% हमेशा 0% हमेशा 0%":
+        - cell "प्लेटफ़ॉर्म कमीशन"
+        - cell "हमेशा 0%"
+        - cell "हमेशा 0%"
+        - cell "हमेशा 0%"
+        - cell "हमेशा 0%"
+      - row "मुफ़्त परीक्षण 14 दिन 14 दिन 14 दिन 14 दिन":
+        - cell "मुफ़्त परीक्षण"
+        - cell "14 दिन"
+        - cell "14 दिन"
+        - cell "14 दिन"
+        - cell "14 दिन"
+      - row "सेटअप शुल्क ₹0 ₹0 ₹0 ₹0":
+        - cell "सेटअप शुल्क"
+        - cell "₹0"
+        - cell "₹0"
+        - cell "₹0"
+        - cell "₹0"
+    - rowgroup:
+      - text: मुख्य कॉमर्स
+      - row "ऑनलाइन स्टोरफ़्रंट पूरा पूरा पूरा पूरा":
+        - cell "ऑनलाइन स्टोरफ़्रंट"
+        - cell "पूरा"
+        - cell "पूरा"
+        - cell "पूरा"
+        - cell "पूरा"
+      - row "थीम और टेम्पलेट":
+        - cell "थीम और टेम्पलेट"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "असीमित उत्पाद":
+        - cell "असीमित उत्पाद"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "असीमित ऑर्डर":
+        - cell "असीमित ऑर्डर"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "असीमित ग्राहक":
+        - cell "असीमित ग्राहक"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "कर्मचारी खाते 1 3 10 25":
+        - cell "कर्मचारी खाते"
+        - cell "1"
+        - cell "3"
+        - cell "10"
+        - cell "25"
+      - row "स्टोरेज 1 GB 10 GB 50 GB 200 GB":
+        - cell "स्टोरेज"
+        - cell "1 GB"
+        - cell "10 GB"
+        - cell "50 GB"
+        - cell "200 GB"
+      - row "मासिक AI क्रेडिट 50 250 1,000 5,000":
+        - cell "मासिक AI क्रेडिट"
+        - cell "50"
+        - cell "250"
+        - cell "1,000"
+        - cell "5,000"
+    - rowgroup:
+      - text: उत्पाद
+      - row "उत्पाद विकल्प":
+        - cell "उत्पाद विकल्प"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "संग्रह":
+        - cell "संग्रह"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "श्रेणियाँ":
+        - cell "श्रेणियाँ"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "उत्पाद मीडिया":
+        - cell "उत्पाद मीडिया"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "उत्पाद समीक्षाएँ — —":
+        - cell "उत्पाद समीक्षाएँ"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "कस्टम डेटा (मेटाफ़ील्ड) —":
+        - cell "कस्टम डेटा (मेटाफ़ील्ड)"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "एक साथ उत्पाद आयात —":
+        - cell "एक साथ उत्पाद आयात"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "खरीद ऑर्डर — —":
+        - cell "खरीद ऑर्डर"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+    - rowgroup:
+      - text: स्टॉक
+      - row "स्टॉक ट्रैकिंग —":
+        - cell "स्टॉक ट्रैकिंग"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "समायोजन और इतिहास —":
+        - cell "समायोजन और इतिहास"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "स्टॉक स्थान — 1 कई कई":
+        - cell "स्टॉक स्थान"
+        - cell "—"
+        - cell "1"
+        - cell "कई"
+        - cell "कई"
+      - row "कई गोदाम — —":
+        - cell "कई गोदाम"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "कम स्टॉक की जानकारी —":
+        - cell "कम स्टॉक की जानकारी"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: ऑर्डर
+      - row "ऑर्डर प्रबंधन":
+        - cell "ऑर्डर प्रबंधन"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "ड्राफ़्ट ऑर्डर —":
+        - cell "ड्राफ़्ट ऑर्डर"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "ऑर्डर नोट और टैग":
+        - cell "ऑर्डर नोट और टैग"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "वापसी और रिफ़ंड":
+        - cell "वापसी और रिफ़ंड"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "COD मिलान —":
+        - cell "COD मिलान"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "ऑर्डर ID का कस्टम प्रारूप":
+        - cell "ऑर्डर ID का कस्टम प्रारूप"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: भुगतान
+      - row "Razorpay भुगतान":
+        - cell "Razorpay भुगतान"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "UPI भुगतान":
+        - cell "UPI भुगतान"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "QR भुगतान":
+        - cell "QR भुगतान"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "कैश ऑन डिलीवरी":
+        - cell "कैश ऑन डिलीवरी"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "GST कर इनवॉइस":
+        - cell "GST कर इनवॉइस"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "गिफ़्ट कार्ड — —":
+        - cell "गिफ़्ट कार्ड"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "वॉलेट और पेआउट":
+        - cell "वॉलेट और पेआउट"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "0% कमीशन":
+        - cell "0% कमीशन"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: चेकआउट
+      - row "होस्ट किया चेकआउट":
+        - cell "होस्ट किया चेकआउट"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "ग्राहक खाते":
+        - cell "ग्राहक खाते"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "चेकआउट अनुकूलन सीमित सीमित मानक पूरा":
+        - cell "चेकआउट अनुकूलन"
+        - cell "सीमित"
+        - cell "सीमित"
+        - cell "मानक"
+        - cell "पूरा"
+      - row "छूटी खरीद की रिकवरी —":
+        - cell "छूटी खरीद की रिकवरी"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: मार्केटिंग
+      - row "कूपन —":
+        - cell "कूपन"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "छूट इंजन —":
+        - cell "छूट इंजन"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "ग्राहक समूह —":
+        - cell "ग्राहक समूह"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "ईमेल अभियान —":
+        - cell "ईमेल अभियान"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "WhatsApp कॉमर्स —":
+        - cell "WhatsApp कॉमर्स"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "मार्केटिंग ऑटोमेशन — बुनियादी":
+        - cell "मार्केटिंग ऑटोमेशन"
+        - cell "—"
+        - cell "बुनियादी"
+        - cell
+        - cell
+      - row "समीक्षा और ग्राहक सामग्री — —":
+        - cell "समीक्षा और ग्राहक सामग्री"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "ब्लॉग":
+        - cell "ब्लॉग"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: ग्राहक
+      - row "ग्राहक प्रोफ़ाइल":
+        - cell "ग्राहक प्रोफ़ाइल"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "नोट और टैग":
+        - cell "नोट और टैग"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "सेव किए पते":
+        - cell "सेव किए पते"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "ग्राहक वर्गीकरण —":
+        - cell "ग्राहक वर्गीकरण"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "वफ़ादारी कार्यक्रम — —":
+        - cell "वफ़ादारी कार्यक्रम"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+    - rowgroup:
+      - text: शिपिंग
+      - row "शिपिंग ज़ोन":
+        - cell "शिपिंग ज़ोन"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "शिपिंग दर":
+        - cell "शिपिंग दर"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "शिपिंग पर GST":
+        - cell "शिपिंग पर GST"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "शिपिंग लेबल —":
+        - cell "शिपिंग लेबल"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "ऑर्डर ट्रैकिंग":
+        - cell "ऑर्डर ट्रैकिंग"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: कर
+      - row "GST इनवॉइस":
+        - cell "GST इनवॉइस"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "GSTIN लेना":
+        - cell "GSTIN लेना"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "HSN कोड":
+        - cell "HSN कोड"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "कर सहित कीमत":
+        - cell "कर सहित कीमत"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "GST राज्य कोड":
+        - cell "GST राज्य कोड"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: AI
+      - row "AI होमपेज बिल्डर":
+        - cell "AI होमपेज बिल्डर"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "AI उत्पाद सामग्री —":
+        - cell "AI उत्पाद सामग्री"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "AI SEO —":
+        - cell "AI SEO"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "AI मार्केटिंग —":
+        - cell "AI मार्केटिंग"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "AI सहायक — —":
+        - cell "AI सहायक"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "AI संचालन — — —":
+        - cell "AI संचालन"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "मासिक AI क्रेडिट 50 250 1,000 5,000":
+        - cell "मासिक AI क्रेडिट"
+        - cell "50"
+        - cell "250"
+        - cell "1,000"
+        - cell "5,000"
+    - rowgroup:
+      - text: विश्लेषण
+      - row "बिक्री डैशबोर्ड":
+        - cell "बिक्री डैशबोर्ड"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "मानक रिपोर्ट":
+        - cell "मानक रिपोर्ट"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "विस्तृत रिपोर्ट —":
+        - cell "विस्तृत रिपोर्ट"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "कार्यकारी केंद्र — — —":
+        - cell "कार्यकारी केंद्र"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "LCIS जानकारी — — —":
+        - cell "LCIS जानकारी"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+    - rowgroup:
+      - text: संचालन
+      - row "संचालन केंद्र — — —":
+        - cell "संचालन केंद्र"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "प्रक्रिया और घटनाएँ — — —":
+        - cell "प्रक्रिया और घटनाएँ"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "लाइव संचालन — — —":
+        - cell "लाइव संचालन"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "सामूहिक संचालन —":
+        - cell "सामूहिक संचालन"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "बड़े व्यवसाय का ऑटोमेशन — — —":
+        - cell "बड़े व्यवसाय का ऑटोमेशन"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+    - rowgroup:
+      - text: डोमेन
+      - row "मुफ़्त .letbuyy.com पता":
+        - cell "मुफ़्त .letbuyy.com पता"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "कस्टम डोमेन —":
+        - cell "कस्टम डोमेन"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+      - row "मुफ़्त SSL प्रमाणपत्र":
+        - cell "मुफ़्त SSL प्रमाणपत्र"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "LetBuyy ब्रांडिंग हटाएँ —":
+        - cell "LetBuyy ब्रांडिंग हटाएँ"
+        - cell "—"
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: वैश्विक कॉमर्स
+      - row "स्टोरफ़्रंट की भाषाएँ 1 3 सभी सभी":
+        - cell "स्टोरफ़्रंट की भाषाएँ"
+        - cell "1"
+        - cell "3"
+        - cell "सभी"
+        - cell "सभी"
+      - row "डिफ़ॉल्ट भाषा":
+        - cell "डिफ़ॉल्ट भाषा"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "बाज़ार — —":
+        - cell "बाज़ार"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+      - row "स्थानीय मुद्रा दिखाना — —":
+        - cell "स्थानीय मुद्रा दिखाना"
+        - cell "—"
+        - cell "—"
+        - cell
+        - cell
+    - rowgroup:
+      - text: B2B
+      - row "B2B कैटलॉग — — —":
+        - cell "B2B कैटलॉग"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "एक स्टोर से B2B + DTC — — —":
+        - cell "एक स्टोर से B2B + DTC"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "थोक मूल्य सूची — — —":
+        - cell "थोक मूल्य सूची"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+    - rowgroup:
+      - text: कई स्टोर
+      - row "कई स्टोर का प्रबंधन — — —":
+        - cell "कई स्टोर का प्रबंधन"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "केंद्रीय कैटलॉग — — —":
+        - cell "केंद्रीय कैटलॉग"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "स्टोर बदलना — — —":
+        - cell "स्टोर बदलना"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+    - rowgroup:
+      - text: सुरक्षा
+      - row "KYC सत्यापन":
+        - cell "KYC सत्यापन"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "दो-चरण प्रमाणीकरण":
+        - cell "दो-चरण प्रमाणीकरण"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "पासकी":
+        - cell "पासकी"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "उपयोगकर्ता और अनुमति मानक मानक मानक कस्टम":
+        - cell "उपयोगकर्ता और अनुमति"
+        - cell "मानक"
+        - cell "मानक"
+        - cell "मानक"
+        - cell "कस्टम"
+      - row "कस्टम भूमिकाएँ — — —":
+        - cell "कस्टम भूमिकाएँ"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+      - row "अतिरिक्त सत्यापन":
+        - cell "अतिरिक्त सत्यापन"
+        - cell
+        - cell
+        - cell
+        - cell
+      - row "नीति पेज":
+        - cell "नीति पेज"
+        - cell
+        - cell
+        - cell
+        - cell
+    - rowgroup:
+      - text: सहायता
+      - row "सहायता का माध्यम ईमेल प्राथमिकता प्राथमिकता + WhatsApp समर्पित प्रबंधक":
+        - cell "सहायता का माध्यम"
+        - cell "ईमेल"
+        - cell "प्राथमिकता"
+        - cell "प्राथमिकता + WhatsApp"
+        - cell "समर्पित प्रबंधक"
+      - row "शुरुआती सेटअप स्वयं सेवा मार्गदर्शित मार्गदर्शित विशेष सहायता":
+        - cell "शुरुआती सेटअप"
+        - cell "स्वयं सेवा"
+        - cell "मार्गदर्शित"
+        - cell "मार्गदर्शित"
+        - cell "विशेष सहायता"
+      - row "जवाब की प्राथमिकता मानक प्राथमिकता प्राथमिकता सर्वोच्च":
+        - cell "जवाब की प्राथमिकता"
+        - cell "मानक"
+        - cell "प्राथमिकता"
+        - cell "प्राथमिकता"
+        - cell "सर्वोच्च"
+      - row "समर्पित सफलता प्रबंधक — — —":
+        - cell "समर्पित सफलता प्रबंधक"
+        - cell "—"
+        - cell "—"
+        - cell "—"
+        - cell
+  - button "+ सभी सुविधाएँ देखें"
+  - region "शुरुआत से पहले जानने योग्य बातें":
+    - paragraph: अक्सर पूछे जाने वाले सवाल
+    - heading "शुरुआत से पहले जानने योग्य बातें" [level=2]
+    - paragraph: कीमत, स्थानांतरण, भुगतान, डेटा स्वामित्व और अन्य प्लेटफ़ॉर्म से LetBuyy की तुलना के सामान्य सवालों के जवाब।
+    - complementary "आधुनिक कॉमर्स के लिए बना":
+      - heading "आधुनिक कॉमर्स के लिए बना" [level=3]
+      - list:
+        - listitem: लेनदेन पर कमीशन नहीं
+        - listitem: भारतीय भुगतान व्यवस्था
+        - listitem: कस्टम डोमेन समर्थित
+        - listitem: स्थानांतरण में सहायता
+        - listitem: AI आधारित कॉमर्स प्लेटफ़ॉर्म
+      - term: AI क्षमताएँ
+      - definition: 50+
+      - term: निगरानी
+      - definition: 24/7
+      - term: डेटा का स्वामित्व
+      - definition: 100%
+      - term: कमीशन
+      - definition: 0%
+    - heading "LetBuyy क्या है?" [level=3]:
+      - button "LetBuyy क्या है?" [expanded]
+    - region "LetBuyy क्या है?":
+      - paragraph: LetBuyy AI आधारित कॉमर्स ऑपरेटिंग सिस्टम है, जो एक ही प्लेटफ़ॉर्म से स्टोरफ़्रंट, उत्पाद, स्टॉक, ऑर्डर, भुगतान, ग्राहक, विश्लेषण और संचालन सँभालने में मदद करता है।
+      - paragraph: LetBuyy केवल ऑनलाइन दुकान के बजाय पूरा कॉमर्स व्यवसाय चलाने के लिए बना है।
+    - heading "LetBuyy Shopify से अलग कैसे है?" [level=3]:
+      - button "LetBuyy Shopify से अलग कैसे है?"
+    - heading "क्या अपना कस्टम डोमेन इस्तेमाल कर सकता हूँ?" [level=3]:
+      - button "क्या अपना कस्टम डोमेन इस्तेमाल कर सकता हूँ?"
+    - heading "LetBuyy में कौन से भुगतान विकल्प हैं?" [level=3]:
+      - button "LetBuyy में कौन से भुगतान विकल्प हैं?"
+    - heading "क्या Shopify, WooCommerce या दूसरे प्लेटफ़ॉर्म से आ सकता हूँ?" [level=3]:
+      - button "क्या Shopify, WooCommerce या दूसरे प्लेटफ़ॉर्म से आ सकता हूँ?"
+    - heading "क्या LetBuyy बढ़ते व्यवसाय के लिए सही है?" [level=3]:
+      - button "क्या LetBuyy बढ़ते व्यवसाय के लिए सही है?"
+    - heading "क्या लेनदेन पर कमीशन लेते हैं?" [level=3]:
+      - button "क्या लेनदेन पर कमीशन लेते हैं?"
+    - heading "मुफ़्त परीक्षण के बाद क्या होगा?" [level=3]:
+      - button "मुफ़्त परीक्षण के बाद क्या होगा?"
+    - heading "स्टोर डेटा का मालिक कौन है?" [level=3]:
+      - button "स्टोर डेटा का मालिक कौन है?"
+  - paragraph: LetBuyy इकोसिस्टम
+  - heading "एक प्लेटफ़ॉर्म। कई शक्तिशाली कार्यक्षेत्र।" [level=2]
+  - paragraph: एक जुड़े इकोसिस्टम से कॉमर्स चलाने के लिए व्यापारी, डेवलपर, संचालक और पार्टनर की हर ज़रूरत।
+  - text: 12+ प्लेटफ़ॉर्म कार्यक्षेत्र 1 एकीकृत पहचान 100% कॉमर्स इंजन AI अंतर्निहित आधार
+  - article:
+    - text: मुख्य प्लेटफ़ॉर्म व्यापारी नियंत्रण केंद्र
+    - paragraph: हर LetBuyy स्टोर का ऑपरेटिंग सिस्टम।
+    - text: उत्पाद ऑर्डर स्टॉक ग्राहक विश्लेषण AI सहायक
+    - link "नियंत्रण केंद्र खोलें":
+      - /url: https://accounts.letbuyy.com/signup
+  - paragraph: प्लेटफ़ॉर्म कार्यक्षेत्र
+  - link "थीम स्टोरफ़्रंट थीम मार्गदर्शिका मार्गदर्शिका":
+    - /url: /in-hi/resources/platform/how-themes-work
+  - link "ऐप ऐप एकीकरण मार्गदर्शिका मार्गदर्शिका":
+    - /url: /in-hi/resources/platform/introduction-to-apps
+  - link "डेवलपर API, वेबहुक, OAuth, SDK मार्गदर्शिका":
+    - /url: /in-hi/resources/developers
+  - link "कीमत फ़ाउंडर और विकास योजनाएँ योजनाएँ":
+    - /url: /in-hi/pricing
+  - paragraph: सभी कार्यक्षेत्र एक ही कॉमर्स इंजन, पहचान और डेटा परत साझा करते हैं।
+  - heading "आज ही LetBuyy के साथ शुरुआत करें।" [level=2]
+  - paragraph: मिनटों में अपना स्टोर, ब्लॉग या लैंडिंग पेज बनाएँ।
+  - link "मुफ़्त शुरुआत करें":
+    - /url: https://accounts.letbuyy.com/signup
+  - link "डेमो माँगें":
+    - /url: /in-hi/demo
+  - paragraph: क्रेडिट कार्ड की ज़रूरत नहीं • हमेशा मुफ़्त योजना उपलब्ध
+- contentinfo "LetBuyy फ़ुटर":
+  - heading "LetBuyy फ़ुटर" [level=2]
+  - link "LetBuyy होम":
+    - /url: /in-hi
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "LetBuyy क्या है?":
+          - /url: /in-hi
+      - listitem:
+        - link "कीमत":
+          - /url: /in-hi/pricing
+      - listitem:
+        - link "अपनी दुकान शुरू करें":
+          - /url: /in-hi/create
+  - navigation "इकोसिस्टम":
+    - heading "इकोसिस्टम" [level=3]
+    - list:
+      - listitem:
+        - link "थीम मार्गदर्शिका":
+          - /url: /in-hi/resources/platform/how-themes-work
+      - listitem:
+        - link "ऐप एकीकरण मार्गदर्शिका":
+          - /url: /in-hi/resources/platform/introduction-to-apps
+      - listitem:
+        - link "डेवलपर डॉक्स":
+          - /url: /in-hi/resources/developers
+      - listitem:
+        - link "मर्चेंट लॉगिन":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "संसाधन":
+    - heading "संसाधन" [level=3]
+    - list:
+      - listitem:
+        - link "सभी संसाधन":
+          - /url: /in-hi/resources
+      - listitem:
+        - link "ईकॉमर्स गाइड":
+          - /url: /in-hi/resources/ecommerce
+      - listitem:
+        - link "डेवलपर डॉक्स":
+          - /url: /in-hi/resources/developers
+      - listitem:
+        - link "चेंजलॉग":
+          - /url: /in-hi/resources/changelog
+  - navigation "सहायता":
+    - heading "सहायता" [level=3]
+    - list:
+      - listitem:
+        - link "सहायता केंद्र":
+          - /url: /in-hi/support
+      - listitem:
+        - link "संपर्क करें":
+          - /url: /in-hi/contact
+      - listitem:
+        - link "शिकायत निवारण":
+          - /url: /in-hi/legal/grievance
+      - listitem:
+        - link "सुरक्षा":
+          - /url: /in-hi/legal/security
+      - listitem:
+        - link "खाता एक्सेस":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "क्षेत्र और भाषा": भारत हिन्दी
+  - navigation "क़ानूनी लिंक":
+    - link "क़ानूनी":
+      - /url: /in-hi/legal
+    - link "शर्तें":
+      - /url: /in-hi/legal/terms
+    - link "प्राइवेसी":
+      - /url: /in-hi/legal/privacy
+    - link "रिफ़ंड":
+      - /url: /in-hi/legal/refunds
+    - link "साइटमैप":
+      - /url: /in-hi/sitemap
+    - button "आपकी प्राइवेसी पसंद"
+  - navigation "सोशल लिंक":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. सर्वाधिकार सुरक्षित।
+- alert

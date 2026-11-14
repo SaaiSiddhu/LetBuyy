@@ -1,9 +1,0 @@
-Browser tab: 11, Title: "Pantry lifecycle rice | Threadline", URL: "http://syn-threadline-ui-d11a8917.localhost:57226/product/27c2b2de-97f0-4bc7-bc82-419a42ef55b9".
-The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
-Removed element IDs: 31-34
-+			50 text 1000 g net per pack
-+			51 text ₹22.00 / 100 g
-+			52 text 2 sellable packs · 2000 g total net contents.
-+			53 text Quantity counts sellable packs. Shipping is calculated at checkout.
-~			36 stepper (settable, integer) Number of packs, Value: 2, ID: lb-quantity-pantry-selection
-The focused UI element is 36 stepper (settable, integer) Number of packs, Value: 2, ID: lb-quantity-pantry-selection

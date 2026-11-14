@@ -6,7 +6,7 @@ import { ARTICLE_CONTENT } from './article-catalog'
 function mapBlock(block: ContentBlock, t: (text: string) => string): ContentBlock {
     switch (block.type) {
         case 'code': return block.lang === 'text' ? { ...block, text: t(block.text) } : { ...block } // Translate prose prompts; preserve executable examples.
-        case 'p': return { ...block, text: t(block.text) }
+        case 'p': return { ...block, text: t(block.text), ...(block.references ? { references: block.references.map(reference => ({ ...reference, label: t(reference.label) })) } : {}) }
         case 'h2': case 'h3': return { ...block, id: block.id ?? resourceHeadingId(block.text), text: t(block.text) }
         case 'blockquote': return { ...block, text: t(block.text), ...(block.cite ? { cite: t(block.cite) } : {}) }
         case 'ul': case 'ol': return { ...block, items: block.items.map(t) }

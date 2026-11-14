@@ -1,9 +1,8 @@
 export type SecurityHeaderOptions = {
   frameAncestors?: string[];
-  /** Explicit provider frames; these origins gain no script/connect/CORS permission. */
-  frameSources?: string[];
   reportOnly?: boolean;
-  razorpayCheckoutForms?: boolean;
+  /** Explicit application API URLs; added only to connect-src. */
+  connectOrigins?: string[];
 };
 
 function splitOrigins(value: string | undefined): string[] {
@@ -46,6 +45,14 @@ function unique(values: string[]): string[] {
   return Array.from(new Set(values.filter(Boolean)));
 }
 
+function explicitConnectOrigin(value: string): string {
+  const url = new URL(value);
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hostname.includes('*')) {
+    throw new Error('Additional CSP connect origins must be explicit HTTP(S) URLs without credentials');
+  }
+  return url.origin;
+}
+
 function isDevelopmentRuntime(): boolean {
   return process.env.NODE_ENV !== 'production';
 }
@@ -69,7 +76,7 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
   // lumberjack.razorpay.com is Razorpay's own telemetry/fraud-signal beacon (checkout.js posts to
   // /v2/logz throughout the checkout flow) — connect-src only, never a script or frame origin.
   const razorpayConnectOnly = ['https://lumberjack.razorpay.com'];
-  const connectSrc = unique(["'self'", ...origins, 'https://*.supabase.co', 'wss://*.supabase.co', ...razorpayOrigins, ...razorpayConnectOnly]);
+  const connectSrc = unique(["'self'", ...origins, ...(options.connectOrigins ?? []).map(explicitConnectOrigin), 'https://*.supabase.co', 'wss://*.supabase.co', ...razorpayOrigins, ...razorpayConnectOnly]);
   const imgSrc = unique(["'self'", 'data:', 'blob:', 'https:', ...origins]);
   const scriptSrc = unique([
     "'self'",
@@ -85,13 +92,7 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
   // layout.tsx are emitted correctly but have no effect when the CSP blocks the stylesheet.
   const styleSrc = unique(["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com']);
   const fontSrc = unique(["'self'", 'data:', 'https://fonts.gstatic.com']);
-  const providerFrames = (options.frameSources || []).flatMap(value => {
-    try {
-      const url = new URL(value);
-      return url.protocol === 'https:' && /^[a-z0-9][a-z0-9.-]*$/i.test(url.hostname) && !url.username && !url.password && url.pathname === '/' && !url.search && !url.hash ? [url.origin] : [];
-    } catch { return []; }
-  });
-  const frameSrc = unique(["'self'", 'https://challenges.cloudflare.com', ...razorpayOrigins, ...origins, ...providerFrames]);
+  const frameSrc = unique(["'self'", 'https://challenges.cloudflare.com', ...razorpayOrigins, ...origins]);
 
   return [
     "default-src 'self'",
@@ -103,9 +104,7 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
     `frame-src ${frameSrc.join(' ')}`,
     `frame-ancestors ${frameAncestors.join(' ')}`,
     "base-uri 'self'",
-    options.razorpayCheckoutForms
-      ? "form-action 'self' https://api.razorpay.com"
-      : "form-action 'self'",
+    "form-action 'self'",
     "object-src 'none'",
   ].join('; ');
 }

@@ -1,3 +1,5 @@
+import { loadPublicPricing } from '@/lib/pricing'
+import { BRAND_ASSETS, BRAND_SOCIAL_IMAGE } from '@/lib/brand-assets'
 import { localizeMetadata } from '@/lib/i18n/metadata'
 import type { Metadata } from 'next'
 import Header from '@/components/Header'
@@ -7,32 +9,27 @@ import FinalCTA from '@/components/FinalCTA'
 import Footer from '@/components/Footer'
 
 const sourceMetadata: Metadata = {
-    title: 'Pricing',
+    title: 'LetBuyy Pricing — Plans for Indian Businesses',
     description:
-        'LetBuyy Launch plan starts at ₹299/month. 0% commission forever. UPI, COD, and GST-ready payments built in. Review plans before paying.',
+        'Compare LetBuyy subscription plans for Indian businesses. Review current prices, availability and signup terms. 0% commission on your sales.',
     alternates: {
         canonical: '/pricing',
     },
     openGraph: {
-        title: 'LetBuyy pricing — Launch from ₹299/month',
+        title: 'LetBuyy Pricing — Plans for Indian Businesses',
         description:
-            'Launch and Growth plans available now. Scale and Commerce OS coming soon. 0% commission forever. India-first commerce platform.',
+            'Compare current subscription plans and availability for your Indian business.',
         url: '/pricing',
         images: [
-            {
-                url: '/icons/letbuyy-logo-light.svg',
-                width: 680,
-                height: 220,
-                alt: 'LetBuyy pricing',
-            },
+            BRAND_SOCIAL_IMAGE,
         ],
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'LetBuyy pricing — Launch from ₹299/month',
+        title: 'LetBuyy Pricing — Plans for Indian Businesses',
         description:
-            'Launch and Growth plans live now. 0% commission. UPI, COD, GST-ready. Review plans before paying.',
-        images: ['/icons/letbuyy-logo-light.svg'],
+            'Review current LetBuyy subscription plans and signup terms.',
+        images: [BRAND_ASSETS.social],
     },
 }
 
@@ -41,12 +38,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 
-export default function PricingPage() {
+export default async function PricingPage() {
+    const initialData = await loadPublicPricing()
     return (
         <>
             <Header />
             <main>
-                <Pricing />
+                <Pricing initialData={initialData} headingLevel={1} />
                 <FAQ />
                 <FinalCTA />
             </main>

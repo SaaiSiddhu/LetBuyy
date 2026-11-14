@@ -1,20 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice,fetchRazorpayRefund } from './index';
-
-test('refund lookup uses the given historical account, encodes the reference and preserves provider facts',async()=>{
- const result=await fetchRazorpayRefund({keyId:'synthetic-key-id',keySecret:'synthetic-key-secret'},'rfnd_a/b',{
-  fetch:async(input,init)=>{assert.equal(String(input),'https://api.razorpay.com/v1/refunds/rfnd_a%2Fb');
-   assert.equal(init?.method,'GET');assert.equal(new Headers(init?.headers).get('Authorization'),'Basic '+btoa('synthetic-key-id:synthetic-key-secret'));
-   return Response.json({id:'rfnd_a/b',payment_id:'pay_synthetic',amount:1,currency:'INR',status:'created'});},
- });assert.equal(result.status,'created');assert.equal(result.amount,1);
-});
-test('refund lookup does not manufacture a processed refund on errors or malformed provider JSON',async()=>{
- for(const response of [Response.json({}, {status:503}),Response.json(null),Response.json([])]){
-  const result=await fetchRazorpayRefund({keyId:'synthetic-key-id',keySecret:'synthetic-key-secret'},'rfnd_synthetic',{fetch:async()=>response});
-  assert.ok(result.error);assert.equal(result.status,undefined);
- }
-});
+import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice } from './index';
 
 test('Razorpay receipt lookup sends an authenticated bounded exact-receipt query', async () => {
   let requestedUrl = '';

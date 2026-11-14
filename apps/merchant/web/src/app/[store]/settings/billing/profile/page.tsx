@@ -1,12 +1,8 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
-    Section,
-    Card,
     Badge,
     Banner,
     Button,
@@ -45,26 +41,21 @@ function readString(value: unknown, fallback = '') {
 }
 
 function normalizeMandates(value: unknown): BillingMandateView[] {
-    if (!Array.isArray(value)) throw new Error('Billing mandate list response is incomplete.')
-    return value.map((m) => {
-        if (!isRecord(m) || typeof m.id !== 'string' || !m.id ||
-            typeof m.provider !== 'string' || typeof m.status !== 'string' ||
-            typeof m.plan_slug !== 'string' || typeof m.billing_period !== 'string') {
-            throw new Error('Billing mandate data is incomplete.')
-        }
+    if (!Array.isArray(value)) return []
+    return value.flatMap((m) => {
+        if (!isRecord(m) || typeof m.id !== 'string') return []
         const mode = m.provider_mode === 'live' ? 'live' : m.provider_mode === 'sandbox' ? 'sandbox' : null
-        const amount = m.amount_minor === null || m.amount_minor === undefined || m.amount_minor === ''
-            ? Number.NaN : Number(m.amount_minor)
-        return {
+        const amount = typeof m.amount_minor === 'number' ? m.amount_minor : Number(m.amount_minor) || 0
+        return [{
             id: m.id,
-            provider: m.provider,
+            provider: readString(m.provider, 'upi_autopay'),
             provider_mode: mode,
-            status: m.status,
-            plan_slug: m.plan_slug,
-            billing_period: m.billing_period,
-            amount_minor: Number.isFinite(amount) ? amount : Number.NaN,
+            status: readString(m.status, 'pending_provider'),
+            plan_slug: readString(m.plan_slug),
+            billing_period: readString(m.billing_period, 'monthly'),
+            amount_minor: amount,
             currency: readString(m.currency, 'INR'),
-        }
+        }]
     })
 }
 
@@ -79,27 +70,22 @@ export default function BillingProfilePage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [profile, setProfile] = useState<ProfileData>({ gstin: null, gst_state_code: null, legal_name: null, currency: 'INR' })
     const [mandates, setMandates] = useState<BillingMandateView[]>([])
+    const [selectedPlan, setSelectedPlan] = useState<{ slug: string; period: string } | null>(null)
 
     const [gstinInput, setGstinInput] = useState('')
     const [editingGstin, setEditingGstin] = useState(false)
     const [savingGstin, setSavingGstin] = useState(false)
 
-    const beginRead = useReadRequest(store)
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/billing`, { cache: 'no-store', signal: request.signal })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/billing`, { cache: 'no-store' })
             const payload = (await response.json().catch(() => null)) as BillingPayload | null
-            if (!request.isCurrent()) return
             if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to load billing profile'))
 
-            if (!isRecord(payload?.data) || !isRecord(payload.data.profile) || !Array.isArray(payload.data.mandates)) {
-                throw new Error('Billing profile response is incomplete.')
-            }
-            const data = payload.data
-            const p = data.profile as Record<string, unknown>
+            const data = isRecord(payload?.data) ? payload.data : {}
+            const p = isRecord(data.profile) ? data.profile : {}
             const next: ProfileData = {
                 gstin: typeof p.gstin === 'string' ? p.gstin : null,
                 gst_state_code: typeof p.gst_state_code === 'string' ? p.gst_state_code : null,
@@ -109,15 +95,18 @@ export default function BillingProfilePage() {
             setProfile(next)
             setGstinInput(next.gstin || '')
             setMandates(normalizeMandates(data.mandates))
+            const upcoming = isRecord(data.upcoming) ? data.upcoming : {}
+            setSelectedPlan(typeof upcoming.plan === 'string' && upcoming.plan.trim()
+                ? { slug: upcoming.plan, period: readString(upcoming.billing_period, 'monthly') }
+                : null)
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load billing profile'
             setLoadError(message)
             notify({ title: 'Billing profile could not load', description: message, variant: 'critical' })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [notify, store])
 
     useEffect(() => { void loadData() }, [loadData])
 
@@ -156,13 +145,13 @@ export default function BillingProfilePage() {
 
     if (loading) {
         return (
-            <SettingsPane navigationKey="billing" title="Billing profile" description="Your payment methods, tax ID, and billing currency." store={store}>
+            <SettingsPane title="Billing profile" description="Your payment methods, tax ID, and billing currency." store={store}>
                 <div className="settings-general-stack">
                     {[1, 2, 3].map((i) => (
-                        <Card key={i}>
-                            <Section><Skeleton variant="text" lines={1} /></Section>
+                        <div key={i} className="settings-home-card">
+                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
                             <div className="settings-form-body"><Skeleton variant="text" lines={2} /></div>
-                        </Card>
+                        </div>
                     ))}
                 </div>
             </SettingsPane>
@@ -173,7 +162,6 @@ export default function BillingProfilePage() {
 
     return (
         <SettingsPane
-                navigationKey="billing"
             title="Billing profile"
             description="Your payment methods, tax ID, and billing currency."
             store={store}
@@ -190,20 +178,24 @@ export default function BillingProfilePage() {
             )}
 
             {/* ── Payment methods ───────────────────────────────────────────── */}
-            <Section variant="grouped" title="Payment methods" >
-
+            <div className="settings-home-card">
+                <div className="settings-home-section-label">Payment methods</div>
+                <div className="settings-form-body">
                     <div className="settings-general-hint">For purchases and subscription bills in LetBuyy.</div>
                     <BillingPaymentMethods
                         store={store}
                         mandates={mandates}
+                        currentPlanSlug={selectedPlan?.slug}
+                        currentBillingPeriod={selectedPlan?.period}
                         onChanged={() => void loadData({ quiet: true })}
                     />
-
-            </Section>
+                </div>
+            </div>
 
             {/* ── Tax ID (GSTIN) ────────────────────────────────────────────── */}
-            <Section variant="grouped" title="Tax ID" >
-
+            <div className="settings-home-card">
+                <div className="settings-home-section-label">Tax ID</div>
+                <div className="settings-form-body">
                     <div className="settings-general-hint">
                         Subscription prices include applicable taxes. Your billing details appear on the invoice;
                         entering a GSTIN does not by itself make a subscription exempt from GST.
@@ -253,12 +245,13 @@ export default function BillingProfilePage() {
                             </div>
                         </div>
                     )}
-
-            </Section>
+                </div>
+            </div>
 
             {/* ── Currency ──────────────────────────────────────────────────── */}
-            <Section variant="grouped" title="Currency" >
-
+            <div className="settings-home-card">
+                <div className="settings-home-section-label">Currency</div>
+                <div className="settings-form-body">
                     <div className="settings-general-hint">
                         Your billing currency is determined by your business country (India).
                     </div>
@@ -274,8 +267,8 @@ export default function BillingProfilePage() {
                         <CheckCircle2 className="letbuyy-icon" aria-hidden="true" />
                         <span>All LetBuyy subscription charges and invoices are issued in INR.</span>
                     </div>
-
-            </Section>
+                </div>
+            </div>
 
             <div className="billing-profile-foot">
                 <Info className="letbuyy-icon" aria-hidden="true" />

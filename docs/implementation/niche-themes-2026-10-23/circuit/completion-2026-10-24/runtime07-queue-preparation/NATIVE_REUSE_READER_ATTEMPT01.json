@@ -1,9 +1,0 @@
-{
-  "recordedAt": "2026-10-24T20:48:09.013225+00:00",
-  "classification": "SOURCE_EVIDENCE_READER_ASSUMPTION_FAILURE_NOT_A_NATIVE_TEST_FAILURE",
-  "failure": "StopIteration while trying to locate webhook-first log in NATIVE_PROVENANCE_REVIEW",
-  "cause": "That detailed proof-artifact index covers four other cohorts; webhook-first is indexed instead by its exact result hash in INDEPENDENT_SHARED_GATE_REVIEW.",
-  "correctedReader": "Use the actual webhook-first nativeCohorts entry and verify retained result hash/counts, four current candidate pins and retained TAP. Do not claim the four-cohort provenance index reviewed the webhook log.",
-  "fileOrRuntimeMutationsBeforeFailure": 0,
-  "nativeExecutions": 0
-}

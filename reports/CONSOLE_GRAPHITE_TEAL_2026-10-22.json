@@ -1,0 +1,297 @@
+{
+  "artifactHashes": {
+    "docs/evidence/console-graphite-teal-2026-10-22/final-visual-runner.json": "b763dacef86a3497102c06d76d0df0860173420fee5debbdcca0f980fd5f6056",
+    "docs/evidence/console-graphite-teal-2026-10-22/initial-runner.json": "37b44ffd069be3017f5dbff5f0ff744ea750b4fe80c35c2c1526bba645b0003e",
+    "docs/evidence/console-graphite-teal-2026-10-22/measured-text-contrast.json": "5356a202b33c5be1faa6fc339c3625123893a281eeb5771daa68be984c990073",
+    "docs/evidence/console-graphite-teal-2026-10-22/merchant-catalog-light.png": "8dadd911dd28d86284741e0711d185377ed7f824929422a1f80265c37795bd9e",
+    "docs/evidence/console-graphite-teal-2026-10-22/merchant-workspace-dark-320px.png": "d14726452984a60352d929d62214da3b8b984845029ccaceee08e3ef0f1b8a54",
+    "docs/evidence/console-graphite-teal-2026-10-22/merchant-workspace-dark-390px.png": "2af752c6c2b7df947007c7646b50348e8e583206b6b9860f1eff0c6b56f64cb6",
+    "docs/evidence/console-graphite-teal-2026-10-22/merchant-workspace-dark.png": "398bc444c311cec34eeeebb085070514f79a1617dbacfa1de499bfa75954d5d8",
+    "docs/evidence/console-graphite-teal-2026-10-22/merchant-workspace-light.png": "93391788e9759130fa72e2fad75598dd9c50ad45ad9108fcb15adc16d5c2c0a6",
+    "docs/evidence/console-graphite-teal-2026-10-22/merchant-workspace-outage-dark.png": "e09b20fa9ddfc114c440395c3d15f0168986a5e02235a08f6c8ae20d94f9b6af",
+    "docs/evidence/console-graphite-teal-2026-10-22/overview-dark.png": "7b6bf2c8740a98305c5d021d126fd553e2ebd1b4e5f8d59eee307c57d6779eaf",
+    "docs/evidence/console-graphite-teal-2026-10-22/overview-light.png": "a2ce47749a0243a25fff6834a64ad5b6d58fe800f2f9ed1cbb33f26fd045fcd9",
+    "docs/evidence/console-graphite-teal-2026-10-22/pages-and-visual-runner.json": "93dbab7f126b4fda54ab65ee969d9a0479af17ade3beb8a458f673aecde3270c",
+    "docs/evidence/console-graphite-teal-2026-10-22/revenue-table-dark.png": "eb6a36147e1007f62f1642591d36f9899381444c9eb537eb80b7f443d99ce050",
+    "docs/evidence/console-graphite-teal-2026-10-22/support-and-table-instrumentation-runner.json": "085b3e04c3f2b66dff7c0595a75911addf9b148ecda5ced3f2bd614087bd1e5c",
+    "docs/evidence/console-graphite-teal-2026-10-22/support-console-390px.png": "3377ee4cced6ed5645a563e7783a69bffa12e4ad1df979aa51b73da41a9729d2",
+    "docs/evidence/console-graphite-teal-2026-10-22/support-console-desktop.png": "e7844e85faa23af3b05a78411477c188d8b2176bac76d6c66b009bf0a0fdbc69"
+  },
+  "branch": "develop",
+  "browserReceipts": {
+    "final-visual": {
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "fail": 0,
+      "pass": 1,
+      "results": [
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "console-ui-refinement-browser.postgres",
+          "pass": 1
+        }
+      ],
+      "runId": "916eb84c9a2a",
+      "skips": 0
+    },
+    "initial": {
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "fail": 1,
+      "pass": 1,
+      "results": [
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "console-all-pages-browser.postgres",
+          "pass": 1
+        },
+        {
+          "code": 1,
+          "fail": 1,
+          "name": "console-ui-refinement-browser.postgres",
+          "pass": 0
+        }
+      ],
+      "runId": "af4166d5ffe2",
+      "skips": 0
+    },
+    "pages-and-visual": {
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "fail": 0,
+      "pass": 2,
+      "results": [
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "console-all-pages-browser.postgres",
+          "pass": 1
+        },
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "console-ui-refinement-browser.postgres",
+          "pass": 1
+        }
+      ],
+      "runId": "d3fae7ee8d88",
+      "skips": 0
+    },
+    "support-and-table-instrumentation": {
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "fail": 1,
+      "pass": 1,
+      "results": [
+        {
+          "code": 1,
+          "fail": 1,
+          "name": "console-ui-refinement-browser.postgres",
+          "pass": 0
+        },
+        {
+          "code": 0,
+          "fail": 0,
+          "name": "merchant-console-support-browser.postgres",
+          "pass": 1
+        }
+      ],
+      "runId": "6cd05ce7bd55",
+      "skips": 0
+    }
+  },
+  "browserVerdict": "Pages/visual2pass; connected support1pass in retained mixed receipt; corrected final visual/table1pass on unchanged runtime source. Failed receipts are retained, not relabelled.",
+  "checks": {
+    "consoleEslint": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/eslint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "consoleTests": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/console-tests.log",
+      "sha256": "e56d2002d679fe373ed2c3d51847a546a49fc836e5a6d74f8e40189af4cb46f6"
+    },
+    "consoleTypes": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/console-types-accepted.log",
+      "sha256": "f9d2c7d268e12cc62785ca86c0bfc7b07ee90bd256dd92596dd0cdffb17d3f19"
+    },
+    "designSystem": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/design-system-accepted.log",
+      "sha256": "cbcef3e97cb2fb7b4cb8de0edd6ef4aa3690f821abd5e0150b4c2b204b6c9bb9"
+    },
+    "dtcgParity": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/token-parity.log",
+      "sha256": "b03551e4433719980353b72fd806ad4b176e42b0293fc5d8060dc386e2e29f1c"
+    },
+    "gatewayTypes": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/gateway-types.log",
+      "sha256": "b6e70f1bff58ec529692e68bb1e9fff97cfa6c1380dce4a5a48e35294b1059f2"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/production-build-accepted.log",
+      "sha256": "bb33a9d6ff8ca7e6a31901e35396487023002ba0b0171fd6857ce25e2cecff77"
+    },
+    "publicApiSnapshot": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/public-api.log",
+      "sha256": "bda2a044207abf809bebe855451c224f46d85ffe1014ff78a55f2c0a67374aed"
+    },
+    "sharedAdoption": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/shared-adoption.log",
+      "sha256": "d077842119874b4ef0f26967af042d967bb8cda3c445e95c30e6124785150d10"
+    },
+    "sharedUi": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/ui-tests-accepted.log",
+      "sha256": "8798c6318f42da2d66fa78a7ff79ad6c7dda76761c03eb1ab3493d259ce8933f"
+    },
+    "sharedUiTypes": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/ui-types-accepted.log",
+      "sha256": "7d2022da07f287e0b625e6fe52a60f74eedcc3c7cf4a4200ab9655b8a2524b8c"
+    },
+    "stylelint": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/stylelint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tokenVariables": {
+      "exitCode": 0,
+      "rawLog": "/private/tmp/letbuyy-console-palette-20261022/token-snapshot-accepted.log",
+      "sha256": "bce5e6416b332b03a0ad395f8b0aea014754d49f7bb0c6114be6e89782fa24ff"
+    }
+  },
+  "completedAtUtc": "2026-10-21T19:23:15.131478+00:00",
+  "evidenceDirectory": "docs/evidence/console-graphite-teal-2026-10-22",
+  "existingAliasValidator": {
+    "afterLogSha256": "52113d6831d8c9cac387a1aede2133fc21124bf81b697df388d70845e6e39e4a",
+    "beforeLogSha256": "7e4f28d6bc74b501eb35d81f435e9fa616f215a33bb462fdf8be24116cc4e14f",
+    "exitCode": 1,
+    "findingsAfter": 18,
+    "findingsBefore": 18,
+    "identical": true,
+    "snapshotChanged": false
+  },
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "limits": [
+    "Console browser fixture is development; separate final production build passes.",
+    "No full WCAG, assistive-technology, device, performance or hosted acceptance.",
+    "No merge/push/deploy, migration, provider transaction or external message.",
+    "Existing token-alias validator retains18 identical baseline findings."
+  ],
+  "ownerChoice": "Graphite and teal",
+  "preservation": {
+    "baselineDirtyFiles": 153,
+    "intentionalBaselineChanges": [
+      "EXECUTION_LEDGER.md",
+      "apps/internal/console/src/app/(dashboard)/dashboard/page.tsx",
+      "apps/internal/console/src/app/globals.css",
+      "apps/internal/console/src/app/layout.tsx",
+      "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md",
+      "packages/typescript/ui/tests/components/foundation.test.tsx",
+      "services/api-gateway/src/__tests__/owned-db/console-ui-refinement-browser.postgres.test.ts"
+    ],
+    "unchangedBaselineFiles": 146,
+    "unexpectedChanges": []
+  },
+  "research": {
+    "frameworkDependenciesUpgraded": false,
+    "primarySources": [
+      "https://www.carbondesignsystem.com/building-blocks/foundations/color/overview",
+      "https://atlassian.design/foundations/color/",
+      "https://tailwindcss.com/docs/theme#referencing-other-variables"
+    ],
+    "reviewDate": "2026-10-22"
+  },
+  "sourceHashes": {
+    "apps/internal/console/src/app/(dashboard)/dashboard/page.tsx": "c4cd641426f93861008be3db3823508496e10408df58cf3faf3bcf0aeeb05024",
+    "apps/internal/console/src/app/globals.css": "a1c429c58e41f17b637179c28c145a9bb4be4d137764d8bbd47dd056af695ab1",
+    "apps/internal/console/src/app/layout.tsx": "551bf8cd641cc793b074a9eb229e1ae275fb0927d9304593092036eaa2cc1f0e",
+    "config/tailwind/letbuyy-tokens.css": "666c75b20ef15cd5b56337e524c619fc98ed7d1aa87466e29bbfa89fca7d8bd9",
+    "packages/typescript/ui/src/tokens.ts": "cd1b422f01f879f1436590615cbf673c7623a0bfd240ed26167c14199156ccc2",
+    "packages/typescript/ui/tests/components/foundation.test.tsx": "a9214dac80eb3c114001d358d9607f76a32bedfa57e905e8281b1b9cf430fa79",
+    "packages/typescript/ui/tests/components/theme-utilities.test.ts": "44cde2a35f9dd8a14221d2c34cf69274dd16d8806255c9745c41a546e6fcb18b",
+    "packages/typescript/ui/tokens.json": "4d45114c36495fd57dbd97515dff30f34530dd2995a4a9f2f0148bf07cd69292",
+    "services/api-gateway/src/__tests__/owned-db/console-ui-refinement-browser.postgres.test.ts": "24786aca7c4b5365c44dbe3b81a7671cee409b70d09ef74283adee94d15834ef"
+  },
+  "sourceIdentity": {
+    "candidateFilesCompared": 9980,
+    "environmentFilesCopied": false,
+    "generatedOutputsCopied": false,
+    "manifestSha256": "0e49af88b096a939629f3348a8587e5e491c17f3736297f59b1000b6c25eabbc",
+    "postVerificationDocumentationChanges": [
+      "EXECUTION_LEDGER.md",
+      "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md"
+    ],
+    "productionRuntimeMismatches": [],
+    "runtimeTestMismatches": []
+  },
+  "status": "LOCAL_UI_VERIFIED_HOSTED_PENDING",
+  "task": "Owner-selected graphite and teal Console",
+  "testCounts": {
+    "completeSharedUi": 52,
+    "console": 46
+  },
+  "visual": {
+    "fullWcagConformanceClaimed": false,
+    "minimumTextContrast": 4.507812544919492,
+    "perMode": {
+      "dark": {
+        "minimum": 5.473250081210842,
+        "samples": 33
+      },
+      "light": {
+        "minimum": 4.507812544919492,
+        "samples": 56
+      },
+      "outageDark": {
+        "minimum": 5.473250081210842,
+        "samples": 33
+      },
+      "restrictedDark": {
+        "minimum": 5.473250081210842,
+        "samples": 33
+      }
+    },
+    "samples": 155,
+    "threshold": 4.5,
+    "viewports": [
+      1440,
+      390,
+      320
+    ]
+  }
+}

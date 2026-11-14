@@ -12,7 +12,6 @@ import {
 } from './icons';
 import { Badge, Skeleton } from './feedback';
 import { Button } from './button';
-import { Card } from './layout';
 import { Checkbox, Select } from './controls';
 import { cx } from './utils';
 import { useDismiss, useFocusTrap } from './overlay-hooks';
@@ -41,9 +40,9 @@ export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkli
     }, [sparkline]);
 
     return (
-        <Card as="div"
+        <div
             className={cx(
-                'p-[var(--lb-density-card-padding)]',
+                'rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-card-border)] bg-[var(--lb-component-card-bg)] p-[var(--lb-density-card-padding)] text-[color:var(--lb-component-card-text)] shadow-[var(--lb-component-card-shadow)]',
                 className,
             )}
             {...props}
@@ -75,7 +74,7 @@ export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkli
                     </svg>
                 )}
             </div>
-        </Card>
+        </div>
     );
 }
 

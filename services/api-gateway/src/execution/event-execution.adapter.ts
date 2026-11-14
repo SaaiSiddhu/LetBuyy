@@ -1,5 +1,4 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { OutboxExecutionAdapter } from './outbox-execution.adapter';
 import { NOTIFICATION_APPLICATION_WORKFLOWS, NOTIFICATION_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/shared-types';
 import { getDomainEventContract, parseDomainEventPayload } from '@letbuyy/event-core';
 
@@ -86,12 +85,6 @@ export class EventExecutionAdapter {
             throw new Error(`Outbox event emit failed: ${error.message}`);
         }
 
-        if (input.storeId && input.aggregateType === 'order') {
-            // Delivery is already durable. A lost post-commit wakeup is recovered
-            // by the existing outbox cron, without failing a committed order.
-            try { await new OutboxExecutionAdapter(this.db).dispatchOrderEmails(input.storeId, input.aggregateId); }
-            catch { console.warn(JSON.stringify({ level: 'warn', event: 'order_email_outbox_wakeup_deferred', site_id: input.storeId })); }
-        }
         return data;
     }
 

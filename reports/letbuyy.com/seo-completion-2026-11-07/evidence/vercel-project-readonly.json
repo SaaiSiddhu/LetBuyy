@@ -1,0 +1,27 @@
+{
+  "captured_at": "2026-11-07T02:58:56.938334+00:00",
+  "project": "marketing-site",
+  "exit_code": 0,
+  "read_only": true,
+  "top_level_keys": [
+    "id",
+    "name",
+    "owner",
+    "createdAt",
+    "rootDirectory",
+    "nodeVersion",
+    "framework",
+    "buildCommand",
+    "outputDirectory",
+    "installCommand",
+    "sandbox"
+  ],
+  "id": "prj_2FQ0ZEkuDMHtzj58XKyWHsWRTVLx",
+  "name": "marketing-site",
+  "rootDirectory": "apps/marketing/web",
+  "framework": "nextjs",
+  "nodeVersion": "22.x",
+  "buildCommand": null,
+  "installCommand": null,
+  "production_target": {}
+}

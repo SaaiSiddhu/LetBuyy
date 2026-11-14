@@ -1,0 +1,71 @@
+{
+  "captured_at": "2026-10-29T23:48:13.125Z",
+  "rows": [
+    {
+      "selector": ".hero-title-line",
+      "style": {
+        "font": "letbuyySans, \"letbuyySans Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyFamily": "\"letbuyySans\",\"letbuyySans Fallback\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "sans": "\"letbuyySans\",\"letbuyySans Fallback\""
+      },
+      "fonts": [
+        {
+          "familyName": "Tamil Sangam MN",
+          "postScriptName": "TamilSangamMN-Bold",
+          "isCustomFont": false,
+          "glyphCount": 11
+        },
+        {
+          "familyName": "Inter Variable",
+          "postScriptName": "InterVariable_opsz1B3126_wght2580000",
+          "isCustomFont": true,
+          "glyphCount": 2
+        }
+      ]
+    },
+    {
+      "selector": ".hero-subtitle",
+      "style": {
+        "font": "letbuyySans, \"letbuyySans Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyFamily": "\"letbuyySans\",\"letbuyySans Fallback\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "sans": "\"letbuyySans\",\"letbuyySans Fallback\""
+      },
+      "fonts": [
+        {
+          "familyName": "Inter Variable",
+          "postScriptName": "InterVariable",
+          "isCustomFont": true,
+          "glyphCount": 10
+        },
+        {
+          "familyName": "Tamil Sangam MN",
+          "postScriptName": "TamilSangamMN",
+          "isCustomFont": false,
+          "glyphCount": 75
+        }
+      ]
+    },
+    {
+      "selector": ".cmap-headline",
+      "style": {
+        "font": "letbuyySans, \"letbuyySans Fallback\", ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyFamily": "\"letbuyySans\",\"letbuyySans Fallback\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "sans": "\"letbuyySans\",\"letbuyySans Fallback\""
+      },
+      "fonts": [
+        {
+          "familyName": "Tamil Sangam MN",
+          "postScriptName": "TamilSangamMN-Bold",
+          "isCustomFont": false,
+          "glyphCount": 37
+        },
+        {
+          "familyName": "Inter Variable",
+          "postScriptName": "InterVariable_opsz149999_wght2580000",
+          "isCustomFont": true,
+          "glyphCount": 7
+        }
+      ]
+    }
+  ]
+}

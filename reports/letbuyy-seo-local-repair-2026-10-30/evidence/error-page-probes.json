@@ -1,0 +1,20 @@
+{
+  "rows": [
+    {
+      "path": "/in/seo-audit-missing-20261030",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "path": "/in/resources/payments/seo-audit-missing-20261030",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "path": "/in/resources/seo-audit-missing-20261030",
+      "status": 404,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

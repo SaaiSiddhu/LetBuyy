@@ -1,0 +1,7 @@
+{
+  "command": "git apply --reverse --check SOURCE-CHANGES.patch",
+  "isolated_copy": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

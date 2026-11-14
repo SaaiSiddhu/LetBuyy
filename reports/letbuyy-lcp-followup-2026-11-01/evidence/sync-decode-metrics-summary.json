@@ -1,0 +1,28 @@
+{
+  "captured_at": "2026-11-01T09:10:31.826392+00:00",
+  "method": "Default mobile simulate; unchanged 2.5s LCP/200ms TBT/0.1 CLS budgets",
+  "rows": [
+    {
+      "name": "pricing",
+      "path": "/in/pricing",
+      "exit_code": 0,
+      "lcp_ms": 3360.1949999999997,
+      "tbt_ms": 34,
+      "cls": 0,
+      "score": 0.92,
+      "script_requests": 10,
+      "script_transfer_bytes": 225510
+    },
+    {
+      "name": "guide",
+      "path": "/in/resources/platform/building-first-letbuyy-store",
+      "exit_code": 0,
+      "lcp_ms": 3758.1279999999997,
+      "tbt_ms": 23.000000000000455,
+      "cls": 0,
+      "score": 0.89,
+      "script_requests": 10,
+      "script_transfer_bytes": 231789
+    }
+  ]
+}

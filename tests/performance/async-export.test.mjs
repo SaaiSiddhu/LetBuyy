@@ -12,7 +12,7 @@ test('gateway CSV export routes enqueue async R2-backed jobs', () => {
     'c.executionCtx.waitUntil(processProductsExport(c, job.id))',
     'c.executionCtx.waitUntil(processOrdersExport(c, job.id))',
     'streamCsvToR2',
-    'bucket.createMultipartUpload(key, { httpMetadata })',
+    'new TransformStream<Uint8Array, Uint8Array>()',
     'signedDownloadUrl',
     "router.get('/jobs/:id/download'",
     'R2_BUCKET',

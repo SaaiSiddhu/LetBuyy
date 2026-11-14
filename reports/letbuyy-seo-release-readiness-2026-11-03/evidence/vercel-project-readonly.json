@@ -1,0 +1,60 @@
+{
+  "capturedAt": "2026-11-03T02:28:16.533315+00:00",
+  "exitCode": 0,
+  "projects": [
+    {
+      "name": "app-marketplace",
+      "framework": null,
+      "rootDirectory": null,
+      "nodeVersion": "24.x",
+      "gitProvider": null,
+      "productionBranch": null,
+      "targets": {}
+    },
+    {
+      "name": "developer-portal",
+      "framework": null,
+      "rootDirectory": null,
+      "nodeVersion": "24.x",
+      "gitProvider": null,
+      "productionBranch": null,
+      "targets": {}
+    },
+    {
+      "name": "theme-marketplace",
+      "framework": null,
+      "rootDirectory": null,
+      "nodeVersion": "24.x",
+      "gitProvider": null,
+      "productionBranch": null,
+      "targets": {}
+    },
+    {
+      "name": "merchant",
+      "framework": null,
+      "rootDirectory": null,
+      "nodeVersion": "24.x",
+      "gitProvider": null,
+      "productionBranch": null,
+      "targets": {}
+    },
+    {
+      "name": "accounts",
+      "framework": null,
+      "rootDirectory": null,
+      "nodeVersion": "24.x",
+      "gitProvider": null,
+      "productionBranch": null,
+      "targets": {}
+    },
+    {
+      "name": "marketing-site",
+      "framework": null,
+      "rootDirectory": null,
+      "nodeVersion": "22.x",
+      "gitProvider": null,
+      "productionBranch": null,
+      "targets": {}
+    }
+  ]
+}

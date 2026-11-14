@@ -1,0 +1,14 @@
+[
+  {
+    "url": "http://localhost:9007/login",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:9010/health",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:9002/lookup",
+    "status": 200
+  }
+]

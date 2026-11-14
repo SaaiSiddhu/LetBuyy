@@ -251,7 +251,7 @@ router.post('/dsr/export', validate('json', DsrSchema), async (c) => {
             actor_email: auth.user.email,
             actor_type: 'system',
             request_id: c.req.header('X-Request-ID') || null,
-        });
+        }, tenant.siteId);
         await emitCustomerDsrEvent(db, {
             siteId: tenant.siteId,
             requestId: String(request.id),

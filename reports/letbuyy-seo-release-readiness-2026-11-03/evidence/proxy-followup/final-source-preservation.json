@@ -1,0 +1,111 @@
+{
+  "capturedAt": "2026-11-03T08:44:03.561055+00:00",
+  "rootBuildId": "x_o-z2KN4IIGV9tF3-aKw",
+  "all20CssSourceFilesUnchanged": true,
+  "styles": [
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/[category]/category-illustrated.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/resources/resources-home.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/sitemap/sitemap.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/globals.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/home.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/how-it-works.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/locale-typography.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/app/resources.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/final-cta.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/header-featured-art.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/legal/legal-layout.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/platform-surfaces.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-section-visual.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/article-visual-overview.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/changelog.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/liquid-guide.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-artwork.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/resource-list-visuals.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/resources/theme-guide.module.css",
+      "unchanged": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/support/support-experience.module.css",
+      "unchanged": true
+    }
+  ],
+  "animationSources": [
+    {
+      "path": "apps/marketing/web/src/components/MarketingMotionProvider.tsx",
+      "matchesMaterializedBaseline": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/MarketingHome.tsx",
+      "matchesMaterializedBaseline": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/Header.tsx",
+      "matchesMaterializedBaseline": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/FAQ.tsx",
+      "matchesMaterializedBaseline": true
+    },
+    {
+      "path": "apps/marketing/web/src/components/CapabilityMap.tsx",
+      "matchesMaterializedBaseline": true
+    }
+  ],
+  "uiPackageExperimentNotAdopted": true,
+  "allSourceHashesMatchRelease": true
+}

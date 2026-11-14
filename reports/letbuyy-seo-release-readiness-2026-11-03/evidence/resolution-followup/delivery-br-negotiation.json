@@ -1,0 +1,143 @@
+{
+  "rows": [
+    {
+      "path": "/_next/static/css/49f839c2f9f50a3d.css",
+      "variants": {
+        "identity": {
+          "status": 200,
+          "encoding": null,
+          "bytes": 382675,
+          "sha256": "6fa2711520ebcf55a75faa37d0dc44246947371d99298a10c1e5e86e23fa259f",
+          "type": "text/css; charset=UTF-8",
+          "vary": "Accept-Encoding"
+        },
+        "gzip": {
+          "status": 200,
+          "encoding": "gzip",
+          "bytes": 53480,
+          "sha256": "6fa2711520ebcf55a75faa37d0dc44246947371d99298a10c1e5e86e23fa259f",
+          "type": "text/css; charset=UTF-8",
+          "vary": "Accept-Encoding"
+        },
+        "br": {
+          "status": 200,
+          "encoding": null,
+          "bytes": 42734,
+          "sha256": "c92d40c4dd18fe6ec3242bcfa5f9599672690a3bf515ca1f4a91784b4567db36",
+          "type": "application/octet-stream",
+          "vary": "Accept-Encoding"
+        },
+        "br;q=0, gzip": {
+          "status": 200,
+          "encoding": "gzip",
+          "bytes": 53480,
+          "sha256": "6fa2711520ebcf55a75faa37d0dc44246947371d99298a10c1e5e86e23fa259f",
+          "type": "text/css; charset=UTF-8",
+          "vary": "Accept-Encoding"
+        },
+        "BR;Q=1": {
+          "status": 200,
+          "encoding": null,
+          "bytes": 42734,
+          "sha256": "c92d40c4dd18fe6ec3242bcfa5f9599672690a3bf515ca1f4a91784b4567db36",
+          "type": "application/octet-stream",
+          "vary": "Accept-Encoding"
+        }
+      },
+      "sameDecodedBody": false
+    },
+    {
+      "path": "/_next/static/chunks/fee3e60c-ab77e3797c935082.js",
+      "variants": {
+        "identity": {
+          "status": 200,
+          "encoding": null,
+          "bytes": 198487,
+          "sha256": "e2a84298e237614d05c1152d3e2728362f1dca37c4ccba52269a763d01e43223",
+          "type": "application/javascript; charset=UTF-8",
+          "vary": "Accept-Encoding"
+        },
+        "gzip": {
+          "status": 200,
+          "encoding": "gzip",
+          "bytes": 62451,
+          "sha256": "e2a84298e237614d05c1152d3e2728362f1dca37c4ccba52269a763d01e43223",
+          "type": "application/javascript; charset=UTF-8",
+          "vary": "Accept-Encoding"
+        },
+        "br": {
+          "status": 200,
+          "encoding": null,
+          "bytes": 53337,
+          "sha256": "5747c2bc434c6e68810e9aa2216019ad5d3d3b5b612d6159ee31c6de440b9bcd",
+          "type": "application/octet-stream",
+          "vary": "Accept-Encoding"
+        },
+        "br;q=0, gzip": {
+          "status": 200,
+          "encoding": "gzip",
+          "bytes": 62451,
+          "sha256": "e2a84298e237614d05c1152d3e2728362f1dca37c4ccba52269a763d01e43223",
+          "type": "application/javascript; charset=UTF-8",
+          "vary": "Accept-Encoding"
+        },
+        "BR;Q=1": {
+          "status": 200,
+          "encoding": null,
+          "bytes": 53337,
+          "sha256": "5747c2bc434c6e68810e9aa2216019ad5d3d3b5b612d6159ee31c6de440b9bcd",
+          "type": "application/octet-stream",
+          "vary": "Accept-Encoding"
+        }
+      },
+      "sameDecodedBody": false
+    },
+    {
+      "path": "/_next/static/chunks/6030-2150524a4ae3ac75.js",
+      "variants": {
+        "identity": {
+          "status": 200,
+          "encoding": null,
+          "bytes": 188161,
+          "sha256": "25168dcd39d8958a498e64fa382d4f14ad37372530df9787f4199679fe4a8d11",
+          "type": "application/javascript; charset=UTF-8",
+          "vary": "Accept-Encoding"
+        },
+        "gzip": {
+          "status": 200,
+          "encoding": "gzip",
+          "bytes": 51526,
+          "sha256": "25168dcd39d8958a498e64fa382d4f14ad37372530df9787f4199679fe4a8d11",
+          "type": "application/javascript; charset=UTF-8",
+          "vary": "Accept-Encoding"
+        },
+        "br": {
+          "status": 200,
+          "encoding": null,
+          "bytes": 42084,
+          "sha256": "003065edddef5d26e10f83c89e5a7e964032f87be2abdce2757905021cad095a",
+          "type": "application/octet-stream",
+          "vary": "Accept-Encoding"
+        },
+        "br;q=0, gzip": {
+          "status": 200,
+          "encoding": "gzip",
+          "bytes": 51526,
+          "sha256": "25168dcd39d8958a498e64fa382d4f14ad37372530df9787f4199679fe4a8d11",
+          "type": "application/javascript; charset=UTF-8",
+          "vary": "Accept-Encoding"
+        },
+        "BR;Q=1": {
+          "status": 200,
+          "encoding": null,
+          "bytes": 42084,
+          "sha256": "003065edddef5d26e10f83c89e5a7e964032f87be2abdce2757905021cad095a",
+          "type": "application/octet-stream",
+          "vary": "Accept-Encoding"
+        }
+      },
+      "sameDecodedBody": false
+    }
+  ],
+  "passed": false
+}

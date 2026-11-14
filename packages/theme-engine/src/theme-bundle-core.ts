@@ -27,24 +27,12 @@ import {
   createUrbanKicksLiquidThemeBundleFixture,
   type LiquidThemePackageBundle,
 } from './theme-bundle';
-import { getExperience } from './theme-presets';
 
 /** Canonical first-party theme catalog slug (merchant-never-sees-this; "Experience" is the UX term). */
 export const LETBUYY_CORE_THEME_SLUG = 'letbuyy-core';
 export const LETBUYY_CORE_STARTER_ANNOUNCEMENT = 'Discover our latest products.';
 /** Canonical Liquid bundle slug for the Core theme (parallels 'urban-kicks-liquid'). */
 export const LETBUYY_CORE_BUNDLE_SLUG = 'letbuyy-core-liquid';
-
-/** Legacy catalog captures use Core repairs; versioned niche designs own their schemas. */
-export function isFirstPartyCoreBundleSlug(slug: unknown, version?: unknown): boolean {
-  const catalogDesign = typeof slug === 'string' && slug.startsWith('letbuyy-')
-    && Boolean(getExperience(slug.slice('letbuyy-'.length)));
-  // All ten v2 designs have package-owned sections. Applying v1 Core defaults
-  // while saving them could reintroduce removed settings or retire valid content.
-  // Versionless/v1 snapshots retain their existing compatibility behavior.
-  if (catalogDesign && typeof version === 'string' && Number(version.split('.')[0]) >= 2) return false;
-  return slug === LETBUYY_CORE_BUNDLE_SLUG || catalogDesign;
-}
 /** Retained legacy alias — existing stores persist sites.theme_id='urban-kicks'; never break them. */
 export const URBAN_KICKS_THEME_SLUG = 'urban-kicks';
 export const URBAN_KICKS_BUNDLE_SLUG = 'urban-kicks-liquid';

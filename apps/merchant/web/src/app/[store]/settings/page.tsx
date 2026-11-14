@@ -1,10 +1,9 @@
 import Link from 'next/link'
 import {
     AppWindow,
-    Card,
-    PageHeader,
-    Section,
+    CheckCircle2,
     ChevronRight,
+    Circle,
     Globe,
     IndianRupee,
     Rocket,
@@ -12,10 +11,9 @@ import {
     type LucideIcon,
 } from '@letbuyy/ui'
 import {
-    getSettingsNavigationGroups,
+    SETTINGS_NAV_ITEMS,
     type SettingsNavItem,
 } from '@/components/settings/settings-navigation'
-import { isAppPlatformEnabled } from '@/lib/app-platform-flag'
 
 interface PageProps {
     params: Promise<{ store: string }>
@@ -70,40 +68,69 @@ const PHASES: Array<{
 ]
 
 // Exclude the subscribe/checkout flow — it's a checkout transaction, not a settings section
+const DASHBOARD_ITEMS = SETTINGS_NAV_ITEMS.filter(i => i.href !== 'subscribe/checkout')
+
 export default async function SettingsDashboardPage({ params }: PageProps) {
     const { store } = await params
-    const appPlatformEnabled = isAppPlatformEnabled()
-    const dashboardItems = getSettingsNavigationGroups(appPlatformEnabled)
-        .flatMap(group => group.items)
-        .filter(item => item.href !== 'subscribe/checkout')
+
+    const totalCount = DASHBOARD_ITEMS.length
+    const availableCount = DASHBOARD_ITEMS.filter(i => i.status !== 'backend-needed').length
+    const pendingCount = totalCount - availableCount
 
     return (
         <div className="settings-dashboard">
 
             {/* ── Hero ── */}
-            <Card className="settings-dashboard-hero">
-                <PageHeader identity="settings" recipe="settings" title="Dashboard" showIcon={false} description="Configure every aspect of your store — from payments and shipping to your custom domain and team. Use this guide to get ready for your first sale." showDescription />
-            </Card>
+            <div className="settings-dashboard-hero">
+                <p className="settings-dashboard-hero-eyebrow">Store setup</p>
+                <h1 className="settings-dashboard-hero-title">Dashboard</h1>
+                <p className="settings-dashboard-hero-desc">
+                    Configure every aspect of your store — from payments and shipping to your
+                    custom domain and team. Use this guide to get ready for your first sale.
+                </p>
+                <div className="settings-dashboard-hero-stats">
+                    <span className="settings-dashboard-hero-stat settings-dashboard-hero-stat--available">
+                        <CheckCircle2 className="letbuyy-icon" aria-hidden="true" />
+                        {availableCount} available now
+                    </span>
+                    {pendingCount > 0 && (
+                        <span className="settings-dashboard-hero-stat settings-dashboard-hero-stat--pending">
+                            <Circle className="letbuyy-icon" aria-hidden="true" />
+                            {pendingCount} coming soon
+                        </span>
+                    )}
+                </div>
+            </div>
 
             {/* ── Setup phases grid ── */}
             <div className="settings-dashboard-phases">
                 {PHASES.map((phase) => {
                     const phaseItems = phase.itemHrefs
-                        .map(href => dashboardItems.find(i => i.href === href))
+                        .map(href => DASHBOARD_ITEMS.find(i => i.href === href))
                         .filter((item): item is SettingsNavItem => Boolean(item))
 
+                    const phaseAvailable = phaseItems.filter(i => i.status !== 'backend-needed').length
+                    const allReady = phaseAvailable === phaseItems.length
                     const PhaseIcon = phase.Icon
 
                     return (
-                        <Card
+                        <div
                             key={phase.id}
                             className={`settings-dashboard-phase${phase.wide ? ' settings-dashboard-phase--wide' : ''}`}
                         >
-                            <Section title={!appPlatformEnabled && phase.id === 'extensions' ? 'Custom data' : phase.title} description={!appPlatformEnabled && phase.id === 'extensions' ? 'Custom storefront data schemas are planned.' : phase.description} action={
-                                <span className="inline-flex items-center gap-[var(--lb-space-2)]">
-                                    <span className="settings-dashboard-phase-icon"><PhaseIcon className="letbuyy-icon" aria-hidden="true" /></span>
+                            {/* Phase card header */}
+                            <div className="settings-dashboard-phase-header">
+                                <div className="settings-dashboard-phase-icon">
+                                    <PhaseIcon className="letbuyy-icon" aria-hidden="true" />
+                                </div>
+                                <div className="settings-dashboard-phase-meta">
+                                    <div className="settings-dashboard-phase-title">{phase.title}</div>
+                                    <div className="settings-dashboard-phase-subdesc">{phase.description}</div>
+                                </div>
+                                <span className={`settings-dashboard-phase-count settings-dashboard-phase-count--${allReady ? 'full' : 'partial'}`}>
+                                    {phaseAvailable}/{phaseItems.length}
                                 </span>
-                            }>{null}</Section>
+                            </div>
 
                             {/* Task rows */}
                             {phaseItems.map((item) => {
@@ -127,7 +154,7 @@ export default async function SettingsDashboardPage({ params }: PageProps) {
                                 }
 
                                 return (
-                                    <Link prefetch={false} key={item.href} href={href} className="settings-dashboard-task">
+                                    <Link key={item.href} href={href} className="settings-dashboard-task">
                                         <span className="settings-dashboard-task-icon">
                                             <ItemIcon className="letbuyy-icon" aria-hidden="true" />
                                         </span>
@@ -136,13 +163,13 @@ export default async function SettingsDashboardPage({ params }: PageProps) {
                                             <span className="settings-dashboard-task-desc">{item.description}</span>
                                         </span>
                                         <span className="settings-dashboard-task-cta">
-                                            Open
+                                            Configure
                                             <ChevronRight className="letbuyy-icon" aria-hidden="true" />
                                         </span>
                                     </Link>
                                 )
                             })}
-                        </Card>
+                        </div>
                     )
                 })}
             </div>

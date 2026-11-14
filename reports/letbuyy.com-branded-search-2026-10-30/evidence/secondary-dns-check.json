@@ -1,0 +1,62 @@
+[
+  {
+    "captured_at": "2026-10-29T18:45:53.614547+00:00",
+    "host": "seller.letbuyy.com",
+    "resolver_url": "https://dns.google/resolve?name=seller.letbuyy.com&type=A",
+    "status_code": 200,
+    "error": null,
+    "dns_response": {
+      "Status": 3,
+      "TC": false,
+      "RD": true,
+      "RA": true,
+      "AD": false,
+      "CD": false,
+      "Question": [
+        {
+          "name": "seller.letbuyy.com.",
+          "type": 1
+        }
+      ],
+      "Authority": [
+        {
+          "name": "letbuyy.com.",
+          "type": 6,
+          "TTL": 1800,
+          "data": "alex.ns.cloudflare.com. dns.cloudflare.com. 2418561932 10000 2400 604800 1800"
+        }
+      ],
+      "Comment": "Response from 108.162.193.100."
+    }
+  },
+  {
+    "captured_at": "2026-10-29T18:45:54.835070+00:00",
+    "host": "developer.letbuyy.com",
+    "resolver_url": "https://dns.google/resolve?name=developer.letbuyy.com&type=A",
+    "status_code": 200,
+    "error": null,
+    "dns_response": {
+      "Status": 3,
+      "TC": false,
+      "RD": true,
+      "RA": true,
+      "AD": false,
+      "CD": false,
+      "Question": [
+        {
+          "name": "developer.letbuyy.com.",
+          "type": 1
+        }
+      ],
+      "Authority": [
+        {
+          "name": "letbuyy.com.",
+          "type": 6,
+          "TTL": 1800,
+          "data": "alex.ns.cloudflare.com. dns.cloudflare.com. 2418561932 10000 2400 604800 1800"
+        }
+      ],
+      "Comment": "Response from 172.64.32.225."
+    }
+  }
+]

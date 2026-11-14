@@ -392,9 +392,9 @@ export default async function ThemeDetailPage({ params, searchParams }: Props) {
 
     const theme = normalizeThemeRecord(record);
     const isFree = theme.letbuyy_pricing_type === 'free';
-    const addHref = isFree ? `/install?theme=${encodeURIComponent(theme.slug)}&version=${encodeURIComponent(theme.version)}` : `/checkout?theme=${encodeURIComponent(theme.slug)}`;
+    const addHref = isFree ? `/install?theme=${encodeURIComponent(theme.slug)}` : `/checkout?theme=${encodeURIComponent(theme.slug)}`;
     const addLabel = isFree ? 'Add to library' : 'Buy and add';
-    const sandboxPreviewHref = themeSandboxPreviewHref(theme.slug, theme.version);
+    const sandboxPreviewHref = themeSandboxPreviewHref(theme.slug);
     const compareHref = themeCompareSingleHref(theme.slug);
     const galleryImages = uniqueGalleryImages(theme);
     const priceLabel = formatThemePrice(theme);

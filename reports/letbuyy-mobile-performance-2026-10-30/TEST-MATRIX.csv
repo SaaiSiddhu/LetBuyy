@@ -1,0 +1,17 @@
+check,status,coverage,command_or_next_step,evidence
+Marketing unit/boundary,PASS,205,node boundary tests + node --import tsx --test tests/marketing/*.test.ts,tests-final.log
+Root contracts,PASS,339,node --import tsx --test tests/contracts/*.test.ts,contracts-final.log
+Shared types,PASS,16 + typecheck,pnpm --dir packages/shared-types test/typecheck,shared-types-tests.log
+Shared UI,PARTIAL,"53 units, API 379 / tokens 371, ESLint/codemod 7 pass; 18 pre-existing alias violations",pnpm --dir packages/typescript/ui validate:ui,ui-validation.log
+Marketing typecheck/build,PASS,production artifact,pnpm typecheck; next build --webpack,build-final-font.log
+Marketing lint/stylelint,PASS with existing warnings,0 errors; 5 existing warnings,pnpm --dir apps/marketing/web lint,lint-final.log
+Ownership/package exports,PASS,marketing validator; 59 manifests,marketing-dead-twin-validator + package-export-validator,package-export-validator-final.log
+URL/schema/locale/XML,PASS,489 routes; 192 XML; 105 articles; 3 negative 404,python3 verify-html.py,html-results.json
+Browser,PASS,64 cases + no-JS,node browser-check.cjs,browser-results.json
+Visual + natural scrolling + SPA,PASS,36 + 28 + 10,three browser comparison harnesses,design-acceptance.json
+Capability previews,PASS,"8 modules × 2 widths, resize, keyboard wrap",node capability-acceptance.cjs,capability-acceptance.json
+Globe drawing parity,PASS,60 identical command traces,node --import tsx renderer-parity.cts,renderer-parity.json
+Animation/fallback/navigation,PASS,worker/fallback failure/pauses/finale/scroll/locales/pricing,node animation-check.cjs,animation-and-navigation.json
+Pricing failure/recovery,PASS,"synthetic outage, real gateway positive control, one upstream read",node pricing-recovery.cjs,pricing-recovery.json
+Field CWV/INP/CrUX,NOT MEASURED,No real-user dataset or deployed candidate,External read-only field data after separately authorized release,
+Physical Safari/Android/assistive technology,NOT MEASURED,Chromium emulation and targeted keyboard only,Actual target device/browser/AT review,

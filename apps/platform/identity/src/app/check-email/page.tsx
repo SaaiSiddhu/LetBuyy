@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
-import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
 import { Banner, Button, ProgressBar } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -29,11 +28,6 @@ const translations: Record<Lang, Record<string, string>> = {
         statusReset: 'Password reset',
         resendReady: 'Ready to resend',
         resendWait: 'Resend cooldown',
-        rateLimited: 'Too many requests. Please wait a few minutes and try again.',
-        botFailed: 'Complete verification to resend your email.',
-        sendFailed: 'We could not send your email. Please try again.',
-        requestFailed: 'Please refresh this page and try again.',
-        networkFailed: 'Could not connect. Check your connection and try again.',
     },
     hi: {
         title: 'अपना ईमेल जांचें',
@@ -53,11 +47,6 @@ const translations: Record<Lang, Record<string, string>> = {
         statusReset: 'पासवर्ड रीसेट',
         resendReady: 'फिर से भेजने के लिए तैयार',
         resendWait: 'रीसेंड cooldown',
-        rateLimited: 'बहुत सारे अनुरोध। कुछ मिनट बाद फिर कोशिश करें।',
-        botFailed: 'ईमेल फिर भेजने के लिए सत्यापन पूरा करें।',
-        sendFailed: 'ईमेल नहीं भेज सके। कृपया फिर कोशिश करें।',
-        requestFailed: 'कृपया पेज रीफ्रेश करके फिर कोशिश करें।',
-        networkFailed: 'कनेक्शन नहीं हो सका। अपना इंटरनेट जांचें और फिर कोशिश करें।',
     },
     ta: {
         title: 'உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்',
@@ -77,11 +66,6 @@ const translations: Record<Lang, Record<string, string>> = {
         statusReset: 'கடவுச்சொல் மீட்டமைப்பு',
         resendReady: 'மீண்டும் அனுப்ப தயாராக உள்ளது',
         resendWait: 'மீண்டும் அனுப்பும் இடைவேளை',
-        rateLimited: 'பல கோரிக்கைகள் வந்துள்ளன. சில நிமிடங்கள் கழித்து மீண்டும் முயற்சிக்கவும்.',
-        botFailed: 'மின்னஞ்சலை மீண்டும் அனுப்ப சரிபார்ப்பை முடிக்கவும்.',
-        sendFailed: 'மின்னஞ்சலை அனுப்ப முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
-        requestFailed: 'இந்தப் பக்கத்தைப் புதுப்பித்து மீண்டும் முயற்சிக்கவும்.',
-        networkFailed: 'இணைக்க முடியவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.',
     },
 }
 
@@ -93,16 +77,6 @@ function CheckEmailContent() {
     const [countdown, setCountdown] = useState(60)
     const [canResend, setCanResend] = useState(false)
     const [resending, setResending] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
-    const turnstileTokenRef = useRef<string | null>(null)
-    const turnstileRef = useRef<TurnstileHandle>(null)
-    const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
-        || process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true'
-    const handleTurnstileVerify = useCallback((token: string) => {
-        turnstileTokenRef.current = token || null
-        setTurnstileToken(token || null)
-    }, [])
     const [lang, setLang] = useState<Lang>('en')
 
     const t = translations[lang]
@@ -135,44 +109,22 @@ function CheckEmailContent() {
 
     const handleResend = async () => {
         if (!canResend || resending) return
-        const currentToken = turnstileTokenRef.current || turnstileToken
-        if (turnstileEnabled && !currentToken) {
-            setError(t.botFailed)
-            turnstileRef.current?.reset()
-            return
-        }
         setResending(true)
-        setError(null)
 
         try {
-            const endpoint = type === 'magic_link' ? '/api/auth/send-magic'
-                : type === 'password_reset' ? '/api/auth/send-reset' : '/api/auth/signup'
-            const response = await fetch(endpoint, {
+            const endpoint = type === 'magic_link' ? '/api/auth/send-magic' : '/api/auth/signup'
+            await fetch(endpoint, {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
-                body: JSON.stringify({ email, turnstileToken: currentToken }),
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ email, turnstileToken: 'resend-bypass' }),
             })
-            const payload = await response.json().catch(() => null) as {
-                success?: boolean
-                error?: string
-            } | null
 
-            if (!response.ok || payload?.success !== true) {
-                if (response.status === 429) setError(t.rateLimited)
-                else if (response.status === 403 && typeof payload?.error === 'string' && payload.error.includes('Bot')) setError(t.botFailed)
-                else if (response.status === 400 || response.status === 403) setError(t.requestFailed)
-                else setError(t.sendFailed)
-                return
-            }
-
+            // Reset countdown
             setCountdown(60)
             setCanResend(false)
         } catch {
-            setError(t.networkFailed)
+            // Silently fail
         } finally {
-            turnstileTokenRef.current = null
-            setTurnstileToken(null)
-            turnstileRef.current?.reset()
             setResending(false)
         }
     }
@@ -224,17 +176,13 @@ function CheckEmailContent() {
                         label={canResend ? t.resendReady : t.resendWait}
                     />
 
-                    {canResend && <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />}
-
-                    {error && <Banner variant="critical">{error}</Banner>}
-
                     <Button
                         type="button"
                         variant="secondary"
                         fullWidth
                         loading={resending}
                         onClick={handleResend}
-                        disabled={!canResend || resending || (turnstileEnabled && !turnstileToken)}
+                        disabled={!canResend || resending}
                     >
                         {canResend
                             ? t.resend

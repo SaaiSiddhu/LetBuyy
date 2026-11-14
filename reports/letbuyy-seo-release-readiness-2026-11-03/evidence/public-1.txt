@@ -1,0 +1,993 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<url>
+<loc>https://www.letbuyy.com/in</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>1</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>1</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>1</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/pricing</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/pricing" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/pricing" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/pricing" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/pricing" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.9</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/pricing</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/pricing" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/pricing" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/pricing" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/pricing" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.9</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/pricing</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/pricing" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/pricing" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/pricing" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/pricing" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.9</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.9</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.9</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.9</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/contact</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/contact" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/contact" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/contact" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/contact" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/contact</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/contact" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/contact" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/contact" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/contact" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/contact</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/contact" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/contact" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/contact" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/contact" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/support</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/support" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/support" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/support" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/support" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/support</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/support" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/support" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/support" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/support" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/support</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/support" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/support" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/support" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/support" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/changelog</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/changelog" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/changelog" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/changelog" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/changelog" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/changelog</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/changelog" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/changelog" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/changelog" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/changelog" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/changelog</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/changelog" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/changelog" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/changelog" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/changelog" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/create</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/create" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/create" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/create" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/create" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/create</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/create" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/create" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/create" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/create" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/create</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/create" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/create" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/create" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/create" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/releases</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/releases" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/releases" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/releases" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/releases" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/releases</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/releases" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/releases" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/releases" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/releases" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/releases</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/releases" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/releases" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/releases" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/releases" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/ecommerce</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/ecommerce" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/ecommerce" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/ecommerce" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/ecommerce" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/ecommerce</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/ecommerce" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/ecommerce" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/ecommerce" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/ecommerce" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/ecommerce</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/ecommerce" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/ecommerce" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/ecommerce" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/ecommerce" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/growth</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/growth" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/growth" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/growth" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/growth" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/growth</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/growth" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/growth" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/growth" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/growth" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/growth</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/growth" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/growth" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/growth" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/growth" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/payments</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/payments" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/payments" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/payments" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/payments" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/payments</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/payments" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/payments" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/payments" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/payments" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/payments</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/payments" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/payments" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/payments" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/payments" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/operations</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/operations" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/operations" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/operations" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/operations" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/operations</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/operations" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/operations" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/operations" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/operations" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/operations</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/operations" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/operations" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/operations" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/operations" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/ai-commerce</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/ai-commerce" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/ai-commerce" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/ai-commerce" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/ai-commerce" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/ai-commerce</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/ai-commerce" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/ai-commerce" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/ai-commerce" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/ai-commerce" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/ai-commerce</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/ai-commerce" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/ai-commerce" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/ai-commerce" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/ai-commerce" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/developers</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/developers" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/developers" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/developers" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/developers" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/developers</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/developers" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/developers" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/developers" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/developers" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/developers</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/developers" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/developers" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/developers" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/developers" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/platform</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/platform" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/platform" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/platform" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/platform" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/platform</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/platform" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/platform" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/platform" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/platform" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/platform</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/platform" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/platform" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/platform" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/platform" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.6</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.6</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.6</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/terms</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/terms" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/terms" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/terms" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/terms" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/terms</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/terms" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/terms" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/terms" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/terms" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/terms</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/terms" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/terms" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/terms" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/terms" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/acceptable-use</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/acceptable-use" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/acceptable-use" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/acceptable-use" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/acceptable-use" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/acceptable-use</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/acceptable-use" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/acceptable-use" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/acceptable-use" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/acceptable-use" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/acceptable-use</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/acceptable-use" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/acceptable-use" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/acceptable-use" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/acceptable-use" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/api-terms</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/api-terms" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/api-terms" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/api-terms" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/api-terms" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/api-terms</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/api-terms" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/api-terms" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/api-terms" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/api-terms" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/api-terms</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/api-terms" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/api-terms" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/api-terms" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/api-terms" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/marketplace</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/marketplace" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/marketplace" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/marketplace" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/marketplace" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/marketplace</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/marketplace" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/marketplace" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/marketplace" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/marketplace" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/marketplace</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/marketplace" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/marketplace" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/marketplace" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/marketplace" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/billing</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/billing" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/billing" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/billing" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/billing" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/billing</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/billing" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/billing" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/billing" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/billing" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/billing</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/billing" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/billing" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/billing" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/billing" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/payouts</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/payouts" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/payouts" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/payouts" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/payouts" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/payouts</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/payouts" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/payouts" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/payouts" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/payouts" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/payouts</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/payouts" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/payouts" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/payouts" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/payouts" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/refunds</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/refunds" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/refunds" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/refunds" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/refunds" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/refunds</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/refunds" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/refunds" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/refunds" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/refunds" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/refunds</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/refunds" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/refunds" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/refunds" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/refunds" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/shipping</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/shipping" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/shipping" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/shipping" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/shipping" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/shipping</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/shipping" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/shipping" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/shipping" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/shipping" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/shipping</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/shipping" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/shipping" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/shipping" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/shipping" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/privacy</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/privacy" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/privacy" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/privacy" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/privacy" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/privacy</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/privacy" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/privacy" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/privacy" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/privacy" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/privacy</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/privacy" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/privacy" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/privacy" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/privacy" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/cookies</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/cookies" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/cookies" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/cookies" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/cookies" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/cookies</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/cookies" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/cookies" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/cookies" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/cookies" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/cookies</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/cookies" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/cookies" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/cookies" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/cookies" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/data-processing</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/data-processing" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/data-processing" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/data-processing" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/data-processing" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/data-processing</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/data-processing" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/data-processing" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/data-processing" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/data-processing" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/data-processing</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/data-processing" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/data-processing" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/data-processing" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/data-processing" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/subprocessors</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/subprocessors" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/subprocessors" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/subprocessors" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/subprocessors" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/subprocessors</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/subprocessors" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/subprocessors" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/subprocessors" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/subprocessors" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/subprocessors</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/subprocessors" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/subprocessors" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/subprocessors" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/subprocessors" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/security</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/security" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/security" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/security" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/security" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/security</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/security" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/security" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/security" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/security" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/security</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/security" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/security" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/security" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/security" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/grievance</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/grievance" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/grievance" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/grievance" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/grievance" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/grievance</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/grievance" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/grievance" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/grievance" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/grievance" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/grievance</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/grievance" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/grievance" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/grievance" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/grievance" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/legal/intellectual-property</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/intellectual-property" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/intellectual-property" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/intellectual-property" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/intellectual-property" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/legal/intellectual-property</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/intellectual-property" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/intellectual-property" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/intellectual-property" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/intellectual-property" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/legal/intellectual-property</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/legal/intellectual-property" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/legal/intellectual-property" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/legal/intellectual-property" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/legal/intellectual-property" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/sitemap</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/sitemap" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/sitemap" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/sitemap" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/sitemap" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.6</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/sitemap</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/sitemap" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/sitemap" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/sitemap" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/sitemap" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.6</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/sitemap</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/sitemap" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/sitemap" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/sitemap" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/sitemap" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.6</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in/resources/search</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/search" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/search" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/search" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/search" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.4</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-ta/resources/search</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/search" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/search" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/search" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/search" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.4</priority>
+</url>
+<url>
+<loc>https://www.letbuyy.com/in-hi/resources/search</loc>
+<xhtml:link rel="alternate" hreflang="en-IN" href="https://www.letbuyy.com/in/resources/search" />
+<xhtml:link rel="alternate" hreflang="ta-IN" href="https://www.letbuyy.com/in-ta/resources/search" />
+<xhtml:link rel="alternate" hreflang="hi-IN" href="https://www.letbuyy.com/in-hi/resources/search" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://www.letbuyy.com/in/resources/search" />
+<lastmod>2026-06-04T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.4</priority>
+</url>
+</urlset>

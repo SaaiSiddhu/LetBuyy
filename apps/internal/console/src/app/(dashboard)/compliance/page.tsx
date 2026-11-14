@@ -1,3 +1,4 @@
+import { ConsoleActionForm } from '@/components/ConsoleActionForm';
 import { revalidatePath } from 'next/cache';
 import type {
     InternalAuditExportCursor,
@@ -207,7 +208,7 @@ export default async function CompliancePage({ searchParams }: PageProps) {
         <ConsoleWorkspace
             eyebrow="Compliance"
             title="Data Subject & Audit Export"
-            description="GDPR-style request workflow, retention policy visibility, and dry-run audit export cursor management."
+            description="Track privacy requests, review retention rules, and inspect audit export readiness."
         >
             {overviewResult.error ? <ConsoleApiErrorPanel title="Compliance overview unavailable" message={overviewResult.error} /> : null}
             {requestsResult.error ? <ConsoleApiErrorPanel title="Data-subject queue unavailable" message={requestsResult.error} /> : null}
@@ -215,10 +216,10 @@ export default async function CompliancePage({ searchParams }: PageProps) {
             {exportsResult.error ? <ConsoleApiErrorPanel title="Audit export status unavailable" message={exportsResult.error} /> : null}
 
             <MetricGrid>
-                <LeadershipMetric label="Open requests" value={String(overview?.totals.open || 0)} detail={`${overview?.totals.due_soon || 0} due soon`} tone="warning" />
-                <LeadershipMetric label="Overdue" value={String(overview?.totals.overdue || 0)} tone={overview?.totals.overdue ? 'critical' : 'success'} />
-                <LeadershipMetric label="Erasure" value={String(overview?.totals.erasure || 0)} />
-                <LeadershipMetric label="Fulfilled" value={String(overview?.totals.fulfilled || 0)} tone="success" />
+                <LeadershipMetric label="Open requests" value={String(overview?.totals.open ?? 'Unavailable')} detail={overview ? `${overview.totals.due_soon} due soon` : 'Source unavailable'} tone="warning" />
+                <LeadershipMetric label="Overdue" value={String(overview?.totals.overdue ?? 'Unavailable')} tone={!overview ? 'warning' : overview.totals.overdue ? 'critical' : 'success'} />
+                <LeadershipMetric label="Erasure" value={String(overview?.totals.erasure ?? 'Unavailable')} />
+                <LeadershipMetric label="Fulfilled" value={String(overview?.totals.fulfilled ?? 'Unavailable')} tone="success" />
             </MetricGrid>
 
             <Panel title="Data-subject queue" description="Webhook intake and manual requests with due clocks, assignees, and audited status changes.">
@@ -260,7 +261,7 @@ export default async function CompliancePage({ searchParams }: PageProps) {
                                         <StatusPill value={request.status} tone={statusTone(request.status)} />
                                     </td>
                                     <td className="px-[var(--lb-space-3)] py-[var(--lb-space-3)]">
-                                        <form action={updateDataSubjectRequest} className="grid min-w-[360px] gap-[var(--lb-space-2)]">
+                                        <ConsoleActionForm action={updateDataSubjectRequest} className="grid min-w-[360px] gap-[var(--lb-space-2)]">
                                             <Input unstyled type="hidden" name="request_id" value={request.id} />
                                             <Select name="status" hideLabel label="Status" defaultValue={request.status} options={updateStatusOptions} controlSize="sm" />
                                             <Input name="assignee_id" placeholder="Assignee employee id" />
@@ -269,7 +270,7 @@ export default async function CompliancePage({ searchParams }: PageProps) {
                                                 <Input name="reason" required minLength={8} placeholder="Reason" className="min-w-0 flex-1" />
                                                 <Button type="submit" size="sm" variant="outline">Save</Button>
                                             </div>
-                                        </form>
+                                        </ConsoleActionForm>
                                     </td>
                                 </tr>
                             ))}
@@ -286,7 +287,7 @@ export default async function CompliancePage({ searchParams }: PageProps) {
             </Panel>
 
             <Panel title="Manual intake" description="Create a governed request when legal/support intake arrives outside app-store webhooks.">
-                <form action={createDataSubjectRequest} className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                <ConsoleActionForm action={createDataSubjectRequest} className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                     <Select name="request_type" label="Request type" options={requestTypeOptions.filter((option) => option.value !== 'all')} defaultValue="access" />
                     <Select name="subject_type" label="Subject type" options={subjectTypeOptions} defaultValue="customer" />
                     <Input name="subject_email" type="email" label="Subject email" placeholder="customer@example.com" />
@@ -294,14 +295,14 @@ export default async function CompliancePage({ searchParams }: PageProps) {
                     <Input name="subject_display" label="Subject display" placeholder="Human-readable subject" />
                     <Input name="site_id" label="Site id" placeholder="Optional site UUID" />
                     <Select name="source" label="Source" options={createSourceOptions} defaultValue="manual" />
-                    <Input name="idempotency_key" label="Idempotency key" placeholder="Optional external request id" />
+                    <Input unstyled type="hidden" name="idempotency_key" value={crypto.randomUUID()} />
                     <div className="md:col-span-2">
                         <Textarea name="reason" required minLength={8} label="Reason" placeholder="Why this request is being opened" />
                     </div>
                     <div className="md:col-span-2">
                         <Button type="submit">Create request</Button>
                     </div>
-                </form>
+                </ConsoleActionForm>
             </Panel>
 
             <Panel title="Retention policy" description="T&S enforcement records are explicitly retention-exempt; purgeable PII moves through the request workflow.">
@@ -328,12 +329,12 @@ export default async function CompliancePage({ searchParams }: PageProps) {
             </Panel>
 
             <Panel title="Audit export" description="Tamper-evident audit export cursor with a local dry-run sink until an external SIEM/WORM destination is configured." action={(
-                <form action={runAuditExport} className="grid gap-[var(--lb-space-2)] md:grid-cols-[minmax(160px,1fr)_120px_minmax(220px,1fr)_auto]">
+                <ConsoleActionForm action={runAuditExport} className="grid gap-[var(--lb-space-2)] md:grid-cols-[minmax(160px,1fr)_120px_minmax(220px,1fr)_auto]">
                     <Input name="cursor_key" placeholder="audit_logs:local_dry_run" />
                     <Input name="limit" type="number" min={1} max={1000} defaultValue={500} />
                     <Input name="reason" required minLength={8} placeholder="Reason" />
                     <Button type="submit" variant="outline">Run</Button>
-                </form>
+                </ConsoleActionForm>
             )}>
                 {cursors.length ? (
                     <Table className="shadow-none" containerClassName="overflow-x-auto" tableClassName="min-w-[860px] text-left text-sm">

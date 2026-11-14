@@ -1,0 +1,133 @@
+--- a/apps/marketing/web/src/app/[locale]/resources/[category]/[slug]/page.tsx
++++ b/apps/marketing/web/src/app/[locale]/resources/[category]/[slug]/page.tsx
+@@ -208,7 +208,7 @@
+                 <nav className="arc-breadcrumb" aria-label="Breadcrumb">
+                   <Link href="/resources"><Copy text={"Resources"} /></Link>
+                   <span className="arc-breadcrumb-sep" aria-hidden="true">›</span>
+-                  <Link href={`/resources/${category}`} style={{ color: cat.color }}>{cat.label}</Link>
++                  <Link href={`/resources/${category}`} style={{ color: `color-mix(in srgb, ${cat.color} 35%, var(--lb-color-text))` }}>{cat.label}</Link>
+                 </nav>
+                 {/* No category chip here — the breadcrumb above already names it */}
+                 {article.featured && <span className="arc-flag"><Copy text={"Featured"} /></span>}
+--- a/apps/marketing/web/src/app/globals.css
++++ b/apps/marketing/web/src/app/globals.css
+@@ -2401,7 +2401,7 @@
+ .select-plan-compare-plan-badge {
+   font-size: calc(var(--lb-font-size-caption) * 0.9167);
+   font-weight: var(--lb-font-weight-medium);
+-  color: var(--text-secondary);
++  color: var(--lb-color-text);
+ }
+ 
+ .select-plan-compare-plan-head.is-popular .select-plan-compare-plan-name {
+@@ -2573,7 +2573,7 @@
+ .select-plan-switch-text {
+   font-size: var(--lb-font-size-secondary);
+   font-weight: var(--lb-font-weight-medium);
+-  color: var(--text-secondary);
++  color: var(--lb-color-text);
+ }
+ 
+ /* Collapsible feature disclosure rows */
+@@ -6773,7 +6773,7 @@
+   background: var(--bg-dark); border: 1px solid var(--border-subtle);
+ }
+ .ctc-foot-note strong { color: var(--text-secondary); font-weight: var(--lb-font-weight-semibold); }
+-.ctc-foot-note a { color: var(--lb-color-primary-text); text-decoration: none; }
++.ctc-foot-note a { color: var(--lb-color-primary-text); text-decoration: underline; text-underline-offset: 0.15em; }
+ .ctc-foot-note a:hover { text-decoration: underline; }
+ 
+ /* Motion is decoration here; the form works identically without it. */
+@@ -9318,7 +9318,7 @@
+ 
+ .lgl-toc-trigger-count {
+   font-size: calc(var(--lb-font-size-caption) * 0.9167);
+-  color: var(--text-subtle);
++  color: var(--lb-color-text);
+   font-variant-numeric: tabular-nums;
+ }
+ 
+@@ -9689,11 +9689,11 @@
+   margin: 0;
+   font-size: var(--lb-font-size-body);
+   line-height: 1.62;
+-  color: var(--text-secondary);
++  color: var(--lb-color-text);
+   max-width: 62ch;
+ }
+ 
+-.lgl-doc-contact a { color: var(--lb-color-primary-text); text-decoration: none; }
++.lgl-doc-contact a { color: var(--lb-color-primary-text); text-decoration: underline; text-underline-offset: 0.15em; }
+ .lgl-doc-contact a:hover { text-decoration: underline; }
+ 
+ .lgl-pager {
+@@ -9732,7 +9732,7 @@
+   font-weight: var(--lb-font-weight-semibold);
+   letter-spacing: 0.16em;
+   text-transform: uppercase;
+-  color: var(--text-subtle);
++  color: var(--lb-color-text);
+ }
+ 
+ .lgl-pager-title {
+@@ -10189,6 +10189,7 @@
+ }
+ .nlx-availability { display: grid; gap: var(--lb-space-3); }
+ .nlx-availability p { color: var(--lb-color-text-subdued); }
++.arc-post-nl-section .nlx-availability p { color: var(--lb-color-text); }
+ .nlx-availability .btn { justify-self: start; }
+ 
+ /* Portaled shared dialogs sit above the marketing site's existing sticky chrome. */
+--- a/apps/marketing/web/src/app/resources.css
++++ b/apps/marketing/web/src/app/resources.css
+@@ -1166,7 +1166,7 @@
+ }
+ .arc-completion-badge { font-size: calc(var(--lb-font-size-caption) * 0.8333); font-weight: var(--lb-font-weight-bold); letter-spacing: 0.1em; text-transform: uppercase; color: var(--lb-color-primary-text); margin-bottom: var(--lb-space-1); }
+ .arc-completion-title { font-size: var(--lb-font-size-h4); font-weight: var(--lb-font-weight-bold); color: var(--text-primary); line-height: 1.3; margin-bottom: calc(var(--lb-space-1) * 0.5); }
+-.arc-completion-sub { font-size: var(--lb-font-size-body); color: var(--text-muted); }
++.arc-completion-sub { font-size: var(--lb-font-size-body); color: var(--lb-color-text); }
+ .arc-completion-cta {
+   display: inline-flex; align-items: center; gap: var(--lb-space-2);
+   background: var(--lb-primitive-color-purple-700); color: #fff; border-radius: var(--lb-radius-lg);
+--- a/apps/marketing/web/src/components/resources/ArticleSidebar.tsx
++++ b/apps/marketing/web/src/components/resources/ArticleSidebar.tsx
+@@ -108,7 +108,7 @@
+           <p className="arc-related-hd"><Copy text={"Related guides"} /></p>
+           {related.map(({ article: a, category: c }) => (
+             <Link key={a.slug} href={`/resources/${a.category}/${a.slug}`} className="arc-rel-item">
+-              <p className="arc-rel-cat" style={{ color: c.color }}>{c.label}</p>
++              <p className="arc-rel-cat" style={{ color: `color-mix(in srgb, ${c.color} 35%, var(--lb-color-text))` }}>{c.label}</p>
+               <p className="arc-rel-title">{a.title}</p>
+               <p className="arc-rel-meta">{a.readingTime} <Copy text={"min read"} /></p>
+             </Link>
+--- a/apps/marketing/web/src/components/resources/PrevNextArticle.tsx
++++ b/apps/marketing/web/src/components/resources/PrevNextArticle.tsx
+@@ -25,7 +25,7 @@
+                 <path d="M15 18l-6-6 6-6" />
+               </svg>
+               <Copy text={"Previous"} /></div>
+-            <p className="arc-pn-cat" style={{ color: prevCat.color }}><Copy text={prevCat.label} /></p>
++            <p className="arc-pn-cat" style={{ color: `color-mix(in srgb, ${prevCat.color} 35%, var(--lb-color-text))` }}><Copy text={prevCat.label} /></p>
+             <p className="arc-pn-title">{prev.title}</p>
+             <p className="arc-pn-meta">{prev.readingTime} <Copy text={"min read"} /></p>
+           </Link>
+@@ -40,7 +40,7 @@
+                 <path d="M9 18l6-6-6-6" />
+               </svg>
+             </div>
+-            <p className="arc-pn-cat" style={{ color: nextCat.color }}><Copy text={nextCat.label} /></p>
++            <p className="arc-pn-cat" style={{ color: `color-mix(in srgb, ${nextCat.color} 35%, var(--lb-color-text))` }}><Copy text={nextCat.label} /></p>
+             <p className="arc-pn-title">{next.title}</p>
+             <p className="arc-pn-meta">{next.readingTime} <Copy text={"min read"} /></p>
+           </Link>
+--- a/apps/marketing/web/src/components/resources/RecommendedArticles.tsx
++++ b/apps/marketing/web/src/components/resources/RecommendedArticles.tsx
+@@ -24,7 +24,7 @@
+           >
+             <ResourceArticleArtwork slug={article.slug} thumbnail />
+             <div className="arc-rec-top">
+-              <span className="arc-rec-cat" style={{ color: category.color }}>{category.label}</span>
++              <span className="arc-rec-cat" style={{ color: `color-mix(in srgb, ${category.color} 35%, var(--lb-color-text))` }}>{category.label}</span>
+             </div>
+             <p className="arc-rec-title">{article.title}</p>
+             <p className="arc-rec-desc">{article.subtitle}</p>

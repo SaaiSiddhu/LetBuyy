@@ -1,0 +1,436 @@
+{
+  "captured_at": "2026-10-29T19:33:49.196107+00:00",
+  "method": "Isolated production app + synthetic public pricing gateway; no transaction or form submissions",
+  "page_samples": 24,
+  "rows": [
+    {
+      "lang": "en",
+      "title": "LetBuyy — India-first commerce operating system",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "More than a store. Your Commerce OS."
+      ],
+      "pricing": "PRICING\n\nSimple, transparent pricing\n\nCompare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales.\n\n🏆 Founding Merchant Program — 4 / 10 slots remaining\n\nLock the founding price for life. Lifetime price lock, founding badge, priority access, and early features.\n\nMOST POPULAR\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/month\n\nRegular ₹37.25 · Save ₹6/mo for life\n\nReview signup terms\nFixture feature\nCOMING SOON\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nComing soon\n\nComing soon\nFixture feature\nCompare all plans\nOnly differences\nSEO fixture Launch\nMost popular\nSEO fixture Upcoming\nFIXTURE COMPARISON\nProducts\n—\n+ See all features",
+      "canonical": "http://localhost:9006/in",
+      "path": "/in",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+      ],
+      "passed": false,
+      "screenshot": "evidence/browser-desktop-_in.png"
+    },
+    {
+      "lang": "hi",
+      "title": "LetBuyy — भारत के लिए बना कॉमर्स ऑपरेटिंग सिस्टम",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "स्टोर से बढ़कर। आपका कॉमर्स OS।"
+      ],
+      "pricing": "कीमत\n\nसरल और स्पष्ट कीमत\n\nनीचे उपलब्ध योजनाओं की तुलना करें। सदस्यता और प्रदाता शुल्क लागू हो सकते हैं। LetBuyy बिक्री पर 0% कमीशन लेता है।\n\n🏆 शुरुआती व्यापारी कार्यक्रम — 4 / 10 स्थान शेष\n\nशुरुआती कीमत जीवनभर तय करें। स्थायी दर, शुरुआती बैज, प्राथमिकता और नई सुविधाओं की जल्द पहुँच।\n\nसबसे लोकप्रिय\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/माह\n\nसामान्य ₹37.25 · बचत ₹6/माह जीवनभर\n\nसाइनअप शर्तें देखें\nFixture feature\nजल्द आ रहा है\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nजल्द आ रहा है\n\nजल्द आ रहा है\nFixture feature\nसभी योजनाओं की तुलना\nकेवल अंतर\nSEO fixture Launch\nसबसे लोकप्रिय\nSEO fixture Upcoming\nFIXTURE COMPARISON\nउत्पाद\n—\n+ सभी सुविधाएँ देखें",
+      "canonical": "http://localhost:9006/in-hi",
+      "path": "/in-hi",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+      ],
+      "passed": false
+    },
+    {
+      "lang": "ta",
+      "title": "LetBuyy — இந்தியாவுக்கான வணிக இயங்குதளம்",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "கடைக்கும் மேலாக. உங்கள் வணிக OS."
+      ],
+      "pricing": "விலை\n\nஎளிய, வெளிப்படையான விலை\n\nகீழே கிடைக்கும் திட்டங்களை ஒப்பிடுங்கள். சந்தா மற்றும் வழங்குநர் கட்டணங்கள் பொருந்தலாம். உங்கள் விற்பனையில் LetBuyy 0% கமிஷன் வசூலிக்கிறது.\n\n🏆 தொடக்க வணிகர் திட்டம் — 4 / 10 இடங்கள் மீதம்\n\nதொடக்க விலையை வாழ்நாள் முழுதும் உறுதிசெய்யுங்கள். நிலையான விலை, தொடக்கக் குறியீடு, முன்னுரிமை, புதிய அம்சங்களுக்கான முன் அணுகல்.\n\nமிகப் பிரபலமானது\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/மாதம்\n\nவழக்கமான ₹37.25 · சேமிப்பு ₹6/மாதம் வாழ்நாள் முழுவதும்\n\nபதிவு விதிகளைப் பாருங்கள்\nFixture feature\nவிரைவில்\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nவிரைவில்\n\nவிரைவில்\nFixture feature\nஅனைத்துத் திட்டங்களையும் ஒப்பிடுங்கள்\nவேறுபாடுகள் மட்டும்\nSEO fixture Launch\nமிகப் பிரபலமானது\nSEO fixture Upcoming\nFIXTURE COMPARISON\nதயாரிப்புகள்\n—\n+ அனைத்து அம்சங்களையும் காணவும்",
+      "canonical": "http://localhost:9006/in-ta",
+      "path": "/in-ta",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+      ],
+      "passed": false
+    },
+    {
+      "lang": "en",
+      "title": "LetBuyy Pricing — Plans for Indian Businesses",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "Simple, transparent pricing"
+      ],
+      "pricing": "PRICING\n\nSimple, transparent pricing\n\nCompare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales.\n\n🏆 Founding Merchant Program — 4 / 10 slots remaining\n\nLock the founding price for life. Lifetime price lock, founding badge, priority access, and early features.\n\nMOST POPULAR\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/month\n\nRegular ₹37.25 · Save ₹6/mo for life\n\nReview signup terms\nFixture feature\nCOMING SOON\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nComing soon\n\nComing soon\nFixture feature\nCompare all plans\nOnly differences\nSEO fixture Launch\nMost popular\nSEO fixture Upcoming\nFIXTURE COMPARISON\nProducts\n—\n+ See all features",
+      "canonical": "http://localhost:9006/in/pricing",
+      "path": "/in/pricing",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [],
+      "passed": true,
+      "screenshot": "evidence/browser-desktop-_in_pricing.png"
+    },
+    {
+      "lang": "hi",
+      "title": "LetBuyy कीमत — भारतीय व्यवसायों की योजनाएँ",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "सरल और स्पष्ट कीमत"
+      ],
+      "pricing": "कीमत\n\nसरल और स्पष्ट कीमत\n\nनीचे उपलब्ध योजनाओं की तुलना करें। सदस्यता और प्रदाता शुल्क लागू हो सकते हैं। LetBuyy बिक्री पर 0% कमीशन लेता है।\n\n🏆 शुरुआती व्यापारी कार्यक्रम — 4 / 10 स्थान शेष\n\nशुरुआती कीमत जीवनभर तय करें। स्थायी दर, शुरुआती बैज, प्राथमिकता और नई सुविधाओं की जल्द पहुँच।\n\nसबसे लोकप्रिय\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/माह\n\nसामान्य ₹37.25 · बचत ₹6/माह जीवनभर\n\nसाइनअप शर्तें देखें\nFixture feature\nजल्द आ रहा है\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nजल्द आ रहा है\n\nजल्द आ रहा है\nFixture feature\nसभी योजनाओं की तुलना\nकेवल अंतर\nSEO fixture Launch\nसबसे लोकप्रिय\nSEO fixture Upcoming\nFIXTURE COMPARISON\nउत्पाद\n—\n+ सभी सुविधाएँ देखें",
+      "canonical": "http://localhost:9006/in-hi/pricing",
+      "path": "/in-hi/pricing",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "ta",
+      "title": "LetBuyy விலை — இந்திய வணிகங்களுக்கான திட்டங்கள்",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "எளிய, வெளிப்படையான விலை"
+      ],
+      "pricing": "விலை\n\nஎளிய, வெளிப்படையான விலை\n\nகீழே கிடைக்கும் திட்டங்களை ஒப்பிடுங்கள். சந்தா மற்றும் வழங்குநர் கட்டணங்கள் பொருந்தலாம். உங்கள் விற்பனையில் LetBuyy 0% கமிஷன் வசூலிக்கிறது.\n\n🏆 தொடக்க வணிகர் திட்டம் — 4 / 10 இடங்கள் மீதம்\n\nதொடக்க விலையை வாழ்நாள் முழுதும் உறுதிசெய்யுங்கள். நிலையான விலை, தொடக்கக் குறியீடு, முன்னுரிமை, புதிய அம்சங்களுக்கான முன் அணுகல்.\n\nமிகப் பிரபலமானது\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/மாதம்\n\nவழக்கமான ₹37.25 · சேமிப்பு ₹6/மாதம் வாழ்நாள் முழுவதும்\n\nபதிவு விதிகளைப் பாருங்கள்\nFixture feature\nவிரைவில்\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nவிரைவில்\n\nவிரைவில்\nFixture feature\nஅனைத்துத் திட்டங்களையும் ஒப்பிடுங்கள்\nவேறுபாடுகள் மட்டும்\nSEO fixture Launch\nமிகப் பிரபலமானது\nSEO fixture Upcoming\nFIXTURE COMPARISON\nதயாரிப்புகள்\n—\n+ அனைத்து அம்சங்களையும் காணவும்",
+      "canonical": "http://localhost:9006/in-ta/pricing",
+      "path": "/in-ta/pricing",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "title": "GST Planning for Ecommerce Sellers in India | LetBuyy",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "GST Planning for Ecommerce Sellers in India"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in/resources/payments/gst-for-ecommerce-india",
+      "path": "/in/resources/payments/gst-for-ecommerce-india",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "hi",
+      "title": "उत्पाद समीक्षाएँ ग्राहकों को निर्णय लेने में कैसे मदद करती हैं | LetBuyy",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "उत्पाद समीक्षाएँ ग्राहकों को निर्णय लेने में कैसे मदद करती हैं"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in-hi/resources/ecommerce/how-product-reviews-increase-conversion",
+      "path": "/in-hi/resources/ecommerce/how-product-reviews-increase-conversion",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [],
+      "passed": true,
+      "screenshot": "evidence/browser-desktop-_in-hi_resources_ecommerce_how-product-reviews-increase-conversion.png"
+    },
+    {
+      "lang": "ta",
+      "title": "வணிகர் கட்டுப்பாட்டு மையம்: உங்கள் வணிக இயங்குதளப் பலகை | LetBuyy",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "வணிகர் கட்டுப்பாட்டு மையம்: உங்கள் வணிக இயங்குதளப் பலகை"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in-ta/resources/platform/merchant-web-guide",
+      "path": "/in-ta/resources/platform/merchant-web-guide",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "title": "Support centre — LetBuyy",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "A clear next step.A little help along the way."
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in/support",
+      "path": "/in/support",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "title": "Create your site | LetBuyy",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "Create Your Site"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in/create",
+      "path": "/in/create",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "title": "Search resources | LetBuyy",
+      "width": 1366,
+      "scrollWidth": 1366,
+      "h1": [
+        "Search resources"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in/resources/search",
+      "path": "/in/resources/search?q=GST",
+      "mobile": false,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "title": "LetBuyy — India-first commerce operating system",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "More than a store. Your Commerce OS."
+      ],
+      "pricing": "PRICING\n\nSimple, transparent pricing\n\nCompare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales.\n\n🏆 Founding Merchant Program — 4 / 10 slots remaining\n\nLock the founding price for life. Lifetime price lock, founding badge, priority access, and early features.\n\nMOST POPULAR\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/month\n\nRegular ₹37.25 · Save ₹6/mo for life\n\nReview signup terms\nFixture feature\nCOMING SOON\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nComing soon\n\nComing soon\nFixture feature\nCompare all plans\nOnly differences\nSEO fixture Launch\nMost popular\nSEO fixture Upcoming\nFIXTURE COMPARISON\nProducts\n—\n+ See all features",
+      "canonical": "http://localhost:9006/in",
+      "path": "/in",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+      ],
+      "passed": false,
+      "screenshot": "evidence/browser-mobile-_in.png"
+    },
+    {
+      "lang": "hi",
+      "title": "LetBuyy — भारत के लिए बना कॉमर्स ऑपरेटिंग सिस्टम",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "स्टोर से बढ़कर। आपका कॉमर्स OS।"
+      ],
+      "pricing": "कीमत\n\nसरल और स्पष्ट कीमत\n\nनीचे उपलब्ध योजनाओं की तुलना करें। सदस्यता और प्रदाता शुल्क लागू हो सकते हैं। LetBuyy बिक्री पर 0% कमीशन लेता है।\n\n🏆 शुरुआती व्यापारी कार्यक्रम — 4 / 10 स्थान शेष\n\nशुरुआती कीमत जीवनभर तय करें। स्थायी दर, शुरुआती बैज, प्राथमिकता और नई सुविधाओं की जल्द पहुँच।\n\nसबसे लोकप्रिय\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/माह\n\nसामान्य ₹37.25 · बचत ₹6/माह जीवनभर\n\nसाइनअप शर्तें देखें\nFixture feature\nजल्द आ रहा है\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nजल्द आ रहा है\n\nजल्द आ रहा है\nFixture feature\nसभी योजनाओं की तुलना\nकेवल अंतर\nSEO fixture Launch\nसबसे लोकप्रिय\nSEO fixture Upcoming\nFIXTURE COMPARISON\nउत्पाद\n—\n+ सभी सुविधाएँ देखें",
+      "canonical": "http://localhost:9006/in-hi",
+      "path": "/in-hi",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+      ],
+      "passed": false
+    },
+    {
+      "lang": "ta",
+      "title": "LetBuyy — இந்தியாவுக்கான வணிக இயங்குதளம்",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "கடைக்கும் மேலாக. உங்கள் வணிக OS."
+      ],
+      "pricing": "விலை\n\nஎளிய, வெளிப்படையான விலை\n\nகீழே கிடைக்கும் திட்டங்களை ஒப்பிடுங்கள். சந்தா மற்றும் வழங்குநர் கட்டணங்கள் பொருந்தலாம். உங்கள் விற்பனையில் LetBuyy 0% கமிஷன் வசூலிக்கிறது.\n\n🏆 தொடக்க வணிகர் திட்டம் — 4 / 10 இடங்கள் மீதம்\n\nதொடக்க விலையை வாழ்நாள் முழுதும் உறுதிசெய்யுங்கள். நிலையான விலை, தொடக்கக் குறியீடு, முன்னுரிமை, புதிய அம்சங்களுக்கான முன் அணுகல்.\n\nமிகப் பிரபலமானது\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/மாதம்\n\nவழக்கமான ₹37.25 · சேமிப்பு ₹6/மாதம் வாழ்நாள் முழுவதும்\n\nபதிவு விதிகளைப் பாருங்கள்\nFixture feature\nவிரைவில்\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nவிரைவில்\n\nவிரைவில்\nFixture feature\nஅனைத்துத் திட்டங்களையும் ஒப்பிடுங்கள்\nவேறுபாடுகள் மட்டும்\nSEO fixture Launch\nமிகப் பிரபலமானது\nSEO fixture Upcoming\nFIXTURE COMPARISON\nதயாரிப்புகள்\n—\n+ அனைத்து அம்சங்களையும் காணவும்",
+      "canonical": "http://localhost:9006/in-ta",
+      "path": "/in-ta",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+      ],
+      "passed": false
+    },
+    {
+      "lang": "en",
+      "title": "LetBuyy Pricing — Plans for Indian Businesses",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "Simple, transparent pricing"
+      ],
+      "pricing": "PRICING\n\nSimple, transparent pricing\n\nCompare available plans below. Subscription and provider charges may apply. LetBuyy charges 0% commission on your sales.\n\n🏆 Founding Merchant Program — 4 / 10 slots remaining\n\nLock the founding price for life. Lifetime price lock, founding badge, priority access, and early features.\n\nMOST POPULAR\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/month\n\nRegular ₹37.25 · Save ₹6/mo for life\n\nReview signup terms\nFixture feature\nCOMING SOON\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nComing soon\n\nComing soon\nFixture feature\nCompare all plans\nOnly differences\nSEO fixture Launch\nMost popular\nSEO fixture Upcoming\nFIXTURE COMPARISON\nProducts\n—\n+ See all features",
+      "canonical": "http://localhost:9006/in/pricing",
+      "path": "/in/pricing",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [],
+      "passed": true,
+      "screenshot": "evidence/browser-mobile-_in_pricing.png"
+    },
+    {
+      "lang": "hi",
+      "title": "LetBuyy कीमत — भारतीय व्यवसायों की योजनाएँ",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "सरल और स्पष्ट कीमत"
+      ],
+      "pricing": "कीमत\n\nसरल और स्पष्ट कीमत\n\nनीचे उपलब्ध योजनाओं की तुलना करें। सदस्यता और प्रदाता शुल्क लागू हो सकते हैं। LetBuyy बिक्री पर 0% कमीशन लेता है।\n\n🏆 शुरुआती व्यापारी कार्यक्रम — 4 / 10 स्थान शेष\n\nशुरुआती कीमत जीवनभर तय करें। स्थायी दर, शुरुआती बैज, प्राथमिकता और नई सुविधाओं की जल्द पहुँच।\n\nसबसे लोकप्रिय\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/माह\n\nसामान्य ₹37.25 · बचत ₹6/माह जीवनभर\n\nसाइनअप शर्तें देखें\nFixture feature\nजल्द आ रहा है\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nजल्द आ रहा है\n\nजल्द आ रहा है\nFixture feature\nसभी योजनाओं की तुलना\nकेवल अंतर\nSEO fixture Launch\nसबसे लोकप्रिय\nSEO fixture Upcoming\nFIXTURE COMPARISON\nउत्पाद\n—\n+ सभी सुविधाएँ देखें",
+      "canonical": "http://localhost:9006/in-hi/pricing",
+      "path": "/in-hi/pricing",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "ta",
+      "title": "LetBuyy விலை — இந்திய வணிகங்களுக்கான திட்டங்கள்",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "எளிய, வெளிப்படையான விலை"
+      ],
+      "pricing": "விலை\n\nஎளிய, வெளிப்படையான விலை\n\nகீழே கிடைக்கும் திட்டங்களை ஒப்பிடுங்கள். சந்தா மற்றும் வழங்குநர் கட்டணங்கள் பொருந்தலாம். உங்கள் விற்பனையில் LetBuyy 0% கமிஷன் வசூலிக்கிறது.\n\n🏆 தொடக்க வணிகர் திட்டம் — 4 / 10 இடங்கள் மீதம்\n\nதொடக்க விலையை வாழ்நாள் முழுதும் உறுதிசெய்யுங்கள். நிலையான விலை, தொடக்கக் குறியீடு, முன்னுரிமை, புதிய அம்சங்களுக்கான முன் அணுகல்.\n\nமிகப் பிரபலமானது\nSEO fixture Launch\n\nSynthetic test catalogue\n\n₹31.25/மாதம்\n\nவழக்கமான ₹37.25 · சேமிப்பு ₹6/மாதம் வாழ்நாள் முழுவதும்\n\nபதிவு விதிகளைப் பாருங்கள்\nFixture feature\nவிரைவில்\nSEO fixture Upcoming\n\nSynthetic test catalogue\n\nவிரைவில்\n\nவிரைவில்\nFixture feature\nஅனைத்துத் திட்டங்களையும் ஒப்பிடுங்கள்\nவேறுபாடுகள் மட்டும்\nSEO fixture Launch\nமிகப் பிரபலமானது\nSEO fixture Upcoming\nFIXTURE COMPARISON\nதயாரிப்புகள்\n—\n+ அனைத்து அம்சங்களையும் காணவும்",
+      "canonical": "http://localhost:9006/in-ta/pricing",
+      "path": "/in-ta/pricing",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "title": "GST Planning for Ecommerce Sellers in India | LetBuyy",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "GST Planning for Ecommerce Sellers in India"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in/resources/payments/gst-for-ecommerce-india",
+      "path": "/in/resources/payments/gst-for-ecommerce-india",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "hi",
+      "title": "उत्पाद समीक्षाएँ ग्राहकों को निर्णय लेने में कैसे मदद करती हैं | LetBuyy",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "उत्पाद समीक्षाएँ ग्राहकों को निर्णय लेने में कैसे मदद करती हैं"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in-hi/resources/ecommerce/how-product-reviews-increase-conversion",
+      "path": "/in-hi/resources/ecommerce/how-product-reviews-increase-conversion",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [],
+      "passed": true,
+      "screenshot": "evidence/browser-mobile-_in-hi_resources_ecommerce_how-product-reviews-increase-conversion.png"
+    },
+    {
+      "lang": "ta",
+      "title": "வணிகர் கட்டுப்பாட்டு மையம்: உங்கள் வணிக இயங்குதளப் பலகை | LetBuyy",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "வணிகர் கட்டுப்பாட்டு மையம்: உங்கள் வணிக இயங்குதளப் பலகை"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in-ta/resources/platform/merchant-web-guide",
+      "path": "/in-ta/resources/platform/merchant-web-guide",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "title": "Support centre — LetBuyy",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "A clear next step.A little help along the way."
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in/support",
+      "path": "/in/support",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "title": "Create your site | LetBuyy",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "Create Your Site"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in/create",
+      "path": "/in/create",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "title": "Search resources | LetBuyy",
+      "width": 375,
+      "scrollWidth": 375,
+      "h1": [
+        "Search resources"
+      ],
+      "pricing": null,
+      "canonical": "http://localhost:9006/in/resources/search",
+      "path": "/in/resources/search?q=GST",
+      "mobile": true,
+      "status": 200,
+      "page_errors": [],
+      "passed": true
+    }
+  ],
+  "javascript_disabled_pricing": {
+    "fixture_plan_present": true,
+    "price_present": true,
+    "passed": true
+  },
+  "mobile_menu": {
+    "opened": true,
+    "escape_closed": true,
+    "passed": true
+  },
+  "client_locale_switch": {
+    "final_url": "http://127.0.0.1:9007/in-hi",
+    "root_lang": "hi",
+    "passed": true
+  },
+  "pricing_retry_recovery": {
+    "initial_error": true,
+    "plan_after_retry": true,
+    "passed": true
+  },
+  "passed": false
+}

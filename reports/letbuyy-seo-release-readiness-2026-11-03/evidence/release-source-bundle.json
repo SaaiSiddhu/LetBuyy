@@ -1,0 +1,13 @@
+{
+  "archive": "MARKETING-RELEASE-SOURCE.tar.gz",
+  "bytes": 37542069,
+  "sha256": "9a0145e2fbf5396660526e9fe1d64004fc598fd1e0df6403cd6fd13ce2d02dbe",
+  "fileCount": 1289,
+  "packageCount": 15,
+  "sourceDirectory": "/tmp/letbuyy-seo-completion-20261103/release-source",
+  "state": "Latest content,directory and decorative-priority repairs built/tested locally; original LCP and external acceptance remain open; NOT approved/deployed",
+  "doesNotAuthorizeDeployment": true,
+  "rootBuildId": "b2CsFLYIUn25H5EguBjys",
+  "candidateBuildId": "fiI7E7RIv4e4VqtSPl2DG",
+  "gatewayIncluded": false
+}

@@ -1,8 +1,0 @@
-{
-  "classification": "COMPILER_ONLY",
-  "actual": [],
-  "baseline": [],
-  "introduced": [],
-  "businessSourceLeaks": [],
-  "sourceFileCount": 958
-}

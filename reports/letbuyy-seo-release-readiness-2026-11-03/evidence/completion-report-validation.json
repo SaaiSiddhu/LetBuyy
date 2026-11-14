@@ -1,0 +1,25 @@
+{
+  "capturedAt": "2026-11-03T10:44:05.288551+00:00",
+  "passed": true,
+  "checks": [
+    "All 291 JSON files parse",
+    "56 unique work records,35 routes,23 production checks; completion/performance/auth state honest",
+    "Local Markdown links resolve",
+    "Final105articles/180bodylinks,477HTML/690JSON-LD,3directory policies and2imagepreloads; isolated artwork mutation caught",
+    "Both canonical configurations pass489URL/XML/404 checks; nine compiled CSS files match; negative mutation meaningful; no private performance candidate adopted",
+    "1289 archive members safe/materialized, hashes match live source manifest, no env/build/dependency directories",
+    "CSS source preservation,three-locale sequence/anchors,CORSnegative controls,health and202 pending review rows",
+    "No credential-shaped values detected in text deliverables; private raw CLI/env data excluded"
+  ],
+  "errors": [],
+  "notClaimed": [
+    "all SEO complete",
+    "original LCP acceptance",
+    "deployment or indexing submission",
+    "hosted edge fix",
+    "GA4 tracking activated",
+    "physical/human review",
+    "real Razorpay payment success",
+    "full destructive governance or all DB suites"
+  ]
+}

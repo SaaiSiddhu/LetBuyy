@@ -1,0 +1,11 @@
+--- a/apps/marketing/web/next.config.ts
++++ b/apps/marketing/web/next.config.ts
+@@ -36,6 +36,8 @@
+ };
+ 
+ const nextConfig: NextConfig = {
++  // The development badge overlaps the mobile article Contents control.
++  devIndicators: false,
+   transpilePackages: workspacePackages,
+   images: {
+     formats: ['image/avif', 'image/webp'],

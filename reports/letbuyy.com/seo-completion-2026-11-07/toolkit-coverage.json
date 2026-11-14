@@ -1,0 +1,356 @@
+{
+  "capturedAt": "2026-11-07T03:05:05.891948+00:00",
+  "routes": [
+    {
+      "route": "doctor",
+      "applicable": true,
+      "why": "Core and browser readiness required",
+      "prior_status": "executed",
+      "current_status": "Executed; managed core/browser ready and current native Chrome verified",
+      "evidence": "evidence/seo-doctor.json; evidence/current-chrome-observations.json",
+      "missing_prerequisites": "None for runtime; Cloudflare login is a separate service prerequisite",
+      "next_step": "No setup repair needed"
+    },
+    {
+      "route": "setup",
+      "applicable": true,
+      "why": "Managed environment was absent; owner explicitly authorized repair/Chromium",
+      "prior_status": "executed",
+      "current_status": "Not needed",
+      "evidence": "Prior Nov3 packet: Doctor proves current runtime/browser readiness",
+      "missing_prerequisites": "None",
+      "next_step": "Do not reinstall working dependencies."
+    },
+    {
+      "route": "updates",
+      "applicable": true,
+      "why": "Current policy/feature claims and historical interpretation",
+      "prior_status": "executed",
+      "current_status": "Prior evidence retained",
+      "evidence": "Prior Nov3 packet: Primary Google sitelink/canonical guidance checked; no new algorithm-impact claim",
+      "missing_prerequisites": "No historic rank/traffic causal dataset",
+      "next_step": "Use actual comparable data before attributing a change to an update."
+    },
+    {
+      "route": "audit",
+      "applicable": true,
+      "why": "Whole live site request",
+      "prior_status": "executed",
+      "current_status": "Executed bounded follow-up",
+      "evidence": "Prior Nov3 packet: ROW-BY-ROW-RESOLUTION.md;56unique records=34historic+22followup",
+      "missing_prerequisites": "External actions and remaining acceptance",
+      "next_step": "Complete category dependencies; this is not a new exhaustive full-site audit."
+    },
+    {
+      "route": "page",
+      "applicable": true,
+      "why": "Homepage,pricing,category,article,tag,author,contact,legal,release/search/create templates reviewed in shared raw HTML; parent browser samples add rendered/mobile evidence.",
+      "prior_status": "partially executed",
+      "current_status": "Fresh bounded local re-verification; hosted/reviewer/specialist limits retained",
+      "evidence": "Prior Nov3 packet: 489 known URL checks; 12 create comparisons; current Chrome smoke; live samples; latest218marketing tests; earlier Chrome desktop/mobile observations; fresh browser access blocked; resolution-followup/seo-signal-verification.json:477HTML/690JSON-LD syntax;eligibility separate; Nov7 current source parity,489URLs in each configuration,189XMLentries,690JSON-LD blocks; schema syntax/identity only,eligibility separate",
+      "missing_prerequisites": "Original category-specific external/human prerequisites remain; no full new live crawl or rich-result-validator execution",
+      "next_step": "Use production matrix after an authorized release."
+    },
+    {
+      "route": "technical",
+      "applicable": true,
+      "why": "All shared inspected responses reviewed for directives, canonical/redirect consistency, raw rendering and graph. Intentional probes separated.",
+      "prior_status": "executed",
+      "current_status": "Fresh bounded local re-verification; hosted/reviewer/specialist limits retained",
+      "evidence": "Prior Nov3 packet: Local landmark fix, known inventory, schema controls, live URL/host and GSC checks; CSP/CORS behavioral tests and real local responses; guide sequence checks; Proxy migration6behavioral/12HTTP cases and489known URLs; resolution-followup/seo-signal-verification.json:477HTML/690JSON-LD syntax;eligibility separate; Nov7 current source parity,489URLs in each configuration,189XMLentries,690JSON-LD blocks; schema syntax/identity only,eligibility separate; current Cloudflare and Vercel bindings read; exact local CORS positive/negative cases pass and live www mismatch persists.",
+      "missing_prerequisites": "Original category-specific external/human prerequisites remain; no full new live crawl or rich-result-validator execution",
+      "next_step": "Verify public corrected artifact and unresolved LCP."
+    },
+    {
+      "route": "content",
+      "applicable": true,
+      "why": "Existing public article library and material commercial/compliance claims",
+      "prior_status": "executed",
+      "current_status": "Executed source/review reconciliation",
+      "evidence": "Prior Nov3 packet: Existing corrected claims retained; 194 human-review passages; owner app/funding facts; first-store sequence1..5 with original anchors preserved;3articles corrected in3languages;105articles/180body links verified; current224tests and unchanged source;202native-review rows still pending; Nov7 all 105 localized guides and 180 contextual body links verified.",
+      "missing_prerequisites": "Native/legal reviewers and deferred consumer facts",
+      "next_step": "Complete actual review; do not invent authors/credentials."
+    },
+    {
+      "route": "content-brief",
+      "applicable": true,
+      "why": "Existing launch/pricing/payment/tax pages have concrete correctness/task gaps",
+      "prior_status": "executed",
+      "current_status": "Executed targeted briefs",
+      "evidence": "Prior Nov3 packet: AUTHORITY-CONTENT-AND-AI-PLAN.md; existing topic owners",
+      "missing_prerequisites": "Current product screenshots, qualified review and publication approval",
+      "next_step": "Implement existing-page evidence assets only with truthful facts."
+    },
+    {
+      "route": "schema",
+      "applicable": true,
+      "why": "Every captured JSON-LD block parsed; types/entity URL/offer/author semantics examined against primary docs; minimal truthful examples generated.",
+      "prior_status": "partially executed",
+      "current_status": "Fresh bounded local re-verification; hosted/reviewer/specialist limits retained",
+      "evidence": "Prior Nov3 packet: Actual live Google RRT: 4 valid items; local EN/HI/TA JSON-LD assertions; resolution-followup/seo-signal-verification.json:477HTML/690JSON-LD syntax;eligibility separate; Nov7 current source parity,489URLs in each configuration,189XMLentries,690JSON-LD blocks; schema syntax/identity only,eligibility separate",
+      "missing_prerequisites": "Original category-specific external/human prerequisites remain; no full new live crawl or rich-result-validator execution",
+      "next_step": "Keep truthful dates; validate final public markup without fabricated ratings."
+    },
+    {
+      "route": "sitemap",
+      "applicable": true,
+      "why": "Live XML parsed; all listed URL quality and published-article coverage checked against shared inventory; lastmod and alternate relationships assessed.",
+      "prior_status": "executed",
+      "current_status": "Fresh bounded local re-verification; hosted/reviewer/specialist limits retained",
+      "evidence": "Prior Nov3 packet: 189global XMLentries;all105guide URLs;only3noindex HTMLdirectories excluded;RSS/404checks pass; Nov7 current source parity,489URLs in each configuration,189XMLentries,690JSON-LD blocks; schema syntax/identity only,eligibility separate",
+      "missing_prerequisites": "Original category-specific external/human prerequisites remain; no full new live crawl or rich-result-validator execution",
+      "next_step": "Release correct XML, then observe processing; do not submit automatically."
+    },
+    {
+      "route": "images",
+      "applicable": true,
+      "why": "Every captured image occurrence inventoried for alt/dimensions/loading/srcset; homepage priority pattern assessed.",
+      "prior_status": "partially executed",
+      "current_status": "Prior fixes retained; scoped check",
+      "evidence": "Prior Nov3 packet: Assets/CSS unchanged; real local screenshots; prior responsive/priority evidence;decorative icons remain eager/low priority;homepage preloads10to2;negative mutation catches regression",
+      "missing_prerequisites": "No fresh exhaustive media byte/performance audit",
+      "next_step": "Measure new consequential image changes; retain prior scope honestly."
+    },
+    {
+      "route": "geo",
+      "applicable": true,
+      "why": "Public educational and software-offer content can be discovered by search and AI systems.",
+      "prior_status": "partially executed",
+      "current_status": "Partially executed with real first-party data",
+      "evidence": "Prior Nov3 packet: GSC AI Beta51 impressions/export; direct AI Overview observed",
+      "missing_prerequisites": "Other-provider citations and controlled comparable benchmark",
+      "next_step": "Do not equate impressions with citation count or cross-provider share."
+    },
+    {
+      "route": "agentic",
+      "applicable": true,
+      "why": "Navigation, pricing, signup redirects and contact/demo journeys matter to browsing users and agents.",
+      "prior_status": "partially executed",
+      "current_status": "Partially executed",
+      "evidence": "Prior Nov3 packet: Create main/focus/keyboard/Back checks; prior no-JS evidence retained",
+      "missing_prerequisites": "No measured Agentic Browsing X/N or consequential agent transaction",
+      "next_step": "Keep structure/access facts separate from unmeasured agent success."
+    },
+    {
+      "route": "plan",
+      "applicable": true,
+      "why": "Business-specific prioritization can proceed from observed correctness/IA gaps",
+      "prior_status": "executed",
+      "current_status": "Executed",
+      "evidence": "Prior Nov3 packet: Release, legacy, measurement and review packets with dependencies",
+      "missing_prerequisites": "External action authorization/facts",
+      "next_step": "Follow dependency order; no recurring job configured."
+    },
+    {
+      "route": "cluster",
+      "applicable": true,
+      "why": "Resource library supports topic architecture and contextual links",
+      "prior_status": "partially executed",
+      "current_status": "Partially executed",
+      "evidence": "Prior Nov3 packet: GSC visible task queries; earlier internal links retained; three existing-owner briefs",
+      "missing_prerequisites": "Full controlled keyword/SERP overlap and demand dataset",
+      "next_step": "Improve useful existing owners; avoid quota-driven new pages."
+    },
+    {
+      "route": "sxo",
+      "applicable": true,
+      "why": "Software landing, pricing, signup/demo/contact and operational-guide journeys exist.",
+      "prior_status": "partially executed",
+      "current_status": "Partial; current entry/pricing/guide handoff checked without shared DB mutation; real sandbox blocked",
+      "evidence": "Prior Nov3 packet: Create first/second/Back; pricing SSR and account target reads; prior broader flows retained; CSP/CORS behavioral tests and real local responses; guide sequence checks; current Chrome plus48CIpage/8interaction cases",
+      "missing_prerequisites": "Physical devices, real provider and complete production journey",
+      "next_step": "Use owned fixtures and real provider acceptance separately."
+    },
+    {
+      "route": "drift",
+      "applicable": true,
+      "why": "Actual prior same-day production snapshot compared; packaged history and new baseline outputs preserved; portable observed-current baseline created.",
+      "prior_status": "executed",
+      "current_status": "Executed current baseline/reconciliation",
+      "evidence": "Prior Nov3 packet: Task-start hashes, current preservation, live pre-release/GSC baselines",
+      "missing_prerequisites": "No post-release comparison or historical algorithm causality",
+      "next_step": "Compare the authorized released artifact with this baseline later."
+    },
+    {
+      "route": "ecommerce",
+      "applicable": false,
+      "why": "Scoped origin markets software subscriptions and merchant education; it is not an inspected consumer product/SKU catalogue. Illustrative products do not establish a live store.",
+      "prior_status": "not applicable",
+      "current_status": "Not applicable to marketing catalog scope",
+      "evidence": "Prior Nov3 packet: Marketing sells a software subscription, not a merchant product catalog crawl",
+      "missing_prerequisites": "Actual merchant catalog scope would be separate",
+      "next_step": "Do not force Product/Shopping workflows onto marketing."
+    },
+    {
+      "route": "programmatic",
+      "applicable": true,
+      "why": "Tag/category/author/locale templates create scaled page patterns",
+      "prior_status": "partially executed",
+      "current_status": "Partially executed",
+      "evidence": "Prior Nov3 packet: Known localized templates; old Shopify tags locally404; current index reasons",
+      "missing_prerequisites": "Full index-example sampling and demand evidence",
+      "next_step": "Do not blanket-prune archives based on word count or exclusion alone."
+    },
+    {
+      "route": "competitor-pages",
+      "applicable": true,
+      "why": "Overlapping store-builder commercial intent and an existing platform-comparison table; no dedicated comparison route found in current source route-tree check.",
+      "prior_status": "executed",
+      "current_status": "Executed research/brief only",
+      "evidence": "Prior Nov3 packet: Fresh UpMinutes/ZSite/CartWhizz page checks and prior brief reconciliation",
+      "missing_prerequisites": "Verified comparison facts and publication authorization",
+      "next_step": "No comparison page was published or keyword numbers invented."
+    },
+    {
+      "route": "local",
+      "applicable": "Conditional; GBP observed",
+      "why": "Observed marketing model is national online software; contact/home/terms samples do not establish an eligible in-person location or service area. A correspondence address alone is insufficient.",
+      "prior_status": "not applicable",
+      "current_status": "Limited applicability now observed",
+      "evidence": "Prior Nov3 packet: Owner-managed GBP appears in supplied/direct search evidence",
+      "missing_prerequisites": "Actual eligibility/customer-facing location/service-area facts and separate edit scope; fresh browser access currently blocked; see current-chrome-access-limits.json",
+      "next_step": "Do not infer a local address, eligibility or edit GBP from this SEO request."
+    },
+    {
+      "route": "maps",
+      "applicable": "Conditional; GBP observed",
+      "why": "No eligible local-business location was established for the audited SaaS marketing site.",
+      "prior_status": "not applicable",
+      "current_status": "Not executed; applicability needs facts",
+      "evidence": "Prior Nov3 packet: GBP management panel observed, no map-grid study",
+      "missing_prerequisites": "Local eligibility, accurate location/service area, provider access/budget; fresh browser access currently blocked; see current-chrome-access-limits.json",
+      "next_step": "Only run a relevant map study after those facts; no review/profile edits."
+    },
+    {
+      "route": "hreflang",
+      "applicable": true,
+      "why": "All captured locale HTML and XML alternate sets checked for self/reciprocal/canonical agreement; all3languages represented.",
+      "prior_status": "partially executed",
+      "current_status": "Fresh bounded local re-verification; hosted/reviewer/specialist limits retained",
+      "evidence": "Prior Nov3 packet: All known locale metadata checked; visible live samples and human packet; Nov7 current source parity,489URLs in each configuration,189XMLentries,690JSON-LD blocks; schema syntax/identity only,eligibility separate",
+      "missing_prerequisites": "Original category-specific external/human prerequisites remain; no full new live crawl or rich-result-validator execution",
+      "next_step": "Inspect deployed reciprocal identities without promising Google language selection."
+    },
+    {
+      "route": "google",
+      "applicable": true,
+      "why": "Search/index/performance evidence relevant",
+      "prior_status": "partially executed",
+      "current_status": "Partial; current native Chrome GSC/Firebase sessions verified; different-window AI report observed",
+      "evidence": "evidence/current-chrome-observations.json; prior dated exports retained",
+      "missing_prerequisites": "Field data still unmeasured. Owner chose tracking off; no active destination or consent transmission.",
+      "next_step": "Use consent-first proposal and later approved stream; no indexing/settings change"
+    },
+    {
+      "route": "backlinks",
+      "applicable": true,
+      "why": "External authority is relevant; one public candidate was discovered.",
+      "prior_status": "partially executed",
+      "current_status": "Partially executed with actual GSC sample",
+      "evidence": "Prior Nov3 packet: 3 reported links; exported URLs; fresh verification; .store consolidation findings",
+      "missing_prerequisites": "Full provider inventory/history and approved external action",
+      "next_step": "Do not present 3 as all Internet backlinks or send outreach/disavow."
+    },
+    {
+      "route": "flow",
+      "applicable": true,
+      "why": "Find/Optimize/Win synthesis fits the observed product and trust/offer gaps",
+      "prior_status": "executed",
+      "current_status": "Prior synthesis retained",
+      "evidence": "Prior Nov3 packet: Original FLOW attribution and strategy retained in earlier audit",
+      "missing_prerequisites": "No new FLOW execution claimed",
+      "next_step": "If reusing new FLOW material attribute Daniel Agrici under CC BY4.0."
+    },
+    {
+      "route": "dataforseo",
+      "applicable": true,
+      "why": "Optional controlled SERP/keyword/backlink enrichment",
+      "prior_status": "unavailable",
+      "current_status": "Unavailable",
+      "evidence": "Prior Nov3 packet: Tool discovery and credential-presence evidence",
+      "missing_prerequisites": "Executable connected entitlement and approved paid budget",
+      "next_step": "Use dated export or approved read access; no credits spent."
+    },
+    {
+      "route": "image-gen",
+      "applicable": true,
+      "why": "Audit-only asset plan useful; generation not required",
+      "prior_status": "executed",
+      "current_status": "Not required this phase",
+      "evidence": "Prior Nov3 packet: Current illustrations/assets preserved; real screenshots prepared separately",
+      "missing_prerequisites": "Generation not necessary for semantic repair/release review",
+      "next_step": "Do not present concept art as real product evidence."
+    },
+    {
+      "route": "firecrawl",
+      "applicable": true,
+      "why": "Optional firecrawl enrichment may add coverage",
+      "prior_status": "unavailable",
+      "current_status": "Unavailable",
+      "evidence": "Prior Nov3 packet: No connected mapping/crawling tool; bounded direct HTTP reused",
+      "missing_prerequisites": "Actual connected tool/access if needed",
+      "next_step": "No need to purchase a service to recheck known inventory."
+    },
+    {
+      "route": "ahrefs",
+      "applicable": true,
+      "why": "Optional ahrefs enrichment may add coverage",
+      "prior_status": "unavailable",
+      "current_status": "Unavailable",
+      "evidence": "Prior Nov3 packet: No executable connected provider or entitlement demonstrated",
+      "missing_prerequisites": "Dated export or authorized provider access",
+      "next_step": "Use GSC sample now; no fabricated authority metrics."
+    },
+    {
+      "route": "bing",
+      "applicable": true,
+      "why": "Owned index/link evidence relevant; submissions prohibited",
+      "prior_status": "unavailable",
+      "current_status": "Unavailable",
+      "evidence": "Prior Nov3 packet: No authenticated Bing property demonstrated",
+      "missing_prerequisites": "Existing property read access/export",
+      "next_step": "Do not submit IndexNow or create indexing actions."
+    },
+    {
+      "route": "matomo",
+      "applicable": true,
+      "why": "Organic landing/conversion analytics could enrich conclusions",
+      "prior_status": "unavailable",
+      "current_status": "Unavailable",
+      "evidence": "Prior Nov3 packet: No approved marketing instance/property/token demonstrated",
+      "missing_prerequisites": "Existing instance/site and read access/export",
+      "next_step": "Do not configure a rival collector or change settings."
+    },
+    {
+      "route": "profound",
+      "applicable": true,
+      "why": "Optional profound enrichment may add coverage",
+      "prior_status": "unavailable",
+      "current_status": "Unavailable",
+      "evidence": "Prior Nov3 packet: No actual citation-provider tool/access demonstrated",
+      "missing_prerequisites": "Connected entitlement or dated citation export",
+      "next_step": "No fabricated client/citation counts."
+    },
+    {
+      "route": "seranking",
+      "applicable": true,
+      "why": "Optional seranking enrichment may add coverage",
+      "prior_status": "unavailable",
+      "current_status": "Unavailable",
+      "evidence": "Prior Nov3 packet: No executable connected SEO/AI provider demonstrated",
+      "missing_prerequisites": "Actual entitlement and approved cost scope",
+      "next_step": "Use supplied dated export if available."
+    },
+    {
+      "route": "unlighthouse",
+      "applicable": true,
+      "why": "Representative multi-page lab analysis requested",
+      "prior_status": "unavailable",
+      "current_status": "Direct Lighthouse executed; both simulated lanes fail 0/3; wrapper not run",
+      "evidence": "evidence/final-performance/run-LyAU2I/summary.json",
+      "missing_prerequisites": "A safe passing performance repair, field coverage and post-release measurement",
+      "next_step": "Safe real repair and unchanged repeated acceptance; do not label direct CLI as wrapper execution"
+    }
+  ],
+  "scores": "No aggregate SEO score assigned; missing metrics are not zero or passing."
+}

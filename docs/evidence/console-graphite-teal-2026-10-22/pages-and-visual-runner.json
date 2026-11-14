@@ -1,0 +1,119 @@
+{
+  "runId": "d3fae7ee8d88",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-32969-mvihkrsv-edb5b1"
+  ],
+  "reaped": [],
+  "suites": 2,
+  "gatewayDbSuites": 2,
+  "failedSuites": 0,
+  "tests": 2,
+  "assertionsPassed": 2,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 318.2,
+  "suiteSeconds": 315.9,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "console-all-pages-browser.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/console-all-pages-browser.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-32969-mvihkrsv-edb5b1",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 227.7,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_console_all_pages_browser_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1.4,
+      "rest": {
+        "container": "letbuyy-exec-d3fae7ee8d88-rest-2",
+        "upstreamPort": 64232,
+        "proxyPort": 64233
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 655,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    },
+    {
+      "name": "console-ui-refinement-browser.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/console-ui-refinement-browser.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-32969-mvihkrsv-edb5b1",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 88.2,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_console_ui_refinement_browser_postgres",
+      "templateSeconds": 32,
+      "provisionSeconds": 2.1,
+      "rest": {
+        "container": "letbuyy-exec-d3fae7ee8d88-rest-1",
+        "upstreamPort": 63951,
+        "proxyPort": 63952
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 233,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    }
+  ]
+}

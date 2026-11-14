@@ -1,0 +1,20 @@
+{
+  "captured_at": "2026-10-29T21:06:31.153946+00:00",
+  "status": "BLOCKED_PROVIDER_TEST_CREDENTIALS",
+  "provider": "Razorpay",
+  "requested_mode": "test",
+  "provider_auth_http_status": 401,
+  "provider_auth_error": "Authentication failed",
+  "real_checkout_sdk_loaded": true,
+  "real_provider_order_created": false,
+  "real_provider_payment_completed": false,
+  "real_provider_webhook_received": false,
+  "sandbox_end_to_end_verified": false,
+  "supplier_profile_present_in_shared_gateway": false,
+  "source_changed": false,
+  "environment_files_changed": false,
+  "shared_database_written": false,
+  "deployed": false,
+  "owner_response": "Valid test credentials unavailable at present",
+  "next_step": "Provide a valid Razorpay Test Mode key pair in local untracked configuration; then execute owned-database payment and billing acceptance with the actual Checkout SDK and provider APIs."
+}

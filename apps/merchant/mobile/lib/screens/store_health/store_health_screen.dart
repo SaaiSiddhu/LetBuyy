@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
 import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
+
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 class StoreHealthScreen extends StatefulWidget {
@@ -17,6 +18,30 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
   bool _loading = true;
   String? _error;
   Map<String, dynamic>? _health;
+  int _generation = 0;
+  Object? _contextKey;
+  StoreContext? _storeContext;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final next = context.read<StoreContext>();
+    if (identical(next, _storeContext)) return;
+    _storeContext?.removeListener(_storeChanged);
+    _storeContext = next;
+    next.addListener(_storeChanged);
+  }
+
+  void _storeChanged() {
+    if (_contextKey != _storeContext?.requestContextKey) _loadHealth();
+  }
+
+  @override
+  void dispose() {
+    _generation++;
+    _storeContext?.removeListener(_storeChanged);
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -25,13 +50,22 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
   }
 
   Future<void> _loadHealth() async {
+    final generation = ++_generation;
+    final storeContext = context.read<StoreContext>();
+    final contextKey = storeContext.requestContextKey;
+    _contextKey = contextKey;
     setState(() {
       _loading = true;
       _error = null;
+      _health = null;
     });
 
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final store = await storeContext.ensureSelectedStore();
+      if (!mounted ||
+          generation != _generation ||
+          contextKey != storeContext.requestContextKey)
+        return;
       if (store == null) {
         setState(() {
           _health = null;
@@ -42,13 +76,22 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
       final health = await context.read<StoreService>().fetchStoreHealth(
         store.id,
       );
-      if (!mounted) return;
+      if (!mounted ||
+          generation != _generation ||
+          contextKey != storeContext.requestContextKey ||
+          storeContext.selectedStoreId != store.id)
+        return;
+      if (health['store_id'] != store.id)
+        throw StateError('Wrong store health');
       setState(() {
         _health = health;
         _loading = false;
       });
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted ||
+          generation != _generation ||
+          contextKey != storeContext.requestContextKey)
+        return;
       setState(() {
         _error = 'Store health is unavailable right now.';
         _loading = false;
@@ -104,7 +147,7 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
           ),
           IconButton(
             tooltip: 'Refresh',
-            onPressed: _loadHealth,
+            onPressed: _loading ? null : _loadHealth,
             icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
           ),
         ],
@@ -127,6 +170,9 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
     }
 
     final score = _intValue(health['score']);
+    final readiness = health['readiness'] is Map
+        ? Map<String, dynamic>.from(health['readiness'] as Map)
+        : null;
     final pillars = (health['pillars'] as List? ?? const [])
         .whereType<Map>()
         .map((item) => Map<String, dynamic>.from(item))
@@ -138,7 +184,12 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          _scorePanel(colors, score),
+          _scorePanel(colors, score, readiness),
+          const SizedBox(height: 12),
+          Text(
+            'Saved configuration and recorded verification. Live uptime and payment delivery need separate verification.',
+            style: TextStyle(color: colors.textSecondary, height: 1.35),
+          ),
           const SizedBox(height: 16),
           if (pillars.isEmpty)
             _emptyState(
@@ -156,7 +207,11 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
     );
   }
 
-  Widget _scorePanel(AppThemeColors colors, int score) {
+  Widget _scorePanel(
+    AppThemeColors colors,
+    int score,
+    Map<String, dynamic>? readiness,
+  ) {
     final color = _scoreColor(score);
     return Container(
       padding: const EdgeInsets.all(20),
@@ -198,7 +253,15 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _scoreLabel(score),
+                  readiness == null
+                      ? 'Setup evidence incomplete'
+                      : readiness['status'] == 'unknown'
+                      ? 'Needs checking'
+                      : readiness['status'] == 'blocked'
+                      ? 'Restricted'
+                      : readiness['status'] == 'ready'
+                      ? 'Checks complete'
+                      : 'Needs attention',
                   style: TextStyle(
                     color: colors.textPrimary,
                     fontSize: 18,
@@ -207,7 +270,9 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Based on live setup, catalog, order, domain, and review signals.',
+                  readiness == null
+                      ? 'Refresh to load the current setup checklist.'
+                      : '${readiness['complete']} of ${readiness['total']} setup checks complete.',
                   style: TextStyle(color: colors.textSecondary, height: 1.35),
                 ),
               ],
@@ -226,7 +291,15 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
     final actionable = route != null && route.isNotEmpty && action != null;
 
     return InkWell(
-      onTap: actionable ? () => Navigator.pushNamed(context, route) : null,
+      onTap: actionable
+          ? () async {
+              final contextKey = context.read<StoreContext>().requestContextKey;
+              await Navigator.pushNamed(context, route);
+              if (mounted &&
+                  contextKey == context.read<StoreContext>().requestContextKey)
+                await _loadHealth();
+            }
+          : null,
       borderRadius: BorderRadius.circular(14),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -329,12 +402,6 @@ class _StoreHealthScreenState extends State<StoreHealthScreen> {
     if (score >= 85) return const Color(0xFF16A34A);
     if (score >= 50) return const Color(0xFFF59E0B);
     return const Color(0xFFEF4444);
-  }
-
-  String _scoreLabel(int score) {
-    if (score >= 85) return 'Ready';
-    if (score >= 50) return 'Needs attention';
-    return 'Action needed';
   }
 
   Color _statusColor(String status, int score) {

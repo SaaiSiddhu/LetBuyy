@@ -1,0 +1,24 @@
+{
+  "captured_at": "2026-10-30T00:36:14.572Z",
+  "rows": [
+    {
+      "width": 375,
+      "dimensions": {
+        "viewport": 375,
+        "document": 375,
+        "table": 301
+      },
+      "links_valid": true
+    },
+    {
+      "width": 1366,
+      "dimensions": {
+        "viewport": 1366,
+        "document": 1366,
+        "table": 1100
+      },
+      "links_valid": true
+    }
+  ],
+  "passed": true
+}

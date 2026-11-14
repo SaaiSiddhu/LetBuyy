@@ -3,8 +3,8 @@
   "region": "ap-south-1",
   "plan": "pro",
   "db_name": "letbuyy_production",
-  "project_ref": "qtrzgnnqnvboifoqntfi",
-  "api_url": "https://qtrzgnnqnvboifoqntfi.supabase.co",
+  "project_ref": "PRODUCTION_PROJECT_REF_PLACEHOLDER",
+  "api_url": "https://PRODUCTION_PROJECT_REF_PLACEHOLDER.supabase.co",
   "anon_key": "PRODUCTION_ANON_KEY_PLACEHOLDER",
   "service_role_key": "PRODUCTION_SERVICE_ROLE_KEY_PLACEHOLDER",
   "db_connection_string": "postgresql://postgres:PRODUCTION_DB_PASSWORD@db.PRODUCTION_PROJECT_REF_PLACEHOLDER.supabase.co:5432/postgres"

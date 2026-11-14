@@ -1,0 +1,11 @@
+{
+  "captured_at": "2026-10-29T19:52:58.875779+00:00",
+  "json_files": 14,
+  "local_report_links": 19,
+  "source_manifest_hashes_match": true,
+  "audit_records": 34,
+  "verified_url_rows": 489,
+  "secret_pattern_values_printed": false,
+  "errors": [],
+  "passed": true
+}

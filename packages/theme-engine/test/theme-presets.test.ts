@@ -86,7 +86,7 @@ test('Stream B: the settings overlay emits both fontFamily and bodyFontFamily (R
   assert.equal(overlay.fontFamily, 'Inter');
   assert.equal(overlay.bodyFontFamily, 'Inter');
   assert.equal(overlay.headingFontFamily, 'Playfair Display');
-  assert.equal(overlay.primaryColor, '#713F35');
+  assert.equal(overlay.primaryColor, '#1A1A2E');
 });
 
 test('Stream B: applyExperienceToSettingsData merges (keeps unrelated keys) and can replace', () => {

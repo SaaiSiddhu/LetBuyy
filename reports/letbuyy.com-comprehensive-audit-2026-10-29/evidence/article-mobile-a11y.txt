@@ -1,0 +1,313 @@
+- banner:
+  - link "LetBuyy Home":
+    - /url: /in
+    - img "LetBuyy"
+  - link "Start for free":
+    - /url: https://accounts.letbuyy.com/signup
+  - button "Open menu"
+- navigation "Resources navigation":
+  - link "Resources":
+    - /url: /in/resources
+  - link "All":
+    - /url: /in/resources
+  - link "Ecommerce":
+    - /url: /in/resources/ecommerce
+  - link "Growth":
+    - /url: /in/resources/growth
+  - link "Payments":
+    - /url: /in/resources/payments
+  - link "Operations":
+    - /url: /in/resources/operations
+  - link "AI Commerce":
+    - /url: /in/resources/ai-commerce
+  - link "Developers":
+    - /url: /in/resources/developers
+  - link "Changelog":
+    - /url: /in/resources/changelog
+  - button "Commerce updates"
+- main:
+  - main:
+    - navigation "Breadcrumb":
+      - link "Resources":
+        - /url: /in/resources
+      - link "Payments":
+        - /url: /in/resources/payments
+    - 'heading "GST for Ecommerce in India: The Complete 2026 Guide" [level=1]'
+    - paragraph: GST compliance, filing, TCS, and input tax credit — explained for online sellers.
+    - paragraph: Neha Gupta Payments & Compliance
+    - paragraph:
+      - time: 1 Mar 2026
+      - text: 13 min readUpdated 16 Jun 2026
+    - button "Copy article link": Copy link
+    - button "Bookmark this article": Save
+    - link "#gst":
+      - /url: /in/resources/tag/gst
+    - link "#tax":
+      - /url: /in/resources/tag/tax
+    - link "#compliance":
+      - /url: /in/resources/tag/compliance
+    - link "#india":
+      - /url: /in/resources/tag/india
+    - region "Illustrated guide overview":
+      - text: The guide, illustrated
+      - figure "Keep sales, invoices and the supporting records connected. Concept illustration":
+        - img "Invoice sheets, a calculator and a folder beside a small parcel."
+        - text: Keep sales, invoices and the supporting records connected. Concept illustration
+      - paragraph: Explore an idea, then read the detail.
+      - tablist "Ideas in this guide":
+        - tab "The basics" [selected]
+        - tab "Monthly filing"
+        - tab "Input credit"
+      - tabpanel "The basics":
+        - heading "GST Basics for Ecommerce" [level=2]
+        - paragraph: "GST (Goods and Services Tax) replaced 17 central and state taxes in 2017. For ecommerce, the key principle is: GST is charged at the point of supply (where goods are delivered), collected from the buyer, and remitted to the government monthly."
+        - 'link "Read section: GST Basics for Ecommerce"':
+          - /url: "#gst-basics-for-ecommerce"
+          - text: Read this section
+    - paragraph: GST is the one compliance task that stops more Indian brands from scaling than any other. The fear is understandable — GST has its own terminology, its own portal, and its own filing schedule. But once you understand the fundamentals, it becomes a system, not a burden.
+    - heading "GST Basics for Ecommerce Copy link to this section" [level=2]:
+      - text: GST Basics for Ecommerce
+      - button "Copy link to this section"
+    - figure "The basics Keep sales, invoices and the supporting records connected. Concept illustration":
+      - img "Invoice sheets, a calculator and a folder beside a small parcel."
+      - text: The basics Keep sales, invoices and the supporting records connected. Concept illustration
+    - paragraph: "GST (Goods and Services Tax) replaced 17 central and state taxes in 2017. For ecommerce, the key principle is: GST is charged at the point of supply (where goods are delivered), collected from the buyer, and remitted to the government monthly."
+    - heading "Do You Need GST Registration? Copy link to this section" [level=2]:
+      - text: Do You Need GST Registration?
+      - button "Copy link to this section"
+    - list:
+      - listitem: "Annual turnover above ₹20 lakh (₹10 lakh in special category states): Mandatory"
+      - listitem: "Annual turnover below ₹20 lakh: Optional but recommended for input tax credit"
+      - listitem: "Selling on marketplaces (Amazon, Flipkart): Mandatory regardless of turnover"
+      - listitem: "Selling via your own website to other states: Mandatory regardless of turnover"
+    - note:
+      - paragraph: Marketplace TCS
+      - paragraph: Marketplaces like Amazon and Flipkart are required to collect Tax Collected at Source (TCS) at 1% of your taxable sales and deposit it with the government. This appears in your GSTR-2A and must be reconciled.
+    - heading "GST Rates for Common Ecommerce Categories Copy link to this section" [level=2]:
+      - text: GST Rates for Common Ecommerce Categories
+      - button "Copy link to this section"
+    - table:
+      - rowgroup:
+        - row "Category GST Rate Notes":
+          - columnheader "Category"
+          - columnheader "GST Rate"
+          - columnheader "Notes"
+      - rowgroup:
+        - row "Apparel below ₹1,000 5% Reduced rate for affordable clothing":
+          - cell "Apparel below ₹1,000"
+          - cell "5%"
+          - cell "Reduced rate for affordable clothing"
+        - row "Apparel above ₹1,000 12%":
+          - cell "Apparel above ₹1,000"
+          - cell "12%"
+          - cell
+        - row "Footwear below ₹1,000 5%":
+          - cell "Footwear below ₹1,000"
+          - cell "5%"
+          - cell
+        - row "Electronics 18% Most consumer electronics":
+          - cell "Electronics"
+          - cell "18%"
+          - cell "Most consumer electronics"
+        - row "Packaged food (branded) 12% FSSAI registered products":
+          - cell "Packaged food (branded)"
+          - cell "12%"
+          - cell "FSSAI registered products"
+        - row "Beauty and personal care 18% Most categories":
+          - cell "Beauty and personal care"
+          - cell "18%"
+          - cell "Most categories"
+        - row "Books 0% Exempt":
+          - cell "Books"
+          - cell "0%"
+          - cell "Exempt"
+        - row "Handloomed textiles 5% Special rate":
+          - cell "Handloomed textiles"
+          - cell "5%"
+          - cell "Special rate"
+    - 'heading "Monthly Filing: GSTR-1 and GSTR-3B Copy link to this section" [level=2]':
+      - text: "Monthly Filing: GSTR-1 and GSTR-3B"
+      - button "Copy link to this section"
+    - list:
+      - listitem: "GSTR-1: File by 11th of every month — list all outward supplies (sales)"
+      - listitem: "GSTR-3B: File by 20th of every month — net tax liability after input credit"
+      - listitem: Pay any tax due by the GSTR-3B filing date
+      - listitem: Reconcile TCS in GSTR-2A before filing GSTR-3B
+    - 'heading "Input Tax Credit: Your Cost Advantage Copy link to this section" [level=2]':
+      - text: "Input Tax Credit: Your Cost Advantage"
+      - button "Copy link to this section"
+    - figure "Input credit Understand what is in stock, where it belongs and what needs attention. Concept illustration":
+      - img "An illustrated inventory and stock-management workspace."
+      - text: Input credit Understand what is in stock, where it belongs and what needs attention. Concept illustration
+    - paragraph: Input Tax Credit (ITC) lets you deduct GST paid on business purchases from GST collected on sales. If you pay ₹18 GST on packaging materials and collect ₹60 GST on sales, you only remit ₹42. This is significant — ITC on packaging, courier services, and raw materials can reduce your effective tax rate by 30–40%.
+    - complementary "Article complete":
+      - paragraph: Article complete
+      - paragraph: "Up next: GST Invoices for Indian Ecommerce: What Must Be Included"
+      - paragraph: 7 min read
+      - link "Continue learning":
+        - /url: /in/resources/payments/invoicing-india-merchants
+  - paragraph: Neha Gupta
+  - paragraph: Payments & Compliance
+  - paragraph: GST consultant and payments specialist focused on making India-first commerce frictionless for merchants of all sizes.
+  - paragraph:
+    - strong: "5"
+    - text: articles
+    - strong: "1"
+    - text: topics
+  - text: Payments
+  - link "All articles by Neha":
+    - /url: /in/resources/authors/neha-payments
+  - text: Weekly Newsletter
+  - paragraph: Commerce guides and platform updates
+  - paragraph: Commerce Insights Weekly
+  - text: AI Commerce insights India growth playbooks Platform feature updates Conversion rate tactics
+  - paragraph: Email subscriptions are not available yet. Follow new guides with your RSS reader.
+  - link "Follow via RSS":
+    - /url: /in/resources/rss.xml
+  - paragraph: Related guides
+  - link "Ecommerce How To Start an Online Store in India (2026 Guide) 12 min read":
+    - /url: /in/resources/ecommerce/how-to-start-an-online-store-india
+    - paragraph: Ecommerce
+    - paragraph: How To Start an Online Store in India (2026 Guide)
+    - paragraph: 12 min read
+  - 'link "Payments UPI vs COD: Which Payment Method Wins for Indian Stores 9 min read"':
+    - /url: /in/resources/payments/upi-vs-cod-india
+    - paragraph: Payments
+    - paragraph: "UPI vs COD: Which Payment Method Wins for Indian Stores"
+    - paragraph: 9 min read
+  - 'link "Payments GST Invoices for Indian Ecommerce: What Must Be Included 7 min read"':
+    - /url: /in/resources/payments/invoicing-india-merchants
+    - paragraph: Payments
+    - paragraph: "GST Invoices for Indian Ecommerce: What Must Be Included"
+    - paragraph: 7 min read
+  - navigation "Article navigation":
+    - 'link "Previous Payments UPI vs COD: Which Payment Method Wins for Indian Stores 9 min read"':
+      - /url: /in/resources/payments/upi-vs-cod-india
+      - text: Previous
+      - paragraph: Payments
+      - paragraph: "UPI vs COD: Which Payment Method Wins for Indian Stores"
+      - paragraph: 9 min read
+    - 'link "Next Payments GST Invoices for Indian Ecommerce: What Must Be Included 7 min read"':
+      - /url: /in/resources/payments/invoicing-india-merchants
+      - text: Next
+      - paragraph: Payments
+      - paragraph: "GST Invoices for Indian Ecommerce: What Must Be Included"
+      - paragraph: 7 min read
+  - region "Recommended reading":
+    - paragraph: Keep reading
+    - heading "Recommended for you" [level=2]
+    - link "Ecommerce How To Start an Online Store in India (2026 Guide) Everything you need to launch, sell, and grow — from GST registration to your first order. 12 min read":
+      - /url: /in/resources/ecommerce/how-to-start-an-online-store-india
+      - text: Ecommerce
+      - paragraph: How To Start an Online Store in India (2026 Guide)
+      - paragraph: Everything you need to launch, sell, and grow — from GST registration to your first order.
+      - text: 12 min read
+    - 'link "Payments UPI vs COD: Which Payment Method Wins for Indian Stores The data on India''s two dominant payment methods — and how to optimize both. 9 min read"':
+      - /url: /in/resources/payments/upi-vs-cod-india
+      - text: Payments
+      - paragraph: "UPI vs COD: Which Payment Method Wins for Indian Stores"
+      - paragraph: The data on India's two dominant payment methods — and how to optimize both.
+      - text: 9 min read
+    - 'link "Payments GST Invoices for Indian Ecommerce: What Must Be Included Every field, every format, every rule — so your invoices are always compliant. 7 min read"':
+      - /url: /in/resources/payments/invoicing-india-merchants
+      - text: Payments
+      - paragraph: "GST Invoices for Indian Ecommerce: What Must Be Included"
+      - paragraph: Every field, every format, every rule — so your invoices are always compliant.
+      - text: 7 min read
+  - region "Commerce updates":
+    - paragraph: Email subscriptions are not available yet. Follow new guides with your RSS reader.
+    - link "Follow via RSS":
+      - /url: /in/resources/rss.xml
+  - button
+  - button "Copy link"
+  - button "Back to top"
+  - 'link "GST Invoices for Indian Ecommerce: What Must Be Included"':
+    - /url: /in/resources/payments/invoicing-india-merchants
+- contentinfo "LetBuyy footer":
+  - heading "LetBuyy footer" [level=2]
+  - link "LetBuyy home":
+    - /url: /in
+    - img "LetBuyy"
+  - navigation "LetBuyy":
+    - heading "LetBuyy" [level=3]
+    - list:
+      - listitem:
+        - link "What is LetBuyy?":
+          - /url: /in
+      - listitem:
+        - link "Pricing":
+          - /url: /in/pricing
+      - listitem:
+        - link "Start your store":
+          - /url: /in/create
+  - navigation "Ecosystem":
+    - heading "Ecosystem" [level=3]
+    - list:
+      - listitem:
+        - link "Theme guide":
+          - /url: /in/resources/platform/how-themes-work
+      - listitem:
+        - link "App integrations guide":
+          - /url: /in/resources/platform/introduction-to-apps
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Merchant login":
+          - /url: https://accounts.letbuyy.com/lookup
+  - navigation "Resources":
+    - heading "Resources" [level=3]
+    - list:
+      - listitem:
+        - link "All resources":
+          - /url: /in/resources
+      - listitem:
+        - link "Ecommerce guides":
+          - /url: /in/resources/ecommerce
+      - listitem:
+        - link "Developer Docs":
+          - /url: /in/resources/developers
+      - listitem:
+        - link "Changelog":
+          - /url: /in/resources/changelog
+  - navigation "Support":
+    - heading "Support" [level=3]
+    - list:
+      - listitem:
+        - link "Support centre":
+          - /url: /in/support
+      - listitem:
+        - link "Contact us":
+          - /url: /in/contact
+      - listitem:
+        - link "Grievance redressal":
+          - /url: /in/legal/grievance
+      - listitem:
+        - link "Security":
+          - /url: /in/legal/security
+      - listitem:
+        - link "Account access":
+          - /url: https://accounts.letbuyy.com/lookup
+  - button "Region and language": India English
+  - navigation "Legal links":
+    - link "Legal":
+      - /url: /in/legal
+    - link "Terms":
+      - /url: /in/legal/terms
+    - link "Privacy":
+      - /url: /in/legal/privacy
+    - link "Refunds":
+      - /url: /in/legal/refunds
+    - link "Sitemap":
+      - /url: /in/sitemap
+    - button "Your Privacy Choices"
+  - navigation "Social links":
+    - link "Facebook":
+      - /url: https://www.facebook.com/share/14tEGNoJSXR/
+    - link "X":
+      - /url: https://x.com/letbuyyhq
+    - link "YouTube":
+      - /url: https://youtube.com/@letbuyyhq
+    - link "Instagram":
+      - /url: https://www.instagram.com/letbuyyhq
+  - paragraph: © 2026 LetBuyy. All rights reserved.

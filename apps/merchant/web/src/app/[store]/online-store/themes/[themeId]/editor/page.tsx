@@ -1,22 +1,20 @@
 'use client'
 
-import editorStyles from '@/components/theme-editor/editor-workspace.module.css'
-import { MerchantEmptyArtwork } from '@/components/empty-states/MerchantEmptyState'
 import { getStorefrontRootDomain } from '@/lib/public-urls'
-import { isUnchangedCoreDemoCategoryBlocks, isFirstPartyCoreBundleSlug } from '@letbuyy/theme-engine'
-import { useReadRequest } from '@/lib/api/use-read-request'
+import { isUnchangedCoreDemoCategoryBlocks } from '@letbuyy/theme-engine'
 
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useParams } from 'next/navigation'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
     ArrowLeft,
     Blocks,
     CheckCircle2,
     ChevronDown,
-    CircleAlert,
+    ChevronRight,
     Eye,
     FileJson,
+    GripVertical,
     Laptop,
     Layers3,
     Loader2,
@@ -25,7 +23,6 @@ import {
     PanelLeft,
     Plus,
     Redo2,
-    RefreshCw,
     Rocket,
     Save,
     Settings,
@@ -37,47 +34,60 @@ import {
     WandSparkles,
     X,
 } from 'lucide-react'
-import { Button, Badge, ConfirmDialog, SaveBar, Select, Input, letbuyyPrimitiveTokens, useToast } from '@letbuyy/ui'
+import { Button, Badge, ConfirmDialog, SaveBar, Select, letbuyyPrimitiveTokens, useToast } from '@letbuyy/ui'
 import {
     getDefaultStorefrontThemeTemplate,
     getSectionSchemas,
     getThemeSettingsSchema,
     hasRenderableThemeTemplate,
     resolveExperiencePresetItems,
-    compilePortableToLiquidBundle,
-    parseLiquidThemePackageBundle,
-    toThemeDocumentV2,
-    fromThemeDocumentV2,
-    MAX_BUNDLE_BLOCK_NESTING_DEPTH,
-    isLiquidAppBlockType,
-    ThemeEditorTemplateKeySchema,
-    EditorPreviewContextSchema,
-    createEditorPreviewIdentityIndex,
-    normalizeEditorSchemaField,
-    resolveFieldDefault,
-    parseTemplateKey,
-    type EditorPreviewContext,
-    composeExperienceTemplateSections,
-    type ExperienceApplyMode,
-    type ExperienceTemplateKey,
     type ExperiencePresetItem,
 } from '@letbuyy/theme-engine'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import CenterPanel from '@/components/theme-editor/CenterPanel'
-import { ResourcePickerControl } from '@/components/theme-editor/controls/ResourcePickerControl'
 import { PREVIEW_VIEWPORT_WIDTHS } from '@/components/theme-editor/preview-viewport'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import ExperiencePicker from '@/components/theme-editor/ExperiencePicker'
 import ConflictDialog from '@/components/theme-editor/ConflictDialog'
 import { ThemeDraftClient, ThemeDraftConflictError, ThemeDraftValidationError } from '@/lib/theme-draft-client'
 import SectionTreePanel, { TreeGroup } from '@/components/theme-editor/SectionTreePanel'
-import { addEditorBlock, canAddEditorBlock, editorBlockCatalog, editorBlockSchema, editorBlockSiblings, findEditorBlock, moveEditorBlock, toggleEditorBlock } from '@/components/theme-editor/editor-block-actions'
-import type { BlockEntry, SectionEntry, EditorState, EditorSelection } from '@/components/theme-editor/editor-view-state'
-import type { ExtendedBlockSchema as BlockSchema, ExtendedSchemaField as SchemaField, ExtendedSectionSchema as SectionSchema, ExtendedThemeSettingsGroup as ThemeSettingsGroup, ExtendedThemeSettingsSchema as ThemeSettingsSchema } from '@letbuyy/theme-engine'
+import type { BlockSchema, SchemaField, SectionSchema, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
 type JsonRecord = Record<string, unknown>
 type PreviewDevice = 'desktop' | 'tablet' | 'mobile'
 type PanelMode = 'sections' | 'settings' | 'experiences' | 'versions'
+
+type BlockEntry = {
+    id: string
+    type: string
+    order: number
+    visible: boolean
+    settings: JsonRecord
+}
+
+type SectionEntry = {
+    id: string
+    type: string
+    order: number
+    visible: boolean
+    settings: JsonRecord
+    blocks: BlockEntry[]
+}
+
+type EditorState = {
+    experienceId?: string
+    themeSettings: JsonRecord
+    sections: {
+        header: SectionEntry | null
+        footer: SectionEntry | null
+        template: SectionEntry[]
+    }
+}
+
+type EditorSelection =
+    | { kind: 'section'; sectionId: string }
+    | { kind: 'block'; sectionId: string; blockId: string }
+    | { kind: 'theme'; groupKey: string }
 
 type EditorHistory = {
     past: EditorState[]
@@ -143,8 +153,7 @@ const DEFAULT_TEMPLATE_OPTIONS: TemplateOption[] = [
     { key: 'collection', label: 'Collection page', type: 'collection' },
     { key: 'page', label: 'Content page', type: 'page' },
     { key: 'cart', label: 'Cart page', type: 'cart' },
-    { key: 'blog', label: 'Blog listing', type: 'blog' },
-    { key: 'article', label: 'Blog post', type: 'article' },
+    { key: 'blog', label: 'Blog post', type: 'blog' },
 ]
 
 const EMPTY_SETTINGS_SCHEMA: ThemeSettingsSchema = {
@@ -155,8 +164,8 @@ const EMPTY_SETTINGS_SCHEMA: ThemeSettingsSchema = {
 const EMPTY_STATE: EditorState = {
     themeSettings: {},
     sections: {
-        header: [],
-        footer: [],
+        header: null,
+        footer: null,
         template: [],
     },
 }
@@ -166,6 +175,20 @@ const PREVIEW_DEVICES: Array<{ value: PreviewDevice; label: string; icon: typeof
     { value: 'tablet', label: 'Tablet', icon: Tablet, width: PREVIEW_VIEWPORT_WIDTHS.tablet },
     { value: 'mobile', label: 'Mobile', icon: Smartphone, width: PREVIEW_VIEWPORT_WIDTHS.mobile },
 ]
+
+const FIELD_TYPES = new Set([
+    'text',
+    'textarea',
+    'richtext',
+    'color',
+    'image',
+    'select',
+    'toggle',
+    'range',
+    'number',
+    'url',
+    'radio',
+])
 
 function asRecord(value: unknown): JsonRecord {
     return value && typeof value === 'object' && !Array.isArray(value)
@@ -188,10 +211,6 @@ function optionalString(value: unknown): string | undefined {
     return text.length > 0 ? text : undefined
 }
 
-function isTextEditingTarget(target: EventTarget | null): boolean {
-    return target instanceof Element && Boolean(target.closest('textarea, [contenteditable]:not([contenteditable="false"]), [role="textbox"], input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"])'))
-}
-
 function labelFromKey(key: string): string {
     return key
         .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
@@ -199,9 +218,9 @@ function labelFromKey(key: string): string {
         .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
-function normalizeTemplateKey(value: unknown, fallback = 'index'): string {
-    const parsed = ThemeEditorTemplateKeySchema.safeParse(value)
-    return parsed.success ? parsed.data : fallback
+function normalizeTemplateKey(value: unknown): string {
+    const normalized = typeof value === 'string' ? value.trim() : ''
+    return /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(normalized) ? normalized : 'index'
 }
 
 function templateLabel(key: string, template?: JsonRecord): string {
@@ -214,8 +233,8 @@ function normalizeTemplateOptions(value: unknown, templateConfig: JsonRecord): T
     const fromApi = Array.isArray(value)
         ? value.flatMap((entry) => {
             const record = asRecord(entry)
-            const key = normalizeTemplateKey(record.key, '')
-            return key && !['header', 'footer'].includes(key) ? [{
+            const key = normalizeTemplateKey(record.key)
+            return key ? [{
                 key,
                 label: stringValue(record.label, templateLabel(key, record)),
                 type: stringValue(record.type, key),
@@ -229,8 +248,7 @@ function normalizeTemplateOptions(value: unknown, templateConfig: JsonRecord): T
     }
 
     for (const [key, template] of Object.entries(asRecord(templateConfig.templates))) {
-        const normalizedKey = normalizeTemplateKey(key, '')
-        if (!normalizedKey || ['header', 'footer'].includes(normalizedKey)) continue
+        const normalizedKey = normalizeTemplateKey(key)
         options.set(normalizedKey, {
             key: normalizedKey,
             label: templateLabel(normalizedKey, asRecord(template)),
@@ -241,8 +259,43 @@ function normalizeTemplateOptions(value: unknown, templateConfig: JsonRecord): T
     return Array.from(options.values())
 }
 
+function normalizeFieldType(value: unknown): SchemaField['type'] {
+    const rawType = typeof value === 'string' ? value : 'text'
+    if (rawType === 'checkbox') return 'toggle'
+    if (rawType === 'font') return 'select'
+    return FIELD_TYPES.has(rawType) ? (rawType as SchemaField['type']) : 'text'
+}
+
+function normalizeFieldOptions(value: unknown): string[] | undefined {
+    if (!Array.isArray(value)) return undefined
+
+    const options = value.flatMap((entry) => {
+        if (typeof entry === 'string') return [entry]
+        const record = asRecord(entry)
+        const optionValue = record.value
+        if (typeof optionValue === 'string') return [optionValue]
+        if (typeof optionValue === 'number' || typeof optionValue === 'boolean') return [String(optionValue)]
+        return []
+    })
+
+    return options.length > 0 ? options : undefined
+}
+
 function normalizeField(key: string, value: unknown): SchemaField {
-    return normalizeEditorSchemaField(value, labelFromKey(key))
+    const record = asRecord(value)
+    return {
+        type: normalizeFieldType(record.type),
+        label: stringValue(record.label, labelFromKey(key)),
+        default: record.default,
+        maxLength: typeof record.maxLength === 'number' ? record.maxLength : typeof record.max_length === 'number' ? record.max_length : undefined,
+        options: normalizeFieldOptions(record.options),
+        min: typeof record.min === 'number' ? record.min : undefined,
+        max: typeof record.max === 'number' ? record.max : undefined,
+        step: typeof record.step === 'number' ? record.step : undefined,
+        unit: optionalString(record.unit),
+        info: optionalString(record.info) || optionalString(record.help_text),
+        description: optionalString(record.description),
+    }
 }
 
 function normalizeFields(value: unknown): Record<string, SchemaField> {
@@ -296,8 +349,11 @@ function normalizeSettingsSchema(value: unknown): ThemeSettingsSchema {
 }
 
 function defaultValueForField(field: SchemaField): unknown {
-    if (field.type === 'color' && field.default === undefined) return letbuyyPrimitiveTokens.color.black
-    return resolveFieldDefault(field)
+    if (field.default !== undefined) return field.default
+    if (field.type === 'toggle') return false
+    if (field.type === 'number' || field.type === 'range') return field.min ?? 0
+    if (field.type === 'color') return letbuyyPrimitiveTokens.color.black
+    return ''
 }
 
 function defaultSettingsForFields(fields: Record<string, SchemaField>): JsonRecord {
@@ -332,9 +388,8 @@ function portableBlocksToArray(section: JsonRecord): unknown[] {
 }
 
 function portableTemplateSectionsToArray(template: JsonRecord): unknown[] | null {
-    if (Array.isArray(template.sections)) return template.sections
-    if (!template.sections || typeof template.sections !== 'object') return null
     const sections = asRecord(template.sections)
+    if (Object.keys(sections).length === 0) return null
 
     const order = Array.isArray(template.order)
         ? template.order.filter((sectionId): sectionId is string => typeof sectionId === 'string')
@@ -402,42 +457,22 @@ function sampleBlocksForSchema(schema?: SectionSchema): BlockEntry[] {
     })
 }
 
-/** Reusable definitions own nested defaults; section inline descriptors own roots. */
-function reusableSchemasFromBundle(bundle: unknown): Record<string, BlockSchema> {
-    return Object.fromEntries(Object.entries(asRecord(asRecord(bundle).blocks)).map(([type, value]) => {
-        const schema = asRecord(asRecord(value).schema)
-        const settings = Array.isArray(schema.settings) ? schema.settings : []
-        const fields = Object.fromEntries(settings.flatMap(value => {
-            const field = asRecord(value)
-            return typeof field.id === 'string' ? [[field.id, normalizeEditorSchemaField(field, field.id)]] : []
-        }))
-        return [type, { name: stringValue(schema.name, type), fields }]
-    }))
-}
-
-function normalizeBlock(value: unknown, index: number, blockSchemas?: Record<string, BlockSchema>, depth = 1, reusableSchemas?: Record<string, BlockSchema>): BlockEntry | null {
+function normalizeBlock(value: unknown, index: number, blockSchemas?: Record<string, BlockSchema>): BlockEntry | null {
     const record = asRecord(value)
     const type = stringValue(record.type)
     if (!type) return null
-    if (depth > MAX_BUNDLE_BLOCK_NESTING_DEPTH) throw new Error('This block tree exceeds the supported nesting limit. Your saved document has been kept.')
 
-    const blockSchema = (depth > 1 && reusableSchemas ? reusableSchemas : blockSchemas)?.[type]
-    const defaults = blockSchema?.fields ? defaultSettingsForFields(blockSchema.fields) : {}
-    const children = Array.isArray(record.children) ? record.children : portableBlocksToArray(record)
+    const defaults = blockSchemas?.[type]?.fields ? defaultSettingsForFields(blockSchemas[type].fields) : {}
 
     return {
         id: stringValue(record.id, `${type}-${index + 1}`),
         type,
         order: numberValue(record.order, index),
-        visible: record.disabled !== true && record.visible !== false && record.isVisible !== false,
+        visible: record.visible === false || record.isVisible === false ? false : true,
         settings: {
             ...defaults,
             ...asRecord(record.settings),
         },
-        children: children.flatMap((child, childIndex) => {
-            const normalized = normalizeBlock(child, childIndex, blockSchemas, depth + 1, reusableSchemas)
-            return normalized ? [normalized] : []
-        }),
     }
 }
 
@@ -447,7 +482,6 @@ function normalizeSection(
     fallbackId: string,
     index: number,
     schemas: Record<string, SectionSchema>,
-    reusableSchemas?: Record<string, BlockSchema>,
 ): SectionEntry | null {
     const record = asRecord(value)
     const type = stringValue(record.type, fallbackType)
@@ -456,7 +490,7 @@ function normalizeSection(
     const schema = schemas[type]
     const blocks = Array.isArray(record.blocks)
         ? record.blocks.flatMap((block, blockIndex) => {
-            const normalized = normalizeBlock(block, blockIndex, schema?.blocks_schema, 1, reusableSchemas)
+            const normalized = normalizeBlock(block, blockIndex, schema?.blocks_schema)
             return normalized ? [normalized] : []
         })
         : sampleBlocksForSchema(schema)
@@ -465,7 +499,7 @@ function normalizeSection(
         id: stringValue(record.id, fallbackId),
         type,
         order: numberValue(record.order, index * 10),
-        visible: record.disabled !== true && record.visible !== false && record.isVisible !== false,
+        visible: record.visible === false || record.isVisible === false ? false : true,
         settings: {
             ...sectionDefaults(type, schemas),
             ...asRecord(record.settings),
@@ -477,7 +511,7 @@ function normalizeSection(
 function createSectionFromSchema(type: string, schemas: Record<string, SectionSchema>, order: number): SectionEntry {
     const schema = schemas[type]
     return {
-        id: `section-${crypto.randomUUID()}`,
+        id: `${type}-${Date.now().toString(36)}`,
         type,
         order,
         visible: true,
@@ -490,7 +524,7 @@ function createSectionFromSchema(type: string, schemas: Record<string, SectionSc
 
 function createBlockFromSchema(blockType: string, blockSchema: BlockSchema | undefined, order: number): BlockEntry {
     return {
-        id: `block-${crypto.randomUUID()}`,
+        id: `${blockType}-${Date.now().toString(36)}`,
         type: blockType,
         order,
         visible: true,
@@ -508,30 +542,15 @@ function normalizeEditorState(
     const fallback = getDefaultStorefrontThemeTemplate(themeId)
     const fallbackConfig = fallback as unknown as JsonRecord
     const candidate = hasRenderableThemeTemplate(templateConfig) ? asRecord(templateConfig) : fallbackConfig
-    const isLiquid = candidate.rendererEngine === 'liquid' || asRecord(asRecord(candidate.liquidBundle).renderer).engine === 'liquid'
-    const reusableSchemas = isLiquid ? reusableSchemasFromBundle(candidate.liquidBundle) : undefined
     const root = getSectionRoot(candidate, templateKey)
     const fallbackRoot = getSectionRoot(fallbackConfig, templateKey)
     const templateEntries = Array.isArray(root.template) ? root.template : []
-    const templates = asRecord(candidate.templates)
-    // Portable themes own their header/footer and setting defaults. Importing
-    // another renderer's fallback fields makes the first draft fail validation.
-    const normalizeGroup = (key: 'header' | 'footer'): SectionEntry[] => {
-        // Liquid templates contain the complete group. The legacy root is only
-        // a first-section compatibility projection and cannot describe the group.
-        const group = isLiquid && Object.hasOwn(templates, key)
-            ? portableTemplateSectionsToArray(asRecord(templates[key])) || []
-            : [root[key] || (!isLiquid ? fallbackRoot[key] : null)].filter(Boolean)
-        return group.flatMap((section, index) => {
-            const normalized = normalizeSection(section, key, `${key}-${index + 1}`, index, sectionSchemas, reusableSchemas)
-            return normalized ? [normalized] : []
-        })
-    }
-    const header = normalizeGroup('header')
-    const footer = normalizeGroup('footer')
+
+    const header = normalizeSection(root.header || fallbackRoot.header, 'header', 'header', 0, sectionSchemas)
+    const footer = normalizeSection(root.footer || fallbackRoot.footer, 'footer', 'footer', 100, sectionSchemas)
     const template = templateEntries.flatMap((section, index) => {
-        const normalized = normalizeSection(section, `section_${index + 1}`, `section-${index + 1}`, index + 1, sectionSchemas, reusableSchemas)
-        if (normalized && isFirstPartyCoreBundleSlug(asRecord(asRecord(candidate.liquidBundle).package).slug, asRecord(asRecord(candidate.liquidBundle).package).version)
+        const normalized = normalizeSection(section, `section_${index + 1}`, `section-${index + 1}`, index + 1, sectionSchemas)
+        if (normalized && asRecord(asRecord(candidate.liquidBundle).package).slug === 'letbuyy-core-liquid'
             && ['categoryGrid', 'category-grid'].includes(normalized.type) && isUnchangedCoreDemoCategoryBlocks(normalized.blocks)) {
             return [{ ...normalized, blocks: [] }]
         }
@@ -546,7 +565,7 @@ function normalizeEditorState(
         experienceId: typeof candidate.experienceId === 'string' ? candidate.experienceId : typeof legacyExperienceId === 'string' ? legacyExperienceId : undefined,
         themeSettings: {
             ...defaultThemeSettings(settingsSchema),
-            ...(isLiquid ? {} : asRecord(fallback.themeSettings)),
+            ...asRecord(fallback.themeSettings),
             ...configSettingsData,
             ...rootSettingsData,
             ...asRecord(candidate.themeSettings),
@@ -560,13 +579,10 @@ function normalizeEditorState(
 }
 
 function blockToPortableRecord(block: BlockEntry): JsonRecord {
-    const children = block.children || []
     return {
         type: block.type,
         visible: block.visible,
         settings: block.settings,
-        blocks: Object.fromEntries(children.map(child => [child.id, blockToPortableRecord(child)])),
-        block_order: children.map(child => child.id),
     }
 }
 
@@ -593,11 +609,6 @@ function buildDraftConfig(baseConfig: JsonRecord, themeId: string, state: Editor
         sections: Object.fromEntries(state.sections.template.map((section) => [section.id, sectionToPortableRecord(section)])),
         order: state.sections.template.map((section) => section.id),
     }
-    const groupTemplate = (key: 'header' | 'footer') => ({
-        ...asRecord(templates[key]),
-        sections: Object.fromEntries(state.sections[key].map(section => [section.id, sectionToPortableRecord(section)])),
-        order: state.sections[key].map(section => section.id),
-    })
     const nextSettingsData = {
         ...rootSettingsData,
         current: Object.fromEntries(Object.entries(state.themeSettings).filter(([key]) => key !== 'experienceId')),
@@ -609,17 +620,10 @@ function buildDraftConfig(baseConfig: JsonRecord, themeId: string, state: Editor
         themeId: stringValue(baseConfig.themeId, themeId),
         experienceId: state.experienceId,
         themeSettings: Object.fromEntries(Object.entries(state.themeSettings).filter(([key]) => key !== 'experienceId')),
-        // Preserve the established API projection; all group entries are owned
-        // by templates, which the canonical compiler consumes in full.
-        sections: { template: state.sections.template,
-            ...(state.sections.header[0] ? { header: state.sections.header[0] } : {}),
-            ...(state.sections.footer[0] ? { footer: state.sections.footer[0] } : {}),
-        },
+        sections: state.sections,
         templates: {
             ...templates,
             [templateKey]: nextTemplate,
-            header: groupTemplate('header'),
-            footer: groupTemplate('footer'),
         },
         settings_data: nextSettingsData,
         config: {
@@ -645,10 +649,10 @@ function presetsFromBaseConfig(baseConfig: JsonRecord): Record<string, unknown> 
 
 function getAllSections(state: EditorState): SectionEntry[] {
     return [
-        ...state.sections.header,
+        state.sections.header,
         ...state.sections.template,
-        ...state.sections.footer,
-    ]
+        state.sections.footer,
+    ].filter((section): section is SectionEntry => Boolean(section))
 }
 
 function getSectionById(state: EditorState, sectionId: string): SectionEntry | null {
@@ -656,43 +660,25 @@ function getSectionById(state: EditorState, sectionId: string): SectionEntry | n
 }
 
 function getBlockById(section: SectionEntry | null, blockId: string): BlockEntry | null {
-    const find = (blocks: BlockEntry[]): BlockEntry | null => {
-        for (const block of blocks) {
-            if (block.id === blockId) return block
-            const child = find(block.children || [])
-            if (child) return child
-        }
-        return null
-    }
-    return find(section?.blocks || [])
-}
-
-function updateBlockInTree(blocks: BlockEntry[], blockId: string, update: (block: BlockEntry) => BlockEntry): BlockEntry[] {
-    return blocks.map(block => block.id === blockId ? update(block) : block.children?.length
-        ? { ...block, children: updateBlockInTree(block.children, blockId, update) } : block)
-}
-
-function removeBlockFromTree(blocks: BlockEntry[], blockId: string): BlockEntry[] {
-    return blocks.filter(block => block.id !== blockId).map(block => block.children?.length
-        ? { ...block, children: removeBlockFromTree(block.children, blockId) } : block)
+    return section?.blocks.find((block) => block.id === blockId) || null
 }
 
 function updateSectionById(state: EditorState, sectionId: string, updater: (section: SectionEntry) => SectionEntry): EditorState {
-    const update = (section: SectionEntry) => section.id === sectionId ? updater(section) : section
+    const updateNullable = (section: SectionEntry | null) => section?.id === sectionId ? updater(section) : section
 
     return {
         ...state,
         sections: {
-            header: state.sections.header.map(update),
-            footer: state.sections.footer.map(update),
-            template: state.sections.template.map(update),
+            header: updateNullable(state.sections.header),
+            footer: updateNullable(state.sections.footer),
+            template: state.sections.template.map((section) => section.id === sectionId ? updater(section) : section),
         },
     }
 }
 
 function coerceFieldValue(field: SchemaField | undefined, value: unknown): unknown {
     if (!field) return value
-    if (field.type === 'toggle' || field.type === 'checkbox') return Boolean(value)
+    if (field.type === 'toggle') return Boolean(value)
     if (field.type === 'number' || field.type === 'range') return numberValue(value, field.min ?? 0)
     return value
 }
@@ -705,7 +691,7 @@ function fieldByKey(schema: ThemeSettingsSchema, key: string): SchemaField | und
 }
 
 function firstSelection(state: EditorState, settingsSchema: ThemeSettingsSchema): EditorSelection {
-    const firstSection = getAllSections(state)[0]
+    const firstSection = state.sections.header || state.sections.template[0] || state.sections.footer
     if (firstSection) return { kind: 'section', sectionId: firstSection.id }
     return { kind: 'theme', groupKey: Object.keys(settingsSchema.settings)[0] || 'general' }
 }
@@ -739,7 +725,6 @@ function ThemeEditorInner() {
     const themeId = params?.themeId as string
     const { actorId: editorActorId } = useMerchantSecurityContext(store)
     const { notify } = useToast()
-    const router = useRouter()
 
     const [settingsSchema, setSettingsSchema] = useState<ThemeSettingsSchema>(() => normalizeSettingsSchema(getThemeSettingsSchema(themeId || 'urban-kicks')))
     const [sectionSchemas, setSectionSchemas] = useState<Record<string, SectionSchema>>(() => getSectionSchemas(themeId || 'urban-kicks'))
@@ -747,17 +732,12 @@ function ThemeEditorInner() {
     const [editorState, setEditorState] = useState<EditorState>(EMPTY_STATE)
     const [savedState, setSavedState] = useState<EditorState>(EMPTY_STATE)
     const [baseConfig, setBaseConfig] = useState<JsonRecord>({})
-    const [designReview, setDesignReview] = useState<{ state: EditorState; mode: ExperienceApplyMode; changes: string[]; atRisk: boolean } | null>(null)
     const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>(DEFAULT_TEMPLATE_OPTIONS)
     const [selectedTemplateKey, setSelectedTemplateKey] = useState('index')
     const [history, setHistory] = useState<EditorHistory>({ past: [], future: [] })
     const [selection, setSelection] = useState<EditorSelection>({ kind: 'section', sectionId: 'header' })
     const [panelMode, setPanelMode] = useState<PanelMode>('sections')
     const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop')
-    const [mobilePanel, setMobilePanel] = useState<'sections' | 'preview' | 'properties'>('preview')
-    const [navigationOpen, setNavigationOpen] = useState(true)
-    const [leaveRequested, setLeaveRequested] = useState(false)
-    const [isLiveTheme, setIsLiveTheme] = useState(false)
     const [addSectionType, setAddSectionType] = useState('')
     const [sectionPendingRemoval, setSectionPendingRemoval] = useState<SectionEntry | null>(null)
     const [blockPendingRemoval, setBlockPendingRemoval] = useState<{ sectionId: string; block: BlockEntry } | null>(null)
@@ -767,15 +747,12 @@ function ThemeEditorInner() {
     const [isSaving, setIsSaving] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
     const [themeName, setThemeName] = useState('LetBuyy Core')
+    const [schemaSource, setSchemaSource] = useState('registry')
     const [draftVersion, setDraftVersion] = useState<number | null>(null)
     const [savedAt, setSavedAt] = useState<string | null>(null)
     const [currentReleaseVersion, setCurrentReleaseVersion] = useState<number | null>(null)
     const [releases, setReleases] = useState<ReleaseEntry[]>([])
     const [previewToken, setPreviewToken] = useState<string | null>(null)
-    const [previewContext, setPreviewContext] = useState<EditorPreviewContext | null>(null)
-    const [previewResourceId, setPreviewResourceId] = useState('')
-    const [previewBlogPage, setPreviewBlogPage] = useState(1)
-    const [previewBlogPageInput, setPreviewBlogPageInput] = useState('1')
     const [previewError, setPreviewError] = useState<string | null>(null)
     const [isPreviewRefreshing, setIsPreviewRefreshing] = useState(false)
     // Phase R — conflict state: set when a draft PUT returns HTTP 409 (code 'CONFLICT').
@@ -820,12 +797,8 @@ function ThemeEditorInner() {
         ? selection.groupKey
         : themeGroups[0]?.[0] || 'general'
     const selectedSectionSchema = selectedSection ? sectionSchemas[selectedSection.type] : undefined
-    const installedBlockBundle = useMemo(() => {
-        try { return parseLiquidThemePackageBundle(baseConfig.liquidBundle) } catch { return null }
-    }, [baseConfig.liquidBundle])
-    const blockCatalogs = useMemo(() => Object.fromEntries(Object.entries(sectionSchemas).map(([type, schema]) => [type, editorBlockCatalog(schema, installedBlockBundle)])), [sectionSchemas, installedBlockBundle])
     const selectedBlockSchema = selectedSection && selectedBlock
-        ? editorBlockSchema(blockCatalogs[selectedSection.type], selectedBlock.type, findEditorBlock(selectedSection.blocks, selectedBlock.id)?.depth || 1)
+        ? selectedSectionSchema?.blocks_schema?.[selectedBlock.type]
         : undefined
     const addableSections = useMemo(() => {
         const existingPinned = new Set(['header', 'footer'])
@@ -844,16 +817,11 @@ function ThemeEditorInner() {
     const activeAddSectionType = addSectionType || addableSections[0]?.type || ''
     const activeDevice = PREVIEW_DEVICES.find((device) => device.value === previewDevice) || PREVIEW_DEVICES[0]
     const selectedTemplate = templateOptions.find((option) => option.key === selectedTemplateKey) || templateOptions[0] || DEFAULT_TEMPLATE_OPTIONS[0]
-    const templateBase = parseTemplateKey(selectedTemplateKey).baseType
-    const previewBlogPageValid = /^[1-9]\d*$/.test(previewBlogPageInput) && Number(previewBlogPageInput) <= 1000
-    const previewResourceType = templateBase === 'article' ? 'blog' : ['page', 'product', 'collection'].includes(templateBase) ? templateBase as 'page' | 'product' | 'collection' : null
     const selectedPreviewSectionId = selection.kind === 'theme' ? null : selection.sectionId
-    const previewIdentities = useMemo(() => createEditorPreviewIdentityIndex(getAllSections(savedState)), [savedState])
 
     const applyChange = useCallback((updater: (current: EditorState) => EditorState) => {
         setEditorState((current) => {
             const next = updater(current)
-            if (next === current) return current
             setHistory((existing) => ({
                 past: [...existing.past.slice(-49), current],
                 future: [],
@@ -879,30 +847,12 @@ function ThemeEditorInner() {
         }))
     }, [applyChange, presetItems])
 
-    const reviewThreadlinePage = (mode: ExperienceApplyMode) => {
-        try {
-            const draft = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
-            const bundle = compilePortableToLiquidBundle(draft, { baseBundle: parseLiquidThemePackageBundle(baseConfig.liquidBundle) }).bundle
-            const document = toThemeDocumentV2(bundle)
-            const template = document.templates.find(item => item.key === selectedTemplateKey)
-            if (!template || !['index', 'product', 'collection'].includes(selectedTemplateKey)) return
-            const result = composeExperienceTemplateSections({ experienceId: 'sense', templateKey: selectedTemplateKey as ExperienceTemplateKey, sections: template.sections, sectionDefinitions: document.section_definitions, blockDefinitions: document.block_definitions, options: { mode, preserveContent: true } })
-            if (result.diff.some(item => item.action === 'incompatible')) throw new Error('This installed package does not contain the required page sections.')
-            template.sections = result.sections
-            const nextBundle = fromThemeDocumentV2(document)
-            const next = normalizeEditorState({ ...draft, templates: nextBundle.templates, sections: {}, liquidBundle: nextBundle }, themeId, selectedTemplateKey, sectionSchemas, settingsSchema)
-            setDesignReview({ state: next, mode, atRisk: result.requiresDuplicate, changes: result.diff.map(item => `${item.action}: ${sectionSchemas[item.type]?.name || item.type}${item.lostContent ? ' — contains saved content or bindings' : ''}`) })
-        } catch (error) {
-            notify({ title: 'Layout could not be prepared', description: error instanceof Error ? error.message : 'Review this installed package.', variant: 'critical' })
-        }
-    }
-
     const loadReleases = useCallback(async () => {
         if (!store || !themeId) return
         const scope = draftClientScopeRef.current, generation = loadRequestCounter.current, request = ++releaseRequestCounter.current
 
         try {
-            const res = await fetch(`/api/themes/${themeId}/releases?store_name=${encodeURIComponent(store)}`, { cache: 'no-store', signal: AbortSignal.timeout(15_000) })
+            const res = await fetch(`/api/themes/${themeId}/releases?store_name=${encodeURIComponent(store)}`, { cache: 'no-store' })
             const payload = await res.json().catch(() => ({}))
             if (scope !== draftClientScopeRef.current || generation !== loadRequestCounter.current || request !== releaseRequestCounter.current) return
             if (!res.ok) { setReleases([]); setCurrentReleaseVersion(null); return }
@@ -923,23 +873,23 @@ function ThemeEditorInner() {
         }
     }, [store, themeId])
 
-    const beginEditorRead = useReadRequest(JSON.stringify([editorActorId, store, themeId, selectedTemplateKey]))
     const loadEditor = useCallback(async () => {
         if (!store || !themeId) return
-        const read = beginEditorRead()
+
         const loadId = ++loadRequestCounter.current
-        previewRequestCounter.current += 1
-        setPreviewToken(null)
-        setPreviewContext(null)
         setIsLoading(true)
         setLoadError(null)
 
         try {
             const fallbackSectionSchemas = getSectionSchemas(themeId)
-            // The owned editor snapshot already includes the same runtime schemas.
-            const editorRes = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, { cache: 'no-store', signal: read.signal })
+            const [sectionsRes, editorRes] = await Promise.all([
+                fetch(`/api/themes/${themeId}/sections`, { cache: 'no-store' }).catch(() => null),
+                fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, { cache: 'no-store' }),
+            ])
+
+            const sectionsPayload = sectionsRes ? await sectionsRes.json().catch(() => ({})) : {}
             const editorPayload = await editorRes.json().catch(() => ({})) as ApiEditorResponse
-            if (!read.isCurrent() || loadRequestCounter.current !== loadId) return
+            if (loadRequestCounter.current !== loadId) return
 
             if (!editorRes.ok) {
                 const errorRecord = asRecord((editorPayload as { error?: unknown }).error)
@@ -948,21 +898,11 @@ function ThemeEditorInner() {
 
             const apiSectionSchemas = {
                 ...fallbackSectionSchemas,
+                ...asRecord(sectionsPayload.schemas),
                 ...asRecord(editorPayload.sectionSchemas),
             } as Record<string, SectionSchema>
             const nextSettingsSchema = normalizeSettingsSchema(editorPayload.themeSettingsSchema || getThemeSettingsSchema(themeId))
             const loadedBaseConfig = asRecord(editorPayload.draftConfig || editorPayload.templateConfig)
-            // Captured runtime schemas from older catalog versions advertised
-            // every reusable block. The installed Liquid section's declaration
-            // is the actual add-block contract; keep the picker within it.
-            for (const [type, file] of Object.entries(asRecord(asRecord(loadedBaseConfig.liquidBundle).sections))) {
-                const declared = asRecord(file).schema
-                const blocks = asRecord(declared).blocks
-                if (apiSectionSchemas[type] && Array.isArray(blocks)) {
-                    const allowed = new Set(blocks.map(block => asRecord(block).type))
-                    apiSectionSchemas[type] = { ...apiSectionSchemas[type], blocks_schema: Object.fromEntries(Object.entries(apiSectionSchemas[type].blocks_schema || {}).filter(([key]) => allowed.has(key))) }
-                }
-            }
             const nextTemplateOptions = normalizeTemplateOptions(editorPayload.templates, loadedBaseConfig)
             const nextTemplateKey = normalizeTemplateKey(editorPayload.templateKey || selectedTemplateKey)
             const nextState = normalizeEditorState(
@@ -972,9 +912,9 @@ function ThemeEditorInner() {
                 apiSectionSchemas,
                 nextSettingsSchema,
             )
-            const catalogSchemas = Object.keys(asRecord(editorPayload.sectionSchemas)).length > 0
-                ? editorPayload.sectionSchemas as Record<string, SectionSchema> : apiSectionSchemas
-            const sectionCatalog = Object.entries(catalogSchemas).map(([type, schema]) => ({
+            const sectionCatalog = Array.isArray(asRecord(sectionsPayload).sections)
+                ? (asRecord(sectionsPayload).sections as AvailableSection[])
+                : Object.entries(apiSectionSchemas).map(([type, schema]) => ({
                     type,
                     name: schema.name,
                     description: schema.description,
@@ -1030,13 +970,13 @@ function ThemeEditorInner() {
             setHistory({ past: [], future: [] })
             setIsDirty(false)
             setThemeName(stringValue(editorPayload.theme?.name, labelFromKey(themeId)))
+            setSchemaSource(stringValue(editorPayload.theme?.schema_source, 'registry'))
             setDraftVersion(typeof editorPayload.version === 'number' ? editorPayload.version : null)
             setSavedAt(editorPayload.draftSavedAt || null)
-            setIsLiveTheme(Boolean(editorPayload.release))
             setCurrentReleaseVersion(typeof editorPayload.release?.version === 'number' ? editorPayload.release.version : null)
             void loadReleases()
         } catch (err) {
-            if (!read.isCurrent() || loadRequestCounter.current !== loadId) return
+            if (loadRequestCounter.current !== loadId) return
             const message = err instanceof Error ? err.message : 'Failed to load theme editor'
             setLoadError(message)
             notify({
@@ -1045,9 +985,9 @@ function ThemeEditorInner() {
                 variant: 'critical',
             })
         } finally {
-            if (read.isCurrent() && loadRequestCounter.current === loadId) setIsLoading(false)
+            if (loadRequestCounter.current === loadId) setIsLoading(false)
         }
-    }, [beginEditorRead, editorActorId, loadReleases, notify, selectedTemplateKey, store, themeId])
+    }, [editorActorId, loadReleases, notify, selectedTemplateKey, store, themeId])
 
     useEffect(() => {
         void loadEditor()
@@ -1056,14 +996,12 @@ function ThemeEditorInner() {
     useEffect(() => {
         function handleKeyDown(event: KeyboardEvent) {
             const modifier = event.metaKey || event.ctrlKey
-            if (!modifier || event.altKey || event.isComposing || event.defaultPrevented) return
+            if (!modifier) return
 
             if (event.key.toLowerCase() === 's') {
                 event.preventDefault()
                 void handleSave()
-                return
             }
-            if (isTextEditingTarget(event.target)) return
             if (event.key.toLowerCase() === 'z' && !event.shiftKey) {
                 event.preventDefault()
                 undo()
@@ -1111,20 +1049,19 @@ function ThemeEditorInner() {
         })
     }, [editorState])
 
-    const saveDraft = useCallback(async (reviewedVersion?: number, ensurePreviewDraft = false) => {
+    const saveDraft = useCallback(async (reviewedVersion?: number) => {
         const client = draftClientRef.current
         if (!client || draftClientScopeRef.current !== `${client.actorId}:${client.storeId}:${themeId}:${selectedTemplateKey}:${store}`) throw new Error('Reload the current owned editor before saving.')
         const snapshot = editorState
         const draftConfig = buildDraftConfig(baseConfig, themeId, snapshot, selectedTemplateKey)
         try {
-            const ack = await client.save(draftConfig, reviewedVersion, ensurePreviewDraft)
+            const ack = await client.save(draftConfig, reviewedVersion)
             if (draftClientRef.current !== client) return ack
             setBaseConfig((current) => JSON.stringify(current) === JSON.stringify(draftConfig) ? current : draftConfig)
             setSavedState(snapshot)
             setDraftVersion(ack.version)
             if (ack.savedAt) setSavedAt(ack.savedAt)
-            // Autosave confirms persistence; it must not erase the merchant's
-            // ability to undo and redo changes made in this editor session.
+            if (latestEditorState.current === snapshot) setHistory({ past: [], future: [] })
             setIsDirty(latestEditorState.current !== snapshot)
             return ack
         } catch (error) {
@@ -1145,25 +1082,18 @@ function ThemeEditorInner() {
         setIsPreviewRefreshing(true)
         setPreviewError(null)
         try {
-            // Publication consumes its draft. Request a canonical preview draft
-            // explicitly so even unchanged published settings remain inspectable
-            // while storefront access is restricted.
-            await saveDraft(undefined, true)
+            await saveDraft()
             if (previewRequestCounter.current !== requestId || draftClientRef.current !== client) return
-            if (!client.hasDraft) { setPreviewToken(null); setPreviewContext(null); return }
+            if (!client.hasDraft) { setPreviewToken(null); return }
             const sessionRes = await fetch(`/api/themes/${themeId}/preview-session`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(15000),
                 body: JSON.stringify({ store_name: store, actorId: client.actorId, storeId: client.storeId, ttl_seconds: 900, templateKey: selectedTemplateKey }),
             })
             const sessionPayload = await sessionRes.json().catch(() => ({}))
             if (!sessionRes.ok) throw new Error(stringValue(asRecord(asRecord(sessionPayload).error).message, 'Unable to refresh the storefront preview.'))
-            const session = asRecord(asRecord(sessionPayload).data)
-            const nextPreviewToken = stringValue(session.preview_token)
+            const nextPreviewToken = stringValue(asRecord(asRecord(sessionPayload).data).preview_token)
             if (!nextPreviewToken) throw new Error('Preview session did not return a token.')
-            const context = EditorPreviewContextSchema.safeParse({ sessionId: session.preview_session_id, revision: session.draft_version, templateKey: session.template_key, ...(previewResourceId ? { resourceId: previewResourceId } : {}), ...(parseTemplateKey(selectedTemplateKey).baseType === 'blog' ? { page: previewBlogPage } : {}) })
-            if (!context.success || context.data.templateKey !== selectedTemplateKey) throw new Error('Preview session did not match the selected template.')
-            if (previewRequestCounter.current !== requestId || draftClientRef.current !== client || latestEditorState.current !== editorState) return
-            setPreviewContext(context.data)
+            if (previewRequestCounter.current !== requestId || draftClientRef.current !== client) return
             setPreviewToken(nextPreviewToken)
         } catch (error) {
             if (previewRequestCounter.current !== requestId || draftClientRef.current !== client) return
@@ -1172,20 +1102,13 @@ function ThemeEditorInner() {
         } finally {
             if (previewRequestCounter.current === requestId) setIsPreviewRefreshing(false)
         }
-    }, [editorState, saveDraft, selectedTemplateKey, previewResourceId, previewBlogPage, store, themeId])
+    }, [editorState, saveDraft, selectedTemplateKey, store, themeId])
 
     useEffect(() => {
         if (isLoading || loadError || !store || !themeId || hasConflict || draftClientRef.current?.paused || isPublishing) return
         const timeout = window.setTimeout(() => { void syncPreviewDraft() }, isDirty ? 900 : 0)
         return () => window.clearTimeout(timeout)
     }, [hasConflict, isDirty, isLoading, isPublishing, loadError, store, syncPreviewDraft, themeId])
-
-    useEffect(() => {
-        if (!isDirty && !isSaving) return
-        const guard = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = '' }
-        window.addEventListener('beforeunload', guard)
-        return () => window.removeEventListener('beforeunload', guard)
-    }, [isDirty, isSaving])
 
     const handleSave = useCallback(async () => {
         if (!store || !themeId || isSaving) return
@@ -1238,19 +1161,16 @@ function ThemeEditorInner() {
             if (ack.currentVersion === ack.version && ack.replayed !== true) setCurrentReleaseVersion(typeof release.release_version === 'number' ? release.release_version : currentReleaseVersion)
             if (ack.savedAt && ack.currentVersion === ack.version) setSavedAt(ack.savedAt)
             setPreviewToken(null)
-            setPreviewContext(null)
             setIsDirty(latestEditorState.current !== snapshot)
             if (latestEditorState.current === snapshot) setHistory({ past: [], future: [] })
             void loadReleases()
-            setIsLiveTheme(true)
-            router.refresh()
             notify({ title: ack.replayed === true || ack.currentVersion > ack.version ? 'Theme publication recovered' : 'Theme published', description: ack.currentVersion > ack.version ? 'The saved version was published. A newer draft revision exists; review it before editing further.' : ack.replayed === true ? 'The earlier publication is confirmed. Review the latest live version and saved draft.' : latestEditorState.current === snapshot ? `${selectedTemplate.label} is now included in the live storefront version.` : 'The previously saved version is live. Your newer edits remain a draft.', variant: 'success' })
         } catch (error) {
             if (draftClientRef.current !== client) return
             if (error instanceof ThemeDraftConflictError) { setReplacementVersion(null); setHasConflict(true); setConflictSource('manual-save') }
             notify({ title: 'Theme publish not confirmed', description: error instanceof Error ? error.message : 'Retry publication to recover its result.', variant: 'critical' })
         } finally { if (draftClientRef.current === client) setIsPublishing(false) }
-    }, [currentReleaseVersion, savedState, isDirty, isPublishing, loadReleases, notify, router, selectedTemplate.label, selectedTemplateKey, store, themeId])
+    }, [currentReleaseVersion, savedState, isDirty, isPublishing, loadReleases, notify, selectedTemplate.label, selectedTemplateKey, store, themeId])
 
     const recoverConflict = useCallback(async () => {
         if (conflictRecoveryBusy.current) return
@@ -1285,30 +1205,8 @@ function ThemeEditorInner() {
             })
             return
         }
-        previewRequestCounter.current += 1
-        setPreviewResourceId('')
-        setPreviewBlogPage(1)
-        setPreviewBlogPageInput('1')
-        setPreviewContext(null)
-        setPreviewToken(null)
         setSelectedTemplateKey(normalized)
     }, [isDirty, notify, selectedTemplateKey])
-
-    const changePreviewResource = useCallback((resourceId: string) => {
-        if (resourceId === previewResourceId) return
-        previewRequestCounter.current += 1
-        setPreviewContext(null)
-        setPreviewToken(null)
-        setPreviewResourceId(resourceId)
-    }, [previewResourceId])
-
-    const changePreviewBlogPage = useCallback((page: number) => {
-        if (!Number.isInteger(page) || page < 1 || page > 1000 || page === previewBlogPage) return
-        previewRequestCounter.current += 1
-        setPreviewContext(null)
-        setPreviewToken(null)
-        setPreviewBlogPage(page)
-    }, [previewBlogPage])
 
     const discardChanges = useCallback(() => {
         setEditorState(savedState)
@@ -1345,20 +1243,19 @@ function ThemeEditorInner() {
 
     const updateBlockSetting = useCallback((sectionId: string, blockId: string, key: string, value: unknown) => {
         const section = getSectionById(editorState, sectionId)
-        const location = section ? findEditorBlock(section.blocks, blockId) : null
-        const field = section && location ? editorBlockSchema(blockCatalogs[section.type], location.block.type, location.depth)?.fields[key] : undefined
-        if (!field) return
+        const block = getBlockById(section, blockId)
+        const field = section && block ? sectionSchemas[section.type]?.blocks_schema?.[block.type]?.fields?.[key] : undefined
         applyChange((current) => updateSectionById(current, sectionId, (targetSection) => ({
             ...targetSection,
-            blocks: updateBlockInTree(targetSection.blocks, blockId, (targetBlock) => ({
+            blocks: targetSection.blocks.map((targetBlock) => targetBlock.id === blockId ? {
                 ...targetBlock,
                 settings: {
                     ...targetBlock.settings,
                     [key]: coerceFieldValue(field, value),
                 },
-            })),
+            } : targetBlock),
         })))
-    }, [applyChange, editorState, blockCatalogs])
+    }, [applyChange, editorState, sectionSchemas])
 
     const toggleSectionVisibility = useCallback((sectionId: string) => {
         applyChange((current) => updateSectionById(current, sectionId, (section) => ({
@@ -1422,41 +1319,23 @@ function ThemeEditorInner() {
         }, settingsSchema))
     }, [applyChange, editorState, sectionPendingRemoval, settingsSchema])
 
-    const addBlock = useCallback((sectionId: string, blockType: string, parentBlockId = sectionId) => {
+    const addBlock = useCallback((sectionId: string, blockType: string) => {
         const section = getSectionById(editorState, sectionId)
-        const catalog = section && blockCatalogs[section.type]
-        if (!section || !catalog || !canAddEditorBlock(section, catalog, parentBlockId, blockType)) return
-        const nextBlock = createBlockFromSchema(blockType, editorBlockSchema(catalog, blockType, parentBlockId === sectionId ? 1 : 2), 0)
-        applyChange(current => updateSectionById(current, sectionId, target => addEditorBlock(target, catalog, parentBlockId, nextBlock)))
+        const blockSchema = section ? sectionSchemas[section.type]?.blocks_schema?.[blockType] : undefined
+        const order = section?.blocks.length ? Math.max(...section.blocks.map((block) => block.order)) + 10 : 10
+        const nextBlock = createBlockFromSchema(blockType, blockSchema, order)
+        applyChange((current) => updateSectionById(current, sectionId, (targetSection) => ({
+            ...targetSection,
+            blocks: [...targetSection.blocks, nextBlock],
+        })))
         setSelection({ kind: 'block', sectionId, blockId: nextBlock.id })
-    }, [applyChange, editorState, blockCatalogs])
-
-    const addChildBlock = useCallback((sectionId: string, parentBlockId: string, blockType: string) => {
-        addBlock(sectionId, blockType, parentBlockId)
-    }, [addBlock])
-
-    const moveBlock = useCallback((sectionId: string, parentBlockId: string, blockId: string, direction: -1 | 1) => {
-        const section = getSectionById(editorState, sectionId)
-        if (!section || moveEditorBlock(section, parentBlockId, blockId, direction) === section) return
-        applyChange(current => updateSectionById(current, sectionId, target => moveEditorBlock(target, parentBlockId, blockId, direction)))
-    }, [applyChange, editorState])
-
-    const toggleBlockVisibility = useCallback((sectionId: string, blockId: string) => {
-        if (!getBlockById(getSectionById(editorState, sectionId), blockId)) return
-        applyChange(current => updateSectionById(current, sectionId, target => toggleEditorBlock(target, blockId)))
-    }, [applyChange, editorState])
-
-    const requestRemoveChildBlock = useCallback((sectionId: string, parentBlockId: string, blockId: string) => {
-        const section = getSectionById(editorState, sectionId)
-        const block = section && editorBlockSiblings(section, parentBlockId)?.find(entry => entry.id === blockId)
-        if (block) setBlockPendingRemoval({ sectionId, block })
-    }, [editorState])
+    }, [applyChange, editorState, sectionSchemas])
 
     const removeBlock = useCallback(() => {
         if (!blockPendingRemoval) return
         applyChange((current) => updateSectionById(current, blockPendingRemoval.sectionId, (section) => ({
             ...section,
-            blocks: removeBlockFromTree(section.blocks, blockPendingRemoval.block.id),
+            blocks: section.blocks.filter((block) => block.id !== blockPendingRemoval.block.id),
         })))
         setSelection({ kind: 'section', sectionId: blockPendingRemoval.sectionId })
         setBlockPendingRemoval(null)
@@ -1516,40 +1395,30 @@ function ThemeEditorInner() {
     if (loadError) {
         return (
             <main className="theme-os theme-os--centered">
-                <section className="theme-os-state" role="alert" aria-labelledby="theme-editor-error-title" aria-describedby="theme-editor-error-description">
-                    <span className="theme-os-state__icon"><CircleAlert size={26} strokeWidth={1.75} aria-hidden="true" /></span>
-                    <div className="theme-os-state__copy">
-                        <span className="theme-os-state__eyebrow">Theme workspace</span>
-                        <h1 id="theme-editor-error-title">Theme editor could not load</h1>
-                        <p id="theme-editor-error-description">{loadError}</p>
-                    </div>
-                    <div className="theme-os-state__actions">
-                        <Button type="button" onClick={() => void loadEditor()}>
-                            <RefreshCw size={16} aria-hidden="true" />
-                            Try again
-                        </Button>
-                        <Button asChild variant="secondary">
-                            <Link href={`/${store}/online-store/themes`}>Back to themes</Link>
-                        </Button>
-                    </div>
+                <section className="theme-os-state" role="alert">
+                    <FileJson size={32} aria-hidden="true" />
+                    <h1>Theme editor could not load</h1>
+                    <p>{loadError}</p>
+                    <Button unstyled className="theme-os-btn theme-os-btn--primary" type="button" onClick={() => void loadEditor()}>
+                        Retry
+                    </Button>
                 </section>
             </main>
         )
     }
 
     return (
-        <main className={`theme-os ${editorStyles.editor}`} data-panel={mobilePanel} data-navigation={navigationOpen ? 'open' : 'closed'}>
+        <main className="theme-os">
             <header className="theme-os-topbar">
                 <div className="theme-os-topbar__left">
-                    <Link href={`/${store}/online-store/themes`} className="theme-os-icon-btn" aria-label="Back to themes" onClick={event => { if (isDirty || isSaving) { event.preventDefault(); setLeaveRequested(true) } }}>
+                    <Link href={`/${store}/online-store/themes`} className="theme-os-icon-btn" aria-label="Back to themes">
                         <ArrowLeft size={17} aria-hidden="true" />
                     </Link>
-                    <Button unstyled className="theme-os-icon-btn" aria-label="Toggle navigation panel" aria-pressed={navigationOpen} onClick={() => { setNavigationOpen(value => !value); setMobilePanel('sections') }}><PanelLeft size={17} aria-hidden="true" /></Button>
                     <Button unstyled
                         className={`theme-os-icon-btn ${panelMode === 'sections' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Sections"
-                        onClick={() => { setPanelMode('sections'); setNavigationOpen(true); setMobilePanel('sections') }}
+                        onClick={() => setPanelMode('sections')}
                     >
                         <Layers3 size={17} aria-hidden="true" />
                     </Button>
@@ -1557,15 +1426,15 @@ function ThemeEditorInner() {
                         className={`theme-os-icon-btn ${panelMode === 'settings' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Theme settings"
-                        onClick={() => { setPanelMode('settings'); setNavigationOpen(true); setMobilePanel('sections') }}
+                        onClick={() => setPanelMode('settings')}
                     >
                         <Settings size={17} aria-hidden="true" />
                     </Button>
                     <Button unstyled
                         className={`theme-os-icon-btn ${panelMode === 'experiences' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
-                        aria-label="Theme styles"
-                        onClick={() => { setPanelMode('experiences'); setMobilePanel('sections') }}
+                        aria-label="Experiences"
+                        onClick={() => setPanelMode('experiences')}
                     >
                         <Sparkles size={17} aria-hidden="true" />
                     </Button>
@@ -1573,7 +1442,7 @@ function ThemeEditorInner() {
                         className={`theme-os-icon-btn ${panelMode === 'versions' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Versions"
-                        onClick={() => { setPanelMode('versions'); setMobilePanel('sections') }}
+                        onClick={() => setPanelMode('versions')}
                     >
                         <FileJson size={17} aria-hidden="true" />
                     </Button>
@@ -1583,17 +1452,19 @@ function ThemeEditorInner() {
                     <div className="theme-os-theme-pill">
                         <Blocks size={15} aria-hidden="true" />
                         <span>{themeName}</span>
-                        <Badge label={isLiveTheme ? 'Active' : 'Draft theme'} variant={isLiveTheme ? 'success' : 'default'} />
-                        <span aria-live="polite" title="Draft changes save automatically. Publishing updates the storefront.">{isSaving ? 'Saving…' : isDirty ? 'Unsaved' : 'Saved'}</span>
+                        <Badge label={isDirty ? 'Draft' : 'Saved'} variant={isDirty ? 'warning' : 'success'} />
                     </div>
                     <label className="theme-os-page-pill" aria-label="Template">
                         <Laptop size={15} aria-hidden="true" />
-                        <Select unstyled aria-label="Template"
+                        <select
                             value={selectedTemplateKey}
                             onChange={(event) => handleTemplateChange(event.target.value)}
                             disabled={isLoading || isSaving || isPublishing}
-                            options={templateOptions.map(template => ({value:template.key,label:template.label}))}
-                        />
+                        >
+                            {templateOptions.map((template) => (
+                                <option key={template.key} value={template.key}>{template.label}</option>
+                            ))}
+                        </select>
                         <ChevronDown size={14} aria-hidden="true" />
                     </label>
                 </div>
@@ -1617,45 +1488,28 @@ function ThemeEditorInner() {
             </header>
 
             <div className="theme-os-workspace">
-                <aside className="theme-os-sidebar" aria-label="Theme editor navigation" data-preview-resource={panelMode === 'sections' && Boolean(previewResourceType || templateBase === 'blog')}>
+                <aside className="theme-os-sidebar" aria-label="Theme editor navigation">
                     <div className="theme-os-sidebar__header">
                         <div>
-                            <h2>{panelMode === 'sections' ? selectedTemplate.label : panelMode === 'settings' ? 'Theme settings' : panelMode === 'versions' ? 'Version history' : 'Theme styles'}</h2>
+                            <p>{schemaSource} schema</p>
+                            <h2>Theme OS</h2>
                         </div>
                         <Badge label={draftVersion ? `v${draftVersion}` : 'Draft'} variant="info" />
                     </div>
-
-                    {panelMode === 'sections' && previewResourceType ? <div className={editorStyles.previewResource}>
-                        <ResourcePickerControl key={`${store}:${themeId}:${selectedTemplateKey}`} storeName={store}
-                            field={{ type: previewResourceType, label: templateBase === 'article' ? 'Preview blog post' : `Preview ${previewResourceType}`, info: 'Choose content to preview this template.' }}
-                            value={previewResourceId} onChange={changePreviewResource} />
-                    </div> : null}
-
-                    {panelMode === 'sections' && templateBase === 'blog' ? <div className={editorStyles.previewResource}>
-                        <form onSubmit={event => { event.preventDefault(); if (previewBlogPageValid) changePreviewBlogPage(Number(previewBlogPageInput)) }}>
-                            <Input id="theme-editor-blog-page" type="number" min={1} max={1000} step={1} label="Preview blog page" value={previewBlogPageInput} onChange={event => setPreviewBlogPageInput(event.target.value)} error={!previewBlogPageValid ? 'Enter a page from 1 to 1000.' : undefined} />
-                            <Button type="submit" variant="secondary" size="sm" disabled={!previewBlogPageValid || Number(previewBlogPageInput) === previewBlogPage}>Preview page</Button>
-                        </form>
-                    </div> : null}
 
                     {panelMode === 'sections' ? (
                         <SectionTreePanel
                             state={editorState}
                             sectionSchemas={sectionSchemas}
-                            blockCatalogs={blockCatalogs}
                             selection={selection}
                             addableSections={addableSections}
                             addSectionType={activeAddSectionType}
-                            onSelect={value => { setSelection(value); if (window.matchMedia('(max-width: 760px)').matches) setMobilePanel('properties') }}
+                            onSelect={setSelection}
                             onAddSectionTypeChange={setAddSectionType}
                             onAddSection={addSection}
                             onMoveSection={moveSection}
                             onToggleSection={toggleSectionVisibility}
                             onRemoveSection={setSectionPendingRemoval}
-                            onAddChildBlock={addChildBlock}
-                            onRemoveChildBlock={requestRemoveChildBlock}
-                            onMoveChildBlock={moveBlock}
-                            onToggleBlock={toggleBlockVisibility}
                         />
                     ) : null}
 
@@ -1663,23 +1517,16 @@ function ThemeEditorInner() {
                         <ThemeSettingsTree
                             groups={themeGroups}
                             selection={selection}
-                            onSelect={(groupKey) => { setSelection({ kind: 'theme', groupKey }); setMobilePanel('properties') }}
+                            onSelect={(groupKey) => setSelection({ kind: 'theme', groupKey })}
                         />
                     ) : null}
 
                     {panelMode === 'experiences' ? (
-                        <>
                         <ExperiencePicker
                             presets={presetItems}
                             activeExperienceId={editorState.experienceId}
                             onApply={applyExperience}
                         />
-                        {asRecord(asRecord(baseConfig.liquidBundle).package).slug === 'letbuyy-sense' && String(asRecord(asRecord(baseConfig.liquidBundle).package).version).startsWith('2.') && ['index', 'product', 'collection'].includes(selectedTemplateKey) ? <div className="te-form">
-                            <p>Apply Threadline’s layout to this page. Existing copy and product bindings are preserved in matching sections.</p>
-                            <Button variant="secondary" onClick={() => reviewThreadlinePage('COMPOSE_ADDITIVE')}>Review additive layout</Button>
-                            <Button variant="secondary" onClick={() => reviewThreadlinePage('COMPLETE_DESIGN')}>Review full page layout</Button>
-                        </div> : null}
-                        </>
                     ) : null}
 
                     {panelMode === 'versions' ? (
@@ -1688,7 +1535,6 @@ function ThemeEditorInner() {
                             currentReleaseVersion={currentReleaseVersion}
                             savedAt={savedAt}
                             draftVersion={draftVersion}
-                            recoveryHref={isLiveTheme ? `/${store}/online-store/themes/update?themeSlug=${encodeURIComponent(themeId)}` : undefined}
                         />
                     ) : null}
                 </aside>
@@ -1726,13 +1572,7 @@ function ThemeEditorInner() {
                             previewError={previewError}
                             isPreviewRefreshing={isPreviewRefreshing}
                             selectedSectionId={selectedPreviewSectionId}
-                            selectedBlockId={selection.kind === 'block' ? selection.blockId : null}
-                            previewContext={previewContext}
-                            identities={previewIdentities}
-                            onRetryPreview={() => { void syncPreviewDraft() }}
-                            retryDisabled={hasConflict || isPublishing}
-                            onSelectSection={(sectionId) => { setSelection({ kind: 'section', sectionId }); if (window.matchMedia('(max-width: 760px)').matches) setMobilePanel('properties') }}
-                            onSelectBlock={(sectionId, blockId) => { setSelection({ kind: 'block', sectionId, blockId }); if (window.matchMedia('(max-width: 760px)').matches) setMobilePanel('properties') }}
+                            onSelectSection={(sectionId) => setSelection({ kind: 'section', sectionId })}
                         />
                     </div>
                 </section>
@@ -1752,29 +1592,18 @@ function ThemeEditorInner() {
                     onThemeSettingChange={updateThemeSetting}
                     onSelectSection={(sectionId) => setSelection({ kind: 'section', sectionId })}
                     onAddBlock={addBlock}
-                    canAddBlock={(sectionId, type) => { const section = getSectionById(editorState, sectionId); const catalog = section && blockCatalogs[section.type]; return Boolean(section && catalog && canAddEditorBlock(section, catalog, section.id, type)) }}
                     onRemoveBlock={(sectionId, block) => setBlockPendingRemoval({ sectionId, block })}
                     onAiHook={applyAiHook}
                 />
             </div>
 
-            <nav className={editorStyles.mobileTabs} aria-label="Editor panels">
-                <Button variant={mobilePanel === 'sections' ? 'primary' : 'secondary'} aria-pressed={mobilePanel === 'sections'} onClick={() => setMobilePanel('sections')}><Layers3 size={16} />Sections</Button>
-                <Button variant={mobilePanel === 'preview' ? 'primary' : 'secondary'} aria-pressed={mobilePanel === 'preview'} onClick={() => setMobilePanel('preview')}><Eye size={16} />Preview</Button>
-                <Button variant={mobilePanel === 'properties' ? 'primary' : 'secondary'} aria-pressed={mobilePanel === 'properties'} onClick={() => setMobilePanel('properties')}><Settings size={16} />Settings</Button>
-            </nav>
-            <ConfirmDialog open={leaveRequested} title="Leave the editor?" description="Recent changes may still be saving. Stay in the editor to confirm they are saved before leaving." confirmLabel="Leave editor" cancelLabel="Stay in editor" onClose={() => setLeaveRequested(false)} onConfirm={() => { window.location.href = `/${store}/online-store/themes` }}><p>Saved drafts will be available when you return. Your live storefront changes only when you publish.</p></ConfirmDialog>
-            <ConfirmDialog open={Boolean(designReview)} title={designReview?.mode === 'COMPLETE_DESIGN' ? 'Replace this page layout?' : 'Add Threadline’s page layout?'} description="This changes the current page’s draft. The live store changes only when you publish." confirmLabel="Apply reviewed layout" destructive={designReview?.atRisk} onClose={() => setDesignReview(null)} onConfirm={() => { if (designReview) applyChange(() => designReview.state); setDesignReview(null) }}>
-                {designReview?.atRisk ? <p>Some sections with saved content or product bindings will be removed. Save your draft and duplicate it from the theme library first if you need to keep a separate copy. Undo remains available in this editor.</p> : <p>Matching content and bindings are kept. Additive application keeps extra sections.</p>}
-                <ul>{designReview?.changes.map((change, index) => <li key={index}>{change}</li>)}</ul>
-            </ConfirmDialog>
-            {(isSaving || isDirty) && <SaveBar
+            <SaveBar
                 state={isSaving ? 'saving' : isDirty ? 'unsaved' : 'saved'}
                 saveLabel="Save draft"
                 discardLabel="Discard"
                 onSave={() => void handleSave()}
                 onDiscard={discardChanges}
-            />}
+            />
 
             <ConfirmDialog
                 open={Boolean(sectionPendingRemoval)}
@@ -1849,13 +1678,11 @@ function VersionTree({
     currentReleaseVersion,
     savedAt,
     draftVersion,
-    recoveryHref,
 }: {
     releases: ReleaseEntry[]
     currentReleaseVersion: number | null
     savedAt: string | null
     draftVersion: number | null
-    recoveryHref?: string
 }) {
     return (
         <div className="theme-os-tree">
@@ -1866,7 +1693,7 @@ function VersionTree({
             </section>
             <TreeGroup label="Published versions">
                 {releases.length === 0 ? (
-                    <div className="flex items-center gap-2"><MerchantEmptyArtwork scene="theme-editor" compact /><p className="theme-os-muted">No release history available.</p></div>
+                    <p className="theme-os-muted">No release history available.</p>
                 ) : releases.map((release) => {
                     const version = releaseVersion(release)
                     return (
@@ -1881,7 +1708,6 @@ function VersionTree({
                     )
                 })}
             </TreeGroup>
-            {recoveryHref ? <Link href={recoveryHref}>Updates and recovery</Link> : null}
         </div>
     )
 }
@@ -1901,7 +1727,6 @@ function PropertyPanel({
     onThemeSettingChange,
     onSelectSection,
     onAddBlock,
-    canAddBlock,
     onRemoveBlock,
     onAiHook,
 }: {
@@ -1919,7 +1744,6 @@ function PropertyPanel({
     onThemeSettingChange: (key: string, value: unknown) => void
     onSelectSection: (sectionId: string) => void
     onAddBlock: (sectionId: string, blockType: string) => void
-    canAddBlock: (sectionId: string, blockType: string) => boolean
     onRemoveBlock: (sectionId: string, block: BlockEntry) => void
     onAiHook: (mode: 'copy' | 'blocks' | 'layout') => void
 }) {
@@ -1944,9 +1768,11 @@ function PropertyPanel({
             </div>
 
             <div className="theme-os-properties__body">
-                <details className="theme-os-ai-card" aria-label="Smart defaults" aria-describedby="theme-smart-defaults-description">
-                    <summary>Smart defaults</summary>
+                <section className="theme-os-ai-card" aria-label="Smart defaults" aria-describedby="theme-smart-defaults-description">
                     <div>
+                        <Settings size={16} aria-hidden="true" />
+                        <strong>Smart defaults</strong>
+                    </div>
                     <Button unstyled type="button" aria-label="Apply copy defaults" onClick={() => onAiHook('copy')}>
                         <WandSparkles size={14} aria-hidden="true" />
                         Copy
@@ -1959,11 +1785,10 @@ function PropertyPanel({
                         <Plus size={14} aria-hidden="true" />
                         Block
                     </Button>
-                    </div>
                     <p id="theme-smart-defaults-description" className="theme-os-muted col-span-full">
                         Apply fixed defaults to your theme settings or section.
                     </p>
-                </details>
+                </section>
 
                 {selection.kind === 'theme' && selectedThemeGroup ? (
                     <section className="theme-os-property-card">
@@ -1991,8 +1816,8 @@ function PropertyPanel({
                         {selectedSectionSchema?.blocks_schema ? (
                             <div className="theme-os-block-tools">
                                 <p>Blocks</p>
-                                {Object.entries(selectedSectionSchema.blocks_schema).filter(([blockType]) => !isLiquidAppBlockType(blockType)).map(([blockType, blockSchema]) => (
-                                    <Button unstyled key={blockType} type="button" disabled={!canAddBlock(selectedSection.id, blockType)} onClick={() => onAddBlock(selectedSection.id, blockType)}>
+                                {Object.entries(selectedSectionSchema.blocks_schema).map(([blockType, blockSchema]) => (
+                                    <Button unstyled key={blockType} type="button" onClick={() => onAddBlock(selectedSection.id, blockType)}>
                                         <Plus size={14} aria-hidden="true" />
                                         Add {blockSchema.name}
                                     </Button>
@@ -2036,13 +1861,9 @@ export default function ThemeEditorPage() {
 function EditorLoading() {
     return (
         <main className="theme-os theme-os--centered">
-            <section className="theme-os-state" role="status" aria-labelledby="theme-editor-loading-title" aria-describedby="theme-editor-loading-description" aria-atomic="true">
-                <span className="theme-os-state__icon"><Loader2 className="theme-os-spin" size={26} strokeWidth={1.75} aria-hidden="true" /></span>
-                <div className="theme-os-state__copy">
-                    <span className="theme-os-state__eyebrow">Theme workspace</span>
-                    <h1 id="theme-editor-loading-title">Loading theme editor</h1>
-                    <p id="theme-editor-loading-description">Preparing your workspace and saved draft.</p>
-                </div>
+            <section className="theme-os-state" role="status">
+                <Loader2 className="theme-os-spin" size={32} aria-hidden="true" />
+                <h1>Loading theme editor</h1>
             </section>
         </main>
     )

@@ -1,7 +1,0 @@
-{
-  "checkedAt": "2026-10-23T13:53:06.038377+00:00",
-  "allAcceptedInputsUnchanged": true,
-  "fixtureOnlySourceCorrection": "Explicit SQL NULL checksum-to-omitted canonical payload oracle; nonnull or any other field remains rejected",
-  "currentSuiteSha256": "0a17994cf8b1b3b634b991ab70b8c47dbea48bb925bc64ffbd0747a5a10057bc",
-  "no390Emission": true
-}

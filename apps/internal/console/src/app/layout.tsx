@@ -40,10 +40,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
       <head>
-        <ThemeScript defaultTheme="dark" />
+        <ThemeScript storageKey="letbuyy-console-theme" defaultTheme="light" />
       </head>
       <body className="antialiased">
-        <LetbuyyThemeProvider surface="operations" defaultTheme="dark">
+        <LetbuyyThemeProvider surface="operations" density="comfortable" storageKey="letbuyy-console-theme" defaultTheme="light" className="console-design-root">
           {children}
         </LetbuyyThemeProvider>
       </body>

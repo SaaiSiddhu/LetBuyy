@@ -1,0 +1,1 @@
+{"head": "371", "receipt_table": null, "announcement_table": null, "postgres_superuser": false, "all_event_triggers_enabled": true, "existing_platform_messages": 0}

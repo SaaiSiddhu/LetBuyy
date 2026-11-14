@@ -1,0 +1,171 @@
+{
+  "capturedAt": "2026-11-03T03:51:56.070156+00:00",
+  "page": "https://www.letbuyy.com/in/pricing",
+  "readOnly": true,
+  "scriptCount": 19,
+  "rows": [
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/fee3e60c-aa3ab2d59836057c.js",
+      "status": 200,
+      "bytes": 198492,
+      "sha256": "ea8ff04d5f7f829d083332765d55b915deb564c9f37b85bdc6ff715a4fe2a311",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/6030-729d5479b4c2b3b5.js",
+      "status": 200,
+      "bytes": 188639,
+      "sha256": "eed4c95d078ec8c88ba2eee1e0a153181905451f4fc8ec7be2d4be75a69746a9",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/main-app-a5f2984222edc062.js",
+      "status": 200,
+      "bytes": 529,
+      "sha256": "16436fd2fce3d181a71827362823c278df99d3838c62310f08d6028c74799d39",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/2176-f320e6740e4fc981.js",
+      "status": 200,
+      "bytes": 54438,
+      "sha256": "0bcd77b145962a3b023da73a0e0033e578f5bd2b776d0d3b291ae58ffcd07268",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/4419-ca6f174d77088d11.js",
+      "status": 200,
+      "bytes": 188368,
+      "sha256": "ce08b4e1759024a0326a0f41e142f7be60bc2c2e93726fbda0a43564d41c18c2",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/app/layout-2e62e482bcb79ae2.js",
+      "status": 200,
+      "bytes": 1611,
+      "sha256": "c708f0726e381ec97e04028e9bdc0512b8bc59436bf9f5494815f1de8b6b4b31",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/7986-9309bf7cb6a7b30a.js",
+      "status": 200,
+      "bytes": 9006,
+      "sha256": "b21e57e1d11b345800fcb4286bf6573223fec095bda26ca21981a5657e8f3a1a",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/8364-cb6b0810e2a244c3.js",
+      "status": 200,
+      "bytes": 13680,
+      "sha256": "9ac1eb927fb08285c384f89692b95f179e923b60fdb58648bad1634f718f2e2b",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/9894-7c700046c5b2ad58.js",
+      "status": 200,
+      "bytes": 99354,
+      "sha256": "19ff58113fb02881581d1ff1d42cb9b98f4b633fa027b40dfa00f9cfe39d19fe",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/9731-21f967b8d31df952.js",
+      "status": 200,
+      "bytes": 121511,
+      "sha256": "1cc882afe9539a712af87f590bfaed87841e30f347376cdb04d3ba3ccf43c780",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/1848-fc69f82615ee7454.js",
+      "status": 200,
+      "bytes": 324899,
+      "sha256": "134f2ad7fb486bc5613d77bb337c870e761166e5bc987cb716e668202546a6e6",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/8947-216731afb483e518.js",
+      "status": 200,
+      "bytes": 1020,
+      "sha256": "82fcc79810248c79e50a8fe6345b35b72f3991afd2ce9c9b949e2fc5bec2b242",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/9480-948b93a20db6b17a.js",
+      "status": 200,
+      "bytes": 149876,
+      "sha256": "065e5da7a94f46dda5f9431ed6f702eb0846a5fdc8c38e960852ea6f87749449",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/1911-68b1dc1b87097be6.js",
+      "status": 200,
+      "bytes": 69260,
+      "sha256": "55ff7f569bbc7682a2eb83a3f54f60d0a6fc86104210625750b8e4fa4a6d4548",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/6564-637acf0f0d32c6c0.js",
+      "status": 200,
+      "bytes": 18151,
+      "sha256": "f600cc39ad7d8f894f9bed51cbcd7e53d9c1900f52642c1f386c65def2b437a5",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/app/%5Blocale%5D/pricing/page-e35a261dd0048b4f.js",
+      "status": 200,
+      "bytes": 1373,
+      "sha256": "eb5e073344eddfd8b8fad6f613e5ed87a29864cffca705769ba26a37491fbbd6",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/app/%5Blocale%5D/layout-454049c42c09d054.js",
+      "status": 200,
+      "bytes": 452,
+      "sha256": "f99c4bb308433a1e46d226e20344f11cf57c8588531029b776b6550628af3fd7",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "status": 200,
+      "bytes": 112594,
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    },
+    {
+      "url": "https://www.letbuyy.com/_next/static/chunks/webpack-2939bc8b3035161a.js",
+      "status": 200,
+      "bytes": 3875,
+      "sha256": "62d72fd394a472421a5922cb762a854f2e1543ef17e7f7b2d6b45c4498cd9196",
+      "canonicalApiLiteralFound": false,
+      "apexApiLiteralFound": false
+    }
+  ],
+  "apiOriginGet": {
+    "url": "https://api.letbuyy.com/v1/pricing",
+    "origin": "https://www.letbuyy.com",
+    "status": 403,
+    "headers": {
+      "Access-Control-Allow-Origin": null,
+      "Access-Control-Allow-Credentials": null,
+      "Vary": null
+    }
+  },
+  "canonicalApiLiteralFound": false
+}

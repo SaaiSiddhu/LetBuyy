@@ -1,0 +1,23 @@
+{
+  "captured_at": "2026-10-29T20:55:48.251856+00:00",
+  "requests": "GET/HEAD only; all form/provider mutations blocked",
+  "rows": [
+    {
+      "width": 1366,
+      "status": 200,
+      "tour_control_visible": true,
+      "keyboard_pause_continue_pause": true,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "width": 375,
+      "status": 200,
+      "tour_control_visible": true,
+      "keyboard_pause_continue_pause": true,
+      "page_errors": [],
+      "passed": true
+    }
+  ],
+  "passed": true
+}

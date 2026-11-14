@@ -1,11 +1,8 @@
 'use client'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
-    Section,
     Badge,
     Banner,
     Button,
@@ -140,31 +137,12 @@ export default function PlanSettingsPage() {
     const [renderTime] = useState(() => Date.now())
     const [renderDate] = useState(() => new Date())
 
-    const beginPlan = useReadRequest(store)
-    const beginPlanInfo = useReadRequest(store)
-    const loadPlanInfo = useCallback(async (siteType: string, sub: SubscriptionData, request: { signal: AbortSignal; isCurrent: () => boolean }) => {
-        try {
-            const response = await fetch(`/api/plans?site_type=${encodeURIComponent(siteType)}&slug=${encodeURIComponent(sub.plan)}`, { cache: 'no-store', signal: request.signal })
-            const payload = await response.json().catch(() => null) as PlansPayload | null
-            if (!request.isCurrent()) return
-            const item = Array.isArray(payload?.plans) ? payload.plans[0] : null
-            const info = response.ok ? normalizePlanInfo(item) : null
-            setPlanInfo(info)
-        } catch {
-            if (request.isCurrent()) setPlanInfo(null)
-        }
-    }, [])
-
     const loadData = useCallback(async () => {
-        const request = beginPlan()
-        const planInfoRequest = beginPlanInfo()
         setLoading(true)
-        setPlanInfo(null)
         setLoadError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/plan`, { cache: 'no-store', signal: request.signal })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/plan`, { cache: 'no-store' })
             const payload = (await response.json().catch(() => null)) as PlanPayload | null
-            if (!request.isCurrent()) return
             if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to load plan settings'))
 
             const data = isRecord(payload?.data) ? payload.data : null
@@ -179,17 +157,26 @@ export default function PlanSettingsPage() {
                 return
             }
 
-            setSubscription(sub)
-            void loadPlanInfo(storeData.site_type, sub, planInfoRequest)
+            let nextPlanInfo: PlanInfo | null = null
+            try {
+                const planResponse = await fetch(`/api/plans?site_type=${encodeURIComponent(storeData.site_type)}&slug=${encodeURIComponent(sub.plan)}`)
+                const plansPayload = (await planResponse.json().catch(() => null)) as PlansPayload | null
+                const planData = Array.isArray(plansPayload?.plans) ? plansPayload.plans[0] : null
+                if (planResponse.ok) nextPlanInfo = normalizePlanInfo(planData)
+            } catch {
+                nextPlanInfo = null
+            }
+
+            setPlanInfo(nextPlanInfo)
+            setSubscription({ ...sub, plan_name: nextPlanInfo?.name || sub.plan_name })
         } catch (error) {
-            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load plan settings'
             setLoadError(message)
             notify({ title: 'Plan settings could not load', description: message, variant: 'critical' })
         } finally {
-            if (request.isCurrent()) setLoading(false)
+            setLoading(false)
         }
-    }, [beginPlan, beginPlanInfo, loadPlanInfo, notify, store])
+    }, [notify, store])
 
     useEffect(() => { void loadData() }, [loadData])
 
@@ -238,29 +225,31 @@ export default function PlanSettingsPage() {
 
     if (loading) {
         return (
-            <SettingsPane navigationKey="plan" title="Plan" description="Your subscription and billing cycle." store={store}>
-                <Section variant="grouped" title="Plan details" >
+            <SettingsPane title="Plan" description="Your subscription and billing cycle." store={store}>
+                <div className="settings-home-card">
+                    <div className="settings-home-section-label">Plan details</div>
                     <div className="settings-plan-row">
                         <Skeleton variant="text" lines={1} />
                     </div>
-                </Section>
-                <Section variant="grouped" title="Subscriptions" >
+                </div>
+                <div className="settings-home-card">
+                    <div className="settings-home-section-label">Subscriptions</div>
                     <div className="settings-plan-subs-desc">
                         <Skeleton variant="text" lines={1} />
                     </div>
-                </Section>
+                </div>
             </SettingsPane>
         )
     }
 
-    const planLabel = hasSubscription ? (planInfo?.name || subscription!.plan_name) : 'Free Trial'
+    const planLabel = hasSubscription ? subscription!.plan_name : 'Free Trial'
     const planBadgeVariant = hasSubscription ? statusVariant(subscription!.status) : isTrialExpired ? 'critical' : 'success'
     const planBadgeLabel = hasSubscription ? formatStatus(subscription!.status) : isTrialExpired ? 'Expired' : 'Trial'
     const planDesc = hasSubscription ? currentPrice : trialDesc
 
     return (
         <>
-            <SettingsPane navigationKey="plan" title="Plan" description="Your subscription and billing cycle." store={store}>
+            <SettingsPane title="Plan" description="Your subscription and billing cycle." store={store}>
                 {loadError && (
                     <Banner
                         variant="critical"
@@ -271,7 +260,8 @@ export default function PlanSettingsPage() {
                     </Banner>
                 )}
 
-                <Section variant="grouped" title="Plan details" >
+                <div className="settings-home-card">
+                    <div className="settings-home-section-label">Plan details</div>
                     <div className="settings-plan-row">
                         <div className="settings-plan-info">
                             <div className="settings-plan-headline">
@@ -301,9 +291,10 @@ export default function PlanSettingsPage() {
                             privacy policy
                         </a>
                     </div>
-                </Section>
+                </div>
 
-                <Section variant="grouped" title="Subscriptions" >
+                <div className="settings-home-card">
+                    <div className="settings-home-section-label">Subscriptions</div>
                     <div className="settings-plan-subs-desc">
                         Additional items you&apos;re billed for on a recurring basis.
                     </div>
@@ -316,7 +307,7 @@ export default function PlanSettingsPage() {
                         <span>View billing history</span>
                         <ChevronRight className="settings-plan-subs-chevron" aria-hidden="true" />
                     </Button>
-                </Section>
+                </div>
             </SettingsPane>
 
             <ConfirmDialog

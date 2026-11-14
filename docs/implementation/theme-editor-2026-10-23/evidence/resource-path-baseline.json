@@ -1,6 +1,0 @@
-{
-  "services/api-gateway/src/routes/resource-search.ts": "c6998e1c756636fc4af373d7eab4e4e6f13184b5f10487acb214f1eedc80f223",
-  "services/api-gateway/src/routes/storefront/public-routes.ts": "5f1611e958f6710ddcc8bf3c3ea828db549a7cb17f34c6ec94658e6fb6e7924e",
-  "apps/merchant/web/src/app/api/stores/[store]/resource-search/route.ts": "648bfde57d62c610dfbfe288eeb180b08789cd365e33e9cb397648f5b3227bd7",
-  "apps/commerce/web/src/lib/content-service.ts": "1d4418e4b49917023c71bf816a5555a8f24508a15cde2c87dad01d333b81f798"
-}

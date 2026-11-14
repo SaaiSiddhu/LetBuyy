@@ -10,8 +10,7 @@ import type {
     AnalyticsDashboard,
     AnalyticsOrdersBreakdown,
     Order,
-    PaginatedResponse,
-    ProductListSummary,
+    Product,
 } from '@letbuyy/api-client'
 
 /* ——————————————————————————————————————
@@ -105,15 +104,9 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     }).configured
 
     const apiClient = createMerchantApiClient()
-    // Setup only needs to know whether the all-status catalogue has any rows.
-    // Share the bounded recent-products read and start independent sections now.
-    const recentProducts = storeData.site_type === 'store'
-        ? apiClient.products.listSummary({ store_id: storeData.id, status: 'all', limit: 4, sort: 'created_at', order: 'desc' }).catch(() => null)
-        : Promise.resolve(null)
-    const [setupStatus, homeData] = await Promise.all([
-        loadSetupStatus(apiClient, storeData.id, storeData.site_type, !!themeCustomized, domainConfigured, recentProducts),
-        loadDashboardHomeData(apiClient, storeData.id, storeData.site_type === 'store', recentProducts),
-    ])
+    const health = storeData.site_type === 'store' ? await apiClient.stores.health(storeData.id).catch(() => null) : null
+    const setupStatus = storeData.site_type === 'store' ? buildStoreSetupStatus(health) : await loadSetupStatus(apiClient, storeData.id, storeData.site_type, !!themeCustomized, domainConfigured)
+    const homeData = await loadDashboardHomeData(apiClient, storeData.id, storeData.site_type === 'store')
 
     return (
         <DashboardClient
@@ -121,6 +114,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
             storeInfo={storeInfo}
             setupStatus={setupStatus}
             homeData={homeData}
+            health={health}
         />
     )
 }
@@ -131,24 +125,7 @@ async function loadSetupStatus(
     siteType: string,
     themeCustomized: boolean,
     domainConfigured: boolean,
-    recentProductsRead: Promise<PaginatedResponse<ProductListSummary> | null>,
 ): Promise<SetupStatus> {
-    if (siteType === 'store') {
-        const [productsPayload, shippingZonesPayload, paymentConfigPayload] = await Promise.all([
-            recentProductsRead,
-            apiClient.shipping.zones.list({ store_id: storeId, limit: 1 }).catch(() => null),
-            apiClient.stores.paymentConfig.get(storeId).catch(() => null),
-        ])
-
-        return buildStoreSetupStatus({
-            productsTotal: productsPayload?.total ?? null,
-            shippingZones: Array.isArray(shippingZonesPayload) ? shippingZonesPayload : null,
-            paymentConfig: paymentConfigPayload,
-            themeCustomized,
-            domainConfigured,
-        })
-    }
-
     const pagesPayload = await apiClient.pages.list({ store_id: storeId, limit: 1 }).catch(() => null)
     return buildPageSetupStatus({
         pagesTotal: pagesPayload?.total ?? null,
@@ -161,7 +138,6 @@ async function loadDashboardHomeData(
     apiClient: ReturnType<typeof createMerchantApiClient>,
     storeId: string,
     isStore: boolean,
-    recentProductsRead: Promise<PaginatedResponse<ProductListSummary> | null>,
 ): Promise<DashboardHomeData> {
     if (!isStore) {
         return emptyDashboardHomeData()
@@ -179,7 +155,13 @@ async function loadDashboardHomeData(
                 sort: 'created_at',
                 order: 'desc',
             }).catch(() => null),
-            recentProductsRead,
+            apiClient.products.list({
+                store_id: storeId,
+                status: 'all',
+                limit: 4,
+                sort: 'created_at',
+                order: 'desc',
+            }).catch(() => null),
         ])
 
         const summary = analyticsPayload?.summary
@@ -189,28 +171,19 @@ async function loadDashboardHomeData(
             ...recentOrders.map((order) => orderActivity(order)),
             ...recentProducts.map((product) => productActivity(product)),
         ]
-            .filter((item): item is DashboardActivity => item !== null)
             .sort((first, second) => timestampValue(second.timestamp) - timestampValue(first.timestamp))
             .slice(0, 5)
 
-        const completeSummary = summary
-            && Number.isFinite(summary.revenue?.value)
-            && Number.isFinite(summary.revenue?.change_pct)
-            && Number.isFinite(summary.orders?.value)
-            && Number.isFinite(summary.orders?.change_pct)
-            && Number.isFinite(summary.avg_order_value)
-            && Number.isFinite(summary.products)
-
         return {
-            totalRevenue: completeSummary ? summary.revenue.value : 0,
-            revenueChangePct: completeSummary ? summary.revenue.change_pct : 0,
-            totalOrders: completeSummary ? summary.orders.value : 0,
-            ordersChangePct: completeSummary ? summary.orders.change_pct : 0,
-            totalProducts: completeSummary ? summary.products : 0,
-            avgOrderValue: completeSummary ? summary.avg_order_value : 0,
+            totalRevenue: summary?.revenue?.value || 0,
+            revenueChangePct: summary?.revenue?.change_pct || 0,
+            totalOrders: summary?.orders?.value || 0,
+            ordersChangePct: summary?.orders?.change_pct || 0,
+            totalProducts: summary?.products || recentProductsPayload?.total || 0,
+            avgOrderValue: summary?.avg_order_value || 0,
             ordersByStatus: ordersBreakdown?.breakdown || {},
             recentActivity,
-            analyticsAvailable: Boolean(completeSummary),
+            analyticsAvailable: Boolean(analyticsPayload),
         }
     } catch {
         return emptyDashboardHomeData()
@@ -231,12 +204,11 @@ function emptyDashboardHomeData(): DashboardHomeData {
     }
 }
 
-function orderActivity(order: Order): DashboardActivity | null {
-    if (!order.id || !order.order_number || !order.status || !Number.isFinite(order.total)) return null
+function orderActivity(order: Order): DashboardActivity {
     const customer = order.customer_name || order.customer_email || order.customer_phone || 'Customer'
-    const amount = formatInrCurrency(order.total, { maximumFractionDigits: 0 })
-    const orderId = order.id
-    const orderNumber = order.order_number
+    const amount = formatInrCurrency(order.total || 0, { maximumFractionDigits: 0 }) || '₹0'
+    const orderId = order.id || crypto.randomUUID()
+    const orderNumber = order.order_number || orderId.slice(0, 8)
 
     return {
         id: `order-${orderId}`,
@@ -246,15 +218,14 @@ function orderActivity(order: Order): DashboardActivity | null {
         timestamp: order.created_at || null,
         href: 'orders',
         icon: 'receipt_long',
-        badgeLabel: titleize(order.status),
-        badgeVariant: statusVariant(order.status),
+        badgeLabel: titleize(order.status || 'pending'),
+        badgeVariant: statusVariant(order.status || 'pending'),
     }
 }
 
-function productActivity(product: ProductListSummary): DashboardActivity | null {
-    if (!product.id || !product.name || !product.status) return null
-    const status = product.status
-    const productId = product.id
+function productActivity(product: Product): DashboardActivity {
+    const status = product.status || (product.is_active ? 'active' : 'draft')
+    const productId = product.id || crypto.randomUUID()
 
     return {
         id: `product-${productId}`,

@@ -20,7 +20,6 @@ export async function GET(
             payment_status: searchParams.get('payment_status') || 'all',
             page: Number(searchParams.get('page') || '1'),
             limit: Number(searchParams.get('limit') || '50'),
-            withCount: searchParams.get('withCount') === 'true',
         }
 
         if (searchParams.get('search')) query.search = searchParams.get('search')!
@@ -36,7 +35,6 @@ export async function GET(
                 page: orders.page,
                 per_page: orders.limit,
                 has_next: orders.has_more,
-                total_is_exact: orders.total_is_exact,
             },
         })
     } catch (err) {

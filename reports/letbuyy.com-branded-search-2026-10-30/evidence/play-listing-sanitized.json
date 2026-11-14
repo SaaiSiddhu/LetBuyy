@@ -1,0 +1,19 @@
+{
+  "captured_at_utc": "2026-10-29T18:41:13.518004+00:00",
+  "requested_url": "https://play.google.com/store/apps/details?id=com.letbuyy.letbuyy&hl=en",
+  "status": 200,
+  "title": "LetBuyy - Apps on Google Play",
+  "raw_sha256": "f86de265c5191c665ca28fc8600a3fa47c67518519525f7cd7f9f92b4ae63a78",
+  "app_id": "com.letbuyy.letbuyy",
+  "public_description_excerpt": "About this app arrow_forward 🛒 Welcome to LetBuyy - Your Ultimate Online Shopping Destination! Discover a world of amazing products at your fingertips. LetBuyy brings you a seamless shopping experience with thousands of products from trusted sellers. ✨ KEY FEATURES: 🎬 REELS & DISCOVERY - Watch engaging product reels just like social media - Discover trending products through short videos - Share your favorite finds with friends 🛍️ EASY SHOPPING - Browse thousands of products across categories - Smart search to find exactly what you need - Secure checkout with multiple payment options - Real-time order tracking 💰 BEST DEALS - Exclusive discoun",
+  "website_privacy_link_candidates": [
+    "https://policies.google.com/privacy",
+    "/store/apps/datasafety?id=com.letbuyy.letbuyy",
+    "/store/apps/datasafety?id=com.letbuyy.letbuyy",
+    "https://letbuy-y.web.app",
+    "https://letbuy-y.web.app/privacy-policy",
+    "https://policies.google.com/privacy"
+  ],
+  "public_personal_contacts": "omitted as unnecessary",
+  "interpretation": "Live listing is consumer-shopping rather than merchant SaaS. A distinct audience can be legitimate; verify product relationship, intended public labels and support/privacy destinations before changing anything."
+}

@@ -10,6 +10,14 @@ import { chromium, expect, type Browser, type BrowserContext, type Page } from '
 import { Gateway, gatewayEnv, newIdentityKeys,INTERNAL_SECRET,IDENTITY_ISSUER } from './gateway-harness';
 import { startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedDatabase, type OwnedClientProcess } from './owned-db-support';
 
+export async function expectConsoleAccount(page: Page, email: string) {
+    const account = page.locator('details.console-account');
+    await expect(account.locator('summary')).toBeVisible();
+    await account.locator('summary').click();
+    await expect(account.getByText(email, { exact: true })).toBeVisible();
+    await account.locator('summary').click();
+}
+
 export interface ConsoleBrowserActor { id: string; email: string; factor: string; kind: 'lead' | 'super' | 'admin' }
 function totp(secret: string) {
     const bits = [...secret].map(letter => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'.indexOf(letter).toString(2).padStart(5, '0')).join('');
@@ -168,7 +176,7 @@ export async function withConsoleBrowser(owned: OwnedDatabase, run: (fixture: {
             await page.getByLabel('Authenticator code', { exact: true }).fill(totp(actor.factor));
             await page.getByRole('button', { name: 'Verify', exact: true }).click();
             await page.waitForURL(url => url.pathname === '/dashboard');
-            await expect(page.getByText(actor.email, { exact: true })).toBeVisible(); return { context, page };
+            await expectConsoleAccount(page, actor.email); return { context, page };
         }
         async function rotateConfiguredFactor(actor:ConsoleBrowserActor,factor:string){
             assert.ok(actors.some(row=>row.id===actor.id));assert.match(factor,/^[A-Z2-7]{16,64}$/);

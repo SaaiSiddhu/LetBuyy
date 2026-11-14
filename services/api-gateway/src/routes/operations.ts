@@ -462,8 +462,10 @@ router.post('/usage/record', async (c) => {
     return c.json(success({ meter }));
 });
 
-router.get('/runtime/overview', async (c) => {
+router.get('/runtime/overview', requirePermission('incident:view'), async (c) => {
     const db = getSupabaseAdmin(c);
+    // Cross-site diagnostics are a bounded platform-operator read, never a tenant query.
+    const queueReadDb = getSupabaseAdminForOperatorRead(c);
 
     const [
         health,
@@ -482,7 +484,7 @@ router.get('/runtime/overview', async (c) => {
             .is('deleted_at', null)
             .order('checked_at', { ascending: false })
             .limit(30),
-        db.from('queue_operation_snapshots')
+        queueReadDb.from('queue_operation_snapshots')
             .select('queue_name, partition_key, site_id, depth, leased, retrying, dead_lettered, oldest_available_at, sampled_at, metadata')
             .is('deleted_at', null)
             .order('sampled_at', { ascending: false })

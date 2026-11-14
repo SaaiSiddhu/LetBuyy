@@ -1,8 +1,7 @@
 import type { Context } from 'hono';
-import { z } from 'zod';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import type { Env } from '../index';
-import { ForbiddenError, NotFoundError, ValidationError } from './errors';
+import { ForbiddenError, NotFoundError } from './errors';
 import { resolveCustomUser, verifySiteOwnership, type CustomUser, type WorkerAuthUser } from './auth-user';
 import { getSupabaseAdmin, getSupabaseAdminUnguarded } from './supabase';
 import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
@@ -236,26 +235,6 @@ export async function resolveOwnedStoreScope(c: AppContext, siteId: string): Pro
         customUser,
         tenant,
     };
-}
-
-/** Scope an ID-addressed merchant resource before reading it. Never bootstrap
- * tenant tables with an unscoped resource-ID lookup. Older owner clients may
- * omit selection; their queries remain fenced to their current owned sites. */
-export async function resolveMerchantResourceStoreIds(c: AppContext): Promise<string[]> {
-    const selected = c.req.header('X-Store-ID') || c.req.query('store_id') || c.get('auth').user.storeId;
-    if (selected) {
-        const parsed = z.string().uuid().safeParse(selected);
-        if (!parsed.success) throw new ValidationError('Choose a valid store before accessing this resource.');
-        await resolveOwnedStoreScope(c, parsed.data);
-        return [parsed.data];
-    }
-    const db = getSupabaseAdmin(c);
-    const user = await resolveCustomUser(db, c.get('auth').user);
-    if (!user) throw new ForbiddenError('User profile not found');
-    const { data, error } = await db.from('sites').select('id')
-        .eq('custom_user_id', user.id).is('deleted_at', null).limit(100);
-    if (error) throw new Error('Owned store scope unavailable');
-    return (data || []).map(row => String(row.id));
 }
 
 export async function resolveTenantContextForOwnedSite(c: AppContext, siteId: string): Promise<TenantContext> {

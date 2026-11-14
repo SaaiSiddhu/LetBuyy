@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // Filtered here, not with a glob pathspec: GIT_LITERAL_PATHSPECS=1 (the setting for paths that contain [brackets], as the Next dynamic
 // routes do) turns `-- '*.sh'` literal, matches nothing, and made this test fail with "no shell scripts found" for whoever had it set.
-const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: repoRoot, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 }).split('\0').filter((file) => file.endsWith('.sh'));
+const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: repoRoot, encoding: 'utf8' }).split('\0').filter((file) => file.endsWith('.sh'));
 
 test('every tracked shell script parses', () => {
   assert.ok(tracked.length > 0, 'no shell scripts found; the check would be inert');

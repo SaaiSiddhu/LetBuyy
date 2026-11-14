@@ -1,0 +1,19 @@
+{
+  "captured_at": "2026-10-30T00:36:33.296360+00:00",
+  "json_files_parsed": 98,
+  "csv_rows": {
+    "PERFORMANCE-COMPARISON.csv": 36,
+    "URL-INVENTORY.csv": 489,
+    "TEST-MATRIX.csv": 16
+  },
+  "valid_markdown_local_links": 23,
+  "current_source_and_candidate_files": 447,
+  "source_patch_files": 41,
+  "binary_before_after_hashes_match": true,
+  "current_source_hashes_match": true,
+  "text_patch_sha256": "4b90df286dd1e4d269478d4f25c4f1f57044f050a7779b2a7c527e9e1552da8b",
+  "remaining_warning_runs": 7,
+  "whole_repository_green_claimed": false,
+  "deployed": false,
+  "passed": true
+}

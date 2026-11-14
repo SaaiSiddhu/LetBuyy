@@ -1,0 +1,21 @@
+{
+  "recorded_at_utc": "2026-10-29T19:51:11.829736+00:00",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "branch": "codex/local-work-preserved-20261025",
+  "source_changed_since_task_start": 74,
+  "boundary_tests": 4,
+  "marketing_tests_before": 180,
+  "marketing_tests_final": 186,
+  "confirmed_audit_records": 25,
+  "confirmed_marketing_records_addressed": 22,
+  "confirmed_external_records_not_changed": [
+    "BR-PUB-01",
+    "BR-PUB-02",
+    "BR-EXT-01"
+  ],
+  "app_source_manifest": "task-source-manifest.json",
+  "deployed": false,
+  "committed": false,
+  "provider_data": "Synthetic public pricing contract for isolated9007 acceptance; existing9006 configuration unchanged",
+  "database_writes": false
+}

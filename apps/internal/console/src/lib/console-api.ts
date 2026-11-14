@@ -42,6 +42,7 @@ type ConsoleApiRequest = {
     /** Server-only forwarding of the real cookie, never a typed actor/MFA flag. */
     sessionToken?: string;
     previousSessionToken?: string;
+    idempotencyKey?: string;
 };
 
 export function consoleApiBaseUrl(): string {
@@ -64,7 +65,13 @@ export async function fetchConsoleApi<T>(
         return { error: 'PLATFORM_CONSOLE_API_TOKEN is not configured.' };
     }
 
-    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    const inputPath = path.startsWith('/') ? path : `/${path}`;
+    if (/\/(?:\.|\.\.)(?:\/|$)|%2f|%5c|\\/i.test(inputPath)) return {error:'Invalid Console API path.',status:400,code:'VALIDATION'};
+    // Operations handlers expect an authenticated human, not the server bridge
+    // as a user bearer. The private facade binds the actual Console session and
+    // admits only the existing workspace routes; frozen services stay absent.
+    const normalizedPath = /^\/operations\/(rbac|risk|runtime|oncall|postmortems|marketplace-listings|support)(?:\/|$)/.test(inputPath)
+        ? inputPath.replace(/^\/operations/, '/internal/console/operator') : inputPath;
     const request = 'query' in input || 'method' in input || 'body' in input || 'sessionToken' in input
         ? input as ConsoleApiRequest
         : { query: input as Record<string, QueryValue> };
@@ -81,6 +88,7 @@ export async function fetchConsoleApi<T>(
         token,
         headers: {
             'X-Request-ID': `admin-web-${Date.now()}`,
+            ...(request.idempotencyKey ? {'Idempotency-Key':request.idempotencyKey} : {}),
             ...(sessionToken ? { 'X-Platform-Console-Session': sessionToken } : {}),
             ...(request.previousSessionToken ? { 'X-Platform-Console-Previous-Session': request.previousSessionToken } : {}),
         },
@@ -93,6 +101,7 @@ export async function fetchConsoleApi<T>(
             method: request.method,
             query: request.query,
             body: request.body,
+            idempotencyKey: request.idempotencyKey,
         });
 
         return { data: payload };
@@ -117,7 +126,7 @@ export function readSearchParam(
 
 export function readPageParam(params: Record<string, string | string[] | undefined> | undefined): number {
     const value = Number(readSearchParam(params, 'page') || 1);
-    return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
+    return Number.isSafeInteger(value) && value > 0 && value <= 10000 ? value : 1;
 }
 
 export function formatMoneyFromPaise(value: number | string | null | undefined, currency = 'INR'): string {

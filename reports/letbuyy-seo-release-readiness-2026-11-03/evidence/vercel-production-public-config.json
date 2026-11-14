@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-11-03T03:43:09.863759+00:00",
+  "project": "marketing-site",
+  "environment": "production",
+  "commandExit": 0,
+  "readOnly": true,
+  "rawOutputPersisted": false,
+  "variableCount": 1,
+  "keys": [
+    "NEXT_PUBLIC_TURNSTILE_SITE_KEY"
+  ],
+  "publicOrigins": []
+}

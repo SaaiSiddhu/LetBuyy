@@ -24,11 +24,10 @@ import { execFileSync, spawn, type ChildProcessByStdio } from 'node:child_proces
 import type { Readable, Writable } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 import {createServer,type Socket} from 'node:net';
-import {chmodSync,mkdtempSync,readFileSync,readdirSync,rmSync,lstatSync,realpathSync,openSync,fstatSync,closeSync,readSync,writeFileSync,constants as fsConstants} from 'node:fs';
+import {chmodSync,mkdtempSync,readFileSync,readdirSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {createHash,X509Certificate,randomBytes,createPrivateKey} from 'node:crypto';
-import {createVolume,docker,newRunId,removeCluster,requireImagePresent,waitUntilAccepting,FIXTURE_LABEL,OWNER_PID_LABEL,RUN_ID_LABEL,ROLE_LABEL} from '../../../../../scripts/governance/executable-pg-fixture.mjs';
+import {createHash,X509Certificate} from 'node:crypto';
 import {SUPABASE_FAITHFUL_BOOTSTRAP_SQL} from '../../../../../scripts/governance/supabase-faithful-bootstrap.mjs';
 import {removeOwnedNextDirectory,validateOwnedNextDirectoryReceipt} from '../../../../../scripts/governance/owned-next-directory.mjs';
 
@@ -49,7 +48,7 @@ export interface OwnedDatabase {
     readonly database: string;
     readonly restUrl: string;
     /** `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` for a gateway Env or a Supabase client: the owned REST endpoint. */
-    restEnv(): { SUPABASE_URL: string; SUPABASE_SERVICE_ROLE_KEY: string; SUPABASE_ANON_KEY: string };
+    restEnv(): { SUPABASE_URL: string; SUPABASE_SERVICE_ROLE_KEY: string };
     /** One statement (or several, in one implicit transaction) as the superuser, `-At -F '|'`. Throws on an SQL error. */
     psql(sql: string): string;
     /** The same, as a separate process, for genuinely concurrent statements. */
@@ -102,7 +101,6 @@ export function requireOwnedDatabase(): OwnedDatabase {
         throw new Error(stderr || 'the owned database could not be verified; run this suite through scripts/governance/run-executable-suites.mjs (pnpm --filter @letbuyy/api-gateway run test:db)');
     }
     const serviceRoleKey = process.env.LETBUYY_OWNED_REST_SERVICE_KEY ?? '';
-    const anonKey = process.env.LETBUYY_OWNED_REST_ANON_KEY ?? '';
     if (!serviceRoleKey) throw new Error('owned database: no REST service key was announced');
     armWatchdog(verified.runnerPid);
     clientFixtureEnv = Object.fromEntries([
@@ -126,7 +124,7 @@ export function requireOwnedDatabase(): OwnedDatabase {
         container: verified.pgContainer,
         database: verified.database,
         restUrl: verified.restUrl,
-        restEnv: () => ({ SUPABASE_URL: verified.restUrl, SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey, SUPABASE_ANON_KEY: anonKey }),
+        restEnv: () => ({ SUPABASE_URL: verified.restUrl, SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey }),
         psql: (sql: string) => execFileSync('docker', [...psqlBase, '-At', '-F', '|', '-c', sql], { encoding: 'utf8', timeout: 15_000 }).trim(),
         psqlAsync: (sql: string) => new Promise<string>((resolvePromise, rejectPromise) => {
             const proc = spawn('docker', [...psqlBase, '-At', '-c', sql]);
@@ -184,77 +182,11 @@ export function requireOwnedDatabase(): OwnedDatabase {
 
 export type OwnedClientProcess = ChildProcessByStdio<Writable, Readable, Readable>;
 
-/** Only fixed private preissued leaf paths; no certificate issuance or trust installation. */
-function requirePrivateCheckoutTlsPath(path:string, directory:boolean, uid:number) {
-    const info=lstatSync(path);
-    if(realpathSync(path)!==path||info.isSymbolicLink()||info.uid!==uid
-        ||(info.mode&0o777)!==(directory?0o700:0o600)
-        ||(directory?!info.isDirectory():!info.isFile()||info.nlink!==1||info.size<1||info.size>65536)) {
-        throw new Error('owned manual checkout TLS requires fixed private owned files');
-    }
-    return info;
-}
-function readPrivateCheckoutTlsLeaf(path:string,uid:number):Buffer {
-    const expected=requirePrivateCheckoutTlsPath(path,false,uid);
-    const fd=openSync(path,fsConstants.O_RDONLY|fsConstants.O_NOFOLLOW);
-    const buffer=Buffer.alloc(65537);
-    try {
-        const actual=fstatSync(fd);
-        if(actual.dev!==expected.dev||actual.ino!==expected.ino||actual.uid!==uid
-            ||!actual.isFile()||actual.nlink!==1||(actual.mode&0o777)!==0o600
-            ||actual.size<1||actual.size>65536)throw new Error('owned manual checkout TLS file changed');
-        const count=readSync(fd,buffer,0,buffer.length,0),after=fstatSync(fd);
-        if(count<1||count>65536||count!==actual.size||after.size!==actual.size
-            ||after.mtimeMs!==actual.mtimeMs||after.ctimeMs!==actual.ctimeMs) {
-            throw new Error('owned manual checkout TLS file changed during read');
-        }
-        return Buffer.from(buffer.subarray(0,count));
-    } finally {buffer.fill(0);closeSync(fd);}
-}
-function createManualOwnedCheckoutTls(toolEnv:Record<string,string>):{key:Buffer;cert:Buffer;spki:string} {
-    let key:Buffer|undefined,verifyDirectory:string|undefined;
-    try {
-        if(process.platform!=='darwin'||process.env.LETBUYY_THEME_EDITOR_BROWSER_HOLD!=='1'
-            ||process.env.LETBUYY_THREADLINE_QA==='1'||!process.getuid)throw new Error('manual Editor-only');
-        const uid=process.getuid(),directory=`/private/tmp/letbuyy-owned-checkout-manual-${uid}`;
-        requirePrivateCheckoutTlsPath(directory,true,uid);
-        const cert=readPrivateCheckoutTlsLeaf(join(directory,'cert.pem'),uid);
-        key=readPrivateCheckoutTlsLeaf(join(directory,'key.pem'),uid);
-        // Exactly one leaf PEM, with no ignored chain, private payload or trailing certificate.
-        if(!/^-----BEGIN CERTIFICATE-----\r?\n[A-Za-z0-9+/=\r\n]+-----END CERTIFICATE-----\s*$/.test(cert.toString('ascii'))) {
-            throw new Error('one leaf certificate required');
-        }
-        const certificate=new X509Certificate(cert);
-        const from=Date.parse(certificate.validFrom),to=Date.parse(certificate.validTo),now=Date.now();
-        if(certificate.subjectAltName!=='DNS:checkout.localhost'||certificate.ca
-            ||certificate.checkHost('checkout.localhost',{subject:'never',wildcards:false})!=='checkout.localhost'
-            ||!Number.isFinite(from)||!Number.isFinite(to)||from>now||to<=now
-            ||certificate.keyUsage?.length!==1||certificate.keyUsage[0]!=='1.3.6.1.5.5.7.3.1'
-            ||!certificate.checkPrivateKey(createPrivateKey(key)))throw new Error('invalid leaf identity, validity or key');
-        // Verify the same immutable bytes parsed above, not a mutable input path.
-        verifyDirectory=mkdtempSync('/private/tmp/letbuyy-owned-checkout-verify-');
-        chmodSync(verifyDirectory,0o700);
-        const verifyPath=join(verifyDirectory,'cert.pem');
-        writeFileSync(verifyPath,cert,{mode:0o600,flag:'wx'});
-        execFileSync('/usr/bin/security',['verify-cert','-c',verifyPath,'-p','ssl','-n','checkout.localhost','-L','-q'],{
-            env:toolEnv,timeout:15_000,stdio:['ignore','pipe','pipe'],maxBuffer:65536,
-        });
-        const publicDer=certificate.publicKey.export({type:'spki',format:'der'});
-        return Object.freeze({key,cert,spki:createHash('sha256').update(publicDer).digest('base64')});
-    } catch {
-        key?.fill(0);
-        throw new Error('owned manual checkout TLS unavailable; owner must provision trusted leaf files separately');
-    } finally {
-        // Preissued inputs remain private and intact; delete only this call's public verification snapshot.
-        if(verifyDirectory)rmSync(verifyDirectory,{recursive:true,force:true});
-    }
-}
-
-/** checkout.localhost TLS material only for a freshly verified owned fixture.
- * Native generation removes its temporary key files; manual mode consumes and preserves private preissued inputs.
- * No caller-selected command, hostname, file path or certificate-trust override is accepted.
+/** One temporary checkout.localhost certificate, only for a freshly verified owned fixture.
+ * No caller-selected command, name, path or certificate-trust override is accepted.
+ * Return its bytes and exact Chromium SPKI pin; remove the temporary key files before returning.
  */
-export function createOwnedCheckoutTlsCertificate(owned:OwnedDatabase,mode:'native-ephemeral'|'manual-os-trusted'='native-ephemeral'):{key:Buffer;cert:Buffer;spki:string} {
+export function createOwnedCheckoutTlsCertificate(owned:OwnedDatabase):{key:Buffer;cert:Buffer;spki:string} {
     if(owned!==requireOwnedDatabase()||!clientFixtureEnv)throw new Error('owned checkout TLS requires the verified database handle');
     const toolEnv:Record<string,string>={};
     for(const name of ['PATH','HOME','TMPDIR','TMP','TEMP','LANG','LC_ALL'])if(process.env[name])toolEnv[name]=process.env[name]!;
@@ -264,8 +196,6 @@ export function createOwnedCheckoutTlsCertificate(owned:OwnedDatabase,mode:'nati
     if(verified.pgContainer!==owned.container||verified.database!==owned.database||verified.runId!==owned.runId) {
         throw new Error('owned checkout TLS refuses a changed fixture binding');
     }
-    if(mode!=='native-ephemeral'&&mode!=='manual-os-trusted')throw new Error('unapproved checkout TLS mode');
-    if(mode==='manual-os-trusted')return createManualOwnedCheckoutTls(toolEnv);
     const directory=mkdtempSync(join(tmpdir(),'letbuyy-owned-checkout-tls-'));
     try {
         chmodSync(directory,0o700);
@@ -317,7 +247,7 @@ export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, op
     if (!CLIENT_KINDS.has(kind)) throw new Error('unapproved owned client runtime kind');
     if (owned !== requireOwnedDatabase() || !clientFixtureEnv) throw new Error('owned client runtime requires the verified database handle');
     if ((kind.endsWith('-next') || kind.endsWith('-next-production')) && (!Number.isInteger(options.port) || options.port! < 1024 || options.port! > 65535)) throw new Error('invalid local Next port');
-    if (Object.keys(options.env).some(name => /^(NODE_OPTIONS|NODE_PATH|BASH_ENV|ENV|PATH|HOME|PNPM_HOME|FLUTTER_ROOT|PUB_CACHE|PLAYWRIGHT_BROWSERS_PATH|LD_PRELOAD|DYLD_.*|__NEXT_PRIVATE_.*)$/.test(name))) {
+    if (Object.keys(options.env).some(name => /^(NODE_OPTIONS|NODE_PATH|BASH_ENV|ENV|PATH|HOME|PNPM_HOME|FLUTTER_ROOT|PUB_CACHE|PLAYWRIGHT_BROWSERS_PATH|LD_PRELOAD|DYLD_.*)$/.test(name))) {
         throw new Error('owned client runtime refuses executable or loader overrides');
     }
     // Only OS/tool paths cross implicitly. Provider/database credentials and
@@ -515,107 +445,4 @@ export function requireOwnedHistoricalSqlDatabase(through: 309 | 315 | 357 | 358
             child.stdin.end(sql);
         }),
     });
-}
-
-
-/** Fresh provider-role cluster, reachable only after the normal fixture guard.
- * Administrator access exists solely inside this network-disabled synthetic
- * image. No endpoint, credentials, existing container or recovery data can be
- * supplied by a caller. All SQL/process access stays in this support module.
- */
-interface OwnedProviderSession {
-    query(sql:string):Promise<string>;
-    close():void;
-    stopped():Promise<void>;
-}
-export async function createOwnedManagedSupabaseFixture(owned:OwnedDatabase) {
-    const verified=requireOwnedDatabase();
-    if(owned!==verified) throw new Error('Managed provider fixture requires the exact verified parent handle');
-    const image='public.ecr.aws/supabase/postgres:17.6.1.127@sha256:be60aee15997daca475b710b734bc6bfe52cd544dcd7e9fd2ff58210b6747d83';
-    requireImagePresent(image);
-    const runId=newRunId(),name=`letbuyy-managed-admission-${runId}`;
-    const volume=createVolume({name:`${name}-data`,runId});
-    const connections:OwnedProviderSession[]=[];
-    const applicationPassword=randomBytes(32).toString('hex');
-    const migratorPassword=randomBytes(32).toString('hex');
-    let applicationPasswordInstalled=false;
-    let migratorPasswordInstalled=false;
-    const execute=(sql:string,role:'postgres'|'supabase_admin'|'authenticator'|'cli_login_postgres'='postgres')=>{
-        try {
-            const password=role==='authenticator'?applicationPassword:role==='cli_login_postgres'?migratorPassword:undefined;
-            const stdout=execFileSync('docker',['exec','-i',...(password?['-e','PGPASSWORD']:[]),name,'psql',...(password?['-h','127.0.0.1']:[]),'-U',role,'-d','postgres','-qAtX','-v','ON_ERROR_STOP=1'],{
-                input:(role==='cli_login_postgres'?'SET ROLE postgres;\n':'')+'SET search_path=public,extensions;\n'+sql,encoding:'utf8',timeout:90_000,stdio:['pipe','pipe','pipe'],
-                ...(password?{env:{...process.env,PGPASSWORD:password}}:{}),
-            });
-            return {ok:true,stdout:stdout.trim(),error:''};
-        } catch(error) {
-            return {ok:false,stdout:'',error:String((error as {stderr?:Buffer|string}).stderr??'Managed fixture SQL failed').slice(-1800)};
-        }
-    };
-    const query=(sql:string,role:'postgres'|'supabase_admin'|'authenticator'|'cli_login_postgres'='postgres')=>{
-        const result=execute(sql,role);if(!result.ok) throw new Error(result.error);return result.stdout;
-    };
-    function session():OwnedProviderSession {
-        const child=spawn('docker',['exec','-i',name,'psql','-U','postgres','-d','postgres','-qAtX','-v','ON_ERROR_STOP=1']);
-        let output='',errors='',ended=false;
-        let pending:{marker:string;done:(value:string)=>void;fail:(error:Error)=>void;timer:ReturnType<typeof setTimeout>}|undefined;
-        child.stdout.on('data',(data:Buffer)=>{
-            output+=data.toString();
-            if(pending&&output.includes(pending.marker)) {
-                const current=pending;pending=undefined;clearTimeout(current.timer);
-                const result=output.slice(0,output.indexOf(current.marker));output='';current.done(result.trim());
-            }
-        });
-        child.stderr.on('data',(data:Buffer)=>{errors+=data.toString();});
-        child.on('exit',()=>{
-            ended=true;
-            if(pending) {clearTimeout(pending.timer);pending.fail(new Error(errors.slice(-1800)));pending=undefined;}
-        });
-        const connection={
-            query(sql:string):Promise<string> {
-                if(ended) return Promise.reject(new Error(errors.slice(-1800)||'Owned managed session ended'));
-                if(pending) return Promise.reject(new Error('One command at a time per owned connection'));
-                return new Promise((done,fail)=>{
-                    const marker='MANAGED_DONE_'+randomBytes(12).toString('hex');
-                    pending={marker,done,fail,timer:setTimeout(()=>{child.kill();fail(new Error('Owned managed SQL timed out'));},90_000)};
-                    child.stdin.write(sql+'\n\\echo '+marker+'\n');
-                });
-            },
-            close(){if(!child.stdin.destroyed)child.stdin.end();},
-            stopped(){return new Promise<void>(done=>{if(ended)done();else child.once('exit',()=>done());});},
-        };
-        connections.push(connection);return connection;
-    }
-    try {
-        docker(['run','-d','--pull','never','--name',name,'--network','none',
-            '--label',`${FIXTURE_LABEL}=1`,'--label',`${OWNER_PID_LABEL}=${process.pid}`,
-            '--label',`${RUN_ID_LABEL}=${runId}`,'--label',`${ROLE_LABEL}=postgres`,
-            '--memory','1g','--memory-swap','1g','--cpus','2','--pids-limit','512',
-            '--mount',`type=volume,source=${volume},target=/var/lib/postgresql/data`,'-e','POSTGRES_PASSWORD',
-            image,'postgres','-D','/etc/postgresql','-c','max_prepared_transactions=2','-c','autovacuum=off','-c','jit=off'],
-            {env:{POSTGRES_PASSWORD:randomBytes(32).toString('hex')}});
-        await waitUntilAccepting(name);
-    } catch(error) {removeCluster({name,runId,volume});throw error;}
-    return {
-        psql:(sql:string)=>query(sql),admin:(sql:string)=>query(sql,'supabase_admin'),
-        application:(sql:string)=>{
-            if(!applicationPasswordInstalled) {
-                query(`ALTER ROLE authenticator PASSWORD '${applicationPassword}';`,'supabase_admin');
-                applicationPasswordInstalled=true;
-            }
-            return query(sql,'authenticator');
-        },migrator:(sql:string)=>{
-            if(!migratorPasswordInstalled) {
-                query(`ALTER ROLE cli_login_postgres PASSWORD '${migratorPassword}';`,'supabase_admin');
-                migratorPasswordInstalled=true;
-            }
-            return query(sql,'cli_login_postgres');
-        },session,
-        psqlExpectError(sql:string){const result=execute(sql);if(result.ok)throw new Error('Refused managed-fixture operation unexpectedly succeeded');return result.error;},
-        async close(){
-            for(const connection of connections)connection.close();
-            await Promise.all(connections.map(connection=>connection.stopped()));
-            removeCluster({name,runId,volume});
-        },
-    };
 }

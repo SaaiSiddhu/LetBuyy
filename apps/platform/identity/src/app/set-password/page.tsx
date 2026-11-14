@@ -6,7 +6,6 @@ import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
-import { validatePasswordStrength } from '@/lib/auth/password'
 import { Badge, Banner, Button, Input, ProgressBar } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -15,18 +14,12 @@ const translations: Record<Lang, Record<string, string>> = {
     en: {
         verified: 'Email verified!',
         title: 'Create your password',
-        subtitle: 'Choose a strong password for your LetBuyy account.',
+        subtitle: 'Choose a strong password for',
         password: 'Password',
         confirmPassword: 'Confirm password',
         create: 'Create password',
-        skip: 'Back to login',
-        retryContext: 'Try again',
-        contextFailed: 'Unable to check your email verification. Please try again.',
-        rateLimited: 'Too many attempts. Please wait before trying again.',
+        skip: 'Or skip and use magic links →',
         minLength: 'At least 8 characters',
-        maxLength: 'At most 128 characters',
-        hasLowercase: 'One lowercase letter',
-        hasSpecial: 'One symbol',
         hasUppercase: 'One uppercase letter',
         hasNumber: 'One number',
         strength: 'Password strength',
@@ -44,14 +37,8 @@ const translations: Record<Lang, Record<string, string>> = {
         password: 'पासवर्ड',
         confirmPassword: 'पासवर्ड की पुष्टि करें',
         create: 'पासवर्ड बनाएं',
-        skip: 'लॉगिन पर वापस जाएं',
-        retryContext: 'फिर कोशिश करें',
-        contextFailed: 'ईमेल सत्यापन की जाँच नहीं हो सकी। फिर कोशिश करें।',
-        rateLimited: 'बहुत अधिक प्रयास। थोड़ी देर बाद फिर कोशिश करें।',
+        skip: 'या मैजिक लिंक का उपयोग करें →',
         minLength: 'कम से कम 8 अक्षर',
-        maxLength: 'अधिकतम 128 अक्षर',
-        hasLowercase: 'एक छोटा अक्षर',
-        hasSpecial: 'एक विशेष चिह्न',
         hasUppercase: 'एक बड़ा अक्षर',
         hasNumber: 'एक संख्या',
         strength: 'पासवर्ड मजबूती',
@@ -69,14 +56,8 @@ const translations: Record<Lang, Record<string, string>> = {
         password: 'கடவுச்சொல்',
         confirmPassword: 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
         create: 'கடவுச்சொல்லை உருவாக்கவும்',
-        skip: 'உள்நுழைவுக்குத் திரும்பு',
-        retryContext: 'மீண்டும் முயற்சி',
-        contextFailed: 'மின்னஞ்சல் சரிபார்ப்பைச் சரிபார்க்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
-        rateLimited: 'மிக அதிக முயற்சிகள். சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.',
+        skip: 'அல்லது மேஜிக் இணைப்புகளைப் பயன்படுத்தவும் →',
         minLength: 'குறைந்தது 8 எழுத்துகள்',
-        maxLength: 'அதிகபட்சம் 128 எழுத்துகள்',
-        hasLowercase: 'ஒரு சிறிய எழுத்து',
-        hasSpecial: 'ஒரு குறியீடு',
         hasUppercase: 'ஒரு பெரிய எழுத்து',
         hasNumber: 'ஒரு எண்',
         strength: 'கடவுச்சொல் வலிமை',
@@ -98,42 +79,40 @@ function SetPasswordContent() {
     const [showConfirm, setShowConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [contextReady, setContextReady] = useState(false)
-    const [checkingContext, setCheckingContext] = useState(true)
-    const [contextError, setContextError] = useState<'expired' | 'unavailable' | null>(null)
-    const [contextAttempt, setContextAttempt] = useState(0)
+    const [userEmail, setUserEmail] = useState('')
+    const [userId, setUserId] = useState('')
     const [lang, setLang] = useState<Lang>('en')
 
     const t = translations[lang]
 
     useEffect(() => {
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
-        setLang(['en', 'hi', 'ta'].includes(savedLang) ? savedLang : 'en')
-        let retired = false
-        setCheckingContext(true)
-        setContextReady(false)
-        setContextError(null)
+        setLang(savedLang)
 
-        // This is an advisory check of the HTTP-only verified intent cookie.
-        // The POST still atomically consumes the database intent as authority.
-        fetch('/api/auth/set-password', { cache: 'no-store' })
-            .then(async (res) => {
-                const data = await res.json()
-                if (retired) return
-                if (res.ok && data.canSetPassword === true) {
-                    setContextReady(true)
-                } else {
-                    setContextError(res.status === 403 ? 'expired' : 'unavailable')
-                }
-            })
-            .catch(() => {
-                if (!retired) setContextError('unavailable')
-            })
-            .finally(() => {
-                if (!retired) setCheckingContext(false)
-            })
-        return () => { retired = true }
-    }, [contextAttempt])
+        // Read userId and email from URL search params (passed from signup OTP step)
+        const paramUserId = searchParams.get('userId')
+        const paramEmail = searchParams.get('email')
+
+        if (paramUserId && paramEmail) {
+            setUserId(paramUserId)
+            setUserEmail(paramEmail)
+        } else {
+            // Fallback: try session (for edge cases like direct navigation)
+            fetch('/api/auth/session')
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.authenticated) {
+                        setUserEmail(data.user.email)
+                        setUserId(data.user.id)
+                    } else {
+                        window.location.href = authPathWithReturnTo('/lookup', returnTo)
+                    }
+                })
+                .catch(() => {
+                    window.location.href = authPathWithReturnTo('/lookup', returnTo)
+                })
+        }
+    }, [searchParams])
 
 
     const cycleLang = () => {
@@ -143,40 +122,46 @@ function SetPasswordContent() {
         localStorage.setItem('letbuyy_lang', next)
     }
 
-    const { rules, isValid } = useMemo(() => validatePasswordStrength(password), [password])
+    const rules = useMemo(() => ({
+        minLength: password.length >= 8,
+        hasUppercase: /[A-Z]/.test(password),
+        hasNumber: /[0-9]/.test(password),
+    }), [password])
+
+    const isValid = rules.minLength && rules.hasUppercase && rules.hasNumber
     const passwordsMatch = password === confirmPassword && confirmPassword.length > 0
     const ruleCount = Object.values(rules).filter(Boolean).length
     const visibilityButtonClass = 'inline-flex h-[var(--lb-density-icon-button-height)] w-[var(--lb-density-icon-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]'
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!contextReady || !isValid || !passwordsMatch || loading) return
+        if (!isValid || !passwordsMatch) return
 
         setLoading(true)
         setError(null)
 
         try {
+            if (!userId || !userEmail) {
+                setError(t.sessionExpired)
+                return
+            }
+
             const res = await fetch('/api/auth/set-password', {
                 method: 'POST',
-                headers: (await getAuthHeaders()),
-                body: JSON.stringify({ password }),
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ password, userId, email: userEmail }),
             })
 
             const data = await res.json()
 
             if (!res.ok) {
-                if (res.status === 401 || res.status === 403) {
-                    setContextReady(false)
-                    setContextError('expired')
-                } else if (res.status === 429) setError(t.rateLimited)
-                else setError(t.genericError)
+                if (res.status === 401) setError(t.sessionExpired)
+                else setError(data.error || 'Failed to set password')
                 return
             }
 
             if (data.success) {
                 window.location.href = returnTo || data.redirectTo
-            } else {
-                setError(t.genericError)
             }
         } catch {
             setError(t.genericError)
@@ -186,7 +171,7 @@ function SetPasswordContent() {
     }
 
     const handleSkip = () => {
-        window.location.href = authPathWithReturnTo('/lookup', returnTo)
+        window.location.href = returnTo || '/onboarding'
     }
 
     return (
@@ -202,22 +187,16 @@ function SetPasswordContent() {
                     <BrandLogo />
                 </div>
 
-                {contextReady && <div className="flex justify-center">
+                <div className="flex justify-center">
                     <Badge label={t.verified} variant="success" />
-                </div>}
+                </div>
 
                 <h1 className="auth-title">{t.title}</h1>
                 <p className="auth-subtitle">
-                    {t.secureHint}
+                    {t.subtitle} <strong>{userEmail}</strong>
                 </p>
 
-                {contextError && <Banner variant="critical">
-                    {contextError === 'expired' ? t.sessionExpired : t.contextFailed}
-                </Banner>}
-                {contextError === 'unavailable' && <Button type="button" fullWidth
-                    onClick={() => setContextAttempt(value => value + 1)}>{t.retryContext}</Button>}
-
-                <form onSubmit={handleSubmit} className="auth-form" aria-busy={checkingContext}>
+                <form onSubmit={handleSubmit} className="auth-form">
                     <Input
                         id="newPassword"
                         type={showPassword ? 'text' : 'password'}
@@ -227,7 +206,6 @@ function SetPasswordContent() {
                         helperText={t.secureHint}
                         autoComplete="new-password"
                         autoFocus
-                        disabled={!contextReady || checkingContext}
                         required
                         rightIcon={
                             <Button unstyled
@@ -242,14 +220,11 @@ function SetPasswordContent() {
                     />
 
                     <div className="grid gap-[var(--lb-space-2)]">
-                        <ProgressBar value={ruleCount} max={Object.keys(rules).length} label={t.strength} />
+                        <ProgressBar value={ruleCount} max={3} label={t.strength} />
                         <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                             <Badge label={t.minLength} variant={rules.minLength ? 'success' : 'warning'} />
                             <Badge label={t.hasUppercase} variant={rules.hasUppercase ? 'success' : 'warning'} />
                             <Badge label={t.hasNumber} variant={rules.hasNumber ? 'success' : 'warning'} />
-                            <Badge label={t.hasLowercase} variant={rules.hasLowercase ? 'success' : 'warning'} />
-                            <Badge label={t.hasSpecial} variant={rules.hasSpecial ? 'success' : 'warning'} />
-                            <Badge label={t.maxLength} variant={rules.maxLength ? 'success' : 'warning'} />
                         </div>
                     </div>
 
@@ -261,7 +236,6 @@ function SetPasswordContent() {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         autoComplete="new-password"
                         error={confirmPassword && !passwordsMatch ? t.mismatch : undefined}
-                        disabled={!contextReady || checkingContext}
                         required
                         rightIcon={
                             <Button unstyled
@@ -285,7 +259,7 @@ function SetPasswordContent() {
                         type="submit"
                         fullWidth
                         loading={loading}
-                        disabled={checkingContext || !contextReady || loading || !isValid || !passwordsMatch}
+                        disabled={loading || !isValid || !passwordsMatch}
                     >
                         {t.create}
                     </Button>

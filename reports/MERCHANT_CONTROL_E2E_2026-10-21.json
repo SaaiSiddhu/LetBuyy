@@ -1,0 +1,535 @@
+{
+  "recorded_at": "2026-10-21T21:24:14.901429+05:30",
+  "scope": "Bounded merchant web/native and Console operations implementation; no whole-platform or release acceptance",
+  "status": "LOCAL_BOUNDED_VERIFIED_NATIVE_DEVICE_PENDING",
+  "checkout": "/Users/saai_mithra/Projects/Start_Up/LetBuyy",
+  "branch": "develop",
+  "source_head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "source_state": "uncommitted working tree",
+  "source_hashes": {
+    "apps/internal/console/src/app/(dashboard)/merchants/[id]/operations/page.tsx": "a8397386250416bbbe6531bd02792cde9e2a6fa72576997cbcb7c4a86a287e69",
+    "apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx": "a74ae7559438338fc18a029243dcbb81e6027f6a14fe84ee9ba0660d54386b39",
+    "apps/internal/console/src/app/(dashboard)/merchants/page.tsx": "3e1be92047f4ab0c0bfcefbfd60067147ac4d57a425db6587d52031fe204f42c",
+    "apps/internal/console/src/app/(dashboard)/stores/page.tsx": "e8ee6efa99031acbaceb1928617ac505bebbef73c054dbe99c3818086dbcc63d",
+    "apps/merchant/mobile/lib/screens/orders/order_detail_screen.dart": "6883d64932d68cafc0ee4bcc4dee0c341299c7827a3b6495e34aafea8ac3ec20",
+    "apps/merchant/mobile/lib/screens/settings/help_screen.dart": "01f2808c338343d38e7e612d0c4ae9f5ab4dde540daf561a12ea22a4d0de4ab4",
+    "apps/merchant/mobile/lib/screens/settings/merchant_support_screen.dart": "ac144a9fbbf821f7c54ebf42ce912246125f6e9e13a8d893b511dedb32060df8",
+    "apps/merchant/mobile/test/mobile_services_test.dart": "547e57317d4d19fa33b17c0529f2cbef0907d077360eeee8e951b45ee8870ebc",
+    "apps/merchant/mobile/test/merchant_support_screen_test.dart": "0d70e44171de37d39e473339c46cbe6e904a25d5516fe099920e713892cb765a",
+    "packages/shared-types/src/index.ts": "ab82579c576deb58f304b4bb466adca458f4943a6e4aaaacfc79d26d632d1929",
+    "packages/shared-types/src/merchant-operations.ts": "184d508b60468def98aa55bc3dd54c77b87d2508d7f4668c18ae07eeebad8a08",
+    "services/api-gateway/src/routes/internal-console.ts": "acf5e0a4c61d141840d6e6c77b6f59aa251e2f5cccc5d1ba37196a3b7f2d6538",
+    "services/api-gateway/src/routes/internal-console/merchant-operations.ts": "ccd7ba5cd84974c7832eea7dead2daa70a68225aefbed06c7d296374225a1df8",
+    "services/api-gateway/src/__tests__/internal-os-merchant-360.test.ts": "83be069a45bd782c8bb13f5b695ddca38b0a83aa789d1701d2cbeba2585520a5",
+    "services/api-gateway/src/__tests__/owned-db/merchant-control-workspace.postgres.test.ts": "d0fcae098f45e54c068f43d4758dabf6ae68e9138fa6f446b68481096100ec54",
+    "services/api-gateway/src/__tests__/owned-db/merchant-control-workspace-browser.postgres.test.ts": "a7c618eaaee85eeaad150b0e508ae0b6e0e093baf4aeb979025bbb1f496cb4ec",
+    "EXECUTION_LEDGER.md": "0403ab27d7edf261fb7a5d75d42b6266f8442ebaa0de41a76c90c886979d9b04",
+    "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md": "00c18499a59c0d73dfb4dc5e889fccd56a66e739e33f22bfbae25311e860cc9c",
+    "reports/MERCHANT_OPERATIONS_PRIORITIES_2026-10-21.md": "acb449c8e3ef257be27cc1ebfc24c83f2646cb2a0eacbefcc007313f9e0ccbe9",
+    "reports/MERCHANT_CONTROL_E2E_2026-10-21.md": "ca164656e6f967eb741cfde9796d8d93c98eb375e73948b498a36eb426ab1995"
+  },
+  "candidate": {
+    "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/candidate",
+    "source_manifest": "/private/tmp/letbuyy-merchant-control-e2e-20261021/candidate-source-hashes-final.json",
+    "manifest_sha256": "89071cf77b879a729602e8afac4e4f57edfd69292f424aedbe474c0a99efe117",
+    "source_files": 9967,
+    "task_runtime_files_match": true,
+    "notes": "Snapshot excludes environment files and build outputs. Later continuity/report edits are outside runtime compilation."
+  },
+  "preservation": {
+    "baseline": "/private/tmp/letbuyy-merchant-control-e2e-20261021/baseline.json",
+    "baseline_sha256": "c3197f31ddaa5c46fa6b613333ac4c6d1fd39b6b0f045e215b7bc0a113801589",
+    "original_dirty_files": 102,
+    "unchanged": 91,
+    "missing": [],
+    "intentional_overlaps": [
+      "EXECUTION_LEDGER.md",
+      "apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx",
+      "apps/internal/console/src/app/(dashboard)/merchants/page.tsx",
+      "apps/internal/console/src/app/(dashboard)/stores/page.tsx",
+      "apps/merchant/mobile/lib/screens/settings/help_screen.dart",
+      "apps/merchant/mobile/lib/screens/settings/merchant_support_screen.dart",
+      "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md",
+      "packages/shared-types/src/index.ts",
+      "reports/MERCHANT_OPERATIONS_PRIORITIES_2026-10-21.md",
+      "services/api-gateway/src/__tests__/internal-os-merchant-360.test.ts",
+      "services/api-gateway/src/routes/internal-console.ts"
+    ],
+    "overlap_contents_at_start": {
+      "EXECUTION_LEDGER.md": "5e5081a0bd2d3394383ac4860095908038ab3c011b189bba6a945255392b33f3",
+      "apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx": "cc1eb8e7c4a0c4cd4dedc004023caae6fff0c671c4e1ca41e986ccc450bfac48",
+      "apps/internal/console/src/app/(dashboard)/merchants/page.tsx": "b3f571bb53c69e55e9fe4a21197061c871db40329d4cb200e5e081e60e0d2325",
+      "apps/internal/console/src/app/(dashboard)/stores/page.tsx": "b7ef718f3f5b290c874ca6ffa41d7d97fcd16a4ec7ceb9245f07cd51b77d9ca0",
+      "apps/merchant/mobile/lib/screens/settings/help_screen.dart": "e1f5f9ba8e012e80d42ce13cd32c16a06ae642ae7bc1224a38c76877f6fcea93",
+      "apps/merchant/mobile/lib/screens/settings/merchant_support_screen.dart": "063665161d99ab854c2594f3b8c45f5beecc5760661b9059adaf3fb471154a09",
+      "docs/evidence/foundation-programme-2026-09-26/FOUNDATION_PROGRAMME.md": "a6c390622820076375f07d6a748b9377decdcca6b65134ab49315d28336de3c9",
+      "packages/shared-types/src/index.ts": "5873767c086e45d76addc16433fec963ec068d6ff1479c079f80a7e47448fb85",
+      "reports/MERCHANT_OPERATIONS_PRIORITIES_2026-10-21.md": "90c76e982281d73e62eeb440b4b83fbb61a247e01a5080e3ad375bb33b85d593",
+      "services/api-gateway/src/__tests__/internal-os-merchant-360.test.ts": "966f053770523b29bddeee45e01cc33c49e9ec2266b58bc628d440c66b04fe3d",
+      "services/api-gateway/src/routes/internal-console.ts": "b29b32d08cf1546e33d71b6a1b6bdaded7298de6b2bf61b4d5e1a67099029d8c"
+    },
+    "expected_overlaps_exact": true
+  },
+  "owned_suite_evidence": [
+    {
+      "run_id": "58f66e5aa0f5",
+      "runner_path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/acceptance-final/runner.json",
+      "runner_sha256": "de9419f074357b13f2dfc9ca514f6dc6e5f240fb7a292de75ea405b05baf845e",
+      "aggregate_failed_suites": 0,
+      "result": {
+        "name": "merchant-control-workspace-browser.postgres",
+        "path": "services/api-gateway/src/__tests__/owned-db/merchant-control-workspace-browser.postgres.test.ts",
+        "kind": "gateway-db",
+        "cluster": "letbuyy-exec-4160-mviab1yi-b55103",
+        "code": 0,
+        "timedOut": false,
+        "hasSummary": true,
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "seconds": 49.4,
+        "firstFailure": "",
+        "failures": [],
+        "skips": [],
+        "strayProcessesStopped": false,
+        "database": "letbuyy_exec_merchant_control_workspace_browser_postgres",
+        "templateSeconds": 17.6,
+        "provisionSeconds": 1.1,
+        "rest": {
+          "container": "letbuyy-exec-58f66e5aa0f5-rest-1",
+          "upstreamPort": 53062,
+          "proxyPort": 53063
+        },
+        "ownership": "verified before start",
+        "cleanup": {
+          "rest": true,
+          "database": true
+        },
+        "proxyRequests": {
+          "forwarded": 288,
+          "refused": 0,
+          "upstreamErrors": 1
+        }
+      }
+    },
+    {
+      "run_id": "58f66e5aa0f5",
+      "runner_path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/acceptance-final/runner.json",
+      "runner_sha256": "de9419f074357b13f2dfc9ca514f6dc6e5f240fb7a292de75ea405b05baf845e",
+      "aggregate_failed_suites": 0,
+      "result": {
+        "name": "merchant-control-workspace.postgres",
+        "path": "services/api-gateway/src/__tests__/owned-db/merchant-control-workspace.postgres.test.ts",
+        "kind": "gateway-db",
+        "cluster": "letbuyy-exec-4160-mviab1yi-b55103",
+        "code": 0,
+        "timedOut": false,
+        "hasSummary": true,
+        "tests": 5,
+        "pass": 5,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "seconds": 6.6,
+        "firstFailure": "",
+        "failures": [],
+        "skips": [],
+        "strayProcessesStopped": false,
+        "database": "letbuyy_exec_merchant_control_workspace_postgres",
+        "templateSeconds": 0,
+        "provisionSeconds": 0.8,
+        "rest": {
+          "container": "letbuyy-exec-58f66e5aa0f5-rest-2",
+          "upstreamPort": 53252,
+          "proxyPort": 53253
+        },
+        "ownership": "verified before start",
+        "cleanup": {
+          "rest": true,
+          "database": true
+        },
+        "proxyRequests": {
+          "forwarded": 167,
+          "refused": 0,
+          "upstreamErrors": 1
+        }
+      }
+    },
+    {
+      "run_id": "713fc6fcc27c",
+      "runner_path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/acceptance/runner.json",
+      "runner_sha256": "21ff418922f895ba3776e51d044cacac927d345625589d3afee2ed2a0152de02",
+      "aggregate_failed_suites": 0,
+      "result": {
+        "name": "platform-approval-workflow.postgres",
+        "path": "services/api-gateway/src/__tests__/owned-db/platform-approval-workflow.postgres.test.ts",
+        "kind": "gateway-db",
+        "cluster": "letbuyy-exec-861-mvia2jdx-e6a529",
+        "code": 0,
+        "timedOut": false,
+        "hasSummary": true,
+        "tests": 21,
+        "pass": 21,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "seconds": 62,
+        "firstFailure": "",
+        "failures": [],
+        "skips": [],
+        "strayProcessesStopped": false,
+        "database": "letbuyy_exec_platform_approval_workflow_postgres",
+        "templateSeconds": 0,
+        "provisionSeconds": 0.8,
+        "rest": {
+          "container": "letbuyy-exec-713fc6fcc27c-rest-3",
+          "upstreamPort": 52652,
+          "proxyPort": 52653
+        },
+        "ownership": "verified before start",
+        "cleanup": {
+          "rest": true,
+          "database": true
+        },
+        "proxyRequests": {
+          "forwarded": 777,
+          "refused": 0,
+          "upstreamErrors": 1
+        }
+      }
+    },
+    {
+      "run_id": "698ab777caf7",
+      "runner_path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/browser-first/runner.json",
+      "runner_sha256": "4dce6274fc40d365afa844d7eafa8e9e3ce69a31e34e3cde7b0ed8732b1d2ba3",
+      "aggregate_failed_suites": 1,
+      "result": {
+        "name": "merchant-product-edit-browser.postgres",
+        "path": "tests/owned-db/merchant-product-edit-browser.postgres.test.ts",
+        "kind": "gateway-db",
+        "cluster": "letbuyy-exec-96603-mvi9rszi-da0a42",
+        "code": 0,
+        "timedOut": false,
+        "hasSummary": true,
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "seconds": 48.3,
+        "firstFailure": "",
+        "failures": [],
+        "skips": [],
+        "strayProcessesStopped": false,
+        "database": "letbuyy_exec_merchant_product_edit_browser_postgres",
+        "templateSeconds": 0,
+        "provisionSeconds": 0.8,
+        "rest": {
+          "container": "letbuyy-exec-698ab777caf7-rest-3",
+          "upstreamPort": 51404,
+          "proxyPort": 51405
+        },
+        "ownership": "verified before start",
+        "cleanup": {
+          "rest": true,
+          "database": true
+        },
+        "proxyRequests": {
+          "forwarded": 1040,
+          "refused": 0,
+          "upstreamErrors": 1
+        }
+      }
+    },
+    {
+      "run_id": "652cc5346452",
+      "runner_path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/browser-final/runner.json",
+      "runner_sha256": "5e429cbf81345e6e8bbb334c8f81c07c5d87dee5a2bf57eab737e08589eac30f",
+      "aggregate_failed_suites": 1,
+      "result": {
+        "name": "platform-approval-browser.postgres",
+        "path": "services/api-gateway/src/__tests__/owned-db/platform-approval-browser.postgres.test.ts",
+        "kind": "gateway-db",
+        "cluster": "letbuyy-exec-98791-mvi9wyqt-bcce7e",
+        "code": 0,
+        "timedOut": false,
+        "hasSummary": true,
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "seconds": 28.8,
+        "firstFailure": "",
+        "failures": [],
+        "skips": [],
+        "strayProcessesStopped": false,
+        "database": "letbuyy_exec_platform_approval_browser_postgres",
+        "templateSeconds": 0,
+        "provisionSeconds": 0.8,
+        "rest": {
+          "container": "letbuyy-exec-652cc5346452-rest-2",
+          "upstreamPort": 52058,
+          "proxyPort": 52059
+        },
+        "ownership": "verified before start",
+        "cleanup": {
+          "rest": true,
+          "database": true
+        },
+        "proxyRequests": {
+          "forwarded": 317,
+          "refused": 0,
+          "upstreamErrors": 1
+        }
+      }
+    }
+  ],
+  "owned_cleanup": {
+    "browser-first": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "browser-final": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "acceptance": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "acceptance-final": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "commands": [
+    {
+      "command": "pnpm --filter @letbuyy/api-gateway typecheck",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @letbuyy/admin-web typecheck",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @letbuyy/shared-types typecheck",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @letbuyy/admin-web build",
+      "exit_code": 0,
+      "cwd": "/private/tmp/letbuyy-merchant-control-e2e-20261021/candidate"
+    },
+    {
+      "command": "pnpm --filter @letbuyy/admin-web exec eslint <four touched merchant/directory pages>",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm exec tsx --test services/api-gateway/src/__tests__/internal-os-merchant-360.test.ts services/api-gateway/src/__tests__/console-runtime-command-history.test.ts",
+      "exit_code": 0,
+      "tests": 14,
+      "pass": 14,
+      "fail": 0
+    },
+    {
+      "command": "pnpm --filter @letbuyy/admin-web exec tsx --tsconfig tsconfig.json --test src/lib/console-read-params.test.ts src/lib/console-mfa.test.ts src/lib/console-csv.test.ts",
+      "exit_code": 0,
+      "tests": 12,
+      "pass": 12,
+      "fail": 0
+    },
+    {
+      "command": "flutter analyze --no-pub",
+      "exit_code": 0,
+      "result": "No issues found",
+      "cwd": "/private/tmp/letbuyy-merchant-control-e2e-20261021/candidate/apps/merchant/mobile"
+    },
+    {
+      "command": "flutter test --no-pub",
+      "exit_code": 0,
+      "tests": 358,
+      "pass": 358,
+      "fail": 0,
+      "cwd": "/private/tmp/letbuyy-merchant-control-e2e-20261021/candidate/apps/merchant/mobile"
+    },
+    {
+      "command": "flutter build bundle --debug --no-pub --target-platform=android-arm64 --target=lib/main.dart --asset-dir=/private/tmp/letbuyy-merchant-control-e2e-20261021/merchant-debug-bundle",
+      "exit_code": 0,
+      "artifact_kind": "Flutter kernel/assets, not APK or native-plugin/device proof"
+    },
+    {
+      "command": "node scripts/validators/{tenant-isolation-validator,domain-boundary-validator,session-security-validator,undeclared-import-validator,validate-design-system}.mjs (individually)",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "logs": {
+    "gateway-types-accepted.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/gateway-types-accepted.log",
+      "sha256": "b6e70f1bff58ec529692e68bb1e9fff97cfa6c1380dce4a5a48e35294b1059f2"
+    },
+    "console-types-accepted.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/console-types-accepted.log",
+      "sha256": "f9d2c7d268e12cc62785ca86c0bfc7b07ee90bd256dd92596dd0cdffb17d3f19"
+    },
+    "shared-types-final.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/shared-types-final.log",
+      "sha256": "d382e9969816172c7c542d667f5d274cf6ba6e7c3883323555001f2a02c05803"
+    },
+    "console-lint-accepted.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/console-lint-accepted.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "console-build-final.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/console-build-final.log",
+      "sha256": "e8881d5ee60c88961d02729f952fd852fc91a924457a9a0a8ba7be82af2c3ed6"
+    },
+    "merchant-control-unit.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/merchant-control-unit.log",
+      "sha256": "a2fcfb290e06858417f69d6c95528cf381c9881522f5b44d9592236fdbac5562"
+    },
+    "console-unit.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/console-unit.log",
+      "sha256": "a40e4a2920720acb3a13199b63b70cd74d900c11e1f1f870e01aa53993d8f1d6"
+    },
+    "mobile-analyze-final.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/mobile-analyze-final.log",
+      "sha256": "ebe6588cb39cc8deb193f282678e3fa210e19fb250009e7b47bcba69fc96eab3"
+    },
+    "mobile-tests-final.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/mobile-tests-final.log",
+      "sha256": "57382051e4565c55537ec8968288e47ede044a817ed3263e8ca647bc7e70b010"
+    },
+    "mobile-support-wrapped.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/mobile-support-wrapped.log",
+      "sha256": "87e9e0d767601ac5d46b0d0fb018dcd694388064ef3d4186023ec386b2931794"
+    },
+    "mobile-bundle.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/mobile-bundle.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tenant-lint-final.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/tenant-lint-final.log",
+      "sha256": "70f509fbf59e3071871e6ea4a1fda7e2d64103cc3ad61d05380d39395004c44b"
+    },
+    "domain-lint-final.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/domain-lint-final.log",
+      "sha256": "d354f63dcff51aaf76d81cd86a7f4f9c5dfa156e7b91a442caaf721158d85cc6"
+    },
+    "session-lint-final.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/session-lint-final.log",
+      "sha256": "55b88cf5aa890f1b6f30af7620f99960dc561006d639bc27adbaa00efcebd0bc"
+    },
+    "import-lint-final.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/import-lint-final.log",
+      "sha256": "6acec28334fba7b749d6b50bd41d27edf99f2243c80e52b961b3debda61ebced"
+    },
+    "design-system-accepted.log": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/design-system-accepted.log",
+      "sha256": "bd5bcd1f15bfd15c7a882c748b5b92e2b9673a872d2704616b324fc994d34dc5"
+    }
+  },
+  "flutter_sdk": {
+    "frameworkVersion": "3.47.7",
+    "channel": "stable",
+    "repositoryUrl": "https://github.com/flutter/flutter.git",
+    "frameworkRevision": "abaf9c523780a608bd46686fd5e53740a07077f8",
+    "frameworkCommitDate": "2026-10-08 09:51:21 -0700",
+    "engineRevision": "deb287481e3ce9468f3434937ced4240a70539ca",
+    "engineCommitDate": "2026-10-07 17:09:12.000Z",
+    "engineContentHash": "d8a2d6c768c334d53e16277f837970ffa1e2de81",
+    "engineBuildDate": "2026-10-07 23:21:44.552",
+    "dartSdkVersion": "3.13.5",
+    "devToolsVersion": "2.60.0",
+    "flutterVersion": "3.47.7",
+    "flutterRoot": "/private/tmp/letbuyy-merchant-control-e2e-20261021/flutter-sdk"
+  },
+  "native_bundle": {
+    "target": "android-arm64",
+    "mode": "debug",
+    "entrypoint": "lib/main.dart",
+    "kind": "Flutter kernel/assets bundle; not an APK, native plugin build or device run",
+    "file_count": 22,
+    "total_bytes": 109044054,
+    "files": {
+      "NOTICES.Z": "2a23b41234eca8561a6748b5d4ddef7d62cdaefc7e7a57c400694f642e7ce872",
+      ".last_build_id": "bc9ff9acd495b2be52713a3902ccccb7ae79e7c5bbb90ceb3b105fa72275a515",
+      "NativeAssetsManifest.json": "9548a31e4a048135c1d94f919328bfb62ae2c7bb3cab96557c7941daa97776cb",
+      "vm_snapshot_data": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "isolate_snapshot_data": "86bca6674ce2054938fb6ef6e827a46e775def9c32ee4bec672085e4047bae7f",
+      "kernel_blob.bin": "8322ed94b6b3513210dd315b915f8299ee7ef82c0af7ac4adc2b2f18b37c0e36",
+      "FontManifest.json": "cd7e03645bc44b2dd47b7cb626f51c4ecbf55a197ab77241628b47ac165fbe21",
+      "AssetManifest.bin": "9dfe9b20f844742da68f3374c52d5d50b1deecf0b04f329f90c0f12fd16c3e53",
+      "packages/cupertino_icons/assets/CupertinoIcons.ttf": "67c44fe9183b002e79dde7f6977e2988661c9a3e4a3c5fce968787efdbed823c",
+      "packages/fluttertoast/assets/toastify.js": "091c9a70994a2004ee02b04f111d40abe40c07b066856399f58c587042ec2990",
+      "packages/fluttertoast/assets/toastify.css": "69baf44fea5b3efd3377babc154ef1b83bf8263b910202a8c7d6e745d751349f",
+      "packages/flex_color_picker/assets/opacity.png": "8f40db314a0a7eab3ebc1817b78547496fbed922203783a1a8a4adb2afda0976",
+      "shaders/ink_sparkle.frag": "1fe8436a743884cb65078fe8c7b38e18f5365f2a2961270916f426fd13c604af",
+      "shaders/stretch_effect.frag": "bc7599dbbbaab310efe41520574138d21fb18a88c8fe4495ed79315309336f6f",
+      "fonts/MaterialIcons-Regular.otf": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453",
+      "assets/images/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assets/images/letbuyy-logo-light.svg": "503005328241f667159cf9be50b5952745c4b88df0dd6127ed1bec9f88bc986b",
+      "assets/images/letbuyy-logo-dark.svg": "9d8a3691db07cb3cdde3e7325d3194777cec78bce20954f6014a05c25ca15220",
+      "assets/images/templates/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assets/icons/app_icon.png": "7582bb93d2de94259e264a266098bcd1fd88117cab352d929cacede85939bc85",
+      "assets/icons/google.png": "721eaaa75386e99f3466fec38d2478508077522a6a18a0c996ae43d2ef08a2d8",
+      "assets/animations/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "screenshots": {
+    "merchant-operations-390px.png": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/screenshots/merchant-operations-390px.png",
+      "sha256": "50e9f5aca570e061be536e664d0fa145c329573018851a1e19de38586337c0e2"
+    },
+    "merchant-operations-desktop.png": {
+      "path": "/private/tmp/letbuyy-merchant-control-e2e-20261021/screenshots/merchant-operations-desktop.png",
+      "sha256": "e74d3be724a08e840dd884e7df2b9f9548be26b3b3e347daebf0ab9166a265dd"
+    }
+  },
+  "apk_attempt": {
+    "action": "Download official Android command line tools and Temurin JDK to a task-owned temporary directory for a debug APK build",
+    "executed": false,
+    "reason": "Automatic approval review could not complete because its usage limit was reached. No safety determination was made; no bypass was attempted."
+  },
+  "remaining": [
+    "APK/native-plugin compilation and normal Android device journey",
+    "iOS plugin/device verification",
+    "Controlled application and hosted verification of earlier support migration 370",
+    "Release gates and hosted/provider acceptance for a reviewable candidate"
+  ],
+  "no_commit_push_merge_deploy": true,
+  "new_migration": null,
+  "earlier_migration_370": "applied only in owned disposable databases",
+  "notes": [
+    "Earlier aggregate browser-first/browser-final runs were red; only the named passing suites are reused. Final workspace and acceptance runs are fully green.",
+    "Native widget API transport and secure storage are explicit synthetic seams; no phone-to-Gateway proof.",
+    "No full governance gate or whole-merchant feature certification is claimed."
+  ]
+}

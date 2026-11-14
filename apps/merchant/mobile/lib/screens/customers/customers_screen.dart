@@ -1,9 +1,8 @@
-import '../../services/api_client.dart';
-import '../../widgets/shared/merchant_export_share.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../app/store_context.dart';
 
 import '../../app/routes.dart';
@@ -128,7 +127,10 @@ class _CustomersScreenState extends State<CustomersScreen> {
       if (status == 'completed' &&
           downloadUrl != null &&
           downloadUrl.isNotEmpty) {
-        await shareMerchantExport(api: context.read<ApiClient>(), job: latest);
+        await Share.share(
+          downloadUrl,
+          subject: latest['filename']?.toString() ?? 'customers.csv',
+        );
         _showCustomerSnack('Customer CSV export ready to share.');
       } else {
         _showCustomerSnack('Customer CSV export $status. Try again shortly.');

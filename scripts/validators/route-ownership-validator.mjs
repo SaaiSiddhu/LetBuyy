@@ -195,10 +195,9 @@ function importsOwnershipGateFromCanonicalModule(sourceFile, filePath, identifie
 // These paths use an actual imported guard rather than one of the legacy text
 // signals above. Recognize only direct, ordered calls and exact query bindings;
 // a comment, unused import, callback, swallowed error or presumed mount is not proof.
-function canonicalCall(call, sourceFile, filePath, exportName, modulePath, contextName, handler) {
-  if (!call || !ts.isCallExpression(call) || !ts.isIdentifier(call.expression) ||
-      !call.arguments[0] || !ts.isIdentifier(call.arguments[0]) || call.arguments[0].text !== contextName) return false;
-  const localName = call.expression.text;
+function canonicalIdentifier(identifier, sourceFile, filePath, exportName, modulePath, handler) {
+  if (!identifier || !ts.isIdentifier(identifier)) return false;
+  const localName = identifier.text;
   let shadowed = false;
   function check(node) {
     if ((ts.isVariableDeclaration(node) || ts.isFunctionDeclaration(node) || ts.isParameter(node)) &&
@@ -231,6 +230,55 @@ function canonicalCall(call, sourceFile, filePath, exportName, modulePath, conte
       !element.isTypeOnly && !statement.importClause.isTypeOnly && element.name.text === localName &&
       (element.propertyName ?? element.name).text === exportName);
   });
+}
+
+function canonicalCall(call, sourceFile, filePath, exportName, modulePath, contextName, handler) {
+  return call && ts.isCallExpression(call) && call.arguments[0] && ts.isIdentifier(call.arguments[0])
+    && call.arguments[0].text === contextName
+    && canonicalIdentifier(call.expression, sourceFile, filePath, exportName, modulePath, handler);
+}
+
+// Console operators may inspect tenants by permission; this is not tenant ownership.
+// Prove the actual ordered per-route middleware and its canonical imports. Neither
+// helper names in comments nor arbitrary local/mount-level callbacks are sufficient.
+function canonicalConsoleMiddlewareGuard(sourceFile, filePath, route, handler) {
+  const handlerIndex = route.arguments.indexOf(handler);
+  const middleware = route.arguments.slice(1, handlerIndex);
+  // Additional callbacks could replace the bound identity or change context
+  // after authorization. Only the reviewed binder/permission pair is admitted.
+  if (middleware.length !== 2) return false;
+  let bound = false;
+  const permissionFactory = expression => ts.isCallExpression(expression)
+    && expression.arguments.length === 1 && ts.isStringLiteral(expression.arguments[0])
+    && /^[a-z]+:[a-z]+$/.test(expression.arguments[0].text)
+    && canonicalIdentifier(expression.expression, sourceFile, filePath, 'consolePermission',
+      'identity-foundation/console-approval-repository', handler);
+  for (const argument of middleware) {
+    if (canonicalIdentifier(argument, sourceFile, filePath, 'bindConsoleOperatorIdentity',
+        'identity-foundation/console-session-repository', handler)) {
+      bound = true;
+      continue;
+    }
+    if (!bound) continue;
+    if (permissionFactory(argument)) return true;
+    if (!ts.isIdentifier(argument)) continue;
+    // A module-level const alias is allowed only when it cannot be shadowed at
+    // registration. It must still originate from the canonical permission factory.
+    let shadowed = false;
+    for (let scope = route.parent; scope && scope !== sourceFile; scope = scope.parent) {
+      if ((scope.parameters ?? []).some(p => ts.isIdentifier(p.name) && p.name.text === argument.text)) shadowed = true;
+      if (ts.isBlock(scope) && scope.statements.some(statement =>
+        ts.isVariableStatement(statement) && statement.declarationList.declarations.some(d => ts.isIdentifier(d.name) && d.name.text === argument.text)
+        || ts.isFunctionDeclaration(statement) && statement.name?.text === argument.text)) shadowed = true;
+    }
+    if (shadowed) continue;
+    for (const statement of sourceFile.statements) {
+      if (!ts.isVariableStatement(statement) || !(statement.declarationList.flags & ts.NodeFlags.Const)) continue;
+      if (statement.declarationList.declarations.some(d => ts.isIdentifier(d.name) && d.name.text === argument.text
+          && d.initializer && permissionFactory(d.initializer))) return true;
+    }
+  }
+  return false;
 }
 
 function boundedCanonicalGuard(sourceFile, filePath, handler) {
@@ -395,6 +443,7 @@ for (const filePath of listTypeScriptFiles(routesRoot)) {
           containsTenantTable(handlerText) &&
           !containsGuard(handlerText) &&
           !boundedCanonicalGuard(sourceFile, filePath, handler) &&
+          !canonicalConsoleMiddlewareGuard(sourceFile, filePath, node, handler) &&
           !explicitAllowlist.has(key)
         ) {
           const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;

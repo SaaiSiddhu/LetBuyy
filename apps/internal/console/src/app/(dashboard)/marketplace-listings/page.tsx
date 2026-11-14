@@ -12,9 +12,10 @@
 // use. A server action is not an API route, so the freeze is respected rather than exempted.
 
 import Link from 'next/link';
+import { ConsoleApiErrorPanel, ConsoleDataTable, type ConsoleDataColumn } from '@/components/ConsoleDataTable';
+import { readPageParam, type ConsolePagination } from '@/lib/console-api';
 import {
     ConsoleWorkspace,
-    EmptyDataState,
     LeadershipMetric,
     MetricGrid,
     Panel,
@@ -36,7 +37,7 @@ interface ListingRow {
 
 interface ListResponse {
     data?: ListingRow[];
-    meta?: { total?: number };
+    meta?: ConsolePagination;
     error?: string;
 }
 
@@ -46,11 +47,12 @@ interface ListResponse {
 
 // ---------------------------------------------------------------------------
 
-export default async function MarketplaceListingsPage() {
+export default async function MarketplaceListingsPage({ searchParams }: { searchParams: Promise<Record<string,string|string[]|undefined>> }) {
+    const page = readPageParam(await searchParams);
     await requireConsoleSession();
 
     const response = await fetchConsoleApi<ListResponse>('/operations/marketplace-listings', {
-        query: { status: REVIEW_QUEUE_STATUS, limit: 50 },
+        query: { status: REVIEW_QUEUE_STATUS, limit: 25, page },
     });
 
     const listings = response.data?.data ?? [];
@@ -63,9 +65,7 @@ export default async function MarketplaceListingsPage() {
             description="Merchant submissions waiting on an operator decision. Nothing reaches the marketplace feed until it is approved here."
         >
             {response.error ? (
-                <Panel title="Listing queue unavailable" description={response.error}>
-                    <EmptyDataState message="The operations API did not return a listing queue." />
-                </Panel>
+                <ConsoleApiErrorPanel title="Listing queue unavailable" message={response.error} />
             ) : (
                 <>
                     <MetricGrid>
@@ -77,32 +77,19 @@ export default async function MarketplaceListingsPage() {
                         title="Pending review"
                         description="Approve publishes to the marketplace feed. Reject and take down both require a reason, which is recorded against the listing."
                     >
-                        {listings.length === 0 ? (
-                            <EmptyDataState message="No listings are waiting for review." />
-                        ) : (
-                            <ul>
-                                {listings.map((listing) => (
-                                    <li key={listing.id}>
-                                        <div>
-                                            <StatusPill value={listing.status} />
-                                            <strong>{listing.products?.name || 'Untitled product'}</strong>
-                                            <span>
-                                                {listing.sites?.store_name || 'Unknown store'}
-                                                {listing.sites?.subdomain ? ` (${listing.sites.subdomain})` : ''}
-                                            </span>
-                                            <span>Submitted {formatDateTime(listing.submitted_at)}</span>
-                                        </div>
-
-                                        <Link href={`/marketplace-listings/${listing.id}`} className="font-medium text-[var(--lb-color-primary)] underline-offset-4 hover:underline">
-                                            Review listing
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+                        <ConsoleDataTable columns={listingColumns} rows={listings} meta={response.data?.meta}
+                            basePath="/marketplace-listings" emptyLabel="No listings are waiting for review." getRowKey={row=>row.id} />
                     </Panel>
                 </>
             )}
         </ConsoleWorkspace>
     );
 }
+
+const listingColumns: ConsoleDataColumn<ListingRow>[] = [
+    {key:'product',header:'Product',cell:row=><strong>{row.products?.name || 'Untitled product'}</strong>},
+    {key:'store',header:'Store',cell:row=>row.sites?.store_name || row.sites?.subdomain || row.site_id},
+    {key:'status',header:'Status',cell:row=><StatusPill value={row.status}/>},
+    {key:'submitted',header:'Submitted',cell:row=>formatDateTime(row.submitted_at)},
+    {key:'action',header:'Review',cell:row=><Link href={`/marketplace-listings/${row.id}`} className="font-medium text-primary underline">Review listing</Link>},
+];

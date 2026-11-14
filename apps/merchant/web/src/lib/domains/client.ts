@@ -12,7 +12,6 @@ import type {
     DomainListResult,
     DomainSetPrimaryResult,
     DomainVerifyResult,
-    CheckoutDomainSetup,
 } from '@letbuyy/api-client'
 
 interface Envelope<T> {
@@ -21,14 +20,9 @@ interface Envelope<T> {
 }
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
-    const isRead = !init?.method || init.method === 'GET'
-    const signal = isRead
-        ? AbortSignal.any([...(init?.signal ? [init.signal] : []), AbortSignal.timeout(15_000)])
-        : init?.signal
     const response = await fetch(path, {
         cache: 'no-store',
         ...init,
-        signal,
         headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
     })
     const payload = (await response.json().catch(() => null)) as (Envelope<T> & Record<string, unknown>) | null
@@ -45,12 +39,8 @@ const enc = encodeURIComponent
 const base = (store: string) => `/api/stores/${enc(store)}/domains`
 
 export const domainsClient = {
-    checkout: (store: string, signal?: AbortSignal) =>
-        call<CheckoutDomainSetup>(`${base(store)}/checkout`, { signal }),
-    prepareCheckout: (store: string, signal?: AbortSignal) =>
-        call<CheckoutDomainSetup>(`${base(store)}/checkout`, { method: 'POST', signal, headers: { 'X-Idempotency-Key': crypto.randomUUID() } }),
-    list: (store: string, signal?: AbortSignal) =>
-        call<DomainListResult>(base(store), { signal }),
+    list: (store: string) =>
+        call<DomainListResult>(base(store)),
 
     connect: (store: string, domain: string) =>
         call<DomainConnectResult>(base(store), {
@@ -61,11 +51,11 @@ export const domainsClient = {
     verify: (store: string, domain: string) =>
         call<DomainVerifyResult>(`${base(store)}/${enc(domain)}/verify`, { method: 'POST' }),
 
-    health: (store: string, domain: string, signal?: AbortSignal) =>
-        call<CustomDomainHealth>(`${base(store)}/${enc(domain)}`, { signal }),
+    health: (store: string, domain: string) =>
+        call<CustomDomainHealth>(`${base(store)}/${enc(domain)}`),
 
-    history: (store: string, domain: string, signal?: AbortSignal) =>
-        call<DomainHistoryResult>(`${base(store)}/${enc(domain)}/history`, { signal }),
+    history: (store: string, domain: string) =>
+        call<DomainHistoryResult>(`${base(store)}/${enc(domain)}/history`),
 
     setPrimary: (store: string, domain: string) =>
         call<DomainSetPrimaryResult>(`${base(store)}/${enc(domain)}/primary`, { method: 'POST' }),

@@ -1,0 +1,45 @@
+{
+  "captured_at": "2026-11-01T03:10:14.879Z",
+  "synthetic_fault_only": true,
+  "positive_control": "Unmodified local gateway9010 public read, retained real catalog",
+  "ssr_outage": true,
+  "repeated_failure_stays_honest": true,
+  "real_retry_recovery": true,
+  "client_retry_requests": 2,
+  "plan_count": 4,
+  "plans": [
+    {
+      "slug": "launch",
+      "status": "available",
+      "purchasable": true,
+      "regular_inr": 299,
+      "founding_inr": 199
+    },
+    {
+      "slug": "growth",
+      "status": "available",
+      "purchasable": true,
+      "regular_inr": 999,
+      "founding_inr": 699
+    },
+    {
+      "slug": "scale",
+      "status": "coming_soon",
+      "purchasable": false,
+      "regular_inr": 2499,
+      "founding_inr": 2499
+    },
+    {
+      "slug": "commerce_os",
+      "status": "coming_soon",
+      "purchasable": false,
+      "regular_inr": 5999,
+      "founding_inr": 5999
+    }
+  ],
+  "comparison_rows": 110,
+  "one_upstream_request_per_successful_recovery": true,
+  "page_errors": [],
+  "provider_or_database_mutations": false,
+  "passed": true
+}

@@ -1,0 +1,9 @@
+{
+  "url": "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https%3A%2F%2Fwww.letbuyy.com%2Fin&strategy=mobile&category=performance",
+  "capturedAt": "2026-11-03T02:37:53.537316+00:00",
+  "httpStatus": 429,
+  "errorStatus": "RESOURCE_EXHAUSTED",
+  "errorReasons": [
+    "rateLimitExceeded"
+  ]
+}

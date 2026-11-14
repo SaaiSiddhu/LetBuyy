@@ -1,0 +1,45 @@
+{
+  "captured_at": "2026-10-30T00:31:24.644Z",
+  "rows": [
+    {
+      "width": 375,
+      "modules": [
+        "storefront",
+        "orders",
+        "payments",
+        "analytics",
+        "inventory",
+        "customers",
+        "ai",
+        "b2b"
+      ],
+      "keyboard_wraps": true,
+      "responsive_resize": true,
+      "hidden_legacy_removed": true,
+      "offscreen_illustration_deferred": true,
+      "preview_reveals_and_fits": true,
+      "page_errors": []
+    },
+    {
+      "width": 1366,
+      "modules": [
+        "storefront",
+        "orders",
+        "payments",
+        "analytics",
+        "inventory",
+        "customers",
+        "ai",
+        "b2b"
+      ],
+      "keyboard_wraps": true,
+      "responsive_resize": true,
+      "hidden_legacy_removed": true,
+      "offscreen_illustration_deferred": true,
+      "preview_reveals_and_fits": true,
+      "page_errors": []
+    }
+  ],
+  "passed": true,
+  "real_server_rendered_capability_descriptions_retained": true
+}

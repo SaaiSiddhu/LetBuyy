@@ -1,0 +1,17 @@
+{
+  "captured_at": "2026-11-07T02:36:56.540236+00:00",
+  "branch": "codex/local-work-preserved-20261025",
+  "head": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "dirty_entries_at_start": 424,
+  "source_manifest_files": 1289,
+  "source_manifest_differences": [],
+  "root_build_id": "b2CsFLYIUn25H5EguBjys",
+  "local_processes": {
+    "marketing": 9006,
+    "gateway": 9010,
+    "accounts": 9002
+  },
+  "accounts_dev_auth_bypass_override": false,
+  "shared_restored_database_reset_or_mutated": false,
+  "deployment": false
+}

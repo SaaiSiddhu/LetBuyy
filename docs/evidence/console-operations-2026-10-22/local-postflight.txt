@@ -1,0 +1,2 @@
+SET
+{"migration_head": "371", "ownership_contract": 371, "postgres_superuser": false, "all_event_triggers_enabled": true, "merchant_support_service_only": true, "subscription_tax_guard_enabled": true, "application_roles_non_superuser": true}

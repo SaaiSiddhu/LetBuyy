@@ -1,0 +1,16 @@
+{
+  "capturedAt": "2026-11-07T03:08:37.914930+00:00",
+  "markdownLocalLinksChecked": 71,
+  "jsonFilesParsed": 89,
+  "archiveSourceFiles": 1289,
+  "rootAndIsolatedSourceHashesMatch": true,
+  "inheritedRecords": 56,
+  "totalRecords": 57,
+  "toolkitRoutes": 35,
+  "postReleaseChecks": 23,
+  "currentPerformanceAcceptancePassed": false,
+  "scratchDuplicateFilesRemoved": [],
+  "credentialPatternScanHits": [],
+  "errors": [],
+  "passed": true
+}

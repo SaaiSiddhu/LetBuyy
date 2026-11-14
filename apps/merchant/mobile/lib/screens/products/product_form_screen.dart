@@ -14,7 +14,6 @@ import '../../services/api_client.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import '../../widgets/shared/barcode_scanner_sheet.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
-import '../../widgets/shared/merchant_media_picker.dart';
 
 /// Product Form Screen for Store Builder
 /// Simplified product creation with essential fields
@@ -560,11 +559,15 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   Future<void> _pickAndUploadProductImage(ImageSource source) async {
     if (_isLoading || _images.length >= 5) return;
 
+    final image = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 1600,
+      imageQuality: 88,
+    );
+    if (image == null) return;
+
     setState(() => _isLoading = true);
     try {
-      final image = await pickMerchantMedia(context, source: source, pick: () => ImagePicker().pickImage(
-        source: source, maxWidth: 1600, imageQuality: 88));
-      if (!mounted || image == null) return;
       final imageUrl = await context.read<ProductService>().uploadProductImage(
         File(image.path),
       );
