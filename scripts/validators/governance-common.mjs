@@ -413,7 +413,6 @@ export function listWorkspaceDirectories(startDirs = [
 // They remain excluded from source scans and forbidden in the tracked-file validator.
 export function listLocalArtifactDirectories(startDirs = ["apps", "packages", "services"]) {
   const artifactDirectoryNames = new Set([
-    "node_modules",
     ".next",
     ".turbo",
     ".dart_tool",

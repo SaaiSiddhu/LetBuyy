@@ -49,6 +49,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Track protected project cleanup
         id: pc_cleanup
@@ -145,7 +147,9 @@ jobs:
       - name: Generate SBOM
         id: sbom
         continue-on-error: true
-        run: pnpm dlx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+        # Read-only tool version; installation/builds retain pnpm10.6.2.
+        # Native lockfile inventory includes every resolved workspace dependency.
+        run: pnpm dlx pnpm@11.28.11 --config.pm-on-fail=ignore sbom --sbom-format cyclonedx --lockfile-only --out sbom.cdx.json
 
       - name: Dependency audit
         id: dependency-audit
