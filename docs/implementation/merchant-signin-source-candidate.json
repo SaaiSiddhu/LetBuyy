@@ -1,0 +1,786 @@
+{
+  "base": "e4105581e3346041d71694d3db093eb713773e07",
+  "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
+  "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
+  "preparedUtc": "2026-11-15T07:02:47.574044+00:00",
+  "purpose": "Native Merchant sign-in release only; canonical issuer, Gateway persistence and web/BFF cookie compatibility. No unrelated Gateway feature changes or migrations419\u2013444.",
+  "files": [
+    {
+      "path": ".github/workflows/architecture-governance.yml",
+      "sha256": "e88a497469a59e8272bf0896ef3acb2d12cf9981b45dd1ce229b319d208fc36f",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "fde5cc46cda28d768eb0875c1aebeedba1bee719a25fe8311ddd10ba5ab26ef9",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/action.cjs",
+      "sha256": "68aa6fb0fde3e094cde5caab291b774b5a561f66d1be2d09eabf1402c5507436",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/action.yml",
+      "sha256": "e45c26bcf6fb806ee810037ac92d285e8410fa4c7ff759553811d3a588f2560d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/ci_lifecycle.py",
+      "sha256": "99d91fbb84c2e1aadef998eb884651f7fc84acb4a0f3692d5ba8c061f8ac6c28",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": ".project-cleanup/ci/engine.py",
+      "sha256": "1f6ad4717e04321c83630b835bf5cf03e6734c2405dd71a21bdc96b154458698",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/ownership.json",
+      "sha256": "47c8f81b669304a99ee0809fc624326d3c259f5c825a2d32d854249a778845ae",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/post.cjs",
+      "sha256": "e82906f86f343ddfc1ae70b5ff5e637c86fa64a91ba178a007aced5dbcd1ff31",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/test_ci_lifecycle.py",
+      "sha256": "4e7edce48bb4872bae4fb1f32a83cd647dee2b917c5182905666d1cef7b76712",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "apps/commerce/web/package.json",
+      "sha256": "185f71c7fe893de5cb92ef17fbaade14d206043291366ba97fa97a8ef8e0598d",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "apps/frozen/app-store/package.json",
+      "sha256": "3af7fa5a9d7f383974d4031e6d53f299fcaf1bf21c7589ea508712b5e6d85a79",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/frozen/developer-portal/package.json",
+      "sha256": "1f648bf148ee88ed8a3e8bc0d89d90fa94d6cbd21b2ff14d0c2232dd01523031",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/frozen/operations-portal/package.json",
+      "sha256": "890dbc7f587e16dca7954a9fc71e5f8b5240bbdba259bd5b695ab634c14f1500",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/frozen/theme-store/package.json",
+      "sha256": "af1bda35935cd080e9b4dd8e6edefe654f7e4b3b0791e286e8bdc268d80eaed1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/internal/console/package.json",
+      "sha256": "c8b5a7b1b9118d498c74b4daa13f22aadc4b42c65a34272a9d208bf33c5425ee",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "apps/marketing/web/package.json",
+      "sha256": "a3ba27b7fa636945f578500662720054563f3a418ca6aea99b52f6b2a743578c",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/merchant_auth_contract.g.dart",
+      "sha256": "3fc7eb698bce33c2f4c2af08ead4499c74b9021af6ed2ce78f5f8f9f091aa6cc",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "apps/merchant/web/package.json",
+      "sha256": "c5ffdd9987b9d9fc9c46aa2574ee198c15eb66972f3fb111687c6f3f831b0458",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/auth/logout/route.ts",
+      "sha256": "cc746f056d2d28f3a8ffa9b361fd30044a608d5e919ae76f56097b80c7daf9b6",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/api/client.ts",
+      "sha256": "4bc33a34368d27933913d315031c5dccb0fa85169076b1b5157328cb02758837",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/merchant/web/src/proxy.ts",
+      "sha256": "30dd80a57649ff3dbcf637feb875e0f1f90e8f20e23ff1c4cddeeba73f85deca",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/next.config.ts",
+      "sha256": "826a6b550c265ca5d3a9c2ef2f729e42966152827d2ff5a481b610750dd48e01",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/package.json",
+      "sha256": "7b418c31437ae5d6d10aeeb33a7d9a119ffb802f19ca0a374fa375dcb988392b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/auth-flow.test.ts",
+      "sha256": "56e271f9798a7f02715b21eb76697ec043608b03b03fe6094046a9b1ea5bb25b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/auth-switch-guard.test.ts",
+      "sha256": "95707d05dbf5bf9823d24e3da62158654b808d71c5c60f438a0da8f884d15d40",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/csrf-client.test.ts",
+      "sha256": "0d9d8e0b930e7f292c773a2c94936f2a2a62cea9c40abd21d4fb381dc9711a55",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/merchant-session-read.test.ts",
+      "sha256": "4c1f3a2f4765b24e1467e5304545872dd2b62d6770360ddab6232630a689709a",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/staging-cookie-boundary.test.ts",
+      "sha256": "e60f55a4e76b260a16a0eb8916b0948eafa5719b8115fbc5badad4ffbd3d197d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/.well-known/assetlinks.json/route.ts",
+      "sha256": "a49579064b8617b75637787272aa0f4260e6c7b97ed9dc38951a0f1ad24137e8",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/create-store/route.ts",
+      "sha256": "f3d4548c1a24eb64609c3058773dd5d664bc0856347642c2b113f07f09230459",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/login/route.ts",
+      "sha256": "765ba2dbe04376017abd66fa0d2ee3dada03da080ab2316bbeb01674334c36f2",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/logout/route.ts",
+      "sha256": "b79f1ba5708fdcb60cae44b7aadf22da53145b5bc072375300aaf5c3aaf0c60e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/lookup/route.ts",
+      "sha256": "5d1c4d647d1da8b59366637669a16ebe2a383cc0fca6d88501693ea259ab5cb1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/abandon/route.ts",
+      "sha256": "de5263823cdc993d0587c02f9233bc9aea1cfb40b84645a05d0a1ec4e390fc02",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/approve/route.ts",
+      "sha256": "0f9c8bdb5aadc6085a473008164a0c32ed58c2f33ea49168a2f954f0ee02844b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/bind/route.ts",
+      "sha256": "3855a266eb792cdf9f59f9bd959df638a3870b907d588dabe810eb6d02000827",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/cancel/route.ts",
+      "sha256": "3afb3d1443b285ef567061f8d1d8b00dadfd834fd5db77bdbca5f929f656fad8",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/complete/route.ts",
+      "sha256": "3321d767cafbeeb779cae1e7778562c51fae24caf76832ff69f58ebd827a1991",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/exchange/route.ts",
+      "sha256": "56d4b1316e3d1bd83bdef873c913ebc0539569808aa81b5e49725dadde505b03",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/requests/route.ts",
+      "sha256": "920bbbd33e1f287a38631a5e10b13ae554089eba2409e9e55e09c364081b5a2e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/security/route.ts",
+      "sha256": "7f4b423a7e0d42683d8a04a62e54ee8a13a8f031c82716a5a1757e42a413a6e9",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/send-reset/route.ts",
+      "sha256": "bf55595c5c6e0089861d0d9411c2d294b11864b9d7f33dc033e4fce764fb1d15",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/session/route.ts",
+      "sha256": "e303c1d687f67b0104bcc1c77de2d02c3dc6c87bdc7e951c67d9766fd9fa7608",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/set-password/route.ts",
+      "sha256": "07b1637c5bb83c6bf0982fa96ae6c665d9b88d53f3b38674d6bbfaed90564dd1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/signup/route.ts",
+      "sha256": "a576d7984211f0bf35dd251663dae91006138684c7463b8a71e58c29a6170115",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/stores/route.ts",
+      "sha256": "529ec9e1dbcbedd640317462e4ecc9344f3d85d220b9af945674d15fd3fcf3de",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/switch/route.ts",
+      "sha256": "cc62dc6bc667b4a6c9a8a585d4da7cbb95e2d8050d294a2a920ccf87caa8d2c2",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/verify-otp/route.ts",
+      "sha256": "8a7d2d1066550a48bec6ba315b6adb94d949c38d7c4de5cd3f1385b0645b07e5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/verify/route.ts",
+      "sha256": "9683e0add8c7605c335cc701efe0fd8085a51ba89692ab848f039c1e282bee35",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/forgot-password/page.tsx",
+      "sha256": "93f6561ad72d7fda859cfcdaa8380c5ca2a7ca924dcb7b1f2ff054bdd2117250",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/login/page.tsx",
+      "sha256": "142cb9e5357528c39a69caa1514eb00cc7bee6ad6ad934d7f649bf91400ba667",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/lookup/page.tsx",
+      "sha256": "e771e4611bae4f23f82b127550f251074b6561243a88238bec27476c1d96d12e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/merchant/auth/callback/page.tsx",
+      "sha256": "25c47ccdefff4d702f3137c02078345b17f6de498e26c318310d805a9a9866a6",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/mobile/authorize/page.tsx",
+      "sha256": "04385f57e187758ea1086f187d7a296650f23e78a1654da0110771c8bd270bc9",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/mobile/page.tsx",
+      "sha256": "37937fbabd0d9605daa9a0ae0dbb490011ddfef440d2851a02d2533528d9ba05",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/mobile/return/page.tsx",
+      "sha256": "b477a58d46882653c54e51e86dd6d93c43b27f6ad6abde1edebdb39ec8305f74",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/onboarding/page.tsx",
+      "sha256": "9abd68ac6a3a73e4dd01b49c46dc573ba12680c5af00ff3aed26f9be5a3d6c2a",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/reset-password/page.tsx",
+      "sha256": "fb344f7f7fa846d4d0de00d7109b16489f74e53f18a189a381db22463df5f94e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/security/page.tsx",
+      "sha256": "f282ce22f69bd77cf14d25cb726fb27b6fab18f2a9908ccd031b37fe0dc10f54",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/select/page.tsx",
+      "sha256": "788402d5e536a389b64ded8aa1c216965410951d73e3192755c9b950cca221e2",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/set-password/page.tsx",
+      "sha256": "98a2c6e2f31c72cc799015322364d7767d6511bdf68147bc2b29eee5a45fb335",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/signup/page.tsx",
+      "sha256": "b7e75aed5d71be08490b02e9c4f78ad2521ec291f223355a663492364455099e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/components/MfaLoginFields.tsx",
+      "sha256": "7fb350b1bfb0eddd91a2cb762f9b8fad4246425f2eb6674f69eac411fb129175",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/components/MobileAccountReturn.tsx",
+      "sha256": "02fc7d24a089ca6ad510dcef557290adb744dd655e97a9de4df08e4df841128f",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/components/TurnstileWidget.tsx",
+      "sha256": "8ee97d7b335c35a1d066959b780c127915f3f5790ed76a0e65e7d2bdaeec0378",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/api/client.ts",
+      "sha256": "b45327e2e95b96969ebbdaf1968009b027d9c3a67d3504bc4de5b26ddf3ba350",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/cookies.ts",
+      "sha256": "c03a5bf5dd08c559187265c4c0049c258b74a11e5be37bbfff51309b028125a5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/csrf.ts",
+      "sha256": "ecf5ff9d8fadba04e0dc51ef06a8d71173a6a8f53146bf7a92c00e8246fa7646",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/mobile-http.ts",
+      "sha256": "ad5b9f28dda34302b7347f09c544c716036d08496bf3c3ab878d4da486a35021",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/mobile.ts",
+      "sha256": "3bd1dd549991509d2a4b9c7c0ebbaaea9a7c5555fd64ec93061cf0f2e9b696e5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/return-to.ts",
+      "sha256": "67c0f74e4d4b97159444f0078d65d73d989b8d987974fc7ae639df663946d76b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/session-http.ts",
+      "sha256": "43d4f754442da17b27e658a49c1b275c940d880ea897f8afe092596bf2890370",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/session.ts",
+      "sha256": "87481814dbe2cb4f3af89e2d7679f6718f1bd324358ac761322f24bcfbd070ab",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/config/urls.ts",
+      "sha256": "715114b5e730b9f8af20f9bba2acd9ca4958e0e9a6a6f6f6f04563528f400096",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/csrf-client.ts",
+      "sha256": "d1185a6e6b60eb1f1446b11cbfb8620da93e730c73c1ecc50e99238fe15fc728",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/rate-limit.ts",
+      "sha256": "1d121d7fa21c56f36f2c0a007576f7cab7ea4e9e58f1aa0e68c2a3eee0ed74ff",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/proxy.ts",
+      "sha256": "f1c3c062e24874893e5bfbe08b3e4aeae0e959464dfb472cb8d4ecd8fa848db1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "config/env/schemas/next-app.schema.json",
+      "sha256": "6aa4db826fb8bef3956132ac4e3e69e5b79f6f7f022bc335abd69accb68606a7",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "config/env/templates/next-app.env.example",
+      "sha256": "2bcf18a2408b87e4c33a52e3f87254d63801e6267cf2f6e618d6aec99d39e54c",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "config/security/next-security-headers.ts",
+      "sha256": "fbf5022ffb409fb82420409e715e91c7a67e585db7dcfeb083e665c048ab7c63",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "config/supabase/history-aliases.json",
+      "sha256": "95c934a6126b3814d864d5ccd6287f6e2b9f0e9fee7c973f37593c56355e41e7",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/migrations/415_atomic_warehouse_commands.sql",
+      "sha256": "a85250a9792e63dfe0bd32c368088781159a7b09985840af651d5bd408e149cd",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/migrations/416_durable_product_imports.sql",
+      "sha256": "20d4b5e223e5fca53625724af92bb852e800315dd4b22b1be3edf262d98554d5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/migrations/417_managed_sandbox_payment_connections.sql",
+      "sha256": "7032515b61bd20aff4a4f7007a07c1dfd70d61eadf77a276422d11f65a06da50",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/migrations/418_merchant_accounts_mobile_handoff.sql",
+      "sha256": "439ccfe3d844a0382a2d7662d6995706e59d1c5eebf6c7d8b45ca914de87ce82",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/rollback/414_gift_card_issue_replay_integrity.rollback.sql",
+      "sha256": "bdafe1e5f805c5feb11f4bcfe491f73b3d4a82c99fa2467513388eae56674432",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/rollback/415_atomic_warehouse_commands.rollback.sql",
+      "sha256": "24ac7e6a80d64a6cc94f3f12d81cc8762210c56b5166d3cbe08bdbd179c25b84",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/rollback/416_durable_product_imports.rollback.sql",
+      "sha256": "a8cdcff194a13e4c5b3395554d55d67db8df195214cb33bce68c4e1a8f947753",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/rollback/417_managed_sandbox_payment_connections.rollback.sql",
+      "sha256": "081e00ec10d4a220a832e30a58bc0af1819353c1dcfcc05f61ec23780d70ce3f",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/rollback/418_merchant_accounts_mobile_handoff.rollback.sql",
+      "sha256": "fd64d5d984a78d6f42372868714ee7112d5c34a06f57f83546ff17da4bed3eaa",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "docs/active/BRANCH_DISPOSITIONS.md",
+      "sha256": "ede7afcd61e4d800c3877c1d605098e555a3b9da70ddeb66ab8cdb4614c98159",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "docs/governance/app-api-route-ownership.md",
+      "sha256": "c2afb62f8db2657929109ef98f1c2dd07da8edc67151572c605e3e74607a0add",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "package.json",
+      "sha256": "2f4117f4465ed4afe406f1d7d24128cec72b67e55b512f31c99eab58edff88f0",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "packages/auth-core/src/index.ts",
+      "sha256": "c2f7c6cf23a9b453d39fd703f262c4e966afc0d30feb6115cb5c604545ed237a",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "packages/auth-core/src/merchant-native-registry.ts",
+      "sha256": "184c9fdc02bee0461864a26e6e3736f4a0548f9a956d977a93909472be9392c1",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "packages/auth-core/src/merchant-native.ts",
+      "sha256": "417efdd82c91724dbe48926682a52d2216b7098cb3a83c57df353d829000929d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/auth-core/test/merchant-native.test.ts",
+      "sha256": "d57d36d88f3a456cd2dc2e889798696ee24e4a1087846d0bbcaf578e91123c35",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/auth-core/test/platform-cookie-environment.test.ts",
+      "sha256": "ab58c73dc463ec8d99d5ced3059dbe574418058bbdaf8b355cb0adecef413c26",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/infrastructure/package.json",
+      "sha256": "0a86d5b0100bbe050c7b47a432684889e63654371dbfe7f17ba9ce9a2e0b0b2e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/lcis-mcp/package.json",
+      "sha256": "4fd0202eee82d4ae5b668f5d2496927bcc4b6a23f0b58f937cac2b2528f064fc",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/theme-engine/package.json",
+      "sha256": "66227ff4c6ead5fd42470b06fb8e2907278180f1753ef0396983cb1b6310b86f",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/package.json",
+      "sha256": "b3718d9af54bbc92f1d95d71c52b09ee611783f713cc301a3f1932209cbae63d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/src/turnstile-client.ts",
+      "sha256": "2b34936f51ed1f00b32a3bf5777ac5338c85b77d81faacd9195ec09b777ccbba",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/src/turnstile.tsx",
+      "sha256": "46fc8ec5232f109da2d6b84619e2a023e38dd8fa192dc7cc39ee96dba9f946b1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/tests/turnstile.test.tsx",
+      "sha256": "4d5fb8bebdd2b251aae5f8830d729335f5fdd37eeb02d8280a10188ad3af47f5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/tokens.json",
+      "sha256": "47488814e6acb271dfc4c49f10dfe643b3ca62864d2208102b7c34f5b863ebfb",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "patches/deepmerge@4.3.1.patch",
+      "sha256": "cff1abca369bcc45fe5f0f8612de51a8ebcfe7f125de8e8d97d8d1009ee2bdb1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "db13469d86c7158e52f98d11587cc565e0fb08f225d789a0276c52192f157b64",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/generators/generate-merchant-auth-contract.ts",
+      "sha256": "50385a51fb65acec7ab306b1a4bc180f29de71c52335e002b8c41c8a2de0122f",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/github/activate-flutter.py",
+      "sha256": "73f7f38c60a6de2b8a015739d66393fb86c7f71b5b6b7a90b74122aa428569a8",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/governance/definer-role-closure.mjs",
+      "sha256": "0fbfee9a4d5ebb67fd5b0cd4bca26a96d7dab2551f57f1994280afede60e0bfa",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/governance/test-suite-catalog.mjs",
+      "sha256": "62e234418beffc09933e10aa1586a3afa893a48bf48449be198c7a9031f71cca",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "scripts/governance/validator-orchestrator.mjs",
+      "sha256": "d6c1043aa7552780347f6ddd1fe9536176885a370482c526c85a60aad20d7067",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/supabase/README.md",
+      "sha256": "c78a2e2eef43271e7bf65930ca323fc624fd66ce9c2c37884f5498b129b0a6f5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/validators/app-api-route-inventory.mjs",
+      "sha256": "23b3511a4d2aff5c636281f0f08f8268a479d717089ccb9a765de0b799af66bc",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "scripts/validators/dependency-manifest-validator.mjs",
+      "sha256": "faa393c3ffa10ea49f078f4a226974be20c9e5a966605c70505320d74e74b879",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/validators/governance-common.mjs",
+      "sha256": "2c5b371a3cedb120ad9c93f8452613051f13d6a0bd0ec477b3b1122bff66f446",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/validators/platform-domain-literal-validator.mjs",
+      "sha256": "5758e5d2ba3719b9191e0eaf7e609e5a9419a059d6f5d28f33f14260ec6b3786",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/validators/session-security-validator.mjs",
+      "sha256": "f49d2bedd3096a8b511a6176ede68186c51da5c045b23bc0b0103147cf64f479",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/package.json",
+      "sha256": "a4c1b2514ce7cd650cc3a3cf137de5ee6dbcef727cc0d5366fe1c34c7b1f0650",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-auth-admission.postgres.test.ts",
+      "sha256": "c9ffb23e09a4442c765272715f2080417d81656228d6c0dec084dd978d586d9d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-auth.postgres.test.ts",
+      "sha256": "0037cb3e41a9be19962b0ad03350bcf9015572ca45dc417f93baaf19ccc10ef7",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/store-access-password.test.ts",
+      "sha256": "a0caa2270d88098868b0bb4cf1decad49a2e9bc64506837647ee89c01a22a836",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/lib/store-access-hashing.node.ts",
+      "sha256": "ba91523cdc7f000e3a8bea5e823f7fe145b107311d7bc84f14d9e533fc5e4fcf",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/lib/totp.ts",
+      "sha256": "f59790b2cad666bcd669020cc9fc36e308e1dda659b5d7174d20ee923f2a76a7",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/routes/auth.ts",
+      "sha256": "2e5d45390aa4c1671a067d2cc72591e2774bb743d6563f643303ca500f726823",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/routes/merchant-mobile-auth.ts",
+      "sha256": "0744e8b889570b2d3da85b0cf74baefd30694c1e38214fe638d88a41f7e8566b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/routes/two-factor.ts",
+      "sha256": "418ce5ef1b1fb14fcd379d0ae368acd68eceb93ad3d219185dec84ab9b6ff9f6",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/tenant/tenant-tables.registry.ts",
+      "sha256": "7b36754b1b609c93e914471eb0b8f74a56e9c154fd3b61b5a8f4c31af8f00bef",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "services/lcis-api/package.json",
+      "sha256": "231f4b1e95f2a5d66b3c156536d812b65e1860bd47481d98a13f510a59c935bf",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/mobile-bff/package.json",
+      "sha256": "29bf52746841c9de208a455a7f7afcd91c60a123ca0a9240ea456cf33455e39b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/mobile-bff/src/index.ts",
+      "sha256": "de18b6c2304ea961fffbe42697568f9be03fbc0e3e2d8b0fefc59f34d699665a",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "services/mobile-bff/test/session-token.test.ts",
+      "sha256": "e3b20468870e5edbed9bd39a087f4972e6f19e20a8245446c5354bfd3a81439a",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/webhook-service/package.json",
+      "sha256": "4c0f987125c61657728136672093d43c109dd93b1003bd5cf5cccc723e451272",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/auth/csrf-contract.test.mjs",
+      "sha256": "f69c4df25c99a3d143a5beb87db249c9e71c09943553c199036c28f175f2a2b2",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "tests/auth/identity-email-delivery-feedback.test.mjs",
+      "sha256": "4daadc00b36b3df2ddcaa15dbf85cc3d3c453f0b3859b1efad16eca1f3fdd60c",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/auth/identity-password-intent.test.mjs",
+      "sha256": "4e5d0dc4be22e0c05951cd90d3cfd5abe463c057930ce2c6a12fa969857edebd",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/auth/identity-password-setup-recovery.test.mjs",
+      "sha256": "dfafae48d41e34928c93360cd625cbc2f71ac462332264b15f8e7de39ee17a88",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/auth/session-verifier.test.mjs",
+      "sha256": "24f2bec2668f40b61ea0f75f41e9320e5f513f2ccdb166f01af338ac10409719",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/dependency-manifest-dev-sources.test.mjs",
+      "sha256": "61ecf7192c8f0ccbec3c5749c184ad844eac185a1c8c97511222d6ec141ab0fb",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/dependency-test-boundary.test.mjs",
+      "sha256": "88b6cb07c10e5a5ab2c30ff5cc5f82b9853ede0a490809edbc03c869b5cda725",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/gateway-db-lifecycle.test.mjs",
+      "sha256": "eb721acf0151fd93d3df50b4a47d8fe6d87461bcd46eb94ebb920373987b7aff",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/governance-source-traversal.test.mjs",
+      "sha256": "bb17c1b751d36f13219df465c26eb2c25c86e7ad4adeac31640161eb7d46f7c3",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/platform-callback-scheme.test.mjs",
+      "sha256": "78b900764a517640c821f8644a29890fe75da9d2f13500676fd36fb02b042f24",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "tests/governance/self-hosted-flutter.test.mjs",
+      "sha256": "8d15867815b5dfcca599f2df4e0a50a8b8ed0b8113c7df3b8681e30ffebc4e91",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/session-security-validator.test.mjs",
+      "sha256": "5bbc9346afce8eb5b6946bb366ffb40363c6e78caba46d571013510741096847",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/validator-orchestration.test.mjs",
+      "sha256": "400c7c985ffa29e368eb49c68eecbdabc620b1cca8376c2e2e49d0a549ac1cd2",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/owned-db/managed-hosted-history-upgrade.postgres.test.ts",
+      "sha256": "c5afff047a8d44b5a3c58c0393c7b9a6f97b0f3eb27f1244b6a40a5ad4eb64c4",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/owned-db/merchant-accounts-browser.postgres.test.ts",
+      "sha256": "499461654fd0927549681c2104771ba8ee2f920a6d7dd22257b572c0ac292a09",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    }
+  ],
+  "scopeNotes": [
+    "Auth-core index excludes unrelated product-import transport exports",
+    "Shared dependency versions/security overrides/patches retained; unrelated package scripts stay at baseline",
+    "BFF retains baseline operation allowlist; only canonical staging-cookie selection is added",
+    "Accounts eight session-owned routes explicitly classified; route ratchet239",
+    "Tenant registry generated from candidate migrations through418",
+    "Canonical development Android callback54351 implements the existing owner decision; all production/staging redirects unchanged",
+    "Native callback Dart projection and finite OS-scheme validator are canonical derived references",
+    "Owner branch claim is separate from implementation; exact CI and hosted acceptance remain required",
+    "Lossless compressed CI bundle payloads preserve signed bytes/modes, symbols, upload acknowledgement and failure pins; global cleanup engine unchanged."
+  ],
+  "verification": {
+    "authCore": 53,
+    "accounts": 73,
+    "passwordSessionBoundaries": 47,
+    "validatorNegativeControls": 82,
+    "gatewayAndBffTypecheck": true,
+    "bffTests": 18,
+    "ownedNativeMfaAdmissionDatabaseTests": 19,
+    "ownedAccountsBrowser": 1,
+    "governance": 114,
+    "freshCallbackBrowserRecheck": "PASS:54351; owned production-built Accounts browser run5e92cadd024a",
+    "compressedBundleAdapter": 19,
+    "commonCleanupEngine": "PASS",
+    "commonTaskRuntime": 38,
+    "osSchemeNegativeControls": 3,
+    "exactFinalCommitCi": "PENDING"
+  },
+  "pushed": false,
+  "deployed": false,
+  "productionActivated": false,
+  "iphoneVerified": false
+}

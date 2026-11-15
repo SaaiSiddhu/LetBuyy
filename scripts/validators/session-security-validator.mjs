@@ -266,10 +266,25 @@ requires(routeBody('services/api-gateway/src/routes/auth.ts', 'post', '/custom/u
   'if (mfaResponse) return mfaResponse',
 ], 'merchant password authentication must execute and enforce enrolled MFA before success');
 requires(functionBody('services/api-gateway/src/routes/auth.ts', 'enforceMerchantMfaIfEnrolled'), [
-  ".from('merchant_2fa_factors')", ".eq('custom_user_id', userId)", ".eq('status', 'active')",
+  'await readActiveMerchantMfaFactor(db, userId)',
   'await decryptTextAesGcm(encryptionSecret, factor.secret_ciphertext)',
-  'await verifyTotpCode({ secret: totpSecret, code })', 'if (!accepted)',
-], 'merchant enrolled MFA must verify the actual actor factor and deny invalid codes');
+  'await matchingTotpCounter({ secret: totpSecret, code })',
+  "await db.rpc('consume_merchant_login_factor',", 'p_user_id: userId', 'p_factor_id: factor.id',
+  'p_counter: counter', 'p_recovery_hash:', 'if (consumeError)', 'const accepted = consumed === true', 'if (!accepted)',
+], 'merchant enrolled MFA must verify the actual actor factor and durably consume the accepted counter or recovery code');
+requires(latestSql('consume_merchant_login_factor'), [
+  'FOR UPDATE', "status='active'", 'custom_user_id=p_user_id',
+  'p_counter<=coalesce(f.login_last_counter,-1)', 'array_remove(recovery_code_hashes,p_recovery_hash)',
+].map(s => s.toLowerCase()), 'merchant MFA consumption must bind the active actor factor, lock it and reject replay');
+requires(functionBody('services/api-gateway/src/routes/auth.ts','readActiveMerchantMfaFactor'),[
+  ".from('merchant_2fa_factors')", ".select('id, secret_ciphertext')", ".eq('custom_user_id', userId)",
+  ".eq('factor_type', 'totp')", ".eq('status', 'active')", ".is('deleted_at', null)", '.limit(1)',
+], 'merchant factor lookup must scope the active nondeleted TOTP factor to the actual actor');
+requires(routeBody('services/api-gateway/src/routes/auth.ts','post','/custom/users/by-email','auth'),[
+  'await readActiveMerchantMfaFactor(db, user.id)',
+  'if (factorError || !Array.isArray(factors)) return c.json(dbErrorBody(), 503)',
+  'mfa_required: factors.length > 0',
+], 'Accounts admission must use the canonical factor lookup and fail closed on unavailable or malformed factor reads');
 requires(functionBody('services/api-gateway/src/lib/merchant-session.ts', 'validateMerchantSessionToken'), [
   "await db.rpc('validate_and_rotate_merchant_session',", 'p_rotate: options.rotate === true',
   "accepted: row?.accepted === true && row?.status === 'accepted'", 'if (error)', 'accepted: false',

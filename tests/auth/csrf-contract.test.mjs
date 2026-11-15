@@ -12,8 +12,8 @@ const gatewaySecuritySource = readFileSync('services/api-gateway/src/middleware/
 const storefrontRouteSource = readStorefrontRouteSource();
 
 test('identity and mobile write the canonical letbuyy_csrf cookie name', () => {
-  assert.match(identityCookiesSource, /csrf: 'letbuyy_csrf'/);
-  assert.match(identityProxySource, /response\.cookies\.set\('letbuyy_csrf'/);
+  assert.match(identityCookiesSource, /const COOKIE_NAMES = resolveLetbuyyPlatformCookieNames/);
+  assert.match(identityProxySource, /response\.cookies\.set\(names\.csrf/);
   assert.match(mobileStoreAuthSource, /_csrfCookieName = 'letbuyy_csrf'/);
 
   assert.doesNotMatch(identityCookiesSource, /csrf: 'lb_csrf'/);
@@ -22,10 +22,10 @@ test('identity and mobile write the canonical letbuyy_csrf cookie name', () => {
 });
 
 test('CSRF readers prefer letbuyy_csrf with one-release lb_csrf fallback', () => {
-  assert.match(identityCsrfSource, /request\.cookies\.get\('letbuyy_csrf'\)/);
-  assert.match(identityCsrfSource, /request\.cookies\.get\('lb_csrf'\)/);
-  assert.match(identityCsrfClientSource, /letbuyy_csrf=\(\[\^;\]\*\)/);
-  assert.match(identityCsrfClientSource, /lb_csrf=\(\[\^;\]\*\)/);
+  assert.match(identityCsrfSource, /request\.cookies\.get\(names\.csrf\)/);
+  assert.match(identityCsrfSource, /request\.cookies\.get\(names\.legacyCsrf\)/);
+  assert.match(identityCsrfClientSource, /\[names\.csrf, names\.legacyCsrf\]/);
+  assert.match(identityCsrfClientSource, /resolveLetbuyyPlatformCookieNames\(process\.env\.NEXT_PUBLIC_ENV\)/);
   assert.match(gatewaySecuritySource, /parseCookie\(c\.req\.header\('cookie'\), 'letbuyy_csrf'\)/);
   assert.match(gatewaySecuritySource, /parseCookie\(c\.req\.header\('cookie'\), 'lb_csrf'\)/);
 });

@@ -9,6 +9,9 @@ import { generateDeviceFingerprint, getOrCreateDevice, parseDeviceName } from '@
 import { validateCsrf } from '@/lib/auth/csrf'
 import { sendNewDeviceLoginEmail } from '@/lib/email/resend'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
+import { SignInSchema } from '@letbuyy/auth-core'
+import { z } from 'zod'
+import { approveMobileFlow, mobileFailure, MobileAuthError } from '@/lib/auth/mobile'
 
 /**
  * POST /api/auth/login
@@ -38,7 +41,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
-        const { email, password, turnstileToken, mfaCode } = await request.json()
+        const parsed = SignInSchema.extend({ turnstileToken: z.string().max(4096).optional(), mfaCode: z.string().max(16).optional(), recoveryCode: z.string().trim().max(40).optional() }).safeParse(await request.json().catch(() => null))
+        if (!parsed.success) return NextResponse.json({ error: 'Enter a valid email and password.' }, { status: 400 })
+        const { email, password, turnstileToken, mfaCode, recoveryCode } = parsed.data
 
         if (!email || !password) {
             return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
@@ -54,7 +59,7 @@ export async function POST(request: NextRequest) {
 
         const userResponse = await identityApiRequest('/auth/custom/users/authenticate', {
             method: 'POST',
-            body: JSON.stringify({ email: normalizedEmail, password, mfa_code: mfaCode || undefined }),
+            body: JSON.stringify({ email: normalizedEmail, password, mfa_code: mfaCode || undefined, recovery_code: recoveryCode || undefined }),
         })
         const userPayload = await userResponse.json().catch(() => null) as {
             data?: {
@@ -99,6 +104,10 @@ export async function POST(request: NextRequest) {
         const { deviceId, isNew: isNewDevice } = await getOrCreateDevice(user.id, fingerprint, userAgent)
         const sessionToken = await createSession(user.id, deviceId)
 
+        // Fresh password + required MFA has completed. Bind this exact browser session
+        // before returning to the app; a signed remembered-email cookie is not proof.
+        const nativeContinuation = await approveMobileFlow(sessionToken)
+
         // Set cookies
         await setSessionCookie(sessionToken)
         await addAccount({
@@ -116,6 +125,8 @@ export async function POST(request: NextRequest) {
             }).catch(() => { }) // Don't fail login if email fails
         }
 
+        if (nativeContinuation) return NextResponse.json({ success: true, ...nativeContinuation }, { headers: { 'Cache-Control': 'private, no-store' } })
+
         // CHECK IF USER HAS COMPLETED ONBOARDING (store exists?)
         const storesResponse = await identityApiRequest('/stores?limit=2', {
             method: 'GET',
@@ -125,7 +136,10 @@ export async function POST(request: NextRequest) {
         const storesPayload = await storesResponse.json().catch(() => null) as {
             data?: Array<{ subdomain: string }>
         } | null
-        const stores = storesResponse.ok ? storesPayload?.data || [] : []
+        if (!storesResponse.ok || !Array.isArray(storesPayload?.data)) {
+            return NextResponse.json({ success: true, discoveryUnavailable: true, redirectTo: '/select' }, { headers: { 'Cache-Control': 'private, no-store' } })
+        }
+        const stores = storesPayload.data
 
         // Route based on store count: 0 → onboarding, 1 → admin, 2+ → store picker
         let redirectTo: string
@@ -139,7 +153,8 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ success: true, redirectTo })
     } catch (error) {
-        console.error('Login error:', error)
+        if (error instanceof MobileAuthError) return mobileFailure(error)
+        console.error(JSON.stringify({ level: 'error', service: 'accounts', reason: 'login_unavailable' }))
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

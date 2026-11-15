@@ -121,6 +121,7 @@ function ResetPasswordContent() {
         try {
             const res = await fetch('/api/auth/reset-password', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({ token, password }),
             })

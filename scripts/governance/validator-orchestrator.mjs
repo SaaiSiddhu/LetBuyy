@@ -458,7 +458,6 @@ export function countByStatus(results = []) {
 
 export const GENERATED_DIRECTORY_NAMES = Object.freeze(
   new Set([
-    "node_modules",
     ".next",
     ".turbo",
     "dist",
@@ -473,7 +472,9 @@ export const GENERATED_DIRECTORY_NAMES = Object.freeze(
   ]),
 );
 
-const NEVER_WALK = new Set([".git"]);
+// Installed workspace dependencies are inputs to the following validators/tests.
+// Never delete them or descend into their package build directories.
+const NEVER_WALK = new Set([".git", "node_modules"]);
 const isGeneratedDirectoryName = (name, names = GENERATED_DIRECTORY_NAMES) =>
   names.has(name) || (names === GENERATED_DIRECTORY_NAMES && isNextSessionRuntimeDirectoryName(name));
 

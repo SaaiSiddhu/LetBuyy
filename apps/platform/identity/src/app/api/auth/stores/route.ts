@@ -13,13 +13,13 @@ export async function GET() {
         const sessionToken = await getSessionCookie()
 
         if (!sessionToken) {
-            return NextResponse.json({ authenticated: false })
+            return NextResponse.json({ authenticated: false }, { status: 401 })
         }
 
         const session = await validateSession(sessionToken)
 
         if (!session) {
-            return NextResponse.json({ authenticated: false })
+            return NextResponse.json({ authenticated: false }, { status: 401 })
         }
 
         const storesResponse = await identityApiRequest('/stores?limit=50', {
@@ -37,6 +37,10 @@ export async function GET() {
             }>
         } | null
 
+        if (!storesResponse.ok || !Array.isArray(storesPayload?.data)) {
+            return NextResponse.json({ error: 'Unable to load your stores. Please retry.', code: 'STORE_DISCOVERY_UNAVAILABLE' }, { status: 503, headers: { 'Cache-Control': 'private, no-store' } })
+        }
+
         return NextResponse.json({
             authenticated: true,
             user: {
@@ -44,10 +48,10 @@ export async function GET() {
                 email: session.email,
                 fullName: session.fullName,
             },
-            stores: storesResponse.ok ? storesPayload?.data || [] : [],
+            stores: storesPayload.data,
         })
     } catch (error) {
-        console.error('Stores fetch error:', error)
-        return NextResponse.json({ authenticated: false })
+        console.error(JSON.stringify({ level: 'error', service: 'accounts', reason: 'store_discovery_unavailable' }))
+        return NextResponse.json({ error: 'Unable to load your stores. Please retry.', code: 'STORE_DISCOVERY_UNAVAILABLE' }, { status: 503, headers: { 'Cache-Control': 'private, no-store' } })
     }
 }

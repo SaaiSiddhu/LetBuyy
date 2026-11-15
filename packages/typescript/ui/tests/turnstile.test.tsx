@@ -2,7 +2,7 @@ import React, { StrictMode, createRef } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TurnstileWidget, type TurnstileHandle } from '../src/turnstile';
-import { loadTurnstile, mountTurnstile, type TurnstileApi } from '../src/turnstile-client';
+import { loadTurnstile, mountTurnstile, resolveTurnstileScriptUrl, type TurnstileApi } from '../src/turnstile-client';
 
 type Options = Record<string, unknown>;
 type Browser = Window & { turnstile?: TurnstileApi };
@@ -20,6 +20,24 @@ function call(options: Options, name: string, ...args: unknown[]) {
 afterEach(() => { delete browser.turnstile; document.querySelectorAll('script[data-lb-turnstile]').forEach((script) => script.remove()); vi.useRealTimers(); });
 
 describe('shared Turnstile lifecycle', () => {
+    it('keeps hosted verification fixed and admits only explicit loopback provider simulations', () => {
+        const sdk = 'http://127.0.0.1:54359/fixtures/turnstile/api.js';
+        expect(resolveTurnstileScriptUrl('https://accounts.letbuyy.com/login')).toBe('https://challenges.cloudflare.com/turnstile/v0/api.js');
+        expect(resolveTurnstileScriptUrl('http://localhost:54351/login', sdk)).toBe(sdk);
+        expect(resolveTurnstileScriptUrl('http://[::1]:54351/mobile', sdk)).toBe(sdk);
+        for (const [page, script] of [
+            ['https://accounts.letbuyy.com/login', sdk],
+            ['https://accounts-staging.letbuyy.com/login', sdk],
+            ['http://outside.example:54351/login', sdk],
+            ['http://localhost:80/login', sdk],
+            ['http://localhost:54351/login', 'http://outside.example:54359/fixtures/turnstile/api.js'],
+            ['http://localhost:54351/login', sdk + '?replacement=1'],
+            ['http://localhost:54351/login', sdk + '#fragment'],
+            ['http://localhost:54351/login', 'http://name:secret@127.0.0.1:54359/fixtures/turnstile/api.js'],
+            ['http://localhost:54351/login', 'http://127.0.0.1:54359/arbitrary.js'],
+        ]) expect(() => resolveTurnstileScriptUrl(page, script)).toThrow('Local verification configuration unavailable');
+    });
+
     it('ends an SDK load that never becomes ready without an automatic retry loop', async () => {
         vi.useFakeTimers();
         const frame = document.createElement('iframe');

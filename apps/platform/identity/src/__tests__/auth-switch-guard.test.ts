@@ -43,25 +43,25 @@ test('switch requires a valid current session before resolving the target accoun
     const validateSessionIndex = switchRouteSource.indexOf('await validateSession(currentToken)')
     const unauthorizedIndex = switchRouteSource.indexOf('{ status: 401 }')
     const savedAccountsIndex = switchRouteSource.indexOf('const savedAccounts = await getAccounts()')
-    const targetLookupIndex = switchRouteSource.indexOf("identityApiRequest('/auth/custom/users/by-email'")
+    const targetProofIndex = switchRouteSource.indexOf('reauthenticationRequired: true')
 
     assert.ok(currentTokenIndex > -1, 'switch route must read the current session cookie')
     assert.ok(validateSessionIndex > currentTokenIndex, 'switch route must validate the current session token')
     assert.ok(unauthorizedIndex > validateSessionIndex, 'anonymous switch requests must return 401 before target lookup')
     assert.ok(savedAccountsIndex > unauthorizedIndex, 'saved account proof must run only after current session proof')
-    assert.ok(targetLookupIndex > savedAccountsIndex, 'target user lookup must not run before saved-account proof')
+    assert.ok(targetProofIndex > savedAccountsIndex, 'target reauthentication must follow both current-session and saved-account guards')
 })
 
-test('switch rejects unproven target accounts before minting a replacement session', () => {
+test('switch requires fresh target credentials and cannot mint from a remembered email', () => {
     const savedAccountsIndex = switchRouteSource.indexOf('const savedAccounts = await getAccounts()')
     const isProvenAccountIndex = switchRouteSource.indexOf('const isProvenAccount = savedAccounts.some')
     const forbiddenIndex = switchRouteSource.indexOf('{ status: 403 }', isProvenAccountIndex)
-    const destroyIndex = switchRouteSource.indexOf('await destroySession(currentToken)')
-    const createSessionIndex = switchRouteSource.indexOf('const sessionToken = await createSession')
+    const targetProofIndex = switchRouteSource.indexOf('reauthenticationRequired: true')
 
     assert.ok(savedAccountsIndex > -1, 'switch route must read the signed saved-accounts cookie')
     assert.ok(isProvenAccountIndex > savedAccountsIndex, 'switch route must verify the target against saved accounts')
     assert.ok(forbiddenIndex > isProvenAccountIndex, 'unproven target switch requests must return 403')
-    assert.ok(destroyIndex > forbiddenIndex, 'current session must not be destroyed before target proof passes')
-    assert.ok(createSessionIndex > destroyIndex, 'replacement session must be minted only after all switch guards pass')
+    assert.ok(targetProofIndex > forbiddenIndex)
+    assert.doesNotMatch(switchRouteSource, /await createSession\(/, 'remembered metadata cannot mint a target session')
+    assert.doesNotMatch(switchRouteSource, /await destroySession\(/, 'a failed or cancelled switch must preserve the working session')
 })

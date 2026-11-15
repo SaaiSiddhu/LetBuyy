@@ -1,0 +1,60 @@
+diff --git a/index.js b/index.js
+--- a/index.js
++++ b/index.js
+@@ -53,0 +54,7 @@
++function setOwnDataProperty(target, key, value) {
++	// Own data only: copying a key must never invoke an inherited setter.
++	Object.defineProperty(target, key, {
++		value: value, enumerable: true, configurable: true, writable: true
++	})
++}
++
+@@ -58 +65 @@
+-			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options)
++			setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(target[key], options))
+@@ -67 +74 @@
+-			destination[key] = getMergeFunction(key, options)(target[key], source[key], options)
++			setOwnDataProperty(destination, key, getMergeFunction(key, options)(target[key], source[key], options))
+@@ -69 +76 @@
+-			destination[key] = cloneUnlessOtherwiseSpecified(source[key], options)
++			setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(source[key], options))
+diff --git a/dist/cjs.js b/dist/cjs.js
+--- a/dist/cjs.js
++++ b/dist/cjs.js
+@@ -78,0 +79,7 @@
++function setOwnDataProperty(target, key, value) {
++	// Own data only: copying a key must never invoke an inherited setter.
++	Object.defineProperty(target, key, {
++		value: value, enumerable: true, configurable: true, writable: true
++	})
++}
++
+@@ -83 +90 @@
+-			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
++			setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(target[key], options))
+@@ -92 +99 @@
+-			destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
++			setOwnDataProperty(destination, key, getMergeFunction(key, options)(target[key], source[key], options))
+@@ -94 +101 @@
+-			destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
++			setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(source[key], options))
+diff --git a/dist/umd.js b/dist/umd.js
+--- a/dist/umd.js
++++ b/dist/umd.js
+@@ -82,0 +83,7 @@
++	function setOwnDataProperty(target, key, value) {
++		// Own data only: copying a key must never invoke an inherited setter.
++		Object.defineProperty(target, key, {
++			value: value, enumerable: true, configurable: true, writable: true
++		})
++	}
++
+@@ -87 +94 @@
+-				destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
++				setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(target[key], options))
+@@ -96 +103 @@
+-				destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
++				setOwnDataProperty(destination, key, getMergeFunction(key, options)(target[key], source[key], options))
+@@ -98 +105 @@
+-				destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
++				setOwnDataProperty(destination, key, cloneUnlessOtherwiseSpecified(source[key], options))

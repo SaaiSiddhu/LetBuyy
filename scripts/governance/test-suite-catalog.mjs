@@ -50,6 +50,8 @@ export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';
 // Explicit reviewed ownership inventory; new root suites must be registered,
 // never silently admitted as pure tests or provider/runtime code.
 export const ROOT_GATEWAY_DB_SUITES = [
+    'tests/owned-db/managed-hosted-history-upgrade.postgres.test.ts',
+    'tests/owned-db/merchant-accounts-browser.postgres.test.ts',
     'tests/owned-db/ad-credit-purchase.postgres.test.ts',
     'tests/owned-db/console-current-oncall-browser.postgres.test.ts',
     'tests/owned-db/console-mfa-reset-delivery.postgres.test.ts',

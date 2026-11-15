@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { OtpRequestSchema } from '@letbuyy/auth-core'
+import { z } from 'zod'
 import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateOTPToken } from '@/lib/auth/tokens'
@@ -30,7 +32,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request.' }, { status: 403 })
         }
 
-        const { email, otp } = await request.json()
+        const parsed = OtpRequestSchema.extend({ otp: z.string().regex(/^\d{6}$/) }).safeParse(await request.json().catch(() => null))
+        if (!parsed.success) return NextResponse.json({ error: 'Enter a valid email and six-digit verification code.' }, { status: 400 })
+        const { email, otp } = parsed.data
 
         if (!email || typeof email !== 'string') {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 })

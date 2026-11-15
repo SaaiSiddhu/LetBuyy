@@ -111,6 +111,8 @@ async function loadSessions(db: ReturnType<typeof getSupabaseAdmin>, userId: str
         .from('sessions')
         .select('id, device_id, expires_at, created_at, last_active')
         .eq('user_id', userId)
+        .is('revoked_at', null)
+        .gt('expires_at', new Date().toISOString())
         .order('last_active', { ascending: false })
         .limit(25);
     if (error) throw new Error(`Session lookup failed: ${error.message}`);

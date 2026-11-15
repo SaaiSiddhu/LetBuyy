@@ -8,9 +8,9 @@ import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWid
 import { features } from '@/lib/config/features'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
-import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
+import { MfaLoginFields } from '@/components/MfaLoginFields'
 import { Banner, Button, Input } from '@letbuyy/ui'
-import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
+import { safePlatformReturnTo, authPathWithReturnTo, accountResultPath } from '@/lib/auth/return-to'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -120,6 +120,10 @@ function LookupContent() {
     const searchParams = useSearchParams()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [mfaRequired, setMfaRequired] = useState(false)
+    const [mfaCode, setMfaCode] = useState('')
+    const [recoveryCode, setRecoveryCode] = useState('')
+    const [useRecovery, setUseRecovery] = useState(false)
     const [showPasswordField, setShowPasswordField] = useState(false)
     const [viewState, setViewState] = useState<ViewState>('email')
     const [loading, setLoading] = useState(false)
@@ -173,7 +177,7 @@ function LookupContent() {
     const fetchSavedAccounts = async () => {
         try {
             const [sessionRes, accountsRes] = await Promise.all([
-                fetch('/api/auth/session'),
+                fetch('/api/auth/session', { cache: 'no-store', signal: AbortSignal.timeout(20000) }),
                 fetch('/api/auth/accounts'),
             ])
             const sessionData = await sessionRes.json()
@@ -181,16 +185,17 @@ function LookupContent() {
 
             // If user has an active session, route from the same store verdict
             // used by /select so zero-store users land on onboarding directly.
-            if (sessionData.authenticated) {
+            if (sessionRes.ok && sessionData.authenticated) {
+                if (sessionData.continuation === 'native') { window.location.replace('/mobile'); return }
                 const requestedReturn = safePlatformReturnTo(searchParams.get('return_to'))
                 if (requestedReturn) { window.location.replace(requestedReturn); return }
-                const storesRes = await fetch('/api/auth/stores')
+                const storesRes = await fetch('/api/auth/stores', { cache: 'no-store', signal: AbortSignal.timeout(20000) })
                 const storesData = await storesRes.json().catch(() => null) as {
                     authenticated?: boolean
                     stores?: UserStore[]
                 } | null
 
-                if (storesData?.authenticated) {
+                if (storesRes.ok && storesData?.authenticated && Array.isArray(storesData.stores)) {
                     const stores = Array.isArray(storesData.stores) ? storesData.stores : []
 
                     if (stores.length === 0) {
@@ -236,6 +241,7 @@ function LookupContent() {
         try {
             const res = await fetch('/api/auth/lookup', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({ email: email.trim() }),
             })
@@ -262,8 +268,8 @@ function LookupContent() {
                 setShowPasswordField(true)
                 setViewState('password')
             } else {
-                // User exists but no password — send magic link
-                await handleSendMagicLink()
+                // Resume the same email-proof/password setup as new signup.
+                window.location.href = authPathWithReturnTo(`/signup?email=${encodeURIComponent(email.trim())}`, returnTo)
             }
         } catch {
             setError('Something went wrong. Please try again.')
@@ -286,10 +292,13 @@ function LookupContent() {
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
                     password,
+                    mfaCode: mfaRequired && !useRecovery ? mfaCode : undefined,
+                    recoveryCode: mfaRequired && useRecovery ? recoveryCode : undefined,
                     turnstileToken: currentToken,
                     returnTo: returnTo || undefined,
                 }),
@@ -301,7 +310,11 @@ function LookupContent() {
                 // Reset Turnstile widget to get a fresh token for retry
                 turnstileRef.current?.reset()
 
-                if (res.status === 429) setError(t.rateLimited)
+                turnstileTokenRef.current = null
+                setTurnstileToken(null)
+                if (data.mfaRequired) { setMfaRequired(true); setError(data.error || 'Enter your verification code.') }
+                else if (res.status === 429) setError(t.rateLimited)
+                else if (res.status >= 500) setError('Sign-in is temporarily unavailable. Please retry.')
                 else if (res.status === 403 && data.error?.includes('Bot')) setError(t.botFailed)
                 else if (res.status === 403 && data.error?.toLowerCase().includes('verify')) setError(t.verifyEmail)
                 else if (res.status === 403) setError(data.error || 'Request failed. Please refresh the page.')
@@ -311,7 +324,7 @@ function LookupContent() {
 
             if (data.success) {
                 // Use return_to if available and login API didn't override
-                window.location.href = returnTo || data.redirectTo
+                window.location.href = accountResultPath(data, returnTo)
             }
         } catch {
             setError('Something went wrong. Please try again.')
@@ -336,6 +349,7 @@ function LookupContent() {
         try {
             const response = await fetch('/api/auth/send-magic', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
@@ -374,11 +388,16 @@ function LookupContent() {
         setLoading(true)
         setError(null)
         setPassword('')
+        setMfaRequired(false)
+        setMfaCode('')
+        setRecoveryCode('')
+        setUseRecovery(false)
         setEmail(accountEmail)
 
         try {
             const res = await fetch('/api/auth/lookup', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({ email: accountEmail }),
             })
@@ -404,7 +423,7 @@ function LookupContent() {
             }
 
             if (!data.hasPassword) {
-                window.location.href = authPathWithReturnTo(`/set-password?email=${encodeURIComponent(accountEmail)}`, returnTo)
+                window.location.href = authPathWithReturnTo(`/signup?email=${encodeURIComponent(accountEmail)}`, returnTo)
                 return
             }
 
@@ -416,10 +435,6 @@ function LookupContent() {
             setLoading(false)
         }
     }
-
-    const handleOAuth = useCallback(async (provider: 'google' | 'apple') => {
-        setError(`${provider === 'google' ? 'Google' : 'Apple'} sign-in is not configured. Use email sign-in.`)
-    }, [])
 
     const handleTurnstileVerify = useCallback((token: string) => {
         setTurnstileToken(token)
@@ -527,27 +542,7 @@ function LookupContent() {
                             </Button>
                         </form>
 
-                        <div className="auth-divider">
-                            <span>{t.or}</span>
-                        </div>
 
-                        {features.passkey && (
-                            <Button unstyled className="auth-btn-secondary" disabled>
-                                <AuthIcon name="passkey" size={18} style={{ marginRight: 6 }} /> {t.signInWithPasskey}
-                            </Button>
-                        )}
-
-                        <div className="auth-oauth-row">
-                            <Button unstyled className="auth-btn-oauth unavailable" onClick={(e) => e.preventDefault()} aria-disabled="true">
-                                <OAuthBrandIcon provider="apple" className="auth-oauth-brand-icon" />
-                                {t.apple}
-                                <span className="auth-unavailable-badge">{t.unavailable}</span>
-                            </Button>
-                            <Button unstyled className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
-                                <OAuthBrandIcon provider="google" className="auth-oauth-brand-icon" />
-                                {t.google}
-                            </Button>
-                        </div>
 
                         <div className="auth-bottom-link">
                             <span>{t.newToLetBuyy}</span>{' '}
@@ -579,6 +574,9 @@ function LookupContent() {
                                         onClick={() => {
                                             setViewState('email')
                                             setShowPasswordField(false)
+                                            setMfaRequired(false)
+                                            setMfaCode('')
+                                            setRecoveryCode('')
                                             setPassword('')
                                             setError(null)
                                         }}
@@ -610,6 +608,8 @@ function LookupContent() {
                                 </div>
                             </div>
 
+                            {mfaRequired && <MfaLoginFields lang={lang} code={mfaCode} onCode={setMfaCode} recovery={recoveryCode} onRecovery={setRecoveryCode} useRecovery={useRecovery} onMode={() => { setUseRecovery(!useRecovery); setMfaCode(''); setRecoveryCode('') }} />}
+
                             {error && <Banner variant="critical">{error}</Banner>}
 
                             <Button unstyled
@@ -621,11 +621,7 @@ function LookupContent() {
                             </Button>
                         </form>
 
-                        <div className="auth-divider">
-                            <span>{t.or}</span>
-                        </div>
-
-                        {features.magicLink && (
+{features.magicLink && (
                             <Button unstyled
                                 className="auth-btn-secondary"
                                 onClick={handleSendMagicLink}
@@ -635,13 +631,13 @@ function LookupContent() {
                             </Button>
                         )}
 
-                        <a href="/forgot-password" className="auth-forgot-link">
+                        <a href={authPathWithReturnTo('/forgot-password', returnTo)} className="auth-forgot-link">
                             {t.forgotPassword}
                         </a>
                     </>
                 )}
 
-                {viewState === 'password' && <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />}
+                {viewState === 'password' && <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} onExpire={() => { setTurnstileToken(null); turnstileTokenRef.current = null }} />}
             </div>
         </main>
     )

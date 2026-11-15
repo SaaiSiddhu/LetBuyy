@@ -33,6 +33,21 @@ describe('expired Accounts CSRF cookie renewal', { concurrency: false }, () => {
         assert.equal(requests.length, 0)
     })
 
+    test('staging ignores production CSRF cookies and uses its own value in a mixed jar', async () => {
+        const original = process.env.NEXT_PUBLIC_ENV
+        process.env.NEXT_PUBLIC_ENV = 'staging'
+        try {
+            cookie = `letbuyy_csrf=${'p'.repeat(64)}; lb_csrf=${'q'.repeat(64)}`
+            assert.equal(getCsrfToken(), '')
+            cookie += `; letbuyy_csrf_staging=${freshToken}`
+            assert.equal((await getAuthHeaders())['X-CSRF-Token'], freshToken)
+            assert.equal(requests.length, 0)
+        } finally {
+            if (original === undefined) delete process.env.NEXT_PUBLIC_ENV
+            else process.env.NEXT_PUBLIC_ENV = original
+        }
+    })
+
     test('an expired cookie is renewed before headers are returned, with no credential body', async () => {
         const headers = await getAuthHeaders()
         assert.equal(headers['X-CSRF-Token'], freshToken)

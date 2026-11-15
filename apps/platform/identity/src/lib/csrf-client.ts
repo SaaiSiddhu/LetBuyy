@@ -1,3 +1,5 @@
+import { resolveLetbuyyPlatformCookieNames } from '@letbuyy/auth-core'
+
 /**
  * Client-side utility to read the CSRF token from the letbuyy_csrf cookie.
  * Used by all client-side fetch() calls to include the X-CSRF-Token header.
@@ -8,10 +10,13 @@
  */
 export function getCsrfToken(): string {
     if (typeof document === 'undefined') return ''
-    const match = document.cookie.match(/(?:^|;\s*)letbuyy_csrf=([^;]*)/)
-        || document.cookie.match(/(?:^|;\s*)lb_csrf=([^;]*)/)
+    const names = resolveLetbuyyPlatformCookieNames(process.env.NEXT_PUBLIC_ENV)
+    const parts = document.cookie.split(';').map(value => value.trim())
+    const cookie = [names.csrf, names.legacyCsrf]
+        .map(name => parts.find(value => value.startsWith(`${name}=`)))
+        .find(value => value !== undefined)
     try {
-        return match ? decodeURIComponent(match[1]) : ''
+        return cookie ? decodeURIComponent(cookie.slice(cookie.indexOf('=') + 1)) : ''
     } catch {
         return ''
     }

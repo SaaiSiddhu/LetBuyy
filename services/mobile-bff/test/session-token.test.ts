@@ -3,6 +3,22 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import app, { extractMobileSessionToken, verifyMobileTurnstileToken } from '../src/index';
 
+test('staging cookie transport ignores production cookies, including mixed jars', async () => {
+  const env = { ENVIRONMENT: 'staging', INTERNAL_API_SECRET: 'synthetic-stage-key',
+    API_GATEWAY_SERVICE: { fetch: async (request: Request) => {
+      assert.equal(request.headers.get('X-LetBuyy-Internal-Session-Token'), 's'.repeat(32));
+      assert.equal(request.headers.get('Cookie'), null);
+      return Response.json({ success: true, data: [] });
+    } } };
+  const prodOnly = new Request('https://bff.test/v1/inventory/locations', { headers: { Cookie: `lb_session=${'p'.repeat(32)}` } });
+  assert.equal(extractMobileSessionToken(prodOnly, env), null);
+  assert.equal((await app.fetch(prodOnly, env)).status, 401);
+  const mixed = new Request('https://bff.test/v1/inventory/locations', { headers: { Cookie: `lb_session=${'p'.repeat(32)}; lb_session_staging=${'s'.repeat(32)}` } });
+  assert.equal(extractMobileSessionToken(mixed, env), 's'.repeat(32));
+  assert.equal(extractMobileSessionToken(mixed, { ENVIRONMENT: 'production' }), 'p'.repeat(32));
+  assert.equal((await app.fetch(mixed, env)).status, 200);
+});
+
 test('extracts lb_session from bearer authorization first', () => {
   const request = new Request('https://mobile-bff.test/v1/products', {
     headers: {

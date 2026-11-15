@@ -38,6 +38,7 @@
     "AUTH_SECRET": { "type": "string" },
     "CUSTOMER_SESSION_SECRET": { "type": "string" },
     "ACCOUNTS_COOKIE_SECRET": { "type": "string" },
+    "LETBUYY_MERCHANT_MOBILE_AUTH_ENABLED": { "enum": ["true", "false"], "description": "Accounts server-only native request creation; enable only after Gateway/schema qualification. Existing requests may drain when false." },
     "LETBUYY_IDENTITY_ISSUER": { "type": "string", "format": "uri" },
     "LETBUYY_IDENTITY_PRIVATE_JWK": { "type": "string", "description": "Identity runtime only; never configure on Console or Gateway." },
     "LETBUYY_IDENTITY_PUBLIC_JWKS": { "type": "string", "description": "Public asymmetric verification keys; no private JWK members." },

@@ -64,6 +64,16 @@ test('ordinary runtime dependency declarations still work for both source classe
   assert.deepEqual(failures('src/example.test.tsx', { dependency: 'react', dev: false }), []);
 });
 
+test('only named Storybook configuration files admit declared development dependencies', () => {
+  for (const file of ['.storybook/main.ts', '.storybook/preview.tsx', '.storybook/manager.mjs']) {
+    assert.deepEqual(failures(file), [], file);
+    assert.equal(failures(file, { dev: false }).length, 1, file);
+  }
+  for (const file of ['.storybook/runtime.ts', 'src/storybook/main.ts', '.storybook/main.tsx.ts']) {
+    assert.equal(failures(file).length, 1, file);
+  }
+});
+
 test('conditional package import aliases retain dependency checks in the correct source class', () => {
   const options = { dependency: '#compiler', aliases: { '#compiler': { default: 'typescript' } } };
   assert.deepEqual(failures('src/example.test.ts', options), []);
