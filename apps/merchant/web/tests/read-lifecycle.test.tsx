@@ -118,7 +118,7 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
         : (await import('../src/components/NotificationsPanel')).default
     let completions = 0
     const root = createRoot(dom.window.document.getElementById('root')!)
-    const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
+    const router = { bfcacheId: 'synthetic-router', back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
     const render = async (store = 'alpha', actorId = 'actor-a') => {
         await act(async () => root.render(
             <AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}>

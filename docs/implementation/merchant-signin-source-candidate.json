@@ -1,8 +1,8 @@
 {
   "base": "e4105581e3346041d71694d3db093eb713773e07",
-  "claimCommit": "acff33ba247c3912e4bec1372bad05099413b604",
+  "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-15T07:12:15.870451+00:00",
+  "preparedUtc": "2026-11-15T08:07:41.238008+00:00",
   "purpose": "Native Merchant sign-in release only; canonical issuer, Gateway persistence and web/BFF cookie compatibility. No unrelated Gateway feature changes or migrations419\u2013444.",
   "files": [
     {
@@ -61,6 +61,11 @@
       "source": "Reviewed local narrow-source derivation; see scope notes"
     },
     {
+      "path": "apps/commerce/web/src/components/catalog-preview-navigation.test.tsx",
+      "sha256": "b56cfc2d949a08c6f1afce14c5b852e3f9fb6abe55e2bf0040bc52faa3e0a1e5",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
       "path": "apps/frozen/app-store/package.json",
       "sha256": "3af7fa5a9d7f383974d4031e6d53f299fcaf1bf21c7589ea508712b5e6d85a79",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -106,6 +111,36 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "apps/merchant/web/src/components/orders/order-line-items.test.tsx",
+      "sha256": "133f716c98c05132e18ab36ab4b789359c133f6022814492ad73012c9fec58af",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/collection-membership.test.tsx",
+      "sha256": "7f90f956721014e1f5be9f28c5eea02640e73ba70b00e3d8435b27c19406f39e",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/inventory-adjustment.test.tsx",
+      "sha256": "9aee634bbc8ea36b44999ce6d91704e9e449109e2c35fec2ceaabd582c3cc293",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "e97aabde945c24b132ddca6a649f9b749d06a41c7d5926c09f46cb2b10ca98e0",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-status.test.tsx",
+      "sha256": "9747c3ee546fd14e7236abed5a85b4c28fc4faef2ac724982617e7c56d935023",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/smart-collection-preview.test.tsx",
+      "sha256": "d471a3b115b562dffad5ee738ab0e4c467a6f1f6503201cdee15430d039216a2",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
       "path": "apps/merchant/web/src/lib/api/client.ts",
       "sha256": "4bc33a34368d27933913d315031c5dccb0fa85169076b1b5157328cb02758837",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -114,6 +149,21 @@
       "path": "apps/merchant/web/src/proxy.ts",
       "sha256": "30dd80a57649ff3dbcf637feb875e0f1f90e8f20e23ff1c4cddeeba73f85deca",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/merchant/web/tests/billing-entry.test.tsx",
+      "sha256": "82ccf03bd825ccf5d689c3ce44702a4efd9ddad000e2992d7a649022a5d8b480",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/tests/read-lifecycle.test.tsx",
+      "sha256": "bcf21495daea73883ed5b097c2054144b9955a142fca5e770fda757f7c1f391c",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/tests/theme-marketplace-ui.test.tsx",
+      "sha256": "aa5d94b901737ea259b977aa79281cb2d8544bd588207fa06e8224d8522d15f7",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
     },
     {
       "path": "apps/platform/identity/next.config.ts",
@@ -571,6 +621,11 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "scripts/governance/tenant-registry-common.mjs",
+      "sha256": "866fb245cc998431923c677b28125b874c8485b1e9333ae037fbfe8a60ad1dec",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
       "path": "scripts/governance/test-suite-catalog.mjs",
       "sha256": "62e234418beffc09933e10aa1586a3afa893a48bf48449be198c7a9031f71cca",
       "source": "Reviewed local narrow-source derivation; see scope notes"
@@ -746,6 +801,11 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "tests/governance/tenant-registry-columns.test.mjs",
+      "sha256": "013fff9e68a161273096dacc6c46b38d0eae7100df942de34c63fd57b1980e7c",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
       "path": "tests/governance/validator-orchestration.test.mjs",
       "sha256": "400c7c985ffa29e368eb49c68eecbdabc620b1cca8376c2e2e49d0a549ac1cd2",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -772,7 +832,8 @@
     "Owner branch claim is separate from implementation; exact CI and hosted acceptance remain required",
     "Compressed CI bundle preservation keeps signed bytes/modes/symbols, acknowledgement and failed-run pins; global engine unchanged",
     "Environment lifecycle contract job uses the existing free runner, full history and a frozen dependency install; hosted staging-proof dispatch stays unchanged",
-    "Secret scanner remains strict; only6 matching existing canonical fixture/public sample hash records are carried, with all original historical exceptions preserved"
+    "Secret scanner remains strict; only6 matching existing canonical fixture/public sample hash records are carried, with all original historical exceptions preserved",
+    "Current Next router fixtures include required bfcacheId; schema discovery decodes file URLs without changing any tenancy predicate"
   ],
   "verification": {
     "authCore": 53,
@@ -791,7 +852,11 @@
     "osSchemeNegativeControls": 3,
     "strictTrackedFixtureRegistry": "PASS;6 existing exact-value synthetic/public records at5locations",
     "freeLifecycleWorkflowCoverage": 7,
-    "exactFinalCommitCi": "PENDING"
+    "exactFinalCommitCi": "PENDING",
+    "webRouterFixtureBehavior": 193,
+    "webRouterFixtureTypecheck": "PASS both apps;14 tasks",
+    "tenantPathAndScopeRegression": 26,
+    "actualFreshStagingRestore": "PASS653;523tables286621rows; exact selected SQL unchanged by CI-only corrections"
   },
   "pushed": false,
   "deployed": false,

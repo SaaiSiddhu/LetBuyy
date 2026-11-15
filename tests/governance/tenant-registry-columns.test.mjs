@@ -1,10 +1,42 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { deriveTenantTablesFromMigrations } from '../../scripts/governance/tenant-registry-common.mjs';
 
 const derive = source => deriveTenantTablesFromMigrations([{ file: '001_columns.sql', source }]);
 const scopes = source => derive(source).map(({ table, scopeColumns, tenantColumn, ownerColumns }) => ({ table, scopeColumns, tenantColumn, ownerColumns }));
+
+test('schema discovery preserves spaces, percent signs, fragments and Unicode in checkout paths', async () => {
+    const temporary = mkdtempSync(path.join(tmpdir(), 'tenant-registry-path-'));
+    try {
+        const fixture = path.join(temporary, 'Developer Tools #100% தமிழ்');
+        const scripts = path.join(fixture, 'scripts/governance');
+        const migrations = path.join(fixture, 'database/supabase/migrations');
+        mkdirSync(scripts, { recursive: true });
+        mkdirSync(migrations, { recursive: true });
+        writeFileSync(path.join(migrations, '001_fixture.sql'), 'CREATE TABLE public.path_probe (id uuid, site_id uuid); CREATE TABLE public.unscoped (id uuid);');
+        writeFileSync(path.join(migrations, '002_fixture.sql'), 'ALTER TABLE public.path_probe ADD COLUMN owner_id uuid;');
+        const source = readFileSync(new URL('../../scripts/governance/tenant-registry-common.mjs', import.meta.url), 'utf8');
+        const modulePath = path.join(scripts, 'tenant-registry-common.mjs');
+        writeFileSync(modulePath, source);
+        const actual = await import(pathToFileURL(modulePath).href);
+        assert.equal(actual.root, fixture);
+        assert.deepEqual(actual.deriveTenantTablesFromMigrations().map(({ table, scopeColumns }) => ({ table, scopeColumns })), [{ table: 'path_probe', scopeColumns: ['site_id', 'owner_id'] }]);
+        // Reproducing the original URL-path bug must fail on these same files.
+        const mutantPath = path.join(scripts, 'encoded-path-mutant.mjs');
+        const mutant = source.replace('fileURLToPath(import.meta.url)', 'new URL(import.meta.url).pathname');
+        assert.notEqual(mutant, source);
+        writeFileSync(mutantPath, mutant);
+        const broken = await import(pathToFileURL(mutantPath).href);
+        assert.throws(() => broken.deriveTenantTablesFromMigrations(), { code: 'ENOENT' });
+    } finally {
+        rmSync(temporary, { recursive: true, force: true });
+    }
+});
 
 test('same-line columns preserve every established tenant and owner predicate', () => {
     assert.deepEqual(scopes('CREATE TABLE public.example (id uuid, site_id uuid, store_id uuid, user_id uuid, owner_id uuid, buyer_account_id uuid);'), [{

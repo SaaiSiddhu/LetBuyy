@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-export const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
+export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const registryPath = 'services/api-gateway/src/tenant/tenant-tables.registry.ts';
 export const migrationDir = 'database/supabase/migrations';
 
