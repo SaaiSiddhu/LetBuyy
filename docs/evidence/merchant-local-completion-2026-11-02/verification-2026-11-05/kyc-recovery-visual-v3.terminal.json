@@ -1,0 +1,24 @@
+{
+  "started_at": "2026-11-06T11:19:19.363942+00:00",
+  "supervisor_pid": 88262,
+  "source": "merchant-recovery-source-v12",
+  "source_sha256": "712ef4312e547fae4d0abf5d50ed1600320987ef93d3b7df42fac8859863de9a",
+  "command": [
+    "env",
+    "LETBUYY_KYC_RECOVERY_VISUAL_DIR=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc-recovery-rendered-v3",
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc_recovery_visual_v3_test.dart",
+    "--timeout",
+    "45s",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 88282,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T11:19:23.857118+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "712ef4312e547fae4d0abf5d50ed1600320987ef93d3b7df42fac8859863de9a"
+}

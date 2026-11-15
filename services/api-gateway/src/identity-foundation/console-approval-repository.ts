@@ -39,6 +39,11 @@ const codes: Record<string, { status: number; message: string }> = {
     APPROVAL_EXPIRED_OR_REVOKED: { status: 428, message: 'The approval expired or an associated session was revoked. Request a new approval.' },
     INDEPENDENT_APPROVAL_REQUIRED: { status: 428, message: 'An independently approved request is required before this action.' },
     APPROVAL_ALREADY_DECIDED: { status: 409, message: 'This request already has a different decision.' },
+    KYC_HOLD_ADMIN_REQUIRED: { status: 403, message: 'A platform compliance administrator is required.' },
+    KYC_HOLD_INVALID: { status: 400, message: 'A valid exact-receipt hold and documented authority are required.' },
+    KYC_HOLD_TOO_LATE: { status: 409, message: 'Deletion has started or completed; the document can no longer be held.' },
+    KYC_HOLD_ALREADY_EXISTS: { status: 409, message: 'This exact receipt already has an active hold.' },
+    KYC_HOLD_NOT_FOUND: { status: 404, message: 'This exact receipt hold was not found.' },
 };
 export function requireAcceptedConsoleResult(value: unknown): asserts value is Record<string, unknown> & { accepted: true } {
     if (value && typeof value === 'object' && 'accepted' in value && value.accepted === true) return;

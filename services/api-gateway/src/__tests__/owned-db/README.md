@@ -55,9 +55,15 @@ Suites do not share a database. The cluster's template is pristine and sealed (`
 
 
 Historical migration cohorts are explicit in HISTORICAL_GATEWAY_MIGRATION_CEILINGS
-in scripts/governance/test-suite-catalog.mjs. Those six suites test a named
+in scripts/governance/test-suite-catalog.mjs. Those suites test a named
 predecessor, including its refusal and reverse/reapply paths, against a separate
 sealed template at that exact ceiling. Their result records the applied source
 hashes and ceiling. They execute fully and cannot silently use the current
 schema. The remaining current-stack suites continue through every migration;
 an explicit --through-migration still selects a requested qualification cohort.
+
+The 435/436 birth-profile and retained-data cutover cohorts remain separate from
+`merchant-current-retained-recovery.postgres.test.ts`, which uses the complete
+current schema. That counterpart drives real collection/transfer commands,
+checks original receipt replay and tenant denial, and proves that rejected
+historical reversals preserve every current table's rows and role authority.

@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-06T23:44:03.647992+00:00",
+  "supervisor_pid": 2919,
+  "source": "merchant-editor-feedback-source-v62",
+  "source_sha256": "8e2b9f6b03ff9ea79a70dd6cd0c17f2af00bd10eafac03df6119d8ba08c4b5a4",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 2921,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T23:44:10.072755+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "8e2b9f6b03ff9ea79a70dd6cd0c17f2af00bd10eafac03df6119d8ba08c4b5a4"
+}

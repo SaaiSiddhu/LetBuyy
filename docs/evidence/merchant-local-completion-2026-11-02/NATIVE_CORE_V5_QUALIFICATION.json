@@ -1,0 +1,340 @@
+{
+  "status": "LOCAL_WEB_WORKER_DATABASE_VERIFIED_BOUNDED",
+  "runId": "ba16c5e3e25e",
+  "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "source_sha256": "b818440a5579b5bbf7b9b7bde20940bd4fd7649d1b8f8d48eca7ceb6332e396a",
+  "sourceEntries": 7387,
+  "sourceArchive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-core-v5-qualified-source",
+  "sourceHeldAndTerminalVerified": true,
+  "productionModeLocalWebApps": 3,
+  "worker": "actual owned Workerd",
+  "storage": "actual owned local R2",
+  "database": "owned PostgreSQL/PostgREST with reconciled414\u2013434 sequence",
+  "androidOrIosApp": false,
+  "testStory": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "summary": {
+    "OWNED_NATIVE_CORE": {
+      "nativeWorkerd": true,
+      "nativeR2": true,
+      "seededAccount": false,
+      "seededStore": false,
+      "seededProduct": false,
+      "productionApps": 3,
+      "providerFixtureOnly": true,
+      "store": {
+        "count": 1,
+        "theme": "letbuyy-forge",
+        "status": "draft",
+        "trial_days": 14
+      },
+      "productVariants": 2,
+      "uploadedExactPng": true,
+      "imageDimensions": [
+        320,
+        320
+      ],
+      "normalEditorPublish": true,
+      "unpublishedPreviewVerified": true,
+      "merchantDomainLabelsVerified": true,
+      "preferencesSeoReadback": true,
+      "anonymousDraftDenied": true,
+      "presets": [
+        {
+          "name": "Forge",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        },
+        {
+          "name": "Sense",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        },
+        {
+          "name": "Aura",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        },
+        {
+          "name": "Craft",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        },
+        {
+          "name": "Refresh",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        },
+        {
+          "name": "Ride",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        },
+        {
+          "name": "Dawn",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        },
+        {
+          "name": "Bloom",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        },
+        {
+          "name": "Nova",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        },
+        {
+          "name": "Summit",
+          "applied": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "widths": [
+            1280,
+            360
+          ],
+          "renderedPrimary": true,
+          "routes": [
+            "home",
+            "product",
+            "collection-index"
+          ],
+          "variantSelection": true,
+          "mobileMenu": true
+        }
+      ],
+      "realTenantTlsHost": true,
+      "actualScheduledSearchIndex": true,
+      "manualCollectionShopperVerified": true,
+      "searchSubmissionVerified": true,
+      "canonicalBuyerProfileAddressVerified": true,
+      "buyerAddressCrudVerified": true,
+      "staleAccountWriteDenied": true,
+      "canonicalBuyers": 2,
+      "unrelatedOrderDenied": true,
+      "searchScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-search-ba16c5e3e25e.png",
+      "accountScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-account-ba16c5e3e25e.png",
+      "addressScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-address-ba16c5e3e25e.png",
+      "customerOrders": 3,
+      "codTotalMinor": 26900,
+      "screenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-ba16c5e3e25e.png",
+      "publicScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-store-ba16c5e3e25e.png",
+      "orderScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-order-ba16c5e3e25e.png"
+    },
+    "OWNED_NATIVE_VISITOR_ACCESS": {
+      "nativeWorkerd": true,
+      "productionApps": 3,
+      "passwordForm": true,
+      "wrongPasswordRefused": true,
+      "verifierUnavailableAndRetry": true,
+      "secureHttpOnlyGate": true,
+      "productAndCollectionsUnlocked": true,
+      "passwordRotationRevoked": true,
+      "modeChangeRevoked": true,
+      "normalPreviewIssue": true,
+      "firstPreviewRequest": true,
+      "previewProduct": true,
+      "normalPreviewRevoke": true,
+      "offlineRefused": true,
+      "publicRecovery": true,
+      "retiredPreviewCookieCleared": true,
+      "visitorScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-visitor-access-ba16c5e3e25e.png"
+    },
+    "OWNED_NATIVE_LOCAL_CHALLENGE": {
+      "issued": 9,
+      "verified": 4,
+      "refused": 0,
+      "browserExternalRefused": 228,
+      "nativeSdkServed": 0,
+      "nativeIssued": 0
+    },
+    "OWNED_REPEAT_SHOPPING_BEFORE": {
+      "handoffStatus": 200,
+      "originalConvertedCartUnchanged": true,
+      "orders": 1
+    }
+  },
+  "screenshots": [
+    {
+      "path": "screenshots/core-v5-letbuyy-native-core-search-ba16c5e3e25e.png",
+      "sha256": "fefd1ffae559649b94cfa257e17ea8369b705ce1712b65e44f4713b4f3741760"
+    },
+    {
+      "path": "screenshots/core-v5-letbuyy-native-core-store-ba16c5e3e25e.png",
+      "sha256": "f3ab5b6c7327b7140ddb9b457546704c739a616796c869ac36a850a8d90054c0"
+    },
+    {
+      "path": "screenshots/core-v5-letbuyy-native-core-order-ba16c5e3e25e.png",
+      "sha256": "d62a183cf358b1253b415a501f0e218c5d6894d4f93e26f5f59717a71d37e22f"
+    },
+    {
+      "path": "screenshots/core-v5-letbuyy-native-core-account-ba16c5e3e25e.png",
+      "sha256": "4691674afadff4ca90e99634116146e4576e920bc2fa92155c8ea8f0ca220aea"
+    },
+    {
+      "path": "screenshots/core-v5-letbuyy-native-core-ba16c5e3e25e.png",
+      "sha256": "d9318a572186a4dcad1b2001b3d51535e0edb3a0b85f93ede87235809fec2ef1"
+    },
+    {
+      "path": "screenshots/core-v5-letbuyy-native-core-address-ba16c5e3e25e.png",
+      "sha256": "944a73ebef084abfb5c44a68de55e57fdfb946bf17b8d1e519ad5168badff703"
+    },
+    {
+      "path": "screenshots/core-v5-letbuyy-repeat-shopping-ba16c5e3e25e.png",
+      "sha256": "ccc008ef2d3bcb73c9d11ee7aacd0c939c57300cf1429ef83c0304841337f57e"
+    },
+    {
+      "path": "screenshots/core-v5-letbuyy-native-visitor-access-ba16c5e3e25e.png",
+      "sha256": "8925f20c2ae7e70e84149f18a9c8fbd3757eea51f8471284225e0021cd50258d"
+    }
+  ],
+  "visuallyInspected": [
+    "core-v5-letbuyy-native-core-order-ba16c5e3e25e.png",
+    "core-v5-letbuyy-native-core-store-ba16c5e3e25e.png"
+  ],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "limits": [
+    "Local browser/Worker story is not Android/iOS app acceptance, hosted provider delivery or release readiness.",
+    "Starter promotional images are not all visually qualified by this synthetic run; the configured product PNG is actually uploaded and decoded.",
+    "Other122-entry contracts and complete both-direction mobile readback remain open.",
+    "Subsequent collection convergence requires fresh source and artifact qualification."
+  ]
+}

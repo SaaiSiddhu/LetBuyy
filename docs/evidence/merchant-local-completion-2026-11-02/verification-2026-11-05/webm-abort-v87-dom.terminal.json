@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-07T11:03:57.084320+00:00",
+  "supervisor_pid": 63201,
+  "source": "merchant-webm-abort-source-v87",
+  "source_sha256": "e831c0f58dd6a6447cb6a60190e962096732a19577e7162bb5be075540b70c18",
+  "command": [
+    "node",
+    "--test",
+    "test/merchant_webm_document.test.mjs"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 63235,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T11:03:58.002281+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "e831c0f58dd6a6447cb6a60190e962096732a19577e7162bb5be075540b70c18"
+}

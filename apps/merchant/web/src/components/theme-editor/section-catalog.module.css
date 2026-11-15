@@ -1,0 +1,18 @@
+.catalog { margin: var(--lb-space-2) var(--lb-space-3); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-md); background: var(--lb-color-surface); color: var(--lb-color-text); box-shadow: var(--lb-shadow-lg); min-width: 0; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--lb-space-2); padding: var(--lb-space-3); border-bottom: 1px solid var(--lb-color-border); }
+.header p { margin: var(--lb-space-1) 0 0; color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-caption); text-transform: capitalize; }
+.header button { border-radius: var(--lb-radius-sm); color: inherit; }
+.search { display: flex; align-items: center; gap: var(--lb-space-2); margin: var(--lb-space-3); padding: var(--lb-space-2); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-sm); }
+.search input { width: 100%; min-width: 0; border: 0; background: transparent; color: inherit; outline: 0; }
+.search:focus-within, .catalog button:focus-visible { outline: 2px solid var(--lb-color-focus-ring); outline-offset: 2px; }
+.list { max-height: 22rem; overflow: auto; padding: 0 var(--lb-space-2) var(--lb-space-2); }
+.list h3 { margin: var(--lb-space-3) var(--lb-space-1) var(--lb-space-1); color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-caption); }
+.item { display: flex; width: 100%; align-items: center; gap: var(--lb-space-3); padding: var(--lb-space-2); border-radius: var(--lb-radius-sm); text-align: left; color: inherit; }
+.item:hover:not(:disabled) { background: var(--lb-color-surface-selected); }
+.item:disabled { opacity: .6; cursor: not-allowed; }
+.preview { display: flex; flex: 0 0 4.5rem; min-height: 3rem; align-items: center; justify-content: center; padding: var(--lb-space-1); border: 1px dashed var(--lb-color-border); border-radius: var(--lb-radius-sm); color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-caption); text-align: center; }
+.copy { display: grid; gap: var(--lb-space-1); min-width: 0; }
+.copy small { color: var(--lb-color-text-subdued); white-space: normal; }
+.reason { color: var(--lb-color-critical) !important; }
+.empty { padding: var(--lb-space-3); color: var(--lb-color-text-subdued); }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }

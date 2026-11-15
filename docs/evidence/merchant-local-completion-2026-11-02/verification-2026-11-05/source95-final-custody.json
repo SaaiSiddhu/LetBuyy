@@ -1,0 +1,31 @@
+{
+  "at": "2026-11-08T06:14:49.200943+00:00",
+  "core_source_unchanged": true,
+  "source_sha256": "6a9dffa117db5c1be62f26f57d8f031910f3e599fc966a1eb0cfc87392519a18",
+  "core_inputs": 8519,
+  "staged_entries_sha256": "67a04f878906e4a92b9a852969da907cd465dc8b3df2be0083d6d42262986c9d",
+  "raw_index_sha256": "e5ce8e4a6c1d009e55d2b221ac35254d2d5a2b81de31900b34127f562e983248",
+  "original_sdk_source_unchanged": true,
+  "temporary_sdk_overlay_inactive": true,
+  "owned_runs_terminal": [
+    "/private/tmp/letbuyy-merchant-local-20261108-f7a3c2efea",
+    "/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398",
+    "/private/tmp/letbuyy-ios-ui-20261108-9ae2f99d13"
+  ],
+  "owned_cleanup_empty": true,
+  "ports54350_to54353_free": true,
+  "host9002": "Never contacted, probed, bound or stopped. Android emulator-only reverse9002->54351 was restored.",
+  "ios": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "initial_and_final": "Shutdown",
+    "existing_files_photos_preserved": true
+  },
+  "android": {
+    "exact_avd_qemu_preserved": true,
+    "app_stopped": true,
+    "reverse_mappings": "",
+    "forward_mappings": "",
+    "existing_files_photos_preserved": true
+  },
+  "no_hosted_merge_push_release": true
+}

@@ -1,0 +1,30 @@
+{
+  "runId": "a9b18426d201",
+  "tests": 12,
+  "assertionsPassed": 11,
+  "assertionsFailed": 1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "media-commands.postgres",
+      "pass": 11,
+      "fail": 1,
+      "skipped": 0,
+      "failures": [
+        "not ok 10 - concurrent same-key creation has one effect and changed input cannot reuse that key"
+      ],
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    }
+  ],
+  "boundary": "No aggregate feature acceptance. v48 final failure was psql status-line parsing. v49 actual Media12PASS, prior upload18PASS; broader old fixture collection/warehouse calls rejected by current canonical contracts, upgraded in50 with explicit legacy rejection retained."
+}

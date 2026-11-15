@@ -1,0 +1,74 @@
+{
+  "run_id": "54ecf4a294b8",
+  "receipt_same_id_key_hash": true,
+  "one_original_byte_post": true,
+  "one_public_object": true,
+  "one_library_row": true,
+  "public_sha256": "5bdf25a6aaf02df243934f1ce42d40803c06efc171109c5d7fbc46741a20fd7a",
+  "private_objects": 1,
+  "private_public_read_denied": true,
+  "kyc_projection": {
+    "site_id": "164ab411-2e91-4b08-8c8e-f0c7c43791ea",
+    "overall_status": "in_progress",
+    "provider_mode": "sandbox",
+    "private_upload_available": true,
+    "india_direct_upload_available": false,
+    "required_documents": [
+      {
+        "document_type": "business_pan",
+        "title": "Business PAN",
+        "required": true,
+        "status": "submitted"
+      },
+      {
+        "document_type": "bank_proof",
+        "title": "Bank proof",
+        "required": true,
+        "status": null
+      },
+      {
+        "document_type": "address_proof",
+        "title": "Business address proof",
+        "required": true,
+        "status": null
+      },
+      {
+        "document_type": "gst_certificate",
+        "title": "GST certificate",
+        "required": false,
+        "status": null
+      },
+      {
+        "document_type": "identity_proof",
+        "title": "Identity proof",
+        "required": false,
+        "status": null
+      }
+    ],
+    "documents": [
+      {
+        "id": "73836eda-b4e0-41f7-8b8e-e9860189bf83",
+        "created_at": "2026-11-06T17:47:49.35252+00:00",
+        "updated_at": "2026-11-06T17:47:49.35252+00:00",
+        "deleted_at": null,
+        "site_id": "164ab411-2e91-4b08-8c8e-f0c7c43791ea",
+        "document_type": "business_pan",
+        "status": "submitted",
+        "provider": "letbuyy_sandbox_kyc",
+        "provider_mode": "sandbox",
+        "provider_reference": null,
+        "has_private_upload": true,
+        "evidence_scan_status": "pending",
+        "provider_unavailable": false,
+        "requires_resubmission": false,
+        "document_number_last4": "1234",
+        "rejection_reason": null,
+        "submitted_at": "2026-11-06T17:47:49.352+00:00",
+        "verified_at": null,
+        "rejected_at": null
+      }
+    ],
+    "next_action": "Upload the remaining required documents privately. Sandbox uploads are not provider reviewed and cannot enable live payouts."
+  },
+  "scope": "Actual Android picker + compiled Worker + owned PG + separate ephemeral private/public R2; test-only private upload, no India/AWS/provider readiness."
+}

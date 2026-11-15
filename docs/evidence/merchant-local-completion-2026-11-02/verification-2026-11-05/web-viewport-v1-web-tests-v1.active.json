@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-11-06T06:23:27.856321+00:00",
+  "supervisor_pid": 39187,
+  "source": "web-viewport-source-v1",
+  "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "command": [
+    "pnpm",
+    "--dir",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/web",
+    "test"
+  ],
+  "status": "RUNNING",
+  "child_pid": 39189
+}

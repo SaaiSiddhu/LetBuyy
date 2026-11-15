@@ -1,0 +1,22 @@
+{
+  "build_script_sha256": "6a89b8df324e6a5b53792afbc32b682d80c09536fb75c03cd35d493f8273cdb7",
+  "status": "RUNNING",
+  "source_sha256": "dee2756c4b94267b7bf2b3b9bcb01a9fcafd87b86643f375b55232523f518e32",
+  "source_inputs": 8454,
+  "supervisor_pid": 61420,
+  "owned_root": "/private/tmp/letbuyy-store-pages-v3-ios-8thsib5q",
+  "platform": "ios",
+  "started_at": "2026-11-06T05:25:20.938477+00:00",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "ACCOUNTS_ENVIRONMENT": "development",
+    "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+    "API_BASE_URL": "http://127.0.0.1:54350/v1",
+    "IDENTITY_BASE_URL": "http://127.0.0.1:54351",
+    "ADMIN_BASE_URL": "http://127.0.0.1:54353",
+    "STOREFRONT_BASE_URL": "http://127.0.0.1:54354"
+  },
+  "steps": [],
+  "scope": "Normal main.dart debug compile/artifact only. No install, launch, sign-in, provider, web-mobile sync, device, hosted or release acceptance.",
+  "active_child_pid": 61424
+}

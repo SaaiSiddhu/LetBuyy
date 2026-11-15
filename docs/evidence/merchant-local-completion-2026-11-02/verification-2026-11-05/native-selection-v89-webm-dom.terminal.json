@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-07T18:22:39.509769+00:00",
+  "supervisor_pid": 835,
+  "source": "merchant-native-selection-source-v89",
+  "source_sha256": "d76ed098ae86a3a02653e84ceac36218b763163b8b5961ecd8c51a379e22203d",
+  "command": [
+    "node",
+    "--test",
+    "test/merchant_webm_document.test.mjs"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 845,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T18:22:40.222721+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "d76ed098ae86a3a02653e84ceac36218b763163b8b5961ecd8c51a379e22203d"
+}

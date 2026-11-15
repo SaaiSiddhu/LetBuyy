@@ -1,0 +1,21 @@
+{
+  "source": "4376f0d7c1ae7491a86fe2494df35fd6f029c8a394de0ef96527d06e62dc6270",
+  "from_source": "11a91c9f3c34021244bd17149f4f131001303877deebe50ea1a78ac920974516",
+  "changed": [
+    "apps/merchant/web/package.json",
+    "apps/merchant/web/src/app/api/stores/[store]/upload/recover/route.ts",
+    "apps/merchant/web/src/app/api/v1/stores/[store]/upload/recover/route.ts",
+    "apps/merchant/web/src/components/reels/client-file-sha256.worker.ts",
+    "apps/merchant/web/src/lib/media/media-command-recovery.ts",
+    "apps/merchant/web/tests/media-command-recovery.test.ts",
+    "apps/merchant/web/tests/media-proxy.test.ts",
+    "config/eslint/boundary-baseline.json",
+    "package.json",
+    "pnpm-lock.yaml",
+    "tests/browser/merchant-media-checksum-csp.test.ts"
+  ],
+  "policy_restoration": "Exact original security headers and Merchant Next config; rejected CSP opt-in fully removed before repair qualification.",
+  "repair": "Already-locked fast-sha2561.3.0 directly declared; canonical worker keeps64KiB reads, no Wasm/eval requirement; existing policy unchanged. New app recovery proxy uses CODE-R8 /api/v1.",
+  "flutter_reuse": "Source65 1673 PASS; source67 changes no mobile/Dart input; analysis66 zero issues.",
+  "boundary": "Whole122 acceptance remains open. Native90/91 product phases pass; aggregate browser recovery has not passed."
+}

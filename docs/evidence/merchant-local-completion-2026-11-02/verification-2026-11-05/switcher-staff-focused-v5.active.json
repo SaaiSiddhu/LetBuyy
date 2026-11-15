@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-06T03:32:55.201019+00:00",
+  "supervisor_pid": 82472,
+  "source": "switcher-staff-source-v5",
+  "source_sha256": "5e7ee451631a8b91536057c0584b74874db00ca475fee315e3feb62e05bb4b4a",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/store_switcher_presentation_test.dart",
+    "test/store_session_boundary_test.dart",
+    "test/staff_environment_isolation_test.dart",
+    "test/staff_scope_boundary_test.dart",
+    "test/staff_invitation_test.dart",
+    "test/staff_retry_test.dart",
+    "test/staff_presentation_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 82505
+}

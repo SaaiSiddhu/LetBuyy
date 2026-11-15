@@ -1,0 +1,39 @@
+{
+  "run_id": "07fa938bcf12",
+  "parent_response_stock": 0,
+  "summary_stock": 0,
+  "summary_fields": [
+    "id",
+    "name",
+    "status",
+    "stock",
+    "price",
+    "compare_price",
+    "images",
+    "category",
+    "product_type",
+    "vendor",
+    "is_active",
+    "created_at",
+    "display_order",
+    "version"
+  ],
+  "variant_stock": [
+    3
+  ],
+  "levels": [
+    {
+      "free": 0,
+      "reserved": 0,
+      "available": 0,
+      "variant_id": null
+    },
+    {
+      "free": 3,
+      "reserved": 0,
+      "available": 3,
+      "variant_id": "75190cfa-b223-47a5-ab93-2856248de2ce"
+    }
+  ],
+  "scope": "Read contract observation, not whole-feature or UI acceptance"
+}

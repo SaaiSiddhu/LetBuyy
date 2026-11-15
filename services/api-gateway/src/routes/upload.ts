@@ -1,14 +1,15 @@
 import { Hono, type Context } from 'hono';
+import { PublicUploadRecoveryInputSchema, FileUploadResultSchema } from '@letbuyy/shared-types';
+import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
+import { AppError, ConflictError, ForbiddenError, ValidationError } from '../lib/errors';
 import type { Env } from '../index';
+import { allocatedUploadKey, PublicUploadProgressSchema, PUBLIC_UPLOAD_RESOURCE, uploadObjectMatches, storedUploadResponse } from '../lib/public-upload-recovery';
 import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
 import { getSupabaseAdmin } from '../lib/supabase';
-import { validateUploadMime } from '../lib/upload-mime';
+import { validateUploadMime, safeFileExtension, mediaKindForUpload, uploadLimitForKind, uploadLimitLabel, safeUploadFolder } from '../lib/upload-mime';
 
 const router = new Hono<{ Bindings: Env }>();
 type UploadContext = Context<{ Bindings: Env }>;
-const STANDARD_UPLOAD_LIMIT_BYTES = 10 * 1024 * 1024;
-const VIDEO_UPLOAD_LIMIT_BYTES = 100 * 1024 * 1024;
-const MODEL_UPLOAD_LIMIT_BYTES = 50 * 1024 * 1024;
 
 function isProductionEnv(env: Env): boolean {
     return [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV, env.DEPLOYMENT_ENV]
@@ -48,14 +49,6 @@ function publicAssetBaseUrl(c: UploadContext): string | null {
     return `${new URL(c.req.url).origin}/assets`;
 }
 
-function safeUploadFolder(value: string): string {
-    return value
-        .trim()
-        .replace(/[^a-zA-Z0-9/_-]/g, '-')
-        .replace(/\/+/g, '/')
-        .replace(/^\/+|\/+$/g, '')
-        .slice(0, 96) || 'uploads';
-}
 
 // This route always returns public media (or inline development bytes). A KYC
 // namespace must never imply private custody on either storage path. Recognizing
@@ -69,30 +62,7 @@ function isPrivateDocumentFolder(value: string): boolean {
             && words.some((word) => /^(?:documents?|proofs?|evidence)$/.test(word)));
 }
 
-function safeFileExtension(fileName: string): string {
-    const ext = fileName.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin';
-    return ext.slice(0, 12) || 'bin';
-}
-
-function mediaKindForUpload(file: File): 'video' | 'model' | 'standard' {
-    const type = file.type.toLowerCase();
-    const ext = safeFileExtension(file.name);
-    if (type.startsWith('video/') || ['mp4', 'mov', 'm4v', 'webm'].includes(ext)) return 'video';
-    if (type.startsWith('model/') || ['glb', 'gltf', 'usdz'].includes(ext)) return 'model';
-    return 'standard';
-}
-
-function uploadLimitForKind(kind: 'video' | 'model' | 'standard'): number {
-    if (kind === 'video') return VIDEO_UPLOAD_LIMIT_BYTES;
-    if (kind === 'model') return MODEL_UPLOAD_LIMIT_BYTES;
-    return STANDARD_UPLOAD_LIMIT_BYTES;
-}
-
-function uploadLimitLabel(bytes: number): string {
-    return `${Math.floor(bytes / (1024 * 1024))}MB`;
-}
-
-function uploadMediaType(file: File, kind: 'video' | 'model' | 'standard'): 'image' | 'video' | 'audio' | 'document' | 'other' {
+function uploadMediaType(file: { type: string }, kind: 'video' | 'model' | 'standard'): 'image' | 'video' | 'audio' | 'document' | 'other' {
     const type = file.type.toLowerCase();
     if (kind === 'video') return 'video';
     if (kind === 'model') return 'other';
@@ -140,6 +110,63 @@ function logUploadError(error: unknown): void {
     }));
 }
 
+// POST /upload/recover — Verify the original allocated object and acknowledge
+// that same receipt. Never allocate, reclaim an upload lease or resend bytes.
+router.post('/recover', async (c) => {
+    const parsed = PublicUploadRecoveryInputSchema.safeParse(await c.req.json().catch(() => null));
+    if (!parsed.success) throw new ValidationError('Invalid saved upload details');
+    const input = parsed.data, auth = c.get('auth');
+    const selected = c.req.header('X-Store-ID')?.trim();
+    if ((selected && selected !== input.store_id) ||
+        !(await verifyUploadStoreOwnership(c, input.store_id, auth.user))) throw new ForbiddenError();
+    const idempotency = new IdempotencyExecutionAdapter(getSupabaseAdmin(c));
+    const receipt = await idempotency.readForRecovery({
+        siteId: input.store_id, key: input.idempotency_key, scope: 'http:POST:/upload',
+        requestBody: { method: 'POST', path: '/upload', query: {}, body: {
+            store_id: input.store_id, folder: input.folder,
+            file: { name: input.filename, content_type: input.content_type,
+                size: input.byte_size, sha256: input.sha256_hex },
+        } },
+    });
+    if (!receipt) throw new ConflictError('The storage acknowledgement is unconfirmed. Retain the saved request for review.');
+    const completed = receipt.status === 'completed';
+    const allocation = PublicUploadProgressSchema.safeParse(receipt.response_body);
+    if (!completed && (!allocation.success || receipt.resource_type !== PUBLIC_UPLOAD_RESOURCE))
+        throw new ConflictError('This older unfinished upload has no recoverable object identity. Retain it for review.');
+    if (!completed && allocation.success && allocation.data.upload_progress.actor_id !== auth.user.id) throw new ForbiddenError();
+    let value: unknown;
+    let acknowledgement: ReturnType<typeof storedUploadResponse> | undefined;
+    if (completed) {
+        const envelope = receipt.response_body;
+        value = envelope && typeof envelope === 'object' && !Array.isArray(envelope) ? envelope.data : null;
+    } else if (allocation.success) {
+        const base = publicAssetBaseUrl(c);
+        if (!base) throw new AppError('Public upload delivery is unavailable', 503, 'STORAGE_UNAVAILABLE');
+        const key = allocatedUploadKey(allocation.data.upload_progress, input.folder, input.filename);
+        acknowledgement = storedUploadResponse(base, key, { size: input.byte_size, contentType: input.content_type,
+            mediaType: uploadMediaType({ type: input.content_type }, mediaKindForUpload({ name: input.filename, type: input.content_type })), storeId: input.store_id });
+        value = acknowledgement.data;
+    }
+    const result = FileUploadResultSchema.safeParse(value);
+    if (!result.success || result.data.store_id !== input.store_id)
+        throw new AppError('The saved upload acknowledgement could not be confirmed', 503, 'UPLOAD_RECEIPT_UNAVAILABLE');
+    if (!c.env.R2_BUCKET) throw new AppError('File storage is unavailable', 503, 'STORAGE_UNAVAILABLE');
+    const object = await c.env.R2_BUCKET.head(result.data.key);
+    if (!uploadObjectMatches(object, { key: result.data.key, siteId: input.store_id,
+        size: input.byte_size, contentType: input.content_type,
+        ...(!completed ? { receiptId: receipt.id, actorId: auth.user.id, sha256: input.sha256_hex } : {}) }))
+        throw new AppError('The uploaded object could not be confirmed. Retain the original request for review.', 503, 'UPLOAD_OBJECT_UNCONFIRMED');
+    if (!(await verifyUploadStoreOwnership(c, input.store_id, auth.user))) throw new ForbiddenError();
+    if (!completed) {
+        if (!acknowledgement) throw new AppError('The original acknowledgement is unavailable', 503, 'UPLOAD_RECEIPT_UNAVAILABLE');
+        await idempotency.completeRecovered({ id: receipt.id, siteId: input.store_id,
+            requestHash: receipt.request_hash, resourceType: PUBLIC_UPLOAD_RESOURCE,
+            responseBody: acknowledgement, statusCode: 201 });
+    }
+    if (!(await verifyUploadStoreOwnership(c, input.store_id, auth.user))) throw new ForbiddenError();
+    return c.json({ data: result.data }, 200);
+});
+
 // POST /upload — Upload file to R2
 router.post('/', async (c) => {
     const auth = c.get('auth');
@@ -158,7 +185,7 @@ router.post('/', async (c) => {
         if (bodyStoreId && selectedStoreId && bodyStoreId !== selectedStoreId) {
             return c.json({ error: { code: 'FORBIDDEN', message: 'Selected store does not match this upload' } }, 403);
         }
-        const storeId = bodyStoreId || selectedStoreId;
+        const storeId = bodyStoreId || selectedStoreId || auth.user.storeId;
 
         if (
             !fileEntry ||
@@ -197,12 +224,12 @@ router.post('/', async (c) => {
             return c.json({ error: { code: 'VALIDATION', message: `File too large (max ${uploadLimitLabel(sizeLimit)})` } }, 400);
         }
 
-        // Generate unique path
-        const ext = safeFileExtension(file.name);
-        // Use the full UUID (122 bits) rather than an 8-char slice (~32 bits) to
-        // eliminate any theoretical brute-force enumeration of CDN URLs within a
-        // specific store + millisecond window.
-        const key = `public-media/${folder}/${auth.user.id}/${Date.now()}-${crypto.randomUUID().replace(/-/g, '')}.${ext}`;
+        const claim = c.get('publicUploadClaim');
+        const allocation = PublicUploadProgressSchema.safeParse(claim?.recoveryBody);
+        if (!claim || claim.siteId !== storeId || !allocation.success)
+            throw new AppError('A durable original upload allocation is required', 503, 'UPLOAD_RECEIPT_UNAVAILABLE');
+        if (allocation.data.upload_progress.actor_id !== auth.user.id) throw new ForbiddenError();
+        const key = allocatedUploadKey(allocation.data.upload_progress, folder, file.name);
 
         if (!c.env.R2_BUCKET) {
             if (isProductionEnv(c.env)) {
@@ -227,7 +254,16 @@ router.post('/', async (c) => {
         const assetBaseUrl = publicAssetBaseUrl(c);
         if (!assetBaseUrl) return c.json({ error: { code: 'STORAGE_UNAVAILABLE', message: 'Public upload delivery URL is not configured' } }, 503);
 
+        const expectedObject = { key, siteId: storeId!, size: file.size, contentType: file.type,
+            receiptId: claim.id, actorId: auth.user.id, sha256: claim.sha256 };
+        const existing = await c.env.R2_BUCKET.head(key);
+        if (existing && !uploadObjectMatches(existing, expectedObject))
+            throw new ConflictError('The original object does not match this upload. Retain it for review.');
+        if (!(await verifyUploadStoreOwnership(c, storeId!, auth.user))) throw new ForbiddenError();
+        if (!existing) {
         await c.env.R2_BUCKET.put(key, file.stream(), {
+            onlyIf: new Headers({ 'If-None-Match': '*' }),
+            sha256: claim.sha256,
             httpMetadata: { contentType: file.type },
             customMetadata: {
                 visibility: 'public',
@@ -237,25 +273,24 @@ router.post('/', async (c) => {
                 folder,
                 original_name: file.name.slice(0, 160),
                 media_type: mediaType,
+                upload_receipt_id: claim.id,
+                upload_sha256: claim.sha256,
             },
         });
+        // A conditional loser or interrupted acknowledgement can only accept
+        // the exact original bound object, never overwrite unrelated bytes.
+        const stored = await c.env.R2_BUCKET.head(key);
+        if (!uploadObjectMatches(stored, expectedObject))
+            throw new AppError('Storage did not confirm the original object', 503, 'UPLOAD_OBJECT_UNCONFIRMED');
+        }
+        if (!(await verifyUploadStoreOwnership(c, storeId!, auth.user))) throw new ForbiddenError();
 
-        // Return the registered public-media delivery URL on this Worker.
-        const publicUrl = `${assetBaseUrl}/${key}`;
-
-        return c.json({
-            data: {
-                url: publicUrl,
-                key,
-                size: file.size,
-                content_type: file.type,
-                media_type: mediaType,
-                storage: 'r2',
-                cdn_configured: false,
-                store_id: storeId || null,
-            },
-        }, 201);
+        // A new response and recovery serialize the same original object receipt.
+        return c.json(storedUploadResponse(assetBaseUrl, key, {
+            size: file.size, contentType: file.type, mediaType, storeId: storeId!,
+        }), 201);
     } catch (err) {
+        if (err instanceof AppError) throw err;
         logUploadError(err);
         return c.json({ error: { code: 'UPLOAD_ERROR', message: 'Failed to upload file' } }, 500);
     }

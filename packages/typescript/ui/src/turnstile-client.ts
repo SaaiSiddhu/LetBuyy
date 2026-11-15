@@ -10,8 +10,26 @@ type TurnstileWindow = Window & { turnstile?: TurnstileApi };
 const loads = new WeakMap<Window, Promise<TurnstileApi>>();
 const scriptUrl = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 
+/** An explicit loopback provider simulation never changes server verification. */
+export function resolveTurnstileScriptUrl(pageUrl: string, localSdkUrl?: string): string {
+    if (!localSdkUrl) return scriptUrl;
+    try {
+        const page = new URL(pageUrl), sdk = new URL(localSdkUrl);
+        const loopback = (url: URL) => url.protocol === 'http:'
+            && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
+            && Number(url.port) >= 1024 && Number(url.port) <= 65535
+            && !url.username && !url.password;
+        if (loopback(page) && loopback(sdk)
+            && sdk.pathname === '/fixtures/turnstile/api.js' && !sdk.search && !sdk.hash) return sdk.href;
+    } catch { /* Fail closed without returning a caller-supplied URL. */ }
+    throw new Error('Local verification configuration unavailable');
+}
+
 /** One SDK request per document, including concurrent mounts and route transitions. */
-export function loadTurnstile(target: Window = window): Promise<TurnstileApi> {
+export function loadTurnstile(target: Window = window, localSdkUrl?: string): Promise<TurnstileApi> {
+    let selectedUrl: string;
+    try { selectedUrl = resolveTurnstileScriptUrl(target.location.href, localSdkUrl); }
+    catch (error) { return Promise.reject(error); }
     const browser = target as TurnstileWindow;
     if (browser.turnstile) return Promise.resolve(browser.turnstile);
     const pending = loads.get(target);
@@ -19,13 +37,13 @@ export function loadTurnstile(target: Window = window): Promise<TurnstileApi> {
     const promise = new Promise<TurnstileApi>((resolve, reject) => {
         const document = target.document;
         let script = Array.from(document.scripts).find((candidate) => {
-            try { return new URL(candidate.src).origin + new URL(candidate.src).pathname === scriptUrl; }
+            try { return new URL(candidate.src).origin + new URL(candidate.src).pathname === selectedUrl; }
             catch { return false; }
         });
         const owned = !script;
         if (!script) {
             script = document.createElement('script');
-            script.src = `${scriptUrl}?render=explicit`;
+            script.src = localSdkUrl ? selectedUrl : `${selectedUrl}?render=explicit`;
             script.async = true;
             script.defer = true;
             script.dataset.lbTurnstile = 'true';
@@ -62,6 +80,7 @@ export function loadTurnstile(target: Window = window): Promise<TurnstileApi> {
 
 export interface TurnstileControllerOptions {
     siteKey: string;
+    localSdkUrl?: string;
     action?: string;
     onToken(token: string): void;
     onStatus?(status: TurnstileStatus): void;
@@ -95,7 +114,7 @@ export function mountTurnstile(container: HTMLElement, options: TurnstileControl
         if (!options.siteKey.trim()) { options.onStatus?.('unavailable'); return; }
         options.onStatus?.('checking');
         const current = () => !destroyed && generation === attempt;
-        void loadTurnstile(container.ownerDocument.defaultView!).then((sdk) => {
+        void loadTurnstile(container.ownerDocument.defaultView!, options.localSdkUrl).then((sdk) => {
             if (!current()) return;
             api = sdk;
             widgetId = sdk.render(container, {

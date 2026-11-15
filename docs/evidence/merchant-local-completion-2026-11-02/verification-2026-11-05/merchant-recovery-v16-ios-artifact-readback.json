@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-06T12:08:47.503804+00:00",
+  "status": "CURRENT_IOS_COMPILE_AND_EXACT_BUNDLE_FONT_READBACK_PASS",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "artifact": {
+    "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/artifacts/local-operational-proof/merchant-mobile/source16-ios-compile/Runner.app",
+    "files": 260,
+    "manifest_sha256": "f046d31fc936e38ca9198ac9b9ff55b9d3b0f15b7b385fa7b5871e45fea45b91",
+    "bundle_identifier": "com.letbuyy.store"
+  },
+  "font_assets": [
+    {
+      "asset": "fonts/MaterialIcons-Regular.otf",
+      "sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+    },
+    {
+      "asset": "packages/cupertino_icons/assets/CupertinoIcons.ttf",
+      "sha256": "67c44fe9183b002e79dde7f6977e2988661c9a3e4a3c5fce968787efdbed823c"
+    }
+  ],
+  "source_unchanged": true,
+  "original_and_copied_files_equal": true,
+  "scope": "Unsigned iOS simulator compile only; no install/launch/sign-in, iOS runtime, provider or release acceptance."
+}

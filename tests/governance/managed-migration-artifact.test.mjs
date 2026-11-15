@@ -29,6 +29,7 @@ test('managed artifact preserves business SQL and identifies its different safet
 
 test('every existing reviewed admission block compiles without editing its source',()=>{
     let forward=0,rollback=0;
+    const integrated={migrations:[],rollback:[]};
     for(const folder of ['migrations','rollback'])for(const file of readdirSync('database/supabase/'+folder)) {
         if(!file.endsWith('.sql'))continue;
         const text=readFileSync('database/supabase/'+folder+'/'+file,'utf8');
@@ -36,9 +37,14 @@ test('every existing reviewed admission block compiles without editing its sourc
         const artifact=compileManagedMigration(text,file);
         assert.ok(artifact.receipt.adaptedFences>0,file);
         assert.doesNotMatch(artifact.sql,/PERFORM letbuyy_maintenance\.lock_catalogs_v1\(\)/);
+        if(parseInt(file)>=433)integrated[folder].push(parseInt(file));
         if(folder==='migrations')forward++;else rollback++;
     }
-    assert.equal(forward,22);assert.equal(rollback,31);
+    // The integrated 433–440 source adds five forward and eight reverse fences.
+    // Each still passed the complete closed recognizer/compiler above.
+    assert.deepEqual(integrated.migrations,[436,437,438,439,440]);
+    assert.deepEqual(integrated.rollback,[433,434,435,436,437,438,439,440]);
+    assert.equal(forward,27);assert.equal(rollback,41);
 });
 
 for(const [before,after] of [

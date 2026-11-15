@@ -1,0 +1,13 @@
+{
+  "source_sha256": "823d816f06cb8b21ecedb637f9ea6dc6cdf390c6caeae5fbb7676cf4231dc37a",
+  "baseline_source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "changed": [
+    "apps/merchant/mobile/lib/screens/content/navigation_screen.dart",
+    "apps/merchant/mobile/lib/screens/settings/shipping_screen.dart",
+    "apps/merchant/mobile/test/navigation_item_preservation_test.dart",
+    "apps/merchant/mobile/test/shipping_rate_preservation_test.dart"
+  ],
+  "all_other_canonical_inputs_unchanged": 8440,
+  "backend_domain_identity_persistence_sdk_service_changes": [],
+  "qualification": "37focusedPASS;analysis/full/builds not yet executed"
+}

@@ -53,6 +53,7 @@ export async function validateSession(token: string): Promise<{
         requireSession: true,
         sessionToken: token,
     })
+    if (response.status >= 500 || response.status === 429) throw new Error('Account verification is temporarily unavailable')
     if (!response.ok) return null
     const payload = await response.json().catch(() => null) as {
         authenticated?: boolean
@@ -77,18 +78,20 @@ export async function validateSession(token: string): Promise<{
  * Destroy a specific session (logout current device).
  */
 export async function destroySession(token: string): Promise<void> {
-    await identityApiRequest('/auth/custom/sessions/destroy', {
+    const response = await identityApiRequest('/auth/custom/sessions/destroy', {
         method: 'POST',
         body: JSON.stringify({ token }),
     })
+    if (!response.ok) throw new Error('Session revocation is unavailable')
 }
 
 /**
  * Destroy all sessions for a user (logout everywhere).
  */
 export async function destroyAllUserSessions(userId: string): Promise<void> {
-    await identityApiRequest('/auth/custom/sessions/destroy-all', {
+    const response = await identityApiRequest('/auth/custom/sessions/destroy-all', {
         method: 'POST',
         body: JSON.stringify({ user_id: userId }),
     })
+    if (!response.ok) throw new Error('Session revocation is unavailable')
 }

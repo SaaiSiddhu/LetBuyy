@@ -1,0 +1,10 @@
+{
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261107-c7c5f83555",
+  "source_sha256": "737c9bfdd8a1f91072dd49d58069c29778f9459e07c66f5391c94251bf997f50",
+  "source_inputs": 8486,
+  "source_role": "TEMPORARY_DIAGNOSTIC_NOT_QUALIFIED_FOR_DELIVERY",
+  "fixture_sha256": "95d09c432cd529e5fda0532105f774b5181a67ca626050f18b53c4592ff4f2b4",
+  "swift_sha256": "0c4200e8374cf1732066a1778b66fe0dbb03de549f00a54a620d01249eed22f4",
+  "launcher_sha256": "d4260d50543f5a97e0af68f5a4ab5be992cb37f4b49ae1766ffd271fd4962ac1",
+  "scope": "Source59 plus local-debug-only pointer/submit/validation/store bits; no data values or credentials logged. One real first tap diagnosis. Restore or replace trace before delivery; earlier evidence remains separate."
+}

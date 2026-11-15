@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-06T08:37:49.349413+00:00",
+  "supervisor_pid": 62221,
+  "source": "merchant-recovery-source-v9",
+  "source_sha256": "cdd6849c07447a0af351c9edf6e11801fa9ac03cf79f38a8e453a698a919c8f6",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc_upload_visual_v2_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 62224,
+  "exit_code": 1,
+  "finished_at": "2026-11-06T08:37:52.186647+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "cdd6849c07447a0af351c9edf6e11801fa9ac03cf79f38a8e453a698a919c8f6"
+}

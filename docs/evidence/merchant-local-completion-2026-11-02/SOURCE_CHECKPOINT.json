@@ -1,0 +1,25 @@
+{
+  "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "kind": "uncommitted-source-checkpoint-not-final-freeze",
+  "files": {
+    "services/api-gateway/src/routes/auth.ts": "a3318fc715a4193bb22f24bce682964556ba78952f77086accf3165092f2b801",
+    "apps/platform/identity/src/app/api/auth/verify/route.ts": "ecc63ce61aabce4bea65a128ec3f415ed79619e24c6f031515cd6aae52052e2b",
+    "apps/merchant/mobile/lib/services/product_service.dart": "00cb226b4410bca9c413fb0d1918349246a1083c54f05da238ecf1596c3dc2c6",
+    "apps/merchant/mobile/lib/screens/products/products_screen.dart": "c556a5f7679f489546cee79735e6da78a0ea50f85508f444e342b470b1f456c1",
+    "apps/merchant/mobile/lib/config/app_config.dart": "9f63a9fee1af1992374563d0ea59e370dad2d30470b76bbdd8a426071f34e69f",
+    "apps/merchant/mobile/lib/services/security_command_store.dart": "c11705c3d135a47b6069e0dc34299fb78adfc149e9ffb974d98454ce57c8c9fe"
+  },
+  "tests": {
+    "flutter-full-v3": {
+      "passed": 812,
+      "nativeEmulator": false
+    },
+    "flutter-analysis-v1": "no issues",
+    "identity-unit-v2": {
+      "firstLane": 71,
+      "secondLane": 6,
+      "thirdLane": "covered by second combined invocation; see log"
+    },
+    "accounts-recovery-v4": 65
+  }
+}

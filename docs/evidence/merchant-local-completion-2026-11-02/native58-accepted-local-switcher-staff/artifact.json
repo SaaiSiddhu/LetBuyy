@@ -1,0 +1,23 @@
+{
+  "run_id": "92d452e8952f",
+  "source_sha256": "e41e16f263bcef7c77ba46353965943f9e9d15f0e688d00c7db0380e0b50a6bf",
+  "apk": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v58/qualified-artifact/merchant-local-debug.apk",
+  "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+  "original_bytes_retained": true,
+  "sha256": "697f5d8596030cfc80b9550b12f59c0a66d2401ba8bc2fa937957074f43cd3df",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+    "API_BASE_URL": "http://127.0.0.1:54350/v1",
+    "IDENTITY_BASE_URL": "http://localhost:9002",
+    "ADMIN_BASE_URL": "http://localhost:54353",
+    "STOREFRONT_BASE_URL": "http://localhost:54354",
+    "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:54479/fixtures/turnstile/api.js",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "MOBILE_PUSH_DEVICE_TOKEN": "",
+    "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+  },
+  "build_method": "flutter-config-only-then-offline-gradle-debug",
+  "installed_readback": true,
+  "scope": "Local debug artifact only; no hosted/provider/release certification."
+}

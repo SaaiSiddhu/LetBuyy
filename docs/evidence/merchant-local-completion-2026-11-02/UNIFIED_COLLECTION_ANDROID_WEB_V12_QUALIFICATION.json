@@ -1,0 +1,80 @@
+{
+  "status": "BOUNDED_LOCAL_ANDROID_WEB_DATABASE_PASS",
+  "runId": "ee1f0bbce004",
+  "tests": 1,
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_sha256": "f501e0749318a4dcc49f089a128efb8f7d523d0873b54ce8f3506f1dcc251c0f",
+  "sourceEntries": 7406,
+  "sourceHeldAndTerminalVerified": true,
+  "sourceArchive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v12/qualified-source",
+  "sourceArchiveVerified": true,
+  "artifact": {
+    "run_id": "ee1f0bbce004",
+    "source_sha256": "6251fb82f2669f1991bf2029f37152de04ea510a079d018f992c7292f377579c",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v12/qualified-artifact/merchant-local-debug.apk",
+    "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "original_bytes_retained": true,
+    "sha256": "7ebd67a2bd1ded7b93ee80db6602091b866d5895cd9db5e1087d7774d1e262ec",
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:60276/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "observed": [
+    "Normal synthetic Accounts UI through task Chrome with ADB input; automatic return, actual fresh PKCE inspection/exchange, canonical session confirmation.",
+    "Manual ordered membership: actual committed201/200 response interrupted503; same original key/body retry with one receipt; normal web sign-in/native order read, web order save, native reload; exactly2 receipts/audits/outbox.",
+    "Smart native rule/publication create: committed201/wire503; process restart with encrypted original request retained; exact original key/body retry201, one effect; saved preview1match.",
+    "Normal web read of native rule/publication and one-match preview; exact public API product before. Normal web rule save, native fresh rule read and preview2matches; exact public API two products afterward.",
+    "Smart database version2, exactly2metadata receipts/audits/outbox.",
+    "Current screenshot review confirms canonical light editor heading on dark surface, visibly disabled creation during original recovery, and full saved-rule preview above system gesture area."
+  ],
+  "smartPersisted": {
+    "version": 2,
+    "conditions": [
+      {
+        "op": "contains",
+        "field": "title",
+        "value": "Synthetic"
+      }
+    ],
+    "is_active": true,
+    "receipts": 2,
+    "audits": 2,
+    "outbox": 2
+  },
+  "controllerLimitations": [
+    "Normal ADB input uses actual visible control bounds. Empty Material field labels are not serialized by UiAutomator; form order was previously visually confirmed. No token, code or session injection.",
+    "All milestones and exact backend effects independently asserted; screenshots inspected. This is not complete accessibility acceptance."
+  ],
+  "remaining": [
+    "Native manual metadata CRUD, all rule operators, native stale-conflict/delete/staff UI, rendered buyer collection page and full-feature acceptance remain separate.",
+    "Current broader retained-data/security/governance gates and many of the original122 entries remain incomplete.",
+    "No iOS/physical device/provider/hosted/release/production acceptance."
+  ],
+  "scope": "One bounded compound story, not a122-feature or production-ready certification.",
+  "controllerProcessExits": {
+    "canonicalRunner": 0,
+    "normalAdbCompanion": 0
+  }
+}

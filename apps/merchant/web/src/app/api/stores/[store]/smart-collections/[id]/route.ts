@@ -1,25 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
-import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
-import type { UpdateSmartCollectionInput } from '@letbuyy/api-client'
-
-type RouteParams = { params: Promise<{ store: string; id: string }> }
-
-export async function PATCH(
-    request: NextRequest,
-    { params }: RouteParams
-) {
-    try {
-        const { store, id } = await params
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
-
-        if (resolved.error) return resolved.error
-
-        const body = await request.json() as UpdateSmartCollectionInput
-        const data = await createMerchantApiClient().smartCollections.update(id, body)
-
-        return NextResponse.json({ data })
-    } catch (err) {
-        return merchantApiErrorResponse(err, 'Unable to update smart collection')
-    }
-}
+import { NextRequest } from 'next/server'
+import { collectionMetadataMutation, collectionMetadataRead } from '@/lib/products/collection-metadata-proxy'
+type Params = { params: Promise<{ store: string; id: string }> }
+export const GET = async (request: NextRequest, { params }: Params) => collectionMetadataRead(request, params, 'smart', (await params).id)
+export const PATCH = async (request: NextRequest, { params }: Params) => collectionMetadataMutation(request, params, 'smart', 'update', (await params).id)
+export const DELETE = async (request: NextRequest, { params }: Params) => collectionMetadataMutation(request, params, 'smart', 'delete', (await params).id)

@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-06T08:52:54.767381+00:00",
+  "status": "READ_ONLY_NEXT_COHORT;NOT_IMPLEMENTED_OR_ACCEPTED",
+  "source": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "observations": [
+    "KycService.uploadDocument generates a fresh India UUID on every invocation; private multipart path likewise has no durable original command state.",
+    "Current _record error copy still offers retry for ambiguous transport results. Surface dismissal/covered completion is repaired; durable outcome uncertainty is separate.",
+    "Existing SecurityCommandStore already owns encrypted actor/store-bound logical requests and original stable keys; do not create another persistence system or store document bytes/signed ticket secrets. KycService needs explicit current actor/store wiring to use that owner.",
+    "India intent receipt commits before STS; replay must match hash/type/size/reference and existing key. Completed/expired intent cannot become a new intent implicitly.",
+    "Completion can replay exact receipt/version/key, but lost direct storage response without version is not safely resolved by another object POST. Current server reconciliation capability must be traced before implementing this stage.",
+    "KYC overview malformed documents/list shape remains open; map filtering and one as List cast are not canonical validation or full acceptance."
+  ],
+  "next": [
+    "Trace canonical shared KYC contracts, receipt-stage recovery and current actor/store providers before edits.",
+    "Use populated real service, ownedGateway/PG, held responses, restart/account switching and original-key negative tests; prove effects once.",
+    "Keep provider intake test-only; no real document/provider account/storage action or new runtime."
+  ],
+  "external_gate": "AWS account and real scan/retention/provider controls are unaccepted; local synthetic flow cannot grant verification/payout readiness.",
+  "additional_current_source_trace": {
+    "canonical_contracts": "packages/shared-types/src/index.ts MerchantKycDocumentSchema/RequirementSchema/OverviewSchema (around1068-1107);strictpublicstatus DTO,private keys/payloads excluded. Dartmirror not found inmodels at current read.",
+    "provider_wiring": "main.dart:311 KycService onlyapi;nearbyTwoFactorService alreadyusescanonicalauth.currentUser.id/storeContext.selectedStoreId callbacks. Reuse that authority.",
+    "encrypted_progress": "SecurityCommandStore.replaceIntent already atomically retains progress with SAMEkey and compare-current-record;no new storage owner/API needed. Never persist STS fields,signed policies,document bytes or credentials.",
+    "existing_gates": "KYC India POSTintent/complete requireowned ENVIRONMENT=test;legacyJSONreference endpoint410;R2multipart requiresstable X-Idempotency-Key and canonical receipt before object write. NoGETreceipt-by-key observed inroutes.",
+    "fixture_scope": "Existing containment fixtures intentionally use simplified IDs/legacy fields for lifetime/race assertions. NewstrictDTO tests must add populated canonical Gateway/DB fixtures and preserve old guard assertions;do not infer strictreadback acceptance fromold simplifiedpositives."
+  }
+}

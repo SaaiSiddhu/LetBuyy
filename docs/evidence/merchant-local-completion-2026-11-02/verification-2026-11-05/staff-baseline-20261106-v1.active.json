@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-11-06T02:23:49.812782+00:00",
+  "supervisor_pid": 44757,
+  "source": "utilities-source-v4",
+  "source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/staff_scope_boundary_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 44760
+}

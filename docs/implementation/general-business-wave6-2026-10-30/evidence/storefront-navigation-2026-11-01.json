@@ -1,0 +1,29 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Merchant inventory navigation and storefront Liquid fallback/account-route contract on the Wave 6 branch",
+  "finding": "Four implemented Merchant inventory pages had no navigation links. Two launch assertions expected pre-current Liquid syntax or a Liquid registration page despite the canonical Identity registration redirect.",
+  "change": "Added Inventory history, Reservations, Locations, and Operations dashboard to the existing Products navigation. Retargeted the storefront launch assertions to the existing Liquid render-failure fallback and sole-Identity registration route.",
+  "checks": {
+    "merchantCommerceLaunch": { "passed": 21, "failed": 0, "skipped": 0 },
+    "storefrontRouteTemplateLaunch": { "passed": 28, "failed": 0, "skipped": 0 },
+    "storefrontLiquidRuntimeContract": { "passed": 17, "failed": 0, "skipped": 0 },
+    "merchantTypecheck": "passed after frozen offline dependency restore",
+    "governanceGate": "114 passed, 0 failed, 0 blocked, 0 skipped",
+    "ownedSignedInBrowser": {
+      "runId": "9a8edcce4f36",
+      "suites": 1,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "cleanupFailures": 0,
+      "remainingOwnedContainers": 0,
+      "remainingOwnedNetworks": 0,
+      "remainingOwnedVolumes": 0
+    }
+  },
+  "notEstablished": [
+    "Physical mobile-device navigation or screen-reader acceptance",
+    "Hosted Merchant or custom-domain storefront deployment",
+    "A green full behavioral suite on the edited tree"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-06T17:42:00.607383+00:00",
+  "source_sha256": "4d0884bd1d999e12271b2ee11c026a08977a7a509d2e00a4508ee1c3bfc21372",
+  "run_id": "535d3928cc7f",
+  "status": "NATIVE_KYC_MEDIA_AND_WEB_DELETE_SYNC_PASSED_LATER_STORE_RENAME_TEST_RACE",
+  "completed": [
+    "Original public-upload receipt/key/hash with no second bytePOST; restart/cache removal/recovery; native metadata readback.",
+    "Native private KYC strict public status; distinct private/public buckets and anonymous denial.",
+    "Web KYC canonical projection equal and actual in-viewport saved/private/pending status.",
+    "Browser Gallery actual image decode/delete200; native refresh shows empty library; public object retained."
+  ],
+  "race": "After native deletion readback marker, web was allowed to rename immediately, while native still opened Details and asserted the previous name. Observed native EditText already correctly contained Synthetic Alpha web. Harness ordering defect, no app regression.",
+  "next": "Native74 adds paired marker: native resumes Details and confirms original name before Node begins web rename. All original assertions, including old/new names, retained.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

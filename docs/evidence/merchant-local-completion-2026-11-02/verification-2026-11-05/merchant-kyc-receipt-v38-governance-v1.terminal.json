@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T15:39:06.754096+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-kyc-receipt-v38-governance-jv_0tqkr",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+  "core_inputs_byte_equal": 8481,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "merchant-kyc-receipt-v38-governance-v1-report.json"
+}

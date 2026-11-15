@@ -3,6 +3,8 @@
 // not an application/runtime authority. The existing fixture guard decides ownership.
 import { resolveOwnedStoreRoot } from './owned-client-host-policy.mjs';
 import { isOwnedClientServiceUrl } from './owned-client-url-policy.mjs';
+import { validateOwnedProviderFixture } from './owned-provider-network.mjs';
+import { pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -102,6 +104,21 @@ try {
     const addresses = await lookup('localhost', { all:true });
     if (!addresses.length || addresses.some(a => a.address !== '127.0.0.1' && a.address !== '::1')) throw new Error('localhost must resolve only to loopback');
     env.NODE_OPTIONS = '--dns-result-order=ipv4first';
+    if (env.LETBUYY_OWNED_BLOCKED_LOCAL_PORTS !== undefined) {
+        const ports = JSON.parse(env.LETBUYY_OWNED_BLOCKED_LOCAL_PORTS);
+        if (!Array.isArray(ports) || ports.some(p => !Number.isInteger(p) || p < 1 || p > 65535)) throw new Error('invalid owned local port deny list');
+        env.NODE_OPTIONS += ' --import=' + pathToFileURL(join(root,'scripts/governance/owned-local-network-preload.mjs')).href;
+    }
+    if (env.LETBUYY_OWNED_PROVIDER_PROFILE !== undefined) {
+        if (!kind.startsWith('identity-next')) throw new Error('owned provider fixture is limited to Identity clients');
+        const provider = validateOwnedProviderFixture(JSON.parse(env.LETBUYY_OWNED_PROVIDER_PROFILE));
+        const response = await fetch(provider.origin + '/_owned_provider_fixture', {
+            headers: { 'X-Owned-Provider-Capability': provider.capability }, redirect:'error', signal:AbortSignal.timeout(3000),
+        });
+        const receipt = response.ok ? await response.json() : null;
+        if (receipt?.kind !== provider.kind || receipt?.runId !== fixture.runId || receipt?.database !== fixture.database) throw new Error('owned provider fixture ownership refused');
+        env.NODE_OPTIONS += ' --import=' + pathToFileURL(join(root,'scripts/governance/owned-provider-preload.mjs')).href;
+    }
     let command = process.execPath;
     let args;
     let cwd = root;

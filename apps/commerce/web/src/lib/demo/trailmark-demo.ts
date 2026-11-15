@@ -2,6 +2,7 @@
 import { SportsFactsSchema, SportsVariantFactsSchema, type ProductModel } from '@letbuyy/commerce-core';
 import { LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import type { StoreNavigation } from '@letbuyy/tenant-core';
+import { isCatalogDemoVersion } from './catalog-demo-versions';
 
 const media = '/theme-assets/trailmark/v2/';
 const productIds = ['7b669c70-8600-4000-8000-000000000001', '7b669c70-8600-4000-8000-000000000002', '7b669c70-8600-4000-8000-000000000003'];
@@ -39,7 +40,7 @@ export const TRAILMARK_DEMO_NAVIGATION: StoreNavigation = {
 /** Isolated catalog preview settings only; live merchants keep their own resources and facts. */
 export function withTrailmarkDemoContent(input: Record<string, unknown>): Record<string, unknown> {
   const bundle=LiquidThemePackageBundleSchema.parse(structuredClone(input.liquidBundle));
-  if(bundle.package.slug!=='letbuyy-ride'||bundle.package.version!=='2.0.0')throw new Error('Trailmark sample content requires the matching versioned package.');
+  if(bundle.package.slug!=='letbuyy-ride'||!isCatalogDemoVersion(bundle.package.version))throw new Error('Trailmark sample content requires the matching versioned package.');
   for(const template of Object.values(bundle.templates))for(const instance of Object.values(template.sections)){
     if(instance.type==='hero-banner')Object.assign(instance.settings,{image:media+'activity.webp',imageAlt:'Two adults enjoying a fictional recreational badminton game',imageFocus:'center'});
     if(instance.type==='category-grid')Object.assign(instance.settings,{collection1:TRAILMARK_DEMO_COLLECTIONS[0].id,collection2:TRAILMARK_DEMO_COLLECTIONS[1].id,collection3:TRAILMARK_DEMO_COLLECTIONS[2].id});

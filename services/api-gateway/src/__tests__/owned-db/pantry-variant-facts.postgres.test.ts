@@ -1,10 +1,11 @@
-// Latest-stack385 only. Every write goes to the runner's positively owned disposable fixture.
+// Current runtime plus isolated385 SQL retirement controls. Every write goes
+// to positively owned disposable infrastructure; historical SQL has no REST.
 import assert from 'node:assert/strict';
 import test, { before, after, afterEach } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from './owned-db-support';
+import { requireOwnedDatabase, requireOwnedHistoricalSqlDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
@@ -16,6 +17,7 @@ const quote = (value: string) => `'${value.replaceAll("'", "''")}'`;
 const json = (value: unknown) => quote(JSON.stringify(value)) + '::jsonb';
 const migration = (kind: 'migrations' | 'rollback') => readFileSync(new URL('../../../../../database/supabase/' + kind + '/385_product_variant_facts' + (kind === 'rollback' ? '.rollback' : '') + '.sql', import.meta.url), 'utf8');
 let gateway: Gateway, mirrorGateway: Gateway, proxy: OwnedPooledSqlProxy;
+let historical: ReturnType<typeof requireOwnedHistoricalSqlDatabase>;
 
 before(async () => {
   for (const tenant of [site, other]) seedSyntheticTenant(psql, tenant);
@@ -33,18 +35,18 @@ before(async () => {
 afterEach(async () => { await gateway.settle(); await mirrorGateway.settle(); });
 after(async () => { await closePooledSqlClients(); await proxy?.stop(); });
 
-function product(metadata: object = {}, images: string[] = []) {
+function product(metadata: object = {}, images: string[] = [], query = psql) {
   const id = crypto.randomUUID();
-  psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status,country_of_origin,metadata,images)
+  query(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status,country_of_origin,metadata,images)
     VALUES('${id}','${site.siteId}','${site.siteId}','Synthetic pantry product','syn-${id}',180,0,true,'active','India',${json(metadata)},ARRAY[${images.map(quote).join(',')}]::text[]);`);
   return id;
 }
 const version = (id: string) => Number(psql(`SELECT version FROM products WHERE id='${id}';`));
 interface StoredVariant { id: string; stock: number; options: Record<string, string>; metadata: Record<string, unknown>; }
 interface StoredProduct { id: string; version: number; variants: StoredVariant[]; metadata: Record<string, unknown> & { gifts?: { mediaRoles?: Record<string, number> } }; }
-const row = (id: string) => JSON.parse(psql(`SELECT product_edit_snapshot_v1('${id}');`)) as StoredProduct;
-function snapshot(id: string) {
-  return JSON.parse(psql(`SELECT jsonb_build_object(
+const row = (id: string, query = psql) => JSON.parse(query(`SELECT product_edit_snapshot_v1('${id}');`)) as StoredProduct;
+function snapshot(id: string, query = psql) {
+  return JSON.parse(query(`SELECT jsonb_build_object(
     'product',(SELECT to_jsonb(t) FROM products t WHERE id='${id}'),
     'variants',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]') FROM product_variants t WHERE product_id='${id}'),
     'levels',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]') FROM inventory_levels t WHERE product_id='${id}'),
@@ -69,29 +71,31 @@ async function payload(response: { json: unknown }) {
 }
 const food = { netQuantity: { value: 250, unit: 'g' } };
 const allFacts = { food, toys: { materials: 'Merchant supplied wood' }, furniture: { materials: ['Birch'] }, sports: { weight: { value: 300, unit: 'g' } }, books: { kind: 'book', language: 'English', format: 'paperback' } };
-function functionProfile() {
-  return psql(`SELECT jsonb_agg(jsonb_build_object('name',proname,'body',prosrc,'acl',proacl,'config',proconfig,'owner',proowner) ORDER BY proname)
+function functionProfile(query = psql) {
+  return query(`SELECT jsonb_agg(jsonb_build_object('name',proname,'body',prosrc,'acl',proacl,'config',proconfig,'owner',proowner) ORDER BY proname)
     FROM pg_proc WHERE oid IN('public.product_edit_snapshot_v1(uuid)'::regprocedure,'public.apply_product_edit_v1(uuid,uuid,uuid,integer,uuid,jsonb)'::regprocedure,'public.refresh_products_variants_jsonb_cache(integer)'::regprocedure);`);
 }
 
 test('385 clean-empty DOWN and reapply restore exact reviewed functions and preserve product data/ACLs', () => {
-  assert.equal(psql(`SELECT count(*) FROM product_variants WHERE metadata<>'{}';`), '0');
-  const id = product(); const before = snapshot(id), profile = functionProfile();
-  owned.script(migration('rollback'));
-  assert.equal(psql(`SELECT count(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='product_variants' AND column_name='metadata';`), '0');
-  const legacy = product(), legacyVariant = crypto.randomUUID(), unmatched = crypto.randomUUID();
-  psql(`INSERT INTO product_variants(id,product_id,title,price,inventory_qty) VALUES('${legacyVariant}','${legacy}','Legacy synthetic pack',180,0);
+  historical = requireOwnedHistoricalSqlDatabase(385);
+  const sql = historical.psql; seedSyntheticTenant(sql, site);
+  assert.equal(sql(`SELECT count(*) FROM product_variants WHERE metadata<>'{}';`), '0');
+  const id = product({}, [], sql); const before = snapshot(id, sql), profile = functionProfile(sql);
+  historical.script(migration('rollback'));
+  assert.equal(sql(`SELECT count(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='product_variants' AND column_name='metadata';`), '0');
+  const legacy = product({}, [], sql), legacyVariant = crypto.randomUUID(), unmatched = crypto.randomUUID();
+  sql(`INSERT INTO product_variants(id,product_id,title,price,inventory_qty) VALUES('${legacyVariant}','${legacy}','Legacy synthetic pack',180,0);
     UPDATE products SET variants=jsonb_set(jsonb_set(variants,'{0,metadata}',${json({ food })}),'{0,id}',${json(unmatched)}) WHERE id='${legacy}';`);
-  const legacyBefore = psql(`SELECT variants FROM products WHERE id='${legacy}';`);
-  assert.match(owned.psqlScriptExpectError(migration('migrations')), /refuses unmatched or ambiguous variant facts/);
-  assert.equal(psql(`SELECT variants FROM products WHERE id='${legacy}';`), legacyBefore, 'failed expansion never drops unmatched facts');
-  assert.equal(psql(`SELECT count(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='product_variants' AND column_name='metadata';`), '0');
-  psql(`UPDATE products SET variants=jsonb_set(variants,'{0,id}',${json(legacyVariant)}) WHERE id='${legacy}';`);
-  owned.script(migration('migrations'));
-  assert.deepEqual(snapshot(id), before);
-  assert.equal(functionProfile(), profile);
-  assert.deepEqual(row(legacy).variants[0].metadata, { food }, 'backfill follows the existing UUID only');
-  assert.deepEqual(row(legacy).variants, JSON.parse(psql(`SELECT variants FROM products WHERE id='${legacy}';`)));
+  const legacyBefore = sql(`SELECT variants FROM products WHERE id='${legacy}';`);
+  assert.match(historical.psqlScriptExpectError(migration('migrations')), /refuses unmatched or ambiguous variant facts/);
+  assert.equal(sql(`SELECT variants FROM products WHERE id='${legacy}';`), legacyBefore, 'failed expansion never drops unmatched facts');
+  assert.equal(sql(`SELECT count(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='product_variants' AND column_name='metadata';`), '0');
+  sql(`UPDATE products SET variants=jsonb_set(variants,'{0,id}',${json(legacyVariant)}) WHERE id='${legacy}';`);
+  historical.script(migration('migrations'));
+  assert.deepEqual(snapshot(id, sql), before);
+  assert.equal(functionProfile(sql), profile);
+  assert.deepEqual(row(legacy, sql).variants[0].metadata, { food }, 'backfill follows the existing UUID only');
+  assert.deepEqual(row(legacy, sql).variants, JSON.parse(sql(`SELECT variants FROM products WHERE id='${legacy}';`)));
 });
 
 test('real canonical POST creates all five inline namespaces, stock and UUIDs in one tenant transaction', async () => {
@@ -213,9 +217,10 @@ test('effective image bounds and beauty option membership reject metadata-only a
 });
 
 test('385 DOWN refuses saved facts and changed search_path without changing data or function authority', () => {
-  const id = product(); const before = snapshot(id), profile = functionProfile();
-  assert.match(owned.psqlScriptExpectError(migration('rollback')), /refuses to discard saved variant facts/);
-  assert.deepEqual(snapshot(id), before); assert.equal(functionProfile(), profile);
-  assert.match(owned.psqlScriptExpectError(`BEGIN; ALTER FUNCTION public.product_edit_snapshot_v1(uuid) SET search_path=public;\n${migration('rollback')}`), /refuses changed product function contract/);
-  assert.equal(functionProfile(), profile);
+  const sql = historical.psql;
+  const id = product({}, [], sql); const before = snapshot(id, sql), profile = functionProfile(sql);
+  assert.match(historical.psqlScriptExpectError(migration('rollback')), /refuses to discard saved variant facts/);
+  assert.deepEqual(snapshot(id, sql), before); assert.equal(functionProfile(sql), profile);
+  assert.match(historical.psqlScriptExpectError(`BEGIN; ALTER FUNCTION public.product_edit_snapshot_v1(uuid) SET search_path=public;\n${migration('rollback')}`), /refuses changed product function contract/);
+  assert.equal(functionProfile(sql), profile);
 });

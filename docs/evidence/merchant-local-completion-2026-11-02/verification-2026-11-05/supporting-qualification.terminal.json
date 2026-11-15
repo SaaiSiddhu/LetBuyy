@@ -1,0 +1,33 @@
+{
+  "supervisor_pid": 53510,
+  "source_sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+  "started_at": "2026-11-05T18:28:09.334411+00:00",
+  "full_flutter": {
+    "pass": 1466,
+    "fail": 1,
+    "skip": 0,
+    "known_protected_staff_failure_only": true
+  },
+  "steps": [
+    {
+      "step": "ui-kit-analysis",
+      "exit_code": 0
+    },
+    {
+      "step": "governance",
+      "exit_code": 0
+    },
+    {
+      "step": "android-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "ios-compile",
+      "exit_code": 0
+    }
+  ],
+  "status": "TERMINAL_ALL_ORDERED_LOCAL_GATES_PASSED_WITH_KNOWN_FULL_SUITE_FAILURE",
+  "active_step": "ios-compile",
+  "finished_at": "2026-11-05T18:30:57.486384+00:00",
+  "source_unchanged": true
+}

@@ -120,6 +120,7 @@ router.get('/web-draft', async (c) => {
             .select('id, subdomain')
             .eq('subdomain', data.requested_subdomain)
             .eq('custom_user_id', customUser.id)
+            .eq('store_creation_idempotency_key', `accounts-store:${customUser.id}:${data.id}`)
             .is('deleted_at', null)
             .maybeSingle();
         if (storeError) {
@@ -128,11 +129,12 @@ router.get('/web-draft', async (c) => {
         if (ownedStore) {
             // Recover if the store insert succeeded but its following draft-finalization call lost
             // its response. The exact signed-in owner and exact requested handle must match.
-            await db.rpc('complete_storefront_web_onboarding_draft', {
+            const completion = await db.rpc('complete_storefront_web_onboarding_draft', {
                 p_user_id: customUser.id,
                 p_attempt_id: data.id,
                 p_store_id: ownedStore.id,
             });
+            if (completion.error) return c.json({ success: false, error: { code: 'DRAFT_LOAD_FAILED', message: 'Unable to finish saved setup. Retry to recover your store.' } }, 503);
             const storefrontDomain = await provisionFirstPartyStorefrontDomain(c.env, ownedStore);
             return c.json(success({ attempt: null, completed_store: ownedStore }, { meta: { storefront_domain: storefrontDomain } }));
         }

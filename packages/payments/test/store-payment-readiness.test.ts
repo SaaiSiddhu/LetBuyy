@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema } from '@letbuyy/shared-types';
+import { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, AttachStorePaymentWebhookSchema, UpdateStorePaymentMethodsSchema } from '@letbuyy/shared-types';
 import { deriveStorePaymentSetup, type StorePaymentReadinessInput } from '../src/store-payment-readiness';
 
 const ready: StorePaymentReadinessInput = {
@@ -66,9 +66,36 @@ test('credential input defaults to test and rejects environment confusion, coerc
   ]) assert.equal(SaveStorePaymentConfigSchema.safeParse({ ...input, ...change }).success, false);
 });
 
+test('attaching a callback secret needs a current revision and cannot smuggle API credentials', () => {
+  const valid = { attach_to_existing: true, webhook_secret: 'synthetic-webhook-secret',
+    expected_revision: '2026-11-01T10:00:00.000Z' };
+  assert.equal(AttachStorePaymentWebhookSchema.safeParse(valid).success, true);
+  for (const change of [{ expected_revision: undefined }, { webhook_secret: 'short' },
+    { webhook_secret: 'secret with spaces' }, { key_secret: 'synthetic-api-secret' },
+    { attach_to_existing: false }]) {
+    assert.equal(AttachStorePaymentWebhookSchema.safeParse({ ...valid, ...change }).success, false);
+  }
+});
+
 test('method updates cannot smuggle gateway, credentials or non-boolean grants', () => {
   assert.deepEqual(UpdateStorePaymentMethodsSchema.parse({ cod_enabled: true }), { cod_enabled: true });
   assert.equal(UpdateStorePaymentMethodsSchema.safeParse({}).success, false);
   assert.equal(UpdateStorePaymentMethodsSchema.safeParse({ online_payment_enabled: 'true' }).success, false);
   assert.equal(UpdateStorePaymentMethodsSchema.safeParse({ cod_enabled: true, mode: 'shared' }).success, false);
+});
+
+test('managed sandbox requires explicit availability, exact sandbox credentials and separate online activation', () => {
+  const input = { ...ready, accountMode: 'managedSandbox' as const, managedSandboxAvailable: true };
+  assert.equal(deriveStorePaymentSetup(input).connection, 'managed_sandbox');
+  assert.equal(deriveStorePaymentSetup(input).online_checkout_available, true);
+  assert.equal(deriveStorePaymentSetup({ ...input, onlineRequested: false }).online_checkout_available, false);
+  for (const change of [{ managedSandboxAvailable: false }, { credentialVerified: false },
+    { environment: 'live' as const }, { credentialsUsable: false }]) {
+    assert.equal(deriveStorePaymentSetup({ ...input, ...change }).can_enable_online, false);
+  }
+  assert.deepEqual(SaveStorePaymentConfigSchema.parse({ connection: 'managed_sandbox' }), { connection: 'managed_sandbox' });
+  for (const extra of [{ key_id: 'injected-key' }, { key_secret: 'injected-secret' }, { test_mode: false },
+    { provider_account_id: 'acct_injected' }, { online_payment_enabled: true }]) {
+    assert.equal(SaveStorePaymentConfigSchema.safeParse({ connection: 'managed_sandbox', ...extra }).success, false);
+  }
 });

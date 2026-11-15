@@ -5,7 +5,7 @@ import Link from 'next/link';
 import type { StoreModel } from '@letbuyy/tenant-core';
 import type { FooterSettings, ThemeSettings, BlockModel } from '@letbuyy/theme-engine';
 import { resolveStoreHref } from '@/lib/store-paths';
-import { Mail, Instagram, Facebook, Twitter, Youtube, Heart, MessageCircle, Send } from '@letbuyy/ui';
+import { Mail, Phone, Globe, Instagram, Facebook, Twitter, Youtube, Heart, MessageCircle, Send } from '@letbuyy/ui';
 
 interface DynamicFooterProps {
     store: StoreModel;
@@ -47,7 +47,14 @@ export default function DynamicFooter({ store, settings, blocks = [] }: DynamicF
     const youtubeUrl = settings?.youtubeUrl || '';
 
     // Contact email
-    const contactEmail = settings?.contactEmail || 'help@letbuyy.com';
+    const savedContactEmail = settings?.contactEmail?.trim() || '';
+    // Older generated themes contained a LetBuyy support placeholder. It is
+    // never a merchant contact and must not mask an opted-in merchant address.
+    const contactEmail = savedContactEmail.toLowerCase() === 'help@letbuyy.com'
+        ? store.publicContact?.email || ''
+        : savedContactEmail || store.publicContact?.email || '';
+    const contactPhone = settings?.contactPhone || store.publicContact?.phone || '';
+    const contactWebsite = store.publicContact?.website || '';
 
     const footerBlockLinks = blocks
         .filter((block) => block.type === 'footerLink' && block.isVisible !== false)
@@ -191,7 +198,7 @@ export default function DynamicFooter({ store, settings, blocks = [] }: DynamicF
                     )}
 
                     {/* Contact */}
-                    <div>
+                    {(contactEmail || contactPhone || contactWebsite) && <div>
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -202,13 +209,21 @@ export default function DynamicFooter({ store, settings, blocks = [] }: DynamicF
                                 Contact
                             </h4>
                             <ul className="space-y-2">
-                                <li className="flex items-center gap-2 text-sm footer-text-muted">
+                                {contactEmail && <li className="flex items-center gap-2 text-sm footer-text-muted">
                                     <Mail size={14} style={{ color: theme.primaryColor }} />
-                                    <span>{contactEmail}</span>
-                                </li>
+                                    <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+                                </li>}
+                                {contactPhone && <li className="flex items-center gap-2 text-sm footer-text-muted">
+                                    <Phone size={14} style={{ color: theme.primaryColor }} />
+                                    <a href={`tel:${contactPhone}`}>{contactPhone}</a>
+                                </li>}
+                                {contactWebsite && <li className="flex items-center gap-2 text-sm footer-text-muted">
+                                    <Globe size={14} style={{ color: theme.primaryColor }} />
+                                    <a href={contactWebsite} rel="noopener noreferrer">Website</a>
+                                </li>}
                             </ul>
                         </motion.div>
-                    </div>
+                    </div>}
                 </div>
 
                 {/* Bottom Bar */}

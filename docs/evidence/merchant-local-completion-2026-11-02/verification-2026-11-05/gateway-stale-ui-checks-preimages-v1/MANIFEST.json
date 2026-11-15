@@ -1,0 +1,18 @@
+[
+  {
+    "path": "services/api-gateway/src/__tests__/analytics-comparison.test.ts",
+    "sha256": "1833c944799196a8cddc0847d65368cbbae70d8b5922354e88a1d0f0acec4133"
+  },
+  {
+    "path": "services/api-gateway/src/__tests__/analytics-live.test.ts",
+    "sha256": "4b52d08f9d4297e8173cfba580a444f897242c4690c5731fba370f31e5dfc534"
+  },
+  {
+    "path": "services/api-gateway/src/__tests__/mobile-export.test.ts",
+    "sha256": "a76caf82abed573c28d21faaace91c63082538df084d8a65b6d745944095bcdc"
+  },
+  {
+    "path": "services/api-gateway/src/__tests__/storefront-session-analytics.test.ts",
+    "sha256": "8b14a85956f67adc711caf860d880faa8ab4765632e2f76eb377222f91ab6b02"
+  }
+]

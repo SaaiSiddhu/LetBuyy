@@ -1106,12 +1106,14 @@ try {
           // client generation without depending on a hidden tab surviving the
           // Identity navigation; the mutation itself still traverses the real BFF.
           const staleReviewDraftPage = await linkContext.newPage();
+          // Mount/pageshow may both read the session. Bound the synthetic cache
+          // to draft preparation, then restore real reads before the write.
           await staleReviewDraftPage.route('**/api/buyer-auth/session', route => route.fulfill({
             status: 200,
             contentType: 'application/json',
             headers: { 'cache-control': 'no-store' },
             body: JSON.stringify(buyerASessionSnapshot),
-          }), { times: 1 });
+          }));
           await staleReviewDraftPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/product/${PRICE_HISTORY_PRODUCT_ID}`, { waitUntil: 'domcontentloaded' });
           await staleReviewDraftPage.getByRole('heading', { name: PRICE_HISTORY_PRODUCT_NAME }).waitFor({ state: 'visible', timeout: 15_000 });
           await staleReviewDraftPage.getByRole('button', { name: 'Write a Review' }).click();
@@ -1121,6 +1123,7 @@ try {
           await staleReviewForm.locator('textarea[placeholder="Share your experience with this product..."]').fill('This draft belongs to buyer A.');
           await staleReviewForm.locator('button').nth(4).click();
           runtimeProgress('buyer-a-review-draft-loaded-from-cached-session');
+          await staleReviewDraftPage.unroute('**/api/buyer-auth/session');
           const currentReviewBuyer = await staleReviewDraftPage.evaluate(async () => {
             const response = await fetch('/api/buyer-auth/session', { cache: 'no-store' });
             return { status: response.status, buyer: (await response.json().catch(() => null))?.buyer };
@@ -1152,7 +1155,7 @@ try {
               contentType: 'application/json',
               headers: { 'cache-control': 'no-store' },
               body: JSON.stringify(buyerASessionSnapshot),
-            }), { times: 1 });
+            }));
             await staleWishlistPage.route('**/api/buyer/wishlist', route => {
               if (route.request().method() !== 'GET') return route.fallback();
               return route.fulfill({
@@ -1165,6 +1168,7 @@ try {
             await staleWishlistPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/product/${STALE_WISHLIST_PRODUCT_ID}`, { waitUntil: 'domcontentloaded' });
             await staleWishlistPage.getByRole('heading', { name: 'Synthetic Stale Wishlist Product' }).waitFor({ state: 'visible', timeout: 15_000 });
             await staleWishlistPage.getByRole('button', { name: 'Remove from wishlist' }).waitFor({ state: 'visible', timeout: 10_000 });
+            await staleWishlistPage.unroute('**/api/buyer-auth/session');
             runtimeProgress('stale-wishlist-delete-waiter-registering');
             const staleWishlistDeletePromise = staleWishlistPage.waitForResponse(response => new URL(response.url()).pathname === '/api/buyer/wishlist'
               && response.request().method() === 'DELETE', { timeout: 15_000 });

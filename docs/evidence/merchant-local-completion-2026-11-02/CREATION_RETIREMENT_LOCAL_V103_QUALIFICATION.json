@@ -1,0 +1,35 @@
+{
+  "at": "2026-11-08T08:41:51.742485+00:00",
+  "source_sha256": "23ed7b54ec793bf87949a3b90dd175918ca6b709f152ceb3cc14a108eb145147",
+  "core_inputs": 8525,
+  "scope": "Approved source/local implementation, synthetic verification and debug builds; no hosted release",
+  "fixed": "Catalog-specific sorted immutable create input supports Code options/specifications; security command policy untouched",
+  "source103_gates": {
+    "Flutter": 1787,
+    "analysis": 0,
+    "focused_creation_transport": 20,
+    "Code_owned_API": 5,
+    "governance": {
+      "pass": 114,
+      "NA": 1,
+      "report": "verification-2026-11-05/merchant-creation-retirement-v103-governance-v2-report.json"
+    }
+  },
+  "identical_backend_web_inputs_evidence": "verification-2026-11-05/source103-backend-contract-input-equivalence.json;102product106/web63/inventory16/cart21/tenant2/retired-cart1 remain scoped to unchanged consumed inputs",
+  "historical_bounded_native102": {
+    "Android134": "PASS e70ef7247567",
+    "iOS133": "PASS81e0152fda73",
+    "proof": "creation/original-key replay/web135/native retirement/history retained and web/native readback; no whole-feature acceptance"
+  },
+  "current_native103": {
+    "Android136": "PASS 0cfa8ce40f6b; current Code-axis source103",
+    "iOS137": "PASS 26b14bbf700c; Auth ENOSPC build failed before UI, identical immutable retry PASS, create/retire PASS, cleanup empty and Shutdown restored",
+    "compiled_buyer": "PASS 75deb1788eef; 1compound compiled full Merchant/CoreLiquid/buyer regression, 298.9s, cleanup empty"
+  },
+  "source_frozen": false,
+  "whole_features_accepted": 0,
+  "host9002": "Never contacted",
+  "release": "None",
+  "source_readback": "All8525inputs unchanged after native136/137 and compiled buyer103b",
+  "next_confirmed_work": "Catalog availability display/filter/sort; parent stock0 vs live variant3; real-screen regressions both fail before repair"
+}

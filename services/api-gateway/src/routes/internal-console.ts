@@ -26,6 +26,7 @@ import internalConsoleApprovalsRouter from './internal-console/approvals';
 import platformJobsRouter from './operations/platform-jobs';
 import consoleOperationsOncallRouter from './internal-console/operations-oncall';
 import consoleRuntimeCommandHistoryRouter from './internal-console/operations-runtime-commands';
+import consoleKycEvidenceRouter from './internal-console/kyc-evidence';
 import {
     dayBounds,
     daysAgo,
@@ -132,6 +133,7 @@ router.route('/trust-safety',trustSafetyRouter);
 router.route('/developers', internalConsoleDevelopersRouter);
 router.route('/compliance', internalConsoleComplianceRouter);
 router.route('/money', internalConsoleMoneyRouter);
+router.route('/kyc', consoleKycEvidenceRouter);
 router.route('/platform-jobs', platformJobsRouter);
 router.route('/operations', consoleOperationsOncallRouter);
 router.route('/operations', consoleRuntimeCommandHistoryRouter);

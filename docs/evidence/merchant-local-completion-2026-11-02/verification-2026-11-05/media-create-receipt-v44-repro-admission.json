@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-06T17:59:07.801858+00:00",
+  "source_manifest": "merchant-kyc-receipt-source-v44",
+  "source_sha256": "4d0884bd1d999e12271b2ee11c026a08977a7a509d2e00a4508ee1c3bfc21372",
+  "test": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/media-create-receipt-source39-repro.postgres.test.ts",
+  "test_sha256": "4c79d8fcc77ea3e9dda91aa54e38bd1ad6149779a45300da0432459093784003",
+  "status": "ADMITTED_LOCAL_REPRO_NOT_PREJUDGED",
+  "boundaries": "Actual compiled Worker + isolated PG/PostgREST + localR2. One positive control and3 failure/type invariants. No native/hosted/provider claim. No new production changes during run."
+}

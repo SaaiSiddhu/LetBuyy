@@ -1,0 +1,774 @@
+diff --git a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart b/apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart
+index cfacc33bb..886085b25 100644
+--- a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart
++++ b/apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart
+@@ -294,55 +294,58 @@ class _KycScreenState extends State<KycScreen> {
+         service.captureRequestContext() == sdkContext;
+     setState(() => _referenceOpen = true);
+     try {
+-      final recorded = await showLetbuyyFormSheet<bool>(
+-        context: context,
+-        isDismissible: false,
+-        builder: (dialogContext) => _ReferenceDialog(
+-          stores: stores,
+-          service: service,
+-          documentTypes: _documentTitles,
+-          initialType: _documentTitles.containsKey(originalType)
+-              ? originalType!
+-              : 'business_pan',
+-          initialReference:
+-              savedInput?['document_number_last4'] as String? ?? '',
+-          lockInput: savedInput != null,
+-          isCurrent: current,
+-          record: (type, digits, file) async {
+-            if (!current()) throw _changedContext();
+-            final selection = context.read<NativeMediaSelection?>();
+-            final selected = XFile(file.path);
+-            if (selection != null)
+-              await selection.bindInput(selected, {
+-                'document_type': type,
+-                'reference': digits,
+-                'transport':
+-                    service.pendingUploadTransport ??
+-                    (service.overview?['india_direct_upload_available'] == true
+-                        ? 'india'
+-                        : 'private'),
+-              });
+-            final operationKey = selection?.operationKeyForFile(
+-              selected,
+-              'kyc-upload',
+-            );
+-            final selectionKey = selection?.claimUpload(selected);
+-            try {
+-              await service.uploadDocument(
+-                storeId: storeId,
+-                documentType: type,
+-                documentNumberLast4: digits,
+-                file: file,
+-                selectionKey: operationKey,
+-                options: ApiRequestOptions(expectedContextVersion: sdkContext),
++      final recorded = await Navigator.of(context).push<bool>(
++        MaterialPageRoute(
++          builder: (dialogContext) => _ReferenceDialog(
++            stores: stores,
++            service: service,
++            documentTypes: _documentTitles,
++            initialType: _documentTitles.containsKey(originalType)
++                ? originalType!
++                : 'business_pan',
++            initialReference:
++                savedInput?['document_number_last4'] as String? ?? '',
++            lockInput: savedInput != null,
++            isCurrent: current,
++            record: (type, digits, file) async {
++              if (!current()) throw _changedContext();
++              final selection = context.read<NativeMediaSelection?>();
++              final selected = XFile(file.path);
++              if (selection != null)
++                await selection.bindInput(selected, {
++                  'document_type': type,
++                  'reference': digits,
++                  'transport':
++                      service.pendingUploadTransport ??
++                      (service.overview?['india_direct_upload_available'] ==
++                              true
++                          ? 'india'
++                          : 'private'),
++                });
++              final operationKey = selection?.operationKeyForFile(
++                selected,
++                'kyc-upload',
+               );
+-              await selection?.completeKey(selectionKey);
+-            } finally {
+-              selection?.releaseUpload(selectionKey);
+-            }
+-            if (!current()) throw _changedContext();
+-          },
+-          pickDocumentPhoto: widget.pickDocumentPhoto,
++              final selectionKey = selection?.claimUpload(selected);
++              try {
++                await service.uploadDocument(
++                  storeId: storeId,
++                  documentType: type,
++                  documentNumberLast4: digits,
++                  file: file,
++                  selectionKey: operationKey,
++                  options: ApiRequestOptions(
++                    expectedContextVersion: sdkContext,
++                  ),
++                );
++                await selection?.completeKey(selectionKey);
++              } finally {
++                selection?.releaseUpload(selectionKey);
++              }
++              if (!current()) throw _changedContext();
++            },
++            pickDocumentPhoto: widget.pickDocumentPhoto,
++          ),
+         ),
+       );
+       if (!mounted) return;
+@@ -394,6 +397,7 @@ class _KycScreenState extends State<KycScreen> {
+       ),
+       floatingActionButton: canAddDocument
+           ? FloatingActionButton.extended(
++              heroTag: null,
+               onPressed: _referenceOpen ? null : () => _showReferenceDialog(),
+               icon: const Icon(Icons.edit_note),
+               label: const Text('Add document'),
+@@ -944,117 +948,148 @@ class _ReferenceDialogState extends State<_ReferenceDialog> {
+       if (!widget.isCurrent() ||
+           !identical(stores, widget.stores) ||
+           !identical(service, widget.service)) {
+-        return LetbuyyFormSheet(
++        return LetbuyyEditorScaffold(
+           title: 'Store access changed',
+-          actions: [
+-            TextButton(
+-              onPressed: () => completeLetbuyySurface(context),
+-              child: const Text('Close'),
++          hasChanges: false,
++          actions: Row(
++            mainAxisAlignment: MainAxisAlignment.end,
++            children: [
++              TextButton(
++                onPressed: () => completeLetbuyySurface(context),
++                child: const Text('Close'),
++              ),
++            ],
++          ),
++          body: const Padding(
++            padding: EdgeInsets.all(16),
++            child: Text(
++              'Close and reopen verification for the current account and store.',
+             ),
+-          ],
+-          child: const Text(
+-            'Close and reopen verification for the current account and store.',
+           ),
+         );
+       }
+-      return LetbuyyFormSheet(
++      return LetbuyyEditorScaffold(
+         title: 'Upload verification document',
+-        canDismiss: !_saving,
+-        actions: [
+-          TextButton(
+-            onPressed: _saving
+-                ? null
+-                : () => completeLetbuyySurface(context, _received),
+-            child: const Text('Close'),
+-          ),
+-          FilledButton(
+-            onPressed: _saving || _received ? null : _record,
+-            child: _saving
+-                ? const SizedBox(
+-                    width: 20,
+-                    height: 20,
+-                    child: CircularProgressIndicator(strokeWidth: 2),
+-                  )
+-                : const Text('Upload document'),
+-          ),
+-        ],
+-        child: Column(
+-          mainAxisSize: MainAxisSize.min,
++        hasChanges:
++            !_received &&
++            (_file != null ||
++                _digits.text != widget.initialReference ||
++                _type != widget.initialType),
++        currentHasChanges: () =>
++            !_received &&
++            (_file != null ||
++                _digits.text != widget.initialReference ||
++                _type != widget.initialType),
++        isBusy: _saving,
++        currentIsBusy: () => _saving,
++        discardTitle: 'Leave verification upload?',
++        discardMessage:
++            'Unsent reference edits will be discarded. Any saved upload and file remain available for recovery.',
++        discardLabel: 'Leave upload',
++        actions: OverflowBar(
++          alignment: MainAxisAlignment.end,
++          spacing: 12,
++          overflowSpacing: 12,
+           children: [
+-            const Text(
+-              'Choose a clear photo of your document (JPEG or PNG, under 5 MB). Upload is private and still requires provider review.',
+-            ),
+-            const SizedBox(height: 16),
+-            LetbuyyChoiceField<String>(
+-              value: _type,
+-              label: 'Document type',
+-              choices: widget.documentTypes.entries
+-                  .map(
+-                    (entry) =>
+-                        LetbuyyChoice(value: entry.key, label: entry.value),
+-                  )
+-                  .toList(),
+-              onChanged: _saving || _received || widget.lockInput
++            TextButton(
++              onPressed: _saving
+                   ? null
+-                  : (value) {
+-                      setState(() {
+-                        _type = value;
+-                        _file = null;
+-                      });
+-                    },
++                  : () => dismissLetbuyySurface(context, _received),
++              child: const Text('Close'),
+             ),
+-            const SizedBox(height: 12),
+-            CustomTextField(
+-              controller: _digits,
+-              enabled: !_saving && !_received && !widget.lockInput,
+-              maxLength: 4,
+-              label: 'Reference',
+-              helperText: 'Final 2–4 characters',
+-              textCapitalization: TextCapitalization.characters,
++            FilledButton(
++              onPressed: _saving || _received ? null : _record,
++              child: _saving
++                  ? const SizedBox(
++                      width: 20,
++                      height: 20,
++                      child: CircularProgressIndicator(strokeWidth: 2),
++                    )
++                  : const Text('Upload document'),
+             ),
+-            OutlinedButton.icon(
+-              onPressed: _saving || _received
+-                  ? null
+-                  : () async {
+-                      final selected = await pickMerchantMedia(
+-                        context,
+-                        source: ImageSource.gallery,
+-                        purpose: 'private-kyc-$_type',
+-                        maxBytes: 5 * 1024 * 1024,
+-                        draft: {
+-                          'document_type': _type,
+-                          'reference': _digits.text.trim(),
+-                          'operation': 'kyc-upload',
+-                          'operation_key': widget.service.pendingUploadKey,
+-                        },
+-                        pick: () =>
+-                            widget.pickDocumentPhoto?.call() ??
+-                            ImagePicker().pickImage(
+-                              source: ImageSource.gallery,
+-                              imageQuality: 90,
+-                            ),
+-                      );
+-                      if (mounted &&
+-                          widget.isCurrent() &&
+-                          isLetbuyySurfaceCurrent(context) &&
+-                          selected != null)
++          ],
++        ),
++        body: SingleChildScrollView(
++          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
++          padding: const EdgeInsets.all(16),
++          child: Column(
++            crossAxisAlignment: CrossAxisAlignment.stretch,
++            children: [
++              const Text(
++                'Choose a clear photo of your document (JPEG or PNG, under 5 MB). Upload is private and still requires provider review.',
++              ),
++              const SizedBox(height: 16),
++              LetbuyyChoiceField<String>(
++                value: _type,
++                label: 'Document type',
++                choices: widget.documentTypes.entries
++                    .map(
++                      (entry) =>
++                          LetbuyyChoice(value: entry.key, label: entry.value),
++                    )
++                    .toList(),
++                onChanged: _saving || _received || widget.lockInput
++                    ? null
++                    : (value) {
+                         setState(() {
+-                          _file = selected;
+-                          final saved = context
+-                              .read<NativeMediaSelection>()
+-                              .draftForFile(selected);
+-                          final reference = saved['reference'];
+-                          if (reference is String) _digits.text = reference;
++                          _type = value;
++                          _file = null;
+                         });
+-                    },
+-              icon: const Icon(Icons.upload_file),
+-              label: Text(_file?.name ?? 'Choose document photo'),
+-            ),
+-            if (_error != null)
+-              Text(_error!, key: const ValueKey('reference-error')),
+-            if (_received)
+-              const Text('Document received. Close to refresh status.'),
+-          ],
++                      },
++              ),
++              const SizedBox(height: 12),
++              CustomTextField(
++                controller: _digits,
++                enabled: !_saving && !_received && !widget.lockInput,
++                maxLength: 4,
++                label: 'Reference',
++                helperText: 'Final 2–4 characters',
++                textCapitalization: TextCapitalization.characters,
++              ),
++              OutlinedButton.icon(
++                onPressed: _saving || _received
++                    ? null
++                    : () async {
++                        final selected = await pickMerchantMedia(
++                          context,
++                          source: ImageSource.gallery,
++                          purpose: 'private-kyc-$_type',
++                          maxBytes: 5 * 1024 * 1024,
++                          draft: {
++                            'document_type': _type,
++                            'reference': _digits.text.trim(),
++                            'operation': 'kyc-upload',
++                            'operation_key': widget.service.pendingUploadKey,
++                          },
++                          pick: () =>
++                              widget.pickDocumentPhoto?.call() ??
++                              ImagePicker().pickImage(
++                                source: ImageSource.gallery,
++                                imageQuality: 90,
++                              ),
++                        );
++                        if (mounted &&
++                            widget.isCurrent() &&
++                            isLetbuyySurfaceCurrent(context) &&
++                            selected != null)
++                          setState(() {
++                            _file = selected;
++                            final saved = context
++                                .read<NativeMediaSelection>()
++                                .draftForFile(selected);
++                            final reference = saved['reference'];
++                            if (reference is String) _digits.text = reference;
++                          });
++                      },
++                icon: const Icon(Icons.upload_file),
++                label: Text(_file?.name ?? 'Choose document photo'),
++              ),
++              if (_error != null)
++                Text(_error!, key: const ValueKey('reference-error')),
++              if (_received)
++                const Text('Document received. Close to refresh status.'),
++            ],
++          ),
+         ),
+       );
+     },
+diff --git a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/lib/screens/products/product_form_screen.dart b/apps/merchant/mobile/lib/screens/products/product_form_screen.dart
+index 00dadb8a6..713e20127 100644
+--- a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/lib/screens/products/product_form_screen.dart
++++ b/apps/merchant/mobile/lib/screens/products/product_form_screen.dart
+@@ -17,6 +17,8 @@ import '../../widgets/shared/merchant_option_picker.dart';
+ import '../../widgets/shared/merchant_store_view.dart';
+ import '../content/media_library_screen.dart';
+ 
++part 'product_options_editor.dart';
++
+ /// Product Form Screen for Store Builder
+ /// Simplified product creation with essential fields
+ class ProductFormScreen extends StatefulWidget {
+@@ -65,6 +67,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+   // Form Data
+   List<String> _images = [];
+   List<_ProductVariantDraft> _variants = [];
++  List<ProductOptionContract> _productOptions = [];
+   Map<String, String> _specifications = {};
+   bool _isFeatured = false;
+ 
+@@ -178,6 +181,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+       _seoTitleController.text = '${p['seo_title'] ?? ''}';
+       _seoDescriptionController.text = '${p['seo_description'] ?? ''}';
+       _images = List.from(p.images);
++      _productOptions = List.of(p.options);
+       _variants = p.variants
+           .map(_ProductVariantDraft.fromContract)
+           .toList(growable: true);
+@@ -765,6 +769,12 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+         ),
+       ),
+       const SizedBox(height: 12),
++      OutlinedButton.icon(
++        onPressed: _showProductOptions,
++        icon: const Icon(Icons.tune),
++        label: const Text('Manage product options'),
++      ),
++      const SizedBox(height: 12),
+       OutlinedButton.icon(
+         onPressed: _showAddVariantSheet,
+         icon: const Icon(Icons.add),
+@@ -819,7 +829,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+                   label: Text('Edit $variantLabel variant'),
+                 ),
+                 TextButton.icon(
+-                  onPressed: () => setState(() => _variants.removeAt(index)),
++                  onPressed: () => _removeVariant(index, variant),
+                   icon: const Icon(Icons.delete_outline),
+                   label: Text('Delete $variantLabel variant'),
+                 ),
+@@ -838,6 +848,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+       MaterialPageRoute(
+         builder: (_) => _guardFormSurface(
+           _VariantDraftSheet(
++            combinationAvailable: _combinationAvailable,
+             optionNames: _productOptionPayloads()
+                 .map((option) => option['name'] as String)
+                 .toList(),
+@@ -849,6 +860,51 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+     setState(() => _variants.add(draft));
+   }
+ 
++  Future<void> _showProductOptions() async {
++    if (!_canOpenDraft) return;
++    final result = await Navigator.of(context).push<_ProductOptionsDraft>(
++      MaterialPageRoute(
++        builder: (_) => _guardFormSurface(
++          _ProductOptionsEditor(
++            initial: _ProductOptionsDraft(
++              _productOptionPayloads()
++                  .map(ProductOptionContract.fromJson)
++                  .toList(),
++              List.of(_variants),
++              double.tryParse(_salePriceController.text) ?? 0,
++            ),
++            isCurrent: () => _formCurrent,
++            guard: _guardFormSurface,
++          ),
++        ),
++      ),
++    );
++    if (!_formCurrent || result == null) return;
++    setState(() {
++      _productOptions = result.options;
++      _variants = result.rows;
++    });
++  }
++
++  Future<void> _removeVariant(int index, _ProductVariantDraft variant) async {
++    if (!_canOpenDraft) return;
++    final confirmed = await showLetbuyyConfirmation(
++      context: context,
++      title: 'Remove ${variant.title} variant?',
++      message:
++          'This changes your product draft. Save the product to apply it. Variants with stock reservations or retained history may need to stay available.',
++      confirmLabel: 'Remove variant',
++      destructive: true,
++      guard: (_, child) => _guardFormSurface(child),
++    );
++    if (!_formCurrent ||
++        !confirmed ||
++        index >= _variants.length ||
++        !identical(_variants[index], variant))
++      return;
++    setState(() => _variants.removeAt(index));
++  }
++
+   Future<void> _showEditVariantSheet(
+     int index,
+     _ProductVariantDraft variant,
+@@ -860,6 +916,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+         builder: (_) => _guardFormSurface(
+           _VariantDraftSheet(
+             variant: variant,
++            combinationAvailable: (options) =>
++                _combinationAvailable(options, except: index),
+             optionNames: _productOptionPayloads()
+                 .map((option) => option['name'] as String)
+                 .toList(),
+@@ -880,6 +938,16 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+     setState(() => _barcodeController.text = barcode.trim());
+   }
+ 
++  bool _combinationAvailable(Map<String, String> values, {int? except}) =>
++      !_variants.indexed.any(
++        (entry) =>
++            entry.$1 != except &&
++            entry.$2.optionValues.length == values.length &&
++            values.entries.every(
++              (value) => entry.$2.optionValues[value.key] == value.value,
++            ),
++      );
++
+   Widget _buildDetailsStep() => Column(
+     crossAxisAlignment: CrossAxisAlignment.stretch,
+     children: [
+@@ -1085,6 +1153,20 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+       return;
+     }
+ 
++    if (widget.product == null && _pendingEdit == null) {
++      try {
++        _ProductOptionsDraft(
++          _productOptionPayloads().map(ProductOptionContract.fromJson).toList(),
++          _variants,
++          double.tryParse(_salePriceController.text) ?? 0,
++        ).validate();
++      } on _OptionProblem catch (error) {
++        ScaffoldMessenger.of(
++          context,
++        ).showSnackBar(SnackBar(content: Text(error.message)));
++        return;
++      }
++    }
+     setState(() => _isLoading = true);
+ 
+     try {
+@@ -1250,6 +1332,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+       final variantsUnchanged =
+           jsonEncode(_variantPayloads()) ==
+           jsonEncode(intent.fields['variants']);
++      final optionsUnchanged =
++          jsonEncode(_productOptionPayloads()) ==
++          jsonEncode(intent.fields['product_options']);
+       final needsIdentityReview =
+           !variantsUnchanged &&
+           (intent.fields['variants'] as List).any(
+@@ -1257,6 +1342,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+           );
+       setState(() {
+         _baseProduct = ProductContract.fromJson(result);
++        if (optionsUnchanged) _productOptions = List.of(_baseProduct!.options);
+         if (variantsUnchanged) {
+           _variants = _baseProduct!.variants
+               .map(_ProductVariantDraft.fromContract)
+@@ -1329,6 +1415,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+     'featured': _isFeatured,
+     'specifications': _specifications,
+     'variants': _variantPayloads(),
++    'product_options': _productOptionPayloads(),
+   });
+ 
+   Map<String, dynamic> _editFields() => {
+@@ -1369,7 +1456,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
+ 
+   List<Map<String, dynamic>> _productOptionPayloads() {
+     final values = <String, Set<String>>{};
+-    for (final option in _baseProduct?.options ?? <ProductOptionContract>[]) {
++    for (final option in _productOptions) {
+       values[option.name] = option.values.toSet();
+     }
+     for (final variant in _variants) {
+@@ -1504,6 +1591,23 @@ class _ProductVariantDraft {
+   final String optionName;
+   final String optionValue;
+ 
++  _ProductVariantDraft withOptions(
++    Map<String, String> options, {
++    String? title,
++  }) => _ProductVariantDraft(
++    id: id,
++    title: title ?? this.title,
++    sku: sku,
++    barcode: barcode,
++    price: price,
++    writePrice: writePrice,
++    comparePrice: comparePrice,
++    stock: stock,
++    otherOptions: Map.of(options),
++    optionName: options.keys.firstOrNull ?? '',
++    optionValue: options.values.firstOrNull ?? '',
++  );
++
+   Map<String, String> get optionValues => {
+     ...otherOptions,
+     if (optionName.isNotEmpty && optionValue.isNotEmpty)
+@@ -1523,16 +1627,22 @@ class _ProductVariantDraft {
+ }
+ 
+ class _VariantDraftSheet extends StatefulWidget {
+-  const _VariantDraftSheet({this.variant, this.optionNames = const []});
++  const _VariantDraftSheet({
++    this.variant,
++    this.optionNames = const [],
++    this.combinationAvailable,
++  });
+ 
+   final _ProductVariantDraft? variant;
+   final List<String> optionNames;
++  final bool Function(Map<String, String>)? combinationAvailable;
+ 
+   @override
+   State<_VariantDraftSheet> createState() => _VariantDraftSheetState();
+ }
+ 
+ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
++  String? _combinationError;
+   final _formKey = GlobalKey<FormState>();
+   final _titleController = TextEditingController();
+   final _skuController = TextEditingController();
+@@ -1562,7 +1672,8 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
+     _priceController.text = variant?.price?.toString() ?? '';
+     _comparePriceController.text = variant?.comparePrice?.toString() ?? '';
+     _stockController.text = variant?.stock.toString() ?? '0';
+-    _optionNameController.text = variant?.optionName ?? 'Size';
++    _optionNameController.text =
++        variant?.optionName ?? widget.optionNames.firstOrNull ?? 'Size';
+     _optionValueController.text = variant?.optionValue ?? '';
+     for (final entry
+         in variant?.otherOptions.entries ?? <MapEntry<String, String>>[]) {
+@@ -1573,6 +1684,15 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
+         existing: true,
+       ));
+     }
++    if (variant == null) {
++      for (final name in widget.optionNames.skip(1)) {
++        _additionalOptions.add((
++          name: TextEditingController(text: name),
++          value: TextEditingController(),
++          existing: true,
++        ));
++      }
++    }
+     _initialSignature = _draftSignature();
+     for (final controller in _controllers) {
+       controller.addListener(_changed);
+@@ -1604,6 +1724,20 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
+ 
+   void _save() {
+     if (!_formKey.currentState!.validate()) return;
++    final values = {
++      if (_optionNameController.text.trim().isNotEmpty &&
++          _optionValueController.text.trim().isNotEmpty)
++        _optionNameController.text.trim(): _optionValueController.text.trim(),
++      for (final option in _additionalOptions)
++        option.name.text.trim(): option.value.text.trim(),
++    };
++    if (widget.combinationAvailable?.call(values) == false) {
++      setState(
++        () => _combinationError =
++            'A variant with these option values already exists.',
++      );
++      return;
++    }
+     final title = _titleController.text.trim().isEmpty
+         ? [
+             _optionValueController.text.trim(),
+@@ -1613,10 +1747,7 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
+     Navigator.of(context).pop(
+       _ProductVariantDraft(
+         id: widget.variant?.id,
+-        otherOptions: {
+-          for (final option in _additionalOptions)
+-            option.name.text.trim(): option.value.text.trim(),
+-        },
++        otherOptions: values,
+         title: title,
+         sku: _skuController.text.trim(),
+         barcode: _barcodeController.text.trim(),
+@@ -1749,10 +1880,14 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
+           child: Column(
+             crossAxisAlignment: CrossAxisAlignment.stretch,
+             children: [
++              if (_combinationError != null)
++                Semantics(liveRegion: true, child: Text(_combinationError!)),
+               CustomTextField(
+                 controller: _optionNameController,
+                 label: 'Option',
+-                readOnly: widget.variant?.optionName.isNotEmpty == true,
++                readOnly:
++                    widget.variant?.optionName.isNotEmpty == true ||
++                    widget.optionNames.contains(_optionNameController.text),
+                 helperText: widget.variant == null
+                     ? null
+                     : 'Saved option names belong to the whole product.',
+diff --git a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/test/kyc_upload_layout_test.dart b/apps/merchant/mobile/test/kyc_upload_layout_test.dart
+index aeb37a88f..92ff75fd5 100644
+--- a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/test/kyc_upload_layout_test.dart
++++ b/apps/merchant/mobile/test/kyc_upload_layout_test.dart
+@@ -135,6 +135,10 @@ void main() {
+           await tester.pumpAndSettle();
+           await tester.tap(find.widgetWithText(TextButton, 'Close'));
+           await tester.pumpAndSettle();
++          expect(find.text('Leave verification upload?'), findsOneWidget);
++          expect(find.text('Upload verification document'), findsOneWidget);
++          await tester.tap(find.text('Leave upload'));
++          await tester.pumpAndSettle();
+           expect(find.text('Upload verification document'), findsNothing);
+           expect(fixture.calls.where((r) => r.method == 'POST'), isEmpty);
+         },
+diff --git a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/test/mobile_services_test.dart b/apps/merchant/mobile/test/mobile_services_test.dart
+index 331f337be..299ffca60 100644
+--- a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/test/mobile_services_test.dart
++++ b/apps/merchant/mobile/test/mobile_services_test.dart
+@@ -9658,6 +9658,9 @@ void main() {
+       expect(deleteSemantics.hasAction(SemanticsAction.tap), isTrue);
+       await tester.tap(delete);
+       await tester.pumpAndSettle();
++      expect(find.text('Remove Small variant?'), findsOneWidget);
++      await tester.tap(find.text('Remove variant'));
++      await tester.pumpAndSettle();
+       expect(
+         find.text(
+           'No variants yet. The product will use the base price and stock.',
+diff --git a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/test/product_edit_concurrency_test.dart b/apps/merchant/mobile/test/product_edit_concurrency_test.dart
+index 485a57f67..ce9d1216f 100644
+--- a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/apps/merchant/mobile/test/product_edit_concurrency_test.dart
++++ b/apps/merchant/mobile/test/product_edit_concurrency_test.dart
+@@ -229,6 +229,10 @@ void main() {
+       await tester.tap(find.widgetWithText(OutlinedButton, 'Add variant'));
+       await tester.pumpAndSettle();
+       await tester.enterText(find.widgetWithText(TextFormField, 'Value'), 'L');
++      await tester.enterText(
++        find.widgetWithText(TextFormField, 'Option 2 value'),
++        'Blue',
++      );
+       await tester.enterText(
+         find.widgetWithText(TextFormField, 'Price'),
+         '100',
+diff --git a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts b/services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts
+index 442acd3a9..4d2a4a110 100644
+--- a/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu/services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts
++++ b/services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts
+@@ -735,3 +735,42 @@ test('direct guarded app_tenant status pairs preserve three states and reject ma
+         assert.deepEqual(snapshot(id),before,JSON.stringify(fields));
+     }
+ });
++
++
++test('product-wide option rename, extension and reorder preserve canonical identity, stock and reservation history', async()=>{
++    const id=product(),vid=variant(id);
++    psql(`BEGIN;SELECT set_config('app.site_id','${site.siteId}',true);
++      SELECT reserve_inventory('${site.siteId}','${id}','${vid}','${site.locationId}',2,1200,'syn-option-reservation-${id}','${owner}');COMMIT;`);
++    const level=psql(`SELECT jsonb_build_object('id',id,'available',available,'reserved',reserved)::text FROM inventory_levels WHERE variant_id='${vid}';`);
++    const reservations=psql(`SELECT jsonb_agg(to_jsonb(t))::text FROM inventory_reservations t WHERE variant_id='${vid}';`);
++    const rows=[
++      {axes:[{name:'Fit',position:0,values:['M']}],values:{Fit:'M'},title:'M'},
++      {axes:[{name:'Fit',position:0,values:['M']},{name:'Colour',position:1,values:['Blue']}],values:{Fit:'M',Colour:'Blue'},title:'M / Blue'},
++      {axes:[{name:'Colour',position:0,values:['Navy']},{name:'Fit',position:1,values:['M']}],values:{Colour:'Navy',Fit:'M'},title:'Navy / M'},
++      {axes:[{name:'Fit',position:0,values:['M']}],values:{Fit:'M'},title:'M'},
++    ];
++    for(const row of rows) {
++      const result=await patch(id,{product_options:row.axes,variants:[{id:vid,title:row.title,sku:`SYN-${vid}`,price:100,stock:3,options:row.values}]});
++      assert.equal(result.status,200,result.text);
++      assert.equal(result.json?.data.variants[0].id,vid);
++      assert.deepEqual(result.json?.data.variants[0].options,row.values);
++      assert.equal(psql(`SELECT jsonb_build_object('id',id,'available',available,'reserved',reserved)::text FROM inventory_levels WHERE variant_id='${vid}';`),level);
++      assert.equal(psql(`SELECT jsonb_agg(to_jsonb(t))::text FROM inventory_reservations t WHERE variant_id='${vid}';`),reservations);
++      assert.equal(psql(`SELECT count(*) FROM product_variants WHERE product_id='${id}';`),'1');
++    }
++});
++
++test('mobile option-value addition creates only a new zero-stock variant and retries exactly once', async()=>{
++    const id=product(),vid=variant(id),expected=version(id),key=crypto.randomUUID();
++    const level=psql(`SELECT jsonb_build_object('id',id,'available',available,'reserved',reserved)::text FROM inventory_levels WHERE variant_id='${vid}';`);
++    const changes={product_options:[{name:'Size',position:0,values:['M','L']}],variants:[
++      {id:vid,title:'M',sku:`SYN-${vid}`,price:100,stock:5,options:{Size:'M'}},
++      {title:'L',price:100,stock:0,options:{Size:'L'}},
++    ]};
++    const result=await patch(id,changes,expected,key);assert.equal(result.status,200,result.text);
++    const rows=result.json?.data.variants;assert.equal(rows.length,2);assert.equal(rows[0].id,vid);
++    assert.notEqual(rows[1].id,vid);assert.equal(rows[1].stock,0);
++    assert.equal(psql(`SELECT jsonb_build_object('id',id,'available',available,'reserved',reserved)::text FROM inventory_levels WHERE variant_id='${vid}';`),level);
++    const committed=snapshot(id),replay=await patch(id,changes,expected,key);
++    assert.deepEqual(replay.json,result.json);assert.deepEqual(snapshot(id),committed);
++});

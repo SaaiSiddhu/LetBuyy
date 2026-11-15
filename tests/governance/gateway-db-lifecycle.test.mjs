@@ -15,7 +15,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -59,7 +59,6 @@ const labeled = (label) => ({
 const resourcesOfRun = (runId) => labeled(`${RUN_LABEL}=${runId}`);
 const resourcesOfOwner = (pid) => labeled(`${OWNER_LABEL}=${pid}`);
 const everything = (found) => [...found.containers, ...found.networks, ...found.volumes];
-const allFixtureResources = () => everything(labeled(FIXTURE_LABEL)).sort();
 
 async function until(predicate, timeoutMs, what) {
     const deadline = Date.now() + timeoutMs;
@@ -188,9 +187,9 @@ test('a red suite, a skipping suite and an empty suite are all red; a suite star
         'd-skips.test.ts': SKIPPING,
         'e-empty.test.ts': EMPTY,
     });
-    const before = allFixtureResources();
     try {
-        const result = run(['--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--json', '--timeout', '120']);
+        // This case checks its own run's cleanup. The separate reaper case checks stale runs.
+        const result = run(['--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--no-reap', '--json', '--timeout', '120']);
         const report = JSON.parse(result.stdout);
         const by = Object.fromEntries(report.results.map((entry) => [entry.name, entry]));
 
@@ -224,7 +223,6 @@ test('a red suite, a skipping suite and an empty suite are all red; a suite star
 
         // Asked of docker itself, by the run's own label.
         assert.deepEqual(everything(resourcesOfRun(report.runId)), []);
-        assert.deepEqual(allFixtureResources(), before, 'the set of fixture resources on this machine is what it was before the run');
     } finally {
         rmSync(dir, { recursive: true, force: true });
     }
@@ -232,7 +230,6 @@ test('a red suite, a skipping suite and an empty suite are all red; a suite star
 
 test('a REST image that is not present is an infrastructure error naming the image, and nothing at all is created', { skip: needsDocker }, () => {
     const dir = suiteDir({ 'a-writes.test.ts': WRITES });
-    const before = allFixtureResources();
     try {
         const result = run(['--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--json'], {
             env: { ...process.env, LETBUYY_EXECUTABLE_REST_IMAGE: 'letbuyy-no-such-image.invalid/postgrest:0', CI: '', LETBUYY_EXECUTABLE_PULL: '' },
@@ -241,7 +238,7 @@ test('a REST image that is not present is an infrastructure error naming the ima
         const report = JSON.parse(result.stdout);
         assert.match(report.infrastructureError, /letbuyy-no-such-image\.invalid\/postgrest:0 is not present locally; this runner does not pull an image on its own/);
         assert.deepEqual(report.cleanupFailures, []);
-        assert.deepEqual(allFixtureResources(), before, 'not even a network or a volume was created');
+        assert.deepEqual(everything(resourcesOfRun(report.runId)), [], 'this refused run created no container, network or volume');
     } finally {
         rmSync(dir, { recursive: true, force: true });
     }
@@ -250,14 +247,14 @@ test('a REST image that is not present is an infrastructure error naming the ima
 test('a cluster name that is already taken is an infrastructure error; what this run created is removed and what it did not create survives', { skip: needsDocker }, () => {
     const dir = suiteDir({ 'a-writes.test.ts': WRITES });
     const taken = `letbuyy-exec-lifecycle-taken-${process.pid}-${Date.now().toString(36)}`;
-    const before = allFixtureResources();
     try {
         assert.equal(docker(['run', '-d', '--pull', 'never', '--name', taken, '--entrypoint', 'sleep', PG_IMAGE, '300']).status, 0);
         const result = run(['--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--json', '--container', taken]);
         assert.equal(result.status, 70);
-        assert.match(JSON.parse(result.stdout).infrastructureError, /docker run failed/);
+        const report = JSON.parse(result.stdout);
+        assert.match(report.infrastructureError, /docker run failed/);
         assert.equal(docker(['ps', '-a', '--filter', `name=^/${taken}$`, '--format', '{{.Names}}']).stdout.trim(), taken, 'a container this run did not create is never removed');
-        assert.deepEqual(allFixtureResources(), before, 'the network and the volume this run had already created are gone again');
+        assert.deepEqual(everything(resourcesOfRun(report.runId)), [], 'this run removed the network and volume it created');
     } finally {
         docker(['rm', '-f', '-v', taken]);
         rmSync(dir, { recursive: true, force: true });
@@ -266,15 +263,40 @@ test('a cluster name that is already taken is an infrastructure error; what this
 
 async function startSleeper(marker, extraArgs = []) {
     const dir = suiteDir({ 'a-sleeps.test.ts': SLEEPING });
+    const diagnostics = join(mkdtempSync(join(tmpdir(), 'letbuyy-gateway-startup-')), 'runner.log');
     const child = spawn(process.execPath, [runner, '--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--timeout', '150', ...extraArgs], {
         cwd: repoRoot,
-        stdio: 'ignore',
+        stdio: ['ignore', 'pipe', 'pipe'],
         env: { ...process.env, LETBUYY_TEST_MARKER: marker },
     });
+    for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => appendFileSync(diagnostics, chunk));
     const closed = new Promise((resolve) => child.on('close', (code, signal) => resolve({ code, signal })));
-    await until(() => existsSync(marker), 240_000, 'the suite to hold its owned database');
+    try {
+        await until(() => {
+            if (existsSync(marker)) return true;
+            assert.equal(child.exitCode, null, `owned runner exited before readiness; diagnostics: ${diagnostics}`);
+            assert.equal(child.signalCode, null, `owned runner stopped before readiness; diagnostics: ${diagnostics}`);
+            return false;
+        }, 240_000, `the suite to hold its owned database; diagnostics: ${diagnostics}`);
+    } catch (error) {
+        // A failed startup has no returned owner handle. Close it here so the
+        // caller's finally block cannot accidentally leave a live fixture behind.
+        if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
+        await closed;
+        rmSync(dir, { recursive: true, force: true });
+        throw error;
+    }
     return { dir, child, closed, suitePid: Number(readFileSync(marker, 'utf8')) };
 }
+
+test('failed sleeper startup reports its runner diagnostics and ends before the readiness deadline', { skip: needsDocker }, async () => {
+    const markers = mkdtempSync(join(tmpdir(), 'letbuyy-gateway-marker-'));
+    try {
+        await assert.rejects(startSleeper(join(markers, 'never.pid'), ['--container', 'not-an-owned-container']),
+            /owned runner exited before readiness; diagnostics:/);
+        assert.equal(existsSync(join(markers, 'never.pid')), false);
+    } finally { rmSync(markers, { recursive: true, force: true }); }
+});
 
 test('SIGTERM mid-suite: exit 143, the suite\'s whole process group is gone, and every resource of the run is removed', { skip: needsDocker }, async () => {
     const markerDir = mkdtempSync(join(tmpdir(), 'letbuyy-gateway-marker-'));

@@ -1,7 +1,7 @@
 // LB-11 follow-up — gift-card refund restore. Redemption debits the gift-card ledger at
 // checkout, but no path wrote the offsetting 'refund_credit' the balance projection already
 // counts, so refunding/cancelling a gift-card-funded order destroyed the customer's balance.
-// Migration 174 + the order cancel/refund transition close that gap, idempotently.
+// Migration 174 and the governed cancellation/refund paths close that gap, idempotently.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -40,11 +40,16 @@ test('LB-11 restore: it is idempotent (no double credit)', () => {
   assert.match(migration, /IF FOUND THEN/);
 });
 
-test('LB-11 restore: the order cancel/refund transition invokes it (best-effort, idempotent)', () => {
+test('LB-11 restore: cancellation detects an RPC failure and verified full refund uses the recovery helper', () => {
   assert.match(orders, /db\.rpc\('restore_gift_card_on_refund'/);
-  const handler = orders.slice(orders.indexOf("router.patch('/:id'"));
-  assert.match(handler, /body\.status === 'cancelled' \|\| body\.status === 'refunded'[\s\S]{0,900}restore_gift_card_on_refund/);
-  assert.match(handler, /gift_card_refund_restore_failed/);
+  const cancel = orders.slice(orders.indexOf("router.patch('/:id'"), orders.indexOf("router.post('/:id/refund/complete'"));
+  assert.match(cancel, /body\.status === 'cancelled'[\s\S]*?db\.rpc\('restore_gift_card_on_refund'/);
+  assert.match(cancel, /if \(restoreError\) throw new Error\('Gift-card restoration unavailable'\)/);
+  assert.match(cancel, /gift_card_refund_restore_failed/);
+  const complete = orders.slice(orders.indexOf("router.post('/:id/refund/complete'"));
+  assert.match(complete, /await tryRestoreGiftCardForReversedOrder\(db,\{\.\.\.tenant,orderId\},data\.order\)/);
+  const cod = read('services/api-gateway/src/routes/order-risk.ts');
+  assert.match(cod, /if \(restoreError\) throw new Error\('Gift-card restoration unavailable'\)/);
 });
 
 test('LB-11 restore: the canonical refund function is NOT modified by 174', () => {

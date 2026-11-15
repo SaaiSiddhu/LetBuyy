@@ -1,22 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readFileSync } from 'node:fs';
-import ts from 'typescript';
-import { CreateProductSchema } from '@letbuyy/commerce-core';
+import {parseCsv, productCsvInputs} from '../execution/product-csv-input';
 
-// Execute the route's actual private codec with the actual product contract.
-// Storage, mutation and live scope acceptance are proved in the owned lane.
-const source = readFileSync(new URL('../routes/export.ts', import.meta.url), 'utf8');
-const start = source.includes('class CsvInputError') ? source.indexOf('class CsvInputError') : source.indexOf('function parseCsv(');
-const end = source.indexOf('function base64Url', start);
-assert.ok(start >= 0 && end > start);
-const constant = source.match(/const PRODUCT_IMPORT_MAX_ROWS = \d+;/)?.[0];
-assert.ok(constant);
-const code = ts.transpileModule(constant + '\n' + source.slice(start, end), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
-const codec = new Function('CreateProductSchema', code + '\nreturn {parseCsv, productCsvInputs: typeof productCsvInputs === "function" ? productCsvInputs : undefined};')(CreateProductSchema) as {
-    parseCsv(text: string): string[][];
-    productCsvInputs(text: string, store: string): ReturnType<typeof CreateProductSchema.parse>[];
-};
+const codec={parseCsv,productCsvInputs};
 const store = '11111111-1111-4111-8111-111111111111';
 
 test('quoted CSV records retain Unicode, embedded CR/LF, escaped quotes and field whitespace', () => {
@@ -57,4 +43,11 @@ test('all product rows satisfy the canonical schema before a job is queued', () 
 
 test('ambiguous columns and excess fields are refused', () => {
     for (const text of ['name,NAME\nA,B', 'price\n10', 'name\nA,B']) assert.throws(() => codec.productCsvInputs(text, store), /column|fields/);
+});
+
+test('unsupported columns and missing names cannot silently lose source meaning',()=>{
+    assert.throws(()=>codec.productCsvInputs('name,compare_price\nItem,99',store),/unsupported columns/);
+    assert.throws(()=>codec.productCsvInputs('name,price\n,10',store),/invalid name/);
+    assert.throws(()=>codec.productCsvInputs('name\nInvalid\u0000',store),/invalid text/);
+    assert.throws(()=>codec.productCsvInputs('name\nInvalid\ud800',store),/invalid text/);
 });

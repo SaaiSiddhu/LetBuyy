@@ -10,8 +10,8 @@ interface TrustPill {
 
 const TRUST_PILLS: TrustPill[] = [
     { label: '0% Commission Forever' },
-    { label: 'UPI Native' },
-    { label: 'GST Ready' },
+    { label: 'Merchant-owned payments' },
+    { label: 'GST invoices for registered stores' },
     { label: 'AI Powered' },
     { label: 'Built for Bharat' },
 ]
@@ -19,7 +19,7 @@ const TRUST_PILLS: TrustPill[] = [
 const COMMERCE_METRICS = [
     { value: '0%',       label: 'Commission Forever' },
     { value: '14-Day',   label: 'Free Trial' },
-    { value: 'UPI+COD',  label: 'Payment Ready' },
+    { value: 'Own PSP',  label: 'Online payments' },
     { value: 'Commerce', label: 'OS Platform' },
 ]
 

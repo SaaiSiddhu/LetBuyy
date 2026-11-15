@@ -1,495 +1,178 @@
 'use client'
+import {useState,useRef,useLayoutEffect,useEffect}from 'react'
+import {useParams}from 'next/navigation'
+import {Page,PageHeader,Card,Section,Button,Input,Textarea,Banner,Badge,Table,ConfirmDialog,Checkbox}from '@letbuyy/ui'
+import {ProductCategoryPageSchema,ProductCategoryReadSchema,confirmProductCategoryCommandResult,
+ ProductCategoryCommandIntentSchema,type ProductCategoryRead,type ProductCategoryPage,type ProductCategoryCommandIntent}from '@letbuyy/shared-types'
+import {useMerchantSecurityContext}from '@/components/security/MerchantSecurityContext'
+import {readCategoryCommand,retainCategoryCommand,clearCategoryCommand,withCategoryExecution,type SavedCategoryCommand}from '@/lib/products/category-command-journal'
 
-import { useReadRequest } from '@/lib/api/use-read-request'
-
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useParams } from 'next/navigation'
-import { Button, Input, Table,
-    Badge,
-    Banner,
-    Card,
-    ConfirmDialog,
-    LayoutGrid,
-    Package,
-    Page,
-    PageHeader,
-    Pencil,
-    Plus,
-    SaveBar,
-    Section,
-    Skeleton,
-    Tag,
-    Textarea,
-    Trash2,
-    useToast,
-} from '@letbuyy/ui'
-import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
-
-type SaveState = 'saved' | 'unsaved' | 'saving'
-
-interface Category {
-    id: string
-    name: string
-    slug: string
-    description: string | null
-    image_url: string | null
-    parent_id: string | null
-    display_order: number
-    is_visible: boolean
-    product_count: number
-    created_at: string
+type Form={name:string;slug:string;description:string;image:string;parent:ProductCategoryRead|null;order:string;visible:boolean}
+const blank=():Form=>({name:'',slug:'',description:'',image:'',parent:null,order:'0',visible:true})
+const message=(e:unknown)=>e instanceof Error?(e.name==='ZodError'?'The category response could not be confirmed. Keep the original request.':e.message):'The original category outcome could not be confirmed.'
+export default function CategoriesPage(){
+ const {store}=useParams<{store:string}>(),scope=useMerchantSecurityContext(store)
+ if(!scope.siteId)return <Page><Banner variant="critical">Reload the selected store before opening categories.</Banner></Page>
+ return <Workspace key={`${scope.actorId}:${scope.siteId}`} store={store} actorId={scope.actorId} siteId={scope.siteId}/>
 }
-
-interface CategoryFormData {
-    name: string
-    slug: string
-    description: string
-}
-
-const blankCategoryForm: CategoryFormData = {
-    name: '',
-    slug: '',
-    description: '',
-}
-
-function getErrorMessage(payload: unknown, fallback: string) {
-    if (payload && typeof payload === 'object') {
-        const error = (payload as { error?: unknown }).error
-        if (typeof error === 'string') return error
-        if (error && typeof error === 'object') {
-            const message = (error as { message?: unknown }).message
-            if (typeof message === 'string') return message
-        }
-        const message = (payload as { message?: unknown }).message
-        if (typeof message === 'string') return message
-    }
-
-    return fallback
-}
-
-function generateSlug(name: string) {
-    return name
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
-}
-
-export default function CategoriesPage() {
-    const { store } = useParams<{ store: string }>()
-    const { notify } = useToast()
-    const [categories, setCategories] = useState<Category[]>([])
-    const [loading, setLoading] = useState(true)
-    const [loadError, setLoadError] = useState<string | null>(null)
-    const [showForm, setShowForm] = useState(false)
-    const [editingId, setEditingId] = useState<string | null>(null)
-    const [formData, setFormData] = useState<CategoryFormData>(blankCategoryForm)
-    const [formError, setFormError] = useState<string | null>(null)
-    const [formSaveState, setFormSaveState] = useState<SaveState>('saved')
-    const [saving, setSaving] = useState(false)
-    const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null)
-    const [deleting, setDeleting] = useState(false)
-
-    const beginRead = useReadRequest(store)
-    const loadCategories = useCallback(async (options?: { quiet?: boolean }) => {
-        const request = beginRead()
-        if (!options?.quiet) setLoading(true)
-        setLoadError(null)
-
-        try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/categories`, {
-                cache: 'no-store', signal: request.signal,
-            })
-            const payload = await response.json().catch(() => null)
-            if (!request.isCurrent()) return
-
-            if (!response.ok) {
-                throw new Error(getErrorMessage(payload, 'Unable to load categories'))
-            }
-
-            setCategories(Array.isArray(payload?.data) ? payload.data : [])
-        } catch (error) {
-            if (!request.isCurrent()) return
-            const message = error instanceof Error ? error.message : 'Unable to load categories'
-            setCategories([])
-            setLoadError(message)
-            notify({
-                title: 'Categories could not load',
-                description: message,
-                variant: 'critical',
-            })
-        } finally {
-            if (request.isCurrent()) setLoading(false)
-        }
-    }, [beginRead, notify, store])
-
-    useEffect(() => {
-        void loadCategories()
-    }, [loadCategories])
-
-    const categoryStats = useMemo(() => ({
-        total: categories.length,
-        visible: categories.filter((category) => category.is_visible).length,
-        products: categories.reduce((total, category) => total + (category.product_count || 0), 0),
-    }), [categories])
-
-    const updateForm = useCallback(<Key extends keyof CategoryFormData>(key: Key, value: CategoryFormData[Key]) => {
-        setFormData((current) => ({
-            ...current,
-            [key]: value,
-            ...(key === 'name' && !current.slug ? { slug: generateSlug(value) } : {}),
-        }))
-        setFormSaveState('unsaved')
-        setFormError(null)
-    }, [])
-
-    const startCreate = useCallback(() => {
-        setShowForm(true)
-        setEditingId(null)
-        setFormData(blankCategoryForm)
-        setFormError(null)
-        setFormSaveState('unsaved')
-    }, [])
-
-    const startEdit = useCallback((category: Category) => {
-        setShowForm(true)
-        setEditingId(category.id)
-        setFormData({
-            name: category.name,
-            slug: category.slug,
-            description: category.description || '',
-        })
-        setFormError(null)
-        setFormSaveState('saved')
-    }, [])
-
-    const closeForm = useCallback(() => {
-        setShowForm(false)
-        setEditingId(null)
-        setFormData(blankCategoryForm)
-        setFormError(null)
-        setFormSaveState('saved')
-    }, [])
-
-    const handleSave = useCallback(async () => {
-        const name = formData.name.trim()
-        const slug = formData.slug.trim() || generateSlug(name)
-
-        if (!name) {
-            setFormError('Enter a category name before saving.')
-            setFormSaveState('unsaved')
-            return
-        }
-
-        setSaving(true)
-        setFormSaveState('saving')
-        setFormError(null)
-
-        try {
-            const response = await fetch(
-                editingId
-                    ? `/api/stores/${encodeURIComponent(store)}/categories/${encodeURIComponent(editingId)}`
-                    : `/api/stores/${encodeURIComponent(store)}/categories`,
-                {
-                    method: editingId ? 'PATCH' : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name,
-                        slug,
-                        description: formData.description.trim() || null,
-                    }),
-                },
-            )
-            const payload = await response.json().catch(() => null)
-
-            if (!response.ok) {
-                throw new Error(getErrorMessage(payload, 'Unable to save category'))
-            }
-
-            notify({
-                title: editingId ? 'Category updated' : 'Category created',
-                description: `${name} is ready for product organization.`,
-                variant: 'success',
-            })
-            closeForm()
-            await loadCategories({ quiet: true })
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unable to save category'
-            setFormError(message)
-            setFormSaveState('unsaved')
-            notify({
-                title: 'Could not save category',
-                description: message,
-                variant: 'critical',
-            })
-        } finally {
-            setSaving(false)
-        }
-    }, [closeForm, editingId, formData, loadCategories, notify, store])
-
-    const handleDelete = useCallback(async () => {
-        if (!categoryToDelete || deleting) return
-        setDeleting(true)
-
-        try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/categories/${encodeURIComponent(categoryToDelete.id)}`, {
-                method: 'DELETE',
-            })
-            const payload = await response.json().catch(() => null)
-
-            if (!response.ok) {
-                throw new Error(getErrorMessage(payload, 'Unable to delete category'))
-            }
-
-            notify({
-                title: 'Category deleted',
-                description: `${categoryToDelete.name} was removed from your catalog taxonomy.`,
-                variant: 'success',
-            })
-            setCategoryToDelete(null)
-            await loadCategories({ quiet: true })
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unable to delete category'
-            notify({
-                title: 'Could not delete category',
-                description: message,
-                variant: 'critical',
-            })
-        } finally {
-            setDeleting(false)
-        }
-    }, [categoryToDelete, deleting, loadCategories, notify, store])
-
-    if (loading) {
-        return (
-            <Page>
-                <PageHeader identity="collections"
-                    recipe="index"
-                    title="Categories"
-                    description="Organize products into shopper-friendly catalog groups."
-                    breadcrumbs={[{ label: 'Products' }, { label: 'Categories' }]}
-                />
-                <Card>
-                    <Section title="Category list">
-                        <Skeleton variant="table" lines={5} />
-                    </Section>
-                </Card>
-            </Page>
-        )
-    }
-
-    return (
-        <Page>
-            <PageHeader identity="collections"
-                recipe="index"
-                title="Categories"
-                description="Organize products into shopper-friendly catalog groups."
-                breadcrumbs={[{ label: 'Products' }, { label: 'Categories' }]}
-                primaryAction={{
-                    label: 'Add category',
-                    onClick: startCreate,
-                    icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                }}
-            />
-
-            {loadError && (
-                <Banner
-                    variant="critical"
-                    title="Categories could not load"
-                    action={<Button variant="secondary" onClick={() => void loadCategories()}>Retry</Button>}
-                >
-                    {loadError}
-                </Banner>
-            )}
-
-            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                <Card>
-                    <Section>
-                        <div className="flex items-start gap-[var(--lb-space-3)]">
-                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                                <LayoutGrid className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                            </span>
-                            <div>
-                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Total categories</p>
-                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{categoryStats.total}</p>
-                            </div>
-                        </div>
-                    </Section>
-                </Card>
-                <Card>
-                    <Section>
-                        <div className="flex items-start gap-[var(--lb-space-3)]">
-                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                                <Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                            </span>
-                            <div>
-                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Visible categories</p>
-                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{categoryStats.visible}</p>
-                            </div>
-                        </div>
-                    </Section>
-                </Card>
-                <Card>
-                    <Section>
-                        <div className="flex items-start gap-[var(--lb-space-3)]">
-                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                                <Package className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                            </span>
-                            <div>
-                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Assigned products</p>
-                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{categoryStats.products}</p>
-                            </div>
-                        </div>
-                    </Section>
-                </Card>
-            </div>
-
-            {showForm && (
-                <Card>
-                    <Section
-                        title={editingId ? 'Edit category' : 'New category'}
-                        description="Name the collection, confirm its URL slug, and add optional internal context."
-                    >
-                        {formError && (
-                            <Banner variant="critical" title="Category could not be saved">
-                                {formError}
-                            </Banner>
-                        )}
-
-                        <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
-                            <Input
-                                label="Name"
-                                placeholder="Sneakers"
-                                value={formData.name}
-                                onChange={(event) => updateForm('name', event.target.value)}
-                            />
-                            <Input
-                                label="Slug"
-                                placeholder="sneakers"
-                                value={formData.slug || generateSlug(formData.name)}
-                                onChange={(event) => updateForm('slug', event.target.value)}
-                                helperText="Used in storefront category URLs."
-                            />
-                            <div className="md:col-span-2">
-                                <Textarea
-                                    label="Description"
-                                    placeholder="Optional shopper-facing summary"
-                                    value={formData.description}
-                                    onChange={(event) => updateForm('description', event.target.value)}
-                                    rows={3}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                            <Button
-                                loading={saving}
-                                disabled={!formData.name.trim()}
-                                onClick={() => void handleSave()}
-                            >
-                                {editingId ? 'Update category' : 'Create category'}
-                            </Button>
-                            <Button variant="secondary" onClick={closeForm} disabled={saving}>
-                                Cancel
-                            </Button>
-                        </div>
-                    </Section>
-                </Card>
-            )}
-
-            <Card>
-                <Section
-                    title="Category list"
-                    description="Review storefront visibility, product counts, and URL slugs."
-                >
-                    {categories.length === 0 && !showForm ? (
-                        <EmptyState scene="categories"
-                            icon={<LayoutGrid className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            title="No categories yet"
-                            body="Create categories to help shoppers browse your product catalog by intent, season, or collection."
-                            primaryAction={<Button onClick={startCreate}><Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Add category</Button>}
-                        />
-                    ) : categories.length > 0 ? (
-                        <div className="overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                            <Table tableClassName="w-full text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
-                                <thead className="bg-[var(--lb-color-surface-subdued)]">
-                                    <tr>
-                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Name</th>
-                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Slug</th>
-                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Products</th>
-                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Visibility</th>
-                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-[var(--lb-color-border)]">
-                                    {categories.map((category) => (
-                                        <tr key={category.id} className="hover:bg-[var(--lb-color-surface-subdued)]">
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
-                                                <div className="flex items-center gap-[var(--lb-space-3)]">
-                                                    <span className="flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] shrink-0 items-center justify-center rounded-[var(--lb-radius-md)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                                                        <Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                    </span>
-                                                    <span className="font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">{category.name}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">/{category.slug}</td>
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]">{category.product_count || 0}</td>
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
-                                                <Badge
-                                                    label={category.is_visible ? 'Visible' : 'Hidden'}
-                                                    variant={category.is_visible ? 'success' : 'default'}
-                                                />
-                                            </td>
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
-                                                <div className="flex justify-end gap-[var(--lb-space-2)]">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => startEdit(category)}
-                                                        aria-label={`Edit category ${category.name}`}
-                                                    >
-                                                        <Pencil className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => setCategoryToDelete(category)}
-                                                        aria-label={`Delete category ${category.name}`}
-                                                        className="text-[var(--lb-color-critical)]"
-                                                    >
-                                                        <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                        </div>
-                    ) : null}
-                </Section>
-            </Card>
-
-            <SaveBar
-                state={formSaveState}
-                onSave={() => void handleSave()}
-                onDiscard={closeForm}
-                saveLabel={editingId ? 'Update category' : 'Create category'}
-                discardLabel="Discard"
-            />
-
-            <ConfirmDialog
-                open={Boolean(categoryToDelete)}
-                title="Delete category?"
-                description={categoryToDelete ? `Delete ${categoryToDelete.name}? Products keep existing data, but shoppers will lose this catalog grouping.` : 'Delete this category?'}
-                confirmLabel={deleting ? 'Deleting...' : 'Delete category'}
-                cancelLabel="Keep category"
-                destructive
-                onConfirm={() => void handleDelete()}
-                onClose={() => {
-                    if (!deleting) setCategoryToDelete(null)
-                }}
-            />
-        </Page>
-    )
+function Workspace({store,actorId,siteId}:{store:string;actorId:string;siteId:string}){
+ const [page,setPage]=useState<ProductCategoryPage|null>(null),[pageNumber,setPageNumber]=useState(1),[search,setSearch]=useState('')
+ const [busy,setBusy]=useState(false),[error,setError]=useState<string|null>(null),[notice,setNotice]=useState<string|null>(null),[denied,setDenied]=useState(false)
+ const [pending,setPending]=useState<SavedCategoryCommand|null>(null),[reviewable,setReviewable]=useState(false)
+ const [editing,setEditing]=useState<ProductCategoryRead|null>(null),[form,setForm]=useState<Form|null>(null),[deleteRow,setDeleteRow]=useState<ProductCategoryRead|null>(null)
+ const [discard,setDiscard]=useState(false)
+ const [parents,setParents]=useState<ProductCategoryPage|null>(null),[parentSearch,setParentSearch]=useState(''),[parentPage,setParentPage]=useState(1)
+ const alive=useRef(false),inFlight=useRef(false),controller=useRef<AbortController|null>(null),securityEpoch=useRef(0),access=useRef(true)
+ useLayoutEffect(()=>{alive.current=true;return()=>{alive.current=false;controller.current?.abort()}},[])
+ const dirty=form!==null&&JSON.stringify([form.name,form.slug,form.description,form.image,form.parent?.id||null,form.order,form.visible])!==JSON.stringify(
+  [editing?.name||'',editing?.slug||'',editing?.description||'',editing?.image_url||'',editing?.parent_id||null,String(editing?.display_order??0),editing?.is_visible??true])
+ useEffect(()=>{
+  if(!dirty||pending)return
+  const prevent=(event:BeforeUnloadEvent)=>{event.preventDefault();event.returnValue=''}
+  window.addEventListener('beforeunload',prevent);return()=>window.removeEventListener('beforeunload',prevent)
+ },[dirty,pending])
+ function check(){if(!alive.current||!access.current)throw new Error('Account or store access changed. Reload this store.')}
+ function dependencies(){if(!navigator.locks)throw new Error('This browser cannot retain a category save safely. Use a browser with secure request locking.');return {storage:window.localStorage,locks:navigator.locks}}
+ async function request(query:string,method='GET',body?:unknown,key?:string){
+  check();const epoch=securityEpoch.current,captured=controller.current!
+  const response=await fetch(`/api/stores/${encodeURIComponent(store)}/categories${query}`,{method,cache:'no-store',
+   signal:AbortSignal.any([captured.signal,AbortSignal.timeout(20000)]),headers:{'X-LetBuyy-Merchant-Context':actorId,
+    ...(body?{'Content-Type':'application/json'}:{}),...(key?{'X-Idempotency-Key':key}:{})},...(body?{body:JSON.stringify(body)}:{})})
+  const value=await response.json().catch(()=>null);check()
+  if(response.status===401||response.status===403||(response.status===409&&value?.error?.code==='SESSION_CONTEXT_CHANGED')){
+   securityEpoch.current++;access.current=false;setDenied(true);setPage(null);setParents(null);setForm(null);setEditing(null)
+   throw new Error('Store access changed. Reload this store.')
+  }
+  if(controller.current!==captured||captured.signal.aborted||epoch!==securityEpoch.current)throw new Error('A newer access check superseded this request. Reload categories.')
+  if(!response.ok)throw Object.assign(new Error(value?.error?.message||'The category outcome could not be confirmed.'),{status:response.status,code:value?.error?.code})
+  return value
+ }
+ async function run(work:()=>Promise<void>){
+  if(inFlight.current||!alive.current||!access.current)return
+  inFlight.current=true;controller.current?.abort();controller.current=new AbortController();setBusy(true);setError(null);setNotice(null)
+  try{await work()}catch(e){if(alive.current)setError(message(e))}finally{inFlight.current=false;if(alive.current)setBusy(false)}
+ }
+ async function load(n=pageNumber,term=search){
+  const result=ProductCategoryPageSchema.parse(await request(`?page=${n}&limit=20&search=${encodeURIComponent(term)}`))
+  if(result.data.some(row=>row.store_id!==siteId)||result.meta.page!==n||result.meta.per_page!==20)throw new Error('Category page scope changed.')
+  check();setPage(result);setPageNumber(n)
+ }
+ async function refresh(){await run(async()=>{
+  const {storage,locks}=dependencies();setPending(await readCategoryCommand({actorId,siteId},storage,locks,check));setReviewable(false)
+  await load()
+ })}
+ useEffect(()=>{let retired=false;queueMicrotask(()=>{if(!retired)void refresh()});return()=>{retired=true}},[]) // One keyed actor/store lifetime.
+ async function send(){
+  const {storage,locks}=dependencies()
+  await withCategoryExecution({actorId,siteId},locks,check,async()=>{
+   const saved=await readCategoryCommand({actorId,siteId},storage,locks,check)
+   if(!saved){setPending(null);return}
+   setPending(saved);setReviewable(false)
+   const {operation,category_id:id,command}=saved.intent
+   let value:unknown
+   try{value=await request(id?`/${encodeURIComponent(id)}`:'',operation==='create'?'POST':operation==='update'?'PATCH':'DELETE',command,command.idempotency_key)}
+   catch(e){const reason=e as {status?:number;code?:string}
+    if(reason.status===400&&reason.code==='VALIDATION_ERROR'||reason.status===409&&['PRODUCT_CATEGORY_VERSION_CONFLICT','PRODUCT_CATEGORY_IN_USE','PRODUCT_CATEGORY_CONFLICT'].includes(reason.code||''))setReviewable(true)
+    throw e
+   }
+   const receipt=confirmProductCategoryCommandResult(saved.intent,(value as {data?:unknown})?.data)
+   if(receipt.store_id!==siteId||receipt.idempotency_key!==command.idempotency_key||receipt.operation!==operation||id&&receipt.id!==id
+    ||'version'in command&&receipt.version<=command.version)throw new Error('The original category acknowledgement changed.')
+   await clearCategoryCommand(saved,storage,locks,check);setPending(null);setReviewable(false);setForm(null);setEditing(null);setDeleteRow(null)
+   setNotice(operation==='delete'?'Category deleted.':`Category saved. ${receipt.affected_products} assigned products updated.`)
+  })
+  await load()
+ }
+ async function save(){await run(async()=>{
+  if(!form)return
+  const fields={name:form.name.trim(),...(form.slug.trim()?{slug:form.slug.trim()}:{}),description:form.description.trim()||null,
+   image_url:form.image.trim()||null,parent_id:form.parent?.id||null,display_order:Number(form.order),is_visible:form.visible}
+  const intent=ProductCategoryCommandIntentSchema.parse({operation:editing?'update':'create',category_id:editing?.id||null,
+   command:{...fields,store_id:siteId,idempotency_key:crypto.randomUUID(),...(editing?{version:editing.version}:{})}})
+  const {storage,locks}=dependencies();const saved=await retainCategoryCommand({actorId,siteId},intent,storage,locks,check);setPending(saved);await send()
+ })}
+ async function remove(){await run(async()=>{
+  if(!deleteRow)return
+  const intent:ProductCategoryCommandIntent={operation:'delete',category_id:deleteRow.id,
+   command:{store_id:siteId,idempotency_key:crypto.randomUUID(),version:deleteRow.version}}
+  const {storage,locks}=dependencies();setPending(await retainCategoryCommand({actorId,siteId},intent,storage,locks,check));setDeleteRow(null);await send()
+ })}
+ async function review(){await run(async()=>{
+  if(!reviewable)return
+  const {storage,locks}=dependencies()
+  await withCategoryExecution({actorId,siteId},locks,check,async()=>{
+   const saved=await readCategoryCommand({actorId,siteId},storage,locks,check);if(!saved||!pending||JSON.stringify(saved)!==JSON.stringify(pending))throw new Error('The saved request changed. Reload categories.')
+   const row=saved.intent.category_id?ProductCategoryReadSchema.parse((await request(`/${saved.intent.category_id}`)).data):null
+   if(row&&(row.id!==saved.intent.category_id||row.store_id!==siteId))throw new Error('The current category scope changed.')
+   // Only a definite rejection exposes this explicit review action. Unknown outcomes retain the original request.
+   await clearCategoryCommand(saved,storage,locks,check);setPending(null);setReviewable(false)
+   if(row)await open(row);else{setEditing(null);setForm(blank())}
+   setNotice('Current category loaded. Review every field before starting a new save.')
+  });await load()
+ })}
+ async function open(row?:ProductCategoryRead){
+  const current=row?ProductCategoryReadSchema.parse((await request(`/${row.id}`)).data):null
+  if(current&&(current.id!==row!.id||current.store_id!==siteId))throw new Error('The selected category changed.')
+  let parent:ProductCategoryRead|null=null
+  if(current?.parent_id){parent=ProductCategoryReadSchema.parse((await request(`/${current.parent_id}`)).data);if(parent.store_id!==siteId||parent.id!==current.parent_id)throw new Error('The parent category changed.')}
+  check();setEditing(current);setForm(current?{name:current.name,slug:current.slug,description:current.description||'',image:current.image_url||'',parent,order:String(current.display_order),visible:current.is_visible}:blank());setParents(null);setParentPage(1);setParentSearch('')
+ }
+ async function findParents(n=1){
+  const result=ProductCategoryPageSchema.parse(await request(`?page=${n}&limit=10&search=${encodeURIComponent(parentSearch)}`))
+  if(result.meta.page!==n||result.meta.per_page!==10||result.data.some(row=>row.store_id!==siteId))throw new Error('Parent category scope changed.')
+  setParents(result);setParentPage(n)
+ }
+ const disabled=busy||denied||!!pending
+ const listDisabled=disabled||form!==null
+ return <Page>
+  <PageHeader identity="collections" recipe="index" title="Categories" description="Organize the labels assigned to your products." breadcrumbs={[{label:'Products'},{label:'Categories'}]}
+   primaryAction={{label:'Add category',disabled:listDisabled,onClick:()=>{if(!listDisabled)void run(()=>open())}}}/>
+  {error&&<Banner variant="critical" title="Category action could not be confirmed">{error}</Banner>}
+  {notice&&<Banner variant="success">{notice}</Banner>}
+  {pending&&<Banner variant="warning" title="Saved category request needs recovery">
+   <p>Recover this original {pending.intent.operation} before making another category change.</p>
+   <Button disabled={busy||denied} onClick={()=>void run(send)}>Retry original category request</Button>
+   {reviewable&&<Button variant="secondary" disabled={busy||denied} onClick={()=>void review()}>Review current category after rejection</Button>}
+  </Banner>}
+  <Card><Section title="Category list" description={page?`${page.meta.total} categories. Counts below describe this page.`:'Category counts are unavailable until a read succeeds.'}>
+   <div className="flex flex-wrap gap-[var(--lb-space-3)]">
+    <Input label="Search categories" value={search} maxLength={200} disabled={busy||denied} onChange={e=>setSearch(e.target.value)}/>
+    <Button disabled={busy||denied} onClick={()=>void run(()=>load(1))}>Search</Button>
+    <Button variant="secondary" disabled={busy||denied} onClick={()=>void refresh()}>Refresh categories</Button>
+   </div>
+   {page&&<>
+    <Table><thead><tr><th>Name</th><th>Path</th><th>Products</th><th>Children</th><th>Metadata visibility</th><th>Actions</th></tr></thead>
+     <tbody>{page.data.map(row=><tr key={row.id}>
+      <td>{row.name}</td><td>{row.path}</td><td>{row.products_count}</td><td>{row.children_count}</td><td><Badge label={row.is_visible?'Visible':'Hidden'} variant={row.is_visible?'success':'default'}/></td>
+      <td><Button variant="ghost" disabled={listDisabled} onClick={()=>void run(()=>open(row))} aria-label={`Edit category ${row.name}`}>Edit</Button>
+       <Button variant="ghost" disabled={listDisabled} onClick={()=>setDeleteRow(row)} aria-label={`Delete category ${row.name}`}>Delete</Button></td>
+     </tr>)}</tbody></Table>
+    {page.data.length===0&&<p>No categories match this page.</p>}
+    <div className="flex gap-[var(--lb-space-3)]"><Button disabled={busy||denied||!page.meta.has_prev} onClick={()=>void run(()=>load(pageNumber-1))}>Previous categories</Button>
+     <span>Page {pageNumber} of {Math.max(1,page.meta.total_pages)}</span><Button disabled={busy||denied||!page.meta.has_next} onClick={()=>void run(()=>load(pageNumber+1))}>Next categories</Button></div>
+   </>}
+  </Section></Card>
+  {form&&<Card><Section title={editing?'Edit category':'New category'} description="Renaming a category updates assigned product labels together. Deleting requires moving its products and children first.">
+   <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+    <Input label="Name" maxLength={100} disabled={disabled} value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/>
+    <Input label="Slug" maxLength={100} disabled={disabled} value={form.slug} helperText="Leave blank to generate a slug when creating a category." onChange={e=>setForm({...form,slug:e.target.value})}/>
+    <Textarea label="Description" maxLength={500} disabled={disabled} value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/>
+    <Input label="Image URL" maxLength={2048} disabled={disabled} value={form.image} onChange={e=>setForm({...form,image:e.target.value})}/>
+    <Input label="Display order" type="number" min={0} max={2147483647} disabled={disabled} value={form.order} onChange={e=>setForm({...form,order:e.target.value})}/>
+    <Checkbox label="Visible category metadata" checked={form.visible} disabled={disabled} onChange={e=>setForm({...form,visible:e.target.checked})}/>
+   </div>
+   <p>Parent: {form.parent?.name||'Root category'}</p><Button variant="secondary" disabled={disabled} onClick={()=>setForm({...form,parent:null})}>Use root category</Button>
+   <Input label="Find parent category" value={parentSearch} disabled={disabled} onChange={e=>setParentSearch(e.target.value)}/>
+   <Button variant="secondary" disabled={disabled} onClick={()=>void run(()=>findParents())}>Find parent</Button>
+   {parents&&<div>{parents.data.filter(row=>row.id!==editing?.id).map(row=><Button key={row.id} variant="ghost" disabled={disabled} onClick={()=>setForm({...form,parent:row})}>{row.name}</Button>)}
+    <Button disabled={disabled||!parents.meta.has_prev} onClick={()=>void run(()=>findParents(parentPage-1))}>Previous parents</Button>
+    <Button disabled={disabled||!parents.meta.has_next} onClick={()=>void run(()=>findParents(parentPage+1))}>Next parents</Button></div>}
+   <div className="flex gap-[var(--lb-space-3)]"><Button disabled={disabled||!form.name.trim()||!form.order.trim()} onClick={()=>void save()}>{editing?'Update category':'Create category'}</Button>
+    <Button variant="secondary" disabled={disabled} onClick={()=>{if(dirty)setDiscard(true);else{setForm(null);setEditing(null)}}}>Discard category fields</Button></div>
+  </Section></Card>}
+  <ConfirmDialog open={!!deleteRow} title="Delete empty category?" description={deleteRow?`Delete ${deleteRow.name}? Move its products and child categories first.`:''} confirmLabel="Delete category" cancelLabel="Keep category" destructive
+   onConfirm={()=>{if(!disabled)void remove()}} onClose={()=>{if(!busy)setDeleteRow(null)}}/>
+  <ConfirmDialog open={discard} title="Discard unsaved category fields?" description="The fields in this form have not been saved." confirmLabel="Discard fields" cancelLabel="Keep editing" destructive
+   onConfirm={()=>{if(!disabled){setForm(null);setEditing(null);setDiscard(false)}}} onClose={()=>setDiscard(false)}/>
+ </Page>
 }

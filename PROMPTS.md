@@ -4,6 +4,7 @@ This registry is the single live index for prompt-class artifacts. Prompt files 
 
 | ID | Path | Class | Purpose | Rejected-thing reason |
 |---|---|---|---|---|
+| EXECUTED-THEME-EDITOR-INSERTION-20261102 | `docs/research/theme-editor-end-to-end-2026-10-30/IMPLEMENTATION_BLUEPRINT.md` | EXECUTED-PARTIAL-REFERENCE | Insertion and stable preview slice integrated; remaining analysis is preserved reference, not an automatic execution plan. | No new runtime or parallel renderer; current Constitution and explicit owner scope govern any continuation. |
 | EXECUTED-FOUNDATION-STEPUP | `docs/archive/research/CONVERGENCE_CLEANUP_2026_06_10/CODEX_FOUNDATION_STEPUP_MASTER_EXECUTION_PROMPT.md` | EXECUTED-DO-NOT-RERUN | Spent foundation stepup convergence procedure retained for evidence only. | Superseded by the final convergence execution prompt; must not remain canonical or be re-run. |
 | CANONICAL-FINAL-CONVERGENCE-EXECUTION | `docs/archive/audits/FINAL_TRUTH_AUDIT_2026_06_11/LETBUYY_FINAL_CONVERGENCE_CODEX_EXECUTION_PROMPT.md` | CANONICAL-EXECUTION | Final convergence program execution prompt for reality promotion, money unification, Liquid convergence, duplicate elimination, certification, and capability sequencing. | N/A |
 | CANONICAL-LAUNCH-READINESS-EXECUTION | `LAUNCH_READINESS_2026_06_12/LAUNCH_READINESS_CLAUDE_EXECUTION_PROMPT.md` | CANONICAL-EXECUTION | Launch Readiness Program execution prompt for Phase A–G repository-side work, perimeter housekeeping, seam closure support, and launch certification. Claude Sonnet 4.6 executor. | N/A |

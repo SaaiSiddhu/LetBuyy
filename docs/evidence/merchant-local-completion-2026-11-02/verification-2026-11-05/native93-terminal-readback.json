@@ -1,0 +1,13 @@
+{
+  "run_id": "fae004096db4",
+  "source": "source70",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261107-ttu3p4av",
+  "build": "PASS",
+  "native_ui_exit": 65,
+  "aggregate_exit": 1,
+  "normal_auth_accepted": false,
+  "failure": "Test expected app WebView after consent; app tree showed only waiting/cancel. Before credential entry. Video and system browser presentation need observer qualification, not an auth or media success.",
+  "source_unchanged_after_teardown": true,
+  "source_readback": "merchant-media-recovery-source-v70.readback.json",
+  "whole_features_accepted": 0
+}

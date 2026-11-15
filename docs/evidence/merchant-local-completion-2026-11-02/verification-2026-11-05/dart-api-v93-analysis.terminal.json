@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-08T03:54:06.104338+00:00",
+  "supervisor_pid": 40510,
+  "source": "merchant-variant-kyc-source-v93",
+  "source_sha256": "fbde9fe512840dcdc0d84ace8143a461aafbdfdac65fd14b626f2187234c10d7",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/dart",
+    "analyze",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/packages/dart/api_client"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 40581,
+  "exit_code": 0,
+  "finished_at": "2026-11-08T03:54:07.375497+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "fbde9fe512840dcdc0d84ace8143a461aafbdfdac65fd14b626f2187234c10d7"
+}

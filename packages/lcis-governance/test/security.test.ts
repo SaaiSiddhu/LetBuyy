@@ -185,10 +185,14 @@ test('findDangerousPolicies: deterministic', () => {
 
 // ── 3. findPublicMutations ────────────────────────────────────────────────────
 
-test('findPublicMutations returns exactly 4 findings (the real non-secDef money fns)', () => {
-  // Real data: 4 money functions with securityDefiner=false
+test('findPublicMutations preserves the reviewed non-secDef money-function inventory', () => {
+  // This structural heuristic includes a read-only invoker analytics function;
+  // a finding is a review signal, not proof of public EXECUTE or mutation.
   const findings = svc.findPublicMutations();
-  assert.equal(findings.length, 4, '4 money fns without SECURITY DEFINER');
+  assert.deepEqual(findings.map(f => f.subject).sort(), [
+    'enforce_ledger_transaction_balance', 'ledger_balance_breaks',
+    'merchant_daily_revenue_history', 'sync_order_items_site_id', 'sync_order_items_store_id',
+  ]);
 });
 
 test('findPublicMutations: sync_order_items_store_id is in results (confirmed from probe)', () => {
@@ -503,9 +507,9 @@ test('generateSecurityDriftReport: dangerous-policy count = 34 in byKind', () =>
   assert.equal(report.byKind['dangerous-policy'], 34, 'byKind.dangerous-policy = 34');
 });
 
-test('generateSecurityDriftReport: public-mutation count = 4 in byKind', () => {
+test('generateSecurityDriftReport preserves every structural public-mutation finding in byKind', () => {
   const report = svc.generateSecurityDriftReport();
-  assert.equal(report.byKind['public-mutation'], 4, 'byKind.public-mutation = 4');
+  assert.equal(report.byKind['public-mutation'], svc.findPublicMutations().length);
 });
 
 test('generateSecurityDriftReport: summary mentions structural-only limitation', () => {

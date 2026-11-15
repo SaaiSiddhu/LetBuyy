@@ -1,8 +1,9 @@
 'use client'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
     Section,
@@ -11,6 +12,7 @@ import {
     Banner,
     Button,
     CheckCircle2,
+    ConfirmDialog,
     IndianRupee,
     Info,
     Input,
@@ -23,6 +25,8 @@ import { BillingPaymentMethods, type BillingMandateView } from '@/components/bil
 import { deriveGstStateCode, gstStateName } from '@/lib/india/gst-states'
 
 interface ProfileData {
+    version: number | null
+    storeId: string | null
     gstin: string | null
     gst_state_code: string | null
     legal_name: string | null
@@ -72,17 +76,32 @@ const GSTIN_RE = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/
 
 export default function BillingProfilePage() {
     const { store } = useParams<{ store: string }>()
+    const { actorId, siteId } = useMerchantSecurityContext(store)
+    return <BillingProfileWorkspace key={JSON.stringify([actorId, siteId, store])} store={store} actorId={actorId} />
+}
+function BillingProfileWorkspace({ store, actorId }: { store: string; actorId: string }) {
+    const active = useRef(true)
+    useLayoutEffect(() => { active.current = true; return () => { active.current = false } }, [])
+    const [saveNeedsReload, setSaveNeedsReload] = useState(false)
+    const [reloadDialogOpen, setReloadDialogOpen] = useState(false)
     const router = useRouter()
     const { notify } = useToast()
 
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
-    const [profile, setProfile] = useState<ProfileData>({ gstin: null, gst_state_code: null, legal_name: null, currency: 'INR' })
+    const [profile, setProfile] = useState<ProfileData>({ version: null, storeId: null, gstin: null, gst_state_code: null, legal_name: null, currency: 'INR' })
     const [mandates, setMandates] = useState<BillingMandateView[]>([])
 
     const [gstinInput, setGstinInput] = useState('')
     const [editingGstin, setEditingGstin] = useState(false)
+    const editing = useRef(false)
+    const [editBase, setEditBase] = useState<ProfileData | null>(null)
     const [savingGstin, setSavingGstin] = useState(false)
+    const changeEditing = (open: boolean) => {
+        editing.current = open
+        setEditBase(open ? profile : null)
+        setEditingGstin(open)
+    }
 
     const beginRead = useReadRequest(store)
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
@@ -101,13 +120,23 @@ export default function BillingProfilePage() {
             const data = payload.data
             const p = data.profile as Record<string, unknown>
             const next: ProfileData = {
+                version: Number.isSafeInteger(p.version) && (p.version as number) > 0 ? p.version as number : null,
+                storeId: typeof p.store_id === 'string' ? p.store_id : null,
                 gstin: typeof p.gstin === 'string' ? p.gstin : null,
                 gst_state_code: typeof p.gst_state_code === 'string' ? p.gst_state_code : null,
                 legal_name: typeof p.legal_name === 'string' ? p.legal_name : null,
                 currency: readString(p.currency, 'INR'),
             }
             setProfile(next)
-            setGstinInput(next.gstin || '')
+            setSaveNeedsReload(false)
+            if (!editing.current) {
+                setGstinInput(next.gstin || '')
+                if (!next.gstin) {
+                    editing.current = true
+                    setEditBase(next)
+                    setEditingGstin(true)
+                }
+            }
             setMandates(normalizeMandates(data.mandates))
         } catch (error) {
             if (!request.isCurrent()) return
@@ -122,7 +151,8 @@ export default function BillingProfilePage() {
     useEffect(() => { void loadData() }, [loadData])
 
     const handleSaveGstin = useCallback(async () => {
-        if (savingGstin) return
+        const base = editBase
+        if (!active.current || savingGstin || saveNeedsReload || base?.version == null || base.storeId === null) return
         const gstin = gstinInput.trim().toUpperCase()
         if (gstin && !GSTIN_RE.test(gstin)) {
             notify({ title: 'Invalid GSTIN', description: 'Enter a valid 15-character GSTIN (e.g. 22ABCDE1234F1Z5).', variant: 'warning' })
@@ -132,14 +162,19 @@ export default function BillingProfilePage() {
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-LetBuyy-Merchant-Context': actorId, 'X-Idempotency-Key': crypto.randomUUID() },
                 body: JSON.stringify({
+                    version: base.version,
                     gstin: gstin || null,
                     gst_state_code: gstin ? deriveGstStateCode(gstin) || null : null,
                 }),
             })
             const payload = (await response.json().catch(() => null)) as BillingPayload | null
+            if (!active.current) return
             if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to save GSTIN'))
+            if (!isRecord(payload?.data) || payload.data.id !== base.storeId || payload.data.version !== base.version + 1) throw new Error('The GSTIN save acknowledgement could not be confirmed. Reload the current profile.')
+            editing.current = false
+            setEditBase(null)
             setEditingGstin(false)
             notify({
                 title: gstin ? 'GSTIN saved' : 'GSTIN removed',
@@ -148,11 +183,13 @@ export default function BillingProfilePage() {
             })
             await loadData({ quiet: true })
         } catch (error) {
+            if (!active.current) return
+            setSaveNeedsReload(true)
             notify({ title: 'Could not save GSTIN', description: error instanceof Error ? error.message : 'Unable to save GSTIN', variant: 'critical' })
         } finally {
-            setSavingGstin(false)
+            if (active.current) setSavingGstin(false)
         }
-    }, [gstinInput, loadData, notify, savingGstin, store])
+    }, [actorId, editBase, gstinInput, loadData, notify, saveNeedsReload, savingGstin, store])
 
     if (loading) {
         return (
@@ -172,13 +209,19 @@ export default function BillingProfilePage() {
     const hasGstin = Boolean(profile.gstin)
 
     return (
+        <>
         <SettingsPane
                 navigationKey="billing"
             title="Billing profile"
             description="Your payment methods, tax ID, and billing currency."
             store={store}
-            secondaryActions={[{ label: 'Back to billing', onClick: () => router.push(`/${store}/settings/billing`) }]}
+            secondaryActions={[
+                { label: 'Refresh billing profile', onClick: () => void loadData({ quiet: true }), disabled: savingGstin },
+                { label: 'Back to billing', onClick: () => router.push(`/${store}/settings/billing`) },
+            ]}
         >
+            {saveNeedsReload && <Banner variant="warning" title="Reload current billing profile before another GSTIN change"
+                action={<Button variant="secondary" onClick={() => setReloadDialogOpen(true)}>Reload billing profile</Button>}>The save was refused or could not be confirmed. Your draft is retained until you reload.</Banner>}
             {loadError && (
                 <Banner
                     variant="critical"
@@ -221,7 +264,7 @@ export default function BillingProfilePage() {
                                     {profile.gst_state_code ? gstStateName(profile.gst_state_code) : 'Registered for GST'}
                                 </span>
                             </div>
-                            <Button variant="secondary" onClick={() => { setGstinInput(profile.gstin || ''); setEditingGstin(true) }}>
+                        <Button variant="secondary" disabled={profile.version === null || profile.storeId === null || saveNeedsReload} onClick={() => { setGstinInput(profile.gstin || ''); changeEditing(true) }}>
                                 Edit
                             </Button>
                         </div>
@@ -241,13 +284,13 @@ export default function BillingProfilePage() {
                                 {(hasGstin || editingGstin) && (
                                     <Button
                                         variant="secondary"
-                                        onClick={() => { setGstinInput(profile.gstin || ''); setEditingGstin(false) }}
+                                        onClick={() => { setGstinInput(profile.gstin || ''); changeEditing(false) }}
                                         disabled={savingGstin}
                                     >
                                         Cancel
                                     </Button>
                                 )}
-                                <Button onClick={() => void handleSaveGstin()} loading={savingGstin}>
+                                <Button onClick={() => void handleSaveGstin()} loading={savingGstin} disabled={saveNeedsReload || profile.version === null || profile.storeId === null || (!gstinInput.trim() && !editBase?.gstin)}>
                                     {hasGstin ? 'Save GSTIN' : 'Add GSTIN'}
                                 </Button>
                             </div>
@@ -282,5 +325,16 @@ export default function BillingProfilePage() {
                 <span>Need to update your legal name or registered address? Edit them in Business details.</span>
             </div>
         </SettingsPane>
+        <ConfirmDialog open={reloadDialogOpen} title="Reload current billing profile?"
+            description="Discard this GSTIN draft and load the current store revision."
+            confirmLabel="Reload profile" onClose={() => setReloadDialogOpen(false)}
+            onConfirm={() => {
+                editing.current = false
+                setEditBase(null)
+                setEditingGstin(false)
+                setReloadDialogOpen(false)
+                void loadData()
+            }} />
+        </>
     )
 }

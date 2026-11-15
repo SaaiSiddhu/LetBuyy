@@ -1,0 +1,101 @@
+{
+  "at": "2026-11-07T08:23:35.907233+00:00",
+  "status": "BOUNDED_CURRENT_ANDROID_IOS_CATEGORY_PHOTO_MEDIA_RECOVERY_GLB_GLTF_MP4_PLAYBACK_WEB_SYNC_PASS;FULL122_OPEN",
+  "source": {
+    "manifest": "merchant-camera-video-model-source-v84.source.json",
+    "sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+    "inputs": 8502,
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "branch": "codex/merchant-mobile-parity",
+    "frozen": false
+  },
+  "current_gates": {
+    "flutter": {
+      "pass": 1719,
+      "fail": 0,
+      "skip": 0
+    },
+    "analysis_issues": 0,
+    "gateway_types_exit": 0,
+    "root_contract_pass": 400,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "owned_media": {
+      "run_id": "c657e9fb37b7",
+      "pass": 12,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "owned_public_ranges": {
+      "run_id": "e05e4a284cff",
+      "pass": 13,
+      "fail": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "web73_unchanged_inputs_retained_phases": [
+      660,
+      818,
+      295,
+      13
+    ],
+    "counts_note": "Counts are independent/overlapping scopes;parent/subtests are included;never sum."
+  },
+  "current_ios_product_category_media": "native108-final-local-readback.json",
+  "current_ios_video_model": "native105-final-local-readback.json",
+  "historical_android_runtime": "native101-final-local-readback.json,source72",
+  "custody": "source84-final-custody.json",
+  "whole_features_accepted": 0,
+  "whole_applicable_features_open": 119,
+  "excluded": [
+    120,
+    121
+  ],
+  "paused": [
+    122
+  ],
+  "frozen": [
+    51
+  ],
+  "next": [
+    "Camera capture/recording happy paths beyond cancellation/unavailable;MOV/WebM native provider modes.",
+    "Broader variants/options/reorder,media and actual buyer Liquid outcomes.",
+    "Current-role/revocation/store-switch and each remaining web/mobile/buyer whole-feature criterion.",
+    "Private KYC provider/interrupted-object acceptance and historical startup-delay causes."
+  ],
+  "limits": "No native3D/AR renderer claim;real provider/hosted/inbox/signed release/production/full122 acceptance.",
+  "generic_android_compile_only": {
+    "path": "/private/tmp/letbuyy-ios-ui-20261107-a7454jq9/android-v84/app-debug.apk",
+    "sha256": "f1242e86e29fb14e11f86e4c6d57cfd7a40ee1c08fda6d92d7abf12db13f871f",
+    "bytes": 222987147,
+    "normal_debug_build": true,
+    "arm64_flutter_engine": true,
+    "debug_kernel": true,
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453",
+    "installed": false,
+    "runtime_verified": false,
+    "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+    "scope": "Current Android compile/archive only;Android101 is historical source72 runtime."
+  },
+  "current_android_core_runtime": "native109-final-local-readback.json",
+  "current_android_video_model_runtime": "native110-final-local-readback.json",
+  "current_android_installed_apk_sha256": "8891ce4feb5b11e05be8858ac940ce7e6f708755f10fd2c0895b191f3dddc0c8"
+}

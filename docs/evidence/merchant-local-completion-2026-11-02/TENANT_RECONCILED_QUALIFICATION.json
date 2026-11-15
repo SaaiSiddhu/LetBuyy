@@ -1,0 +1,30 @@
+{
+  "status": "LOCAL_DATABASE_VERIFIED_BOUNDED",
+  "currentSchema": {
+    "runId": "acdeff953c62",
+    "suite": "services/api-gateway/src/__tests__/owned-db/final-tenant-table-access.postgres.test.ts",
+    "passed": 8,
+    "failed": 0
+  },
+  "unchangedFoundationRedTeam": {
+    "runId": "e5d6be49c715",
+    "suite": "tests/executable/tenant-redteam-postgres.test.mjs",
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "controls": "RT-1 through RT-9 plus migration198 closure, own-row positive control before denial",
+    "cluster": "separate owned fresh foundation-only cluster",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "limits": [
+    "Foundation-role reset must not share a cluster with a fully migrated Gateway template.",
+    "Current full-schema controls and historical foundation controls are distinct; neither is hosted acceptance."
+  ]
+}

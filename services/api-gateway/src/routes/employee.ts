@@ -11,6 +11,8 @@ import { executeStaffMutation, readStaffSeatPolicy } from '../execution/staff-ex
 import { AppError } from '../lib/errors';
 import { createStaffInvitation, previewStaffInvitation, acceptStaffInvitation } from '../execution/staff-invitation-execution.adapter';
 import { getRequestId } from '../lib/tenant-context';
+import { EmployeeListQuerySchema } from '@letbuyy/shared-types';
+import { validate } from '../middleware/validation';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -54,37 +56,14 @@ async function countStoreStaff(
     return count as number;
 }
 
-function isMissingColumnError(
-    error: { message?: string } | null | undefined,
-    tableName: string,
-    columnName: string
-): boolean {
-    return Boolean(
-        error?.message?.includes(`${tableName}.${columnName}`) &&
-        error.message.includes('does not exist')
-    );
-}
-
-function isMissingEmployeeStoreColumn(error: { message?: string } | null | undefined): boolean {
-    return isMissingColumnError(error, 'employees', 'store_id');
-}
-
-function isMissingEmployeeDeletedAtColumn(error: { message?: string } | null | undefined): boolean {
-    return isMissingColumnError(error, 'employees', 'deleted_at');
-}
-
-function isMissingSitesDeletedAtColumn(error: { message?: string } | null | undefined): boolean {
-    return isMissingColumnError(error, 'sites', 'deleted_at');
-}
-
 // ============================================================
 // EMPLOYEE CRUD (existing routes, kept from before)
 // ============================================================
 
 // GET /employees — List employees for the authenticated user's stores
-router.get('/', async (c) => {
+router.get('/', validate('query', EmployeeListQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
+    const { store_id: storeId, page, limit } = c.get('validatedQuery') as z.infer<typeof EmployeeListQuerySchema>;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -96,33 +75,29 @@ router.get('/', async (c) => {
     if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
     }
-    if (ownedStoreIds.length === 0) return c.json(success([]));
-
-    const buildEmployeesQuery = (includeDeletedAtFilter: boolean) => {
-        const query = db
-            .from('employees')
-            .select('*')
-            .in('store_id', ownedStoreIds)
-            .order('created_at', { ascending: false });
-
-        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
-    };
-
-    let { data, error } = await buildEmployeesQuery(true);
-
-    if (isMissingEmployeeDeletedAtColumn(error)) {
-        ({ data, error } = await buildEmployeesQuery(false));
+    if (ownedStoreIds.length === 0) return c.json(paginated([], 0, page, limit));
+    const from = (page - 1) * limit;
+    const { data, error, count } = await db.from('employees')
+        .select('*', { count: 'exact' }).in('store_id', ownedStoreIds)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false }).order('id', { ascending: false })
+        .range(from, from + limit - 1);
+    // PostgREST returns 416 for an offset beyond the last row. Confirm the
+    // current count under the identical owner/deletion predicates; a missing
+    // schema or unknown count must never be normalized into an empty roster.
+    if (page > 1 && error?.code === 'PGRST103') {
+        const current = await db.from('employees').select('id', { count: 'exact', head: true })
+            .in('store_id', ownedStoreIds).is('deleted_at', null);
+        if (!current.error && typeof current.count === 'number' &&
+            Number.isSafeInteger(current.count) && current.count >= 0 && current.count <= from) {
+            return c.json(paginated([], current.count, page, limit));
+        }
     }
-
-    if (isMissingEmployeeStoreColumn(error)) {
-        return c.json(success([]));
+    if (error || !Array.isArray(data) || typeof count !== 'number' || !Number.isSafeInteger(count) || count < 0 ||
+        data.length !== Math.min(limit, Math.max(0, count - from))) {
+        throw new AppError('Staff records are temporarily unavailable.', 503, 'STAFF_STATE_UNAVAILABLE');
     }
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(success(data || []));
+    return c.json(paginated(data, count, page, limit));
 });
 
 // POST /employees — Provision verified staff or retain an unlinked pending record.
@@ -363,26 +338,26 @@ async function listOwnedStoreIds(
     userId: string,
     sessionStoreId?: string
 ) {
-    const buildOwnedStoresQuery = (includeDeletedAtFilter: boolean) => {
+    const ids: string[] = [];
+    let total: number | undefined;
+    for (let page = 0; page < 10000; page++) {
         let query = db
             .from('sites')
-            .select('id')
+            .select('id', { count: 'exact' })
             .or(`custom_user_id.eq.${userId},user_id.eq.${userId}`);
-
         if (sessionStoreId) query = query.eq('id', sessionStoreId);
-
-        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
-    };
-
-    let { data, error } = await buildOwnedStoresQuery(true);
-
-    if (isMissingSitesDeletedAtColumn(error)) {
-        ({ data, error } = await buildOwnedStoresQuery(false));
+        const { data, error, count } = await query.is('deleted_at', null)
+            .order('id', { ascending: true }).range(page * 50, page * 50 + 49);
+        if (error || !Array.isArray(data) || typeof count !== 'number' || !Number.isSafeInteger(count) || count < 0 ||
+            total !== undefined && count !== total ||
+            data.length !== Math.min(50, Math.max(0, count - page * 50))) {
+            throw new AppError('Staff ownership is temporarily unavailable.', 503, 'STAFF_STATE_UNAVAILABLE');
+        }
+        total = count;
+        ids.push(...data.map(store => store.id as string));
+        if (ids.length === total) return ids;
     }
-
-    if (error) throw new Error(`Store ownership lookup failed: ${error.message}`);
-
-    return (data || []).map((store) => store.id as string);
+    throw new AppError('Staff ownership is temporarily unavailable.', 503, 'STAFF_STATE_UNAVAILABLE');
 }
 
 export default router;

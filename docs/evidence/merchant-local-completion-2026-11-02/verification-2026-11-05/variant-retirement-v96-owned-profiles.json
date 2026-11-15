@@ -1,0 +1,481 @@
+{
+  "run_id": "28affc9502bb",
+  "functions": [
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "app_tenant=X/postgres"
+      ],
+      "hash": "d93780b8ae02d7f2e1a2c7bd8fa69e950bf5f1393a6643450a750fc67579234e",
+      "owner": "10",
+      "signature": "adjust_inventory_level(uuid,uuid,uuid,integer,uuid,text,text,text)",
+      "definition": "CREATE OR REPLACE FUNCTION public.adjust_inventory_level(p_product_id uuid, p_variant_id uuid DEFAULT NULL::uuid, p_location_id uuid DEFAULT NULL::uuid, p_adjustment integer DEFAULT 0, p_actor_id uuid DEFAULT NULL::uuid, p_reason text DEFAULT 'adjustment'::text, p_notes text DEFAULT NULL::text, p_request_id text DEFAULT NULL::text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\nDECLARE\n    v_product RECORD;\n    v_location_id UUID;\n    v_level RECORD;\n    v_next_available INTEGER;\n    v_level_json JSONB;\n    v_adjustment_id UUID;\nBEGIN\n    SELECT id, store_id\n      INTO v_product\n      FROM products\n     WHERE id = p_product_id\n       AND deleted_at IS NULL;\n\n    IF NOT FOUND THEN\n        RAISE EXCEPTION 'product not found';\n    END IF;\n\n    PERFORM public.require_inventory_site_guc(v_product.store_id);\n\n    IF p_location_id IS NULL THEN\n        v_location_id := ensure_default_inventory_location(v_product.store_id);\n    ELSE\n        SELECT id\n          INTO v_location_id\n          FROM inventory_locations\n         WHERE id = p_location_id\n           AND store_id = v_product.store_id\n           AND deleted_at IS NULL;\n\n        IF v_location_id IS NULL THEN\n            RAISE EXCEPTION 'inventory location not found for product store';\n        END IF;\n    END IF;\n\n    SELECT *\n      INTO v_level\n      FROM inventory_levels\n     WHERE product_id = p_product_id\n       AND location_id = v_location_id\n       AND (\n            (p_variant_id IS NULL AND variant_id IS NULL)\n            OR variant_id = p_variant_id\n       )\n     LIMIT 1\n     FOR UPDATE;\n\n    IF NOT FOUND THEN\n        v_next_available := p_adjustment;\n        IF v_next_available < 0 THEN\n            RAISE EXCEPTION 'cannot reduce inventory below zero';\n        END IF;\n\n        INSERT INTO inventory_levels (\n            product_id,\n            variant_id,\n            location_id,\n            available,\n            reserved,\n            incoming,\n            updated_at\n        )\n        VALUES (\n            p_product_id,\n            p_variant_id,\n            v_location_id,\n            v_next_available,\n            0,\n            0,\n            NOW()\n        )\n        RETURNING * INTO v_level;\n    ELSE\n        v_next_available := COALESCE(v_level.available, 0) + p_adjustment;\n\n        IF v_next_available < 0 THEN\n            RAISE EXCEPTION 'cannot reduce inventory below zero';\n        END IF;\n\n        IF v_next_available < COALESCE(v_level.reserved, 0) THEN\n            RAISE EXCEPTION 'available inventory cannot be below reserved quantity';\n        END IF;\n\n        UPDATE inventory_levels\n           SET available = v_next_available,\n               updated_at = NOW()\n         WHERE id = v_level.id\n         RETURNING * INTO v_level;\n    END IF;\n\n    INSERT INTO inventory_adjustments (\n        product_id,\n        variant_id,\n        location_id,\n        quantity_change,\n        reason,\n        note,\n        created_by\n    )\n    VALUES (\n        p_product_id,\n        p_variant_id,\n        v_location_id,\n        p_adjustment,\n        CASE\n            WHEN p_reason IN ('sale', 'return', 'adjustment', 'recount', 'transfer', 'damaged', 'reserved', 'unreserved')\n            THEN p_reason\n            ELSE 'adjustment'\n        END,\n        p_notes,\n        p_actor_id\n    ) RETURNING id INTO v_adjustment_id;\n\n    PERFORM public.sync_inventory_catalog_cache_v1(p_product_id,p_variant_id);\n\n    INSERT INTO outbox_events (\n        store_id,\n        aggregate_type,\n        aggregate_id,\n        event_type,\n        payload,\n        idempotency_key,\n        request_id,\n        actor_id\n    )\n    VALUES (\n        v_product.store_id,\n        'inventory',\n        p_product_id::TEXT,\n        'inventory.level.adjusted',\n        jsonb_build_object(\n            'store_id', v_product.store_id,\n            'product_id', p_product_id,\n            'variant_id', p_variant_id,\n            'location_id', v_location_id,\n            'adjustment', p_adjustment,\n            'available', v_next_available\n        ),\n        'inventory.level.adjusted:audit:' || v_adjustment_id::TEXT,\n        p_request_id,\n        p_actor_id\n    );\n\n    SELECT to_jsonb(v_level) INTO v_level_json;\n    RETURN v_level_json;\nEND;\n$function$\n"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "app_tenant=X/postgres"
+      ],
+      "hash": "1a35267db060b148fcea23e20877f725c670b9d05a625cf98a98468e1b45abd9",
+      "owner": "10",
+      "signature": "apply_product_edit_v1(uuid,uuid,uuid,integer,uuid,jsonb)",
+      "definition": "CREATE OR REPLACE FUNCTION public.apply_product_edit_v1(p_store_id uuid, p_product_id uuid, p_actor_id uuid, p_expected_version integer, p_idempotency_key uuid, p_mutation jsonb)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\nDECLARE\n    p public.products%ROWTYPE; before_product jsonb; receipt public.product_edit_receipts%ROWTYPE;\n    fields jsonb; item jsonb; existing public.product_variants%ROWTYPE; v_variant_id uuid;\n    retained uuid[] := ARRAY[]::uuid[]; removed uuid[]; option_names text[]; option_values text[];\n    gift jsonb; roles jsonb; role_name text; old_index integer; new_index integer; source_url text; match_count integer;\n    idx integer := 0; options jsonb; current_options jsonb; response jsonb; request_id text := nullif(current_setting('app.request_id', true), '');\nBEGIN\n    -- service_role inherits app_tenant's EXECUTE grant in164. An inherited grant\n    -- must not turn the administrative REST role into this tenant transaction.\n    IF current_setting('role', true) IS DISTINCT FROM 'app_tenant' THEN\n        RAISE EXCEPTION 'PRODUCT_EDIT_FORBIDDEN' USING ERRCODE = '42501';\n    END IF;\n    IF p_expected_version IS NULL OR p_expected_version <= 0 OR p_idempotency_key IS NULL\n       OR p_product_id IS NULL OR jsonb_typeof(p_mutation) IS DISTINCT FROM 'object'\n       OR octet_length(p_mutation::text) > 1048576\n       OR jsonb_typeof(p_mutation->'fields') IS DISTINCT FROM 'object'\n       OR EXISTS (SELECT 1 FROM jsonb_object_keys(p_mutation) k WHERE k NOT IN ('fields','stock','product_options','variants')) THEN\n        RAISE EXCEPTION 'PRODUCT_EDIT_INVALID';\n    END IF;\n    fields := p_mutation->'fields';\n    IF fields = '{}'::jsonb AND NOT (p_mutation ?| ARRAY['stock','product_options','variants']) THEN\n        RAISE EXCEPTION 'PRODUCT_EDIT_INVALID';\n    END IF;\n    -- This allowlist is the DB immutability fence for the commerce-core plan. No identity,\n    -- tenant, audit, version or raw variants cache column is writable from a mutation payload.\n    IF EXISTS (SELECT 1 FROM jsonb_object_keys(fields) k WHERE k NOT IN (\n        'name','description','price','compare_price','cost_per_item','images','category','product_type','vendor',\n        'track_inventory','sku','barcode','sell_when_oos','is_physical','weight','weight_unit','country_of_origin',\n        'importer_details','hs_code','hsn_code','url_handle','seo_title','seo_description','charge_tax',\n        'shipping_profile_id','is_active','is_featured','tags','metadata','display_order','status')) THEN\n        RAISE EXCEPTION 'PRODUCT_EDIT_INVALID';\n    END IF;\n    PERFORM public.assert_product_edit_actor_v1(p_store_id, p_actor_id, 'products:write');\n    PERFORM pg_advisory_xact_lock(hashtextextended('letbuyy:product-edit:' || p_idempotency_key::text, 0));\n    -- Match the canonical inventory writer's level -> variant -> parent order.\n    -- The decisive version comparison remains on the final locked parent row.\n    PERFORM il.id FROM public.inventory_levels il WHERE il.product_id=p_product_id AND il.store_id=p_store_id ORDER BY il.id FOR UPDATE;\n    PERFORM pv.id FROM public.product_variants pv JOIN public.products target_product ON target_product.id=pv.product_id\n        WHERE pv.product_id=p_product_id AND target_product.store_id=p_store_id ORDER BY pv.id FOR UPDATE OF pv;\n    PERFORM po.id FROM public.product_options po JOIN public.products target_product ON target_product.id=po.product_id\n        WHERE po.product_id=p_product_id AND target_product.store_id=p_store_id ORDER BY po.id FOR UPDATE OF po;\n    SELECT * INTO p FROM public.products WHERE id = p_product_id AND store_id = p_store_id AND deleted_at IS NULL FOR UPDATE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'PRODUCT_EDIT_NOT_FOUND'; END IF;\n    SELECT * INTO receipt FROM public.product_edit_receipts WHERE idempotency_key = p_idempotency_key;\n    IF FOUND THEN\n        IF receipt.operation <> 'product.update.v1' OR receipt.actor_id IS DISTINCT FROM p_actor_id\n           OR receipt.store_id IS DISTINCT FROM p_store_id OR receipt.product_id IS DISTINCT FROM p_product_id\n           OR receipt.expected_version IS DISTINCT FROM p_expected_version OR receipt.mutation IS DISTINCT FROM p_mutation THEN\n            RAISE EXCEPTION 'PRODUCT_EDIT_KEY_CONFLICT';\n        END IF;\n        RETURN receipt.response;\n    END IF;\n    IF p.version <= 0 OR p.version IS DISTINCT FROM p_expected_version THEN RAISE EXCEPTION 'PRODUCT_EDIT_VERSION_CONFLICT'; END IF;\n    -- Receipt replay returned above. Compare capability meaning only while holding\n    -- the SAME decisive product lock; an unrelated no-effect resave keeps revision.\n    IF fields ? 'metadata' AND (fields->'metadata') ? 'personalization' THEN\n      IF NOT public.storefront_discovery_facts_valid_v1(fields->'metadata'->'personalization','personalization',false)\n        OR jsonb_typeof(fields->'metadata'->'personalization') IS DISTINCT FROM 'object'\n        OR jsonb_typeof(fields->'metadata'->'personalization'->'revision') IS DISTINCT FROM 'number'\n        OR (fields->'metadata'->'personalization'->>'revision') !~ '^[1-9][0-9]{0,9}$'\n        OR (fields->'metadata'->'personalization'->>'revision')::numeric>2147483647 THEN\n        RAISE EXCEPTION 'PRODUCT_PERSONALIZATION_INVALID'; END IF;\n      IF public.storefront_discovery_facts_valid_v1(p.metadata->'personalization','personalization',false) THEN\n        IF (fields->'metadata'->'personalization'->>'revision')::numeric < (p.metadata->'personalization'->>'revision')::numeric THEN\n          RAISE EXCEPTION 'PRODUCT_PERSONALIZATION_REVISION_DECREASED'; END IF;\n        IF ((fields->'metadata'->'personalization')-'revision'::text) IS DISTINCT FROM ((p.metadata->'personalization')-'revision'::text)\n          AND (fields->'metadata'->'personalization'->>'revision')::numeric <= (p.metadata->'personalization'->>'revision')::numeric THEN\n          RAISE EXCEPTION 'PRODUCT_PERSONALIZATION_REVISION_REQUIRED'; END IF;\n      END IF;\n    END IF;\n    before_product := public.product_edit_snapshot_v1(p_product_id);\n    IF (fields ? 'status' OR fields ? 'is_active') AND (\n        jsonb_typeof(fields->'status') IS DISTINCT FROM 'string'\n        OR fields->>'status' NOT IN ('active', 'draft', 'archived')\n        OR fields->'is_active' IS DISTINCT FROM to_jsonb((fields->>'status') = 'active')\n    ) THEN RAISE EXCEPTION 'PRODUCT_EDIT_INVALID'; END IF;\n\n    -- An image-only edit follows the previous URL identity while holding the\n    -- product version lock. Retrying the original intent still matches its receipt.\n    IF fields ? 'images' AND NOT (fields ? 'metadata') AND jsonb_typeof(p.metadata->'gifts') = 'object' THEN\n        gift := p.metadata->'gifts'; roles := '{}'::jsonb;\n        FOREACH role_name IN ARRAY ARRAY['openBox','closedBox'] LOOP\n            IF jsonb_typeof(gift->'mediaRoles'->role_name) = 'number'\n                AND (gift->'mediaRoles'->>role_name) ~ '^[0-9]+$' THEN\n                old_index := (gift->'mediaRoles'->>role_name)::integer;\n                IF old_index BETWEEN 0 AND 19 AND old_index < coalesce(array_length(p.images,1),0) THEN\n                    source_url := p.images[old_index+1];\n                    SELECT count(*), min(n-1)::integer INTO match_count,new_index\n                        FROM jsonb_array_elements_text(fields->'images') WITH ORDINALITY AS images(url,n)\n                        WHERE url=source_url AND nullif(btrim(url),'') IS NOT NULL;\n                    IF match_count=1 AND new_index BETWEEN 0 AND 19 THEN roles := roles || jsonb_build_object(role_name,new_index); END IF;\n                END IF;\n            END IF;\n        END LOOP;\n        IF roles->'openBox' IS NOT NULL AND roles->'openBox'=roles->'closedBox' THEN roles := '{}'::jsonb; END IF;\n        gift := gift-'mediaRoles';\n        IF roles <> '{}'::jsonb THEN gift := gift || jsonb_build_object('mediaRoles',roles); END IF;\n        IF roles='{}'::jsonb AND NOT (\n            coalesce(jsonb_array_length(gift->'occasions'),0)>0 OR coalesce(jsonb_array_length(gift->'recipients'),0)>0\n            OR nullif(btrim(gift->>'suitabilityNote'),'') IS NOT NULL OR coalesce(jsonb_array_length(gift->'contents'),0)>0\n        ) THEN fields := fields || jsonb_build_object('metadata',p.metadata-'gifts');\n        ELSE fields := fields || jsonb_build_object('metadata',jsonb_set(p.metadata,'{gifts}',gift)); END IF;\n    END IF;\n\n    -- Typed merge preserves omitted fields. Any later exception rolls this UPDATE back too.\n    IF fields <> '{}'::jsonb THEN\n        p := jsonb_populate_record(p, fields);\n        IF length(btrim(p.name)) = 0 OR p.price < 0 OR\n            ((fields ? 'price' OR fields ? 'compare_price') AND p.compare_price IS NOT NULL AND p.compare_price <= p.price) THEN\n            RAISE EXCEPTION 'PRODUCT_EDIT_INVALID';\n        END IF;\n        IF jsonb_typeof(p.metadata->'gifts'->'mediaRoles')='object' AND EXISTS (\n            SELECT 1 FROM jsonb_each(p.metadata->'gifts'->'mediaRoles') r\n            WHERE r.key NOT IN ('openBox','closedBox') OR jsonb_typeof(r.value)<>'number'\n               OR r.value::text !~ '^[0-9]+$' OR length(r.value::text)>2\n               OR (r.value::text)::integer >= coalesce(array_length(p.images,1),0)\n        ) THEN RAISE EXCEPTION 'PRODUCT_EDIT_INVALID_GIFT_MEDIA'; END IF;\n        UPDATE public.products target SET\n            name=p.name, description=p.description, price=p.price, compare_price=p.compare_price,\n            cost_per_item=p.cost_per_item, images=p.images, category=p.category, product_type=p.product_type,\n            vendor=p.vendor, track_inventory=p.track_inventory, sku=p.sku, barcode=p.barcode,\n            sell_when_oos=p.sell_when_oos, is_physical=p.is_physical, weight=p.weight, weight_unit=p.weight_unit,\n            country_of_origin=p.country_of_origin, importer_details=p.importer_details, hs_code=p.hs_code, hsn_code=p.hsn_code,\n            url_handle=p.url_handle, seo_title=p.seo_title, seo_description=p.seo_description, charge_tax=p.charge_tax,\n            shipping_profile_id=p.shipping_profile_id, is_active=p.is_active, is_featured=p.is_featured,\n            tags=p.tags, metadata=p.metadata, display_order=p.display_order, status=p.status,\n            updated_by=p_actor_id, updated_at=clock_timestamp()\n        WHERE target.id=p_product_id AND target.store_id=p_store_id;\n    END IF;\n\n    IF jsonb_typeof(p.metadata->'gifts'->'mediaRoles')='object' AND EXISTS (\n        SELECT 1 FROM jsonb_each(p.metadata->'gifts'->'mediaRoles') r\n        WHERE r.key NOT IN ('openBox','closedBox') OR jsonb_typeof(r.value)<>'number'\n           OR r.value::text !~ '^[0-9]+$' OR length(r.value::text)>2\n           OR (r.value::text)::integer >= coalesce(array_length(p.images,1),0)\n    ) THEN RAISE EXCEPTION 'PRODUCT_EDIT_INVALID_GIFT_MEDIA'; END IF;\n\n    IF p_mutation ? 'product_options' THEN\n        options := p_mutation->'product_options';\n        IF jsonb_typeof(options) IS DISTINCT FROM 'array' OR jsonb_array_length(options)>10\n           OR EXISTS (SELECT 1 FROM jsonb_array_elements(options) o WHERE jsonb_typeof(o) <> 'object'\n                OR nullif(btrim(o->>'name'),'') IS NULL OR jsonb_typeof(o->'values') IS DISTINCT FROM 'array')\n           OR (SELECT count(*) FROM jsonb_array_elements(options)) <>\n              (SELECT count(DISTINCT lower(btrim(o->>'name'))) FROM jsonb_array_elements(options) o) THEN\n            RAISE EXCEPTION 'PRODUCT_EDIT_INVALID';\n        END IF;\n        SELECT coalesce(jsonb_agg(jsonb_build_object('name',name,'position',position,'values',values) ORDER BY position,id),'[]'::jsonb)\n            INTO current_options FROM public.product_options WHERE product_id=p_product_id;\n        SELECT coalesce(jsonb_agg(jsonb_build_object('name',o->>'name','position',n-1,'values',o->'values') ORDER BY n),'[]'::jsonb)\n            INTO options FROM jsonb_array_elements(options) WITH ORDINALITY AS entries(o,n);\n        -- A full form often resends unchanged options. Replacing them would transiently\n        -- invalidate an approved listing's material fingerprint even for a stock-only edit.\n        IF current_options IS DISTINCT FROM options THEN\n            DELETE FROM public.product_options WHERE product_id=p_product_id;\n            INSERT INTO public.product_options(product_id,name,position,values)\n                SELECT p_product_id, o->>'name', (n-1)::integer, o->'values'\n                FROM jsonb_array_elements(options) WITH ORDINALITY AS entries(o,n);\n        END IF;\n    END IF;\n    SELECT array_agg(name ORDER BY position,id) INTO option_names FROM public.product_options WHERE product_id=p_product_id;\n\n    IF jsonb_typeof(p.metadata->'beauty')='object' AND jsonb_array_length(coalesce(p.metadata->'beauty'->'shades','[]'::jsonb))>0\n        AND EXISTS(SELECT 1 FROM jsonb_array_elements(p.metadata->'beauty'->'shades') shade\n            WHERE NOT EXISTS(SELECT 1 FROM public.product_options po WHERE po.product_id=p_product_id\n                AND po.name=coalesce(p.metadata->'beauty'->>'shadeOptionName','Shade') AND po.values ? (shade->>'value'))) THEN\n        RAISE EXCEPTION 'PRODUCT_EDIT_INVALID_BEAUTY_OPTION';\n    END IF;\n\n    IF p_mutation ? 'variants' THEN\n        IF jsonb_typeof(p_mutation->'variants') IS DISTINCT FROM 'array' OR jsonb_array_length(p_mutation->'variants')>100 THEN\n            RAISE EXCEPTION 'PRODUCT_EDIT_INVALID';\n        END IF;\n        FOR item IN SELECT value FROM jsonb_array_elements(p_mutation->'variants') LOOP\n            IF jsonb_typeof(item) IS DISTINCT FROM 'object' OR nullif(btrim(item->>'title'),'') IS NULL\n               OR EXISTS (SELECT 1 FROM jsonb_object_keys(item) k WHERE k NOT IN ('id','title','price','price_override','compare_price','sku','barcode','stock','options','metadata')) THEN\n                RAISE EXCEPTION 'PRODUCT_EDIT_INVALID';\n            END IF;\n            IF item ? 'metadata' AND (\n                jsonb_typeof(item->'metadata') IS DISTINCT FROM 'object'\n                OR octet_length((item->'metadata')::text)>131072\n                OR (item->'metadata')-ARRAY['toys','food','furniture','sports','books']::text[] <> '{}'::jsonb\n                OR EXISTS(SELECT 1 FROM jsonb_each(item->'metadata') f WHERE jsonb_typeof(f.value) NOT IN ('object','null'))\n            ) THEN RAISE EXCEPTION 'PRODUCT_EDIT_INVALID_VARIANT_METADATA'; END IF;\n            existing := NULL;\n            IF item ? 'id' THEN\n                v_variant_id := (item->>'id')::uuid;\n                IF v_variant_id IS NULL OR v_variant_id = ANY(retained) THEN RAISE EXCEPTION 'PRODUCT_EDIT_VARIANT_ID'; END IF;\n                SELECT * INTO existing FROM public.product_variants WHERE id=v_variant_id AND product_id=p_product_id FOR UPDATE;\n                IF NOT FOUND THEN RAISE EXCEPTION 'PRODUCT_EDIT_VARIANT_ID'; END IF;\n            ELSE\n                v_variant_id := gen_random_uuid();\n            END IF;\n            retained := array_append(retained,v_variant_id);\n            option_values := ARRAY[existing.option1,existing.option2,existing.option3];\n            IF item ? 'options' THEN\n                IF jsonb_typeof(item->'options') IS DISTINCT FROM 'object' OR\n                    (SELECT count(*) FROM jsonb_object_keys(item->'options'))>3 THEN RAISE EXCEPTION 'PRODUCT_EDIT_INVALID'; END IF;\n                -- Canonical option positions, including explicit legacy unnamed slots. Do not\n                -- depend on JSON key iteration order or truncate additional option dimensions.\n                IF option_names IS NULL THEN\n                    SELECT array_agg(key ORDER BY key) INTO option_names FROM jsonb_each(item->'options');\n                END IF;\n                IF EXISTS (SELECT 1 FROM jsonb_object_keys(item->'options') k WHERE NOT k=ANY(coalesce(option_names,ARRAY[]::text[])))\n                    OR coalesce(array_length(option_names,1),0)>3 THEN RAISE EXCEPTION 'PRODUCT_EDIT_INVALID'; END IF;\n                option_values := ARRAY[item->'options'->>option_names[1],item->'options'->>option_names[2],item->'options'->>option_names[3]];\n            END IF;\n            IF existing.id IS NULL THEN\n                INSERT INTO public.product_variants(id,product_id,title,price,compare_price,sku,barcode,inventory_qty,option1,option2,option3,position,metadata)\n                    VALUES(v_variant_id,p_product_id,item->>'title',coalesce((item->>'price')::numeric,(item->>'price_override')::numeric,p.price),\n                        (item->>'compare_price')::numeric,item->>'sku',item->>'barcode',0,option_values[1],option_values[2],option_values[3],idx,coalesce(item->'metadata','{}'::jsonb));\n            ELSE\n                UPDATE public.product_variants SET title=item->>'title',\n                    price=CASE WHEN item ? 'price' OR item ? 'price_override' THEN coalesce((item->>'price')::numeric,(item->>'price_override')::numeric,p.price) ELSE existing.price END,\n                    compare_price=CASE WHEN item ? 'compare_price' THEN (item->>'compare_price')::numeric ELSE existing.compare_price END,\n                    sku=CASE WHEN item ? 'sku' THEN item->>'sku' ELSE existing.sku END,\n                    barcode=CASE WHEN item ? 'barcode' THEN item->>'barcode' ELSE existing.barcode END,\n                    metadata=CASE WHEN item ? 'metadata' THEN item->'metadata' ELSE existing.metadata END,\n                    option1=option_values[1], option2=option_values[2], option3=option_values[3], position=idx, updated_at=clock_timestamp()\n                    WHERE id=v_variant_id AND product_id=p_product_id;\n            END IF;\n            IF item ? 'stock' OR existing.id IS NULL THEN\n                IF item ? 'stock' AND (jsonb_typeof(item->'stock') <> 'number' OR (item->>'stock') !~ '^[0-9]+$') THEN\n                    RAISE EXCEPTION 'PRODUCT_EDIT_INVALID';\n                END IF;\n                PERFORM public.set_inventory_level_available(p_product_id,v_variant_id,NULL,coalesce((item->>'stock')::integer,0),\n                    p_actor_id,'adjustment','product.update',p_idempotency_key::text||':'||v_variant_id::text);\n            END IF;\n            idx := idx+1;\n        END LOOP;\n        SELECT array_agg(id) INTO removed FROM public.product_variants WHERE product_id=p_product_id AND NOT id=ANY(retained);\n        -- Stable stock/history/reservation references cannot be destroyed by an omitted ID.\n        IF EXISTS (SELECT 1 FROM public.inventory_levels WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.product_price_observations WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.inventory_reservations WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.inventory_adjustments WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.inventory_events WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.fulfillment_order_lines WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.inventory_transfer_lines WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.inventory_transfer_receipts WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.purchase_order_lines WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.purchase_order_receipts WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.restock_events WHERE variant_id=ANY(removed))\n           OR EXISTS (SELECT 1 FROM public.return_lines WHERE variant_id=ANY(removed)) THEN\n            RAISE EXCEPTION 'PRODUCT_EDIT_VARIANT_REMOVAL';\n        END IF;\n        DELETE FROM public.product_variants WHERE product_id=p_product_id AND id=ANY(removed);\n    END IF;\n    IF p_mutation ? 'stock' THEN\n        IF jsonb_typeof(p_mutation->'stock') <> 'number' OR (p_mutation->>'stock') !~ '^[0-9]+$' THEN RAISE EXCEPTION 'PRODUCT_EDIT_INVALID'; END IF;\n        PERFORM public.set_inventory_level_available(p_product_id,NULL,NULL,(p_mutation->>'stock')::integer,\n            p_actor_id,'adjustment','product.update',p_idempotency_key::text||':default');\n    END IF;\n    -- Existing trigger semantics may advance the version several times inside this atomic\n    -- transaction. Return the exact final token; a client must never calculate its next version.\n    UPDATE public.products SET variants=public.product_edit_snapshot_v1(p_product_id)->'variants',\n        updated_by=p_actor_id,updated_at=clock_timestamp() WHERE id=p_product_id AND store_id=p_store_id;\n    response := public.product_edit_snapshot_v1(p_product_id);\n    INSERT INTO public.outbox_events(store_id,site_id,aggregate_type,aggregate_id,event_type,payload,idempotency_key,request_id,actor_id,schema_version)\n        VALUES(p_store_id,p_store_id,'product',p_product_id::text,'product.updated',\n            jsonb_build_object('site_id',p_store_id,'product_id',p_product_id,'handle',coalesce(response->>'url_handle',response->>'slug'),\n                'status',coalesce(response->>'status','draft')),\n            'product.updated:'||p_idempotency_key::text,request_id,p_actor_id,1);\n    INSERT INTO public.audit_activity_events(store_id,actor_id,actor_type,action,resource_type,resource_id,request_id,before_state,after_state,metadata)\n        VALUES(p_store_id,p_actor_id,'user','product.updated','product',p_product_id::text,request_id,before_product,response,\n            jsonb_build_object('idempotency_key',p_idempotency_key,'expected_version',p_expected_version,'version',response->'version'));\n    INSERT INTO public.product_edit_receipts(idempotency_key,operation,store_id,product_id,actor_id,expected_version,mutation,response)\n        VALUES(p_idempotency_key,'product.update.v1',p_store_id,p_product_id,p_actor_id,p_expected_version,p_mutation,response);\n    RETURN response;\nEND $function$\n"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "hash": "4f11f7205fa03435187eb6a0ce6d67eb84a8bd0851537c731ec241e7cfafeb22",
+      "owner": "10",
+      "signature": "create_order_with_inventory_reservations(uuid,text,text,text,jsonb,jsonb,text,text,text,uuid,text)",
+      "definition": "CREATE OR REPLACE FUNCTION public.create_order_with_inventory_reservations(p_store_id uuid, p_customer_name text, p_customer_email text, p_customer_phone text DEFAULT NULL::text, p_shipping_address jsonb DEFAULT '{}'::jsonb, p_items jsonb DEFAULT '[]'::jsonb, p_payment_method text DEFAULT 'cod'::text, p_notes text DEFAULT NULL::text, p_coupon_code text DEFAULT NULL::text, p_actor_id uuid DEFAULT NULL::uuid, p_request_id text DEFAULT NULL::text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nDECLARE\n  v_item jsonb;\n  v_locked_product_versions jsonb;\n  v_ref jsonb; v_cart public.carts%ROWTYPE; v_cart_line jsonb;\n  v_niche jsonb; v_product_facts jsonb; v_variant_facts jsonb;\n  v_selected_options jsonb; v_option_names text[]; v_saved_options jsonb;\n  v_has_variants boolean; v_names text[] := ARRAY['toys','electronics','food','furniture','gifts','personalization','beauty','sports','books'];\n  v_product_id uuid;\n  v_variant_id uuid;\n  v_quantity integer;\n  v_product record;\n  v_variant public.product_variants%ROWTYPE;\n  v_location_id uuid;\n  v_reservation jsonb;\n  v_reservation_id uuid;\n  v_order_id uuid;\n  v_order_number text;\n  v_subtotal numeric(10,2) := 0;\n  v_line_total numeric(10,2);\n  v_unit_price numeric(10,2);\n  v_variant_title text;\n  v_sku text;\n  v_order_items jsonb := '[]'::jsonb;\n  v_order_json jsonb;\nBEGIN\n  IF p_store_id IS NULL THEN\n    RAISE EXCEPTION 'store_id is required';\n  END IF;\n\n  IF jsonb_typeof(p_items) <> 'array' OR jsonb_array_length(p_items) = 0 THEN\n    RAISE EXCEPTION 'items must be a non-empty array';\n  END IF;\n\n  IF NOT EXISTS (\n    SELECT 1\n      FROM public.sites\n     WHERE id = p_store_id\n       AND deleted_at IS NULL\n  ) THEN\n    RAISE EXCEPTION 'store not found';\n  END IF;\n\n  IF public.current_site_id() IS NULL THEN\n    PERFORM set_config('app.site_id', p_store_id::text, true);\n  END IF;\n  PERFORM public.require_inventory_site_guc(p_store_id);\n\n  -- Preserve234's idempotency/advisory-first boundary. Align385/inventory lock order\n  -- across ALL products before accepting any line, so distinct configurations share stock.\n  IF EXISTS(SELECT 1 FROM jsonb_array_elements(p_items) i WHERE i ? 'niche' OR i ? 'niche_snapshot'\n    OR i ? 'catalog_source' OR i ? 'personalization') THEN RAISE EXCEPTION 'CART_FACT_INPUT_INVALID'; END IF;\n  IF EXISTS(SELECT 1 FROM jsonb_array_elements(p_items) i WHERE i ? 'cart_fact_ref'\n    GROUP BY i->'cart_fact_ref'->>'cart_id',i->'cart_fact_ref'->>'line_id' HAVING count(*)>1) THEN\n    RAISE EXCEPTION 'CART_FACT_REFERENCE_DUPLICATED'; END IF;\n  IF EXISTS(SELECT 1 FROM jsonb_array_elements(p_items) i WHERE i ? 'cart_fact_ref') AND (\n    EXISTS(SELECT 1 FROM jsonb_array_elements(p_items) i WHERE NOT i ? 'cart_fact_ref')\n    OR (SELECT count(DISTINCT i->'cart_fact_ref'->>'cart_id') FROM jsonb_array_elements(p_items) i)>1) THEN RAISE EXCEPTION 'CART_FACT_INPUT_INVALID'; END IF;\n  -- Lock cart capabilities in deterministic order before product/inventory locks.\n  PERFORM c.id FROM public.carts c WHERE c.store_id=p_store_id AND c.id IN\n    (SELECT (i->'cart_fact_ref'->>'cart_id')::uuid FROM jsonb_array_elements(p_items) i WHERE i ? 'cart_fact_ref')\n    ORDER BY c.id FOR UPDATE;\n  PERFORM il.id FROM public.inventory_levels il WHERE il.store_id=p_store_id AND il.product_id IN\n    (SELECT (i->>'product_id')::uuid FROM jsonb_array_elements(p_items) i) ORDER BY il.id FOR UPDATE;\n  PERFORM pv.id FROM public.product_variants pv JOIN public.products p ON p.id=pv.product_id\n    WHERE p.store_id=p_store_id AND pv.product_id IN (SELECT (i->>'product_id')::uuid FROM jsonb_array_elements(p_items) i)\n    ORDER BY pv.id FOR UPDATE OF pv;\n  PERFORM po.id FROM public.product_options po JOIN public.products p ON p.id=po.product_id\n    WHERE p.store_id=p_store_id AND po.product_id IN (SELECT (i->>'product_id')::uuid FROM jsonb_array_elements(p_items) i)\n    ORDER BY po.id FOR UPDATE OF po;\n  PERFORM p.id FROM public.products p WHERE p.store_id=p_store_id AND p.id IN\n    (SELECT (i->>'product_id')::uuid FROM jsonb_array_elements(p_items) i) ORDER BY p.id FOR UPDATE;\n\n  -- All inventory/variant/option/product rows above are already locked in canonical order.\n  -- Own reservation/cache writes can advance revisions between same-SKU lines.\n  -- Validate each accepted cart line against this single pre-effect observation;\n  -- external catalog changes are still refused before any reservation.\n  SELECT coalesce(jsonb_object_agg(p.id::text,to_jsonb(p.version)),'{}'::jsonb)\n    INTO v_locked_product_versions FROM public.products p\n   WHERE p.store_id=p_store_id AND p.id IN\n    (SELECT (i->>'product_id')::uuid FROM jsonb_array_elements(p_items) i);\n\n  v_order_number := 'LB-' || to_char(now(), 'YYYYMMDD') || '-' ||\n    upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));\n\n  FOR v_item IN SELECT * FROM jsonb_array_elements(p_items)\n  LOOP\n    v_product_id := (v_item ->> 'product_id')::uuid;\n    v_variant_id := NULLIF(v_item ->> 'variant_id', '')::uuid;\n    v_quantity := COALESCE((v_item ->> 'quantity')::integer, 0);\n\n    IF v_quantity <= 0 THEN\n      RAISE EXCEPTION 'invalid quantity for product %', v_product_id;\n    END IF;\n\n    SELECT id, name, price, sku, is_active, store_id, version, metadata, images\n      INTO v_product\n      FROM public.products\n     WHERE id = v_product_id\n       AND store_id = p_store_id\n       AND deleted_at IS NULL\n     FOR UPDATE;\n\n    IF NOT FOUND THEN\n      RAISE EXCEPTION 'product not found: %', v_product_id;\n    END IF;\n\n    IF COALESCE(v_product.is_active, false) = false THEN\n      RAISE EXCEPTION 'product is not active: %', v_product.name;\n    END IF;\n\n    v_unit_price := v_product.price;\n    v_variant_title := NULL;\n    v_sku := v_product.sku;\n\n    IF v_variant_id IS NOT NULL THEN\n      SELECT *\n        INTO v_variant\n        FROM public.product_variants\n       WHERE id = v_variant_id\n         AND product_id = v_product_id FOR UPDATE;\n\n      IF NOT FOUND THEN\n        RAISE EXCEPTION 'variant not found for product %', v_product_id;\n      END IF;\n\n      v_unit_price := COALESCE(NULLIF(v_variant.price, 0), v_product.price);\n      v_variant_title := v_variant.title;\n      v_sku := COALESCE(v_variant.sku, v_product.sku);\n    END IF;\n\n    SELECT EXISTS(SELECT 1 FROM public.product_variants WHERE product_id=v_product_id) INTO v_has_variants;\n\n    SELECT coalesce(jsonb_object_agg(k,value),'{}'::jsonb) INTO v_product_facts\n      FROM jsonb_each(coalesce(v_product.metadata,'{}'::jsonb)) AS facts(k,value) WHERE k=ANY(v_names);\n    v_variant_facts := CASE WHEN v_variant_id IS NULL THEN '{}'::jsonb ELSE coalesce(v_variant.metadata,'{}'::jsonb) END;\n    SELECT array_agg(name ORDER BY position,id) INTO v_option_names FROM public.product_options WHERE product_id=v_product_id;\n    v_selected_options := CASE WHEN v_variant_id IS NULL THEN '{}'::jsonb ELSE\n      jsonb_strip_nulls(jsonb_build_object(coalesce(v_option_names[1],'Option 1'),v_variant.option1,\n        coalesce(v_option_names[2],'Option 2'),v_variant.option2,coalesce(v_option_names[3],'Option 3'),v_variant.option3)) END;\n    IF v_has_variants AND v_variant_id IS NULL AND (v_item ? 'cart_fact_ref' OR v_product_facts<>'{}'::jsonb\n      OR EXISTS(SELECT 1 FROM public.product_variants pv WHERE pv.product_id=v_product_id AND (pv.metadata<>'{}'::jsonb OR pv.option1 IS NOT NULL OR pv.option2 IS NOT NULL OR pv.option3 IS NOT NULL))\n      OR EXISTS(SELECT 1 FROM public.product_options po WHERE po.product_id=v_product_id)) THEN RAISE EXCEPTION 'CART_VARIANT_REQUIRED'; END IF;\n    v_ref := v_item->'cart_fact_ref';\n    v_niche := NULL;\n    IF v_ref IS NOT NULL THEN\n      SELECT * INTO v_cart FROM public.carts WHERE id=(v_ref->>'cart_id')::uuid AND store_id=p_store_id\n        AND session_id=v_ref->>'cart_token' AND status='active' AND deleted_at IS NULL\n        AND fact_acceptance_version=1 AND (expires_at IS NULL OR expires_at>now()) FOR UPDATE;\n      IF NOT FOUND OR jsonb_array_length(v_cart.items)<>jsonb_array_length(p_items) THEN RAISE EXCEPTION 'CART_FACT_REFERENCE_INVALID'; END IF;\n      IF (SELECT count(*) FROM jsonb_array_elements(v_cart.items) line WHERE line->>'id'=v_ref->>'line_id')<>1 THEN\n        RAISE EXCEPTION 'CART_FACT_REFERENCE_INVALID'; END IF;\n      SELECT line INTO v_cart_line FROM jsonb_array_elements(v_cart.items) line WHERE line->>'id'=v_ref->>'line_id';\n      IF v_cart_line->>'product_id' IS DISTINCT FROM v_product_id::text\n        OR nullif(v_cart_line->>'variant_id','') IS DISTINCT FROM v_variant_id::text\n        OR nullif(v_cart_line->>'marketplace_listing_id','') IS DISTINCT FROM nullif(v_item->>'marketplace_listing_id','')\n        OR (v_cart_line->>'quantity')::integer IS DISTINCT FROM v_quantity\n        OR v_cart_line->'product_version' IS DISTINCT FROM (v_locked_product_versions->v_product_id::text)\n        OR v_ref->'product_version' IS DISTINCT FROM v_cart_line->'product_version'\n        OR v_ref->'configuration_fingerprint' IS DISTINCT FROM v_cart_line->'configuration_fingerprint'\n        OR v_ref->'snapshot_fingerprint' IS DISTINCT FROM v_cart_line->'snapshot_fingerprint'\n        OR coalesce(v_cart_line->>'snapshot_fingerprint','') !~ '^[0-9a-f]{64}$'\n        OR v_cart_line->'catalog_source'->'product_facts' IS DISTINCT FROM v_product_facts\n        OR v_cart_line->'catalog_source'->'variant_facts' IS DISTINCT FROM v_variant_facts\n        OR v_cart_line->'catalog_source'->'selected_options' IS DISTINCT FROM v_selected_options\n        OR v_cart_line->'catalog_source'->'images' IS DISTINCT FROM coalesce(to_jsonb(v_product.images),'[]'::jsonb)\n        THEN RAISE EXCEPTION 'CART_FACTS_CHANGED'; END IF;\n      v_niche := v_cart_line->'niche_snapshot';\n      IF jsonb_typeof(v_niche) IS DISTINCT FROM 'object' OR v_niche->'version' IS DISTINCT FROM '1'::jsonb\n        OR jsonb_typeof(v_niche->'facts') IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'CART_FACT_REFERENCE_INVALID'; END IF;\n      SELECT coalesce(jsonb_object_agg(o->>'name',o->'value'),'{}'::jsonb) INTO v_saved_options\n        FROM jsonb_array_elements(coalesce(v_niche->'selected_options','[]'::jsonb)) o;\n      IF v_saved_options IS DISTINCT FROM v_selected_options THEN RAISE EXCEPTION 'CART_FACTS_CHANGED'; END IF;\n    ELSIF v_product_facts<>'{}'::jsonb OR v_variant_facts<>'{}'::jsonb OR v_selected_options<>'{}'::jsonb THEN\n      -- Existing non-niche direct order clients remain compatible. Factful/configured\n      -- items must go through the same server cart, never a second snapshot writer.\n      RAISE EXCEPTION 'CART_FACT_REFERENCE_REQUIRED';\n    END IF;\n\n    SELECT il.location_id\n      INTO v_location_id\n      FROM public.inventory_levels il\n      JOIN public.inventory_locations loc ON loc.id = il.location_id\n     WHERE il.product_id = v_product_id\n       AND il.variant_id IS NOT DISTINCT FROM v_variant_id\n       AND COALESCE(il.store_id, loc.store_id) = p_store_id\n       AND loc.status = 'active'\n       AND loc.deleted_at IS NULL\n       AND il.deleted_at IS NULL\n     ORDER BY loc.is_default DESC, il.updated_at ASC\n     LIMIT 1;\n\n    IF NOT FOUND OR v_location_id IS NULL THEN\n      RAISE EXCEPTION 'inventory level not found for product %', v_product_id;\n    END IF;\n\n    SELECT public.reserve_inventory(\n      p_store_id,\n      v_product_id,\n      v_variant_id,\n      v_location_id,\n      v_quantity,\n      1200,\n      'checkout.reserve:' || COALESCE(p_request_id, v_order_number) || ':' || jsonb_array_length(v_order_items)::text || ':' || v_product_id::text || ':' || COALESCE(v_variant_id::text, 'default'),\n      p_actor_id,\n      p_request_id\n    )\n    INTO v_reservation;\n    v_reservation_id := (v_reservation ->> 'reservation_id')::uuid;\n\n    v_line_total := v_unit_price * v_quantity;\n    v_subtotal := v_subtotal + v_line_total;\n\n    v_order_items := v_order_items || jsonb_build_array(jsonb_build_object(\n      'product_id', v_product_id,\n      'variant_id', v_variant_id,\n      'reservation_id', v_reservation_id,\n      'location_id', v_location_id,\n      'name', v_product.name,\n      'variant_title', v_variant_title,\n      'sku', v_sku,\n      'quantity', v_quantity,\n      'price', v_unit_price,\n      'total', v_line_total,\n      'images', coalesce(to_jsonb(v_product.images),'[]'::jsonb)\n    ) || CASE WHEN v_niche IS NOT NULL THEN jsonb_build_object('niche',v_niche,'cart_id',v_cart.id,'cart_line_id',v_cart_line->>'id',\n        'product_version',v_cart_line->'product_version','configuration_fingerprint',v_cart_line->'configuration_fingerprint',\n        'snapshot_fingerprint',v_cart_line->'snapshot_fingerprint') ELSE '{}'::jsonb END);\n  END LOOP;\n\n  INSERT INTO public.orders (\n    store_id,\n    order_number,\n    customer_name,\n    customer_email,\n    customer_phone,\n    shipping_address,\n    items,\n    subtotal,\n    shipping_cost,\n    discount,\n    total,\n    coupon_code,\n    payment_method,\n    status,\n    payment_status,\n    notes,\n    inventory_reserved_at,\n    created_by\n  )\n  VALUES (\n    p_store_id,\n    v_order_number,\n    p_customer_name,\n    p_customer_email,\n    COALESCE(p_customer_phone, ''),\n    COALESCE(p_shipping_address, '{}'::jsonb),\n    v_order_items,\n    v_subtotal,\n    0,\n    0,\n    v_subtotal,\n    p_coupon_code,\n    p_payment_method,\n    CASE WHEN p_payment_method = 'cod' THEN 'confirmed' ELSE 'pending' END,\n    'pending',\n    COALESCE(p_notes, ''),\n    now(),\n    p_actor_id\n  )\n  RETURNING id INTO v_order_id;\n\n  FOR v_item IN SELECT * FROM jsonb_array_elements(v_order_items)\n  LOOP\n    v_product_id := (v_item ->> 'product_id')::uuid;\n    v_variant_id := NULLIF(v_item ->> 'variant_id', '')::uuid;\n    v_quantity := (v_item ->> 'quantity')::integer;\n    v_location_id := (v_item ->> 'location_id')::uuid;\n    v_reservation_id := (v_item ->> 'reservation_id')::uuid;\n\n    UPDATE public.inventory_reservations\n       SET order_id = v_order_id,\n           updated_at = now()\n     WHERE id = v_reservation_id\n       AND store_id = p_store_id;\n\n    PERFORM public.commit_inventory_reservation(\n      p_store_id,\n      v_reservation_id,\n      'checkout.commit:' || v_order_id::text || ':' || v_reservation_id::text,\n      p_actor_id,\n      p_request_id\n    );\n\n    INSERT INTO public.inventory_adjustments (\n      product_id,\n      variant_id,\n      location_id,\n      quantity_change,\n      reason,\n      reference_id,\n      note,\n      created_by\n    )\n    VALUES (\n      v_product_id,\n      v_variant_id,\n      v_location_id,\n      -v_quantity,\n      'sale',\n      v_order_id,\n      'Committed by reserve_inventory -> commit_inventory_reservation',\n      p_actor_id\n    );\n\n    INSERT INTO public.order_items (\n      order_id,\n      product_id,\n      variant_id,\n      sku,\n      title,\n      variant_title,\n      quantity,\n      unit_price,\n      total,\n      product_snapshot\n    )\n    VALUES (\n      v_order_id,\n      v_product_id,\n      v_variant_id,\n      v_item ->> 'sku',\n      v_item ->> 'name',\n      v_item ->> 'variant_title',\n      v_quantity,\n      (v_item ->> 'price')::numeric,\n      (v_item ->> 'total')::numeric,\n      v_item - 'reservation_id' - 'location_id'\n    );\n  END LOOP;\n\n  INSERT INTO public.outbox_events (\n    store_id,\n    aggregate_type,\n    aggregate_id,\n    event_type,\n    payload,\n    idempotency_key,\n    request_id,\n    actor_id\n  )\n  VALUES (\n    p_store_id,\n    'order',\n    v_order_id::text,\n    'order.created',\n    jsonb_build_object(\n      'store_id', p_store_id,\n      'order_id', v_order_id,\n      'order_number', v_order_number,\n      'total', v_subtotal,\n      'payment_method', p_payment_method\n    ),\n    'order.created:' || v_order_id::text,\n    p_request_id,\n    p_actor_id\n  )\n  ON CONFLICT (idempotency_key) DO NOTHING;\n\n  INSERT INTO public.audit_activity_events (\n    store_id,\n    actor_id,\n    actor_type,\n    action,\n    resource_type,\n    resource_id,\n    request_id,\n    after_state\n  )\n  VALUES (\n    p_store_id,\n    p_actor_id,\n    'user',\n    'order.create',\n    'order',\n    v_order_id::text,\n    p_request_id,\n    jsonb_build_object(\n      'order_id', v_order_id,\n      'order_number', v_order_number,\n      'total', v_subtotal\n    )\n  );\n\n  SELECT to_jsonb(o)\n    INTO v_order_json\n    FROM public.orders o\n   WHERE o.id = v_order_id;\n\n  IF v_ref IS NOT NULL THEN\n    UPDATE public.carts SET status='converted',checkout_handoff=coalesce(checkout_handoff,'{}'::jsonb)||jsonb_build_object('order_id',v_order_id),updated_at=now()\n      WHERE id=v_cart.id AND store_id=p_store_id AND status='active';\n    IF NOT FOUND THEN RAISE EXCEPTION 'CART_FACT_REFERENCE_INVALID'; END IF;\n  END IF;\n  RETURN v_order_json;\nEND;\n$function$\n"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "hash": "0536086c71513d533bcac4ef8c1ff65454e889b11899a3eb471407d85b3e6119",
+      "owner": "10",
+      "signature": "product_edit_snapshot_v1(uuid)",
+      "definition": "CREATE OR REPLACE FUNCTION public.product_edit_snapshot_v1(p_product_id uuid)\n RETURNS jsonb\n LANGUAGE sql\n STABLE\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\n    SELECT to_jsonb(p) || jsonb_build_object(\n        'product_options', coalesce(o.items, '[]'::jsonb), 'options', coalesce(o.items, '[]'::jsonb),\n        'variants', coalesce(v.items, '[]'::jsonb), 'product_variants', coalesce(v.items, '[]'::jsonb))\n    FROM public.products p\n    LEFT JOIN LATERAL (\n        SELECT jsonb_agg(to_jsonb(po) ORDER BY po.position, po.id) AS items,\n            array_agg(po.name ORDER BY po.position, po.id) AS names\n        FROM public.product_options po WHERE po.product_id = p.id\n    ) o ON true\n    LEFT JOIN LATERAL (\n        SELECT jsonb_agg(jsonb_build_object(\n            'id', pv.id, 'product_id', pv.product_id, 'title', pv.title,\n            'price', pv.price, 'compare_price', pv.compare_price, 'sku', pv.sku, 'barcode', pv.barcode,\n            'stock', pv.inventory_qty, 'inventory_qty', pv.inventory_qty, 'inventory_quantity', pv.inventory_qty,\n            'weight', pv.weight, 'weight_unit', pv.weight_unit, 'image_url', pv.image_url, 'position', pv.position,\n            'metadata', pv.metadata,\n            'option1', pv.option1, 'option2', pv.option2, 'option3', pv.option3,\n            'options', jsonb_strip_nulls(jsonb_build_object(\n                coalesce(o.names[1], 'Option 1'), pv.option1,\n                coalesce(o.names[2], 'Option 2'), pv.option2,\n                coalesce(o.names[3], 'Option 3'), pv.option3))) ORDER BY pv.position, pv.id) AS items\n        FROM public.product_variants pv WHERE pv.product_id = p.id\n    ) v ON true\n    WHERE p.id = p_product_id AND p.deleted_at IS NULL;\n$function$\n"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "app_tenant=X/postgres"
+      ],
+      "hash": "bd17cc56fd9d006b3d56be832a07e8099e686b1a1c1b50d342d8131bd3d81bd4",
+      "owner": "10",
+      "signature": "reserve_inventory(uuid,uuid,uuid,uuid,integer,integer,text,uuid,text)",
+      "definition": "CREATE OR REPLACE FUNCTION public.reserve_inventory(p_store_id uuid, p_product_id uuid, p_variant_id uuid, p_location_id uuid, p_quantity integer, p_ttl_seconds integer DEFAULT 1200, p_idempotency_key text DEFAULT NULL::text, p_actor_id uuid DEFAULT NULL::uuid, p_request_id text DEFAULT NULL::text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\nDECLARE\n  v_existing public.inventory_reservations%ROWTYPE;\n  v_level public.inventory_levels%ROWTYPE;\n  v_reservation public.inventory_reservations%ROWTYPE;\n  v_expires_at timestamptz;\nBEGIN\n  PERFORM public.require_inventory_site_guc(p_store_id);\n\n  IF p_quantity <= 0 THEN\n    RAISE EXCEPTION 'inventory reservation quantity must be positive';\n  END IF;\n\n  IF p_idempotency_key IS NULL OR length(trim(p_idempotency_key)) < 8 THEN\n    RAISE EXCEPTION 'inventory reservation idempotency key is required';\n  END IF;\n\n  SELECT * INTO v_existing\n    FROM public.inventory_reservations\n   WHERE store_id = p_store_id\n     AND idempotency_key = p_idempotency_key\n     AND deleted_at IS NULL\n   LIMIT 1;\n\n  IF FOUND THEN\n    RETURN jsonb_build_object(\n      'reservation_id', v_existing.id,\n      'status', v_existing.status,\n      'quantity', v_existing.quantity,\n      'expires_at', v_existing.expires_at,\n      'idempotent', true\n    );\n  END IF;\n\n  SELECT * INTO v_level\n    FROM public.inventory_levels\n   WHERE store_id = p_store_id\n     AND product_id = p_product_id\n     AND variant_id IS NOT DISTINCT FROM p_variant_id\n     AND location_id = p_location_id\n     AND deleted_at IS NULL\n   FOR UPDATE;\n\n  IF NOT FOUND THEN\n    RAISE EXCEPTION 'inventory level not found';\n  END IF;\n\n  IF (COALESCE(v_level.available, 0) - COALESCE(v_level.reserved, 0)) < p_quantity THEN\n    RAISE EXCEPTION 'INSUFFICIENT_INVENTORY';\n  END IF;\n\n  v_expires_at := now() + make_interval(secs => LEAST(GREATEST(COALESCE(p_ttl_seconds, 1200), 60), 86400));\n\n  UPDATE public.inventory_levels\n     SET reserved = reserved + p_quantity,\n         reserved_quantity = COALESCE(reserved_quantity, reserved) + p_quantity,\n         available_quantity = COALESCE(available_quantity, available),\n         on_hand_quantity = COALESCE(on_hand_quantity, available + reserved),\n         updated_at = now()\n   WHERE id = v_level.id;\n\n  PERFORM public.sync_inventory_catalog_cache_v1(p_product_id,p_variant_id);\n\n  INSERT INTO public.inventory_reservations (\n    store_id,\n    product_id,\n    variant_id,\n    location_id,\n    quantity,\n    status,\n    idempotency_key,\n    expires_at,\n    created_by\n  ) VALUES (\n    p_store_id,\n    p_product_id,\n    p_variant_id,\n    p_location_id,\n    p_quantity,\n    'active',\n    p_idempotency_key,\n    v_expires_at,\n    p_actor_id\n  )\n  RETURNING * INTO v_reservation;\n\n  RETURN jsonb_build_object(\n    'reservation_id', v_reservation.id,\n    'status', v_reservation.status,\n    'quantity', v_reservation.quantity,\n    'expires_at', v_reservation.expires_at,\n    'idempotent', false,\n    'request_id', p_request_id\n  );\nEND;\n$function$\n"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "app_tenant=X/postgres"
+      ],
+      "hash": "6b1ef6dab816eca385d198669de8e3f88b730e532a19b6fad96a5f5a47be04e4",
+      "owner": "10",
+      "signature": "set_inventory_level_available(uuid,uuid,uuid,integer,uuid,text,text,text)",
+      "definition": "CREATE OR REPLACE FUNCTION public.set_inventory_level_available(p_product_id uuid, p_variant_id uuid DEFAULT NULL::uuid, p_location_id uuid DEFAULT NULL::uuid, p_available integer DEFAULT 0, p_actor_id uuid DEFAULT NULL::uuid, p_reason text DEFAULT 'adjustment'::text, p_notes text DEFAULT NULL::text, p_request_id text DEFAULT NULL::text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\nDECLARE\n    v_product RECORD;\n    v_location_id UUID;\n    v_level RECORD;\n    v_previous_available INTEGER := 0;\n    v_delta INTEGER := 0;\n    v_level_json JSONB;\nBEGIN\n    IF p_available < 0 THEN\n        RAISE EXCEPTION 'available inventory cannot be negative';\n    END IF;\n\n    SELECT id, store_id\n      INTO v_product\n      FROM products\n     WHERE id = p_product_id\n       AND deleted_at IS NULL;\n\n    IF NOT FOUND THEN\n        RAISE EXCEPTION 'product not found';\n    END IF;\n\n    PERFORM public.require_inventory_site_guc(v_product.store_id);\n\n    IF p_variant_id IS NOT NULL\n       AND NOT EXISTS (\n           SELECT 1 FROM product_variants\n            WHERE id = p_variant_id\n              AND product_id = p_product_id\n       ) THEN\n        RAISE EXCEPTION 'variant not found for product';\n    END IF;\n\n    IF p_location_id IS NULL THEN\n        v_location_id := ensure_default_inventory_location(v_product.store_id);\n    ELSE\n        SELECT id\n          INTO v_location_id\n          FROM inventory_locations\n         WHERE id = p_location_id\n           AND store_id = v_product.store_id\n           AND deleted_at IS NULL;\n\n        IF v_location_id IS NULL THEN\n            RAISE EXCEPTION 'inventory location not found for product store';\n        END IF;\n    END IF;\n\n    SELECT *\n      INTO v_level\n      FROM inventory_levels\n     WHERE product_id = p_product_id\n       AND location_id = v_location_id\n       AND (\n            (p_variant_id IS NULL AND variant_id IS NULL)\n            OR variant_id = p_variant_id\n       )\n     LIMIT 1\n     FOR UPDATE;\n\n    IF NOT FOUND THEN\n        INSERT INTO inventory_levels (\n            product_id,\n            variant_id,\n            location_id,\n            available,\n            reserved,\n            incoming,\n            updated_at\n        )\n        VALUES (\n            p_product_id,\n            p_variant_id,\n            v_location_id,\n            p_available,\n            0,\n            0,\n            NOW()\n        )\n        RETURNING * INTO v_level;\n        v_delta := p_available;\n    ELSE\n        v_previous_available := COALESCE(v_level.available, 0);\n        -- Public absolute stock is free stock; preserve the existing held subset.\n        p_available := p_available + COALESCE(v_level.reserved, 0);\n        v_delta := p_available - v_previous_available;\n\n        IF p_available < COALESCE(v_level.reserved, 0) THEN\n            RAISE EXCEPTION 'available inventory cannot be below reserved quantity';\n        END IF;\n\n        UPDATE inventory_levels\n           SET available = p_available,\n               updated_at = NOW()\n         WHERE id = v_level.id\n         RETURNING * INTO v_level;\n    END IF;\n\n    IF v_delta <> 0 THEN\n        INSERT INTO inventory_adjustments (\n            product_id,\n            variant_id,\n            location_id,\n            quantity_change,\n            reason,\n            note,\n            created_by\n        )\n        VALUES (\n            p_product_id,\n            p_variant_id,\n            v_location_id,\n            v_delta,\n            CASE\n                WHEN p_reason IN ('sale', 'return', 'adjustment', 'recount', 'transfer', 'damaged', 'reserved', 'unreserved')\n                THEN p_reason\n                ELSE 'adjustment'\n            END,\n            p_notes,\n            p_actor_id\n        );\n    END IF;\n\n    PERFORM public.sync_inventory_catalog_cache_v1(p_product_id,p_variant_id);\n\n    INSERT INTO outbox_events (\n        store_id,\n        aggregate_type,\n        aggregate_id,\n        event_type,\n        payload,\n        idempotency_key,\n        request_id,\n        actor_id\n    )\n    VALUES (\n        v_product.store_id,\n        'inventory',\n        p_product_id::TEXT,\n        'inventory.level.set',\n        jsonb_build_object(\n            'store_id', v_product.store_id,\n            'product_id', p_product_id,\n            'variant_id', p_variant_id,\n            'location_id', v_location_id,\n            'available', p_available,\n            'delta', v_delta\n        ),\n        'inventory.level.set:' || p_product_id::TEXT || ':' || COALESCE(p_variant_id::TEXT, 'default') || ':' || v_location_id::TEXT || ':' || COALESCE(p_request_id, gen_random_uuid()::TEXT),\n        p_request_id,\n        p_actor_id\n    )\n    ON CONFLICT (idempotency_key) DO NOTHING;\n\n    SELECT to_jsonb(v_level) INTO v_level_json;\n    RETURN v_level_json;\nEND;\n$function$\n"
+    }
+  ],
+  "tables": [
+    {
+      "name": "fulfillment_order_lines",
+      "checks": [
+        "CHECK ((fulfilled_quantity >= 0))",
+        "CHECK ((quantity > 0))",
+        "CHECK ((status = ANY (ARRAY['open'::text, 'picked'::text, 'packed'::text, 'shipped'::text, 'fulfilled'::text, 'cancelled'::text])))"
+      ],
+      "columns": [
+        "id",
+        "site_id",
+        "fulfillment_order_id",
+        "order_id",
+        "order_item_id",
+        "product_id",
+        "variant_id",
+        "quantity",
+        "fulfilled_quantity",
+        "status",
+        "metadata",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at",
+        "deleted_at"
+      ]
+    },
+    {
+      "name": "fulfillment_orders",
+      "checks": [
+        "CHECK ((status = ANY (ARRAY['open'::text, 'in_progress'::text, 'partially_fulfilled'::text, 'fulfilled'::text, 'cancelled'::text])))"
+      ],
+      "columns": [
+        "id",
+        "site_id",
+        "order_id",
+        "location_id",
+        "status",
+        "idempotency_key",
+        "request_id",
+        "assigned_at",
+        "picked_at",
+        "packed_at",
+        "shipped_at",
+        "delivered_at",
+        "cancelled_at",
+        "metadata",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at",
+        "deleted_at"
+      ]
+    },
+    {
+      "name": "inventory_levels",
+      "checks": [
+        "CHECK (((available >= reserved) AND (available >= 0) AND (reserved >= 0) AND (incoming >= 0)))"
+      ],
+      "columns": [
+        "id",
+        "product_id",
+        "variant_id",
+        "location_id",
+        "available",
+        "reserved",
+        "incoming",
+        "updated_at",
+        "on_hand_quantity",
+        "available_quantity",
+        "committed_quantity",
+        "unavailable_quantity",
+        "incoming_quantity",
+        "reserved_quantity",
+        "safety_stock_quantity",
+        "store_id",
+        "created_at",
+        "deleted_at",
+        "version",
+        "free_quantity"
+      ]
+    },
+    {
+      "name": "inventory_reservations",
+      "checks": [
+        "CHECK ((quantity > 0))",
+        "CHECK ((status = ANY (ARRAY['active'::text, 'hold'::text, 'committed'::text, 'released'::text, 'expired'::text, 'fulfilled'::text, 'cancelled'::text])))"
+      ],
+      "columns": [
+        "id",
+        "store_id",
+        "product_id",
+        "variant_id",
+        "location_id",
+        "order_id",
+        "quantity",
+        "status",
+        "idempotency_key",
+        "expires_at",
+        "committed_at",
+        "released_at",
+        "release_reason",
+        "created_by",
+        "created_at",
+        "updated_at",
+        "deleted_at",
+        "commit_idempotency_key",
+        "release_idempotency_key"
+      ]
+    },
+    {
+      "name": "inventory_transfer_lines",
+      "checks": [
+        "CHECK ((quantity_received >= 0))",
+        "CHECK ((quantity_requested > 0))",
+        "CHECK ((quantity_shipped >= 0))",
+        "CHECK ((status = ANY (ARRAY['reserved'::text, 'shipped'::text, 'partially_received'::text, 'received'::text, 'cancelled'::text])))"
+      ],
+      "columns": [
+        "id",
+        "site_id",
+        "transfer_id",
+        "product_id",
+        "variant_id",
+        "quantity_requested",
+        "quantity_shipped",
+        "quantity_received",
+        "status",
+        "metadata",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at",
+        "deleted_at",
+        "reservation_id"
+      ]
+    },
+    {
+      "name": "inventory_transfers",
+      "checks": [
+        "CHECK ((status = ANY (ARRAY['reserved'::text, 'shipped'::text, 'partially_received'::text, 'received'::text, 'cancelled'::text])))"
+      ],
+      "columns": [
+        "id",
+        "site_id",
+        "transfer_number",
+        "source_location_id",
+        "destination_location_id",
+        "status",
+        "shipped_at",
+        "received_at",
+        "cancelled_at",
+        "notes",
+        "idempotency_key",
+        "request_id",
+        "metadata",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at",
+        "deleted_at"
+      ]
+    },
+    {
+      "name": "order_items",
+      "checks": [
+        "CHECK ((fulfillment_status = ANY (ARRAY['unfulfilled'::text, 'partial'::text, 'fulfilled'::text, 'returned'::text])))",
+        "CHECK (((hsn_code IS NULL) OR (hsn_code ~ '^\\d{4,8}$'::text)))",
+        "CHECK (((marketplace_approved_fingerprint IS NULL) OR (marketplace_approved_fingerprint ~ '^[0-9a-f]{64}$'::text)))",
+        "CHECK (((marketplace_listing_id IS NULL) = (marketplace_approved_fingerprint IS NULL)))",
+        "CHECK ((quantity > 0))"
+      ],
+      "columns": [
+        "id",
+        "order_id",
+        "product_id",
+        "variant_id",
+        "name",
+        "sku",
+        "quantity",
+        "price",
+        "total",
+        "created_at",
+        "title",
+        "variant_title",
+        "unit_price",
+        "discount_amount",
+        "tax_amount",
+        "product_snapshot",
+        "fulfillment_status",
+        "fulfilled_quantity",
+        "deleted_at",
+        "returned_quantity",
+        "refunded_quantity",
+        "updated_at",
+        "hsn_code",
+        "gst_rate",
+        "taxable_amount",
+        "cgst_amount",
+        "sgst_amount",
+        "igst_amount",
+        "store_id",
+        "site_id",
+        "marketplace_listing_id",
+        "marketplace_approved_fingerprint",
+        "marketplace_category_id",
+        "tax_snapshot"
+      ]
+    },
+    {
+      "name": "orders",
+      "checks": [
+        "CHECK ((channel = ANY (ARRAY['web'::text, 'whatsapp'::text, 'instagram'::text, 'pos'::text, 'api'::text])))",
+        "CHECK ((cod_confirmation_status = ANY (ARRAY['not_required'::text, 'requested'::text, 'confirmed'::text, 'rejected'::text, 'expired'::text])))",
+        "CHECK (((customer_gstin IS NULL) OR (customer_gstin ~ '^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$'::text)))",
+        "CHECK ((financial_state = ANY (ARRAY['pending'::text, 'authorized'::text, 'paid'::text, 'partially_refunded'::text, 'refunded'::text, 'failed'::text, 'voided'::text])))",
+        "CHECK ((fulfillment_state = ANY (ARRAY['unfulfilled'::text, 'hold'::text, 'partial'::text, 'fulfilled'::text, 'delivered'::text, 'returned'::text, 'rto'::text, 'cancelled'::text])))",
+        "CHECK ((order_source = ANY (ARRAY['checkout'::text, 'draft'::text, 'admin'::text, 'import'::text])))",
+        "CHECK (((payment_gateway IS NULL) OR (payment_gateway = ANY (ARRAY['razorpay'::text, 'cod'::text])))) NOT VALID",
+        "CHECK (((payment_method IS NULL) OR (payment_method = ANY (ARRAY['razorpay'::text, 'cod'::text])))) NOT VALID",
+        "CHECK ((payment_status = ANY (ARRAY['pending'::text, 'paid'::text, 'failed'::text, 'refunded'::text])))",
+        "CHECK (((place_of_supply_state IS NULL) OR (place_of_supply_state ~ '^(0[1-9]|[12][0-9]|3[0-8]|97)$'::text)))",
+        "CHECK ((refund_status = ANY (ARRAY['none'::text, 'pending'::text, 'processing'::text, 'partially_refunded'::text, 'refunded'::text, 'failed'::text])))",
+        "CHECK ((return_status = ANY (ARRAY['none'::text, 'requested'::text, 'authorized'::text, 'received'::text, 'refunded'::text, 'closed'::text, 'cancelled'::text])))",
+        "CHECK ((risk_level = ANY (ARRAY['low'::text, 'medium'::text, 'high'::text])))",
+        "CHECK (((risk_score >= 0) AND (risk_score <= 100)))",
+        "CHECK ((rto_status = ANY (ARRAY['none'::text, 'at_risk'::text, 'in_transit'::text, 'returned'::text, 'resolved'::text])))",
+        "CHECK ((status = ANY (ARRAY['pending'::text, 'pending_cod'::text, 'confirmed'::text, 'processing'::text, 'shipped'::text, 'delivered'::text, 'cancelled'::text, 'refunded'::text, 'returned'::text, 'rto'::text])))"
+      ],
+      "columns": [
+        "id",
+        "store_id",
+        "order_number",
+        "customer_email",
+        "customer_name",
+        "customer_phone",
+        "shipping_address",
+        "billing_address",
+        "items",
+        "subtotal",
+        "shipping_cost",
+        "tax",
+        "discount",
+        "total",
+        "coupon_code",
+        "coupon_discount",
+        "status",
+        "payment_status",
+        "payment_method",
+        "payment_id",
+        "tracking_number",
+        "carrier",
+        "created_at",
+        "updated_at",
+        "fulfillment_status",
+        "payment_gateway",
+        "shipping_method",
+        "notes",
+        "site_id",
+        "deleted_at",
+        "created_by",
+        "updated_by",
+        "version",
+        "payment_processed_at",
+        "inventory_reserved_at",
+        "inventory_released_at",
+        "payment_failure_reason",
+        "last_payment_event_id",
+        "currency",
+        "return_status",
+        "refund_status",
+        "customer_gstin",
+        "place_of_supply_state",
+        "gst_invoice_number",
+        "gst_invoice",
+        "order_source",
+        "checkout_session_id",
+        "channel",
+        "financial_state",
+        "fulfillment_state",
+        "cod_confirmation_status",
+        "cod_confirmation_requested_at",
+        "cod_confirmed_at",
+        "cod_expires_at",
+        "rto_status",
+        "risk_score",
+        "risk_level",
+        "order_locked_at",
+        "immutable_snapshot",
+        "purchase_id",
+        "tax_snapshot"
+      ]
+    },
+    {
+      "name": "purchase_order_lines",
+      "checks": [
+        "CHECK ((quantity_ordered > 0))",
+        "CHECK ((quantity_received >= 0))",
+        "CHECK ((status = ANY (ARRAY['ordered'::text, 'partially_received'::text, 'received'::text, 'cancelled'::text])))"
+      ],
+      "columns": [
+        "id",
+        "site_id",
+        "purchase_order_id",
+        "product_id",
+        "variant_id",
+        "location_id",
+        "quantity_ordered",
+        "quantity_received",
+        "unit_cost",
+        "total_cost",
+        "status",
+        "metadata",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at",
+        "deleted_at"
+      ]
+    },
+    {
+      "name": "purchase_orders",
+      "checks": [
+        "CHECK ((status = ANY (ARRAY['draft'::text, 'ordered'::text, 'partially_received'::text, 'received'::text, 'cancelled'::text, 'closed'::text])))"
+      ],
+      "columns": [
+        "id",
+        "site_id",
+        "supplier_id",
+        "location_id",
+        "po_number",
+        "status",
+        "ordered_at",
+        "expected_at",
+        "received_at",
+        "cancelled_at",
+        "currency",
+        "subtotal",
+        "total",
+        "notes",
+        "idempotency_key",
+        "request_id",
+        "metadata",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at",
+        "deleted_at"
+      ]
+    },
+    {
+      "name": "return_lines",
+      "checks": [
+        "CHECK ((condition = ANY (ARRAY['sellable'::text, 'opened'::text, 'damaged'::text, 'missing'::text, 'unknown'::text])))",
+        "CHECK ((disposition = ANY (ARRAY['restock'::text, 'scrap'::text, 'return_to_vendor'::text, 'no_restock'::text])))",
+        "CHECK ((quantity > 0))",
+        "CHECK ((received_quantity >= 0))",
+        "CHECK ((refund_amount >= (0)::numeric))",
+        "CHECK ((restock_quantity >= 0))",
+        "CHECK ((status = ANY (ARRAY['requested'::text, 'authorized'::text, 'received'::text, 'inspected'::text, 'restocked'::text, 'refunded'::text, 'rejected'::text])))"
+      ],
+      "columns": [
+        "id",
+        "site_id",
+        "return_id",
+        "order_id",
+        "order_item_id",
+        "product_id",
+        "variant_id",
+        "quantity",
+        "received_quantity",
+        "restock_quantity",
+        "refund_amount",
+        "reason",
+        "condition",
+        "disposition",
+        "status",
+        "metadata",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at",
+        "deleted_at"
+      ]
+    },
+    {
+      "name": "returns",
+      "checks": [
+        "CHECK ((refund_method = ANY (ARRAY['original_payment'::text, 'gift_card'::text, 'manual'::text])))",
+        "CHECK ((status = ANY (ARRAY['requested'::text, 'authorized'::text, 'rejected'::text, 'received'::text, 'inspected'::text, 'approved'::text, 'refunded'::text, 'closed'::text, 'cancelled'::text])))"
+      ],
+      "columns": [
+        "id",
+        "site_id",
+        "order_id",
+        "status",
+        "customer_email",
+        "reason",
+        "refund_method",
+        "idempotency_key",
+        "request_id",
+        "authorized_at",
+        "received_at",
+        "inspected_at",
+        "refunded_at",
+        "closed_at",
+        "metadata",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at",
+        "deleted_at"
+      ]
+    }
+  ]
+}

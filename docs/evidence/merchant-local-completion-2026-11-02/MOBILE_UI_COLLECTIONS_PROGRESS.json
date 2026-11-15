@@ -1,0 +1,152 @@
+{
+  "at": "2026-11-04T17:33:21.673652+00:00",
+  "status": "COLLECTIONS_V22_LOCAL_QUALIFIED_ANDROID19_BOUNDED_PASS_IOS6_COMPILE_ONLY",
+  "source": {
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-collections-v11.source.json",
+    "sha256": "4bca3d04017756e2af1f0fb1e34377f2a6adcc649584a61d9283671e3f86a2b6",
+    "entries": 7463,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-collections-v11-qualified-source"
+  },
+  "implemented": [
+    "Collections list uses shared responsive header, applied type/search/page labels and native choice sheets; same-query refresh retains labelled prior rows with shell-visible progress; captured refresh cannot bypass busy state.",
+    "Complex manual/smart metadata editor is one canonical full page with native fields, pinned Save/Close and dirty Back. Rule selectors retain six fields/seven operators/two match values with explicit Apply.",
+    "Rule cards retain native text/focus identity through removal of an earlier rule using widget keys, with no UI key inserted into the rule payload.",
+    "Saved preview remains server-evaluated, revision-bound and explicitly exact or capped; its progress stays above the scrolled body. Draft changes are not claimed evaluated.",
+    "Membership uses flowing full names, one lazy ordered list and accessible drag/Move/Remove alternatives with original ordered IDs/versions/recovery. Current assignment review is a guarded durable page.",
+    "A real late-preview/disposed State context error was fixed with mounted-first current-view checks. Matching previously existing UI owners receive only that getter guard; their complete method bodies compare unchanged.",
+    "Shared field helper and explicit/validator errors wrap readable text; validator priority and native input behavior retained from fields-v3."
+  ],
+  "diagnostics_retained": {
+    "collections_v6": "256PASS/1test selector failure: RawTooltip cast as IconButton; corrected actual widget predicate.",
+    "collections_v7": "Two new fixture assumptions failed: smart update scopes store in options rather than body; lazy progress unbuilt above scroll exposed real UI visibility finding.",
+    "collections_v8": "280PASS/1real disposed-State preview failure; fixed mounted-first guard.",
+    "collections_v9": "283PASS/0FAIL focused collection/service/UI foundations after guards.",
+    "hero_negative_v10": "0PASS/1FAIL reproduces same disposed-State error after held clipboard acknowledgement.",
+    "scope": "No test diagnostic is represented as an application command/database failure unless actually observed."
+  },
+  "local_qualification": {
+    "full_flutter": {
+      "passed": 1070,
+      "failed": 1,
+      "skipped": 0,
+      "failure": "Existing protected staff_scope_boundary_test: positive hosted invitation remains in its existing namespace; local restore cannot adopt it",
+      "failure_scope": "Outside newfrontend authority; no namespace policy change or weakened assertion."
+    },
+    "app_analysis_issues": 0,
+    "ui_kit_analysis_issues": 0,
+    "parsed_preservation_checks": 241,
+    "governance": {
+      "capsule": "governance-category-capsule-v28",
+      "passed": 114,
+      "failed": 0,
+      "blocked": 0,
+      "skipped": 0,
+      "not_applicable": 1,
+      "all_code_inputs_matched": 7463
+    },
+    "protected_readback": {
+      "baseline_files": 5195,
+      "readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-protected-readback-v8.json",
+      "only_difference": "Same retained Staff presentation/cache exception; all other protected files unchanged."
+    }
+  },
+  "android": {
+    "at": "2026-11-04T17:39:07.309297+00:00",
+    "status": "DIAGNOSTIC_FAILED_NO_COMPOUND_ACCEPTANCE",
+    "run_id": "80282ae5b7de",
+    "source": "mobile-ui-collections-v11/4bca3d04017756e2af1f0fb1e34377f2a6adcc649584a61d9283671e3f86a2b6",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "cancelled": 0,
+    "suite_seconds": 268.7,
+    "wall_seconds": 270.8,
+    "observed_before_failure": [
+      "Normal native Accounts sign-in and automatic app return",
+      "Native membership reorder, committed reply loss and original-key retry",
+      "Normal web read and save followed by native refreshed ordered readback"
+    ],
+    "failure": "Current UI controller selected an EditText coordinate but opened the Rule1operator sheet; focus assertion stopped before entering that field. No application defect inferred.",
+    "cleanup": {
+      "rest": true,
+      "database": true
+    },
+    "reverse_maps": {
+      "at": "2026-11-04T17:36:49.235851+00:00",
+      "serial": "emulator-5580",
+      "adb_port": 15038,
+      "runner_exit": 1,
+      "controller_exit": 1,
+      "baseline": [],
+      "before": [],
+      "removed": [],
+      "refused": [],
+      "after": [],
+      "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+    },
+    "read_only_keyboard_observer": "45-second observer saw no Merchant keyboard; no image or keyboard-layout acceptance.",
+    "post_cleanup_image": "native-focus-diagnostic.png was captured after cleanup and shows Chrome about:blank; it is not evidence of Merchant field geometry.",
+    "next": "V18 active: exact driver header executed and launcher requires executed companion/receipt/self to equal manifest paths.",
+    "v17": "Interrupted receipt-owned runner90324: controller identity stopped before input, exit130/UI1; reverse maps restored. No acceptance.",
+    "active_launcher": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/run-catalog-v18.py"
+  },
+  "ios": "New source compile/runtime pending; prior v40 iOSv5 compiles only that retained source.",
+  "cleanup": "Container replacement is implemented; no source/assets wholesale deleted and no dependent cleanup accepted before newruntime/integration proof.",
+  "programme": "119applicable remainsopen;120/121excluded;122paused;51frozen;unique surface denominator unreconciled.",
+  "updated_at": "2026-11-04T18:11:38.595446+00:00",
+  "semantics_followup": {
+    "basis": "V18 native EditText projected the whole rule card. New v19 negative semantics test confirms its label was Condition1 plus Rule1value, not an independent editable target.",
+    "correction": "Rule Card semanticContainer:false exposes independent child semantics; no field/domain/request behavior changed.",
+    "v20": "311PASS/1test semantics-handle cleanup failure; independent geometry/label assertions passed. Handle now explicitly disposed in finally before end-of-test verification.",
+    "current": "v21 312PASS/0FAIL; v22 full1071PASS/1existingprotectedFAIL, analyses0,241AST; native target/readback acceptance pending.",
+    "prior_source": "v11 remains archived; new corrected source is not its exact source."
+  },
+  "current_source": {
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "sha256": "20222002acc891eae10780d569c6db5b7984ddead7655101ce5f96bcd5602b42",
+    "entries": 7463,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-collections-v22.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-collections-v22-qualified-source",
+    "status": "Archived exact source qualified locally, Android bounded collection/web/DB pass and iOS compile only. Whole app unfinished."
+  },
+  "current_qualification": {
+    "focused_v21": {
+      "passed": 312,
+      "failed": 0
+    },
+    "full_v22": {
+      "passed": 1071,
+      "failed": 1,
+      "skipped": 0,
+      "failure": "Same protected Staff hosted/local invitation namespace test; assertion unchanged."
+    },
+    "app_analysis_issues": 0,
+    "ui_kit_analysis_issues": 0,
+    "parsed_preservation_checks": 241,
+    "protected_readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-protected-readback-v9.json",
+    "governance": {
+      "capsule": "governance-category-capsule-v29",
+      "passed": 114,
+      "failed": 0,
+      "blocked": 0,
+      "skipped": 0,
+      "not_applicable": 1,
+      "code_inputs_matched": 7463
+    },
+    "android": {
+      "status": "passed bounded compound journey",
+      "report": "COMPILED_MOBILE_UI_COLLECTIONS_ANDROID_WEB_V19_QUALIFICATION.json",
+      "run_id": "5f04666b2835",
+      "passed": 1,
+      "failed": 0,
+      "wall_seconds": 686.5
+    },
+    "ios": {
+      "status": "compile/bundle-integrity-only passed; no runtime",
+      "report": "MOBILE_UI_COLLECTIONS_IOS_V6_COMPILE_QUALIFICATION.json",
+      "bundle_manifest_sha256": "50621601fad4d8d49275ccb3cc29043297bb6ba305cacbb681d00756b20a13b7"
+    }
+  }
+}

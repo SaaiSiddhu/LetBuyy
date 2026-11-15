@@ -41,7 +41,7 @@ function product(name: string, metadata: unknown, stock = 5, tenant = site) {
 }
 function variant(productId: string, metadata: unknown, price = 200, stock = 3, size?: string) {
  const id = randomUUID();
- owned.psql(`INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty,option1,metadata) VALUES(${q(id)},${q(productId)},'Synthetic measurement variant',${q('SYN-'+id)},${price},${stock},${size?q(size):'NULL'},${json(metadata)}); SELECT public.set_inventory_level_available(${q(productId)},${q(id)},${q(site.locationId)},${stock},NULL);`);
+ owned.psql(`INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty,option1,metadata) VALUES(${q(id)},${q(productId)},'Synthetic measurement variant',${q('SYN-'+id)},${price},${stock},${size?q(size):'NULL'},${json(metadata)}); WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT public.set_inventory_level_available(${q(productId)},${q(id)},${q(site.locationId)},${stock},NULL) FROM _fixture_inventory_scope436;`);
  return id;
 }
 function browse(query: Record<string, unknown> = {}, selected?: string[], tenant = site) {

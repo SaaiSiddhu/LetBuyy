@@ -1,0 +1,91 @@
+{
+  "runId": "12f64a2421e4",
+  "tests": 88,
+  "assertionsPassed": 88,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "suites": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/cod-collection.postgres.test.ts",
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-money-approval.postgres.test.ts",
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/payment-capture-proof.postgres.test.ts",
+      "tests": 13,
+      "pass": 13,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/payment-credential-history.postgres.test.ts",
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/payment-refund-connection.postgres.test.ts",
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/payout-complete-read.postgres.test.ts",
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/store-payment-setup.postgres.test.ts",
+      "tests": 13,
+      "pass": 13,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts",
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    },
+    {
+      "path": "tests/owned-db/payment-refund-reconciliation.postgres.test.ts",
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "skipped": 0,
+      "code": 0
+    }
+  ],
+  "scope": "Current canonical Gateway/SQL with owned disposable databases and reviewed synthetic provider responses only. No real sandbox connection/capture/refund/payout, KYC, bank settlement, native/browser/full-feature or release acceptance."
+}

@@ -54,7 +54,9 @@ test('shared clients and mobile render real traffic sources with honest empty st
     assert.match(dartClient, /Future<JsonMap> trafficSources/);
     assert.match(mobileService, /class TrafficSourceEntry/);
     assert.match(mobileService, /_api\.analytics\.trafficSources/);
-    assert.match(mobileScreen, /No traffic sources yet/);
+    assert.match(mobileScreen, /!analytics\.trafficSourcesAvailable[\s\S]*Traffic attribution unavailable for this period/);
+    assert.match(mobileScreen, /analytics\.trafficSources\.isEmpty[\s\S]*No traffic sources returned for this period/);
+    assert.match(mobileScreen, /if \(source\.percentageAvailable\)/);
     assert.match(mobileScreen, /LinearProgressIndicator/);
     assert.doesNotMatch(mobileScreen, /Traffic sources unavailable/);
     assert.doesNotMatch(mobileScreen, /coming soon/i);

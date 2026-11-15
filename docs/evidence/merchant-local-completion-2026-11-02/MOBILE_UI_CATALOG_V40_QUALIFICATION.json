@@ -1,0 +1,55 @@
+{
+  "at": "2026-11-04T16:32:20.321077+00:00",
+  "status": "BOUNDED_LOCAL_FRONTEND_QUALIFIED_WITH_EXISTING_PROTECTED_FAILURE_NATIVE_PENDING",
+  "scope": "Products/ProductForm/variant/imageURL/specification/CSV presentation and canonical owners only; no whole-app/119feature acceptance",
+  "source": {
+    "sha256": "98b6bd6a9f48efdab7b349fb4683f60c35d237735b0017e3128b9ab0954661e4",
+    "entries": 7461,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-catalog-v40.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-catalog-v40-qualified-source",
+    "unchanged_through_local_checks": true
+  },
+  "flutter": {
+    "passed": 1051,
+    "failed": 1,
+    "skipped": 0,
+    "existing_failure": "staff_scope_boundary_test.dart positive hosted invitation remains in its existing namespace; local restore cannot adopt it",
+    "failure_boundary": "Protected persistence namespace remains outside this frontend assignment; no all-green claim",
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-catalog-v40.full-flutter.log"
+  },
+  "analyses": {
+    "app_issues": 0,
+    "ui_kit_issues": 0
+  },
+  "parsed_preservation": {
+    "unchanged_checks": 100,
+    "report": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-catalog-v40.preservation.json",
+    "scope": "Original product submit/retry/status helpers, numeric calculations, variant IDs/options/zero/nullability, CSV command/read arguments/parsing and private export bytes/URL validation preserved. Row query reads use same page/filter captured before awaits."
+  },
+  "governance": {
+    "owned_clone": "governance-category-capsule-v27",
+    "passed": 114,
+    "failed": 0,
+    "blocked": 0,
+    "skipped": 0,
+    "not_applicable": 1,
+    "frozen_code_inputs_matched": 7461,
+    "report": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v27.gate.json"
+  },
+  "protected_source": {
+    "baseline_files": 5195,
+    "new_protected_changes": 0,
+    "prior_staff_presentation_exception_unchanged": true,
+    "report": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-protected-readback-v7.json"
+  },
+  "runtime": {
+    "android": "v15boundedPASS;categoryweb/mobilesync and5catalogdraftkeyboardobservations;reportCOMPILED_MOBILE_UI_CATALOG_ANDROID_WEB_V15_QUALIFICATION.json;openUIfindingsremain",
+    "ios": "v5samev40compile/bundle-integrityPASS;MOBILE_UI_CATALOG_IOS_V5_COMPILE_QUALIFICATION.json;no iOSruntime"
+  },
+  "limits": [
+    "No new product/variant/media/CSV/export/provider effect or their web sync accepted from widget tests",
+    "Known export job recheck is local to this open scope; missing job response/process death cannot invent durable recovery",
+    "No whole-app unique surface denominator; many source/caller/state cohorts remain unreviewed",
+    "No deployment, push, merge, hosted mutation, production or release certification"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "runId": "e0ea7d4ebebd",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-96664-mw7isz7e-ba59c0"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 0,
+  "failedSuites": 0,
+  "tests": 2,
+  "assertionsPassed": 2,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 8.4,
+  "suiteSeconds": 6.1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "tenant-redteam",
+      "path": "tests/executable/tenant-redteam-postgres.test.mjs",
+      "kind": "postgres",
+      "cluster": "letbuyy-exec-96664-mw7isz7e-ba59c0",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 6.1,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "database": "letbuyy_exec_tenant_redteam_postgres",
+      "strayProcessesStopped": false
+    }
+  ]
+}

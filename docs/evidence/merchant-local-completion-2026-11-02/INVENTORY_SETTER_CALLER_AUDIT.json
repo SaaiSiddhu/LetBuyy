@@ -1,0 +1,32 @@
+{
+  "kind": "SOURCE_CALLER_MAP_NOT_COMPLETE_FEATURE_ACCEPTANCE",
+  "updatedAt": "2026-11-04T01:12:42.763231+00:00",
+  "currentSourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v8.source.json",
+  "confirmedLocalBehavior": [
+    "Both raw setters deny missing/foreign GUC for app_tenant/service_role/postgres while correct-context positive/no-change controls pass. Managed18; stockRepairV3.",
+    "Normal stock-adjustment browser5, product-status7 and product-editor11 passed at exact guarded source-v4. Current SQL adds the separately57-check-qualified canonical order revision observation."
+  ],
+  "activeDirectScalarReferences": [
+    {
+      "path": "services/api-gateway/src/routes/inventory.ts",
+      "operation": "POST /v1/inventory/bulk-adjust",
+      "referenceLine": 859,
+      "classification": "SOURCE_CANDIDATE_PENDING_OWNED_REPRODUCTION",
+      "finding": "Still calls the low-level adjust RPC through the ordinary PostgREST admin client. getSupabaseAdmin has no request GUC injection. Existing adjustment suite tests only its missing-idempotency-key refusal. No Merchant web/Dart caller found by exact bulk-adjust/bulkAdjust search. Verify valid owned command/replay/current access before proposing a repair; do not exempt the setter from context checks."
+    },
+    {
+      "path": "services/api-gateway/src/execution/product-execution.adapter.ts",
+      "operation": "private setInventoryAvailable -> private legacy variant replacement",
+      "referenceLine": 655,
+      "classification": "PRIVATE_UNREACHABLE_TREE_BY_ACTIVE_ENTRYPOINT_SOURCE; NOT_DELETION_QUALIFIED",
+      "finding": "Public createProduct and updateProduct now enter canonical executeProductCreate/Mutation. replaceProductOptions/replaceProductVariants have no active callers in this adapter; only private legacy branches reference the scalar/batch RPC. Preserve until a separate explicit import/build/test/deletion proof."
+    }
+  ],
+  "currentNativeWork": {
+    "diagnosticVersion": 22,
+    "compiledWorkers": true,
+    "status": "RUNNING_NOT_ACCEPTED",
+    "result": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v22.json"
+  },
+  "fullOriginal122Accepted": false
+}

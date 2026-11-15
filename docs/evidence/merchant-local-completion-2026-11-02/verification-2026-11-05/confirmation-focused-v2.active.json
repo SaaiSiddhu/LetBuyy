@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-05T20:04:24.605700+00:00",
+  "supervisor_pid": 72603,
+  "source": "confirmation-source-v2",
+  "source_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/confirmation_presentation_test.dart",
+    "test/supporting_presentation_test.dart",
+    "test/warehouse_action_lifetime_test.dart",
+    "test/warehouse_create_form_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 72605
+}

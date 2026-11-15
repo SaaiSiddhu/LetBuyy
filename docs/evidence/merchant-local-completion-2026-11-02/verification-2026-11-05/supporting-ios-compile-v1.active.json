@@ -1,0 +1,22 @@
+{
+  "build_script_sha256": "5d36a950b389b6cc80ac2a1762ea37214d2de691f124fe4ec8424edeaaedbd44",
+  "status": "RUNNING",
+  "source_sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+  "source_inputs": 8442,
+  "supervisor_pid": 63980,
+  "owned_root": "/private/tmp/letbuyy-supporting-ios-use_ckjo",
+  "platform": "ios",
+  "started_at": "2026-11-05T18:30:08.460815+00:00",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "ACCOUNTS_ENVIRONMENT": "development",
+    "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+    "API_BASE_URL": "http://127.0.0.1:54350/v1",
+    "IDENTITY_BASE_URL": "http://127.0.0.1:54351",
+    "ADMIN_BASE_URL": "http://127.0.0.1:54353",
+    "STOREFRONT_BASE_URL": "http://127.0.0.1:54354"
+  },
+  "steps": [],
+  "scope": "Normal main.dart debug compile/artifact only. No install, launch, sign-in, provider, web-mobile sync, device, hosted or release acceptance.",
+  "active_child_pid": 63982
+}

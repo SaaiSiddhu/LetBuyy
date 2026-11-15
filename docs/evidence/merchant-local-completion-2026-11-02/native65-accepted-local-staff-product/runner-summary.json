@@ -1,0 +1,19 @@
+{
+  "runId": "65570e9272a9",
+  "tests": 1,
+  "assertionsPassed": 1,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "failedSuites": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "private_original_report_sha256": "393a22f9c3d5ec8f571911b9f4a5c748ed9476ac5347333dcf6cc6547c8173d8"
+}

@@ -19,5 +19,6 @@ export function isApprovedStorefrontDomainLiteral(file, text, index) {
    || (stanza==='env.production.vars' && /^CUSTOM_DOMAIN_CNAME_TARGET = "storefront\.letbuyy\.store"$/.test(line));
  }
  if(file==='packages/shared-types/src/brand.ts')return /^export const DEFAULT_STOREFRONT_DOMAIN = 'letbuyy\.store';$/.test(line);
+ if(file==='packages/dart/models/lib/src/storefront_config.dart')return /^const defaultStorefrontDomain = 'letbuyy\.store';$/.test(line);
  return storefrontEnvFiles.has(file)&&(/^(?:NEXT_PUBLIC_STORE_ROOT_DOMAIN|STOREFRONT_ROOT_DOMAIN)=letbuyy\.store$/.test(line) || /^NEXT_PUBLIC_STOREFRONT_URL=https:\/\/letbuyy\.store$/.test(line));
 }

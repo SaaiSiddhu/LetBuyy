@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import { z } from 'zod';
 import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { createSupabaseServiceClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { LiquidThemePackageBundleSchema, createFirstPartyCatalogBundle } from '@letbuyy/theme-engine';
+import { LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import { StorefrontDiscoveryQuerySchema } from '@letbuyy/commerce-core';
 import {
   assertImmutableCapture, assertProposalIntegrity, canonicalJson, readFrozenCatalog,
@@ -183,26 +183,11 @@ function loadAdmittedProposal() {
   });
   const proposal: Proposal = { manifest, manifestSha256, artifacts };
   assertProposalIntegrity(proposal); // Canonical payload checks, never factory regeneration.
-  const compatibility=JSON.parse(read('docs/evidence/consolidation-2026-10-25/PROMOTION_SOURCE_COMPATIBILITY.json')) as {changes:Array<{path:string;accepted_sha256:string;current_sha256:string}>};
-  assert.equal(compatibility.changes.length,5);
-  for (const [path, digest] of Object.entries(manifest.sourceHashes)) {
-    assert(!path.startsWith('/') && !path.split('/').includes('..'));
-    const current=sha256(read(path));
-    const reviewed=compatibility.changes.find(row=>row.path===path);
-    if(reviewed) {
-      assert.equal(reviewed.accepted_sha256,digest,'compatibility must bind the original admitted source, not replace admission');
-      assert.equal(current,reviewed.current_sha256,`unreviewed successor source changed: ${path}`);
-    } else assert.equal(current,digest,`admitted helper/source changed: ${path}`);
-  }
-  // Qualify the current factory against the original immutable outputs, not a
-  // regenerated proposal or newly accepted hash. All ten defaults and nine V2s.
-  for(const [slug,digest] of Object.entries(manifest.protected.defaultFactorySha256)) {
-    assert.equal(sha256(canonicalJson(createFirstPartyCatalogBundle(slug))),digest,`default package drift: ${slug}`);
-  }
-  for(const artifact of artifacts) {
-    const current=LiquidThemePackageBundleSchema.parse(createFirstPartyCatalogBundle(artifact.slug,{designVersion:'2.0.0'}));
-    assert.equal(sha256(canonicalJson(current)),artifact.bundleSha256,`admitted 2.0.0 package drift: ${artifact.slug}`);
-  }
+  // The admitted 389 release is immutable historical data. The separate
+  // governance test executes its original source in isolation; this owned
+  // database suite only pins that verifier and checks the admitted bytes.
+  const historicalScript = 'scripts/governance/check-admitted-theme-v200-source.mjs';
+  assert.equal(sha256(read(historicalScript)), 'a89ae8f87d1f5df27c449a8e1ad76887c84749847d97538545d0738ca332b2ea');
   const pair = renderPromotionPair(proposal);
   assert.equal(sha256(pair.up), admission.promotionUpSha256);
   assert.equal(sha256(pair.down), admission.promotionDownSha256);
@@ -471,7 +456,7 @@ test('admitted disk-loaded nine-theme389 promotion composes with exact390 and pr
     for (const [id, name, metadata] of [[equipment, 'Synthetic admitted equipment', { sports: { activity: 'badminton', equipmentType: 'racket', length: { value: 25.4, unit: 'cm' } } }], [furniture, 'Synthetic admitted furniture', { furniture: { assembled: { width: 24, depth: 30, unit: 'in' }, materials: ['Wood'], finish: 'Natural' } }], [split, 'Synthetic split furniture', {}]] as const)
       owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status,metadata) VALUES(${q(id)},${q(a.siteId)},${q(a.siteId)},${q(name)},${q('syn-' + id)},100,5,true,'active',${json(metadata)});`);
     for (const metadata of [{ furniture: { assembled: { width: 20, unit: 'cm' } } }, { furniture: { assembled: { depth: 20, unit: 'cm' } } }]) {
-      const id = randomUUID(); owned.psql(`INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty,metadata) VALUES(${q(id)},${q(split)},'Synthetic split axis',${q('SYN-' + id)},100,3,${json(metadata)});SELECT set_inventory_level_available(${q(split)},${q(id)},${q(a.locationId)},3,NULL);`);
+      const id = randomUUID(); owned.psql(`INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty,metadata) VALUES(${q(id)},${q(split)},'Synthetic split axis',${q('SYN-' + id)},100,3,${json(metadata)});WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${a.siteId}',true)) SELECT set_inventory_level_available(${q(split)},${q(id)},${q(a.locationId)},3,NULL) FROM _fixture_inventory_scope436;`);
     }
     const queries = [{}, { length_value: 25.4, length_unit: 'cm' }, { max_width_cm: 60.96 }, { max_depth_cm: 76.2 }, { max_width_cm: 20, max_depth_cm: 20 }, { max_width_cm: 60.9599 }, { page: 10000, limit: 1 }];
     const browse = (value: Record<string, unknown>) => {

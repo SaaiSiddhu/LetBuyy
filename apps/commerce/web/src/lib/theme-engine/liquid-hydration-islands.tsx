@@ -498,6 +498,8 @@ function selectedVariantsFrom(root: ParentNode): Record<string, string> {
 
 function cartItemFromElement(element: HTMLElement): LiquidCartItem | null {
     const sectionRoot = element.closest('[data-section-id],section') || document;
+    if (element.dataset.inventoryKnown === 'false' ||
+        (sectionRoot instanceof HTMLElement && sectionRoot.dataset.inventoryKnown === 'false')) return null;
     const selectedVariant = {
         ...selectedVariantsFrom(sectionRoot),
         ...selectedVariantsFrom(element),
@@ -1286,6 +1288,13 @@ class LbVariantPickerElement extends LiquidIslandBase {
     // Only judges availability once every option group has a selection — a partial selection
     // (e.g. Size chosen, Colour not yet) cannot honestly be marked available or unavailable.
     private applyAvailability() {
+        if (this.closest<HTMLElement>('[data-section-id]')?.dataset.inventoryKnown === 'false') {
+            const status = this.querySelector<HTMLElement>('[data-lb-variant-status]');
+            if (status) status.textContent = 'Stock unavailable. Reload and try again.';
+            this.facts?.update(null, 'unknown');
+            this.dispatchAvailability(false);
+            return;
+        }
         if (this.variants.length === 0) {
             const status = this.querySelector<HTMLElement>('[data-lb-variant-status]');
             if (status) status.textContent = 'Product options are unavailable. Reload and try again.';
@@ -1923,7 +1932,7 @@ class LbCartElement extends LiquidIslandBase {
         window.addEventListener(CART_CHANGED_EVENT, this.handleCartChanged);
         window.addEventListener('storage', this.handleCartChanged);
         const items = readCart();
-        if (items.length > 0) {
+        if (items.length > 0 || window.localStorage.getItem(CART_TOKEN_STORAGE_KEY)) {
             if (window.localStorage.getItem(CART_TOKEN_STORAGE_KEY)) void this.recoverCart(items, ++this.attempt, getLiquidStorefrontSubdomain(), window.localStorage.getItem(CART_TOKEN_STORAGE_KEY), 'review');
             else {
                 // A local draft without a receipt may be a lost POST response.
@@ -2066,6 +2075,13 @@ class LbCartElement extends LiquidIslandBase {
         this.message = 'Checking your saved cart…';
         this.renderCart();
         try {
+            // A drawer command can still own the optimistic draft when this
+            // page mounts. Reading before that command settles can restore the
+            // previous server lines and invalidate its pending receipt.
+            while (cartSyncQueue) {
+                if (!await cartSyncQueue) outcome = 'unknown';
+                if (!ownsDraft()) return;
+            }
             if (subdomain && token) {
                 // A cached receipt may predate another queued write. Read the
                 // capability-bound canonical cart; never retry the mutation.
@@ -2888,6 +2904,7 @@ function bindHeaderControls(root: HTMLElement): () => void {
 export function bindVariantPurchaseControls(root: HTMLElement, productIds: string[]) {
     const required = new Set(productIds);
     root.querySelectorAll<HTMLElement>('lb-add-to-cart').forEach(element => {
+        if (element.dataset.inventoryKnown === 'false') return;
         const picker = element.closest('[data-section-id],section')?.querySelector<HTMLElement>('lb-variant-picker');
         if (!required.has(element.dataset.productId || '') || picker?.dataset.productId === element.dataset.productId) return;
         element.dataset.productRequiresOptions = 'true';

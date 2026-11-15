@@ -1,0 +1,6 @@
+{
+  "apps/merchant/mobile/lib/services/kyc_service.dart": "c6708268a4b4a8a8311b464e90b85f47b6d32de99c983688717fe54574a09e63",
+  "apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart": "b89b5ed07dfc39966cb66d3ec51804c744b1daf9a587b97a978ffdc26d206816",
+  "apps/merchant/mobile/lib/main.dart": "39d8bd4a225a32716676c111db1ecccde7a96a449a1ecfacfa495d0b379818ad",
+  "apps/merchant/mobile/test/kyc_india_upload_test.dart": "ae192a4bb95b23d289fb6c7b92f68c639237d934dee8a7721a333c898cde8da9"
+}

@@ -1,0 +1,7 @@
+{
+  "fixture": "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-availability-observation106-server-v2.postgres.test.ts",
+  "sha256": "d1723563310e664544091998f6b3916f53a4d484e2b40a9d317492f033e79785",
+  "node_options": "--conditions=react-server",
+  "reason": "The original module intentionally imports server-only through the real Commerce mapper. Use its actual server-component export condition rather than disabling or mocking that guard. First observation failed at import before measuring any buyer behavior.",
+  "source": "106 unchanged"
+}

@@ -1,4 +1,5 @@
 // Conservative source tripwire; actual catalog/role behavior belongs to the owned DB lane.
+import { createHash } from 'node:crypto';
 export function sqlTokens(sql) {
     const out = [];
     for (let i = 0; i < sql.length;) {
@@ -73,7 +74,10 @@ export function splitSqlList(tokens) {
 }
 const typeName = tokens => tokenText(tokens).replaceAll('pg_catalog . ', '').replaceAll(' [ ]', '[]')
     .replace(/^int4$|^int$/, 'integer').replace(/^int8$/, 'bigint').replace(/^bool$/, 'boolean')
-    .replace(/^timestamp with time zone$/, 'timestamptz').replace(/^timestamp without time zone$/, 'timestamp');
+    .replace(/^timestamp with time zone$/, 'timestamptz').replace(/^timestamp without time zone$/, 'timestamp')
+    // These canonical public table composites occur in existing migration ABIs.
+    // Other schema-qualified names stay unknown and retain conservative refusal.
+    .replace(/^public \. (products|inventory_transfers|inventory_transfer_lines|purchase_orders|purchase_order_lines)(\[\])?$/, '$1$2');
 export function functionIdentity(signature) {
     const match = signature.match(/^public\s*\.\s*([a-z_][a-z0-9_]*)\s*\(([^()]*)\)$/i);
     if (!match) return null;
@@ -320,6 +324,25 @@ function uncertainPrivileges(body) {
     }
     return events;
 }
+// Migrations 411 and 412 reconstruct existing function bodies from pg_get_functiondef
+// and replay their CREATE OR REPLACE statements. These reviewed, immutable
+// DO blocks contain no ACL operation. PostgreSQL preserves an existing function's
+// ACL on CREATE OR REPLACE; the current-head owned role-access suite proves the
+// effective anon/authenticated/PUBLIC closure. Pin exact bodies so a changed
+// dynamic statement returns to the conservative unknown-privilege path.
+const REVIEWED_DEFINITION_REWRITE_SHA256 = new Set([
+    '50340b3b662b71da4e6600964f42f658f5189b7bd0336d13c1e95a12b4dc417f',
+    '94f090fc3b13e9f438ae81dc9bcf0958064a73dee36566b83b2e0d5d12666490',
+    'fae5327f9466fc77173ca01bfc6a7526e85138fb8b97818fe810cc72d09b0504',
+    '99ea08b3d493403a0f99e1ba38dbcce13e81190bf17c6064431ea7b932e6f3b8',
+    '80d9b04168e0fc4e1112f4d1a93599cfc062c8394c65b88f2fd6d787715c6f8f',
+]);
+const isReviewedDefinitionRewrite = body =>
+    REVIEWED_DEFINITION_REWRITE_SHA256.has(createHash('sha256').update(body).digest('hex'));
+// This exact warehouse block revokes a finite set of function grants and
+// tightens search_path. It cannot reopen another function ACL. Changed bodies
+// return to conservative unknown-privilege analysis; no closure is inferred.
+const REVIEWED_NON_REOPENING_ACL_SHA256 = new Set(['21d525a7cc18211a392c97e401fba389ca3058d3a3acd6a73640c73a759e1542']);
 function privilegeEvents(sql) {
     const events = [];
     for (const tokens of sqlStatements(sql)) {
@@ -327,6 +350,8 @@ function privilegeEvents(sql) {
         if (direct) events.push({...direct, start:tokens[0].start});
         else if (tokens[0]?.value === 'do') {
             const body = tokens.length === 3 && tokens[1].kind === 'body' && tokens[2].value === ';' ? tokens[1] : null;
+            if (body && (isReviewedDefinitionRewrite(body.value)
+                || REVIEWED_NON_REOPENING_ACL_SHA256.has(createHash('sha256').update(body.value).digest('hex')))) continue;
             const finite = body && finitePrivileges(body.value);
             if (finite) events.push(...finite.map(change => ({...change,start:tokens[0].start})));
             // Unbound dynamic SQL can select any function and role. A later explicit

@@ -1,0 +1,8 @@
+{
+  "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d",
+  "files": {
+    "apps/merchant/mobile/lib/widgets/shared/warehouse_document_detail.dart": "88be6f36e651824394b0c5cf2105ea80b033b9a5671b33129473283e35cd906e",
+    "apps/merchant/mobile/test/warehouse_document_presentation_test.dart": "31f457613a79a781a23361fdf8171051bce7d44a2f330ead0254b14ec52eb5a2"
+  },
+  "role": "Exact2changed input files; whole input manifest remains separate, not a full source archive."
+}

@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../services/api_client.dart';
 
 import '../../app/store_context.dart';
+import '../../config/app_config.dart';
 
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
@@ -19,6 +20,8 @@ import '../../app/routes.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../widgets/settings/store_info_card.dart';
 import '../../widgets/settings/settings_tile.dart';
+import '../../widgets/settings/merchant_theme_selector.dart';
+import '../../widgets/shared/merchant_product_usage.dart';
 import '../../widgets/shared/confirm_dialog.dart';
 import '../../widgets/store/store_switcher_button.dart';
 import '../main/store_main_screen.dart';
@@ -40,8 +43,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String? _paymentMethodRetryKey;
   bool _isLoading = true;
   int _loadVersion = 0;
-  int? _loadedEpoch;
+  Object? _loadedKey;
   String? _loadError;
+  StoreContext? _readOwner;
+  Object? _requestedKey;
+  bool _billingLoading = false, _paymentLoading = false;
+  bool _reloadScheduled = false;
 
   @override
   void initState() {
@@ -49,65 +56,129 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadStore();
   }
 
+  bool _staleSettings(StoreContext owner) =>
+      _readOwner != null &&
+      (!identical(_readOwner, owner) ||
+          (_loadedKey ?? _requestedKey) != owner.requestContextKey ||
+          (_store != null && _store!.id != owner.selectedStoreId));
+
   Future<void> _loadStore() async {
+    if (!mounted) return;
     final version = ++_loadVersion;
-    final storeContext = context.read<StoreContext>(),
-        epoch = storeContext.requestContextVersion;
+    final owner = context.read<StoreContext>();
+    final epoch = owner.requestContextVersion;
+    final entryKey = owner.requestContextKey,
+        entryStore = owner.selectedStoreId;
+    bool owned() =>
+        mounted &&
+        version == _loadVersion &&
+        identical(context.read<StoreContext>(), owner);
+    bool current(Object key) => owned() && owner.requestContextKey == key;
     setState(() {
+      _readOwner = owner;
+      _requestedKey = entryKey;
       _isLoading = true;
       _billing = null;
       _paymentConfig = null;
       _store = null;
-      _loadedEpoch = null;
+      _loadedKey = null;
       _loadError = null;
+      _billingLoading = false;
+      _paymentLoading = false;
     });
-    try {
-      final store = await storeContext.ensureSelectedStore();
-      MerchantBillingState? billing;
-      PaymentConfigModel? paymentConfig;
-      if (store != null) {
-        try {
-          billing = await context.read<SubscriptionService>().fetchBillingState(
-            store.id,
-          );
-        } catch (_) {}
-        paymentConfig = await context
-            .read<SubscriptionService>()
-            .getPaymentConfigModel(store.id);
-      }
-      if (!mounted || version != _loadVersion) return;
-      if (epoch != storeContext.requestContextVersion ||
-          storeContext.selectedStoreId != store?.id)
-        throw StateError('Store changed');
+    Future<void> expire() async {
+      if (!owned()) return;
+      ++_loadVersion;
+      final reset = owner.clearSelection();
       setState(() {
-        _loadedEpoch = epoch;
-        _store = store;
-        _billing = billing;
-        _paymentConfig = paymentConfig;
+        _store = null;
+        _billing = null;
+        _paymentConfig = null;
+        _loadedKey = null;
+        _requestedKey = owner.requestContextKey;
+        _loadError = 'Sign in again to load these settings.';
+        _isLoading = false;
+        _billingLoading = false;
+        _paymentLoading = false;
       });
-    } catch (e) {
-      debugPrint('Error loading store: $e');
-      if (mounted && version == _loadVersion)
-        setState(() => _loadError = 'Store details could not load. Try again.');
+      await reset;
+    }
+
+    try {
+      final store = await owner.ensureSelectedStore();
+      if (!owned() ||
+          epoch != owner.requestContextVersion ||
+          owner.selectedStoreId != store?.id ||
+          (entryStore != null && entryKey != owner.requestContextKey))
+        return;
+      final key = owner.requestContextKey;
+      setState(() {
+        _loadedKey = key;
+        _requestedKey = key;
+        _store = store;
+        _isLoading = false;
+        _billingLoading = store != null;
+        _paymentLoading = store != null;
+      });
+      if (store == null) return;
+      final service = context.read<SubscriptionService>();
+      Future<void> billing() async {
+        try {
+          final value = await service.fetchBillingState(store.id);
+          if (current(key)) setState(() => _billing = value);
+        } catch (error) {
+          if (current(key) && error is ApiException && error.statusCode == 401)
+            await expire();
+        } finally {
+          if (current(key)) setState(() => _billingLoading = false);
+        }
+      }
+
+      Future<void> payment() async {
+        try {
+          final value = await service.getPaymentConfigModel(store.id);
+          if (current(key)) setState(() => _paymentConfig = value);
+        } catch (error) {
+          if (current(key) && error is ApiException && error.statusCode == 401)
+            await expire();
+        } finally {
+          if (current(key)) setState(() => _paymentLoading = false);
+        }
+      }
+
+      // Optional owner-only panels never block the current store's navigation.
+      await Future.wait([billing(), payment()]);
+    } catch (error) {
+      if (!owned()) return;
+      if (error is ApiException && error.statusCode == 401) {
+        await expire();
+      } else if (error is! ApiException ||
+          error.code != 'SESSION_CONTEXT_CHANGED') {
+        setState(() {
+          _requestedKey = owner.requestContextKey;
+          _loadError = 'Store details could not load. Try again.';
+        });
+      }
     } finally {
-      if (mounted && version == _loadVersion)
+      if (mounted && version == _loadVersion) {
         setState(() => _isLoading = false);
+      }
     }
   }
 
   Future<void> _updatePaymentMethod(String field, bool enabled) async {
     final store = _store;
     final storeContext = context.read<StoreContext>();
-    final epoch = storeContext.requestContextVersion;
+    final key = storeContext.requestContextKey;
     if (store == null ||
         _paymentConfig == null ||
         _updatingPaymentMethods ||
         storeContext.selectedStoreId != store.id ||
-        _loadedEpoch != epoch)
+        _loadedKey != key)
       return;
     setState(() => _updatingPaymentMethods = true);
     final intent =
-        '$epoch:${store.id}:${_paymentConfig!.revision}:$field:$enabled';
+        '$key:${store.id}:${_paymentConfig!.revision}:$field:$enabled';
     if (_paymentMethodIntent != intent) {
       _paymentMethodIntent = intent;
       _paymentMethodRetryKey = const Uuid().v4();
@@ -120,7 +191,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         idempotencyKey: _paymentMethodRetryKey,
       );
       if (!mounted ||
-          storeContext.requestContextVersion != epoch ||
+          storeContext.requestContextKey != key ||
           storeContext.selectedStoreId != store.id)
         return;
       _paymentMethodIntent = null;
@@ -129,14 +200,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       HapticFeedback.lightImpact();
     } catch (error) {
       if (mounted &&
-          storeContext.requestContextVersion == epoch &&
+          storeContext.requestContextKey == key &&
           storeContext.selectedStoreId == store.id) {
         if (error is ApiException && error.statusCode == 409) {
           _paymentMethodIntent = null;
           _paymentMethodRetryKey = null;
           await _loadStore();
           if (!mounted ||
-              storeContext.requestContextVersion != epoch ||
+              storeContext.requestContextKey != key ||
               storeContext.selectedStoreId != store.id)
             return;
         }
@@ -180,45 +251,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final colors = AppThemeColors.of(context);
     final themeProvider = context.watch<ThemeProvider>();
     final storeContext = context.watch<StoreContext>();
-    if (_loadError != null)
-      return Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(_loadError!),
-                FilledButton(
-                  onPressed: _loadStore,
-                  child: const Text('Retry store details'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    final stale =
-        _loadedEpoch != null &&
-        (_loadedEpoch != storeContext.requestContextVersion ||
-            _store?.id != storeContext.selectedStoreId);
-    if (stale && !_isLoading)
+    final stale = _staleSettings(storeContext);
+    if (stale && !_isLoading && !_reloadScheduled) {
+      _reloadScheduled = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && !_isLoading) _loadStore();
+        _reloadScheduled = false;
+        if (mounted &&
+            !_isLoading &&
+            _staleSettings(context.read<StoreContext>()))
+          _loadStore();
       });
-
-    if (_isLoading || stale) {
+    }
+    if (_isLoading || stale || _loadError != null) {
       return Scaffold(
-        backgroundColor: colors.bgStart,
-        body: Container(
-          decoration: colors.backgroundGradient,
-          child: Center(
-            child: CircularProgressIndicator(color: AppColors.lavender),
+        backgroundColor: colors.card,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(colors),
+              Expanded(
+                child: Center(
+                  child: _isLoading || stale
+                      ? CircularProgressIndicator(color: colors.accent)
+                      : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(_loadError!),
+                            FilledButton(
+                              onPressed: _loadStore,
+                              child: const Text('Retry store details'),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+            ],
           ),
         ),
       );
     }
 
-    final storeUrl = '${_store?.subdomain ?? 'your-store'}.letbuyy.com';
+    // Fresh same-store metadata is already authorized by StoreContext. Reflect
+    // it without another billing/payment fetch or a second private read cache.
+    final visibleStore = _store == null ? null : storeContext.selectedStore;
+    final storeUrl = visibleStore == null
+        ? ''
+        : AppConfig.storefrontUrlFor(
+            subdomain: visibleStore.subdomain,
+            publicUrl: visibleStore.publicUrl,
+          );
 
     return Scaffold(
       backgroundColor: colors.card,
@@ -235,7 +316,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: EdgeInsets.zero,
                 children: [
                   // Store Profile Card
-                  if (_store != null)
+                  if (visibleStore != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 8, bottom: 4),
                       child: GestureDetector(
@@ -244,10 +325,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           AppRoutes.storeDetails,
                         ),
                         child: StoreInfoCard(
-                          storeName: _store!.name,
-                          storeUrl: 'https://$storeUrl',
-                          logoUrl: _store!.logoUrl,
-                          isPublished: _store!.isPublished,
+                          storeName: visibleStore.name,
+                          storeUrl: storeUrl,
+                          logoUrl: visibleStore.logoUrl,
+                          isPublished: visibleStore.isPublished,
                           onEdit: () => Navigator.pushNamed(
                             context,
                             AppRoutes.storeDetails,
@@ -269,7 +350,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Theme',
                         iconColor:
                             mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                        trailing: _buildThemeSelector(themeProvider, colors),
+                        trailing: const MerchantThemeSelector(),
+                        trailingBelow: true,
                         showArrow: false,
                       ),
                     ],
@@ -307,11 +389,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       SettingsTile(
+                        icon: Icons.verified_user_outlined,
+                        title: 'Business verification',
+                        subtitle: 'Private KYC documents and review status',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.kyc),
+                      ),
+                      SettingsTile(
                         icon: Icons.loyalty_outlined,
                         title: 'Loyalty',
                         subtitle: 'Customer points and reward settings',
                         onTap: () =>
                             Navigator.pushNamed(context, AppRoutes.loyalty),
+                      ),
+                      SettingsTile(
+                        icon: Icons.local_shipping_outlined,
+                        title: 'Shipping',
+                        subtitle: 'Delivery zones and rates',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.shipping),
+                      ),
+                      SettingsTile(
+                        icon: Icons.receipt_long_outlined,
+                        title: 'Taxes / GST',
+                        subtitle: 'Tax rates and inclusive prices',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.taxes),
                       ),
                       SettingsTile(
                         icon: Icons.group_outlined,
@@ -362,10 +465,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   SettingsSection(
                     title: 'Payment Options',
                     children: [
+                      if (_paymentConfig == null && !_paymentLoading)
+                        TextButton(
+                          onPressed: () {
+                            if (isLetbuyySurfaceCurrent(context)) _loadStore();
+                          },
+                          child: const Text('Retry payment settings'),
+                        ),
                       SettingsTile(
                         icon: Icons.local_shipping_outlined,
                         title: 'Cash on Delivery (COD)',
-                        subtitle: _store?.codEnabled == true
+                        subtitle: _paymentConfig == null
+                            ? _paymentLoading
+                                  ? 'Loading payment settings…'
+                                  : 'Payment settings unavailable'
+                            : _paymentConfig!.codEnabled
                             ? 'Enabled'
                             : 'Disabled',
                         trailing: Switch(
@@ -384,7 +498,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Online Payment (Razorpay)',
                         subtitle:
                             _paymentConfig?.statusText ??
-                            'Payment readiness not confirmed',
+                            (_paymentLoading
+                                ? 'Checking payment readiness…'
+                                : 'Payment readiness not confirmed'),
                         trailing: Switch(
                           value: _paymentConfig?.onlineRequested ?? false,
                           activeColor: AppColors.lavender,
@@ -429,20 +545,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (mounted) await _loadStore();
                         },
                       ),
-                      if (_store?.subscriptionPlan ==
-                          SubscriptionPlan.professional)
-                        SettingsTile(
-                          icon: Icons.account_balance_outlined,
-                          title: 'Connect Your Razorpay',
-                          subtitle: _store?.isUsingOwnRazorpay == true
-                              ? 'Connected - 0% commission'
-                              : 'Get 0% platform fee',
-                          iconColor: const Color(0xFF2563EB),
-                          onTap: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.connectRazorpay,
-                          ),
+                      SettingsTile(
+                        icon: Icons.account_balance_outlined,
+                        title: 'Your Razorpay connection',
+                        subtitle: _store?.isUsingOwnRazorpay == true
+                            ? 'Review sandbox connection'
+                            : 'Connect a verified sandbox account',
+                        iconColor: const Color(0xFF2563EB),
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.connectRazorpay,
                         ),
+                      ),
                     ],
                   ),
 
@@ -516,91 +630,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: colors.textPrimary,
             ),
           ),
-          const Spacer(),
-          StoreSwitcherButton(onChanged: _loadStore),
-        ],
-      ),
-    );
-  }
-
-  /// Build theme selector dropdown
-  Widget _buildThemeSelector(ThemeProvider provider, AppThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: colors.glassMedium,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: colors.glassMediumBorder),
-      ),
-      child: DropdownButton<ThemeMode>(
-        value: provider.themeMode,
-        underline: const SizedBox(),
-        isDense: true,
-        dropdownColor: colors.card,
-        borderRadius: BorderRadius.circular(12),
-        icon: Icon(
-          Icons.keyboard_arrow_down_rounded,
-          color: colors.textSecondary,
-          size: 18,
-        ),
-        style: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-        ),
-        items: [
-          DropdownMenuItem(
-            value: ThemeMode.system,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.brightness_auto_outlined,
-                  size: 16,
-                  color: colors.textSecondary,
-                ),
-                const SizedBox(width: 6),
-                Text('System', style: TextStyle(color: colors.textPrimary)),
-              ],
-            ),
-          ),
-          DropdownMenuItem(
-            value: ThemeMode.light,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.light_mode_outlined,
-                  size: 16,
-                  color: colors.textSecondary,
-                ),
-                const SizedBox(width: 6),
-                Text('Light', style: TextStyle(color: colors.textPrimary)),
-              ],
-            ),
-          ),
-          DropdownMenuItem(
-            value: ThemeMode.dark,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.dark_mode_outlined,
-                  size: 16,
-                  color: colors.textSecondary,
-                ),
-                const SizedBox(width: 6),
-                Text('Dark', style: TextStyle(color: colors.textPrimary)),
-              ],
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: StoreSwitcherButton(onChanged: _loadStore),
             ),
           ),
         ],
-        onChanged: (mode) {
-          if (mode != null) {
-            HapticFeedback.selectionClick();
-            provider.setThemeMode(mode);
-          }
-        },
       ),
     );
   }
@@ -616,7 +652,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       iconColor: color,
       title: 'Current Plan',
       subtitle: billing == null
-          ? 'Billing unavailable'
+          ? _billingLoading
+                ? 'Loading billing…'
+                : 'Billing unavailable'
           : '${billing.planName} • ${billing.status.replaceAll('_', ' ')}',
       showArrow: false,
     );
@@ -627,56 +665,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final billing = context.watch<StoreContext>().selectedStoreId == _store?.id
         ? _billing
         : null;
-    final percent = (billing?.productUsageFraction ?? 0) * 100;
-    final isUnlimited =
-        billing?.productLimitKnown == true && billing?.productLimit == null;
-
-    Color progressColor;
-    if (isUnlimited) {
-      progressColor = const Color(0xFF10B981);
-    } else if (percent >= 90) {
-      progressColor = const Color(0xFFEF4444);
-    } else if (percent >= 75) {
-      progressColor = const Color(0xFFF59E0B);
-    } else {
-      progressColor = const Color(0xFF10B981);
-    }
-
     return SettingsTile(
       icon: Icons.inventory_2_outlined,
       title: 'Product Usage',
-      subtitle: billing?.productUsageLabel ?? 'Product usage unavailable',
-      trailing: SizedBox(
-        width: 60,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              billing?.productUsageFraction == null
-                  ? '—'
-                  : isUnlimited
-                  ? '∞'
-                  : '${percent.toInt()}%',
-              style: TextStyle(
-                color: progressColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 4),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(2),
-              child: LinearProgressIndicator(
-                value: isUnlimited ? 0.1 : percent / 100,
-                backgroundColor: colors.glassMedium,
-                valueColor: AlwaysStoppedAnimation<Color>(progressColor),
-                minHeight: 3,
-              ),
-            ),
-          ],
-        ),
-      ),
+      trailing: MerchantProductUsage(billing: billing),
+      trailingBelow: true,
       showArrow: false,
     );
   }

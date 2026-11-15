@@ -1,0 +1,10 @@
+{
+  "scope": "Diagnostic local HTTP image and browser fence only; no application/device acceptance.",
+  "result": {
+    "src": "http://127.0.0.1:63067/__owned__/product.png",
+    "complete": true,
+    "width": 4,
+    "height": 4
+  },
+  "errors": []
+}

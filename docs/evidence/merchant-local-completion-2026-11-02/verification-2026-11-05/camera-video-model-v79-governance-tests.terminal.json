@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-07T06:31:06.286869+00:00",
+  "supervisor_pid": 69493,
+  "source": "merchant-camera-video-model-source-v79",
+  "source_sha256": "e5cd4f338399cb21535dad581af4ad3355a38def06ddeb9f2c5cbda4f65672e6",
+  "command": [
+    "node",
+    "--test",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/tests/governance/gateway-db-lane.test.mjs",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/tests/governance/dependency-test-boundary.test.mjs"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 69497,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T06:31:08.855369+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "e5cd4f338399cb21535dad581af4ad3355a38def06ddeb9f2c5cbda4f65672e6"
+}

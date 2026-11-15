@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:letbuyy_core/letbuyy_core.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -13,10 +14,11 @@ import '../../services/order_service.dart';
 import '../../services/two_factor_service.dart';
 import '../../services/api_client.dart';
 import '../../app/store_context.dart';
+import '../../widgets/shared/merchant_store_view.dart';
+import '../../widgets/shared/provider_mode_badge.dart';
 import '../security/two_factor_screen.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
-import '../../widgets/shared/provider_mode_badge.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   const OrderDetailScreen({
@@ -39,30 +41,56 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   String? _error;
 
   late AppThemeColors colors;
-  Object? _observedContext;
+  late final Object? _readContext;
+  MerchantStoreView? _view;
+  bool _fresh = false, _reading = false, _openingAction = false;
+  bool _waitingForInput = false;
+  bool get _current =>
+      mounted &&
+      merchantStoreViewCurrent(context, _view) &&
+      context.read<OrderService>().requestContext == _readContext;
+  bool get _ready =>
+      _current && _fresh && !_isLoading && !_isMutating && !_openingAction;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     context.watch<StoreContext>();
-    final current = context.read<OrderService>().requestContext;
-    if (_observedContext != null && current != _observedContext) {
+    if (!_current) {
       _order = null;
+      _fresh = false;
       _isLoading = false;
       _isMutating = false;
-      _error = 'Account or store access changed. Reload this order.';
+      _openingAction = false;
+      _waitingForInput = false;
+      _error =
+          'Account or store access changed. Reopen this order from the intended store.';
     }
-    _observedContext = current;
   }
 
   @override
   void initState() {
     super.initState();
-    _order = widget.initialOrder;
-    _loadOrder(preferCached: true);
+    final stores = context.read<StoreContext>(), id = stores.selectedStoreId;
+    if (id != null) _view = (key: stores.requestContextKey, storeId: id);
+    _readContext = context.read<OrderService>().requestContext;
+    // The route argument is return context, not a current permission/read proof.
+    // Admit the requested record only through the canonical live reader.
+    _loadOrder();
   }
 
-  Future<void> _loadOrder({bool preferCached = false}) async {
-    final captured = context.read<OrderService>().requestContext;
+  Future<void> _loadOrder() async {
+    if (!_current) {
+      if (mounted)
+        setState(() {
+          _order = null;
+          _fresh = false;
+          _isLoading = false;
+          _error = 'Choose the intended store and reopen this order.';
+        });
+      return;
+    }
+    if (_reading) return;
     if (widget.orderId.trim().isEmpty) {
       setState(() {
         _isLoading = false;
@@ -70,57 +98,152 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       });
       return;
     }
-
-    final service = context.read<OrderService>();
-    if (preferCached) {
-      final cached = _order ?? service.cachedOrder(widget.orderId);
-      if (cached != null &&
-          cached.storeId == context.read<StoreContext>().selectedStoreId) {
-        setState(() {
-          _order = cached;
-          _isLoading = false;
-          _error = null;
-        });
-        return;
-      }
-    }
-
+    _reading = true;
     setState(() {
-      _isLoading = _order == null;
+      _isLoading = true;
+      _fresh = false;
       _error = null;
     });
-
+    final service = context.read<OrderService>();
     try {
-      final order = await service.fetchOrder(widget.orderId);
-      if (mounted && service.requestContext == captured) {
-        setState(() {
-          _order = order;
-          _isLoading = false;
-        });
-      }
+      final order = await service.fetchOrder(
+        widget.orderId,
+        expectedStoreId: _view!.storeId,
+      );
+      if (!_current) return;
+      setState(() {
+        _order = order;
+        _fresh = service.hasFreshOrder(widget.orderId);
+        if (!_fresh)
+          _error =
+              'Saved order · The latest read could not be confirmed. Reload successfully before changing this order.';
+      });
     } catch (error) {
-      if (mounted) {
-        setState(() {
-          _error = error.toString();
-          _isLoading = false;
-        });
-      }
+      if (!_current) return;
+      setState(() {
+        _fresh = false;
+        if (error is FormatException ||
+            error is ApiException &&
+                (const [401, 403, 404].contains(error.statusCode) ||
+                    error.code == 'SESSION_CONTEXT_CHANGED')) {
+          _order = null;
+          _error =
+              'This order could not be confirmed for the selected store. Reopen it from the intended store.';
+        } else {
+          _error =
+              'The order could not be refreshed. Previously shown details, if present, are unconfirmed. Reload before making changes.';
+        }
+      });
+    } finally {
+      _reading = false;
+      if (_current) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _runAction(Future<void> Function() action) async {
+    if (!_ready) return;
+    setState(() => _openingAction = true);
+    try {
+      await action();
+    } finally {
+      if (_current) setState(() => _openingAction = false);
+    }
+  }
+
+  Future<T?> _showCurrentSheet<T>(Widget child) async {
+    if (!_current) return null;
+    setState(() => _waitingForInput = true);
+    try {
+      return await mobile_tokens.showLetbuyyFormSheet<T>(
+        context: context,
+        builder: (_) => guardMerchantStoreView(_view, child, sheet: true),
+      );
+    } finally {
+      if (_current) setState(() => _waitingForInput = false);
+    }
+  }
+
+  Future<T?> _showOrderEditor<T>({
+    required String title,
+    required List<TextEditingController> controllers,
+    required bool Function() hasChanges,
+    required Widget Function(BuildContext, StateSetter) bodyBuilder,
+    required List<Widget> Function(BuildContext) actionsBuilder,
+  }) async {
+    final changes = Listenable.merge(controllers);
+    try {
+      if (!_current) return null;
+      setState(() => _waitingForInput = true);
+      // A prior operation notice belongs to the reading page. Do not carry it
+      // over the next editor's pinned actions while the person retries input.
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      final route = MaterialPageRoute<T>(
+        builder: (page) => guardMerchantStoreView(
+          _view,
+          StatefulBuilder(
+            builder: (formContext, setFormState) => ListenableBuilder(
+              listenable: changes,
+              builder: (_, __) => mobile_tokens.LetbuyyEditorScaffold(
+                title: title,
+                hasChanges: hasChanges(),
+                currentHasChanges: hasChanges,
+                confirmationGuard: (_, child) =>
+                    guardMerchantStoreView(_view, child),
+                body: SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsets.all(16),
+                  child: bodyBuilder(formContext, setFormState),
+                ),
+                actions: OverflowBar(
+                  spacing: 12,
+                  overflowSpacing: 12,
+                  alignment: MainAxisAlignment.end,
+                  children: actionsBuilder(page),
+                ),
+              ),
+            ),
+          ),
+          fullPage: true,
+        ),
+      );
+      final result = await Navigator.of(context).push<T>(route);
+      // Popped routes still render their exit transition. Retire native editing
+      // controllers only after that route has actually completed disposal.
+      await route.completed;
+      return result;
+    } finally {
+      for (final controller in controllers) {
+        controller.dispose();
+      }
+      if (_current) setState(() => _waitingForInput = false);
+    }
+  }
+
+  void _formError(BuildContext page, String message) {
+    if (!_current || !page.mounted || ModalRoute.of(page)?.isCurrent != true)
+      return;
+    mobile_tokens.showLetbuyyOperationFeedback(
+      page,
+      message: message,
+      isError: true,
+    );
   }
 
   Future<void> _issueRefund() async {
     final order = _order;
-    if (order == null || _isMutating) return;
+    if (order == null || !_current || !_fresh || _isLoading || _isMutating)
+      return;
     try {
       final captured = context.read<TwoFactorService>().capture();
       final pending = await context.read<OrderService>().pendingRefundRequest(
         order.id,
         captured,
       );
-      if (!mounted) return;
+      if (!_current) return;
       context.read<TwoFactorService>().check(captured);
       final request = await _showRefundDialog(order, pending: pending);
-      if (request == null || !mounted) return;
+      if (request == null || !_current) return;
       context.read<TwoFactorService>().check(captured);
       setState(() => _isMutating = true);
       final updated = await context.read<OrderService>().refundOrder(
@@ -129,7 +252,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         lines: request.lines,
         reason: request.reason,
       );
-      if (mounted && context.read<TwoFactorService>().isCurrent(captured)) {
+      if (_current && context.read<TwoFactorService>().isCurrent(captured)) {
         setState(() => _order = updated);
         _showSnackBar(
           'Refund request saved. Payment completion is still required.',
@@ -137,27 +260,34 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         await _loadOrder();
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current) _showSnackBar(error.toString(), isError: true);
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _completeRefund() async {
     final order = _order;
-    if (order == null || _isMutating) return;
+    if (order == null || !_current || !_fresh || _isLoading || _isMutating)
+      return;
     try {
       final captured = context.read<TwoFactorService>().capture();
       final pending = await context
           .read<OrderService>()
           .pendingRefundCompletion(order.id, captured);
-      if (!mounted) return;
+      if (!_current) return;
       context.read<TwoFactorService>().check(captured);
       final request = await _showCompleteRefundDialog(pending: pending);
-      if (request == null || !mounted) return;
+      if (request == null || !_current) return;
       context.read<TwoFactorService>().check(captured);
-      final proof = await TwoFactorScreen.approve(context);
-      if (proof == null || !mounted) return;
+      MerchantStepUpProof? proof;
+      setState(() => _waitingForInput = true);
+      try {
+        proof = await TwoFactorScreen.approve(context);
+      } finally {
+        if (_current) setState(() => _waitingForInput = false);
+      }
+      if (proof == null || !_current) return;
       context.read<TwoFactorService>().check(captured);
       if (proof.context != captured) throw TwoFactorService.changed();
       setState(() => _isMutating = true);
@@ -168,23 +298,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         providerRefundId: request.providerRefundId,
         notes: request.notes,
       );
-      if (mounted && context.read<TwoFactorService>().isCurrent(captured)) {
+      if (_current && context.read<TwoFactorService>().isCurrent(captured)) {
         setState(() => _order = updated);
         _showSnackBar('Refund completed');
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current) _showSnackBar(error.toString(), isError: true);
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _fulfillOrder() async {
     final order = _order;
-    if (order == null) return;
+    if (order == null || !_current || !_fresh || _isLoading || _isMutating)
+      return;
 
     final request = await _showTrackingDialog();
-    if (request == null) return;
+    if (request == null || !_current) return;
 
     setState(() => _isMutating = true);
     try {
@@ -203,6 +334,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               packageWidthCm: request.packageWidthCm,
               packageHeightCm: request.packageHeightCm,
             );
+        if (!_current) return;
         label = labelResponse['label'] is Map
             ? Map<String, dynamic>.from(labelResponse['label'] as Map)
             : labelResponse;
@@ -216,8 +348,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         carrier: carrier,
         createShippingLabel: false,
       );
+      if (!_current) return;
       if (label != null) await _shareLabelPdf(label);
-      if (mounted) {
+      if (_current) {
         setState(() => _order = updated);
         _showSnackBar(
           request.createShippingLabel
@@ -226,28 +359,32 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         );
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current) _showSnackBar(error.toString(), isError: true);
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _shareLabelPdf(Map<String, dynamic> label) async {
+    if (!_current) return;
     final raw = label['pdf_base64']?.toString();
     if (raw == null || raw.isEmpty) return;
 
     final bytes = base64Decode(raw);
     final tempDir = await getTemporaryDirectory();
+    if (!_current) return;
     final file = File('${tempDir.path}/shipping-label-${label['id']}.pdf');
     await file.writeAsBytes(bytes, flush: true);
+    if (!_current) return;
     await Share.shareXFiles([
       XFile(file.path, mimeType: 'application/pdf'),
     ], subject: 'Shipping label ${label['tracking_number'] ?? ''}');
   }
 
   Future<void> _editLineItems(OrderContract order) async {
+    if (!_current || !_fresh || _isLoading || _isMutating) return;
     final request = await _showLineItemsDialog(order);
-    if (request == null || request.lines.isEmpty) return;
+    if (request == null || request.lines.isEmpty || !_current) return;
 
     setState(() => _isMutating = true);
     try {
@@ -255,23 +392,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         order.id,
         lines: request.lines,
       );
-      if (mounted) {
+      if (_current) {
         setState(() => _order = updated);
         _showSnackBar('Order line items updated');
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current) _showSnackBar(error.toString(), isError: true);
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   Future<void> _cancelOrder() async {
     final order = _order;
-    if (order == null) return;
+    if (order == null || !_current || !_fresh || _isLoading || _isMutating)
+      return;
 
     final reason = await _showCancelReasonDialog(order);
-    if (reason == null) return;
+    if (reason == null || !_current) return;
 
     setState(() => _isMutating = true);
     try {
@@ -279,101 +417,87 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         order.id,
         reason: reason,
       );
-      if (mounted) {
+      if (_current) {
         setState(() => _order = updated);
         _showSnackBar('Order cancelled');
       }
     } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
+      if (_current) _showSnackBar(error.toString(), isError: true);
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (_current) setState(() => _isMutating = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
-
     return Scaffold(
-      backgroundColor: colors.bgStart,
-      body: Container(
-        decoration: colors.backgroundGradient,
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(child: _buildBody()),
-              if (_order != null) _buildActionBar(_order!),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
-      child: Row(
-        children: [
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: mobile_tokens.CustomAppBar.responsive(
+        context: context,
+        title: 'Order detail',
+        actions: [
           IconButton(
-            icon: Icon(Icons.arrow_back_rounded, color: colors.textPrimary),
-            tooltip: 'Back',
-            onPressed: () => Navigator.pop(context),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _orderNumber(_order),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  'Order detail',
-                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
             tooltip: 'Refresh',
-            onPressed: _loadOrder,
+            onPressed:
+                _current && !_isLoading && !_isMutating && !_openingAction
+                ? _loadOrder
+                : null,
+            icon: const Icon(Icons.refresh),
           ),
         ],
+      ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            if (_isLoading ||
+                _isMutating ||
+                (_openingAction && !_waitingForInput))
+              Semantics(
+                liveRegion: true,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      const mobile_tokens.LoadingIndicator(),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _isMutating
+                              ? 'Submitting order change…'
+                              : _openingAction
+                              ? 'Preparing order action…'
+                              : 'Loading current order…',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(child: _buildBody()),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildBody() {
-    if (_isLoading && _order == null) {
-      return Center(
-        child: CircularProgressIndicator(
-          color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-        ),
-      );
-    }
-
+    if (_isLoading && _order == null) return const SizedBox.shrink();
     final order = _order;
-    if (order == null) {
-      return _buildErrorState();
-    }
-
+    if (order == null) return _buildErrorState();
     return RefreshIndicator(
-      color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-      onRefresh: _loadOrder,
+      onRefresh: () async {
+        if (!_isMutating && !_openingAction) await _loadOrder();
+      },
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        key: PageStorageKey((_view?.key, widget.orderId)),
+        padding: const EdgeInsets.all(16),
         children: [
           if (_error != null) _buildInlineWarning(_error!),
           _buildSummary(order),
+          const SizedBox(height: 12),
+          _buildActionBar(order),
           if (_hasRiskSignal(order)) ...[
             const SizedBox(height: 12),
             _buildRiskSignal(order),
@@ -391,82 +515,54 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _buildErrorState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.receipt_long_outlined, size: 48, color: colors.error),
-            const SizedBox(height: 12),
-            Text(
-              'Could not load this order',
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _error ?? 'Try again from the orders list.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: _loadOrder,
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
-            ),
-          ],
-        ),
+  Widget _buildErrorState() => ListView(
+    padding: const EdgeInsets.all(24),
+    children: [
+      Icon(Icons.receipt_long_outlined, size: 48, color: colors.error),
+      const SizedBox(height: 12),
+      Text(
+        'Could not load this order',
+        style: Theme.of(context).textTheme.titleLarge,
       ),
-    );
-  }
+      const SizedBox(height: 12),
+      Text(_error ?? 'Try again from the orders list.'),
+      const SizedBox(height: 16),
+      FilledButton.icon(
+        onPressed: _current && !_isLoading && !_isMutating && !_openingAction
+            ? _loadOrder
+            : null,
+        icon: const Icon(Icons.refresh),
+        label: const Text('Retry'),
+      ),
+    ],
+  );
 
-  Widget _buildInlineWarning(String message) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.warning.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: colors.warning.withValues(alpha: 0.24)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.info_outline_rounded, color: colors.warning, size: 18),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(color: colors.textSecondary, fontSize: 12),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildInlineWarning(String message) =>
+      mobile_tokens.LetbuyyInlineFeedback(
+        title: 'Current order unconfirmed',
+        message: message,
+      );
 
   Widget _buildSummary(OrderContract order) {
     final status = _status(order.status);
     return _section(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
+          SelectableText(
+            _orderNumber(order),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Expanded(
-                child: Text(
-                  _money(_orderTotal(order)),
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+              Text(
+                _displayOrderTotal(order),
+                key: const ValueKey('order-detail-total'),
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               _chip(_statusLabel(status), _statusColor(status)),
             ],
@@ -486,8 +582,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          _infoRow(Icons.calendar_today_outlined, 'Placed', _formatDate(order)),
+          const SizedBox(height: 16),
+          _infoRow(
+            Icons.calendar_today_outlined,
+            'Placed (device time)',
+            _formatDate(order),
+          ),
           _infoRow(
             Icons.payments_outlined,
             'Payment',
@@ -498,7 +598,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           _infoRow(
             Icons.local_shipping_outlined,
             'Shipping',
-            _nonEmpty(order['shipping_method']) ?? 'Not selected',
+            _nonEmpty(order['shipping_method']) ?? 'Unavailable',
           ),
         ],
       ),
@@ -506,8 +606,23 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildRiskSignal(OrderContract order) {
-    final color = _riskColor(order);
+    final visual = mobile_tokens.LetbuyyStatusColors.of(
+      context,
+      _statusTone(_riskColor(order)),
+    );
+    final color = visual.foreground;
     final level = _riskLevel(order);
+    final storedLevel = order.toJson()['risk_level'];
+    final hasStoredLevel =
+        storedLevel is String &&
+        const [
+          'low',
+          'medium',
+          'high',
+        ].contains(storedLevel.trim().toLowerCase());
+    final storedScore = order.toJson()['risk_score'];
+    final hasStoredScore = storedScore is num && storedScore.isFinite;
+
     final details = _riskDetails(order);
 
     return _section(
@@ -515,34 +630,40 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
+          color: visual.background,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: color.withValues(alpha: 0.22)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Icon(Icons.shield_outlined, color: color, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '${_statusLabel(level)} risk',
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
+                Wrap(
+                  spacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Icon(Icons.shield_outlined, color: color, size: 20),
+                    Text(
+                      hasStoredLevel
+                          ? '${_statusLabel(level)} risk'
+                          : 'Risk level unavailable',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleSmall?.copyWith(color: color),
                     ),
-                  ),
+                  ],
                 ),
                 Text(
-                  'Score ${order.riskScore}/100',
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  hasStoredScore
+                      ? 'Score $storedScore/100'
+                      : 'Score unavailable',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(color: color),
                 ),
               ],
             ),
@@ -610,14 +731,34 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
+  List<LineItemContract> _presentedLineItems(OrderContract order) {
+    if (order['line_items'] is List) return order.lineItems;
+    // The existing API normalizer emits order_items/items with title. This
+    // read-only view leaves the cached DTO and every command input unchanged.
+    final raw = order['order_items'] ?? order['items'];
+    if (raw is! List || raw.any((row) => row is! Map)) return const [];
+    return raw
+        .map((row) {
+          final source = Map<String, dynamic>.from(row as Map);
+          return LineItemContract.fromJson({
+            ...source,
+            if (source['name'] == null) 'name': source['title'],
+            if (source['currency'] == null) 'currency': order['currency'] ?? '',
+          });
+        })
+        .toList(growable: false);
+  }
+
   Widget _buildLineItems(OrderContract order) {
-    final items = order.lineItems;
+    final items = _presentedLineItems(order);
     return _section(
       title: 'Line items',
-      action: items.isEmpty
+      action: order.lineItems.isEmpty
           ? null
           : TextButton.icon(
-              onPressed: _isMutating ? null : () => _editLineItems(order),
+              onPressed: _ready
+                  ? () => _runAction(() => _editLineItems(order))
+                  : null,
               icon: const Icon(Icons.edit_outlined, size: 16),
               label: const Text('Edit'),
             ),
@@ -628,6 +769,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             )
           : Column(
               children: [
+                if (order['line_items'] is! List) ...[
+                  const mobile_tokens.LetbuyyInlineFeedback(
+                    title: 'Line changes unavailable',
+                    message:
+                        'The current order read does not include the line references needed for editing or item refunds. Reload to recheck.',
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 for (final item in items) ...[
                   _lineItem(item),
                   if (item != items.last)
@@ -638,71 +787,74 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _lineItem(LineItemContract item) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: colors.surfaceVariant,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: colors.divider),
+  Widget _lineItem(LineItemContract item) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(
+        item.name.isEmpty ? 'Item' : item.name,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        children: [
+          if (_nonEmpty(item.sku) != null) Text('SKU ${item.sku}'),
+          Text(
+            item['quantity'] == null
+                ? 'Quantity unavailable'
+                : 'Qty ${item.quantity}',
           ),
-          child: Icon(
-            Icons.inventory_2_outlined,
-            color: colors.textSecondary,
-            size: 20,
+          Text(
+            'Unit price ${_displayStoredMoney(item['unit_price'], item.currency)}',
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.name.isEmpty ? 'Item' : item.name,
-                style: TextStyle(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                [
-                  if (_nonEmpty(item.sku) != null) 'SKU ${item.sku}',
-                  'Qty ${item.quantity}',
-                  _money(item.unitPrice),
-                ].join(' | '),
-                style: TextStyle(color: colors.textSecondary, fontSize: 12),
-              ),
-            ],
+          Text(
+            'Line total ${_displayStoredMoney(item['total'], item.currency)}',
           ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          _money(item.total),
-          style: TextStyle(
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    );
-  }
+        ],
+      ),
+    ],
+  );
 
   Widget _buildTotals(OrderContract order) {
     return _section(
       title: 'Totals',
       child: Column(
         children: [
-          _totalRow('Subtotal', order.subtotal),
-          _totalRow('Discount', -order.discountAmount),
-          _totalRow('Shipping', order.shippingAmount),
-          _totalRow('Tax', order.taxAmount),
+          _totalRow(
+            'Subtotal',
+            order.subtotal,
+            display: _displayStoredMoney(order['subtotal'], order.currency),
+          ),
+          _totalRow(
+            'Discount',
+            -order.discountAmount,
+            display: _displayStoredMoney(
+              order['discount_amount'],
+              order.currency,
+              negate: true,
+            ),
+          ),
+          _totalRow(
+            'Shipping',
+            order.shippingAmount,
+            display: _displayStoredMoney(
+              order['shipping_amount'],
+              order.currency,
+            ),
+          ),
+          _totalRow(
+            'Tax',
+            order.taxAmount,
+            display: _displayStoredMoney(order['tax_amount'], order.currency),
+          ),
           Divider(height: 20, color: colors.divider),
-          _totalRow('Total', _orderTotal(order), isStrong: true),
+          _totalRow(
+            'Total',
+            _orderTotal(order),
+            display: _displayOrderTotal(order),
+            isStrong: true,
+          ),
         ],
       ),
     );
@@ -711,7 +863,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   Widget _buildTimeline(OrderContract order) {
     final entries = _timelineEntries(order);
     return _section(
-      title: 'Timeline',
+      title:
+          order['timeline'] is List &&
+              (order['timeline'] as List).whereType<Map>().isNotEmpty
+          ? 'Timeline'
+          : 'Current order summary',
       child: Column(
         children: [
           for (var index = 0; index < entries.length; index++)
@@ -782,45 +938,38 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final canCancel =
         status != 'cancelled' && status != 'refunded' && status != 'delivered';
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      decoration: BoxDecoration(
-        color: colors.card,
-        border: Border(top: BorderSide(color: colors.divider)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: [
-            if (canFulfill)
-              _actionButton(
-                icon: Icons.local_shipping_outlined,
-                label: 'Fulfill',
-                onPressed: _isMutating ? null : _fulfillOrder,
-              ),
-            if (canRefund)
-              _actionButton(
-                icon: Icons.currency_exchange_rounded,
-                label: 'Refund',
-                onPressed: _isMutating ? null : _issueRefund,
-                isDestructive: true,
-              ),
-            if (canCancel)
-              _actionButton(
-                icon: Icons.cancel_outlined,
-                label: 'Cancel',
-                onPressed: _isMutating ? null : _cancelOrder,
-                isDestructive: true,
-              ),
+    return _section(
+      title: 'Order actions',
+      child: Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        children: [
+          if (canFulfill)
             _actionButton(
-              icon: Icons.done_all_rounded,
-              label: 'Complete refund',
-              onPressed: _isMutating ? null : _completeRefund,
+              icon: Icons.local_shipping_outlined,
+              label: 'Fulfill',
+              onPressed: _isMutating ? null : _fulfillOrder,
             ),
-          ],
-        ),
+          if (canRefund)
+            _actionButton(
+              icon: Icons.currency_exchange_rounded,
+              label: 'Refund',
+              onPressed: _isMutating ? null : _issueRefund,
+              isDestructive: true,
+            ),
+          if (canCancel)
+            _actionButton(
+              icon: Icons.cancel_outlined,
+              label: 'Cancel',
+              onPressed: _isMutating ? null : _cancelOrder,
+              isDestructive: true,
+            ),
+          _actionButton(
+            icon: Icons.done_all_rounded,
+            label: 'Complete refund',
+            onPressed: _isMutating ? null : _completeRefund,
+          ),
+        ],
       ),
     );
   }
@@ -860,54 +1009,40 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _chip(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.24)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
+  mobile_tokens.LetbuyyStatusTone _statusTone(Color color) =>
+      color == colors.success
+      ? mobile_tokens.LetbuyyStatusTone.success
+      : color == colors.warning
+      ? mobile_tokens.LetbuyyStatusTone.warning
+      : color == colors.error
+      ? mobile_tokens.LetbuyyStatusTone.danger
+      : color == colors.accentBlue
+      ? mobile_tokens.LetbuyyStatusTone.information
+      : mobile_tokens.LetbuyyStatusTone.neutral;
 
-  Widget _infoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: colors.textTertiary, size: 16),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 82,
-            child: Text(
-              label,
-              style: TextStyle(color: colors.textSecondary, fontSize: 12),
-            ),
+  Widget _chip(String label, Color color) =>
+      mobile_tokens.LetbuyyStatusBadge(label: label, tone: _statusTone(color));
+
+  Widget _infoRow(IconData icon, String label, String value) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: colors.textSecondary, size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(label, style: Theme.of(context).textTheme.labelLarge),
+              const SizedBox(height: 4),
+              SelectableText(value),
+            ],
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 
   Widget _addressBlock(String title, Map<String, dynamic> address) {
     final lines = [
@@ -951,60 +1086,62 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _totalRow(String label, double amount, {bool isStrong = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isStrong ? colors.textPrimary : colors.textSecondary,
-                fontWeight: isStrong ? FontWeight.w800 : FontWeight.w500,
-              ),
-            ),
-          ),
-          Text(
-            _money(amount),
-            style: TextStyle(
-              color: isStrong ? colors.textPrimary : colors.textSecondary,
-              fontWeight: isStrong ? FontWeight.w800 : FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _totalRow(
+    String label,
+    double amount, {
+    String? display,
+    bool isStrong = false,
+  }) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Wrap(
+      spacing: 16,
+      runSpacing: 8,
+      alignment: WrapAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: isStrong
+              ? Theme.of(context).textTheme.titleMedium
+              : Theme.of(context).textTheme.bodyLarge,
+        ),
+        Text(
+          display ?? _money(amount),
+          style: isStrong
+              ? Theme.of(context).textTheme.titleMedium
+              : Theme.of(context).textTheme.bodyLarge,
+        ),
+      ],
+    ),
+  );
 
   Widget _actionButton({
     required IconData icon,
     required String label,
-    required VoidCallback? onPressed,
+    required Future<void> Function()? onPressed,
     bool isDestructive = false,
   }) {
     final color = isDestructive
-        ? colors.error
-        : mobile_tokens.LetbuyyColorTokens.brandPrimary;
-    return SizedBox(
-      height: 44,
-      child: OutlinedButton.icon(
-        onPressed: onPressed,
-        icon: _isMutating && onPressed == null
-            ? SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2, color: color),
-              )
-            : Icon(icon, size: 18),
-        label: Text(label),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: color,
-          side: BorderSide(color: color.withValues(alpha: 0.45)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
+        ? Theme.of(context).colorScheme.error
+        : Theme.of(context).colorScheme.primary;
+    return OutlinedButton.icon(
+      onPressed: _ready && onPressed != null
+          ? () {
+              if (_ready) _runAction(onPressed);
+            }
+          : null,
+      icon: _isMutating && onPressed == null
+          ? SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2, color: color),
+            )
+          : Icon(icon, size: 18),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(48, 48),
+        foregroundColor: color,
+        side: BorderSide(color: color.withValues(alpha: 0.45)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
@@ -1013,7 +1150,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     OrderContract order, {
     JsonMap? pending,
   }) async {
-    final savedLines = asJsonList(pending?['lines']).map(asJsonMap);
+    final Iterable<JsonMap> savedLines = pending == null
+        ? const []
+        : asJsonList(pending['lines']).map(asJsonMap);
     final quantities = {
       for (final line in savedLines) line['order_item_id']: line['quantity'],
     };
@@ -1025,242 +1164,122 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           ),
     };
     final reason = TextEditingController(text: pending?['reason']?.toString());
-    return showDialog<_RefundRequest>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: colors.card,
-        title: const Text('Request item refund'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Choose the quantity to return for each item. Refundable quantities and the final refund amount are checked by the server.',
-              ),
-              if (controllers.isEmpty)
-                const Text(
-                  'Order lines are unavailable. Reload this order before requesting a refund.',
-                ),
-              for (final entry in controllers.entries)
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: TextField(
-                    controller: entry.value,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Return quantity: ${entry.key.name}',
-                      helperText: 'Ordered: ${entry.key.quantity}',
-                    ),
-                  ),
-                ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: reason,
-                decoration: const InputDecoration(labelText: 'Reason'),
-              ),
-            ],
+    bool returned = false;
+    bool changed() =>
+        controllers.entries.any(
+          (entry) =>
+              entry.value.text != (quantities[entry.key.id]?.toString() ?? '0'),
+        ) ||
+        reason.text != (pending?['reason']?.toString() ?? '');
+    return _showOrderEditor<_RefundRequest>(
+      title: 'Request item refund',
+      controllers: [...controllers.values, reason],
+      hasChanges: changed,
+      bodyBuilder: (_, __) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Choose the quantity to return for each item. Refundable quantities and the final refund amount are checked by the server.',
           ),
+          if (pending != null)
+            const Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: Text(
+                'A saved request is waiting. Retry its original quantities and reason.',
+              ),
+            ),
+          if (controllers.isEmpty)
+            const Text(
+              'Order lines are unavailable. Reload this order before requesting a refund.',
+            ),
+          for (final entry in controllers.entries)
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: mobile_tokens.CustomTextField(
+                controller: entry.value,
+                enabled: pending == null,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.next,
+                label: 'Return quantity: ${entry.key.name}',
+                helperText: 'Ordered: ${entry.key.quantity}',
+              ),
+            ),
+          const SizedBox(height: 16),
+          mobile_tokens.CustomTextField(
+            controller: reason,
+            enabled: pending == null,
+            label: 'Reason',
+          ),
+        ],
+      ),
+      actionsBuilder: (dialogContext) => [
+        TextButton(
+          onPressed: () => mobile_tokens.dismissLetbuyySurface(dialogContext),
+          child: const Text('Cancel'),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: controllers.isEmpty
-                ? null
-                : () {
-                    final lines = <JsonMap>[];
-                    for (final entry in controllers.entries) {
-                      final quantity = int.tryParse(entry.value.text.trim());
-                      if (quantity == null ||
-                          quantity < 0 ||
-                          quantity > entry.key.quantity) {
-                        _showSnackBar(
-                          'Enter a return quantity between 0 and the ordered quantity.',
-                          isError: true,
-                        );
-                        return;
-                      }
-                      if (quantity > 0)
-                        lines.add({
-                          'order_item_id': entry.key.id,
-                          'quantity': quantity,
-                        });
-                    }
-                    if (lines.isEmpty) {
-                      _showSnackBar(
-                        'Choose at least one item to return.',
-                        isError: true,
+        FilledButton(
+          onPressed: controllers.isEmpty
+              ? null
+              : () {
+                  if (!_current ||
+                      returned ||
+                      !mobile_tokens.isLetbuyySurfaceCurrent(dialogContext))
+                    return;
+                  final lines = <JsonMap>[];
+                  for (final entry in controllers.entries) {
+                    final quantity = int.tryParse(entry.value.text.trim());
+                    if (quantity == null ||
+                        quantity < 0 ||
+                        quantity > entry.key.quantity) {
+                      _formError(
+                        dialogContext,
+                        'Enter a return quantity between 0 and the ordered quantity.',
                       );
                       return;
                     }
-                    Navigator.pop(
+                    if (quantity > 0)
+                      lines.add({
+                        'order_item_id': entry.key.id,
+                        'quantity': quantity,
+                      });
+                  }
+                  if (lines.isEmpty) {
+                    _formError(
                       dialogContext,
-                      _RefundRequest(lines: lines, reason: reason.text.trim()),
+                      'Choose at least one item to return.',
                     );
-                  },
-            child: Text(
-              pending == null ? 'Request refund' : 'Retry original request',
-            ),
+                    return;
+                  }
+                  returned = true;
+                  mobile_tokens.completeLetbuyySurface(
+                    dialogContext,
+                    _RefundRequest(lines: lines, reason: reason.text.trim()),
+                  );
+                },
+          child: Text(
+            pending == null ? 'Request refund' : 'Retry original request',
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Future<String?> _showCancelReasonDialog(OrderContract order) {
-    final reasonController = TextEditingController();
-    final orderNumber = _orderNumber(order);
-    return showDialog<String>(
-      context: context,
-      builder: (context) {
-        var reason = '';
-        return StatefulBuilder(
-          builder: (context, setDialogState) => AlertDialog(
-            backgroundColor: colors.card,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Text(
-              'Cancel $orderNumber?',
-              style: TextStyle(color: colors.textPrimary),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Add a cancellation reason for the order timeline.',
-                  style: TextStyle(color: colors.textSecondary),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: reasonController,
-                  autofocus: true,
-                  maxLines: 3,
-                  maxLength: 500,
-                  onChanged: (value) =>
-                      setDialogState(() => reason = value.trim()),
-                  decoration: InputDecoration(
-                    labelText: 'Cancellation reason',
-                    hintText: 'Customer requested cancellation',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Keep order',
-                  style: TextStyle(color: colors.textSecondary),
-                ),
-              ),
-              TextButton(
-                onPressed: reason.isEmpty
-                    ? null
-                    : () => Navigator.pop(context, reason),
-                child: Text(
-                  'Cancel order',
-                  style: TextStyle(color: colors.error),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  Future<String?> _showCancelReasonDialog(OrderContract order) =>
+      _showCurrentSheet<String>(
+        _DetailCancellationSheet(view: _view!, number: _orderNumber(order)),
+      );
 
   Future<_CompleteRefundRequest?> _showCompleteRefundDialog({
     JsonMap? pending,
-  }) async {
-    final refundIdController = TextEditingController(
-      text:
+  }) => _showCurrentSheet<_CompleteRefundRequest>(
+    _DetailRefundCompletionSheet(
+      view: _view!,
+      initialRefundId:
           pending?['refund_id']?.toString() ??
           _order?.toJson()['refund_id']?.toString(),
-    );
-    final providerRefundIdController = TextEditingController(
-      text: pending?['provider_refund_id']?.toString(),
-    );
-    final notesController = TextEditingController();
-
-    return showDialog<_CompleteRefundRequest>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Complete refund',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: refundIdController,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Refund ID',
-                labelStyle: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: providerRefundIdController,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Provider refund ID',
-                labelStyle: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: notesController,
-              readOnly: true,
-              minLines: 2,
-              maxLines: 3,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Notes',
-                helperText: 'Add completion notes on the return.',
-                labelStyle: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(
-              context,
-              _CompleteRefundRequest(
-                refundId: refundIdController.text.trim(),
-                providerRefundId: providerRefundIdController.text.trim(),
-                notes: notesController.text.trim(),
-              ),
-            ),
-            child: Text(
-              'Complete',
-              style: TextStyle(
-                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+      initialProviderRefundId: pending?['provider_refund_id']?.toString(),
+    ),
+  );
 
   Future<_TrackingRequest?> _showTrackingDialog() async {
     final carrierController = TextEditingController();
@@ -1271,197 +1290,236 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final heightController = TextEditingController(text: '5');
     var createShippingLabel = false;
     var logisticsProvider = AppConfig.normalizedDefaultLogisticsProvider;
+    Map<String, dynamic>? providerRead;
+    bool providerPending = false;
+    int providerGeneration = 0;
+    bool bookingAvailable() {
+      final capabilities = providerRead?['capabilities'];
+      final mode = ProviderMode.parse(providerRead?['provider_mode']);
+      return !providerPending &&
+          mode != null &&
+          capabilities is Map &&
+          capabilities['carrier_booking_available'] == true &&
+          ProviderMode.parse(capabilities['provider_mode']) == mode;
+    }
 
-    return showDialog<_TrackingRequest>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: colors.card,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+    Future<void> checkProvider(BuildContext page, StateSetter update) async {
+      if (!_current ||
+          !mobile_tokens.isLetbuyySurfaceCurrent(page) ||
+          providerPending)
+        return;
+      final generation = ++providerGeneration;
+      update(() {
+        providerPending = true;
+        providerRead = null;
+      });
+      bool current() =>
+          _current &&
+          page.mounted &&
+          mobile_tokens.isLetbuyySurfaceCurrent(page) &&
+          createShippingLabel &&
+          generation == providerGeneration;
+      try {
+        final result = await context
+            .read<OrderService>()
+            .fetchShippingProviderMode(_view!.storeId);
+        if (current())
+          update(() {
+            providerRead = result;
+            providerPending = false;
+          });
+      } catch (_) {
+        if (current())
+          update(() {
+            providerRead = null;
+            providerPending = false;
+          });
+      }
+    }
+
+    bool returned = false;
+    return _showOrderEditor<_TrackingRequest>(
+      title: 'Fulfill order',
+      controllers: [
+        carrierController,
+        trackingController,
+        weightController,
+        lengthController,
+        widthController,
+        heightController,
+      ],
+      hasChanges: () =>
+          createShippingLabel ||
+          logisticsProvider != AppConfig.normalizedDefaultLogisticsProvider ||
+          carrierController.text.isNotEmpty ||
+          trackingController.text.isNotEmpty ||
+          weightController.text != '500' ||
+          lengthController.text != '10' ||
+          widthController.text != '10' ||
+          heightController.text != '5',
+      bodyBuilder: (formContext, setFormState) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SwitchListTile.adaptive(
+            contentPadding: EdgeInsets.zero,
+            value: createShippingLabel,
+            title: const Text('Buy shipping label'),
+            subtitle: const Text(
+              'Use your configured carrier integration to request a label, then mark the order shipped.',
+            ),
+            onChanged: (value) {
+              if (!_current ||
+                  !mobile_tokens.isLetbuyySurfaceCurrent(formContext))
+                return;
+              setFormState(() {
+                createShippingLabel = value;
+                providerGeneration++;
+                providerRead = null;
+                providerPending = false;
+              });
+              if (value) checkProvider(formContext, setFormState);
+            },
           ),
-          title: Text(
-            'Fulfill order',
-            style: TextStyle(color: colors.textPrimary),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SwitchListTile.adaptive(
-                  contentPadding: EdgeInsets.zero,
-                  value: createShippingLabel,
-                  activeColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                  title: Text(
-                    'Buy shipping label',
-                    style: TextStyle(color: colors.textPrimary),
-                  ),
-                  subtitle: Text(
-                    'Creates a sandbox label unless live carrier credentials are configured.',
-                    style: TextStyle(color: colors.textSecondary),
-                  ),
-                  onChanged: (value) =>
-                      setDialogState(() => createShippingLabel = value),
-                ),
-                if (createShippingLabel) ...[
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Text(
-                        'Carrier provider',
-                        style: TextStyle(
-                          color: colors.textSecondary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const ProviderModeBadge(
-                        mode: ProviderMode.sandbox,
-                        compact: true,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    value: logisticsProvider,
-                    dropdownColor: colors.card,
-                    decoration: InputDecoration(
-                      labelText: 'Carrier account',
-                      labelStyle: TextStyle(color: colors.textSecondary),
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'shiprocket',
-                        child: Text('Shiprocket'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'delhivery',
-                        child: Text('Delhivery'),
-                      ),
-                      DropdownMenuItem(value: 'pickrr', child: Text('Pickrr')),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        setDialogState(() => logisticsProvider = value);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: weightController,
-                    keyboardType: TextInputType.number,
-                    style: TextStyle(color: colors.textPrimary),
-                    decoration: InputDecoration(
-                      labelText: 'Package weight (grams)',
-                      labelStyle: TextStyle(color: colors.textSecondary),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: lengthController,
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(color: colors.textPrimary),
-                          decoration: InputDecoration(
-                            labelText: 'L cm',
-                            labelStyle: TextStyle(color: colors.textSecondary),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: widthController,
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(color: colors.textPrimary),
-                          decoration: InputDecoration(
-                            labelText: 'W cm',
-                            labelStyle: TextStyle(color: colors.textSecondary),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: heightController,
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(color: colors.textPrimary),
-                          decoration: InputDecoration(
-                            labelText: 'H cm',
-                            labelStyle: TextStyle(color: colors.textSecondary),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ] else ...[
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: carrierController,
-                    style: TextStyle(color: colors.textPrimary),
-                    decoration: InputDecoration(
-                      labelText: 'Carrier',
-                      labelStyle: TextStyle(color: colors.textSecondary),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: trackingController,
-                    style: TextStyle(color: colors.textPrimary),
-                    decoration: InputDecoration(
-                      labelText: 'Tracking number',
-                      labelStyle: TextStyle(color: colors.textSecondary),
-                    ),
+          if (createShippingLabel) ...[
+            if (providerPending)
+              const Row(
+                children: [
+                  mobile_tokens.LoadingIndicator(),
+                  SizedBox(width: 12),
+                  Expanded(child: Text('Checking provider status…')),
+                ],
+              )
+            else if (ProviderMode.parse(providerRead?['provider_mode']) != null)
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  const Text('Provider mode'),
+                  ProviderModeBadge(
+                    mode: ProviderMode.parse(providerRead?['provider_mode']),
                   ),
                 ],
+              )
+            else
+              const Text('Provider status unavailable'),
+            if (!providerPending && providerRead != null && !bookingAvailable())
+              const Text(
+                'Carrier booking unavailable. Use manual fulfillment or check your carrier setup.',
+              ),
+            if (ProviderMode.parse(providerRead?['provider_mode']) ==
+                ProviderMode.sandbox)
+              const Text('Sandbox labels do not book a real shipment.'),
+            TextButton.icon(
+              onPressed: providerPending
+                  ? null
+                  : () => checkProvider(formContext, setFormState),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Recheck provider status'),
+            ),
+            const SizedBox(height: 16),
+            mobile_tokens.LetbuyyChoiceField<String>(
+              label: 'Carrier account',
+              value: logisticsProvider,
+              choices: const [
+                mobile_tokens.LetbuyyChoice(
+                  value: 'shiprocket',
+                  label: 'Shiprocket',
+                ),
+                mobile_tokens.LetbuyyChoice(
+                  value: 'delhivery',
+                  label: 'Delhivery',
+                ),
+                mobile_tokens.LetbuyyChoice(value: 'pickrr', label: 'Pickrr'),
               ],
+              onChanged: (value) =>
+                  setFormState(() => logisticsProvider = value),
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: colors.textSecondary),
-              ),
+            const SizedBox(height: 16),
+            mobile_tokens.CustomTextField(
+              controller: weightController,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.next,
+              label: 'Package weight (grams)',
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(
-                context,
-                _TrackingRequest(
-                  carrier: carrierController.text.trim(),
-                  trackingNumber: trackingController.text.trim(),
-                  createShippingLabel: createShippingLabel,
-                  logisticsProvider: createShippingLabel
-                      ? logisticsProvider
-                      : null,
-                  packageWeightGrams: createShippingLabel
-                      ? int.tryParse(weightController.text.trim())
-                      : null,
-                  packageLengthCm: createShippingLabel
-                      ? double.tryParse(lengthController.text.trim())
-                      : null,
-                  packageWidthCm: createShippingLabel
-                      ? double.tryParse(widthController.text.trim())
-                      : null,
-                  packageHeightCm: createShippingLabel
-                      ? double.tryParse(heightController.text.trim())
-                      : null,
-                ),
-              ),
-              child: Text(
-                createShippingLabel ? 'Buy label + ship' : 'Ship',
-                style: TextStyle(
-                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                ),
-              ),
+            const SizedBox(height: 16),
+            mobile_tokens.CustomTextField(
+              controller: lengthController,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.next,
+              label: 'Length (cm)',
+            ),
+            const SizedBox(height: 16),
+            mobile_tokens.CustomTextField(
+              controller: widthController,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.next,
+              label: 'Width (cm)',
+            ),
+            const SizedBox(height: 16),
+            mobile_tokens.CustomTextField(
+              controller: heightController,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              label: 'Height (cm)',
+            ),
+          ] else ...[
+            const SizedBox(height: 16),
+            mobile_tokens.CustomTextField(
+              controller: carrierController,
+              label: 'Carrier',
+              textInputAction: TextInputAction.next,
+            ),
+            const SizedBox(height: 16),
+            mobile_tokens.CustomTextField(
+              controller: trackingController,
+              label: 'Tracking number',
+              textInputAction: TextInputAction.done,
             ),
           ],
-        ),
+        ],
       ),
+      actionsBuilder: (page) => [
+        TextButton(
+          onPressed: () => mobile_tokens.dismissLetbuyySurface(page),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: createShippingLabel && !bookingAvailable()
+              ? null
+              : () {
+                  if (!_current ||
+                      returned ||
+                      !mobile_tokens.isLetbuyySurfaceCurrent(page))
+                    return;
+                  returned = true;
+                  mobile_tokens.completeLetbuyySurface(
+                    page,
+                    _TrackingRequest(
+                      carrier: carrierController.text.trim(),
+                      trackingNumber: trackingController.text.trim(),
+                      createShippingLabel: createShippingLabel,
+                      logisticsProvider: createShippingLabel
+                          ? logisticsProvider
+                          : null,
+                      packageWeightGrams: createShippingLabel
+                          ? int.tryParse(weightController.text.trim())
+                          : null,
+                      packageLengthCm: createShippingLabel
+                          ? double.tryParse(lengthController.text.trim())
+                          : null,
+                      packageWidthCm: createShippingLabel
+                          ? double.tryParse(widthController.text.trim())
+                          : null,
+                      packageHeightCm: createShippingLabel
+                          ? double.tryParse(heightController.text.trim())
+                          : null,
+                    ),
+                  );
+                },
+          child: Text(createShippingLabel ? 'Buy label + ship' : 'Ship'),
+        ),
+      ],
     );
   }
 
@@ -1471,96 +1529,74 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         if (item.id.isNotEmpty)
           item: TextEditingController(text: item.quantity.toString()),
     };
-
-    return showDialog<_LineItemsRequest>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Edit line items',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final entry in controllers.entries) ...[
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        entry.key.name.isEmpty ? 'Item' : entry.key.name,
-                        style: TextStyle(color: colors.textPrimary),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    SizedBox(
-                      width: 84,
-                      child: TextField(
-                        controller: entry.value,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(color: colors.textPrimary),
-                        decoration: InputDecoration(
-                          labelText: 'Qty',
-                          labelStyle: TextStyle(color: colors.textSecondary),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-              ],
-              Text(
-                'Set quantity to 0 to remove a line. Totals are recalculated on the server.',
-                style: TextStyle(color: colors.textSecondary, fontSize: 12),
-              ),
-            ],
+    bool returned = false;
+    return _showOrderEditor<_LineItemsRequest>(
+      title: 'Edit line items',
+      controllers: controllers.values.toList(growable: false),
+      hasChanges: () => controllers.entries.any(
+        (entry) => entry.value.text != entry.key.quantity.toString(),
+      ),
+      bodyBuilder: (_, __) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Set quantity to 0 to remove a line. Totals are recalculated on the server.',
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              final lines = controllers.entries
-                  .map((entry) {
-                    return {
-                      'order_item_id': entry.key.id,
-                      'quantity':
-                          int.tryParse(entry.value.text.trim()) ??
-                          entry.key.quantity,
-                    };
-                  })
-                  .toList(growable: false);
-              Navigator.pop(context, _LineItemsRequest(lines: lines));
-            },
-            child: Text(
-              'Save',
-              style: TextStyle(
-                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+          for (final entry in controllers.entries)
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: mobile_tokens.CustomTextField(
+                controller: entry.value,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.next,
+                label:
+                    'Quantity: ${entry.key.name.isEmpty ? 'Item' : entry.key.name}',
+                helperText: int.tryParse(entry.value.text.trim()) == null
+                    ? 'This entry cannot be read. Saving keeps the current quantity of ${entry.key.quantity}.'
+                    : 'Current quantity: ${entry.key.quantity}. Enter 0 to remove this line.',
               ),
             ),
-          ),
         ],
       ),
+      actionsBuilder: (page) => [
+        TextButton(
+          onPressed: () => mobile_tokens.dismissLetbuyySurface(page),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () {
+            if (!_current ||
+                returned ||
+                !mobile_tokens.isLetbuyySurfaceCurrent(page))
+              return;
+            final lines = controllers.entries
+                .map((entry) {
+                  return {
+                    'order_item_id': entry.key.id,
+                    'quantity':
+                        int.tryParse(entry.value.text.trim()) ??
+                        entry.key.quantity,
+                  };
+                })
+                .toList(growable: false);
+            returned = true;
+            mobile_tokens.completeLetbuyySurface(
+              page,
+              _LineItemsRequest(lines: lines),
+            );
+          },
+          child: const Text('Save'),
+        ),
+      ],
     );
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? colors.error : colors.success,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
+    if (!_current || ModalRoute.of(context)?.isCurrent != true) return;
+    mobile_tokens.showLetbuyyOperationFeedback(
+      context,
+      message: message,
+      isError: isError,
     );
   }
 
@@ -1719,8 +1755,41 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   String _money(double amount) {
-    final value = NumberFormat.decimalPattern('en_IN').format(amount.abs());
-    return amount < 0 ? '-INR $value' : 'INR $value';
+    final value = PriceFormatter.formatPrice(amount.abs());
+    return amount < 0 ? '-$value' : value;
+  }
+
+  String _displayStoredMoney(
+    Object? raw,
+    String currency, {
+    bool negate = false,
+  }) {
+    final value = raw is num
+        ? raw.toDouble()
+        : raw is String
+        ? double.tryParse(raw)
+        : null;
+    if (value == null || !value.isFinite) return 'Unavailable';
+    // Preserve an unfamiliar currency's original value rather than silently
+    // relabelling it INR or applying an invented currency conversion.
+    if (currency != 'INR') return '${negate ? '-' : ''}$currency $raw';
+    return _money(negate ? -value : value);
+  }
+
+  String _displayOrderTotal(OrderContract order) {
+    final raw = order['total'];
+    final value = raw is num
+        ? raw.toDouble()
+        : raw is String
+        ? double.tryParse(raw)
+        : null;
+    if (value == null || !value.isFinite) return 'Total unavailable';
+    if (order.currency != 'INR')
+      return _displayStoredMoney(raw, order.currency);
+    // Keep the protected calculation unchanged. Its positive-total branch
+    // agrees with the stored value; zero is displayed directly, never inferred
+    // from a fallback line sum as an acknowledged order total.
+    return _money(order.total > 0 ? _orderTotal(order) : value);
   }
 
   String _formatDate(OrderContract order) {
@@ -1797,4 +1866,152 @@ class _LineItemsRequest {
   const _LineItemsRequest({required this.lines});
 
   final List<Map<String, dynamic>> lines;
+}
+
+class _DetailCancellationSheet extends StatefulWidget {
+  const _DetailCancellationSheet({required this.view, required this.number});
+  final MerchantStoreView view;
+  final String number;
+  @override
+  State<_DetailCancellationSheet> createState() =>
+      _DetailCancellationSheetState();
+}
+
+class _DetailCancellationSheetState extends State<_DetailCancellationSheet> {
+  final reasonController = TextEditingController();
+  String reason = '';
+  bool returned = false;
+  bool get _current =>
+      mounted && merchantStoreViewCurrent(context, widget.view);
+  @override
+  void dispose() {
+    reasonController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => mobile_tokens.LetbuyyFormSheet(
+    title: 'Cancel ${widget.number}?',
+    description: 'Add a cancellation reason for the order timeline.',
+    actions: [
+      TextButton(
+        onPressed: () => mobile_tokens.completeLetbuyySurface(context),
+        child: const Text('Keep order'),
+      ),
+      FilledButton(
+        style: FilledButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          foregroundColor: Theme.of(context).colorScheme.onError,
+        ),
+        onPressed: reason.isEmpty
+            ? null
+            : () {
+                if (!_current ||
+                    returned ||
+                    !mobile_tokens.isLetbuyySurfaceCurrent(context))
+                  return;
+                returned = true;
+                mobile_tokens.completeLetbuyySurface(context, reason);
+              },
+        child: const Text('Cancel order'),
+      ),
+    ],
+    child: mobile_tokens.CustomTextField(
+      controller: reasonController,
+      label: 'Cancellation reason',
+      autofocus: true,
+      maxLines: 3,
+      maxLength: 500,
+      onChanged: (value) => setState(() => reason = value.trim()),
+    ),
+  );
+}
+
+class _DetailRefundCompletionSheet extends StatefulWidget {
+  const _DetailRefundCompletionSheet({
+    required this.view,
+    this.initialRefundId,
+    this.initialProviderRefundId,
+  });
+  final MerchantStoreView view;
+  final String? initialRefundId, initialProviderRefundId;
+  @override
+  State<_DetailRefundCompletionSheet> createState() =>
+      _DetailRefundCompletionSheetState();
+}
+
+class _DetailRefundCompletionSheetState
+    extends State<_DetailRefundCompletionSheet> {
+  late final refundIdController = TextEditingController(
+    text: widget.initialRefundId,
+  );
+  late final providerRefundIdController = TextEditingController(
+    text: widget.initialProviderRefundId,
+  );
+  final notesController = TextEditingController();
+  bool returned = false;
+  bool get _current =>
+      mounted && merchantStoreViewCurrent(context, widget.view);
+  @override
+  void dispose() {
+    refundIdController.dispose();
+    providerRefundIdController.dispose();
+    notesController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => mobile_tokens.LetbuyyFormSheet(
+    title: 'Complete refund',
+    description:
+        'The existing security approval and server confirmation are required after these references are submitted.',
+    actions: [
+      TextButton(
+        onPressed: () => mobile_tokens.completeLetbuyySurface(context),
+        child: const Text('Cancel'),
+      ),
+      FilledButton(
+        onPressed: () {
+          if (!_current ||
+              returned ||
+              !mobile_tokens.isLetbuyySurfaceCurrent(context))
+            return;
+          returned = true;
+          mobile_tokens.completeLetbuyySurface(
+            context,
+            _CompleteRefundRequest(
+              refundId: refundIdController.text.trim(),
+              providerRefundId: providerRefundIdController.text.trim(),
+              notes: notesController.text.trim(),
+            ),
+          );
+        },
+        child: const Text('Complete'),
+      ),
+    ],
+    child: Column(
+      children: [
+        mobile_tokens.CustomTextField(
+          controller: refundIdController,
+          label: 'Refund ID',
+          textInputAction: TextInputAction.next,
+        ),
+        const SizedBox(height: 16),
+        mobile_tokens.CustomTextField(
+          controller: providerRefundIdController,
+          label: 'Provider refund ID',
+          textInputAction: TextInputAction.done,
+        ),
+        const SizedBox(height: 16),
+        mobile_tokens.CustomTextField(
+          controller: notesController,
+          readOnly: true,
+          minLines: 2,
+          maxLines: 3,
+          label: 'Notes',
+          helperText: 'Add completion notes on the return.',
+        ),
+      ],
+    ),
+  );
 }

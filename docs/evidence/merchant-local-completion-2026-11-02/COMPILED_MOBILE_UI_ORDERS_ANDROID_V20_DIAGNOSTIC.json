@@ -1,0 +1,104 @@
+{
+  "at": "2026-11-04T19:11:37.451337+00:00",
+  "status": "FAILED_LOCAL_DRAFT_BACKEND_GATE_WITH_BOUNDED_NATIVE_UI_OBSERVATIONS",
+  "run_id": "a4e102bf98f2",
+  "source": {
+    "sha256": "41c0d88908a63fc74d260b26144059acc3925e89509364db05ddf0e985e451e7",
+    "entries": 7465,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-orders-v13-qualified-source",
+    "native_manifest_sha256": "b336af6dac5d05126d10346cfcd0dc9eb788e0e44fc32f6bd53bcbea22c0da3d",
+    "native_manifest_inputs": 4785,
+    "all_match_broad_source": true
+  },
+  "result": {
+    "compound_tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "cancelled": 0,
+    "suite_seconds": 835,
+    "wall_seconds": 836.8,
+    "timed_out": false,
+    "runner_exit": 1,
+    "controller_exit": 1
+  },
+  "artifact": {
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v20/qualified-artifact/merchant-local-debug.apk",
+    "apk_sha256": "dfbf1c9e5e6525b08a6187b9e0fcbc27146b42cd0fbbc964a0866b3fa4122064",
+    "normal_main": true,
+    "original_bytes_retained": true,
+    "installed_readback": true
+  },
+  "environment": "Taskemulator5580/server15038, normal synthetic Accounts PKCE/sign-in/automatic return; actual local Hono Gateway/BFF handlers +owned migratedPostgres/PostgREST, production-mode localAccounts/Merchant. Not compiledWorkerd/hosted/provider.",
+  "bounded_observations": [
+    "Normal sign-in and collection membership reply-loss/originalretry/web\u2194native readback, Smartpublication/restartretry/webfreshpreview observed; compound20didnotreachfinalcollectionlifecycleassertions. Earlier19proofremainsseparate.",
+    "Orders actualGET200empty-page/readablepagescope +appliedPendingsheet observed.",
+    "Complexdraftnativeemptyvalidation and fullyvisiblelabels/errors observed.",
+    "ActualAndroidsoftwarekeyboard/nameandemailinputreadback; Close/Savevisiblyabovekeyboard on both independentlyinspectedPNGs.",
+    "ActualdraftPOSTreturned500three recordedtransportattempts. No convertPOSTorneworderreadbackverified. UIretainedinput, showedunknownoutcome, disabledSave; no falseconfirmedorder."
+  ],
+  "backend_dependency": {
+    "report": "ORDERS_DRAFT_BACKEND_DEPENDENCY.md",
+    "observed_error": "Tenant table draft_orders requires a tenant/owner predicate before execution",
+    "http_draft_statuses": [
+      500,
+      500,
+      500
+    ],
+    "code_inference": "loadDraftOrder selects draft_orders by id without site_id; this is an inferred source cause, not an independently capturedSQLstack. No backendfixorweakenedguard.",
+    "commit_state": "Unknown. AncillaryREADONLYwitnessconfirmedzero before request; neverobservedconvertedorder; stoppedwhenownedrunnerretired. Latecheckpointrefusedbecausereadycredentialmetadatawasalreadyretired. NoSQLqueryornewretryafterretirement.",
+    "idempotency_limit": "Observed-calllogdoesnotrecordbody/keydigestsforOrders;threeHTTP500attemptsdonotqualifyeffect-onceorzerocommit."
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-orders-v20-empty-scope.png",
+      "sha256": "f79416c1b64f91685d24a95a7ddb18ed822ebbdf6292fe4a8cfba9f0c9e76749",
+      "independently_visually_inspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-orders-v20-applied-status.png",
+      "sha256": "c035a9173348fcea84bfe4b239561ee366604fd2993fdbfe6924ce55f411f71f",
+      "independently_visually_inspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-orders-v20-draft-validation.png",
+      "sha256": "0855e6378a76e3b602a9c1eb57edf08606eada36e44c9bc2a52f0e6c22d3e986",
+      "independently_visually_inspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-orders-v20-name-keyboard.png",
+      "sha256": "e1bba30b82332e04f53fa905b57621a135f4422d907069e6211ae186f4042d2e",
+      "independently_visually_inspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-orders-v20-email-keyboard.png",
+      "sha256": "e899cf3f8a0badf1755fabde72b879d2c6b925387be0ec502a0da705cf0d3b56",
+      "independently_visually_inspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-orders-v20-draft-unknown.png",
+      "sha256": "6cc06232f8e9aa262b51b84c624c0c671c62567a196cc7c1a7ac8d45de872340",
+      "independently_visually_inspected": true
+    }
+  ],
+  "cleanup": {
+    "runner": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "independent_readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/orders-v20-owned-terminal-readback.json",
+    "reverse_restored_empty": true,
+    "pre_existing_forward_preserved": true,
+    "host9002": "Neverboundorprobed;onlyemulatorreverse9002to54351wasownedandretired.",
+    "power": "Runner-boundcaffeinateonly;retired;no persistentpowerchanges."
+  },
+  "acceptance_limits": [
+    "No Orders create/convert/web\u2194mobile/effect-once/refund/provider/hosted/iOSruntime/physical/releaseacceptance.",
+    "No overallv20pass; UIobservationsaredistinctfromthefailedcompoundtest.",
+    "Wholeappand119featureprogrammeopen;120/121excluded,122paused,51frozen;screen denominatorunreconciled."
+  ]
+}

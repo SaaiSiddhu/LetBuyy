@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-06T06:25:29.316095+00:00",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c",
+  "source_manifest": "web-viewport-source-v1.source.json",
+  "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "inputs": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/run-switcher-v56.py",
+      "sha256": "79d175482e13dfad3adac8e6b78d9c7794387aee1143f1e20896db5a9e9519e3"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/android-device-receipt-switcher-v56.json",
+      "sha256": "a5e7431ef0397e12f7a4abedac07816c556fe450ebd9d416bf9571e84c933827"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v56.py",
+      "sha256": "961ef90ed4afd7628266e60d41654f527a0193b1e213a2eab9b13d46a365aa6f"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v56-local-android.postgres.test.ts",
+      "sha256": "a7af621ef1a4cb3ffc7d9b964be21ec57a24944b809aa3cdd62af44061180246"
+    }
+  ],
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "scope": "Original53membership/native/web/Staff journey retained;actual browser panel bounds,scroll/focus and both appearance visibility/restoration added. Real canonical inventory and nullable-description/media/effect-once preservation assertions retained. No force click or business response stub. Not launched."
+}

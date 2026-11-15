@@ -36,11 +36,11 @@ async function mount(transport: Transport) {
     const { MerchantSecurityContext } = await import('../security/MerchantSecurityContext')
     const { default: CollectionsPage } = await import('../../app/[store]/products/collections/page')
     const container = dom.window.document.getElementById('root')!, root = createRoot(container)
-    const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
+    const router = { bfcacheId: 'synthetic-router-cache',  back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
     let key = 0
     const render = async (store = 'alpha', actor = actorId) => { await act(async () => root.render(
         <AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store }}><ToastProvider duration={0}>
-            <MerchantSecurityContext.Provider value={{ actorId: actor, store }}><CollectionsPage key={key} /></MerchantSecurityContext.Provider>
+            <MerchantSecurityContext.Provider value={{ actorId: actor, store, siteId }}><CollectionsPage key={key} /></MerchantSecurityContext.Provider>
         </ToastProvider></PathParamsContext.Provider></AppRouterContext.Provider>)) }
     await render()
     const text = () => container.textContent || ''
@@ -60,9 +60,47 @@ async function mount(transport: Transport) {
         await act(async () => root.unmount()); dom.window.close()
         for (const name of names) { if (previous[name]) Object.defineProperty(globalThis, name, previous[name]!); else Reflect.deleteProperty(globalThis, name) }
     }
-    return { container, text, button, click, checkbox, toggle, render, remount: async () => { key++; await render() }, storage: dom.window.sessionStorage, close }
+    const dialogClick = async (name: string) => {
+        const control = [...dom.window.document.querySelectorAll('[role="dialog"] button')].find(item => item.textContent?.trim() === name)
+        assert.ok(control, 'Missing maintained dialog control ' + name)
+        await act(async () => { (control as HTMLButtonElement).click() })
+    }
+    return { container, text, button, click, dialogClick, checkbox, toggle, render, remount: async () => { key++; await render() }, storage: dom.window.sessionStorage, close }
 }
 function base(url: string) { return /\/collections(?:\?|$)/.test(url) ? response(collections) : url.includes('/collections/') ? response(snapshot()) : choices() }
+
+test('normal collection list discovers retained membership recovery when its live row was deleted', async () => {
+    const h = await mount(async () => response([], 200, {page:1,per_page:20,total:0,total_pages:0,has_next:false,has_prev:false}));
+    try {
+        h.storage.setItem(`letbuyy.collection-membership.v1:${actorId}:alpha:${cid}`, JSON.stringify({
+            actorId, store:'alpha', storeId:siteId, collectionId:cid,
+            command:{product_ids:[pid],expected_version:7,idempotency_key:otherCid},
+        }));
+        await h.remount();
+        assert(h.button('Retry saved product selection'));
+    } finally { await h.close() }
+});
+
+for (const code of ['COLLECTION_MEMBERSHIP_KEY_CONFLICT', 'COLLECTION_MEMBERSHIP_LEGACY_KEY']) {
+    test(`${code} cannot release an unconfirmed original selection as a stale-version review`, async () => {
+        const h = await mount(async (url, init) => init?.method === 'PUT'
+            ? Response.json({error:{code,message:'Synthetic original outcome is uncertain'}},{status:409}) : base(url));
+        try {
+            await h.click('Manage products');await h.click('Save products');
+            assert.doesNotMatch(h.text(), /Reload current products/);
+            assert(h.storage.getItem(`letbuyy.collection-membership.v1:${actorId}:alpha:${cid}`));
+        } finally { await h.close() }
+    });
+}
+test('a current owner denial removes private product-selection rows and keeps original recovery', async () => {
+    const h = await mount(async (url, init) => init?.method === 'PUT'
+        ? Response.json({error:{code:'FORBIDDEN',message:'Synthetic owner revoked'}},{status:403}) : base(url));
+    try {
+        await h.click('Manage products');assert(h.text().includes(product().name));await h.click('Save products');
+        assert(!h.text().includes(product().name), 'Private selection rows must retire after current authority is withdrawn.');
+        assert(h.storage.getItem(`letbuyy.collection-membership.v1:${actorId}:alpha:${cid}`));
+    } finally { await h.close() }
+});
 
 test('a failed membership read never becomes an intentional empty save; explicit retry restores current selection', async () => {
     let reads = 0, puts = 0
@@ -193,3 +231,112 @@ test('an unmounted membership reply cannot clear a newer mounted editor pending 
         assert.equal(h.storage.getItem(storageKey),retained,'Late old component acknowledgement must leave newer pending command byteexact');
     }finally{oldReply.resolve(response(snapshot(19,[])));newReply.resolve(response(current));await act(async()=>{await Promise.resolve()});await h.close()}
 });
+
+const retainedKey = `letbuyy.collection-membership.v1:${actorId}:alpha:${cid}`
+const retainedSelection = () => ({ actorId, store:'alpha', storeId:siteId, collectionId:cid,
+    command:{product_ids:[pid],expected_version:7,idempotency_key:otherCid} })
+const emptyCollectionList = () => response([],200,{page:1,per_page:20,total:0,total_pages:0,has_next:false,has_prev:false})
+const missingMembership = () => Response.json({error:{code:'COLLECTION_MEMBERSHIP_NOT_FOUND',message:'Synthetic canonical target missing'}},{status:404})
+
+test('a deleted-row recovery retries the original command and accepts its original receipt', async () => {
+    const commands: {url:string; body:unknown; headers:Headers}[]=[]
+    const h=await mount(async(url,init)=>{
+        if(init?.method==='PUT'){commands.push({url,body:JSON.parse(String(init.body)),headers:new Headers(init.headers)});return response(snapshot(8))}
+        return emptyCollectionList()
+    })
+    try{
+        h.storage.setItem(retainedKey,JSON.stringify(retainedSelection()));await h.remount();assert.doesNotMatch(h.text(),/Synthetic assigned product/)
+        await h.click('Retry saved product selection');assert.equal(commands.length,1);assert.deepEqual(commands[0].body,retainedSelection().command)
+        assert.equal(commands[0].headers.get('X-LetBuyy-Merchant-Context'),actorId);assert.equal(commands[0].headers.get('X-Idempotency-Key'),otherCid)
+        assert.equal(h.storage.getItem(retainedKey),null);assert.match(h.text(),/Original product selection confirmed/)
+    }finally{await h.close()}
+})
+test('a store URL rename discovers the stable-site selection and retries through the new URL',async()=>{
+    const requests:string[]=[]
+    const h=await mount(async(url,init)=>{if(init?.method==='PUT'){requests.push(url);return response(snapshot(8))}return emptyCollectionList()})
+    try{
+        h.storage.setItem(retainedKey,JSON.stringify(retainedSelection()));await h.render('renamed-alpha')
+        await h.click('Retry saved product selection');assert.deepEqual(requests,[`/api/stores/renamed-alpha/collections/${cid}/products`]);assert.equal(h.storage.getItem(retainedKey),null)
+    }finally{await h.close()}
+})
+test('other actors and sites stay private while malformed matching recovery blocks a new save',async()=>{
+    let puts=0;const h=await mount(async(url,init)=>{if(init?.method==='PUT'){puts++;return response(snapshot(8))}return base(url)})
+    try{
+        const otherActor='55555555-5555-4555-8555-555555555555',otherSite='66666666-6666-4666-8666-666666666666'
+        const otherActorKey=`letbuyy.collection-membership.v1:${otherActor}:alpha:${cid}`
+        h.storage.setItem(otherActorKey,JSON.stringify({...retainedSelection(),actorId:otherActor}))
+        h.storage.setItem(retainedKey,JSON.stringify({...retainedSelection(),storeId:otherSite}));await h.remount();assert.doesNotMatch(h.text(),/Retry saved product selection/)
+        assert(h.storage.getItem(retainedKey));assert(h.storage.getItem(otherActorKey))
+        h.storage.setItem(retainedKey,'{malformed matching original');await h.remount();await h.click('Manage products')
+        assert.equal(h.button('Save products').disabled,true);assert.doesNotMatch(h.text(),/Discard saved recovery/)
+        await h.click('Save products');assert.equal(puts,0);assert.equal(h.storage.getItem(retainedKey),'{malformed matching original')
+    }finally{await h.close()}
+})
+for(const status of [404,503])test(`generic${status} after deletion cannot release an original selection`,async()=>{
+    const h=await mount(async(_url,init)=>init?.method==='PUT'?response(null,status):emptyCollectionList())
+    try{
+        h.storage.setItem(retainedKey,JSON.stringify(retainedSelection()));await h.remount();await h.click('Retry saved product selection')
+        assert.doesNotMatch(h.text(),/Discard rejected product selection/);assert(h.storage.getItem(retainedKey))
+    }finally{await h.close()}
+})
+test('a same-version response cannot acknowledge an original membership effect',async()=>{
+    const h=await mount(async(_url,init)=>init?.method==='PUT'?response(snapshot(7)):emptyCollectionList())
+    try{
+        h.storage.setItem(retainedKey,JSON.stringify(retainedSelection()));await h.remount();await h.click('Retry saved product selection')
+        assert(h.storage.getItem(retainedKey));assert.match(h.text(),/receipt could not be confirmed/)
+    }finally{await h.close()}
+})
+test('missing recovery survives remount and Cancel, then rechecks original command before explicit dismissal',async()=>{
+    const commands:unknown[]=[]
+    const h=await mount(async(_url,init)=>{if(init?.method==='PUT'){commands.push(JSON.parse(String(init.body)));return missingMembership()}return emptyCollectionList()})
+    try{
+        h.storage.setItem(retainedKey,JSON.stringify(retainedSelection()));await h.remount();await h.click('Retry saved product selection')
+        assert.equal(JSON.parse(h.storage.getItem(retainedKey)!).outcome,'missing');await h.remount()
+        await h.click('Discard rejected product selection');await h.dialogClick('Cancel');assert(h.storage.getItem(retainedKey));assert.equal(commands.length,1)
+        await h.click('Discard rejected product selection');await h.dialogClick('Discard selection')
+        assert.equal(commands.length,2);assert.deepEqual(commands[0],retainedSelection().command);assert.deepEqual(commands[1],commands[0])
+        assert.equal(h.storage.getItem(retainedKey),null);assert.match(h.text(),/Rejected product selection discarded/)
+    }finally{await h.close()}
+})
+for(const last of ['outage','denial','receipt'])test(`missing dismissal handles current ${last} without fabricating rejection`,async()=>{
+    let puts=0
+    const h=await mount(async(_url,init)=>{
+        if(init?.method==='PUT'){
+            if(++puts===1)return missingMembership()
+            return last==='receipt'?response(snapshot(8)):Response.json({error:{code:last==='denial'?'FORBIDDEN':'UNAVAILABLE'}},{status:last==='denial'?403:503})
+        }
+        return emptyCollectionList()
+    })
+    try{
+        h.storage.setItem(retainedKey,JSON.stringify(retainedSelection()));await h.remount();await h.click('Retry saved product selection')
+        await h.click('Discard rejected product selection');await h.dialogClick('Discard selection');assert.equal(puts,2)
+        if(last==='receipt'){assert.equal(h.storage.getItem(retainedKey),null);assert.match(h.text(),/Original product selection confirmed/);assert.doesNotMatch(h.text(),/Rejected product selection discarded/)}
+        else{assert(h.storage.getItem(retainedKey));assert.doesNotMatch(h.text(),/Rejected product selection discarded/)}
+        if(last==='denial')assert.match(h.text(),/Store access changed/)
+    }finally{await h.close()}
+})
+test('stale review requires a fresh authorized read before releasing its original request',async()=>{
+    let reads=0
+    const h=await mount(async(url,init)=>{
+        if(init?.method==='PUT')return Response.json({error:{code:'COLLECTION_MEMBERSHIP_VERSION_CONFLICT'}},{status:409})
+        if(url.includes('/collections/'))return ++reads===1?response(snapshot()):Response.json({error:{code:'FORBIDDEN'}},{status:403})
+        return base(url)
+    })
+    try{
+        await h.click('Manage products');await h.click('Save products');const retained=h.storage.getItem(retainedKey);assert(retained)
+        await h.click('Reload current products');assert.match(h.text(),/Store access changed/);assert.equal(h.storage.getItem(retainedKey),retained);assert.doesNotMatch(h.text(),/Synthetic assigned product/)
+    }finally{await h.close()}
+})
+test('a current list denial retires private views and a late successful write cannot clear retained recovery',async()=>{
+    const reply=deferred<Response>();let lists=0
+    const h=await mount(async(url,init)=>{
+        if(init?.method==='PUT')return reply.promise
+        if(/\/collections(?:\?|$)/.test(url)&&++lists>1)return Response.json({error:{code:'FORBIDDEN'}},{status:403})
+        return base(url)
+    })
+    try{
+        await h.click('Manage products');await h.click('Save products');const retained=h.storage.getItem(retainedKey);assert(retained)
+        await h.click('Refresh');assert.match(h.text(),/Store access changed/);assert.doesNotMatch(h.text(),/Synthetic assigned product/)
+        await act(async()=>reply.resolve(response(snapshot(8))));assert.equal(h.storage.getItem(retainedKey),retained);assert.doesNotMatch(h.text(),/Products updated/)
+    }finally{reply.resolve(response(snapshot(8)));await h.close()}
+})

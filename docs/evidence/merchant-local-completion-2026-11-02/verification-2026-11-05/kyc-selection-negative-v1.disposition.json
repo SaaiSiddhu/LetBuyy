@@ -1,0 +1,8 @@
+{
+  "at": "2026-11-06T06:58:57.380173+00:00",
+  "status": "INTERRUPTED_POSITIVE_FIXTURE_NOT_ACCEPTED",
+  "pass": 0,
+  "source_unchanged": true,
+  "exit_code_alone_insufficient": true,
+  "reason": "Real SDK initial setup awaited under widget fake clock; own child interrupted after no completed positive. Flutter shutdown exited0with stream errors; neither application negative nor successful test claimed."
+}

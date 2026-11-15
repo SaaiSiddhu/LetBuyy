@@ -29,6 +29,15 @@ class MerchantReturn {
   JsonMap toJson() => Map<String, dynamic>.from(_json);
 }
 
+/// Current read presentation only. The server supplies this exact population.
+typedef ReturnPagePresentation = ({
+  String storeId,
+  String status,
+  int page,
+  int limit,
+  int total,
+});
+
 class ReturnService extends ChangeNotifier {
   ReturnService({
     required ApiClient api,
@@ -55,12 +64,36 @@ class ReturnService extends ChangeNotifier {
   final ApiClient _api;
 
   List<MerchantReturn> _returns = [];
-  List<MerchantReturn> get returns => _returnsContext == requestContext
-      ? List.unmodifiable(_returns)
+  List<MerchantReturn> get returns =>
+      !_disposed && _returnsContext == requestContext
+      ? List.unmodifiable(_returns.where((row) => !hasDeniedRead(row.storeId)))
       : const [];
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  bool _disposed = false;
+  int _readGeneration = 0;
+  Object? _pageContext;
+  ReturnPagePresentation? _page;
+  Object? _denialsContext;
+  final _deniedStores = <String>{};
+  bool hasDeniedRead(String storeId) =>
+      _disposed ||
+      _denialsContext == requestContext && _deniedStores.contains(storeId);
+  int? get readPageGeneration => readPage == null ? null : _readGeneration;
+  ReturnPagePresentation? pageFor(List<MerchantReturn> rows) =>
+      identical(rows, _returns) ? readPage : null;
+  ReturnPagePresentation? get readPage =>
+      !_disposed && _pageContext == requestContext ? _page : null;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _readGeneration++;
+    _returns = [];
+    _page = null;
+    super.dispose();
+  }
 
   Future<List<MerchantReturn>> fetchReturns(
     String storeId, {
@@ -69,6 +102,13 @@ class ReturnService extends ChangeNotifier {
     int limit = 20,
   }) async {
     final captured = requestContext;
+    if (_disposed) throw TwoFactorService.changed();
+    final generation = ++_readGeneration;
+    bool current() =>
+        !_disposed &&
+        captured == requestContext &&
+        generation == _readGeneration;
+    _page = null;
     _isLoading = true;
     notifyListeners();
     try {
@@ -84,15 +124,60 @@ class ReturnService extends ChangeNotifier {
           'limit': limit,
         },
       );
-      if (captured != requestContext) throw TwoFactorService.changed();
-      _returnsContext = captured;
-      _returns = result.data
+      if (!current()) throw TwoFactorService.changed();
+      final rows = result.data
           .map(MerchantReturn.fromJson)
           .toList(growable: false);
+      if (rows.any(
+            (row) =>
+                row.id.isEmpty ||
+                row.storeId != storeId ||
+                status != 'all' && row.status != status,
+          ) ||
+          result.page != page ||
+          result.page < 1 ||
+          result.limit != limit ||
+          result.limit < 1 ||
+          result.total < rows.length) {
+        throw const FormatException(
+          'The return page could not be confirmed for this store.',
+        );
+      }
+      _returnsContext = captured;
+      _returns = rows;
+      if (_denialsContext != captured) {
+        _denialsContext = captured;
+        _deniedStores.clear();
+      }
+      _deniedStores.remove(storeId);
+      _pageContext = captured;
+      _page = (
+        storeId: storeId,
+        status: status,
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+      );
       return _returns;
+    } catch (error) {
+      if (!current()) throw TwoFactorService.changed();
+      if (error is FormatException ||
+          error is ApiException &&
+              const [401, 403, 404].contains(error.statusCode)) {
+        if (_denialsContext != captured) {
+          _denialsContext = captured;
+          _deniedStores.clear();
+        }
+        _deniedStores.add(storeId);
+        _returns = [];
+        _returnsContext = null;
+      }
+      rethrow;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (current()) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 

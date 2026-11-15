@@ -1,0 +1,193 @@
+{
+  "at": "2026-11-04T14:27:32.367359+00:00",
+  "status": "PASS_BOUNDED_LOCAL_CATEGORY_SYNC_AND_REVIEWED_DASHBOARD_PRESENTATION",
+  "fullAppAccepted": false,
+  "source": {
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-dashboard-v36.source.json",
+    "sha256": "f4b5fa798ec9c20035f509e34b870191fa62a72bfef2ee651eb9e4e25227a9e4",
+    "entries": 7456,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-dashboard-v36-qualified-source",
+    "terminal_unchanged": true,
+    "native_manifest_entries": 4776,
+    "all_native_inputs_match_broad_snapshot": true
+  },
+  "run": {
+    "runId": "0da1fc75a65d",
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "wallSeconds": 453.3,
+    "suiteSeconds": 451.8,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "artifact": {
+    "run_id": "0da1fc75a65d",
+    "source_sha256": "e03b473d91deb6ec3d89b6ad194578b83d5b76fc9c173236d1da866a82968bd5",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v11/qualified-artifact/merchant-local-debug.apk",
+    "sha256": "d222f9a3292a01b3889c4a66ed9a956fa7cbcfd24bcc352bc538ea8bb0ddec65",
+    "original_bytes_retained": true,
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "driver": {
+    "launcher": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/run-category-v11.py",
+    "launcher_sha256": "04ec1aab34e6b5450b92813409f1102f50f8b528d82e13c548e83e1bb75852f5",
+    "companion": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/android-category-auto-v11.py",
+    "sha256": "730085c21a8b3d85990a88ad52d4e0a8d98056df0f8b6bfd9e3205ec0b7ec943",
+    "strict_chart_acceptance": "Both actual dated row leaves fully within every ancestor scroll viewport, horizontal ordering and same-row vertical overlap; header money alone is insufficient",
+    "prior_v10": "Retained diagnostic0PASS/1FAIL due exact Run versus native Run command label mismatch; no application code changed for retry"
+  },
+  "launcher_cleanup": {
+    "at": "2026-11-04T14:24:15.507582+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "integration": {
+    "normal_native_accounts_pkce_return": true,
+    "normal_web_accounts_sign_in": true,
+    "gateway_bff": "Actual existing Hono source handlers/BFF and owned PostgreSQL/PostgREST with production-mode Accounts/Merchant Next applications. Category run does not compile Workerd. Local challenge fixture is separate from hosted Cloudflare.",
+    "category": {
+      "native_rename_lost_reply_same_original_key_body_retry": true,
+      "one_native_effect": true,
+      "web_read_native_rename_then_saved_description": true,
+      "fresh_native_editor_exact_web_description": true,
+      "persisted_category_version": 3,
+      "category_receipts": 2,
+      "audits": 2,
+      "outbox": 2,
+      "assigned_products_propagated": 2
+    },
+    "proof": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v11/backend-verified.json"
+  },
+  "native_presentation": {
+    "both_theme_navigation_settings_observed": true,
+    "real_search_confirmed_empty_read_and_keyboard_close": true,
+    "AI_draft_keyboard_close": true,
+    "AI_Run_fully_visible_with_actual_keyboard": true,
+    "AI_Run_bounds": [
+      597,
+      1339,
+      1028,
+      1465
+    ],
+    "AI_command_submitted": false,
+    "Staff_required_corrected_email_Viewer_role_draft_cancel_fresh_roster": true,
+    "Staff_command_submitted": false,
+    "segment_keyboard_spacing_and_scoped_choice_dirty_Back_cancel_discard": true,
+    "segment_command_submitted": false,
+    "Hero_QR_preview_close_observed": true,
+    "native_share_or_publication_submitted": false,
+    "chart_zero_series_and_decimal_axis_inspected": true,
+    "chart_daily_row_visually_accepted": true,
+    "chart_row": {
+      "date": "6 Oct 2026",
+      "date_bounds": [
+        368,
+        2063,
+        570,
+        2116
+      ],
+      "amount": "\u20b90.00",
+      "amount_bounds": [
+        612,
+        2063,
+        712,
+        2116
+      ]
+    },
+    "ancestor_viewport_clipping": true
+  },
+  "fixture_qualification": {
+    "full_passed": 1023,
+    "full_failed": 1,
+    "protected_failure": "Unchanged Staff hosted/local invitation namespace policy",
+    "app_analysis_issues": 0,
+    "ui_kit_analysis_issues": 0,
+    "parsed_preservation_checks": 53,
+    "governance_passed": 114,
+    "governance_not_applicable": 1,
+    "all7456governance_inputs_match": true
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-root-navigation-dark.png",
+      "sha256": "9bf6c7148d28402955d9be66cafd73f91524649ecd924c1e535013cf957cb217"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-root-navigation-light.png",
+      "sha256": "d9e44e78324a80c79c46cac2939222ba41bb7ac84f9e44b7f88ddd9d73361dfe"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-canonical-search-keyboard.png",
+      "sha256": "235bf6e182c5335e056f310e9a2c60693f6aeee6685e2950dc0479596e70bcf8"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-search-confirmed-empty-keyboard.png",
+      "sha256": "c3900c34d40810e404b958ee5d1243753186c0337688e6330e4fafbf46b65395"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-ai-operator-keyboard-draft.png",
+      "sha256": "01d780a871a2b664bf59b22d326a2c39cf687f27ddb6abd76f4573d87591cc59"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-staff-role-applied-draft.png",
+      "sha256": "64b6b24fc3d5dd27ddcb62193fe184b0251639b6a6719bd5f598065aef74c276"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-revenue-recorded-history.png",
+      "sha256": "3bba70a5c018b225363ee0ac38593255aca27872fe130ae37645c790aa193073"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-revenue-exact-values.png",
+      "sha256": "c2d02ddf013d6e16a07e79539e3f26e2d1960e3249205c3f7859e453c79e9381"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-home-qr-sheet.png",
+      "sha256": "443618cad61d12566faa1012a60262e58f3edc3db8a9211982b31679c3014ece"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-segment-full-page-keyboard.png",
+      "sha256": "4a8413a58b87e0b8251d05cf61b2f6170ba953332b00a5d40813754a7c21b059"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-segment-choice-applied-draft.png",
+      "sha256": "9744bfd570d5b33a8e15b47a6961f3597e3f38b4cded3bd5c2c3f17c1e9e7f66"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-dashboard-v11-native-category-web-description-readback.png",
+      "sha256": "7bd0984b607eaadd658773614be0de5bc5ac45bb818417a05836a1721e6397bc"
+    }
+  ],
+  "visually_inspected_here": [
+    "native-ai-operator-keyboard-draft.png",
+    "native-revenue-exact-values.png",
+    "native-home-qr-sheet.png",
+    "native-category-web-description-readback.png",
+    "native-segment-full-page-keyboard.png"
+  ],
+  "limits": [
+    "One bounded category recovery/synchronization journey and named UI observations only; no whole-app/119-feature certification.",
+    "No AI/provider command, Staff invitation/role/removal effect, segment Save/Preview sync or native publication/share delivery acceptance.",
+    "Nonzero chart amounts are fixture-qualified; native observed series is a real recorded local zero series.",
+    "Current iOScompile in progress; no iOS runtime, spoken TalkBack/VoiceOver, physical-performance or release-signing acceptance.",
+    "Homescreen-widget protected persistence lifetime separately unverified; UI dispatch guards are not persistence cancellation.",
+    "No new hosted/staging/provider/production activation or deployment. Unique surface denominator remains unreconciled."
+  ]
+}

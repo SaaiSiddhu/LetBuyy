@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-06T18:02:09.139395+00:00",
+  "source_sha256": "4d0884bd1d999e12271b2ee11c026a08977a7a509d2e00a4508ee1c3bfc21372",
+  "run_id": "24b74b9d38c4",
+  "status": "POSITIVE_CONTROL_PASS_OTHER_CASES_BLOCKED_BY_FIXTURE_NAME_COLLISION",
+  "counts": {
+    "pass": 1,
+    "setup_failures": 3
+  },
+  "finding": "All3 failures occurred in seedSyntheticTenant: same hardcoded global sites.store_name violated uniqueness. No fault/type invariant reached; no production defect claimed.",
+  "correction": "Only fixture tag gains unique UUID suffix per setup; the actual schema constraint is retained.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "next_test": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/media-create-receipt-source39-repro-v2.postgres.test.ts",
+  "next_test_sha256": "8f43436d0a92944c1dc97e2804b778c1d1d4bc2794d39c26a248af6cf205b2f2"
+}

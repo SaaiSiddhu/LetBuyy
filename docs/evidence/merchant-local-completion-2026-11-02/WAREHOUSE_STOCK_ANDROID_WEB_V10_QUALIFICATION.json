@@ -1,0 +1,49 @@
+{
+  "status": "LOCALLY_ACCEPTED_BOUNDED_WAREHOUSE_STOCK_JOURNEY",
+  "runId": "28036721b070",
+  "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "source": {
+    "sha256": "5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6",
+    "entries": 7411,
+    "verifiedUnchangedAfterTerminal": true,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-stock-v5-qualified-source",
+    "fixtureClosureSha256": "cbac1b79cc14fdee22f126fcc9178f8e8bb066883637f28775ad51f6ea1ebb2a"
+  },
+  "apkSha256": "61264acb56cf0f9b025a9c083d0951cb9d86709ec6a78066c4f9ddfc885ee8aa",
+  "runnerExit": 0,
+  "uiExit": 0,
+  "tests": 1,
+  "pass": 1,
+  "fail": 0,
+  "skip": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "scope": "Normal Android PO4units/cost125.50, partialreceive3with lost-reply/restart/exact retry; transfer2reserve/ship/receive1; normal web reads and completes1unit each; native refresh reads final received states. Canonical available4across2locations/no reserved/incoming,11command receipts including4metadata. Product cache/physical-on-hand allocation semantics remain separately unaccepted. No staff/variants/allfinancial/provider/hosted/iOS/release acceptance.",
+  "actualRuntime": "Compiled Android debug artifact, local production-mode Accounts/Merchant Next; actual BFF/Gateway modules on Node with owned real PostgreSQL/PostgREST. Not a compiled Workerd phone run.",
+  "observed": [
+    "Normal native Accounts PKCE sign-in; no injected tokens/API success.",
+    "Native location create committed reply lost; restart and exact-original retry; native supplier create.",
+    "Normal web reads native metadata and creates metadata; native reads both web records.",
+    "Strict native store profile save and normal web readback.",
+    "PO ordered4units at INR125.50; native receives3, lost reply and restart/exact original retry.",
+    "Native transfer2 reserved, shipped2, received1.",
+    "Normal web reads both partial records, completes remaining1unit each.",
+    "Native refresh reads both received records.",
+    "Independent final state: available2at each of2locations, reserved0,incoming0,11command receipts.",
+    "Original native partial receive receipt whole-row digest unchanged.",
+    "Quantity input entered2 without scanner activation; screenshots inspected."
+  ],
+  "evidenceRoot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v10",
+  "limitations": [
+    "No warehouse metadata edit/delete or normal staff UI acceptance.",
+    "Inventory allocation/product cache/physical-on-hand and checkout reservation semantics remain separate.",
+    "Current screens expose generic product labels/location UUIDs; readable scoped relations follow.",
+    "No hosted/provider/iOS/signed release or full122feature certification."
+  ]
+}

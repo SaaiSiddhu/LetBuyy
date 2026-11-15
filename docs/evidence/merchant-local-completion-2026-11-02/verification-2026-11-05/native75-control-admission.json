@@ -1,0 +1,23 @@
+{
+  "source_manifest": "merchant-media-atomic-source-v50",
+  "source_sha256": "a047f1418326f4923e995a632a886e2a38710450db79216ba3240e92736a10d4",
+  "changes": "Rerun the accepted74 complete Android/browser story against the repaired canonical Media backend. Only run/evidence paths and source admission change; no selector, flow, assertion, fault, permission, conservation or cleanup expectation is weakened.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v75-local-android.postgres.test.ts",
+      "sha256": "9464a436a7226ea8249d10e3287f8f73f0bf007b5de44c05a0a0fd5892b8ff6a"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v75.py",
+      "sha256": "0ba7869759d17b7bb9f73c2bfeb957c6f4e57a85c579643f004c0bc52340957d"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v75.py",
+      "sha256": "06a8e0046ef038abb27c47a92dc3e0f22d872260b0b8bdbc06cb885e5b610c06"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v75.json",
+      "sha256": "e3ac17ac839763a57ba759230e5a9c6f329cd090b636a18c16f80c9e51bbc263"
+    }
+  ]
+}

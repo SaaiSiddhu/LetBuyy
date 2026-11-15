@@ -1,0 +1,48 @@
+{
+  "at": "2026-11-07T02:57:09.839409+00:00",
+  "candidate_source": "11a91c9f3c34021244bd17149f4f131001303877deebe50ea1a78ac920974516",
+  "inputs": 8494,
+  "web_script_phases": [
+    {
+      "tests": 655,
+      "suites": 0,
+      "pass": 655,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    {
+      "tests": 818,
+      "suites": 0,
+      "pass": 818,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    {
+      "tests": 295,
+      "suites": 0,
+      "pass": 295,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    {
+      "tests": 13,
+      "suites": 0,
+      "pass": 13,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    }
+  ],
+  "web_script_event_errors": 0,
+  "flutter_reuse": "media-recovery-v66-flutter-reuse.json",
+  "flutter_analysis": "media-recovery-v66-flutter-analysis.terminal.json",
+  "sdk_build": "media-recovery-v66-sdk-build.terminal.json",
+  "governance_status": "pending current source66 gate; source65 114 PASS / 1 NOT_APPLICABLE",
+  "native89": "Normal authentication reached. Product edit test stopped on a missing Select All menu item. Current build succeeded; no product/media acceptance. Separate UI and backend terminal failures retained.",
+  "native90": "Prepared same source; observed text toolbar handling updated, exact edited-field assertion retained. Not run yet.",
+  "full_feature_acceptance": false,
+  "whole_features_newly_accepted": 0
+}

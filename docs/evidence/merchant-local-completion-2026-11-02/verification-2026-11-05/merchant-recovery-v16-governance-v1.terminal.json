@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T11:47:44.153566+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-recovery-v16-governance-3ed6n3cf",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "core_inputs_byte_equal": 8472,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "merchant-recovery-v16-governance-v1-report.json"
+}

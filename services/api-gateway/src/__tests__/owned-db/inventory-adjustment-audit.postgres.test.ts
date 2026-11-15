@@ -5,7 +5,7 @@ import { getPooledSql, closePooledSqlClients, withPooledSqlScope } from '@letbuy
 import { APPLY_INVENTORY_ADJUSTMENT_SQL } from '../../execution/inventory-adjustment.adapter';
 import test, { after, afterEach, before } from 'node:test';
 import { Gateway, gatewayEnv, newBarrier, newIdentityKeys, signedIdentityHeaders, type IdentityKeys } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from './owned-db-support';
+import { requireOwnedDatabase, requireOwnedHistoricalSqlDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 // The merchant inventory editor and Inventory History are connected through the
@@ -15,7 +15,8 @@ import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 // it is not an RLS proof.
 
 const owned = requireOwnedDatabase();
-const { psql } = owned;
+let inventoryDatabase: ReturnType<typeof requireOwnedHistoricalSqlDatabase> = owned;
+const psql = (statement: string) => inventoryDatabase.psql(statement);
 const tenant = newSyntheticTenant('inv-audit');
 const ownerId = crypto.randomUUID();
 const outsiderId = crypto.randomUUID();
@@ -27,13 +28,9 @@ let keys: IdentityKeys;
 let gateway: Gateway;
 let proxy: OwnedPooledSqlProxy;
 
-before(async () => {
-    // Isolate the pinned 346/356 BEFORE witnesses from later 385/388 replacements.
-    // Current behavior suites reapply both successors after the historical proofs.
-    for(const name of ['412_invoice_checkout_fact_parity','411_authoritative_checkout_gst','388_cart_order_fact_snapshots','385_product_variant_facts']) owned.script(readFileSync(new URL('../../../../../database/supabase/rollback/'+name+'.rollback.sql',import.meta.url),'utf8'));
-    keys = await newIdentityKeys();
-    seedSyntheticTenant(psql, tenant);
-    psql(`
+function seedInventoryAudit(write: (statement: string) => string) {
+    seedSyntheticTenant(write, tenant);
+    write(`
       INSERT INTO users_custom (id,email,email_verified) VALUES
         ('${ownerId}','${ownerEmail}',true),
         ('${outsiderId}','${outsiderEmail}',true);
@@ -45,6 +42,14 @@ before(async () => {
       INSERT INTO inventory_levels (id,store_id,product_id,variant_id,location_id,available,reserved,committed_quantity,available_quantity,reserved_quantity,on_hand_quantity,created_at,updated_at)
       VALUES (gen_random_uuid(),'${tenant.siteId}','${productId}','${variantId}','${tenant.locationId}',4,0,0,4,0,4,now(),now());
     `);
+}
+
+before(async () => {
+    // Physical356 control is replayed in a separately owned SQL-only database.
+    // The current REST/Gateway database keeps the entire436 chain throughout.
+    inventoryDatabase = requireOwnedHistoricalSqlDatabase(356);
+    keys = await newIdentityKeys();
+    seedInventoryAudit(psql);
     proxy = await startOwnedPooledSqlProxy(owned);
     gateway = new Gateway(gatewayEnv(owned, keys, proxy.env()));
 });
@@ -216,8 +221,8 @@ test('BEFORE control: real356 dependency refuses346, then genuine empty356 to346
     const before=stock356BeforeSnapshot();
     for(const kind of ['forward346','rollback346','forward356','rollback356'] as const)stock356BeforeBody(kind);
     const receiptClasses=stock356BeforeReadRawJson(`SELECT jsonb_build_object('server_version_num',current_setting('server_version_num'),'classes',(SELECT coalesce(jsonb_agg(to_jsonb(r) ORDER BY r.oid),'[]') FROM pg_catalog.pg_class r WHERE r.oid='public.inventory_adjustment_receipts'::regclass OR r.oid IN(SELECT indexrelid FROM pg_catalog.pg_index WHERE indrelid='public.inventory_adjustment_receipts'::regclass) OR r.oid=(SELECT reltoastrelid FROM pg_catalog.pg_class WHERE oid='public.inventory_adjustment_receipts'::regclass) OR r.oid IN(SELECT indexrelid FROM pg_catalog.pg_index WHERE indrelid=(SELECT reltoastrelid FROM pg_catalog.pg_class WHERE oid='public.inventory_adjustment_receipts'::regclass))),'languages',(SELECT coalesce(jsonb_agg(to_jsonb(l) ORDER BY l.oid),'[]') FROM pg_catalog.pg_language l WHERE l.oid IN(SELECT prolang FROM pg_catalog.pg_proc WHERE pronamespace='public'::regnamespace AND proname IN('apply_inventory_adjustment_v1','guard_inventory_adjustment_receipt_v1'))))`);
-    stock356BeforeKnownCatalog.push({scope:'fresh known installation metadata only, before any synthetic drift; no business rows or expected-state promotion',run_id:owned.runId,database:owned.database,catalog_raw:before.profile,receipt_classes_raw:receiptClasses,journal356_raw:stock356BeforeReadRawJson("SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text),'[]'::jsonb) FROM public.migration_privilege_journal t WHERE t.migration='356'")});
-    const dependencyError=owned.psqlScriptExpectError('BEGIN;'+stock356BeforeBody('rollback346'));
+    stock356BeforeKnownCatalog.push({scope:'fresh known installation metadata only, before any synthetic drift; no business rows or expected-state promotion',run_id:owned.runId,database:inventoryDatabase.database,catalog_raw:before.profile,receipt_classes_raw:receiptClasses,journal356_raw:stock356BeforeReadRawJson("SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text),'[]'::jsonb) FROM public.migration_privilege_journal t WHERE t.migration='356'")});
+    const dependencyError=inventoryDatabase.psqlScriptExpectError('BEGIN;'+stock356BeforeBody('rollback346'));
     assert.match(dependencyError,/rollback346 refuses unknown function\/receipt\/trigger\/role\/profile or dependency state/,'installed real356 default edge must reach the intended346 profile refusal');
     stock356BeforeSame(before,'real356-to346 refusal preserves every captured row/profile');
     const temp='n9_stock356_before_'+crypto.randomUUID().replaceAll('-','');
@@ -229,7 +234,7 @@ test('BEFORE control: real356 dependency refuses346, then genuine empty356 to346
     // Every other own-profile field, and every foreign journal row, stays exact.
     const ownJournal=`SELECT coalesce(jsonb_agg(to_jsonb(t)-ARRAY['object_oid','recorded_at']::text[] ORDER BY (to_jsonb(t)-ARRAY['object_oid','recorded_at']::text[])::text),'[]'::jsonb) FROM public.migration_privilege_journal t WHERE t.migration IN('346','356')`;
     const expectedOwnJournal=`SELECT coalesce(jsonb_agg(value-ARRAY['object_oid','recorded_at']::text[] ORDER BY (value-ARRAY['object_oid','recorded_at']::text[])::text),'[]'::jsonb) FROM pg_temp.${temp},jsonb_array_elements(data->'migration_privilege_journal') value WHERE value->>'migration' IN('346','356')`;
-    const error=owned.psqlScriptExpectError(`BEGIN;
+    const error=inventoryDatabase.psqlScriptExpectError(`BEGIN;
         CREATE TEMP TABLE ${temp} ON COMMIT DROP AS SELECT (${stock356BeforeDataSql()}) AS data,(${stock356BeforeDefinitionsSql}) AS definitions;
         ${stock356BeforeBody('rollback356')}
         ${stock356BeforeDo(stock356BeforeAssert("to_regclass('public.inventory_adjustment_receipts') IS NULL AND to_regprocedure('public.apply_inventory_adjustment_v1(uuid,uuid,text,jsonb)') IS NULL",'N9_356_EMPTY_NOT_RETIRED'))}
@@ -267,7 +272,7 @@ test('BEFORE defect witness: original356 retires unreviewed provenance and colum
             kind==='function-comment'?`pg_catalog.obj_description('public.apply_inventory_adjustment_v1(uuid,uuid,text,jsonb)'::regprocedure::oid,'pg_proc')=${stockQuote(marker)}`:
                 "(SELECT attstorage='e' FROM pg_catalog.pg_attribute WHERE attrelid='public.inventory_adjustment_receipts'::regclass AND attname='command')";
         const sentinel='N9_356_BEFORE_UNKNOWN_'+kind.replaceAll('-','_').toUpperCase()+'_RETIRED_ABORT';
-        const error=owned.psqlScriptExpectError(`BEGIN; ${ddl}
+        const error=inventoryDatabase.psqlScriptExpectError(`BEGIN; ${ddl}
             ${stock356BeforeDo(stock356BeforeAssert(setup,'N9_UNKNOWN_METADATA_SETUP_NOT_VISIBLE'))}
             ${stock356BeforeBody('rollback356')}
             ${stock356BeforeDo(stock356BeforeAssert("to_regclass('public.inventory_adjustment_receipts') IS NULL AND to_regprocedure('public.apply_inventory_adjustment_v1(uuid,uuid,text,jsonb)') IS NULL",'N9_BEFORE_UNKNOWN_METADATA_NOT_RETIRED')+`RAISE EXCEPTION ${stockQuote(sentinel)};`)}
@@ -279,7 +284,16 @@ test('BEFORE defect witness: original356 retires unreviewed provenance and colum
 });
 
 test('empty356 rollback verifies family/body/owner/ACL/provenance/shape and refuses concurrent writers before a clean reapply and command race',async()=>{
-    for(const name of ['385_product_variant_facts','388_cart_order_fact_snapshots','411_authoritative_checkout_gst','412_invoice_checkout_fact_parity']) owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/'+name+'.sql',import.meta.url),'utf8'));
+    inventoryDatabase = owned;
+    // Exercise the genuine earlier safe reverse only after empty437 has been
+    // safely retired with its own paired DOWN. All following current API
+    // scenarios restore original437, not an emulated or weakened receipt shape.
+    const batchDown=readFileSync('database/supabase/rollback/437_inventory_batch_adjustment_receipts.rollback.sql','utf8');
+    const batchUp=readFileSync('database/supabase/migrations/437_inventory_batch_adjustment_receipts.sql','utf8');
+    owned.script(batchDown);
+    try {
+    seedInventoryAudit(psql);
+    assert.equal(psql("SELECT to_regclass('public.product_import_jobs') IS NOT NULL AND to_regclass('public.warehouse_command_receipts') IS NOT NULL AND (SELECT count(DISTINCT a.adrelid) FROM pg_catalog.pg_attrdef a JOIN pg_catalog.pg_depend d ON d.classid='pg_catalog.pg_attrdef'::regclass AND d.objid=a.oid WHERE a.adrelid IN('public.product_import_jobs'::regclass,'public.warehouse_command_receipts'::regclass) AND d.refobjid='public.assert_product_edit_actor_v1(uuid,uuid,text)'::regprocedure)=2;"),'t','current stock acceptance must restore414/416 and their real authority dependencies');
     const original=stockOwnerDefinitions();assert.equal(psql('SELECT count(*) FROM inventory_adjustment_receipts;'),'0');
     assert.equal(psql(`SELECT EXISTS(SELECT 1 FROM pg_depend d JOIN pg_attrdef a ON d.classid='pg_attrdef'::regclass AND d.objid=a.oid WHERE a.adrelid='public.inventory_adjustment_receipts'::regclass AND d.refclassid='pg_proc'::regclass AND d.refobjid='public.assert_product_edit_actor_v1(uuid,uuid,text)'::regprocedure);`),'t');
     assert.match(owned.psqlExpectError('BEGIN;DROP FUNCTION public.assert_product_edit_actor_v1(uuid,uuid,text) RESTRICT;ROLLBACK;'),/depend|cannot drop/);
@@ -320,6 +334,7 @@ test('empty356 rollback verifies family/body/owner/ACL/provenance/shape and refu
     if(rolled.ok){assert.notEqual(write.status,200);assert.deepEqual(recoverySnapshot(p),before);owned.script(stockMigration);}
     else{assert.equal(psql(`SELECT to_regclass('public.inventory_adjustment_receipts') IS NOT NULL;`),'t');if(write.status===200){assert.equal(Number(psql(`SELECT count(*) FROM inventory_adjustment_receipts WHERE idempotency_key='${key}';`)),1);}else assert.deepEqual(recoverySnapshot(p),before);}
     assert.equal(stockOwnerDefinitions(),original);
+    } finally { owned.script(batchUp); }
 });
 
 test('concurrent merchant variant adjustments remain additive, auditable, visible in history, and tenant-scoped', async () => {
@@ -385,7 +400,7 @@ function recoveryProduct() {
     const id=crypto.randomUUID(),v=crypto.randomUUID();
     psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status) VALUES('${id}','${tenant.siteId}','${tenant.siteId}','Synthetic recovery stock','syn-stock-${id}',100,4,true,'active');
         INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty) VALUES('${v}','${id}','M','SYN-${v}',100,0);
-        SELECT set_inventory_level_available('${id}','${v}','${tenant.locationId}',4,'${ownerId}');`);
+        WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${tenant.siteId}',true)) SELECT set_inventory_level_available('${id}','${v}','${tenant.locationId}',4,'${ownerId}') FROM _fixture_inventory_scope436;`);
     return {id,variantId:v};
 }
 function recoveryStaff(){const id=crypto.randomUUID(),email=`syn-stock-staff-${id}@example.invalid`;psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${id}','${email}',true);INSERT INTO employees(user_id,email,store_id,role,status,is_active,permissions) VALUES('${id}','${email}','${tenant.siteId}','editor','active',true,'{"granted":["products:read","products:write"]}');`);return{id,email};}

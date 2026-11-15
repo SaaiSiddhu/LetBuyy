@@ -1,0 +1,14 @@
+{
+  "supervisor_pid": 41126,
+  "source_sha256": "c7a1e65a73b52b3eeeaf86ea16222bbda13255ae9779bc20b21ab335c2cf72f4",
+  "started_at": "2026-11-06T04:29:11.594864+00:00",
+  "steps": [
+    {
+      "step": "app-analysis",
+      "exit_code": 1
+    }
+  ],
+  "status": "STOPPED_AT_FAILED_STEP",
+  "ui_kit_analysis": "Reused fresh confirmation zero-issue UI-kit result; every UI-kit input byte remains equal.",
+  "active_step": "app-analysis"
+}

@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-06T10:00:00.074900+00:00",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "source_manifest": "merchant-recovery-source-v11.source.json",
+  "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "inputs": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v64.py",
+      "sha256": "3624ff68811ce188e091d1456dcc492046c3ac144776caf2b666a53c913c6713"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v64.json",
+      "sha256": "1b573cd27b781a4d0714c2cf82f1bdfc0f96146b7076158fdb073734ef2ffc78"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v64.py",
+      "sha256": "54ec4c620ffa679daad2fa04ced9918eaa878162739798c9f74861dbf08e689a"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v64-local-android.postgres.test.ts",
+      "sha256": "f82cfea5d313a19ae24752d3a09188429247d22f15288355185266ae96572c52"
+    }
+  ],
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "scope": "All63assertions retained,source85unchanged. Read-only pidof waits up to15sec forAndroidprocesscreation after ONE launch;no input retries or longerUIdeadline.63stopped on premature PIDquery;its actualwire shows both membershippages anddashboardcomplete seconds later.61waitfinding remains separately open;not falsely calledfixed.",
+  "status": "READY_NOT_LAUNCHED"
+}

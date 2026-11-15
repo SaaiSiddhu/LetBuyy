@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-05T06:17:16.253793+00:00",
+  "status": "LOCAL_SOURCE4_QUALIFIED_WITH_EXISTING_PROTECTED_STAFF_FAILURE_DEVICE_PENDING",
+  "source_sha256": "11e1ba4a435cc492137c2ca15c4edc809bad1fc22656a0f5757ebcd23b7bc4e7",
+  "source_entries": 7501,
+  "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-warehouse-v4-qualified-source",
+  "full_flutter": {
+    "passed": 1369,
+    "failed": 1,
+    "skipped": 0,
+    "known_failure": "Staff hosted invitation namespace cannot be adopted by local restore; unchanged protected policy; not weakened"
+  },
+  "analyses": {
+    "app_issues": 0,
+    "ui_kit_issues": 0
+  },
+  "parsed_preservation_checks": 616,
+  "governance": {
+    "capsule": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v42",
+    "passed": 114,
+    "failed": 0,
+    "not_applicable": 1,
+    "actual_core_byte_equality": 7501
+  },
+  "protected_readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source4-protected-readback-v23.json",
+  "new_protected_exceptions": 0,
+  "steps": [
+    {
+      "step": "full-flutter",
+      "exit": 1,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source4-full-flutter.log",
+      "pass": 1369,
+      "fail": 1,
+      "known_protected_failure_only": true
+    },
+    {
+      "step": "app-analysis",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source4-app-analysis.log"
+    },
+    {
+      "step": "ui-kit-analysis",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source4-ui-kit-analysis.log"
+    },
+    {
+      "step": "parsed-preservation",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source4-parsed-preservation.log"
+    },
+    {
+      "step": "source-readback",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source4-source-readback.log"
+    },
+    {
+      "step": "governance42",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source4-governance42.log"
+    }
+  ],
+  "android": "Prepared36, not started/accepted",
+  "ios": "Prepared16 compile-only, not started/accepted",
+  "scope": "Frontend-only local qualification. No all119-feature, hosted, provider, physical-device, release or entire-app claim."
+}

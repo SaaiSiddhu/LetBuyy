@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-06T07:12:48.936421+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-kyc-selection-v2-android-rw62q03t/merchant-local-debug.apk",
+    "sha256": "939a0be0361a250cfed998033be3e070f632e46f52bb2f136aeeeffaa42b6d7b",
+    "bytes": 151924275
+  },
+  "actual_sha256": "939a0be0361a250cfed998033be3e070f632e46f52bb2f136aeeeffaa42b6d7b",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native58 preserves its own prior StoreSwitcher/Staff artifact acceptance; current KYC changes have no new native acceptance.",
+  "material_icons_bytes": 1645184,
+  "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+}

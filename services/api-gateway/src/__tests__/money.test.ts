@@ -40,7 +40,7 @@ test('payout route creates tenant-scoped statements and settles through the adap
     assert.match(payoutsSource, /\.from\('wallet_ledger_entries'\)[\s\S]*\.insert/);
     assert.match(payoutsSource, /createPayoutTransferAdapter/);
     assert.match(payoutsSource, /createRazorpayRoutePayoutProviderClient/);
-    assert.match(payoutsSource, /isLivePASplitProviderReady\('razorpay_route'/);
+    assert.match(payoutsSource, /linked account, verified bank destination/);
     assert.match(payoutsSource, /provider:\s*payoutProviderClient\(statement\.rail\)/);
     assert.doesNotMatch(payoutsSource, /S-018|backend contract|SKIP-NEEDS-BACKEND/);
 });

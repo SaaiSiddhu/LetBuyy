@@ -1,0 +1,50 @@
+{
+  "status": "FAILED_CURRENT_IOS_WEBM_AVPLAYER_PREVIEW_REPRODUCED_NOT_ACCEPTED",
+  "source": "source85",
+  "source_sha256": "0cb3bfe0736fb53a642e3e9b14bf033bd8d713d429b8e72a7fa31eb8dee6e279",
+  "run_id": "d1070fbd4d2d",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261107-tqj09r6m",
+  "normal_auth_and_safari_files_imports_pass": true,
+  "MOV_AVPlayer_decode_controls_marker": true,
+  "WebM_AVPlayer_error_state_observed": true,
+  "screenshot": "/private/tmp/letbuyy-ios-ui-20261107-tqj09r6m/observed-first-format-preview.png",
+  "installed_artifact": {
+    "run_id": "d1070fbd4d2d",
+    "all_files_equal": true,
+    "files": 401,
+    "manifest_sha256": "c51a354caf71605805ebe62f832d0f553b2d041c49d0af86cb031710a686a0de",
+    "recording_camera_microphone_descriptions_packaged": true,
+    "retained": "/private/tmp/letbuyy-ios-ui-20261107-tqj09r6m/native-ios-v113/qualified-artifact/Runner.app",
+    "installed": "/Users/saai_mithra/Library/Developer/CoreSimulator/Devices/B907B390-5B08-490F-BC6A-8900667B2D94/data/Containers/Bundle/Application/4A5F0C7A-C08A-45A3-B118-D7525E77B052/Runner.app"
+  },
+  "phase_failure": {
+    "exit": 65,
+    "accepted": false,
+    "run_id": "d1070fbd4d2d",
+    "phase": "Preview",
+    "attempt": 1,
+    "control_file": "/private/tmp/letbuyy-ios-ui-20261107-tqj09r6m/Preview.swift",
+    "control_sha256": "f28a399fe4e06c5d0f01d04583a0c3134ea598ad223428c439c37b04a333c7dc"
+  },
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 0,
+    "assertionsFailed": 1,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "custody": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "existing_files_and_photos_preserved": true
+  },
+  "whole_features_accepted": 0,
+  "repair": "Existing WebKit platform adapter in source86;unaccepted until fresh native115 replay."
+}

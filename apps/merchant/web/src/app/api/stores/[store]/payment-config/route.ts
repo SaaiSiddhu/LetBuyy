@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema } from '@letbuyy/shared-types'
+import { AttachStorePaymentWebhookSchema, SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema } from '@letbuyy/shared-types'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
@@ -31,13 +31,16 @@ export async function POST(
 
         if (resolved.error) return resolved.error
 
-        const parsed = SaveStorePaymentConfigSchema.safeParse(await request.json().catch(() => null))
-        if (!parsed.success) return NextResponse.json({ error: { code: 'VALIDATION', message: 'Enter valid Razorpay credentials matching the selected environment.' } }, { status: 400 })
-        const payload = await createMerchantApiClient().stores.paymentConfig.save(
-            resolved.storeId,
-            parsed.data,
-            { idempotencyKey: request.headers.get('X-Idempotency-Key') }
-        )
+        const input = await request.json().catch(() => null)
+        const attached = AttachStorePaymentWebhookSchema.safeParse(input)
+        const saved = attached.success ? null : SaveStorePaymentConfigSchema.safeParse(input)
+        if (!attached.success && !saved?.success) return NextResponse.json({ error: { code: 'VALIDATION', message: 'Enter valid test credentials or a webhook secret for the saved test connection.' } }, { status: 400 })
+        const client = createMerchantApiClient().stores.paymentConfig
+        const options = { idempotencyKey: request.headers.get('X-Idempotency-Key') }
+        let payload
+        if (attached.success) payload = await client.attachWebhook(resolved.storeId, attached.data, options)
+        else if (saved?.success) payload = await client.save(resolved.storeId, saved.data, options)
+        else return NextResponse.json({ error: { code: 'VALIDATION', message: 'Enter valid test credentials or a webhook secret for the saved test connection.' } }, { status: 400 })
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {

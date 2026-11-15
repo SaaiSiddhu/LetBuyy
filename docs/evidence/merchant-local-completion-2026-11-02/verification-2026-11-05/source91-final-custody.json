@@ -1,0 +1,38 @@
+{
+  "at": "2026-11-07T19:28:36.978871+00:00",
+  "source_manifest": "merchant-native-selection-source-v91.source.json",
+  "source_readback": {
+    "matches": true,
+    "changed": [],
+    "sha256": "5b655a37c2bcc1b2f6e79cea831340addb0329c8b4b60b4a1f4aff33bafdec6c",
+    "entries": 8513
+  },
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "branch": "codex/merchant-mobile-parity",
+  "staged_entries_sha256": "67a04f878906e4a92b9a852969da907cd465dc8b3df2be0083d6d42262986c9d",
+  "staged_path_mode_blob_entries_preserved": true,
+  "raw_index_sha256": "4f631b7c99e1f1e569f0ccc244d432b7e1e4b20391687f45b6304ee4b17d2ba3",
+  "raw_index_matches_current91_governance": true,
+  "owned_ports": {
+    "54350": "FREE",
+    "54351": "FREE",
+    "54352": "FREE",
+    "54353": "FREE"
+  },
+  "mac_host9002": "Never bound,contacted,probed or stopped by these runs;Android localhost9002 used only its explicitly owned reverse mapping toMac54351",
+  "android": {
+    "exact_owned_qemu_alive": true,
+    "initial_booted_state_preserved": true,
+    "merchant_process_absent": true,
+    "camera_permission": [
+      "android.permission.CAMERA: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|ONE_TIME]"
+    ],
+    "original_empty_private_adb_maps_restored": true
+  },
+  "ios": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "initial_state_restored": "Shutdown"
+  },
+  "preservation": "Existing app/data/Photos/Downloads and synthetic fixtures preserved;no erase/reset,hosted,provider,merge,push or release",
+  "all_owned_native_chains_terminal": true
+}

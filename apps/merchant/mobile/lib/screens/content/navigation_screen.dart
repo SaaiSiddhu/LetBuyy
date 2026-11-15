@@ -138,8 +138,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
     var openInNewTab = input?.openInNewTab ?? false;
     String? dialogError;
 
-    final result = await showDialog<NavigationItemInput>(
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<NavigationItemInput>(
       context: context,
+      themes: InheritedTheme.capture(from: context, to: navigator.context),
+      barrierColor: DialogTheme.of(context).barrierColor ?? Colors.black54,
+      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           backgroundColor: colors.card,
@@ -246,6 +250,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                         : urlController.text.trim(),
                     targetType: targetType,
                     targetResourceId: resourceController.text,
+                    parentItemId: input?.parentItemId,
                     isVisible: isVisible,
                     openInNewTab: openInNewTab,
                   ),
@@ -258,6 +263,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
       ),
     );
 
+    final result = await navigator.push(route);
+    // A popped result arrives before the editor's exit transition completes.
+    await route.completed;
     labelController.dispose();
     urlController.dispose();
     resourceController.dispose();
@@ -302,14 +310,14 @@ class _NavigationScreenState extends State<NavigationScreen> {
     final colors = AppThemeColors.of(context);
     return Scaffold(
       backgroundColor: colors.bgStart,
-      floatingActionButton: _store == null
+      bottomNavigationBar: _store == null
           ? null
-          : FloatingActionButton.extended(
-              onPressed: _isBusy ? null : () => _openItemEditor(),
-              backgroundColor: LetbuyyColorTokens.brandPrimary,
-              foregroundColor: LetbuyyColorTokens.white,
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Add item'),
+          : SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
+                child: _buildSaveBar(colors),
+              ),
             ),
       body: Container(
         decoration: colors.backgroundGradient,
@@ -326,8 +334,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 _buildMenuNameField(colors),
                 const SizedBox(height: 12),
                 Expanded(child: _buildBody(colors)),
-                const SizedBox(height: 12),
-                _buildSaveBar(colors),
               ],
             ),
           ),
@@ -550,26 +556,42 @@ class _NavigationScreenState extends State<NavigationScreen> {
   }
 
   Widget _buildSaveBar(AppThemeColors colors) {
-    return Row(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: Text(
-            '${_items.length} items',
-            style: TextStyle(color: colors.textSecondary, fontSize: 12),
-          ),
+        Text(
+          '${_items.length} items',
+          style: TextStyle(color: colors.textSecondary, fontSize: 12),
         ),
-        FilledButton.icon(
-          onPressed: _store == null || _isLoading || _isBusy
-              ? null
-              : _saveNavigation,
-          icon: _isBusy
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.save_rounded),
-          label: const Text('Save menu'),
+        const SizedBox(height: LetbuyySpacingTokens.space8),
+        // Keep both commands in normal layout; a floating Add button used to
+        // cover Save and intercept its pointer/semantic action.
+        Wrap(
+          spacing: LetbuyySpacingTokens.space8,
+          runSpacing: LetbuyySpacingTokens.space8,
+          alignment: WrapAlignment.end,
+          children: [
+            if (_store != null)
+              OutlinedButton.icon(
+                onPressed: _isBusy ? null : () => _openItemEditor(),
+                icon: const Icon(Icons.add_rounded),
+                label: const Text('Add item'),
+              ),
+            FilledButton.icon(
+              onPressed: _store == null || _isLoading || _isBusy
+                  ? null
+                  : _saveNavigation,
+              icon: _isBusy
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.save_rounded),
+              label: const Text('Save menu'),
+            ),
+          ],
         ),
       ],
     );

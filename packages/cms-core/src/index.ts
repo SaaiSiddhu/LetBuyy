@@ -358,7 +358,7 @@ export function normalizeBlogCommentRecord(row: CmsBlogCommentRecord) {
 }
 
 export function isResumeContentSection(section: string): section is ResumeContentSection {
-  return section in RESUME_CONTENT_SECTION_TABLES;
+  return Object.hasOwn(RESUME_CONTENT_SECTION_TABLES, section);
 }
 
 export function sanitizeResumeContentInput(
@@ -760,11 +760,8 @@ export const UploadMediaSchema = z.object({
   tags: z.array(z.string().max(50)).max(20).default([]),
 });
 
-export const UpdateMediaSchema = z.object({
-  alt_text: z.string().max(500).optional(),
-  folder: z.string().max(200).optional(),
-  tags: z.array(z.string().max(50)).max(20).optional(),
-});
+export { MediaMetadataUpdateSchema as UpdateMediaSchema, MediaRegistrationInputSchema as RegisterMediaSchema } from '@letbuyy/shared-types';
+import { MediaMetadataUpdateSchema as UpdateMediaSchema } from '@letbuyy/shared-types';
 
 export const ListMediaQuery = PaginationQuery.extend({
   store_id: UuidSchema.optional(),

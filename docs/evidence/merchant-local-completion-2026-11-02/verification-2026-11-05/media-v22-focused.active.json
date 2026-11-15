@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-06T12:57:23.208275+00:00",
+  "supervisor_pid": 73137,
+  "source": "merchant-media-recovery-source-v22",
+  "source_sha256": "a517a3f6f9adce4ba3e20188bbf0067f371a46359c091950da2693da7f71af34",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/media_interrupted_upload_recovery_test.dart",
+    "test/media_workflow_context_test.dart",
+    "test/media_library_recovery_test.dart",
+    "test/store_startup_retry_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 73142
+}

@@ -1,0 +1,75 @@
+{
+  "status": "LOCAL_DATABASE_VERIFIED_BOUNDED",
+  "runId": "a9e0a4071e04",
+  "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "source": "uncommitted reconciled candidate",
+  "files": [
+    {
+      "path": "database/supabase/migrations/434_saved_trial_launch_entitlements.sql",
+      "sha256": "ac21753a6f97a1d2ca13062863c567f12e9d606e5c321c425a90b1b4c5971ce2"
+    },
+    {
+      "path": "database/supabase/rollback/434_saved_trial_launch_entitlements.rollback.sql",
+      "sha256": "e72b0257f967820f271cd850fae38dd64b274ec0f0551e0b4495debec1fd2ea6"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/saved-trial-entitlements.postgres.test.ts",
+      "sha256": "5ee59620c1eb5a937a7308d5be6640287fb6c7c6e88128757597b2e295f52520"
+    }
+  ],
+  "tests": 14,
+  "passed": 14,
+  "failed": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "proven": [
+    "saved active trial reads persisted Launch catalogue without subscription",
+    "original product-create retry has one product/receipt/usage effect",
+    "saved trial dates unchanged",
+    "expired/cancelled/grace/frozen/suspended/future/missing-end trial receives no Launch creation grant",
+    "valid paid subscription takes precedence; explicit zero override refuses creation",
+    "missing and malformed Launch catalogue fail closed",
+    "one-product persisted override permits only one of two concurrent creates",
+    "foreign/revoked owner denied",
+    "empty DOWN/UP preserves exact resolver body/owner/ACL; drift and retained history refused"
+  ],
+  "limits": [
+    "Synthetic signed API identities and owned PostgreSQL; normal first-signup browser and native handoff must be requalified separately.",
+    "Expired/ineligible fallback currently surfaces a sanitized unavailable creation response where no persisted quota exists; no invented allowance.",
+    "No real provider, hosted state, billing transaction, deployment or production readiness."
+  ],
+  "previousAttempts": [
+    {
+      "name": "v1",
+      "outcome": "Docker sandbox admission; no tests"
+    },
+    {
+      "name": "v2",
+      "runId": "14a6c30fe5cb",
+      "pass": 1,
+      "fail": 13,
+      "cause": "Synthetic store_name uniqueness fixture corrected"
+    },
+    {
+      "name": "v3",
+      "runId": "e443cc6fc767",
+      "pass": 5,
+      "fail": 9,
+      "cause": "Duplicate fixture SQL assignments corrected"
+    },
+    {
+      "name": "v4",
+      "runId": "06cc764fc95e",
+      "pass": 13,
+      "fail": 1,
+      "cause": "Required synthetic subscription user_id added"
+    }
+  ]
+}

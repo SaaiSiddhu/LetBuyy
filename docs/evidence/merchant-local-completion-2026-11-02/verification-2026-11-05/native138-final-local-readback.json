@@ -1,0 +1,62 @@
+{
+  "at": "2026-11-08T09:06:14.506405+00:00",
+  "source": "c872c19cb9e02fa7581afaa64b6dbf0ef4e50dd44ccbfdc5fb1950fa784ded6f",
+  "root": "/private/tmp/letbuyy-merchant-local-20261108-27ee3d677b",
+  "chain": {
+    "backend_exit": 0,
+    "ui_exit": 0,
+    "at": "2026-11-08T09:05:10.265956+00:00"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "result": {
+    "run_id": "2bccaec188c9",
+    "product_id": "6e8d9512-42c9-4fed-af0a-061cefeabf2e",
+    "variant_id": "96c7866c-5cec-4530-9d72-cbefcb1bb4ec",
+    "created_products": 1,
+    "create_requests": 2,
+    "original_key_equal": true,
+    "original_body_equal": true,
+    "images": 0,
+    "inherited_variant_price": 125,
+    "web_variant_price": 135,
+    "retired_uuid_retained": true,
+    "price_history_retained": true,
+    "catalog_availability": {
+      "initial": 7,
+      "web": 5,
+      "native": 6,
+      "base": 0
+    },
+    "ui": {
+      "run_id": "2bccaec188c9",
+      "accepted": true
+    },
+    "whole_features_accepted": 0,
+    "scope": "Actual normal Android auth; image/description-free creation; options before price; lost201->503 reply, original replay; web135 native readback; zero-stock native retirement and web live-read removal; no provider or whole122 acceptance."
+  },
+  "availability": {
+    "run_id": "2bccaec188c9",
+    "available": 6,
+    "parent_stock": 0,
+    "live_variants": [
+      2,
+      4
+    ],
+    "accepted": true
+  },
+  "mapping_custody": {
+    "run_id": "2bccaec188c9",
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "host9002_never_touched": true
+  },
+  "visual_limit": "Initial card screenshots retain a partly offscreen stock line; actual card accessibility stock7/5/6 and persisted/web results are verified. Do not call those images full visual quantity proof.",
+  "whole_features_accepted": 0
+}

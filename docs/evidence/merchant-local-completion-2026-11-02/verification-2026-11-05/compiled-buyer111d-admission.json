@@ -1,0 +1,22 @@
+{
+  "source_manifest": "merchant-buyer-inventory-source-v111.source.json",
+  "source_sha256": "f572b869ac94a24fc7a2f5f9a4c14907fd614995be3f9df7057097fcc6648460",
+  "fixture": "merchant-inventory-core-buyer-v111d.postgres.test.ts",
+  "fixture_sha256": "9897e9efef25b222c1f5c15d45ac5f7887376aa86f286cb5b8de2eee6214026a",
+  "predecessor": "merchant-creation-core-buyer-v103b.postgres.test.ts",
+  "changes": [
+    "Optional no-JavaScript browser context",
+    "Real public variant quantity7/base0 + Liquid Offer InStock and selectable SKU",
+    "Normal API zero product \u2192 no-JS Soldout/OutOfStock",
+    "Explicit owned missing-level product base99 \u2192 null quantity/no-JS unknown/Offer availability omitted",
+    "Hydrated unknown control stale enable cannot write cart; unknown collection copy and disabled state"
+  ],
+  "scope": "Local owned compiled Accounts/Merchant/Commerce only. Real canonical Gateway/SQL/REST; synthetic provider/email/challenge only. No hosted/provider/production action. Never contact/bind/stop host9002. Global source snapshot only before/after all owned Next markers are removed.",
+  "retry_reason": "Prior7e7c7060a87e fixture treated INSERT command tag as part of RETURNING UUID. Use a known random UUID and CTE SELECT for exact withdrawal; early aborted-transaction proof restores saved Launch entitlement before long browser journey. No application or assertion weakening.",
+  "failed_receipt": "compiled-buyer111.json",
+  "failed_receipts": [
+    "compiled-buyer111.json",
+    "compiled-buyer111b.json",
+    "compiled-buyer111c.json"
+  ]
+}

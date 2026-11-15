@@ -1,0 +1,201 @@
+{
+  "status": "BOUNDED_LOCAL_DATABASE_AND_COMPILED_ANDROID_WEB_VERIFIED",
+  "updatedAt": "2026-11-04T03:49:52.845349+00:00",
+  "scope": "Existing inventory setters and owner-only batch caller, canonical adjustment/audit/outbox/receipts; source and synthetic local fixtures only",
+  "full119Or122Accepted": false,
+  "hostedOrReleaseAuthorized": false,
+  "source": {
+    "latestManifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-bulk-ui-v13.source.json",
+    "sha256": "761ceddc1dde3e586d71d96750589b5a2b386f8ab6e7da767dd8c059dd5e8e27",
+    "entries": 7439
+  },
+  "reproduced": [
+    "Valid owner bulk caller lacked the required GUC and returned per-item failure without stock changes; single authorized adjustment positive passed",
+    "Two actual adjustments with one request trace produced two audit/receipt effects but only one outbox event"
+  ],
+  "implementation": [
+    "Both raw setter GUC guards remain unconditional; no administrator or creator exception",
+    "437 extends the existing private immutable adjustment receipt owner for a whole-batch actor/site/key/normalized-command acknowledgement; no new domain table or stock engine",
+    "Original owner-only API/per-item business outcomes remain; unknown infrastructure/audit/outbox/receipt faults roll back all items",
+    "Every actual additive adjustment event uses its immutable audit row ID, keeping the request ID as correlation",
+    "Live authorization precedes exact replay; changed commands, other actors/sites and legacy HTTP/child-key collisions refuse",
+    "Paired437DOWN conserves compatible existing single receipts and refuses retained new batch/effect data",
+    "Actual provider-image inheritance is observed; direct function ACL stays owner/app_tenant, inherited service_role invocation refuses inside the kernel",
+    "Five native inventory feedback callers use the canonical snackbar pair with Material status icon/spoken status"
+  ],
+  "attempts": [
+    {
+      "attempt": "inventory-bulk-caller-negative-v2",
+      "runId": "10d2431dfe99",
+      "tests": 3,
+      "assertionsPassed": 1,
+      "assertionsFailed": 2,
+      "cancelled": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "attempt": "inventory-bulk-repair-v4",
+      "runId": "3a451495811b",
+      "tests": 3,
+      "assertionsPassed": 3,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "attempt": "inventory-bulk-repair-v5",
+      "runId": "eef28a4d38ad",
+      "tests": 17,
+      "assertionsPassed": 15,
+      "assertionsFailed": 2,
+      "cancelled": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "attempt": "inventory-bulk-repair-v6",
+      "runId": "a89d5ff0c235",
+      "tests": 37,
+      "assertionsPassed": 35,
+      "assertionsFailed": 2,
+      "cancelled": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "attempt": "inventory-bulk-repair-v7",
+      "runId": "b53365834843",
+      "tests": 31,
+      "assertionsPassed": 31,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    {
+      "attempt": "inventory-bulk-regression-v8",
+      "runId": "b1e5d4bae966",
+      "tests": 194,
+      "assertionsPassed": 193,
+      "assertionsFailed": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  ],
+  "failureDispositions": {
+    "v5": [
+      "Missing fixture SQL token separator prevented fault-trigger setup; corrected and original failure retained",
+      "Older436DOWN correctly hit retained-stock refusal before the expected profile check; separate empty-profile and retained-data assertions now cover both"
+    ],
+    "v6": [
+      "The provider inherits app_tenant EXECUTE to service_role under the existing164 membership; direct ACL and real current-role denial are now tested without changing roles"
+    ],
+    "regressionV8": [
+      "Only failure was old16-function count; actual436 contains17 after its already-qualified checkout repair. Assertion now explicitly retains436and437 authority. Rerun in progress."
+    ],
+    "laneV8": [
+      "Two new owned suites required explicit lane inventory registration; only their names added, guard unchanged"
+    ],
+    "tooling": [
+      "Unescalated Docker socket/Flutter SDK writes and tsx CLI IPC refused before the corresponding checks; successful runners use explicit approved local access or node --import tsx"
+    ],
+    "uuidV10": {
+      "runId": "87cc18691da3",
+      "passed": 12,
+      "failed": 1,
+      "finding": "Schema-valid uppercase product/location IDs returned503 because acknowledgement identity was compared as case-sensitive text. Same UUID comparison now works at SQL replay and adapter confirmation without changing original command binding. Current test passes."
+    }
+  },
+  "pending": [
+    "Remaining119 feature dispositions, staff/multi-store/variants and full web/mobile/buyer coverage; external acceptance remains separate"
+  ],
+  "currentDatabase": {
+    "runId": "c97f466578c4",
+    "tests": 39,
+    "assertionsPassed": 39,
+    "assertionsFailed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "scope": "Current thirteen bulk tests, six paired rollback/retained-data tests and twenty actual provider-image checks; overlapping counts across previous attempts are not added."
+  },
+  "localGate": {
+    "governanceCounts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "gatewayUnits": 2087,
+    "sharedContracts": 23,
+    "ownedLane": 16,
+    "gatewayBffDeviceTypes": "PASS",
+    "flutter933AndAnalyze": "PASS; exact unchanged Dart inputs",
+    "proofs": [
+      "inventory-v12-evidence-carryforward.json",
+      "inventory437-tenant-registry-provenance.json"
+    ]
+  },
+  "compiledCurrent": {
+    "report": "COMPILED_INVENTORY_RECOVERY_ANDROID_WEB_V30_QUALIFICATION.json",
+    "runId": "ce29805b307b",
+    "passed": 1,
+    "failed": 0,
+    "cancelled": 0,
+    "source": "761ceddc1dde3e586d71d96750589b5a2b386f8ab6e7da767dd8c059dd5e8e27",
+    "apkSha256": "178d844864e646362e320d2e40d64fa0c1671f43bdc65a5a98be38d903b8d9f4"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "at": "2026-11-04T23:13:33.662185+00:00",
+  "status": "SOURCE3_ARCHIVED_LOCAL_AND_BOUNDED_ANDROID_PASS_WITH_REVIEW_FINDINGS",
+  "source": {
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "sha256": "676be4ba5ff701263b5835ae818ab215a4b926b06418aa12b0ab4157eeb15c65",
+    "entries": 7473,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-create-v3.source.json"
+  },
+  "scope": "Frontend only. CustomerService byte-identical; no backend/model/command/cache/journal/storage change. Original scope programme119 remains unaccepted; unique surface denominator null. Existing ledger has198rows/114unreviewedcandidate records; row count includes hosts/aliases and is not the unique surface denominator.",
+  "implemented": [
+    "Customer create uses existing canonical full-page editor/fields/dirty confirmation, stable native controllers and current store/API/route lifetime. Exact original parsers/defaults/request preserved.",
+    "One operation owns pending save and ignores duplicate/retired callbacks. Covered-route acknowledgement cannot pop another route and is retained for Done. Current denial hides private form data.",
+    "Exact existing VALIDATION_ERROR400 remains editable; other uncertain outcomes keep original fields with no fresh automatic SDK command. No durable/restart recovery or hidden key is invented.",
+    "Unsent cancel preserves original list/query/scroll. Leaving an uncertain save triggers fresh list read without success announcement. Existing successful create resets queries and reloads as before.",
+    "Orders list now reads actual canonical item_count. Real zero, missing count and malformed count remain distinct; existing quantity helper/math is unchanged.",
+    "Order Detail reads actual canonical order_items/items/title/currency through a view-only adapter. SDK/cache DTO and command input remain unchanged. Missing line IDs stay unavailable for edit/refund acceptance."
+  ],
+  "evidence": {
+    "focused_v14": "76PASS",
+    "full_v15": "1178PASS/1existing protected Staff namespace FAIL/0SKIP; terminal collected",
+    "full_v10_historical_source2": "1172PASS/1existing protected Staff namespace FAIL/0SKIP",
+    "parsed_v5_historical_inputs": "438PASS; repeat on current3",
+    "native23_source6": "0compoundPASS/1FAIL from native false0items; one canonical DBline and total199; no Detail/Returns acceptance; exact owned cleanup/source held",
+    "native24": "0compoundPASS/1FAIL/0SKIP;279.1suite/280.7wallsec; exact-source held/owned cleanup empty. Correct1item/199semantic read+Detail observed; helper failed on interior name line in merged Card semantics. Images independently reviewed, listcardpartial so no visual count/form acceptance.",
+    "app_analysis_v17": "0issues",
+    "parsed_v18": "438PASS",
+    "uikit_analysis_v19": "0issues",
+    "protected_readback_v14": "5195baselinefiles; same3classifiedexceptions; no new service/model/storage change",
+    "governance_v34": "114PASS/0FAIL/BLOCK/SKIP/1N/A; all7473actual clone core inputs matched",
+    "ios_v10": "PASS source3/7473 unchanged; originalarm64 simulator adhoc bundle retained, manifestSHA76b49cc6d07097a3b75a2e1d5fd3baff9f54bd160642334c725c2c151c06e243; no boot/runtime",
+    "native25": "1compoundPASS/0FAIL/SKIP/CANCEL;432.6suite/434.2wallsec; source3/7473 held and4793native inputs matched; original APK retained/installed-readback; actual API trace and exact canonical state unchanged; owned resources empty/forwards preserved/reverse restored/caffeinate retired;9reviewed images. See qualification JSON for pending review findings."
+  },
+  "cleanup": "No files/assets deleted. Historical unused _guardedSheet source remains retained pending Customer migration/integration cleanup.",
+  "remaining": [
+    "Customer main list/detail and9remaining form/confirmation tasks; existing segment editor has separate bounded historical proof.",
+    "Whole-app unread/unexercised candidates, Android current24, iOS current compile/runtime, real integration/web sync/provider and full119-feature acceptance.",
+    "Canonical API item normalizer drops order-line IDs; editing/item-refund acceptance needs separately authorized backend/contract repair.",
+    "Native image review: Return empty-ID error duplicates/persists after valid input; correct frontend feedback next.",
+    "Native image review: Orders UTC clock text versus Detail device time, and pending_cod local bucket coverage, remain separate presentation findings."
+  ],
+  "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-create-v3-qualified-source"
+}

@@ -1,0 +1,23 @@
+{
+  "runId": "2f813cdd08bd",
+  "tests": 0,
+  "passed": 0,
+  "failedSuites": 1,
+  "timedOut": true,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "extraDeviceCleanup": "Exact reverses54352/54350/56011/9002 and forward56451 removed after ownership comparison; only task app stopped, emulator/data retained; synthetic credentials retired.",
+  "source_sha256": "691130dfd9a93a5eaa96f7142d76e1ee4eeb9038bb95dc66013031b7a46ee769",
+  "sourceHeldAndTerminalVerified": true,
+  "artifact": "d2211b80eb325326549fb6c7cd085fe845536dd7735207d0a02e568bea51f5db",
+  "artifactBuiltAndInstalledHashVerified": true,
+  "observedFailure": "Synthetic normal password accepted and mobile completion issued, but same-origin HTTP callback remained in Chrome fallback; no fresh PKCE exchange/native session. No code/token extracted or manually delivered.",
+  "outerTimeout": "Runner default600seconds, independent of inner1800; rerun must explicitly set adequate outer timeout.",
+  "scope": "Failure evidence only; no collection Android journey accepted."
+}

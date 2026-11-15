@@ -1,0 +1,47 @@
+{
+  "capturedAt": "2026-11-02T15:12:29.691186+00:00",
+  "entries": [
+    {
+      "path": "docs/implementation/general-business-wave6-2026-10-30/READINESS.md",
+      "sha256": "e25fa2f2df836891f6d862bcde2ea8e62e866274600d9ac63624a06c1feab1f0",
+      "bytes": 143718,
+      "source": "qualified staged KYC stack/policy snapshot"
+    },
+    {
+      "path": "docs/implementation/general-business-wave6-2026-10-30/FIELD_CONTRACT.md",
+      "sha256": "5d6fdb31ed5a694c561fae2670604821d2d4461b802121df334f5557553df212",
+      "bytes": 15777,
+      "source": "qualified staged KYC stack/policy snapshot"
+    },
+    {
+      "path": "docs/implementation/general-business-wave6-2026-10-30/KYC_RETENTION_DECISION.md",
+      "sha256": "5f7ac41e1685670ba078df7e8bcd886bbc02f4256aca31f369297b268b174fd5",
+      "bytes": 4636,
+      "source": "qualified staged KYC stack/policy snapshot"
+    },
+    {
+      "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/kyc-mumbai-stack-candidate-2026-11-02.json",
+      "sha256": "d860faaf327ac41016fc44ff3415ae03d9ebcbc3e8954c729819e837697cf7f8",
+      "bytes": 3041,
+      "source": "qualified staged KYC stack/policy snapshot"
+    },
+    {
+      "path": "infrastructure/deployment/kyc-india-mumbai.README.md",
+      "sha256": "52ae600328b6002812b3f22b1dd91985cc8ff3d1aa2911b90c97b873120ca90c",
+      "bytes": 8568,
+      "source": "qualified staged KYC stack/policy snapshot"
+    },
+    {
+      "path": "infrastructure/deployment/kyc-india-mumbai.cfn.json",
+      "sha256": "6fb4fd1f7286f54f291d279d53d24473fa34288fe93a62f7acd8d874fd2aee59",
+      "bytes": 20835,
+      "source": "qualified staged KYC stack/policy snapshot"
+    },
+    {
+      "path": "tests/contracts/kyc-india-mumbai-stack.test.ts",
+      "sha256": "d855065c533f7dff7dd671b74815ec4b9a90d30d20b37c570522f28cf056a5d7",
+      "bytes": 16347,
+      "source": "qualified staged KYC stack/policy snapshot"
+    }
+  ]
+}

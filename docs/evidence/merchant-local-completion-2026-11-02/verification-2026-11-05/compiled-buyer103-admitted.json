@@ -1,0 +1,7 @@
+{
+  "fixture": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-creation-core-buyer-v102.postgres.test.ts",
+  "sha256": "fcb7f3f420ed948ccebc260551adce2f43c66e82e21a2e11c0aae3b17d771651",
+  "basis": "Existing current complete buyer regression; rebased relative imports and per-run random synthetic password replace its original path-specific allowed static fixture password. No validator exception or production auth change.",
+  "source": "merchant-creation-retirement-source-v103",
+  "run_after": "Native136 and137 cleanup"
+}

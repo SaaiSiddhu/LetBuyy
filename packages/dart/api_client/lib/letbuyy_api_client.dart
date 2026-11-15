@@ -10,3 +10,4 @@ export 'src/graphql.dart';
 export 'src/marketplace.dart';
 export 'src/types.dart';
 export 'src/buyer_assistant.dart';
+export 'src/product_import.dart';

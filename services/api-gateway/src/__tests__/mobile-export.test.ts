@@ -28,6 +28,10 @@ const customersScreenSource = readFileSync(
     new URL('../../../../apps/merchant/mobile/lib/screens/customers/customers_screen.dart', import.meta.url),
     'utf8',
 );
+const exportShareSource = readFileSync(
+    new URL('../../../../apps/merchant/mobile/lib/widgets/shared/merchant_export_share.dart', import.meta.url),
+    'utf8',
+);
 
 test('mobile export route supports products, orders, and customers through owned scope', () => {
     assert.match(bffSource, /'\/v1\/export'/);
@@ -53,10 +57,13 @@ test('mobile order and customer screens share real CSV exports without placehold
     assert.match(orderServiceSource, /_api\.exports\.orders/);
     assert.match(customerServiceSource, /exportCustomers/);
     assert.match(customerServiceSource, /_api\.exports\.customers/);
-    assert.match(ordersScreenSource, /Order CSV export ready to share/);
-    assert.match(customersScreenSource, /Customer CSV export ready to share/);
+    assert.match(ordersScreenSource, /_exportJob\?\['status'\] != 'completed'/);
+    assert.match(customersScreenSource, /status == 'completed' \? 'Share CSV'/);
     assert.match(ordersScreenSource, /shareMerchantExport/);
     assert.match(customersScreenSource, /shareMerchantExport/);
+    assert.match(exportShareSource, /job\['status'\] != 'completed'/);
+    assert.match(exportShareSource, /api\.exports\.download\(id, token: token\)/);
+    assert.match(exportShareSource, /XFile\.fromData\([\s\S]*utf8\.encode\(csv\)[\s\S]*mimeType: 'text\/csv'/);
     assert.doesNotMatch(ordersScreenSource, /Export to \$format coming soon/);
     assert.doesNotMatch(customersScreenSource, /coming soon/i);
 });

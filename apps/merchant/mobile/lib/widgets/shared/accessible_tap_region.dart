@@ -11,6 +11,7 @@ class AccessibleTapRegion extends StatelessWidget {
     this.excludeChildSemantics = false,
     this.minSize = 48,
     this.selected,
+    this.focusNode,
   });
 
   final String label;
@@ -21,6 +22,10 @@ class AccessibleTapRegion extends StatelessWidget {
   final double minSize;
   final bool? selected;
 
+  /// Optional input focus owned by the native child. This wrapper forwards
+  /// semantics focus to that same node; it never creates a second focus owner.
+  final FocusNode? focusNode;
+
   @override
   Widget build(BuildContext context) {
     final content = ConstrainedBox(
@@ -28,7 +33,7 @@ class AccessibleTapRegion extends StatelessWidget {
       child: child,
     );
 
-    return Semantics(
+    Widget semantics() => Semantics(
       container: true,
       button: true,
       enabled: onTap != null,
@@ -36,7 +41,20 @@ class AccessibleTapRegion extends StatelessWidget {
       label: label,
       hint: hint,
       onTap: onTap,
+      focusable: focusNode == null
+          ? null
+          : onTap != null && focusNode!.canRequestFocus,
+      focused: focusNode?.hasFocus,
+      onFocus: focusNode == null || onTap == null
+          ? null
+          : focusNode!.requestFocus,
       child: excludeChildSemantics ? ExcludeSemantics(child: content) : content,
     );
+    return focusNode == null
+        ? semantics()
+        : ListenableBuilder(
+            listenable: focusNode!,
+            builder: (_, _) => semantics(),
+          );
   }
 }

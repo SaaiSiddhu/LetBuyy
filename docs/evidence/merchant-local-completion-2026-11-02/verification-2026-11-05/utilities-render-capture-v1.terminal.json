@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-05T20:21:50.479059+00:00",
+  "supervisor_pid": 97150,
+  "source": "utilities-source-v2",
+  "source_sha256": "392d53d26becc93d69c656afaccb8fc7b591c8c0f542b61b3d80ce7fa475aba9",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/utilities_visual_capture_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 97152,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T20:21:53.639723+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "392d53d26becc93d69c656afaccb8fc7b591c8c0f542b61b3d80ce7fa475aba9"
+}

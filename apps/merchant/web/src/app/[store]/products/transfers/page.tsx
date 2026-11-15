@@ -2,9 +2,18 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import {useMerchantSecurityContext} from '@/components/security/MerchantSecurityContext'
+import {useWarehouseCommands,WarehouseRequestStoppedError,WarehouseCommandValidationError,type WarehouseSubmit} from '@/lib/inventory/use-warehouse-commands'
+import {WarehouseCommandRecovery} from '@/components/products/WarehouseCommandRecovery'
 import { useReadRequest } from '@/lib/api/use-read-request'
+import {WarehouseDocumentPageMetaSchema,WarehouseTransferSchema} from '@letbuyy/shared-types'
+import {useWarehouseDocument} from '@/lib/inventory/use-warehouse-document'
+import {warehouseLineLabel,warehouseLocationLabel} from '@/lib/inventory/warehouse-labels'
 import { useProductPicker } from '@/lib/api/use-product-picker'
 import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
+import type { WarehouseOptionControls } from '@/lib/api/use-warehouse-options'
+import { WarehouseDocumentFilters } from '@/components/products/WarehouseDocumentFilters'
+import { WarehouseOptionSearch } from '@/components/products/WarehouseOptionSearch'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import {
     Badge,
@@ -36,25 +45,7 @@ import type {
     ReceiveInventoryTransferLineInput,
 } from '@letbuyy/api-client'
 
-// ── local type augmentation ───────────────────────────────────────────────────
-// The gateway returns lines via a joined select; the base type omits them.
-
-interface TransferLine {
-    id: string
-    product_id: string
-    variant_id?: string | null
-    quantity: number
-    quantity_received?: number | null
-}
-
-type TransferWithLines = InventoryTransfer & {
-    lines: TransferLine[]
-    notes?: string | null
-    shipped_at?: string | null
-    received_at?: string | null
-    source_location?: { name: string } | null
-    destination_location?: { name: string } | null
-}
+type TransferWithLines = InventoryTransfer;
 
 type TransferProductItem = {
     id: string
@@ -68,9 +59,9 @@ type TransferProductItem = {
 function transferStatusVariant(status: string): StatusVariant {
     switch (status) {
         case 'received': return 'success'
-        case 'partial': return 'info'
+        case 'partially_received': return 'info'
         case 'shipped': return 'warning'
-        case 'pending': return 'default'
+        case 'reserved': return 'default'
         case 'cancelled': return 'critical'
         default: return 'default'
     }
@@ -78,20 +69,13 @@ function transferStatusVariant(status: string): StatusVariant {
 
 function transferStatusLabel(status: string): string {
     switch (status) {
-        case 'pending': return 'Pending'
+        case 'reserved': return 'Reserved'
         case 'shipped': return 'Shipped'
-        case 'partial': return 'Partially received'
+        case 'partially_received': return 'Partially received'
         case 'received': return 'Received'
         case 'cancelled': return 'Cancelled'
         default: return status
     }
-}
-
-function generateIdempotencyKey(): string {
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-        return crypto.randomUUID()
-    }
-    return `tr-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 }
 
 // ── CreateTransferModal ───────────────────────────────────────────────────────
@@ -104,9 +88,11 @@ interface CreateLineRow {
 }
 
 interface CreateTransferModalProps {
+    submitCommand:WarehouseSubmit
+    blocked:boolean
     open: boolean
-    store: string
     locations: InventoryLocation[]
+    locationRead: WarehouseOptionControls
     products: TransferProductItem[]
     hasMoreProducts: boolean
     loadingProducts: boolean
@@ -116,10 +102,10 @@ interface CreateTransferModalProps {
     onCreated: () => void
 }
 
-function CreateTransferModal({
+function CreateTransferModal({ submitCommand, blocked,
     open,
-    store,
     locations,
+    locationRead,
     products,
     hasMoreProducts,
     loadingProducts,
@@ -140,18 +126,18 @@ function CreateTransferModal({
 
     useEffect(() => {
         if (open) {
-            setSourceLocationId(locations[0]?.id ?? '')
-            setDestLocationId(locations[1]?.id ?? locations[0]?.id ?? '')
+            setSourceLocationId('')
+            setDestLocationId('')
             setNotes('')
             setLines([{ id: '1', product_id: '', variant_id: '', quantity: 1 }])
             setError(null)
         }
-    }, [open, locations])
+    }, [open])
 
-    const locationOptions: SelectOption[] = locations.map((l) => ({
+    const locationOptions: SelectOption[] = [{ value: '', label: 'Select location…' }, ...locations.map((l) => ({
         value: l.id,
         label: l.name + (l.is_default ? ' (default)' : ''),
-    }))
+    }))]
 
     const productOptions = (): SelectOption[] => [
         { value: '', label: 'Select product…' },
@@ -184,6 +170,7 @@ function CreateTransferModal({
 
     async function handleSubmit() {
         setError(null)
+        if (locationRead.loading || locationRead.error || !locations.some(row => row.id === sourceLocationId) || !locations.some(row => row.id === destLocationId)) { setError('Select both locations from the current verified choices.'); return }
         if (!sourceLocationId) { setError('Select a source location.'); return }
         if (!destLocationId) { setError('Select a destination location.'); return }
         if (sourceLocationId === destLocationId) {
@@ -201,28 +188,14 @@ function CreateTransferModal({
 
         setSubmitting(true)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/transfers`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    source_location_id: sourceLocationId,
-                    destination_location_id: destLocationId,
-                    notes: notes || null,
-                    lines: payload,
-                    idempotency_key: generateIdempotencyKey(),
-                }),
-            })
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to create transfer'
-                setError(msg)
-                return
-            }
+            await submitCommand('transfer.create',null,{source_location_id:sourceLocationId,destination_location_id:destLocationId,notes:notes||undefined,lines:payload})
             notify({ title: 'Transfer created', variant: 'success' })
             onCreated()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
+        } catch (error) {
+            setError(error instanceof WarehouseCommandValidationError ? error.message : error instanceof WarehouseRequestStoppedError
+                ? 'The original request was stopped before it applied. Close this form to start a new request.'
+                : 'The outcome could not be confirmed. Close this form and use Retry original or Stop original in the workspace.')
         } finally {
             setSubmitting(false)
         }
@@ -239,7 +212,7 @@ function CreateTransferModal({
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={submitting}>
+                    <Button onClick={handleSubmit} disabled={submitting || blocked || locationRead.loading || locationRead.error}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Creating…' : 'Create transfer'}
                     </Button>
@@ -256,6 +229,7 @@ function CreateTransferModal({
                 {productLoadError && <Banner variant="warning" title="More products could not be loaded">Try loading the next products again.</Banner>}
                 {hasMoreProducts && <Button variant="secondary" onClick={loadMoreProducts} disabled={loadingProducts}>{loadingProducts ? 'Loading products…' : 'Load more products'}</Button>}
 
+                <WarehouseOptionSearch label="locations" read={locationRead} />
                 <div className="grid grid-cols-1 gap-[var(--lb-space-3)] sm:grid-cols-2">
                     <Select
                         label="Source location"
@@ -355,14 +329,15 @@ function CreateTransferModal({
 // ── ShipConfirmModal ──────────────────────────────────────────────────────────
 
 interface ShipConfirmModalProps {
+    submitCommand:WarehouseSubmit
+    blocked:boolean
     open: boolean
-    store: string
     transfer: TransferWithLines | null
     onClose: () => void
     onShipped: () => void
 }
 
-function ShipConfirmModal({ open, store, transfer, onClose, onShipped }: ShipConfirmModalProps) {
+function ShipConfirmModal({ submitCommand, blocked, open, transfer, onClose, onShipped }: ShipConfirmModalProps) {
     const { notify } = useToast()
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -378,25 +353,14 @@ function ShipConfirmModal({ open, store, transfer, onClose, onShipped }: ShipCon
         setError(null)
         setSubmitting(true)
         try {
-            const res = await fetch(
-                `/api/stores/${encodeURIComponent(store)}/transfers/${encodeURIComponent(transfer.id)}/ship`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idempotency_key: generateIdempotencyKey() }),
-                },
-            )
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to ship transfer'
-                setError(msg)
-                return
-            }
+            await submitCommand('transfer.ship',transfer.id,{})
             notify({ title: 'Transfer marked as shipped', variant: 'success' })
             onShipped()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
+        } catch (error) {
+            setError(error instanceof WarehouseCommandValidationError ? error.message : error instanceof WarehouseRequestStoppedError
+                ? 'The original request was stopped before it applied. Close this form to start a new request.'
+                : 'The outcome could not be confirmed. Close this form and use Retry original or Stop original in the workspace.')
         } finally {
             setSubmitting(false)
         }
@@ -413,7 +377,7 @@ function ShipConfirmModal({ open, store, transfer, onClose, onShipped }: ShipCon
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleShip} disabled={submitting}>
+                    <Button onClick={handleShip} disabled={submitting || blocked}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Shipping…' : 'Mark as shipped'}
                     </Button>
@@ -441,16 +405,16 @@ function ShipConfirmModal({ open, store, transfer, onClose, onShipped }: ShipCon
 // ── ReceiveTransferModal ──────────────────────────────────────────────────────
 
 interface ReceiveTransferModalProps {
+    submitCommand:WarehouseSubmit
+    blocked:boolean
     open: boolean
-    store: string
     transfer: TransferWithLines | null
     onClose: () => void
     onReceived: () => void
 }
 
-function ReceiveTransferModal({
+function ReceiveTransferModal({ submitCommand, blocked,
     open,
-    store,
     transfer,
     onClose,
     onReceived,
@@ -464,7 +428,7 @@ function ReceiveTransferModal({
         if (open && transfer) {
             const init: Record<string, number> = {}
             for (const l of transfer.lines) {
-                const remaining = l.quantity - (l.quantity_received ?? 0)
+                const remaining = l.quantity_shipped - l.quantity_received
                 init[l.id] = remaining > 0 ? remaining : 0
             }
             setLineQtys(init)
@@ -475,18 +439,23 @@ function ReceiveTransferModal({
     if (!transfer) return null
 
     const receivableLines = transfer.lines.filter(
-        (l) => l.quantity - (l.quantity_received ?? 0) > 0,
+        (l) => l.quantity_shipped - l.quantity_received > 0,
     )
 
     async function handleReceive() {
         if (!transfer) return
         setError(null)
 
+        if(receivableLines.some(line=>{const quantity=lineQtys[line.id]??0;return !Number.isInteger(quantity)||quantity<0||quantity>line.quantity_shipped-line.quantity_received})){
+            setError('Enter whole receiving quantities within the remaining stock for each line.')
+            return
+        }
+
         const receiveLines: ReceiveInventoryTransferLineInput[] = receivableLines
             .filter((l) => (lineQtys[l.id] ?? 0) > 0)
             .map((l) => ({
                 transfer_line_id: l.id,
-                quantity_received: lineQtys[l.id] ?? 0,
+                quantity: lineQtys[l.id] ?? 0,
             }))
 
         if (!receiveLines.length) {
@@ -496,28 +465,14 @@ function ReceiveTransferModal({
 
         setSubmitting(true)
         try {
-            const res = await fetch(
-                `/api/stores/${encodeURIComponent(store)}/transfers/${encodeURIComponent(transfer.id)}/receive`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        lines: receiveLines,
-                        idempotency_key: generateIdempotencyKey(),
-                    }),
-                },
-            )
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({})) as { error?: unknown }
-                const msg = typeof body.error === 'string' ? body.error : 'Failed to receive transfer'
-                setError(msg)
-                return
-            }
+            await submitCommand('transfer.receive',transfer.id,{lines:receiveLines})
             notify({ title: 'Stock received into destination location', variant: 'success' })
             onReceived()
             onClose()
-        } catch {
-            setError('Network error — please try again.')
+        } catch (error) {
+            setError(error instanceof WarehouseCommandValidationError ? error.message : error instanceof WarehouseRequestStoppedError
+                ? 'The original request was stopped before it applied. Close this form to start a new request.'
+                : 'The outcome could not be confirmed. Close this form and use Retry original or Stop original in the workspace.')
         } finally {
             setSubmitting(false)
         }
@@ -534,7 +489,7 @@ function ReceiveTransferModal({
                     <Button variant="secondary" onClick={onClose} disabled={submitting}>
                         Cancel
                     </Button>
-                    <Button onClick={handleReceive} disabled={submitting}>
+                    <Button onClick={handleReceive} disabled={submitting || blocked}>
                         {submitting ? <Spinner size="sm" /> : null}
                         {submitting ? 'Receiving…' : 'Confirm receipt'}
                     </Button>
@@ -555,7 +510,7 @@ function ReceiveTransferModal({
                 ) : (
                     <div className="flex flex-col gap-[var(--lb-space-3)]">
                         {receivableLines.map((line) => {
-                            const remaining = line.quantity - (line.quantity_received ?? 0)
+                            const remaining = line.quantity_shipped - line.quantity_received
                             return (
                                 <div
                                     key={line.id}
@@ -563,15 +518,10 @@ function ReceiveTransferModal({
                                 >
                                     <div className="mb-[var(--lb-space-2)] flex flex-wrap items-center gap-[var(--lb-space-2)]">
                                         <span className="text-[length:var(--lb-font-size-sm)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-primary)]">
-                                            Product ID: {line.product_id.slice(0, 8)}…
+                                            {warehouseLineLabel(line)}
                                         </span>
-                                        {line.variant_id && (
-                                            <span className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-tertiary)]">
-                                                Variant: {line.variant_id.slice(0, 8)}…
-                                            </span>
-                                        )}
                                         <span className="text-[length:var(--lb-font-size-xs)] text-[var(--lb-color-text-secondary)]">
-                                            Qty: {line.quantity} · Received: {line.quantity_received ?? 0} · Remaining: {remaining}
+                                            Requested: {line.quantity_requested} · Shipped: {line.quantity_shipped} · Received: {line.quantity_received} · Remaining: {remaining}
                                         </span>
                                     </div>
                                     <NumberField
@@ -599,7 +549,13 @@ function ReceiveTransferModal({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function TransfersPage() {
-    const { store } = useParams<{ store: string }>()
+    const {store}=useParams<{store:string}>()
+    const {actorId,siteId}=useMerchantSecurityContext(store)
+    return <WarehouseWorkspace key={`${actorId}:${siteId??'unavailable'}:${store}`} store={store} />
+}
+function WarehouseWorkspace({store}:{store:string}) {
+    const commands=useWarehouseCommands(store)
+    const detail=useWarehouseDocument(store)
     const { notify } = useToast()
 
     const [transfers, setTransfers] = useState<TransferWithLines[]>([])
@@ -607,6 +563,10 @@ export default function TransfersPage() {
     const locations = locationRead.items
     const productPicker = useProductPicker<TransferProductItem>(store)
     const beginRead = useReadRequest(store)
+    const {actorId:warehouseActor,siteId:warehouseSite}=useMerchantSecurityContext(store)
+    const [page,setPage]=useState(1)
+    const [filters,setFilters]=useState<{search:string;status:string;sort:'newest'|'oldest'}>({search:'',status:'',sort:'newest'})
+    const [population,setPopulation]=useState<{total:number;more:boolean}|null>(null)
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -619,9 +579,11 @@ export default function TransfersPage() {
         const request = beginRead()
         setLoading(true)
         setLoadError(null)
+        setTransfers([])
+        setPopulation(null)
         try {
-            const transferRes = await fetch(`/api/stores/${encodeURIComponent(store)}/transfers`, { cache: 'no-store', signal: request.signal })
-            const transferBody = await transferRes.json() as { data?: TransferWithLines[]; error?: unknown }
+            const transferRes = await fetch(`/api/stores/${encodeURIComponent(store)}/transfers?${new URLSearchParams({page:String(page),limit:'20',sort:filters.sort,...(filters.search?{search:filters.search}:{}),...(filters.status?{status:filters.status}:{})})}`, { headers:{'X-LetBuyy-Merchant-Context':warehouseActor}, cache: 'no-store', signal: request.signal })
+            const transferBody = await transferRes.json() as { data?: TransferWithLines[]; meta?:unknown; error?: unknown }
             if (!request.isCurrent()) return
 
             if (!transferRes.ok) {
@@ -633,23 +595,33 @@ export default function TransfersPage() {
                 return
             }
 
-            setTransfers(transferBody.data ?? [])
+            const metadata=WarehouseDocumentPageMetaSchema.safeParse(transferBody.meta)
+            if(!metadata.success||metadata.data.store_id!==warehouseSite||metadata.data.page!==page||metadata.data.per_page!==20||
+                !Array.isArray(transferBody.data)||transferBody.data.length!==Math.min(20,Math.max(0,metadata.data.total-(page-1)*20))||
+                metadata.data.has_next!==(page*20<metadata.data.total))throw new Error('Warehouse page could not be confirmed')
+            setTransfers(transferBody.data)
+            setPopulation({total:metadata.data.total,more:metadata.data.has_next})
         } catch {
             if (request.isCurrent()) setLoadError('Unable to load transfers — check your connection.')
         } finally {
             if (request.isCurrent()) setLoading(false)
         }
-    }, [store, beginRead])
+    }, [store, beginRead, page, warehouseSite, warehouseActor, filters])
 
     useEffect(() => { void loadAll() }, [loadAll])
 
     async function openCreate() {
+        if(commands.blocked)return
         if (productPicker.loading) return
         if (await productPicker.load()) setShowCreate(true)
     }
 
-    function openShip(transfer: TransferWithLines) {
-        if (transfer.status !== 'pending') {
+    async function openShip(transfer: TransferWithLines) {
+        if(commands.blocked||detail.loading)return
+        try {
+            transfer=await detail.load('transfers',transfer.id,WarehouseTransferSchema)
+        }catch{notify({title:'The current warehouse record could not be loaded. Refresh and check your access.',variant:'critical'});return}
+        if (transfer.status !== 'reserved') {
             notify({
                 title: `Cannot ship a transfer with status "${transferStatusLabel(transfer.status)}"`,
                 variant: 'critical',
@@ -659,7 +631,11 @@ export default function TransfersPage() {
         setShippingTransfer(transfer)
     }
 
-    function openReceive(transfer: TransferWithLines) {
+    async function openReceive(transfer: TransferWithLines) {
+        if(commands.blocked||detail.loading)return
+        try {
+            transfer=await detail.load('transfers',transfer.id,WarehouseTransferSchema)
+        }catch{notify({title:'The current warehouse record could not be loaded. Refresh and check your access.',variant:'critical'});return}
         if (transfer.status === 'received' || transfer.status === 'cancelled') {
             notify({
                 title: `Cannot receive a ${transferStatusLabel(transfer.status).toLowerCase()} transfer`,
@@ -667,7 +643,7 @@ export default function TransfersPage() {
             })
             return
         }
-        if (transfer.status === 'pending') {
+        if (transfer.status === 'reserved') {
             notify({
                 title: 'Transfer must be shipped before it can be received',
                 variant: 'warning',
@@ -677,9 +653,6 @@ export default function TransfersPage() {
         setReceivingTransfer(transfer)
     }
 
-    function locationName(id: string): string {
-        return locations.find((l) => l.id === id)?.name ?? id.slice(0, 8) + '…'
-    }
 
     // ── render ──────────────────────────────────────────────────────────────
 
@@ -694,7 +667,7 @@ export default function TransfersPage() {
                     label: productPicker.loading && !showCreate ? 'Loading transfer form…' : 'Create transfer',
                     icon: <MaterialIcon name="add" />,
                     onClick: () => void openCreate(),
-                    disabled: loading || productPicker.loading || locationRead.loading || locationRead.error || locations.length < 2,
+                    disabled: commands.blocked || loading || productPicker.loading || locationRead.loading || locationRead.error || locations.length < 2,
                 }}
             />
 
@@ -715,6 +688,16 @@ export default function TransfersPage() {
 
             {locationRead.error && <Banner variant="warning" title="Inventory locations could not be loaded" action={<Button variant="secondary" onClick={() => { void locationRead.load() }}>Retry locations</Button>}>Existing records remain available. Reload locations before creating a new record.</Banner>}
 
+            <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]" aria-label="Warehouse pages">
+                <Button variant="secondary" disabled={loading||page===1} onClick={()=>setPage(value=>value-1)}>Previous</Button>
+                <span>{population?`${population.total} matching records · Page ${page}`:`Page ${page} · Count unavailable`}</span>
+                <Button variant="secondary" disabled={loading||!population?.more} onClick={()=>setPage(value=>value+1)}>Next</Button>
+            </div>
+
+            <WarehouseCommandRecovery commands={commands} onResolved={()=>void loadAll()} />
+
+            <WarehouseDocumentFilters kind="transfers" disabled={loading} onApply={(search,status,sort)=>{ setTransfers([]); setPopulation(null); setLoading(true); setPage(1); setFilters({search,status,sort}); }} />
+
             <Card>
                 <Section
                     title="Location transfers"
@@ -729,7 +712,7 @@ export default function TransfersPage() {
                                 />
                             ))}
                         </div>
-                    ) : transfers.length === 0 ? (
+                    ) : loadError ? <p>Transfer records are unavailable. Reload the workspace to try again.</p> : transfers.length === 0 ? (
                         <EmptyState scene="transfers"
                             icon={
                                 <RefreshCw
@@ -737,7 +720,7 @@ export default function TransfersPage() {
                                     aria-hidden="true"
                                 />
                             }
-                            title="No transfers yet"
+                            title={filters.search||filters.status?"No matching transfers":page===1?"No transfers yet":"No records on this page"}
                             body="Create a transfer to move stock between locations. Transferred inventory is reserved at the source until received at the destination."
                             primaryAction={
                                 <Button
@@ -789,13 +772,13 @@ export default function TransfersPage() {
                                             </td>
                                             <td className="py-[var(--lb-space-3)] pr-[var(--lb-space-4)] text-[var(--lb-color-text-secondary)]">
                                                 <span className="inline-flex items-center gap-[var(--lb-space-1)]">
-                                                    {locationName(transfer.source_location_id)}
+                                                    {warehouseLocationLabel(transfer.source_location,transfer.source_location_id)}
                                                     <MaterialIcon
                                                         name="arrow_forward"
                                                         className="text-[length:var(--lb-font-size-sm)] text-[var(--lb-color-text-tertiary)]"
                                                         aria-hidden="true"
                                                     />
-                                                    {locationName(transfer.destination_location_id)}
+                                                    {warehouseLocationLabel(transfer.destination_location,transfer.destination_location_id)}
                                                 </span>
                                             </td>
                                             <td className="py-[var(--lb-space-3)] pr-[var(--lb-space-4)]">
@@ -815,8 +798,8 @@ export default function TransfersPage() {
                                                     <Button
                                                         variant="secondary"
                                                         size="sm"
-                                                        onClick={() => openShip(transfer)}
-                                                        disabled={transfer.status !== 'pending'}
+                                                        onClick={() => void openShip(transfer)}
+                                                        disabled={commands.blocked || transfer.status !== 'reserved'}
                                                     >
                                                         <Truck
                                                             className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]"
@@ -827,11 +810,11 @@ export default function TransfersPage() {
                                                     <Button
                                                         variant="secondary"
                                                         size="sm"
-                                                        onClick={() => openReceive(transfer)}
+                                                        onClick={() => void openReceive(transfer)}
                                                         disabled={
-                                                            transfer.status === 'received' ||
+                                                            commands.blocked || transfer.status === 'received' ||
                                                             transfer.status === 'cancelled' ||
-                                                            transfer.status === 'pending'
+                                                            transfer.status === 'reserved'
                                                         }
                                                     >
                                                         Receive
@@ -848,9 +831,11 @@ export default function TransfersPage() {
             </Card>
 
             <CreateTransferModal
+                submitCommand={commands.submit}
+                blocked={commands.blocked}
                 open={showCreate}
-                store={store}
                 locations={locations}
+                locationRead={locationRead}
                 products={productPicker.items}
                 hasMoreProducts={productPicker.hasMore}
                 loadingProducts={productPicker.loading}
@@ -861,16 +846,18 @@ export default function TransfersPage() {
             />
 
             <ShipConfirmModal
+                submitCommand={commands.submit}
+                blocked={commands.blocked}
                 open={shippingTransfer !== null}
-                store={store}
                 transfer={shippingTransfer}
                 onClose={() => setShippingTransfer(null)}
                 onShipped={() => void loadAll()}
             />
 
             <ReceiveTransferModal
+                submitCommand={commands.submit}
+                blocked={commands.blocked}
                 open={receivingTransfer !== null}
-                store={store}
                 transfer={receivingTransfer}
                 onClose={() => setReceivingTransfer(null)}
                 onReceived={() => void loadAll()}

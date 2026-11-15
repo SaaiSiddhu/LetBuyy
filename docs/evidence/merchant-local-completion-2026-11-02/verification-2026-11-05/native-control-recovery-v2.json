@@ -1,0 +1,541 @@
+{
+  "scope": "Statically reconstructed candidate controller text only; no historical code execution, no restored credentials/receipts and no native acceptance. Requires fresh ownership, inspection and input pinning before use.",
+  "commands_parsed": 4524,
+  "recovered": [
+    {
+      "name": "android-native-auto-v15.py",
+      "bytes": 11410,
+      "sha256": "19855d98d309d04f74f2eb510ea7072de7d33934ce0de24e27610778d92b906d"
+    },
+    {
+      "name": "android-warehouse-auto-v31.py",
+      "bytes": 28769,
+      "sha256": "ebf684737ad33c42da199d615b5daacee9b29f7f05e4d758c4b787c697b1c9cd"
+    },
+    {
+      "name": "android-warehouse-auto-v38.py",
+      "bytes": 31081,
+      "sha256": "f54dc99bc886103d6c63004036a186623cc78213d1e68f51ac9d6dfaad7881b3"
+    },
+    {
+      "name": "run-warehouse-v38.py",
+      "bytes": 4516,
+      "sha256": "1eb8e48f3c31f04cedb700ed12201f0a9424494c32a4d4bb186e8c4075454963"
+    }
+  ],
+  "missing": [
+    "android-accounts-ui-warehouse-v38.mjs"
+  ],
+  "virtual_script_candidates": [
+    {
+      "name": "android-accounts-ui-v5.mjs",
+      "bytes": 2622
+    },
+    {
+      "name": "android-accounts-ui-v6.mjs",
+      "bytes": 2923
+    },
+    {
+      "name": "android-accounts-ui-v7.mjs",
+      "bytes": 2923
+    },
+    {
+      "name": "android-accounts-ui-v8.mjs",
+      "bytes": 2923
+    },
+    {
+      "name": "android-accounts-ui-v9.mjs",
+      "bytes": 2923
+    },
+    {
+      "name": "android-accounts-ui-v10.mjs",
+      "bytes": 3061
+    },
+    {
+      "name": "android-accounts-ui-v11.mjs",
+      "bytes": 3061
+    },
+    {
+      "name": "android-accounts-ui-v12.mjs",
+      "bytes": 3061
+    },
+    {
+      "name": "android-accounts-ui-v13.mjs",
+      "bytes": 3061
+    },
+    {
+      "name": "android-accounts-ui-v14.mjs",
+      "bytes": 3061
+    },
+    {
+      "name": "android-accounts-ui-v15.mjs",
+      "bytes": 3061
+    },
+    {
+      "name": "extend-warehouse-device-v2.py",
+      "bytes": 8562
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v2.mjs",
+      "bytes": 3070
+    },
+    {
+      "name": "run-warehouse-v2.py",
+      "bytes": 1255
+    },
+    {
+      "name": "android-warehouse-auto-v2.py",
+      "bytes": 14971
+    },
+    {
+      "name": "android-warehouse-auto-v3.py",
+      "bytes": 14971
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v3.mjs",
+      "bytes": 3070
+    },
+    {
+      "name": "run-warehouse-v3.py",
+      "bytes": 1484
+    },
+    {
+      "name": "android-warehouse-auto-v4.py",
+      "bytes": 14971
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v4.mjs",
+      "bytes": 3070
+    },
+    {
+      "name": "run-warehouse-v4.py",
+      "bytes": 1255
+    },
+    {
+      "name": "android-warehouse-auto-v5.py",
+      "bytes": 14971
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v5.mjs",
+      "bytes": 3070
+    },
+    {
+      "name": "run-warehouse-v5.py",
+      "bytes": 1255
+    },
+    {
+      "name": "android-warehouse-auto-v6.py",
+      "bytes": 14991
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v6.mjs",
+      "bytes": 3070
+    },
+    {
+      "name": "run-warehouse-v6.py",
+      "bytes": 1255
+    },
+    {
+      "name": "android-warehouse-auto-v7.py",
+      "bytes": 15558
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v7.mjs",
+      "bytes": 3070
+    },
+    {
+      "name": "run-warehouse-v7.py",
+      "bytes": 1255
+    },
+    {
+      "name": "android-warehouse-auto-v8.py",
+      "bytes": 18056
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v8.mjs",
+      "bytes": 3070
+    },
+    {
+      "name": "run-warehouse-v8.py",
+      "bytes": 1255
+    },
+    {
+      "name": "android-warehouse-auto-v9.py",
+      "bytes": 14775
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v9.mjs",
+      "bytes": 3070
+    },
+    {
+      "name": "run-warehouse-v9.py",
+      "bytes": 1255
+    },
+    {
+      "name": "android-warehouse-auto-v10.py",
+      "bytes": 18125
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v10.mjs",
+      "bytes": 3071
+    },
+    {
+      "name": "run-warehouse-v10.py",
+      "bytes": 1261
+    },
+    {
+      "name": "prepare-warehouse-label-test.py",
+      "bytes": 6092
+    },
+    {
+      "name": "prepare-warehouse-web-label-test.py",
+      "bytes": 2427
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v11.mjs",
+      "bytes": 3071
+    },
+    {
+      "name": "android-warehouse-auto-v11.py",
+      "bytes": 18446
+    },
+    {
+      "name": "run-warehouse-v11.py",
+      "bytes": 1261
+    },
+    {
+      "name": "android-warehouse-auto-v12.py",
+      "bytes": 19643
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v12.mjs",
+      "bytes": 3071
+    },
+    {
+      "name": "run-warehouse-v12.py",
+      "bytes": 1261
+    },
+    {
+      "name": "android-warehouse-auto-v13.py",
+      "bytes": 19643
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v13.mjs",
+      "bytes": 3071
+    },
+    {
+      "name": "run-warehouse-v13.py",
+      "bytes": 1261
+    },
+    {
+      "name": "android-warehouse-auto-v14.py",
+      "bytes": 19643
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v14.mjs",
+      "bytes": 3071
+    },
+    {
+      "name": "run-warehouse-v14.py",
+      "bytes": 3819
+    },
+    {
+      "name": "android-warehouse-auto-v15.py",
+      "bytes": 20014
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v15.mjs",
+      "bytes": 3361
+    },
+    {
+      "name": "run-warehouse-v15.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v16.py",
+      "bytes": 20839
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v16.mjs",
+      "bytes": 3361
+    },
+    {
+      "name": "run-warehouse-v16.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v17.py",
+      "bytes": 16269
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v17.mjs",
+      "bytes": 3361
+    },
+    {
+      "name": "run-warehouse-v17.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v18.py",
+      "bytes": 16488
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v18.mjs",
+      "bytes": 3361
+    },
+    {
+      "name": "run-warehouse-v18.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v19.py",
+      "bytes": 21283
+    },
+    {
+      "name": "android-accounts-ui-warehouse-v19.mjs",
+      "bytes": 3361
+    },
+    {
+      "name": "run-warehouse-v19.py",
+      "bytes": 4050
+    },
+    {
+      "name": "inspect-owned-chrome-v18.mjs",
+      "bytes": 1999
+    },
+    {
+      "name": "android-warehouse-auto-v20.py",
+      "bytes": 17873
+    },
+    {
+      "name": "run-warehouse-v20.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v21.py",
+      "bytes": 22668
+    },
+    {
+      "name": "run-warehouse-v21.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v22.py",
+      "bytes": 17873
+    },
+    {
+      "name": "run-warehouse-v22.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v23.py",
+      "bytes": 25325
+    },
+    {
+      "name": "run-warehouse-v23.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v24.py",
+      "bytes": 17873
+    },
+    {
+      "name": "run-warehouse-v24.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v25.py",
+      "bytes": 25325
+    },
+    {
+      "name": "run-warehouse-v25.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v26.py",
+      "bytes": 26044
+    },
+    {
+      "name": "run-warehouse-v26.py",
+      "bytes": 4050
+    },
+    {
+      "name": "run-warehouse-v27.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v27.py",
+      "bytes": 26044
+    },
+    {
+      "name": "run-warehouse-v28.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v28.py",
+      "bytes": 26044
+    },
+    {
+      "name": "run-warehouse-v29.py",
+      "bytes": 4050
+    },
+    {
+      "name": "android-warehouse-auto-v29.py",
+      "bytes": 26044
+    },
+    {
+      "name": "android-warehouse-auto-v30.py",
+      "bytes": 26619
+    },
+    {
+      "name": "run-warehouse-v30.py",
+      "bytes": 4505
+    },
+    {
+      "name": "run-warehouse-v31.py",
+      "bytes": 4516
+    },
+    {
+      "name": "android-warehouse-auto-v31.py",
+      "bytes": 28769
+    },
+    {
+      "name": "run-warehouse-v32.py",
+      "bytes": 4516
+    },
+    {
+      "name": "android-warehouse-auto-v32.py",
+      "bytes": 22480
+    },
+    {
+      "name": "run-warehouse-v33.py",
+      "bytes": 4516
+    },
+    {
+      "name": "android-warehouse-auto-v33.py",
+      "bytes": 22842
+    },
+    {
+      "name": "run-warehouse-v34.py",
+      "bytes": 4516
+    },
+    {
+      "name": "android-warehouse-auto-v34.py",
+      "bytes": 23971
+    },
+    {
+      "name": "run-warehouse-v35.py",
+      "bytes": 4516
+    },
+    {
+      "name": "android-warehouse-auto-v35.py",
+      "bytes": 25596
+    },
+    {
+      "name": "apply-warehouse-metadata-ui-v1.py",
+      "bytes": 7769
+    },
+    {
+      "name": "apply-warehouse-documents-ui-v1.py",
+      "bytes": 5335
+    },
+    {
+      "name": "apply-warehouse-receipt-ui-v1.py",
+      "bytes": 5565
+    },
+    {
+      "name": "apply-warehouse-creation-review-ui-v1.py",
+      "bytes": 2147
+    },
+    {
+      "name": "reconcile-warehouse-ui-ledger-v1.py",
+      "bytes": 15896
+    },
+    {
+      "name": "prepare-warehouse-preservation-v30.py",
+      "bytes": 11581
+    },
+    {
+      "name": "qualify-warehouse-source2.py",
+      "bytes": 2061
+    },
+    {
+      "name": "qualify-warehouse-source3.py",
+      "bytes": 2061
+    },
+    {
+      "name": "run-warehouse-v36.py",
+      "bytes": 4516
+    },
+    {
+      "name": "android-warehouse-auto-v36.py",
+      "bytes": 29045
+    },
+    {
+      "name": "qualify-warehouse-source4.py",
+      "bytes": 2061
+    },
+    {
+      "name": "run-warehouse-v37.py",
+      "bytes": 4516
+    },
+    {
+      "name": "android-warehouse-auto-v37.py",
+      "bytes": 29789
+    },
+    {
+      "name": "qualify-warehouse-source5.py",
+      "bytes": 2061
+    },
+    {
+      "name": "run-warehouse-v38.py",
+      "bytes": 4516
+    },
+    {
+      "name": "android-warehouse-auto-v38.py",
+      "bytes": 31081
+    },
+    {
+      "name": "qualify-warehouse-source6.py",
+      "bytes": 2061
+    }
+  ],
+  "unresolved_script_inputs": [
+    "android-catalog-auto-v21.py",
+    "android-catalog-auto-v23.py",
+    "android-catalog-auto-v24.py",
+    "android-catalog-auto-v25.py",
+    "android-catalog-auto-v26.py",
+    "android-catalog-auto-v27.py",
+    "android-catalog-auto-v28.py",
+    "android-catalog-auto-v30.py",
+    "android-catalog-auto-v31.py",
+    "android-category-auto-v10.py",
+    "android-category-auto-v11.py",
+    "android-category-auto-v12.py",
+    "android-category-auto-v13.py",
+    "android-category-auto-v14.py",
+    "android-category-auto-v15.py",
+    "android-settings-ui-v1.py",
+    "android-settings-ui-v4.py",
+    "android-warehouse-ui-v1.py",
+    "qualify-catalog-v40.py",
+    "qualify-collections-v11.py",
+    "qualify-fields-v3.py",
+    "run-catalog-v21.py",
+    "run-catalog-v23.py",
+    "run-catalog-v24.py",
+    "run-catalog-v25.py",
+    "run-catalog-v26.py",
+    "run-catalog-v27.py",
+    "run-catalog-v28.py",
+    "run-catalog-v30.py",
+    "run-catalog-v31.py",
+    "run-category-v10.py",
+    "run-category-v11.py",
+    "run-category-v12.py",
+    "run-category-v13.py",
+    "run-category-v14.py",
+    "run-category-v15.py"
+  ]
+}

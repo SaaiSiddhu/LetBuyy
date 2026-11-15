@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-06T18:29:08.148790+00:00",
+  "source50": "a047f1418326f4923e995a632a886e2a38710450db79216ba3240e92736a10d4",
+  "source51": "8b0d289d2cbe5ebbc0da066a90e6b9eae5ce177c4587f2a030c59474f2c742a4",
+  "only_changes": [
+    "services/api-gateway/src/__tests__/observability-analytics-media.test.ts",
+    "services/api-gateway/src/__tests__/tenant-isolation.test.ts"
+  ],
+  "runtime_shared_sdk_owned_suite_helper_migration_inputs_byte_equal": true,
+  "owned45": "media-atomic-v50-owned-readback.json",
+  "tenant_redteam": "media-atomic-v50-tenant-readback.json",
+  "boundary": "Reuse only those actual50runtime checks. Source51 complete broad gate and new native/browser run still required. Two unit source-location checks were retargeted from the removed split writer to ownership-before-replay, RLS/GUC, row/receipt scoping and typed atomic outbox/receipt."
+}

@@ -1,0 +1,24 @@
+{
+  "status": "PREPARED_QUALIFICATION_REQUIRED",
+  "source_manifest": "merchant-kyc-receipt-source-v44",
+  "source_sha256": "4d0884bd1d999e12271b2ee11c026a08977a7a509d2e00a4508ee1c3bfc21372",
+  "changes": "Current web tenant-context fix; same complete native72 assertions; adds actual viewport checks/scroll for web KYC screenshot.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v73-local-android.postgres.test.ts",
+      "sha256": "34cc83edc8bfe13f3ab926bddaa48cf5467fc83425a84b8f522da98d35d08dba"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v73.py",
+      "sha256": "5a3cc29c3a47416c90f0f7571b7ec686d724a5a6adb7b1f6e8fe3dd8d3b4607b"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v73.py",
+      "sha256": "8680af83747d3268e4e9dedc00d367a6af07c048844ef0698292afc8b612bcc0"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v73.json",
+      "sha256": "a3c003137f64be505bdadb5b36327bf16290d8edc719cb0a24ef10482e15e270"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 import '../../theme/app_theme_colors.dart';
 import '../shared/accessible_tap_region.dart';
@@ -11,6 +12,7 @@ class SettingsTile extends StatelessWidget {
   final String? subtitle;
   final Color? iconColor;
   final Widget? trailing;
+  final bool trailingBelow;
   final VoidCallback? onTap;
   final bool showArrow;
   final bool isDestructive;
@@ -22,6 +24,7 @@ class SettingsTile extends StatelessWidget {
     this.subtitle,
     this.iconColor,
     this.trailing,
+    this.trailingBelow = false,
     this.onTap,
     this.showArrow = true,
     this.isDestructive = false,
@@ -29,46 +32,57 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final colors = AppThemeColors.of(context);
     final effectiveColor = isDestructive
-        ? const Color(0xFFEF4444)
+        ? theme.colorScheme.error
         : (iconColor ?? colors.textSecondary);
     final tile = Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 0),
+      padding: const EdgeInsets.symmetric(
+        vertical: LetbuyySpacingTokens.space16,
+      ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: effectiveColor, size: 22),
-          const SizedBox(width: 16),
+          Icon(icon, color: effectiveColor),
+          const SizedBox(width: LetbuyySpacingTokens.space16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 15,
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     color: isDestructive
-                        ? const Color(0xFFEF4444)
+                        ? theme.colorScheme.error
                         : colors.textPrimary,
                   ),
                 ),
-                if (trailing != null && subtitle != null)
+                if (subtitle != null) ...[
+                  const SizedBox(height: LetbuyySpacingTokens.space4),
                   Text(
                     subtitle!,
-                    style: TextStyle(fontSize: 13, color: colors.textTertiary),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.textTertiary,
+                    ),
+                  ),
+                ],
+                if (trailing != null && trailingBelow)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: LetbuyySpacingTokens.space8,
+                    ),
+                    child: Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: trailing,
+                    ),
                   ),
               ],
             ),
           ),
-          if (trailing != null)
+          if (trailing != null && !trailingBelow)
             trailing!
-          else if (subtitle != null)
-            Text(
-              subtitle!,
-              style: TextStyle(fontSize: 13, color: colors.textTertiary),
-            )
-          else if (showArrow)
+          else if (trailing == null && showArrow)
             Icon(
               Icons.chevron_right_rounded,
               color: colors.textTertiary,
@@ -88,12 +102,19 @@ class SettingsTile extends StatelessWidget {
       onTap?.call();
     }
 
-    return AccessibleTapRegion(
-      label: semanticsLabel,
-      hint: 'Open $title',
-      onTap: activate,
-      excludeChildSemantics: true,
-      child: InkWell(excludeFromSemantics: true, onTap: activate, child: tile),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48),
+      child: AccessibleTapRegion(
+        label: semanticsLabel,
+        hint: 'Open $title',
+        onTap: activate,
+        excludeChildSemantics: true,
+        child: InkWell(
+          excludeFromSemantics: true,
+          onTap: activate,
+          child: tile,
+        ),
+      ),
     );
   }
 }
@@ -112,6 +133,7 @@ class SettingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,8 +145,7 @@ class SettingsSection extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
           child: Text(
             title,
-            style: TextStyle(
-              fontSize: 14,
+            style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: colors.textPrimary,
             ),

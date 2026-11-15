@@ -1,0 +1,294 @@
+{
+  "at": "2026-11-05T04:34:29.861217+00:00",
+  "status": "BOUNDED_LOCAL_ANALYTICS_AND_CUSTOMER_ANDROID_WEB_ZERO_CONTROL_PASS",
+  "run_id": "5fe5bed9af15",
+  "runner_exit": 0,
+  "controller_exit": 0,
+  "tests": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0
+  },
+  "suite_seconds": 585.5,
+  "wall_seconds": 587,
+  "source_sha256": "3825de3424739ed105f842a151f4ae9a5f2379936911885833da89b6bc04d3d7",
+  "native_input_entries": 4809,
+  "all_native_inputs_match_broad": true,
+  "external_controller_inputs_match": 4,
+  "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/qualified-artifact/merchant-local-debug.apk",
+  "apk_sha256": "0dc94df0f84977180fc9bf5da6d33d1f8046f6670bcf86dd8b6cdc3bf7e586d5",
+  "installed_apk_matches": true,
+  "native_profile_patch": 1,
+  "native_note_post": 1,
+  "web_note_post": 1,
+  "all_customer_command_statuses_confirmed": true,
+  "recorded_database_notes_each_once": true,
+  "native_to_web_phone_and_note": true,
+  "web_note_reopened_and_native_fresh_readback": true,
+  "native_saved_task_android_back": "Controller manifest holds actual hardware Back after acknowledged profile; current route/parent fresh readback succeeds.",
+  "canonical_order_items_stock_unchanged": true,
+  "order_return_shipping_money_commands_by_mobile": 0,
+  "owned_resources_empty": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "reverse_restored": [],
+  "forward_preserved": [
+    [
+      "emulator-5580",
+      "tcp:52367",
+      "localabstract:chrome_devtools_remote"
+    ]
+  ],
+  "awake_retired": true,
+  "scope": "Normal synthetic local Android PKCE, actual Hono BFF/Gateway+owned PostgreSQL/PostgREST and production-mode local Merchant/Accounts; existing collection recovery/web-native order; Customer phone+note save/readback and web note save/reopen/fresh native read. Adds normal native4report periods and normal web3periods with zero paid revenue/one created order/three products; exact canonical RPC calendar window checks and visible first dates. Ranking is actually empty. Not compiled Workerd, positive paid/nonzero or product/revenue device data, all9Customer tasks, staff-native, hosted, real providers, iOS runtime, physical performance, full119programme or release certification.",
+  "analytics_periods": [
+    {
+      "period": "7d",
+      "days": 7,
+      "rpc_rows": 14,
+      "current_first_date": "2026-10-30",
+      "visible_first_date": "30 Oct 2026",
+      "summary_orders": 1,
+      "summary_products": 3,
+      "summary_revenue": 0,
+      "paid_daily_orders": 0,
+      "all_canonical_history_values_zero": true
+    },
+    {
+      "period": "30d",
+      "days": 30,
+      "rpc_rows": 60,
+      "current_first_date": "2026-10-07",
+      "visible_first_date": "7 Oct 2026",
+      "summary_orders": 1,
+      "summary_products": 3,
+      "summary_revenue": 0,
+      "paid_daily_orders": 0,
+      "all_canonical_history_values_zero": true
+    },
+    {
+      "period": "90d",
+      "days": 90,
+      "rpc_rows": 180,
+      "current_first_date": "2026-08-08",
+      "visible_first_date": "8 Aug 2026",
+      "summary_orders": 1,
+      "summary_products": 3,
+      "summary_revenue": 0,
+      "paid_daily_orders": 0,
+      "all_canonical_history_values_zero": true
+    },
+    {
+      "period": "12m",
+      "days": 365,
+      "rpc_rows": 730,
+      "current_first_date": "2025-11-06",
+      "visible_first_date": "6 Nov 2025",
+      "summary_orders": 1,
+      "summary_products": 3,
+      "summary_revenue": 0,
+      "paid_daily_orders": 0,
+      "all_canonical_history_values_zero": true
+    }
+  ],
+  "web_analytics_periods": [
+    {
+      "period": "30d",
+      "status": 200,
+      "data": {
+        "totalOrders": 1,
+        "totalProducts": 3,
+        "totalRevenue": 0,
+        "avgOrderValue": 0,
+        "ordersByStatus": {
+          "pending_cod": 1
+        }
+      },
+      "normal_ui_read": true
+    },
+    {
+      "period": "7d",
+      "status": 200,
+      "data": {
+        "totalOrders": 1,
+        "totalProducts": 3,
+        "totalRevenue": 0,
+        "avgOrderValue": 0,
+        "ordersByStatus": {
+          "pending_cod": 1
+        }
+      },
+      "normal_ui_read": true
+    },
+    {
+      "period": "90d",
+      "status": 200,
+      "data": {
+        "totalOrders": 1,
+        "totalProducts": 3,
+        "totalRevenue": 0,
+        "avgOrderValue": 0,
+        "ordersByStatus": {
+          "pending_cod": 1
+        }
+      },
+      "normal_ui_read": true
+    }
+  ],
+  "analytics_gateway_gets": 34,
+  "report_gateway_gets": 24,
+  "earlier_dashboard_fanout_gets": 10,
+  "request_accounting": "Gateway observer includes all upstream work.10earlier reads match2existing5-part Dashboard composites;24later reads exactly4sequential6-part Analytics reports. This is not34top-level UI requests.",
+  "analytics_commands": 0,
+  "positive_paid_revenue_or_product_ranking_runtime_accepted": false,
+  "honest_empty_ranking_branch_observed": true,
+  "count_axis": "Actual native31before finding; source3explicit discrete tick variant;38focused cases including composed count-axis negative/fix; current native32paid-day image separately viewed.",
+  "image_review": "Separate independent pixel review required; this report does not inspect screenshots.",
+  "independent_image_review": {
+    "reviewed": 23,
+    "files": [
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-7d-summary.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-7d-summary.png",
+        "sha256": "da800430cddaaf219451bea53bd3b455e2052b92debd2a37e0231a0b6da6aefc",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-7d-first-daily-value.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-7d-first-daily-value.png",
+        "sha256": "218479c90983ca9e1d9b9960ba02ddc74542bfe5beaae32ec3bd1b090032ff6b",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-30d-summary.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-30d-summary.png",
+        "sha256": "997045b26f7f4e2c39ff8c7e1d08ae7f3ac995331a1900a76ba17ece797e8d1c",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-30d-first-daily-value.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-30d-first-daily-value.png",
+        "sha256": "772cc151889222d0a5b20d84803f8853a79857e89d2a61a6b864abaa4e5ad76c",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-90d-summary.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-90d-summary.png",
+        "sha256": "089bc6828da0d6551b6e1b300fdb8cf89f40b4211fcb6269fcc1720bdcb390c8",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-90d-first-daily-value.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-90d-first-daily-value.png",
+        "sha256": "1da1c8461bb2c8ff9130d8f3df398d0a7571af80a9a93fbb6400e4474339dbb0",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-12m-summary.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-12m-summary.png",
+        "sha256": "48bb22fa960fa763372354c3e46ff0062735344c39c15d02184fb524be723e20",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-12m-first-daily-value.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-12m-first-daily-value.png",
+        "sha256": "b59da656a3360bdddfcdd44588b84f8178447b7a0affd942e80281434c3ff5a1",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-7d-paid-orders.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-7d-paid-orders.png",
+        "sha256": "d984b17e89d64cbdbdd9ac493458f5fc4bf4c73d9572b144563d567024e317bc",
+        "review": "Independently viewed current-run pixels; exact bytes copied. Partial plot viewport shows zero baseline; full count-axis tick scope is established by composed widget checks, not this cropped viewport."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-existing-status-breakdown.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-existing-status-breakdown.png",
+        "sha256": "a64cf03c4706646b673b9505c1c11355ed94cf42e5f1ccbaff3a6bfe4c188bdb",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-analytics-empty-product-ranking.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-analytics-empty-product-ranking.png",
+        "sha256": "a64cf03c4706646b673b9505c1c11355ed94cf42e5f1ccbaff3a6bfe4c188bdb",
+        "review": "Independently viewed current-run pixels; exact bytes copied. This viewport duplicates status/Top Products heading and does not show empty copy. Actual empty-branch evidence is controller UI tree, not these pixels."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-dashboard-shared-chart.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-dashboard-shared-chart.png",
+        "sha256": "523df9265307c21fc28148201c0d5aa14530181db880041cecd0f6b5d5773be5",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/web-analytics-local-readback.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-web-analytics-local-readback.png",
+        "sha256": "909910835108ba80c4c9929dbb5cdd289efa33ece638768f49113e0a73551614",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-customer-edit-phone-draft.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-customer-edit-phone-draft.png",
+        "sha256": "6d19c93a1fbfc247448be4f3e2651b91786173de70e6308221904a3ab1f6af0a",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-customer-edit-confirmed.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-customer-edit-confirmed.png",
+        "sha256": "79ba81900b894d56bfafa52887529004752e3a068b91ae60ead82c94f7d4fdde",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-customer-note-confirmed.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-customer-note-confirmed.png",
+        "sha256": "5c0d60ec94a6980460acfa04f39d0d319efefc22a1b1a248dcfbe3feeaee719e",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-customer-note-reopened.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-customer-note-reopened.png",
+        "sha256": "f3ef0fcf2456ac03386abee10b39ebebb5aa8513d74d7b8de97f07fa53e36779",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-customer-web-note-readback.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-customer-web-note-readback.png",
+        "sha256": "56e4b1903c43d821121aad5bd6802c218bfc10cbc8808267475039a6d0385dbc",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/web-customer-native-readback.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-web-customer-native-readback.png",
+        "sha256": "9525a17b9cbd55c931fda4af203ca568feeb534919a1d51a5d26af21eb5f2438",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/web-customer-note-reopened.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-web-customer-note-reopened.png",
+        "sha256": "0ae6f3aebbfe55463453c07d1a6bd65806777297637cc1774d64c0379e5e6589",
+        "review": "Independently viewed current-run pixels; exact bytes copied. This viewport shows profile/phone, not notes; reopened notes are established separately by actual GET/DOM/database and fresh native pixels."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-customer-edit-input-0-keyboard.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-customer-edit-input-0-keyboard.png",
+        "sha256": "27988efda5c666755ab5a88f3093f97cd2f73e940b468a136b40099f3ef098d8",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/native-customer-note-input-0-keyboard.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-native-customer-note-input-0-keyboard.png",
+        "sha256": "dfa8de82618c0f2ed1cef5fdfb7fa57a47245ba686ae7f46620df4d7074ff429",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v32/web-customer-note-before-activation.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native32-web-customer-note-before-activation.png",
+        "sha256": "f769b64768072b492c5ef192a41678f679d1993f07cea397c5cb014be0856439",
+        "review": "Independently viewed current-run pixels; exact bytes copied."
+      }
+    ],
+    "scope": "Current synthetic owner dark Android + mobile Chrome web only. No light-native/iOS/TalkBack/physical-performance/all-task claim."
+  }
+}

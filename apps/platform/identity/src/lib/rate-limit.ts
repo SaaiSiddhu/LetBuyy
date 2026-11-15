@@ -15,6 +15,7 @@ type AuthRateLimitConfig = {
  * Gateway-owned rate limits keep auth throttling outside the Next app boundary.
  */
 export const AUTH_RATE_LIMITS = {
+    'merchant-mobile': { limit: 30, window: '15 m', prefix: 'rl:merchant-mobile' },
     // Lookup: 10 requests per 15 minutes
     lookup: { limit: 10, window: '15 m', prefix: 'rl:lookup' },
 

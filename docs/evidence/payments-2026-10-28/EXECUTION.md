@@ -177,3 +177,330 @@ Reports under /private/tmp/letbuyy-payment-system-plan-20261028/: refund409-owne
 F01 stays PARTIAL: original-account webhook authentication and deduplication, pending-report polling/reconciliation, refunds after settlement, complete capture/order convergence and live/provider/bank acceptance are still open. No release approval is requested on partial money evidence.
 
 409 final tracked-source gate passes114/114 with the existing external branch advisory only. No validator or security assertion was removed. The new exact fixture remains pinned in the full database-lane inventory, and all synthetic source/restore resources were cleaned.
+
+## 2 November — Standard Checkout test setup and platform account plan
+
+**Owner clarification today:** the supplied test account belongs to LetBuyy. Use it
+for platform subscriptions/other platform purchases and for the proposed
+LetBuyy-managed merchant-payment sandbox. Merchants choosing their own Razorpay
+account continue to use their own connection. This selects the intended sandbox
+credential ownership; it does not establish Route/Technology Partner eligibility,
+merchant-of-record terms, bank verification or live activation. A01/A02 and the
+existing no-custody/zero-transaction-rake rules remain in force.
+
+### Completed in this change
+
+The stack is pnpm/TypeScript, a Hono Cloudflare Worker and Next.js Merchant/Commerce.
+Standard Checkout is already present. Reuse its order/verification endpoints,
+modal, cancellation and payment-failure handling; no parallel `/api/create-order`
+or `/api/verify-payment` was added. No new dependency or database table is needed.
+The existing infrastructure adapter uses Workers-compatible fetch/Web Crypto.
+
+The supplied credentials are saved only in ignored local `.env` and
+`services/api-gateway/.dev.vars`, with file permissions0600 and sandbox mode.
+Wrangler reads the service-local file; the root file alone does not configure a
+Worker. Existing unrelated variables were preserved. `.gitignore` already blocks
+both paths. No private key was added to a Next app or a public environment variable;
+the backend returns the applicable public key ID with the checkout response.
+Hosted secrets/deployments and existing merchant connections were not changed.
+
+The shared Razorpay order adapter now rejects non-integer/unsafe amounts and
+amounts below100paise before provider contact, enforces INR and valid receipt
+length, checks required server credentials, sanitizes provider/authentication
+errors, and rejects malformed/mismatched provider order responses. It returns no
+order ID on errors. Intent creation now uses its configured fetch transport, so
+isolated fixtures cannot accidentally bypass their transport. Ambiguous network
+outcomes are never retried by this adapter; durable checkout owns reconciliation.
+The minimum is enforced at the adapter boundary; legacy route-specific HTTP error
+mapping is still part of the convergence work below.
+
+A real server-to-server request using the supplied test credentials created a
+100paise INR Razorpay test order (HTTP200). No capture, refund, bank operation,
+fulfilment or local paid state was performed. This proves credential/order-API
+acceptance only, not a completed browser payment or managed settlement.
+
+### Delivery sequence for the full payment system
+
+| Step | Existing owner and required work | Acceptance |
+| --- | --- | --- |
+| 1. Platform subscriptions | Gateway `/v1/payments/subscription/order` and `/verify`, proxied by Merchant `/api/subscribe` and `/api/subscribe/verify`; use the platform test account. Preserve server plan/coupon/tax quotes and durable checkout keys. | Normal authenticated plan checkout, cancel/fail/retry, captured provider proof, exactly one activation/receipt. Free plans remain provider-free. Complete supplier tax/billing profile setup before paid tests. |
+| 2. Renewal behavior | Reuse the existing billing spine and native Razorpay subscription branch for configured provider plans. One-time Standard Checkout Orders alone do not authorize recurring charges. Provider plan IDs must belong to this same test account and match the saved quote. | Initial and renewal invoice/amount/tax verification, failed-payment recovery and cancellation; no live AutoPay claim from order checkout. |
+| 3. Merchant-owned collections | Existing encrypted store credential history and hosted `/v1/checkout/:cartId/payment-intent` plus `/confirm`. Preserve site/environment/original-connection binding. | Store A cannot pay/verify/refund with Store B's account; switching/disabling settings preserves old in-flight attempts; paid state requires captured exact provider evidence. |
+| 4. LetBuyy-managed sandbox | Use this same platform test account only through the managed account model, with explicit sandbox connection and merchant/provider destination binding. Reuse existing payment/ledger adapters; do not turn an absent own-account connection into a global-key fallback. B01/B02/B06/C04/D01/D02/E01/E05 need this model completed. | Provider-supported sandbox linked-account/onboarding and source/destination tests, or explicitly unavailable provider capability. Managed readiness currently remains unavailable; this change does not activate it. Live requires separate provider/legal/settlement qualification. |
+| 5. Platform adjacencies | Reuse existing ad/AI/other first-party purchase owners and the platform account where supported. Preserve separate purpose, server price, account reference and idempotent entitlement. Frozen third-party app/theme marketplaces stay frozen. | A payment for a plan cannot grant credits or pay a merchant order; one payment grants value once. |
+| 6. Converge old paths | Inventory A04/B10: older protected `/v1/payments/razorpay/*` and public `/v1/storefront/:subdomain/payments/razorpay/*` still read global credentials. Qualify their migration/refusal before provisioning these keys into hosted runtimes. Apply400 validation errors and sanitized provider failures consistently. | No ordinary merchant sale can silently use the platform account. No signature-only legacy capture bypass. Prove old clients migrated before gated deletion. Marketplace online admission stays under its existing eligibility gate. |
+| 7. Async finance and recovery | D05/D06/D09/E04/E06/F01–F04: authenticate original-account webhooks, deduplicate browser/webhook races, recover pending provider outcomes, reconcile and refund through the original connection. Configure a separate dashboard webhook secret; the API secret is not the webhook secret. | Exactly one canonical capture journal/outbox/receipt, wrong-account denial, lost-reply recovery, exact full/partial refund and explicit transfer-versus-bank-settlement states. |
+| 8. Cross-surface qualification | C10/F08/G01–G06: Merchant web/mobile, Commerce, operations, provider sandbox and hosted staging. | Security/tenant/concurrency/rollback gates, normal browser journeys, test badges and account-scoped financial readbacks before release. Production/live remains unactivated. |
+
+Managed collections require more than a Standard Checkout modal: Razorpay's
+[Route integration guide](https://razorpay.com/docs/payments/route/integration-guide/)
+describes linked accounts/product configuration and payment-bound transfers.
+Provider capability is not inferred from a successful ordinary Orders API call.
+The [Standard Checkout guide](https://razorpay.com/docs/payments/payment-gateway/web-integration/standard/integration-steps/)
+requires server verification and distinguishes signature authenticity from captured
+payment status. Existing canonical capture controls remain required.
+
+### Reproduce and manual acceptance
+
+From the repository root, `pnpm install --offline --frozen-lockfile --ignore-scripts`
+restores installed workspace links without changing the lockfile. Start the local
+stack with `pnpm dev`; do not run `dev:setup --force` over saved credentials.
+Use an isolated synthetic database and valid local Identity/session configuration.
+Open Merchant at `http://localhost:9001`, select a store and go to
+`/<store>/access_account/checkout/select-plan`. Complete a paid-plan checkout after
+the supplier and store billing profiles are configured. Test modal dismissal,
+provider failure, success and reload/retry; verify the persisted activation and
+provider captured amount rather than relying on the modal alone.
+
+Buyer checkout uses Commerce at `http://localhost:9000` and the existing signed
+hosted checkout journey after configuring a store-owned test connection in Payment
+Settings. The requested managed sandbox is a following implementation step; its
+current unavailable state is intentional until the managed model is qualified.
+Use Razorpay test instruments only. The separate dashboard webhook secret and any
+same-account recurring plan references remain manual provider configuration.
+
+### Verification of this bounded change
+
+- Focused adapter/HMAC/credential tests:24 passed. Payment/subscription and route
+  regressions:45 passed. These are separate runs, not a full-system test count.
+- Owned Worker/PostgreSQL subscription ownership:10 passed; canonical capture
+  proof:13 passed. Provider responses in those fixtures are synthetic.
+- Infrastructure TypeScript check passed after rebuilding its referenced payments
+  declarations and restoring workspace dependency links. The earlier missing
+  declaration/link diagnostics are retained in the local logs.
+- Browser acceptance remains unverified: the existing subscription browser suite
+  failed before any application request because the owned-client launcher refuses
+  application environment files in this developer checkout. Its isolation guard
+  was preserved. Re-run from a source snapshot without environment files; this is
+  not recorded as a successful checkout or a skipped test.
+- Test credential/Orders API acceptance is the real HTTP200 observation above.
+  File permissions, ignore rules and absence of the supplied secret in tracked
+  source passed. No full provider capture/refund/settlement claim is made.
+- Final governance gate:114 validators passed, with four declared branch-ledger
+  advisories. An initial scan rejected the new synthetic credential-shaped test
+  literal; it was replaced with an explicit synthetic identifier and the full gate
+  rerun successfully. No scan exception or validator weakening was introduced.
+
+Local logs are under `/private/tmp/letbuyy-razorpay-*`; they contain synthetic
+fixtures/status only, not copied credentials. The retained browser failure is
+`/private/tmp/letbuyy-razorpay-db-logs/subscription-checkout-browser.postgres.log`;
+the database report is `/private/tmp/letbuyy-razorpay-db-results.json`.
+No merge, push, migration or hosted deployment is included.
+
+## 2 November — Managed sandbox implemented and real-provider journeys verified
+
+This follow-up supersedes the earlier *planned managed sandbox* status above for
+the bounded test-mode collection flow. The owner explicitly requested its
+implementation and end-to-end subscription/collection verification using the same
+platform test credentials. Live onboarding, merchant-of-record contracting,
+Razorpay Route transfers and bank settlement remain unqualified and unactivated.
+
+### Implemented behavior
+
+- The existing payment-config POST accepts `{ "connection": "managed_sandbox" }`
+  with the existing owner, revision and idempotency controls. It accepts no buyer
+  or merchant-supplied platform credential, destination or live-mode override.
+  The server verifies the configured platform test account before committing.
+- Migration415 extends the existing credential/configuration owner. Distinct
+  managed sandbox connections can use the same platform test key while keeping
+  separate site-bound, immutable credential histories. Merchant-owned manual-key
+  uniqueness is preserved. AES-GCM authentication includes the account model,
+  site, environment, key and credential version; relabeling a managed envelope as
+  merchant-owned fails decryption. No new table, payment authority or ledger exists.
+- Connection save, selected pointer, revision and HTTP receipt still commit
+  atomically. Saving preserves COD and disables new online payments until the
+  owner explicitly enables them. Existing attempts retain their original key
+  after a settings switch; a global-key change cannot redirect them.
+- Admission requires the explicit server-only
+  `LETBUYY_MANAGED_PAYMENTS_MODE=sandbox`, global sandbox mode, test credentials
+  and installed schema support. Production always refuses this managed simulation.
+  The UI does not advertise the option before415 is installed. Both existing
+  application capture and refund readers retain the original encrypted connection;
+  neither becomes a global shared-key fallback.
+- Merchant web exposes **Use LetBuyy test payments**, selected connection state,
+  independent online/COD controls and truthful test/no-bank-settlement wording.
+  Plan checkout displays the server-reported provider mode. Flutter has the same
+  managed mode, readiness parsing and credential-free connect command, with stable
+  retry keys and selected-store response fences. No native/device release is claimed.
+- DOWN415 succeeds only before managed history exists and after configuration
+  commands drain. After use it refuses destructive rollback; application rollback
+  must retain the expanded schema/history.
+
+### Observed verification
+
+The isolated source candidate is `/private/tmp/letbuyy-managed-keltr9m_/source`,
+based on committed identity source at `e4105581e`. Concurrent unrelated native
+Accounts/authentication work in the shared checkout was preserved and excluded
+from this payment candidate. No developer environment file was copied into it.
+
+1. **Genuine Razorpay sandbox, production-built apps and HTTPS checkout:** final
+   run `bf2f98799e35` passed. A normal Identity sign-in and Merchant settings flow
+   connected the platform test account and explicitly enabled online checkout.
+   A real Standard Checkout plan order for69900paise completed through Razorpay's
+   actual simulated bank, then `/v1/payments/subscription/verify` activated exactly
+   one subscription and one paid billing receipt. This was a one-time plan-order
+   payment, not proof of a recurring mandate or renewal.
+2. In that same real-provider run, a buyer followed the normal storefront cart
+   handoff to the production HTTPS checkout. Its100paise provider payment completed
+   through the genuine test-bank page. The ordinary confirmation endpoint returned
+   HTTP200 after server signature/capture verification. Readback proved one paid
+   order, one captured transaction, one canonical capture journal and one
+   `order.paid` event. No synthetic SDK, callback, HMAC or captured-status response
+   was injected. The owned TLS helper was used; production origin/HTTPS guards
+   were preserved. Both flows used the supplied test account; no real funds moved.
+3. **Controlled browser failure/recovery:** managed buyer checkout4 tests passed,
+   including original-credential drain after switching to an own-account pointer,
+   disabling new managed admission and rotating the wrapping key. Subscription
+   browser1 test passed through current dashboard navigation, managed connection
+   setup, create-response loss/reload, dismissal, activation-write failure/retry,
+   exactly-once activation and cancellation readback. These PSP fixtures remain
+   distinct from the genuine provider run above.
+4. **Owned Worker/PostgreSQL:** final28 tests passed across managed connections
+   (7), canonical capture proof (13) and original-connection refunds (8). They
+   cover same-key/different-store roots, model/site envelope confusion, stale
+   revisions, replay after ownership revocation, explicit activation, live/flag
+   denial, unused DOWN/up conservation and post-use rollback refusal. The existing
+   own-account configuration suite separately passed13 tests.
+5. Focused infrastructure/HMAC/readiness/envelope tests passed38 tests on the
+   final isolated candidate; the earlier broader run including route contracts
+   passed43. Gateway and Merchant TypeScript checks passed. Flutter model6 tests
+   and the changed mobile service/screen analyzer passed. No physical-device
+   or complete native-journey acceptance is inferred.
+6. The final isolated payment candidate passed all114 governance validators,
+   with four declared branch-ledger advisories. The tenant registry was regenerated
+   through its owning generator to include415. The shared checkout's generated
+   registry also includes the concurrently authored416 table; that independent
+   Accounts change is not part of this payment qualification. The manual fixture
+   now generates its synthetic sign-in password; no secret-scan exception was added.
+
+Earlier red runs are retained: the initial migration syntax defect was fixed;
+revision fixtures were corrected to real ISO timestamps; browser selectors were
+updated for the current dashboard and payment button; and genuine PSP automation
+was corrected for the offered test bank and popup navigation. The earlier local
+HTTP handoff refusal was honored by using the existing owned HTTPS fixture.
+No guard or failing financial assertion was removed to obtain acceptance.
+
+Reports: `/private/tmp/letbuyy-managed-real-https-results.json`,
+`letbuyy-managed-final-db-results.json`, `letbuyy-managed-subscription-final-results.json`
+and their sibling log directories. The final genuine-provider runner reports
+no remaining containers, networks or volumes. A safe buyer-success capture is
+`/private/tmp/letbuyy-real-managed-collection-bf2f98799e35.png`.
+The explicit-only reproducible provider fixture is
+`tests/owned-db/managed-standard-checkout.manual.ts`; it requires an authorized
+private0600 test-key file and the owned database runner, and is never auto-run.
+The31 scoped source paths and SHA256 hashes are retained in
+`/private/tmp/letbuyy-managed-qualified-source.json`; the qualified generated
+registry hash is recorded separately there. Runtime credential files are excluded.
+
+### Activation boundary
+
+Migration415 and its paired DOWN are source changes, rehearsed only on owned
+disposable databases. Apply415 to the intended non-production stack through its
+normal migration workflow before enabling the sandbox flag. Then open Merchant
+Settings → Payments → **Use LetBuyy test payments**, and explicitly enable online
+payments. The supplied credentials remain only in ignored server configuration;
+merchants choosing their own account retain their own keys. Hosted secret
+provisioning, release integration and activation remain separate work.
+
+This qualifies the managed **sandbox collection** flow and one-time plan checkout.
+It does not qualify live managed onboarding, Route account/destination setup,
+automatic renewals, webhook/report recovery, provider settlement, bank settlement
+or the full68-item programme. No hosted migration, deployment, real-money charge,
+KYC/bank submission, merge or push occurred.
+
+## 2 November — Local Merchant launch and billing setup repair
+
+The owner requested the local Merchant app and reported failed sign-in followed
+by subscription checkout HTTP503. The preserved local stack had source/schema
+and runtime-configuration mismatches; this is separate from the isolated
+candidate acceptance above.
+
+- Restarted only the identified Merchant process after its generated Next cache
+  was missing. Normal navigation reaches Accounts, but page HTTP200 alone was
+  not treated as successful authentication.
+- Password authentication succeeded; session registration failed because the
+  selected local database `letbuyy_development_20261102` stopped at414 and lacked
+  `register_identity_merchant_session_v1`. Verified local container ownership and
+  the actual REST/database target, retained a full custom-format backup, then
+  applied existing415 and416 with bounded locks/timeouts and transactional
+  execution. Backup and exact SQL hashes are retained under
+  `.tmp/local-dev/backups/merchant-login-20261102T131858Z/`. No hosted schema changed.
+- The running Worker used an ignored local configuration snapshot that lacked
+  the four saved sandbox flags. Synced only the test credential pair and those
+  flags, retained its prior private bytes and restarted only the local Gateway.
+- Tax validation correctly refused the missing platform supplier profile and
+  incomplete merchant billing details. Installed a clearly synthetic supplier
+  fixture only in the ignored, local-only Worker snapshot, guarded by local
+  environment and test-key/mode assertions. This does not establish LetBuyy's
+  real GST registration, supplier approval or invoice readiness. Snaz's identity
+  and address were not invented or overwritten; the owner was directed to
+  Business details for legal name and General settings for invoice address.
+- Corrected checkout links to those exact settings owners. Catalog estimates now
+  say tax is included, and an estimated period end does not promise automatic
+  renewal. The saved server quote explicitly identifies a one-time order or the
+  need to authorise recurring checkout. Pending request identity is preserved.
+
+Normal browser verification used the existing synthetic local demo account:
+password sign-in200, durable session readback200, managed test option available,
+and logout/revocation200. Synthetic demo-only business identity/address were
+saved through the normal settings forms, with the original profile retained in
+a private backup. The local Launch plan then returned a genuine Razorpay
+sandbox order for19900paise, a conserving inclusive-tax summary and the actual
+Razorpay contact form. No payment was submitted and no plan activation is claimed
+from this launch check. The initial test navigation race was retained separately
+and corrected without weakening the application checks.
+
+Latest report: `/private/tmp/letbuyy-local-login-smoke-20261102.json`; screenshot:
+`/private/tmp/letbuyy-local-plan-checkout-open-20261102.png`. Merchant TypeScript
+passed;34 existing billing-entry, immutable-intent and tax-source tests passed.
+This follow-up did not rerun the earlier full candidate governance gate. Recurring
+Razorpay plan provisioning/authorisation/renewal and hosted deployment remain
+unqualified and unactivated.
+
+## 2 November — Checkout banners, toasts and saved-attempt clarity
+
+The owner reported that an earlier failed Launch attempt blocked a newly selected
+Growth plan, then requested proper alert banners and toasts. Read-only inspection
+of Snaz's local billing history found zero billing rows, provider references and
+paid rows at that time. The browser's retained retry metadata was not treated as
+proof of a created provider order or a charge, and was not deleted to bypass retry
+protection.
+
+- Reused the canonical shared Banner and ToastProvider/useToast. Billing setup
+  errors have a warning banner with direct Business details and Invoice address
+  links. Service/payment/verification failures have explicit critical feedback;
+  coupon application, payment-window dismissal and verified activation receive
+  the corresponding transient feedback. No toast alone is payment authority.
+- A retained attempt is described as a **saved checkout**, explicitly distinct
+  from confirmed payment. When selected actor/store/plan/period/site type/coupon
+  differs, the primary payment action is disabled and the banner offers review of
+  the original checkout. Review navigates to the retained plan; it sends no payment
+  POST and never silently substitutes its amount for the newly selected plan.
+- Same-term recovery has one primary **Resume payment** action. Retry metadata
+  remains immutable, current-actor-bound and coordinated by the existing browser
+  lock. Initial checkout stays unavailable until saved-attempt reading succeeds.
+  The server-rendered client is keyed by actor/store/plan/period to retire stale
+  view state when reviewing the original selection.
+- Modal dismissal after a payment callback starts cannot re-enable payment while
+  verification is pending or show a misleading cancellation toast. Failed or
+  uncertain confirmation retains the original request for recovery.
+- Banner actions occupy a separate row on small screens; desktop retains inline
+  actions. No new UI library, payment authority, cancellation command or unsafe
+  discard path was introduced.
+
+Verification: Merchant TypeScript and17 billing/intent tests passed, including
+the selected-term presentation guard. Normal local demo sign-in plus controlled
+browser payment responses verified six scenario groups: mismatched-plan denial,
+review without POST, actionable tax banner/toast, input/request preservation on
+service failure, modal-close/payment-failure feedback, and dismissal during held
+verification. All attempted retries carried the original key. Desktop1440 and
+mobile390/320 were checked for overflow and readable banner body width; screenshots
+were inspected and the initially cramped mobile action layout was corrected.
+
+Browser report: `/private/tmp/letbuyy-checkout-feedback-browser-20261102.json`;
+screenshots: `/private/tmp/letbuyy-checkout-feedback-desktop.png`,
+`/private/tmp/letbuyy-checkout-feedback-390.png`,
+`/private/tmp/letbuyy-checkout-billing-banner-toast.png`. These are presentation
+fixtures, not new real-provider, recurring-renewal or financial-race acceptance.
+The demo session was revoked after verification. Local servers remain available;
+no hosted release or live-mode change occurred.

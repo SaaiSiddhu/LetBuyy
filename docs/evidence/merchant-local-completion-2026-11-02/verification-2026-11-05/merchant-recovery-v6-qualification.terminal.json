@@ -1,0 +1,21 @@
+{
+  "started_at": "2026-11-06T08:24:50.994425+00:00",
+  "supervisor_pid": 40103,
+  "source_sha256": "4cb99d2b9f97e0a9d6cf117bd6ff21264ecdc318b22efed6fe91dd6f24c93499",
+  "status": "STOPPED_AT_FAILED_STEP",
+  "steps": [
+    {
+      "step": "gateway-unit",
+      "exit_code": 0
+    },
+    {
+      "step": "root-contracts",
+      "exit_code": 1
+    }
+  ],
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "prior_scoped_passes": "merchant-recovery-v6-reused-scopes.json",
+  "active_step": "root-contracts",
+  "child_pid": 40429,
+  "source_unchanged": true
+}

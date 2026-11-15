@@ -1,0 +1,22 @@
+{
+  "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "purpose": "Complete actual native public/private upload and browser sync; observe unplanned infrastructure failure without changing source or weakening expectations.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v69.py",
+      "sha256": "e8672963f21577f3f3d9eae20a47ac761cb0ceab87b0accfc13ae17544cf2dad"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v69-local-android.postgres.test.ts",
+      "sha256": "547ccfb577872ec645ef787e57c72a4436f9800a580b03b471e957e5a8db2584"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v69.py",
+      "sha256": "12d7e6ec41cc05efc39309dfb44231075f1f8b33f266099f7ab6020eec0e276b"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v69.json",
+      "sha256": "20493552fc208ff6c5cac7b5f5565f5f8ca9c0305219af425b1dc02144f2cfed"
+    }
+  ]
+}

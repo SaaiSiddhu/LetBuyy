@@ -1,0 +1,45 @@
+{
+  "at": "2026-11-08T07:59:20.748730+00:00",
+  "global_core_source": "a7fe3f7c0040e74fe50f47ab69354d5ecfe8e67c69a151cad95ef98ff478f857",
+  "root": "/private/tmp/letbuyy-merchant-local-20261108-fb0373bcc4",
+  "result": {
+    "run_id": "e70ef7247567",
+    "product_id": "144ce1c3-7c1a-4085-b758-5777131231ee",
+    "variant_id": "a4cca901-d3bf-439e-a390-9cb40044428f",
+    "created_products": 1,
+    "create_requests": 2,
+    "original_key_equal": true,
+    "original_body_equal": true,
+    "images": 0,
+    "inherited_variant_price": 125,
+    "web_variant_price": 135,
+    "retired_uuid_retained": true,
+    "price_history_retained": true,
+    "ui": {
+      "run_id": "e70ef7247567",
+      "accepted": true
+    },
+    "whole_features_accepted": 0,
+    "scope": "Actual normal Android auth; image/description-free creation; options before price; lost201->503 reply, original replay; web135 native readback; zero-stock native retirement and web live-read removal; no provider or whole122 acceptance."
+  },
+  "chain": {
+    "backend_exit": 0,
+    "ui_exit": 0,
+    "at": "2026-11-08T07:55:25.703565+00:00"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "mapping_custody": {
+    "run_id": "e70ef7247567",
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "host9002_never_touched": true
+  },
+  "scope": "Bounded normal Android creation/recovery/web/native retirement only; whole122accepted0"
+}

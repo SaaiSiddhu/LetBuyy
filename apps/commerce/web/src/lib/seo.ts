@@ -166,7 +166,9 @@ export function buildProductJsonLd(store: StoreModel, product: ProductModel) {
         priceCurrency: product.currency || 'INR',
         price: product.price,
         priceValidUntil: priceValidUntil(),
-        availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        ...(product.stock !== null ? {
+            availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        } : {}),
         itemCondition: 'https://schema.org/NewCondition',
         seller: {
             '@type': 'Organization',

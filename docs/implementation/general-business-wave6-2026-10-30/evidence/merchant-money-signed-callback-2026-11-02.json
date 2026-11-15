@@ -1,0 +1,21 @@
+{
+  "status": "LOCAL_SYNTHETIC_GATE_PASSED",
+  "date": "2026-11-02",
+  "source": "services/api-gateway/src/__tests__/owned-db/merchant-money-approval.postgres.test.ts",
+  "runId": "ba5d57b84627",
+  "suites": 1,
+  "tests": 23,
+  "pass": 23,
+  "fail": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "observed": "A merchant credential-bound Razorpay refund event is denied on the legacy unbound endpoint, accepted through the signed merchant-specific callback, and read back through the idempotent manual refund result.",
+  "limits": "Synthetic provider webhook secret and owned disposable PostgreSQL/PostgREST only; no FUCOMES payment, provider callback, statement, or hosted settlement."
+}

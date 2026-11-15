@@ -1,0 +1,50 @@
+{
+  "at": "2026-11-07T05:47:29.586331+00:00",
+  "source": "merchant-catalog-media-source-v73",
+  "sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820",
+  "web_phase_passes": [
+    660,
+    818,
+    295,
+    13
+  ],
+  "web_phase_failures": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "web_phase_skips": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "event_errors": 1,
+  "root_contracts": 400,
+  "web_types_exit": 0,
+  "flutter_reused_from72": 1688,
+  "analysis_reused_from72": 0,
+  "mobile_input_reuse": "catalog-media-v73-source-delta.json",
+  "ios_compile_exit": 0,
+  "notes": "Counts overlap, never sum; source72 Android101 runtime is for byte-identical mobile/Dart inputs.",
+  "web_event_errors": 0,
+  "web_react_act_warnings": 1,
+  "react_warning_context": "Existing product-status late collection reads/replies test, test passes; warning is not an uncaught/error event. Preserved verbatim in full log; focused unchanged-source check follows.",
+  "react_warning_focused_readback": "catalog-media-v73-status-warning-check.terminal.json;1PASS no warning;original full-run1warning preserved, no suppression/source change",
+  "governance": {
+    "pass": 114,
+    "not_applicable": 1,
+    "fail": 0,
+    "custody": "merchant-catalog-media-v73-governance-v2.terminal.json",
+    "source_index_bytes_and_entries_unchanged": true,
+    "v1_caveat": "All validators passed, but supervisor exit99 for raw original-index byte mismatch during concurrent build. v1 remains unaccepted custody. No index restoration or source change; no exact cause asserted."
+  },
+  "owned_media_database": {
+    "run_id": "611e8b5725b2",
+    "pass": 12,
+    "fail": 0,
+    "skip": 0,
+    "report": "catalog-media-v73-owned-db.terminal.json"
+  }
+}

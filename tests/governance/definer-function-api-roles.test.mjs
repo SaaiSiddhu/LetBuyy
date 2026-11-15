@@ -50,6 +50,38 @@ test('every current post-256 definer is closed by name after its latest definiti
         'A forward correction may close immutable history, but every current definer needs named closure after its latest definition; a later grant reopens the failure. Actual signatures/roles are also proved in the full-chain owned lane.');
 });
 
+test('reviewed migration 411 function-body rewrites cannot hide a changed dynamic privilege statement', () => {
+    const earlier = readFileSync(join(migrationsDir, '257_buyer_email_challenges.sql'), 'utf8');
+    const original = readFileSync(join(migrationsDir, '411_authoritative_checkout_gst.sql'), 'utf8');
+    const migrations = sql411 => [
+        { number: 257, name: '257_buyer_email_challenges.sql', sql: earlier },
+        { number: 411, name: '411_authoritative_checkout_gst.sql', sql: sql411 },
+    ];
+    assert.deepEqual(currentDefinerClosureOffenders(migrations(original)), []);
+    const changed = original.replace('  EXECUTE definition;',
+        "  EXECUTE 'GRANT EXECUTE ON FUNCTION public.start_buyer_email_challenge(uuid,text) TO anon';");
+    assert.notEqual(changed, original, 'the dynamic statement must be changed in the test fixture');
+    assert.ok(currentDefinerClosureOffenders(migrations(changed)).includes(
+        '257_buyer_email_challenges.sql: public.start_buyer_email_challenge'));
+});
+
+test('reviewed migration 412 invoice rewrites cannot hide a changed dynamic privilege statement', () => {
+    const earlier = readFileSync(join(migrationsDir, '257_buyer_email_challenges.sql'), 'utf8');
+    const original = readFileSync(join(migrationsDir, '412_invoice_checkout_fact_parity.sql'), 'utf8');
+    const migrations = sql412 => [
+        { number: 257, name: '257_buyer_email_challenges.sql', sql: earlier },
+        { number: 412, name: '412_invoice_checkout_fact_parity.sql', sql: sql412 },
+    ];
+    assert.ok(!currentDefinerClosureOffenders(migrations(original)).includes(
+        '257_buyer_email_challenges.sql: public.start_buyer_email_challenge'),
+    'the reviewed rewrite must not reopen unrelated earlier functions');
+    const changed = original.replace('  EXECUTE d;',
+        "  EXECUTE 'GRANT EXECUTE ON FUNCTION public.start_buyer_email_challenge(uuid,text) TO anon';");
+    assert.notEqual(changed, original, 'the dynamic statement must be changed in the test fixture');
+    assert.ok(currentDefinerClosureOffenders(migrations(changed)).includes(
+        '257_buyer_email_challenges.sql: public.start_buyer_email_challenge'));
+});
+
 const mint=`CREATE OR REPLACE FUNCTION public.mint_things(p_site uuid) RETURNS void
  LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN NULL; END; $$;`;
 const close='REVOKE ALL ON FUNCTION public.mint_things(uuid) FROM PUBLIC, anon, authenticated;';
@@ -216,4 +248,32 @@ test('fixed invoker body formatting cannot interpolate SQL or invoke an unknown 
     for(const mutant of [constructor.replace('%L','%s'),constructor.replace('SECURITY INVOKER','SECURITY DEFINER'),constructor.replace('AS %L','AS %L; GRANT EXECUTE ON FUNCTION public.mint_things(uuid) TO anon'),constructor.replace('binding::text','unsafe_sql()')]) {
         assert.notDeepEqual(currentDefinerClosureOffenders([closed,migration(258,mutant)]),[]);
     }
+});
+
+
+test('reviewed warehouse ACL tightening never admits an altered dynamic privilege body',()=>{
+ const original=readFileSync(join(migrationsDir,'415_atomic_warehouse_commands.sql'),'utf8');
+ const body=original.match(/DO \$effects\$[\s\S]*?\$effects\$;/)[0];
+ const base=migration(257,mint+close);
+ const check=sql=>currentDefinerClosureOffenders([base,migration(415,sql)]);
+ assert.deepEqual(check(body),[]);
+ for(const statement of [
+  "EXECUTE 'GRANT EXECUTE ON FUNCTION public.mint_things(uuid) TO anon';",
+  "EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated','public.mint_things(uuid)');"
+ ]){
+  const changed=body.replace('BEGIN',()=>`BEGIN ${statement}`);
+  assert.notEqual(changed,body);
+  assert.ok(check(changed).includes('257_synthetic.sql: public.mint_things'));
+ }
+});
+
+
+test('public composite qualification cannot hide a reopening grant or invalidate unrelated closed functions', () => {
+    const composite = `CREATE FUNCTION public.mint_product(p public.products) RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$ BEGIN NULL; END $$;
+      REVOKE ALL ON FUNCTION public.mint_product(products) FROM PUBLIC,anon,authenticated;`;
+    const closed = migration(257, mint + close + composite);
+    assert.deepEqual(currentDefinerClosureOffenders([closed]), []);
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,'GRANT EXECUTE ON FUNCTION public.mint_product(public.products) TO service_role;')]), []);
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,'GRANT EXECUTE ON FUNCTION public.mint_product(public.products) TO anon;')]), ['257_synthetic.sql: public.mint_product']);
+    assert.ok(currentDefinerClosureOffenders([closed,migration(258,'GRANT EXECUTE ON FUNCTION public.mint_product(unreviewed.products) TO anon;')]).includes('257_synthetic.sql: public.mint_things'));
 });

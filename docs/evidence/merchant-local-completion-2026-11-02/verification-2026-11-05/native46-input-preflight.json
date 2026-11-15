@@ -1,0 +1,7 @@
+{
+  "generated_password_cases": 100,
+  "all_inside_existing_literal_adb_serializer_alphabet": true,
+  "native_serializer_unchanged": true,
+  "reason": "v45 generated a punctuation suffix outside the existing secure literal-input allowlist and failed before password input. Fresh random UUID plus generated alphanumeric character-class suffix preserves input safety without widening allowed characters.",
+  "scope": "Synthetic fixture data only;not auth/provider/password policy proof."
+}

@@ -1,0 +1,9 @@
+{
+  "serial": "emulator-5580",
+  "api_level": "35",
+  "android_release": "15",
+  "camera_permission": "android.permission.CAMERA: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|ONE_TIME]",
+  "forward_mappings": "",
+  "reverse_mappings": "",
+  "app_running": false
+}

@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-06T16:42:02.877042+00:00",
+  "status": "INVESTIGATE",
+  "results": [
+    {
+      "action": "Cancel",
+      "exit_code": 1,
+      "production_file_matches_exact39": true,
+      "disposed_controller_error": true,
+      "dependents_assertion": true,
+      "semantics_handle_leak": false,
+      "log": "media-metadata-source39-cancel-clean-fixture-before.log"
+    },
+    {
+      "action": "Save",
+      "exit_code": 0,
+      "production_file_matches_exact39": true,
+      "disposed_controller_error": false,
+      "dependents_assertion": false,
+      "semantics_handle_leak": false,
+      "log": "media-metadata-source39-save-clean-fixture-before.log"
+    }
+  ],
+  "fixed_source_restored": true,
+  "fixed_source_sha256": "329b63200d37a8ce85f93ae5fce024fc535a9c510659e46454454a9e780338f1",
+  "purpose": "Same corrected regression isolated per action against the exact source39 production file; source42 implementation restored in finally. No hosted/provider/data change."
+}

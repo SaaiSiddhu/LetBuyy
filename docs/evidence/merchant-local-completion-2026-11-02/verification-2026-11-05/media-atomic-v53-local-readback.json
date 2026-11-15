@@ -1,0 +1,70 @@
+{
+  "at": "2026-11-06T18:42:00.990623+00:00",
+  "status": "SOURCE53_LOCAL_BACKEND_GATES_PASS;NATIVE_INTEGRATION_PENDING;FULL122_OPEN",
+  "source_sha256": "8d91014727d143e0fce8e1ee5e3dc578c1d4c89f5cafc0eaaca0e50c14e6286a",
+  "source_inputs": 8484,
+  "pipeline": "media-atomic-v53-pipeline.terminal.json",
+  "build_typechecks": [
+    "shared-types",
+    "cms-core",
+    "api-gateway",
+    "api-client",
+    "merchant-web"
+  ],
+  "gateway_unit": {
+    "pass": 2087,
+    "fail": 0,
+    "skip": 0
+  },
+  "root_contracts": {
+    "pass": 408,
+    "fail": 0,
+    "skip": 0
+  },
+  "shared_tests": {
+    "pass": 23,
+    "fail": 0
+  },
+  "reviewed_lane": {
+    "pass": 16,
+    "fail": 0
+  },
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "NOT_APPLICABLE": 1,
+    "source_index_preserved": true
+  },
+  "new_actual_workerd_media12": "media-atomic-v53-owned-readback.json",
+  "unchanged_runtime_reuse": {
+    "source50": "a047f1418326f4923e995a632a886e2a38710450db79216ba3240e92736a10d4",
+    "only_changed_inputs": [
+      "scripts/governance/test-suite-catalog.mjs",
+      "services/api-gateway/src/__tests__/observability-analytics-media.test.ts",
+      "services/api-gateway/src/__tests__/owned-db/media-commands.postgres.test.ts",
+      "services/api-gateway/src/__tests__/tenant-isolation.test.ts",
+      "tests/governance/gateway-db-lane.test.mjs",
+      "tests/owned-db/merchant-media-commands-workerd.postgres.test.ts"
+    ],
+    "prior_actual_owned45": "media-atomic-v50-owned-readback.json",
+    "prior_tenant_redteam": "media-atomic-v50-tenant-readback.json",
+    "boundary": "Only test placement/structural tests/lane registration changed; all application/runtime/shared/SDK/SQL/helper inputs equal50. New root suite12reran53withautomaticclassification."
+  },
+  "mobile_input_reuse": {
+    "changed_inputs_since_native74_source44": [],
+    "full_flutter_pass": 1656,
+    "flutter_analysis_issues": 0,
+    "boundary": "Exact Flutter/Dart bytes retained from accepted43/44. This does not prove interaction with the newly repaired backend; next native77must run."
+  },
+  "native": "77preparedfor53,notstarted;74lastacceptedonly44;75and76preparednotrun",
+  "private_kyc_regression": "Running actual owned53cleanup/crash suite,session95840",
+  "programme": "119applicableopen;120/121excluded;122paused;51frozen;unique denominator unresolved",
+  "excluded_claims": [
+    "hosted/provider KYC readiness",
+    "physical device",
+    "current iOS runtime",
+    "signed release",
+    "production activation",
+    "all122feature certification"
+  ]
+}

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../theme/app_theme_colors.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../shared/accessible_tap_region.dart';
 
-/// Quick Actions Grid for Dashboard
-/// Modern bento-style quick action buttons
+/// Existing dashboard destinations, presented as native operational rows.
 class QuickActionsGrid extends StatelessWidget {
   final VoidCallback? onEditorTap;
   final VoidCallback? onProductsTap;
@@ -24,259 +23,133 @@ class QuickActionsGrid extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Semantics(
+        header: true,
+        child: Text(
           'Quick Actions',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: colors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
-        const SizedBox(height: 14),
-        Container(
-          decoration: colors.glassCard,
-          child: Column(
-            children: [
-              _QuickActionItem(
-                icon: Icons.palette_rounded,
-                title: 'Customize Design',
-                subtitle: 'Edit sections & layout',
-                color: colors.accent,
-                onTap: onEditorTap,
-              ),
-              _Divider(),
-              _QuickActionItem(
-                icon: Icons.inventory_2_rounded,
-                title: 'Manage Products',
-                subtitle: '$productCount products',
-                color: colors.accentBlue,
-                onTap: onProductsTap,
-              ),
-              _Divider(),
-              _QuickActionItem(
-                icon: Icons.receipt_long_rounded,
-                title: 'Manage Orders',
-                subtitle: 'View & update orders',
-                color: colors.warning,
-                onTap: onOrdersTap,
-              ),
-              _Divider(),
-              _QuickActionItem(
-                icon: Icons.bar_chart_rounded,
-                title: 'View Analytics',
-                subtitle: 'Performance insights',
-                color: colors.success,
-                onTap: onAnalyticsTap,
-              ),
-              _Divider(),
-              _QuickActionItem(
-                icon: Icons.settings_rounded,
-                title: 'Store Settings',
-                subtitle: 'Domain, SEO, billing',
-                color: colors.textTertiary,
-                onTap: onSettingsTap,
-                isLast: true,
-              ),
-            ],
-          ),
+      ),
+      const SizedBox(height: LetbuyySpacingTokens.space12),
+      Card(
+        margin: EdgeInsets.zero,
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            _QuickActionItem(
+              icon: Icons.palette_rounded,
+              title: 'Customize Design',
+              subtitle: 'Edit sections & layout',
+              onTap: onEditorTap,
+            ),
+            const Divider(height: 1),
+            _QuickActionItem(
+              icon: Icons.inventory_2_rounded,
+              title: 'Manage Products',
+              subtitle: '$productCount products',
+              onTap: onProductsTap,
+            ),
+            const Divider(height: 1),
+            _QuickActionItem(
+              icon: Icons.receipt_long_rounded,
+              title: 'Manage Orders',
+              subtitle: 'View & update orders',
+              onTap: onOrdersTap,
+            ),
+            const Divider(height: 1),
+            _QuickActionItem(
+              icon: Icons.bar_chart_rounded,
+              title: 'View Analytics',
+              subtitle: 'Performance insights',
+              onTap: onAnalyticsTap,
+            ),
+            const Divider(height: 1),
+            _QuickActionItem(
+              icon: Icons.settings_rounded,
+              title: 'Store Settings',
+              subtitle: 'Domain, SEO, billing',
+              onTap: onSettingsTap,
+            ),
+          ],
         ),
-      ],
-    );
-  }
-}
-
-class _Divider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return Container(height: 1, color: colors.glassMediumBorder);
-  }
+      ),
+    ],
+  );
 }
 
 class _QuickActionItem extends StatefulWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color color;
-  final VoidCallback? onTap;
-  final bool isLast;
-
   const _QuickActionItem({
     required this.icon,
     required this.title,
     required this.subtitle,
-    required this.color,
     this.onTap,
-    this.isLast = false,
   });
-
+  final IconData icon;
+  final String title, subtitle;
+  final VoidCallback? onTap;
   @override
   State<_QuickActionItem> createState() => _QuickActionItemState();
 }
 
 class _QuickActionItemState extends State<_QuickActionItem> {
-  bool _isPressed = false;
+  final _focus = FocusNode(debugLabel: 'Dashboard quick action');
+  @override
+  void dispose() {
+    _focus.dispose();
+    super.dispose();
+  }
+
+  void _activate() {
+    if (widget.onTap == null) return;
+    HapticFeedback.selectionClick();
+    widget.onTap!();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
+    final theme = Theme.of(context);
     return AccessibleTapRegion(
+      focusNode: _focus,
       label: widget.title,
       hint: widget.subtitle,
-      onTap: widget.onTap,
+      onTap: widget.onTap == null ? null : _activate,
       excludeChildSemantics: true,
       child: InkWell(
+        focusNode: _focus,
         excludeFromSemantics: true,
-        onTap: widget.onTap == null
-            ? null
-            : () {
-                HapticFeedback.selectionClick();
-                widget.onTap?.call();
-              },
-        onHighlightChanged: (highlighted) {
-          if (_isPressed != highlighted) {
-            setState(() => _isPressed = highlighted);
-          }
-        },
-        borderRadius: BorderRadius.vertical(
-          bottom: widget.isLast ? const Radius.circular(20) : Radius.zero,
-        ),
-        child: AnimatedContainer(
-          duration: colors.durationFast,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: _isPressed ? colors.glassHeavy : Colors.transparent,
-            borderRadius: BorderRadius.vertical(
-              top: widget.isLast ? Radius.zero : Radius.zero,
-              bottom: widget.isLast ? const Radius.circular(20) : Radius.zero,
-            ),
-          ),
-          child: Row(
-            children: [
-              // Icon with glow
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: widget.color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(widget.icon, color: widget.color, size: 20),
-              ),
-              const SizedBox(width: 14),
-              // Text
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.title,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      widget.subtitle,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Chevron
-              Icon(
-                Icons.chevron_right_rounded,
-                color: colors.textTertiary,
-                size: 20,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Compact quick action buttons for horizontal scroll
-class QuickActionPill extends StatefulWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback? onTap;
-
-  const QuickActionPill({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.color,
-    this.onTap,
-  });
-
-  @override
-  State<QuickActionPill> createState() => _QuickActionPillState();
-}
-
-class _QuickActionPillState extends State<QuickActionPill> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return AccessibleTapRegion(
-      label: widget.label,
-      onTap: widget.onTap,
-      excludeChildSemantics: true,
-      child: InkWell(
-        excludeFromSemantics: true,
-        onTap: widget.onTap == null
-            ? null
-            : () {
-                HapticFeedback.lightImpact();
-                widget.onTap?.call();
-              },
-        onHighlightChanged: (highlighted) {
-          if (_isPressed != highlighted) {
-            setState(() => _isPressed = highlighted);
-          }
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: AnimatedScale(
-          scale: _isPressed ? 0.95 : 1.0,
-          duration: colors.durationFast,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: colors.glassMedium,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.glassMediumBorder),
-            ),
+        onTap: widget.onTap == null ? null : _activate,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: widget.color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
+                ExcludeSemantics(
+                  child: Icon(
+                    widget.icon,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  child: Icon(widget.icon, color: widget.color, size: 16),
                 ),
-                const SizedBox(width: 10),
-                Text(
-                  widget.label,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
+                const SizedBox(width: LetbuyySpacingTokens.space12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.title, style: theme.textTheme.titleMedium),
+                      const SizedBox(height: LetbuyySpacingTokens.space8),
+                      Text(widget.subtitle, style: theme.textTheme.bodyMedium),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: LetbuyySpacingTokens.space8),
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.chevron_right_rounded,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -286,4 +159,52 @@ class _QuickActionPillState extends State<QuickActionPill> {
       ),
     );
   }
+}
+
+/// Compatibility surface for existing compact action callers. Native feedback
+/// replaces the old press-scale controller, including under reduced motion.
+class QuickActionPill extends StatefulWidget {
+  const QuickActionPill({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.color,
+    this.onTap,
+  });
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback? onTap;
+  @override
+  State<QuickActionPill> createState() => _QuickActionPillState();
+}
+
+class _QuickActionPillState extends State<QuickActionPill> {
+  final _focus = FocusNode(debugLabel: 'Dashboard compact action');
+  @override
+  void dispose() {
+    _focus.dispose();
+    super.dispose();
+  }
+
+  void _activate() {
+    if (widget.onTap == null) return;
+    HapticFeedback.lightImpact();
+    widget.onTap!();
+  }
+
+  @override
+  Widget build(BuildContext context) => AccessibleTapRegion(
+    focusNode: _focus,
+    label: widget.label,
+    onTap: widget.onTap == null ? null : _activate,
+    excludeChildSemantics: true,
+    child: OutlinedButton.icon(
+      focusNode: _focus,
+      onPressed: widget.onTap == null ? null : _activate,
+      style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
+      icon: Icon(widget.icon),
+      label: Text(widget.label),
+    ),
+  );
 }

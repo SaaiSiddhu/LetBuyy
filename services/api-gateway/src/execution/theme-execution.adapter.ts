@@ -290,12 +290,17 @@ export class ThemeExecutionAdapter {
         this.schemaRegistry = new SchemaRegistryExecutionAdapter(db);
     }
 
-    private async validateTemplateConfig(templateConfig: DbRecord, theme: ThemeRecord, resolvedRuntime?: ThemeRuntimeSchema): Promise<ThemeRuntimeSchema> {
+    private async validateTemplateConfig(templateConfig: DbRecord, theme: ThemeRecord, resolvedRuntime?: ThemeRuntimeSchema, trustedPreviousConfig?: DbRecord, selectedTemplateKey?: string): Promise<ThemeRuntimeSchema> {
         const runtime = resolvedRuntime ?? await this.schemaRegistry.resolveThemeRuntime(theme);
         const issues = collectThemeTemplateValidationIssues({
             templateConfig,
             runtime,
             themeSlug: theme.slug,
+            // The fallback is the DB-owned catalog default. Save passes the exact
+            // owner-scoped previous draft/store document below. Never use the
+            // candidate's embedded bundle or section IDs as legacy authority.
+            trustedPreviousConfig: trustedPreviousConfig ?? resolveRenderableThemeTemplateConfig({}, theme),
+            selectedTemplateKey,
         });
 
         if (issues.length > 0) {
@@ -1040,7 +1045,10 @@ export class ThemeExecutionAdapter {
         const state = await this.readOwnedDraft(slug, input.store_id, userId, templateKey);
         const theme = await this.getTheme(slug);
         const config = this.applySectionSchemaMigrations(mergeThemeIdentity(input.template_config, theme));
-        const runtime = state.version === input.base_version ? await this.validateTemplateConfig(config, theme) : null;
+        const priorConfig = state.has_draft
+            ? asRecord(state.template_config)
+            : resolveRenderableThemeTemplateConfig(asRecord(asRecord(state.store).template_config), theme);
+        const runtime = state.version === input.base_version ? await this.validateTemplateConfig(config, theme, undefined, priorConfig, input.template_key) : null;
         return await this.draftRpc('mutate_owned_theme_draft_v1', {
             p_actor_id: userId, p_store_id: input.store_id, p_theme_slug: theme.slug,
             p_template_key: templateKey, p_base_version: input.base_version, p_key: input.idempotency_key,
@@ -1084,7 +1092,7 @@ export class ThemeExecutionAdapter {
         // caller-supplied document can only match this saved server document.
         const templateConfig = asRecord(state.template_config);
         const runtime = state.has_draft && state.version === input.base_version
-            ? await this.validateTemplateConfig(templateConfig, theme) : null;
+            ? await this.validateTemplateConfig(templateConfig, theme, undefined, templateConfig) : null;
         const artifacts = runtime ? this.buildReleaseArtifacts({
             storeId: input.store_id, themeId: theme.slug, releaseConfig: templateConfig, runtime,
             themeInstanceId: typeof state.theme_instance_id === 'string' ? state.theme_instance_id : null,

@@ -85,5 +85,13 @@ test('actual Liquid depth/key scrub retains option labels and the real picker re
         assert.equal(writes[0].lines[0].properties['भाषा'], 'हिन्दी');
         choose('Pack size', '500 g'); assert.equal(button.disabled, true);
         assert.match(picker.textContent!, /currently unavailable/);
+        const section = picker.closest<HTMLElement>('[data-section-id]')!;
+        section.dataset.inventoryKnown = 'false';
+        choose('Pack size', '250 g');
+        assert.equal(button.disabled, true, 'positive variant cache cannot override unknown authoritative inventory');
+        assert.match(picker.textContent!, /Stock unavailable/);
+        button.disabled = false; button.click();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        assert.equal(writes.length, 1, 'stale enabled controls cannot submit an unknown-stock variant');
     } finally { globalThis.fetch = originalFetch; window.localStorage.clear(); document.body.replaceChildren(); dom.window.close(); }
 });

@@ -47,7 +47,7 @@ test('fresh Pantry defaults pass matching manifest validation before normalizati
     // Registry's Liquid template projection, before editor normalization.
     const config = { themeId: bundle.package.slug, schema_version: bundle.schema_version, engineVersion: bundle.renderer.renderer_version,
       rendererEngine: 'liquid', liquidBundle: bundle, sections: {}, templates: bundle.templates, themeSettings: bundle.config.settings_data.current };
-    const issues = (templateConfig: Record<string, unknown>) => collectThemeTemplateValidationIssues({ templateConfig, runtime, themeSlug: bundle.package.slug });
+    const issues = (templateConfig: Record<string, unknown>) => collectThemeTemplateValidationIssues({ templateConfig, runtime, trustedPreviousConfig: { templates: bundle.templates }, themeSlug: bundle.package.slug });
     assert.deepEqual(issues(config), []);
     const wire = JSON.parse(JSON.stringify(config)) as typeof config;
     assert.deepEqual(issues(wire), []);

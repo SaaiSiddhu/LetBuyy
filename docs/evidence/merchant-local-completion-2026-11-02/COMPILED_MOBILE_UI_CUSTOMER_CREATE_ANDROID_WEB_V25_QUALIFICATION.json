@@ -1,0 +1,105 @@
+{
+  "at": "2026-11-04T23:11:26.762736+00:00",
+  "status": "BOUNDED_LOCAL_ANDROID_WEB_JOURNEY_PASS_WITH_REVIEW_FINDINGS",
+  "run_id": "10d16982db2b",
+  "source_sha256": "676be4ba5ff701263b5835ae818ab215a4b926b06418aa12b0ab4157eeb15c65",
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "broad_core_inputs": 7473,
+  "native_inputs": 4793,
+  "all_native_inputs_match_broad_core": true,
+  "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v25/qualified-artifact/merchant-local-debug.apk",
+  "apk_sha256": "6b6200985c3d752da7edc74f6491be8c1fd67fd580fdc5cdca2746ddb0212546",
+  "original_apk_bytes_retained_and_installed_readback": true,
+  "results": {
+    "compound_pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "cancel": 0,
+    "suite_seconds": 432.6,
+    "wall_seconds": 434.2
+  },
+  "runtime": "Normal main debug APK; actual local Hono Gateway/BFF and owned PostgreSQL/PostgREST; production-mode local Accounts/Merchant; normal synthetic browser PKCE sign-in/automatic return. Not hosted/Workerd.",
+  "verified": [
+    "Existing manual collection committed-reply-loss original-key retry; normal web update and fresh native ordered readback.",
+    "One isolated canonical COD prerequisite order seeded once via existing RPC; native list reads canonical item_count1/total199INR and Detail reads quantity1/unitprice199/linetotal199 with missing command references explicitly unavailable.",
+    "Existing provider-mode endpoint GET200 shows SANDBOX and unavailable booking; Buy label+ship disabled, manual fulfillment usable.",
+    "Manual fulfillment actual carrier keyboard and cancel; Return required-ID validation, ID/reason actual keyboards, dirty Back keep and discard; Customer full-page name/email actual keyboards, dirty Back keep and discard.",
+    "No commerce/customer/shipping command was submitted through native UI; API call trace independently checked. Canonical order/items/stock exact before/after readback unchanged. Fixture creation is not buyer checkout acceptance."
+  ],
+  "independent_images": [
+    {
+      "path": "screenshots/ui-native25-native-detail-order-list.png",
+      "sha256": "b0751a9a2f71dc34949da9b88630a2238836718370a09a0dbab9538b56da47c1",
+      "independent_review": "Observed actual source25-frame content; see retained findings and scope."
+    },
+    {
+      "path": "screenshots/ui-native25-native-order-canonical-item-readback.png",
+      "sha256": "9eb894c20c6a76fd7d4dec51c0ebe1f42bab63027d66c9fbdd399f2c3902e645",
+      "independent_review": "Observed actual source25-frame content; see retained findings and scope."
+    },
+    {
+      "path": "screenshots/ui-native25-native-fulfillment-provider-unavailable.png",
+      "sha256": "a0c3936ea8f0e588e7b4964a2ea3b21364cabc65956e54bcd18c4a08eedc201a",
+      "independent_review": "Observed actual source25-frame content; see retained findings and scope."
+    },
+    {
+      "path": "screenshots/ui-native25-native-fulfillment-input-0-keyboard.png",
+      "sha256": "4800b3e96c1dbb978aaee4eb9cd155163a5acb85a93850a7c31113a3687e1bdb",
+      "independent_review": "Observed actual source25-frame content; see retained findings and scope."
+    },
+    {
+      "path": "screenshots/ui-native25-native-return-required-order.png",
+      "sha256": "08da214534ea188f49118e9b7d90e167bdca585e3417754e66f0948aa0bb2dbb",
+      "independent_review": "Observed actual source25-frame content; see retained findings and scope."
+    },
+    {
+      "path": "screenshots/ui-native25-native-return-input-1-keyboard.png",
+      "sha256": "fcdc7467318887034869273763100781ff0f0f0f1f5506e57638e399c8b436d2",
+      "independent_review": "Observed actual source25-frame content; see retained findings and scope."
+    },
+    {
+      "path": "screenshots/ui-native25-native-return-dirty-back-kept.png",
+      "sha256": "252ff79633d5c31d7df7c84b86d38c3f8225a15f469f13640d0c555de3262b87",
+      "independent_review": "Observed actual source25-frame content; see retained findings and scope."
+    },
+    {
+      "path": "screenshots/ui-native25-native-customer-input-1-keyboard.png",
+      "sha256": "f9c997a1364c6ad673c5422fa45548c820b53a1b8a53418a998aaebb0fb0c013",
+      "independent_review": "Observed actual source25-frame content; see retained findings and scope."
+    },
+    {
+      "path": "screenshots/ui-native25-native-customer-create-dirty-back-kept.png",
+      "sha256": "97c9c89c5c5c94ad66b6156300d8f09053277536cbc1301cbf3affb5c7553e70",
+      "independent_review": "Observed actual source25-frame content; see retained findings and scope."
+    }
+  ],
+  "cleanup": {
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "reverse": [],
+    "forward_baseline_preserved": true,
+    "forward_rows": [
+      [
+        "emulator-5580",
+        "tcp:52367",
+        "localabstract:chrome_devtools_remote"
+      ]
+    ],
+    "caffeinate_retired": true,
+    "host9002": "Never bound/probed/stopped; scoped emulator reverse only, now removed."
+  },
+  "review_findings": [
+    "Return required-ID error is duplicated and remains after valid ID entry; current behavior still submits a valid value if requested, but feedback correction remains pending. No Return command submitted.",
+    "Order pending_cod raw display/loaded-page counter/selector coverage remains to reconcile; original status helpers unchanged.",
+    "Order list uses UTC clock text while Detail labels device time; reconcile date presentation/filter semantics explicitly.",
+    "Current API normalizer omits command line IDs; line edit/item refund acceptance remains a backend/contract dependency."
+  ],
+  "not_accepted": [
+    "Order/return/refund/shipping/customer create command persistence, effect-once, provider booking/capture or customer web sync.",
+    "Native phone/tags/marketing field interactions, all alternate states/roles/locales or screen-reader spoken acceptance.",
+    "iOS runtime, release signing, physical-device performance, hosted or full119-feature/whole-app/production acceptance."
+  ]
+}

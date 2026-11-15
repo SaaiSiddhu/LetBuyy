@@ -1,0 +1,239 @@
+{
+  "kind": "READ_ONLY_SOURCE_INVENTORY_NOT_RUNTIME_ACCEPTANCE",
+  "updatedAt": "2026-11-04T01:40:31.819385+00:00",
+  "sourceSnapshot": "inventory-setter-guard-v9",
+  "rows": [
+    {
+      "path": "tests/owned-db/core-presets-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-accounts-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-category-commands-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-collection-membership-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-entitlement-authority-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-free-subscription-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-inventory-adjustment-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-loyalty-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-product-edit-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-product-status-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-public-signup-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-push-preferences.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-smart-collection-preview-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/merchant-store-profile-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/native-core-storefront-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/private-reel-intake.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/published-storefront-recovery-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/reel-review-revisions.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "tests/owned-db/storefront-buyer-support-recovery-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/buyer-privacy-export-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/identity-buyer-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/identity-buyer-session.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/local-turnstile-provider.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-mfa-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payment-setup-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payout-statements-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-staff-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-staff-invitation-browser.postgres.test.ts",
+      "localProviderFixturePresent": true,
+      "providerProfilePassed": true,
+      "browserNetworkAttachment": true,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-client-runtime.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-draft-browser.postgres.test.ts",
+      "localProviderFixturePresent": false,
+      "providerProfilePassed": false,
+      "browserNetworkAttachment": false,
+      "classification": "SOURCE_INVENTORY_ONLY; inspect actual startup/signin/network before a full browser cohort"
+    }
+  ],
+  "required": "Do not launch unsealed older browser/identity fixtures in this local-only assignment. Inspect and reuse the single owned local provider before normal sign-in; no new bypass or real provider transport."
+}

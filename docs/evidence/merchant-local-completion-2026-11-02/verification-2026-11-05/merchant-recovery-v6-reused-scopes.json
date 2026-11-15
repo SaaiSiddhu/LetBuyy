@@ -1,0 +1,19 @@
+{
+  "from_source": "f831b5d9bcb222612c5e79a5e11b79a1f7702d0aec5a537241a818353b2b255d",
+  "to_source": "4cb99d2b9f97e0a9d6cf117bd6ff21264ecdc318b22efed6fe91dd6f24c93499",
+  "changed": [
+    "services/api-gateway/src/__tests__/analytics-comparison.test.ts",
+    "services/api-gateway/src/__tests__/analytics-live.test.ts",
+    "services/api-gateway/src/__tests__/mobile-export.test.ts",
+    "services/api-gateway/src/__tests__/storefront-session-analytics.test.ts"
+  ],
+  "result": "ONLY_FOUR_RETARGETED_GATEWAY_SOURCE_CHECKS;ALL_OTHER_INPUTS_EXACTLY_EQUAL",
+  "prior_passes": [
+    "shared-types",
+    "gateway-types",
+    "ts-sdk-types",
+    "shared-tests"
+  ],
+  "prior_terminal": "merchant-recovery-v5-qualification.terminal.json",
+  "gateway_unit": "RERUN_ALL_ON_CURRENT_SOURCE"
+}

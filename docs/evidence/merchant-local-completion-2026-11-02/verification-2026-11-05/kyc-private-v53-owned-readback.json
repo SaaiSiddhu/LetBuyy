@@ -1,0 +1,15 @@
+{
+  "runId": "114e0b84016b",
+  "tests": 5,
+  "assertionsPassed": 5,
+  "assertionsFailed": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

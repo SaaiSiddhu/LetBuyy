@@ -18,8 +18,8 @@ const TRUST_ITEMS = [
 ]
 
 const METRICS = [
-  { val: '50+',  label: 'AI capabilities' },
-  { val: '24/7', label: 'Monitoring' },
+  { val: 'Own PSP', label: 'Online payments' },
+  { val: 'India', label: 'Launch focus' },
   { val: '100%', label: 'Data ownership' },
   { val: '0%',   label: 'Commission' },
 ]
@@ -51,8 +51,8 @@ const FAQS: { q: string; a: string[] }[] = [
   {
     q: 'Which payment methods does LetBuyy support?',
     a: [
-      'LetBuyy supports UPI, credit cards, debit cards, net banking, wallets, and cash on delivery.',
-      'Payment gateway integrations and GST-ready workflows are built into the platform for Indian businesses.',
+      'A merchant can enable cash on delivery. Online methods such as UPI, cards, net banking, and wallets depend on the merchant connecting their own Razorpay account and the methods Razorpay approves for that account.',
+      'GST-registered merchants can issue invoices from recorded order tax facts. Private business document upload is available after secure storage is configured; live KYC and payout eligibility also require provider approval.',
     ],
   },
   {

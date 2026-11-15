@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-06T16:14:55.377346+00:00",
+  "status": "OWNED_PRE_INPUT_HANDOFF_CONFIRMED",
+  "old_pid": 2212,
+  "old_parent_pid": 1969,
+  "old_terminal_state": "Z, exited after SIGTERM; parent has not yet reaped its launcher handle",
+  "replacement_pid": 9505,
+  "replacement_control": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v68b.py",
+  "replacement_sha256": "ee044a0be325dd4fd6004c83a6871418410e45b7108c502dee46d8d10dccbf82",
+  "original_control_sha256": "55fc5f68933b0bcd53ef03db462748bf5b57cd8d797921699cb08161a5c8cadf",
+  "proof": "Initial handoff preconditions verified no browser readiness/journey readiness/ADB timing. Old UI log stayed empty. Only replacement started input after actual APK and normal browser readiness.",
+  "guard_diagnostic": "os.kill(pid,0) sees an unreaped exited child; initial helper falsely raised. Sequential shell continued launching intended replacement. Read-only process check then proved exact old parent1969/child2212 stateZ and single live replacement9505. No duplicate inputs, no application/source/backend changes.",
+  "change": "Observed-value bounded End/Delete key entry with empty/final focused-value readback; no selection-menu assumption for numeric filenames. Same already tested normal Accounts entry method.",
+  "terminal_requirement": "Collect original Node/launcher exit, intentional old UI exit -15, and replacement Python session exit separately. Never treat the retired UI handle as acceptance."
+}

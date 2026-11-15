@@ -4,9 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:letbuyy_store/app/store_context.dart';
+import 'package:letbuyy_store/config/app_config.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/cache_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
+import 'package:letbuyy_store/models/store_model.dart';
+import 'support/membership_page.dart';
 
 Map<String, dynamic> store(String id) => {
   'id': id,
@@ -40,6 +43,7 @@ class StoreTransport extends ApiClient {
       limit: 50,
       total: captured.length,
       hasMore: false,
+      meta: membershipPageMeta(captured.length),
     );
   }
 }
@@ -47,18 +51,53 @@ class StoreTransport extends ApiClient {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
-  test('clearing a signed-out store context refetches and selects the signed-in owner store', () async {
-    final api = StoreTransport();
-    final service = StoreService(api: api);
-    final context = StoreContext(storeService: service);
-    expect((await context.ensureSelectedStore())?.id, 'owner-store');
-    await context.clearSelection();
-    expect(context.stores, isEmpty);
-    expect(service.stores, isEmpty);
-    expect(service.currentStore, isNull);
-    expect((await context.ensureSelectedStore())?.id, 'owner-store');
-    api.close();
-  });
+  test(
+    'local store selection never adopts the hosted preference in the same installation',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'letbuyy.selected_store_id': 'store-b',
+      });
+      final api = StoreTransport()..rows = [store('store-a'), store('store-b')];
+      final hosted = StoreContext(
+        storeService: StoreService(api: api),
+        environment: 'production',
+      );
+      final local = StoreContext(
+        storeService: StoreService(api: api),
+        environment: 'local',
+      );
+      expect(
+        (await hosted.ensureSelectedStore())?.id,
+        'store-b',
+        reason: 'positive control: hosted preference exists',
+      );
+      expect((await local.ensureSelectedStore())?.id, 'store-a');
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString('letbuyy.selected_store_id'), 'store-b');
+      expect(
+        prefs.getString(
+          'letbuyy.selected_store_id.${AppConfig.persistenceNamespace(environmentName: 'local')}',
+        ),
+        'store-a',
+      );
+      api.close();
+    },
+  );
+  test(
+    'clearing a signed-out store context refetches and selects the signed-in owner store',
+    () async {
+      final api = StoreTransport();
+      final service = StoreService(api: api);
+      final context = StoreContext(storeService: service);
+      expect((await context.ensureSelectedStore())?.id, 'owner-store');
+      await context.clearSelection();
+      expect(context.stores, isEmpty);
+      expect(service.stores, isEmpty);
+      expect(service.currentStore, isNull);
+      expect((await context.ensureSelectedStore())?.id, 'owner-store');
+      api.close();
+    },
+  );
   test(
     'another account outage cannot revive the previous account store cache',
     () async {
@@ -82,197 +121,357 @@ void main() {
       );
     },
   );
-  test('an old delayed store list cannot repopulate context or fallback cache after logout', () async {
-    final api = StoreTransport(), cache = CacheService.memory();
-    api.hold = Completer<void>();
-    final service = StoreService(api: api, cache: cache);
-    final actual = StoreContext(storeService: service);
-    final request = actual.ensureSelectedStore();
-    await Future<void>.delayed(Duration.zero);
-    await actual.clearSelection();
-    api.hold!.complete();
-    await expectLater(request, throwsA(isA<ApiException>()));
-    expect(actual.stores, isEmpty);
-    expect(actual.selectedStore, isNull);
-    expect(service.stores, isEmpty);
-    expect(cache.readJsonList(CacheService.storesKey), isEmpty);
-  });
-  test('direct account changes invalidate the prior picker even without an AuthWrapper route', () async {
-    final api = StoreTransport();
-    final service = StoreService(api: api);
-    final context = StoreContext(storeService: service);
-    await context.bindActor('owner-a');
-    await context.ensureSelectedStore();
-    await context.bindActor('staff-b');
-    expect(context.stores, isEmpty);
-    expect(context.selectedStore, isNull);
-    expect(service.currentStore, isNull);
-    // The same actor refreshing its session does not discard a valid selection.
-    await context.ensureSelectedStore();
-    await context.bindActor('staff-b');
-    expect(context.selectedStoreId, 'owner-store');
-    api.close();
-  });
-  test('private projection keys separate accounts and signed-out reads and writes are unavailable', () async {
-    String? actor = 'owner-a';
-    final cache = CacheService.memory(actorIdProvider: () => actor);
-    await cache.writeJson(CacheService.storesKey, [store('private-a')]);
-    actor = 'staff-b';
-    expect(cache.readJsonList(CacheService.storesKey), isEmpty);
-    await cache.writeJson(CacheService.storesKey, [store('private-b')]);
-    actor = null;
-    expect(cache.readJsonList(CacheService.storesKey), isEmpty);
-    await cache.writeJson(CacheService.storesKey, [store('must-not-save')]);
-    actor = 'owner-a';
-    expect(
-      cache.readJsonList(CacheService.storesKey).single['id'],
-      'private-a',
-    );
-    actor = 'staff-b';
-    expect(
-      cache.readJsonList(CacheService.storesKey).single['id'],
-      'private-b',
-    );
-  });
-  test('a copied shared client refuses a late prior-context response before a consumer can cache it', () async {
-    var epoch = 0;
-    String? actor = 'owner-a';
-    final cache = CacheService.memory(actorIdProvider: () => actor);
-    final dio = Dio();
-    final requestSeen = Completer<void>();
-    late RequestInterceptorHandler held;
-    late RequestOptions options;
-    final root = ApiClient(
-      baseUrl: 'https://gateway.test/v1',
-      contextVersionProvider: () => epoch,
-    );
-    final api = root.withOptions(dio: dio, maxRetries: 0);
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (request, handler) {
-          options = request;
-          held = handler;
-          requestSeen.complete();
-        },
-      ),
-    );
-    final request = api
-        .requestJson('/stores')
-        .then((result) => cache.writeJson(CacheService.storesKey, result));
-    final failure = expectLater(
-      request,
-      throwsA(
-        isA<ApiException>().having(
-          (e) => e.code,
-          'code',
-          'SESSION_CONTEXT_CHANGED',
+  test(
+    'an old delayed store list cannot repopulate context or fallback cache after logout',
+    () async {
+      final api = StoreTransport(), cache = CacheService.memory();
+      api.hold = Completer<void>();
+      final service = StoreService(api: api, cache: cache);
+      final actual = StoreContext(storeService: service);
+      final request = actual.ensureSelectedStore();
+      await Future<void>.delayed(Duration.zero);
+      await actual.clearSelection();
+      api.hold!.complete();
+      await expectLater(request, throwsA(isA<ApiException>()));
+      expect(actual.stores, isEmpty);
+      expect(actual.selectedStore, isNull);
+      expect(service.stores, isEmpty);
+      expect(cache.readJsonList(CacheService.storesKey), isEmpty);
+    },
+  );
+  test(
+    'direct account changes invalidate the prior picker even without an AuthWrapper route',
+    () async {
+      final api = StoreTransport();
+      final service = StoreService(api: api);
+      final context = StoreContext(storeService: service);
+      await context.bindActor('owner-a');
+      await context.ensureSelectedStore();
+      await context.bindActor('staff-b');
+      expect(context.stores, isEmpty);
+      expect(context.selectedStore, isNull);
+      expect(service.currentStore, isNull);
+      // The same actor refreshing its session does not discard a valid selection.
+      await context.ensureSelectedStore();
+      await context.bindActor('staff-b');
+      expect(context.selectedStoreId, 'owner-store');
+      api.close();
+    },
+  );
+  test(
+    'unknown store selection cannot silently switch to the first store',
+    () async {
+      final api = StoreTransport();
+      final service = StoreService(api: api);
+      final context = StoreContext(storeService: service);
+      await context.bindActor('owner-a');
+      await context.ensureSelectedStore();
+      final before = context.requestContextKey;
+      await expectLater(
+        context.selectStoreById('foreign-store'),
+        throwsA(
+          isA<ApiException>().having(
+            (error) => error.code,
+            'code',
+            'STORE_ACCESS_UNAVAILABLE',
+          ),
         ),
-      ),
-    );
-    await requestSeen.future;
-    epoch++;
-    actor = 'staff-b';
-    held.resolve(
-      Response(
-        requestOptions: options,
-        statusCode: 200,
-        data: {
-          'data': {'private': 'owner-a'},
-        },
-      ),
-    );
-    await failure;
-    expect(cache.readJsonMap(CacheService.storesKey), isNull);
-  });
-  test('the request key changes for store selection without changing the actor epoch', () async {
-    final api = StoreTransport();
-    api.rows = [store('store-a'), store('store-b')];
-    final actual = StoreContext(storeService: StoreService(api: api));
-    await actual.bindActor('actor-a');
-    await actual.ensureSelectedStore();
-    final key = actual.requestContextKey, epoch = actual.requestContextVersion;
-    await actual.selectStoreById('store-b');
-    expect(actual.requestContextVersion, epoch);
-    expect(actual.requestContextKey, isNot(key));
-    await actual.bindActor('actor-b');
-    expect(actual.requestContextKey, isNot(key));
-    api.close();
-  });
-  test('bootstrap binds and clears the old actor before selecting an existing replacement store', () async {
-    final api = StoreTransport(),
-        actual = StoreContext(storeService: StoreService(api: api));
-    expect(
-      (await actual.ensureSelectedStoreForActor('actor-a'))!.id,
-      'owner-store',
-    );
-    api.rows = [store('replacement-store')];
-    expect(
-      (await actual.ensureSelectedStoreForActor('actor-b'))!.id,
-      'replacement-store',
-    );
-    expect(actual.selectedStoreId, 'replacement-store');
-    expect(api.calls, 2);
-    api.close();
-  });
-  test('concurrent auth consumers share one canonical store discovery for the same actor', () async {
-    final api = StoreTransport()..hold = Completer<void>(),
-        actual = StoreContext(storeService: StoreService(api: api));
-    final a = actual.ensureSelectedStoreForActor('actor-a'),
-        b = actual.ensureSelectedStoreForActor('actor-a');
-    await Future<void>.delayed(Duration.zero);
-    expect(api.calls, 1);
-    api.hold!.complete();
-    expect((await a)!.id, 'owner-store');
-    expect((await b)!.id, 'owner-store');
-    api.close();
-  });
-  test('a late old-actor bootstrap cannot replace or clear a successfully loaded new actor', () async {
-    final api = StoreTransport()..hold = Completer<void>(),
-        actual = StoreContext(storeService: StoreService(api: api));
-    final old = expectLater(
-      actual.ensureSelectedStoreForActor('actor-a'),
-      throwsA(
-        isA<ApiException>().having(
-          (e) => e.code,
-          'code',
-          'SESSION_CONTEXT_CHANGED',
+      );
+      await expectLater(
+        context.selectStore(StoreModel.fromJson(store('foreign-store'))),
+        throwsA(
+          isA<ApiException>().having(
+            (error) => error.code,
+            'code',
+            'STORE_ACCESS_UNAVAILABLE',
+          ),
         ),
-      ),
-    );
-    await Future<void>.delayed(Duration.zero);
-    final hold = api.hold!;
-    api.hold = null;
-    api.rows = [store('new-owner-store')];
-    expect(
-      (await actual.ensureSelectedStoreForActor('actor-b'))!.id,
-      'new-owner-store',
-    );
-    hold.complete();
-    await old;
-    expect(actual.selectedStoreId, 'new-owner-store');
-    expect(actual.stores.single.id, 'new-owner-store');
-    api.close();
-  });
-  test('bootstrap failure remains an error; only successful empty discovery means onboarding', () async {
-    final api = StoreTransport()..unavailable = true,
-        actual = StoreContext(storeService: StoreService(api: api));
-    await expectLater(
-      actual.ensureSelectedStoreForActor('actor-a'),
-      throwsA(isA<ApiException>()),
-    );
-    api.unavailable = false;
-    api.rows = [];
-    expect(await actual.ensureSelectedStoreForActor('actor-a'), isNull);
-    await expectLater(
-      actual.ensureSelectedStoreForActor(''),
-      throwsA(
-        isA<ApiException>().having(
-          (e) => e.code,
-          'code',
-          'MERCHANT_IDENTITY_REQUIRED',
+      );
+      expect(context.selectedStoreId, 'owner-store');
+      expect(service.currentStore?.id, 'owner-store');
+      expect(context.requestContextKey, before);
+      await context.selectStore(
+        StoreModel.fromJson({
+          ...store('owner-store'),
+          'name': 'Forged local name',
+        }),
+      );
+      expect(context.selectedStore?.name, 'Synthetic owner-store');
+      expect(service.currentStore?.name, 'Synthetic owner-store');
+      final prefs = await SharedPreferences.getInstance();
+      expect(
+        prefs.getString(
+          'letbuyy.selected_store_id.${AppConfig.persistenceNamespace()}',
         ),
-      ),
-    );
-    api.close();
-  });
+        'owner-store',
+      );
+      api.close();
+    },
+  );
+  test(
+    'private projection keys separate accounts and signed-out reads and writes are unavailable',
+    () async {
+      String? actor = 'owner-a';
+      final cache = CacheService.memory(actorIdProvider: () => actor);
+      await cache.writeJson(CacheService.storesKey, [store('private-a')]);
+      actor = 'staff-b';
+      expect(cache.readJsonList(CacheService.storesKey), isEmpty);
+      await cache.writeJson(CacheService.storesKey, [store('private-b')]);
+      actor = null;
+      expect(cache.readJsonList(CacheService.storesKey), isEmpty);
+      await cache.writeJson(CacheService.storesKey, [store('must-not-save')]);
+      actor = 'owner-a';
+      expect(
+        cache.readJsonList(CacheService.storesKey).single['id'],
+        'private-a',
+      );
+      actor = 'staff-b';
+      expect(
+        cache.readJsonList(CacheService.storesKey).single['id'],
+        'private-b',
+      );
+    },
+  );
+  test(
+    'a copied shared client refuses a late prior-context response before a consumer can cache it',
+    () async {
+      var epoch = 0;
+      String? actor = 'owner-a';
+      final cache = CacheService.memory(actorIdProvider: () => actor);
+      final dio = Dio();
+      final requestSeen = Completer<void>();
+      late RequestInterceptorHandler held;
+      late RequestOptions options;
+      final root = ApiClient(
+        baseUrl: 'https://gateway.test/v1',
+        contextVersionProvider: () => epoch,
+      );
+      final api = root.withOptions(dio: dio, maxRetries: 0);
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (request, handler) {
+            options = request;
+            held = handler;
+            requestSeen.complete();
+          },
+        ),
+      );
+      final request = api
+          .requestJson('/stores')
+          .then((result) => cache.writeJson(CacheService.storesKey, result));
+      final failure = expectLater(
+        request,
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.code,
+            'code',
+            'SESSION_CONTEXT_CHANGED',
+          ),
+        ),
+      );
+      await requestSeen.future;
+      epoch++;
+      actor = 'staff-b';
+      held.resolve(
+        Response(
+          requestOptions: options,
+          statusCode: 200,
+          data: {
+            'data': {'private': 'owner-a'},
+          },
+        ),
+      );
+      await failure;
+      expect(cache.readJsonMap(CacheService.storesKey), isNull);
+    },
+  );
+  test(
+    'the request key changes for store selection without changing the actor epoch',
+    () async {
+      final api = StoreTransport();
+      api.rows = [store('store-a'), store('store-b')];
+      final actual = StoreContext(storeService: StoreService(api: api));
+      await actual.bindActor('actor-a');
+      await actual.ensureSelectedStore();
+      final key = actual.requestContextKey,
+          epoch = actual.requestContextVersion;
+      await actual.selectStoreById('store-b');
+      expect(actual.requestContextVersion, epoch);
+      expect(actual.requestContextKey, isNot(key));
+      await actual.bindActor('actor-b');
+      expect(actual.requestContextKey, isNot(key));
+      api.close();
+    },
+  );
+  test(
+    'A to B to A cannot revive an earlier store request generation',
+    () async {
+      final api = StoreTransport()..rows = [store('store-a'), store('store-b')];
+      final actual = StoreContext(storeService: StoreService(api: api));
+      await actual.bindActor('actor-a');
+      await actual.ensureSelectedStore();
+      final old = actual.requestContextKey;
+      final dio = Dio(), seen = Completer<void>();
+      late RequestInterceptorHandler held;
+      late RequestOptions request;
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (value, handler) {
+            request = value;
+            held = handler;
+            seen.complete();
+          },
+        ),
+      );
+      final http = ApiClient(
+        baseUrl: 'https://gateway.test/v1',
+        dio: dio,
+        contextVersionProvider: () => actual.requestContextKey,
+        maxRetries: 0,
+      );
+      final retired = expectLater(
+        http.requestJson('/orders'),
+        throwsA(
+          isA<ApiException>().having(
+            (error) => error.code,
+            'code',
+            'SESSION_CONTEXT_CHANGED',
+          ),
+        ),
+      );
+      await seen.future;
+      await actual.selectStoreById('store-b');
+      await actual.selectStoreById('store-a');
+      held.resolve(
+        Response(
+          requestOptions: request,
+          statusCode: 200,
+          data: {
+            'data': {'private': 'prior store-a response'},
+          },
+        ),
+      );
+      await retired;
+      expect(actual.selectedStoreId, 'store-a');
+      expect(actual.requestContextKey, isNot(old));
+      final prefs = await SharedPreferences.getInstance();
+      expect(
+        prefs.getString(
+          'letbuyy.selected_store_id.${AppConfig.persistenceNamespace()}',
+        ),
+        'store-a',
+      );
+      http.close();
+      api.close();
+    },
+  );
+  test(
+    'logout retires queued selection persistence before removing the saved ID',
+    () async {
+      final api = StoreTransport()..rows = [store('store-a'), store('store-b')];
+      final actual = StoreContext(storeService: StoreService(api: api));
+      await actual.ensureSelectedStore();
+      final selection = actual.selectStoreById('store-b');
+      final cleared = actual.clearSelection();
+      await Future.wait([selection, cleared]);
+      final prefs = await SharedPreferences.getInstance();
+      expect(
+        prefs.getString(
+          'letbuyy.selected_store_id.${AppConfig.persistenceNamespace()}',
+        ),
+        isNull,
+      );
+      expect(actual.selectedStoreId, isNull);
+      api.close();
+    },
+  );
+  test(
+    'bootstrap binds and clears the old actor before selecting an existing replacement store',
+    () async {
+      final api = StoreTransport(),
+          actual = StoreContext(storeService: StoreService(api: api));
+      expect(
+        (await actual.ensureSelectedStoreForActor('actor-a'))!.id,
+        'owner-store',
+      );
+      api.rows = [store('replacement-store')];
+      expect(
+        (await actual.ensureSelectedStoreForActor('actor-b'))!.id,
+        'replacement-store',
+      );
+      expect(actual.selectedStoreId, 'replacement-store');
+      expect(api.calls, 2);
+      api.close();
+    },
+  );
+  test(
+    'concurrent auth consumers share one canonical store discovery for the same actor',
+    () async {
+      final api = StoreTransport()..hold = Completer<void>(),
+          actual = StoreContext(storeService: StoreService(api: api));
+      final a = actual.ensureSelectedStoreForActor('actor-a'),
+          b = actual.ensureSelectedStoreForActor('actor-a');
+      await Future<void>.delayed(Duration.zero);
+      expect(api.calls, 1);
+      api.hold!.complete();
+      expect((await a)!.id, 'owner-store');
+      expect((await b)!.id, 'owner-store');
+      api.close();
+    },
+  );
+  test(
+    'a late old-actor bootstrap cannot replace or clear a successfully loaded new actor',
+    () async {
+      final api = StoreTransport()..hold = Completer<void>(),
+          actual = StoreContext(storeService: StoreService(api: api));
+      final old = expectLater(
+        actual.ensureSelectedStoreForActor('actor-a'),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.code,
+            'code',
+            'SESSION_CONTEXT_CHANGED',
+          ),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      final hold = api.hold!;
+      api.hold = null;
+      api.rows = [store('new-owner-store')];
+      expect(
+        (await actual.ensureSelectedStoreForActor('actor-b'))!.id,
+        'new-owner-store',
+      );
+      hold.complete();
+      await old;
+      expect(actual.selectedStoreId, 'new-owner-store');
+      expect(actual.stores.single.id, 'new-owner-store');
+      api.close();
+    },
+  );
+  test(
+    'bootstrap failure remains an error; only successful empty discovery means onboarding',
+    () async {
+      final api = StoreTransport()..unavailable = true,
+          actual = StoreContext(storeService: StoreService(api: api));
+      await expectLater(
+        actual.ensureSelectedStoreForActor('actor-a'),
+        throwsA(isA<ApiException>()),
+      );
+      api.unavailable = false;
+      api.rows = [];
+      expect(await actual.ensureSelectedStoreForActor('actor-a'), isNull);
+      await expectLater(
+        actual.ensureSelectedStoreForActor(''),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.code,
+            'code',
+            'MERCHANT_IDENTITY_REQUIRED',
+          ),
+        ),
+      );
+      api.close();
+    },
+  );
 }

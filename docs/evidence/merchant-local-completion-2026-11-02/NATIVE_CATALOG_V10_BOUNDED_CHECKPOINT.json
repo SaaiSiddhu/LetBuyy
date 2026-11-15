@@ -1,0 +1,29 @@
+{
+  "runId": "87788f8f7ecc",
+  "suitePassed": 0,
+  "suiteFailed": 1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_sha256": "4e69e0ef145d4b0a26d31df3e508a9e60254b341d07d5c393d96d01839546071",
+  "sourceHeldAndTerminalVerified": true,
+  "artifact_sha256": "e6af906f2870103f7adb781c73f2754569ff7e637ebaa6a6442724ab82fb4f58",
+  "artifactBuiltInstalledAndOriginalBytesRetained": true,
+  "boundedCheckpoints": {
+    "normalSyntheticAccountsUiAndAutomaticReturn": true,
+    "freshPkceInspectionAndExchange200": true,
+    "manualLostReplyOriginalKeyRecovery": true,
+    "manualNormalWebSignInNativeReadWebSaveNativeReload": true,
+    "manualReceiptCount": 2,
+    "manualAuditCount": 2,
+    "manualOutboxCount": 2
+  },
+  "wholeStoryFailure": "Native Smart GET blocked by missing BFF transport route; UI reports unavailable and disables creation. No Smart mutation attempted.",
+  "controllerCorrection": "Initial UI observer did not account for the rendered numbered product labels; corrected private observer and resumed the same unsaved native selection. No app/source change or fabricated proof.",
+  "scope": "Bounded auth/manual checkpoint only; whole device suite failed, no Smart or full-feature acceptance."
+}

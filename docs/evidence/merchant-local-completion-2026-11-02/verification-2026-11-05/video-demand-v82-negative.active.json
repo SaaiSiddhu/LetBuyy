@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-07T06:40:08.316429+00:00",
+  "supervisor_pid": 71938,
+  "source": "merchant-video-demand-baseline-v82",
+  "source_sha256": "5b8e0195e33aa978957abdf557a3dfd49b9ddcd9b2febd28111856d6a12727d4",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/media_video_controls_test.dart",
+    "--plain-name",
+    "a loaded video library does not create decoders until explicit preview",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 71942
+}

@@ -16,9 +16,13 @@ class StorageService {
   ///
   /// [file] is the image file to upload.
   /// [path] is the storage folder. Defaults to 'uploads'.
-  Future<String> uploadImage(File file, {String path = 'uploads'}) async {
+  Future<String> uploadImage(
+    File file, {
+    String path = 'uploads',
+    ApiRequestOptions? options,
+  }) async {
     try {
-      return await _api.uploadFile(file, folder: path);
+      return await _api.uploadFile(file, folder: path, options: options);
     } catch (e) {
       debugPrint('❌ Error uploading image: $e');
       rethrow;

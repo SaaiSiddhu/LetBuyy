@@ -22,12 +22,23 @@ import '../../widgets/editor/layers_drawer.dart';
 import '../../widgets/editor/add_section_sheet.dart';
 import '../../widgets/editor/section_settings_sheet.dart';
 import '../../widgets/editor/header_editor_sheet.dart';
+import '../../widgets/editor/liquid_theme_editor.dart';
 import '../main/store_main_screen.dart';
 
 /// Advanced Section Editor Screen - Website Preview Mode
 /// Live website preview with tap-to-edit sections
 class SectionEditorScreen extends StatefulWidget {
-  const SectionEditorScreen({super.key});
+  const SectionEditorScreen({
+    super.key,
+    this.themeSlug,
+    this.expectedInstanceId,
+    this.expectedPackageVersionId,
+    this.expectedStoreId,
+  });
+  final String? themeSlug,
+      expectedInstanceId,
+      expectedPackageVersionId,
+      expectedStoreId;
 
   @override
   State<SectionEditorScreen> createState() => SectionEditorScreenState();
@@ -49,6 +60,7 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
   Map<String, dynamic> _templateConfigData = {};
   String? _previewToken;
   bool _draftExists = false;
+  bool _isLiquid = false;
   late AppThemeColors colors;
 
   // Selected section for editing
@@ -213,6 +225,12 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
       final store = await context.read<StoreContext>().ensureSelectedStore();
 
       if (store != null) {
+        if (widget.expectedStoreId != null &&
+            store.id != widget.expectedStoreId) {
+          throw StateError(
+            'The selected store changed. Return to its theme library.',
+          );
+        }
         final themeSlug = _resolveThemeSlug(store);
         final requestContext = themeService.captureContext();
         final editorPayload = await themeService.loadEditor(
@@ -225,8 +243,42 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
           return;
         if (editorPayload.store['id'] != store.id ||
             editorPayload.theme['slug'] != themeSlug ||
+            (widget.expectedInstanceId != null &&
+                editorPayload.theme['theme_instance_id']
+                        ?.toString()
+                        .toLowerCase() !=
+                    widget.expectedInstanceId!.toLowerCase()) ||
+            (widget.expectedPackageVersionId != null &&
+                editorPayload.theme['theme_package_version_id']
+                        ?.toString()
+                        .toLowerCase() !=
+                    widget.expectedPackageVersionId!.toLowerCase()) ||
             editorPayload.version < 0) {
           throw StateError('The owned theme draft could not be confirmed.');
+        }
+        final bundle = editorPayload.templateConfig['liquidBundle'];
+        final renderer = bundle is Map ? bundle['renderer'] : null;
+        final isLiquid =
+            editorPayload.templateConfig['rendererEngine'] == 'liquid' ||
+            (renderer is Map && renderer['engine'] == 'liquid');
+        if (isLiquid) {
+          // Validate the portable document before taking the legacy projection
+          // path. Never inject Core sections or coerce niche types to an enum.
+          final document = LiquidThemeDocument(editorPayload.templateConfig);
+          for (final key in document.templateKeys) {
+            for (final group in const ['header', 'template', 'footer']) {
+              document.sections(key, group);
+            }
+          }
+          setState(() {
+            _isLiquid = true;
+            _store = store;
+            _ownedContext = requestContext;
+            _themeSlug = themeSlug;
+            _editorPayload = editorPayload;
+            _baseVersion = editorPayload.version;
+          });
+          return;
         }
         final templateConfig = _templateFromGatewayPayload(
           store: store,
@@ -237,6 +289,7 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
         final editorStore = store.copyWith(templateConfig: templateConfig);
 
         setState(() {
+          _isLiquid = false;
           _store = editorStore;
           _ownedContext = requestContext;
           _sections = sections;
@@ -258,7 +311,8 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
     } catch (_) {
       if (mounted && generation == _loadGeneration)
         setState(() {
-          _loadError = 'The owned theme draft could not be loaded. Retry before editing.';
+          _loadError =
+              'The owned theme draft could not be loaded. Retry before editing.';
           _baseVersion = null;
         });
     } finally {
@@ -269,10 +323,17 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
 
   /// Public method to reload store data (called from store_main_screen when tab switches)
   Future<void> reloadStore() async {
+    // The retained editor tab owns its unsaved document. Returning to that tab
+    // must not replace it with a fresh server read in the same actor/store scope.
+    if (_isLiquid &&
+        _ownedContext == context.read<ThemeService>().captureContext())
+      return;
     await _loadStore();
   }
 
   String _resolveThemeSlug(StoreModel store) {
+    if (widget.themeSlug != null && widget.themeSlug!.isNotEmpty)
+      return widget.themeSlug!;
     final fromTemplate = store.templateConfig?.themeId;
     if (fromTemplate != null && fromTemplate.isNotEmpty) return fromTemplate;
     if (store.themeId.isNotEmpty) return store.themeId;
@@ -372,8 +433,9 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
           .map((s) => s.order)
           .fold<int>(0, (a, b) => a > b ? a : b);
       sections.add(
-        SectionDefaults.createDefault(SectionType.productGrid)
-            .copyWith(order: maxOrder + 1),
+        SectionDefaults.createDefault(
+          SectionType.productGrid,
+        ).copyWith(order: maxOrder + 1),
       );
     }
 
@@ -382,8 +444,9 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
           .map((s) => s.order)
           .fold<int>(0, (a, b) => a > b ? a : b);
       sections.add(
-        SectionDefaults.createDefault(SectionType.footer)
-            .copyWith(order: maxOrder + 1),
+        SectionDefaults.createDefault(
+          SectionType.footer,
+        ).copyWith(order: maxOrder + 1),
       );
     }
 
@@ -473,8 +536,11 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
   /// Handle back button press with unsaved changes confirmation
   Future<void> _handleBackPressed() async {
     void navigateToHome() {
-      // Use static method to switch to home tab
-      StoreMainScreen.navigateToHome();
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      } else {
+        StoreMainScreen.navigateToHome();
+      }
     }
 
     if (_hasChanges) {
@@ -1022,6 +1088,17 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
       );
     }
 
+    if (_isLiquid && _store != null && _editorPayload != null) {
+      return LiquidThemeEditor(
+        key: ObjectKey(_editorPayload),
+        store: _store!,
+        slug: _themeSlug,
+        payload: _editorPayload!,
+        ownedContext: _ownedContext,
+        onExit: StoreMainScreen.navigateToHome,
+      );
+    }
+
     return Scaffold(
       backgroundColor: colors.bgStart,
       body: Container(
@@ -1303,7 +1380,8 @@ class _AiHomepagePromptSheetState extends State<_AiHomepagePromptSheet> {
                 textInputAction: TextInputAction.newline,
                 style: TextStyle(color: colors.textPrimary),
                 decoration: InputDecoration(
-                  hintText: 'Example: A clean homepage for handmade cotton kurtas with a warm hero, newest products, and a short brand story.',
+                  hintText:
+                      'Example: A clean homepage for handmade cotton kurtas with a warm hero, newest products, and a short brand story.',
                   hintStyle: TextStyle(color: colors.textTertiary),
                   filled: true,
                   fillColor: colors.surfaceVariant,

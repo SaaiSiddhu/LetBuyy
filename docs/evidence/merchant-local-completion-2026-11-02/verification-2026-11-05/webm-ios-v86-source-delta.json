@@ -1,0 +1,14 @@
+{
+  "from": "0cb3bfe0736fb53a642e3e9b14bf033bd8d713d429b8e72a7fa31eb8dee6e279",
+  "to": "72eea74898f1efecbb91bd868e286deeeefc42324ff59b6733f288262185cc8e",
+  "changed": [
+    "apps/merchant/mobile/lib/screens/content/media_library_screen.dart",
+    "apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart",
+    "apps/merchant/mobile/lib/widgets/shared/merchant_webm_video_controller.dart",
+    "apps/merchant/mobile/pubspec.yaml",
+    "apps/merchant/mobile/test/kyc_picker_failure_test.dart",
+    "apps/merchant/mobile/test/merchant_webm_video_controller_test.dart"
+  ],
+  "dependency_lockfile_identical": true,
+  "backend_schema_shared_contract_files_unchanged": true
+}

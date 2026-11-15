@@ -1,0 +1,149 @@
+{
+  "observedAt": "2026-11-03",
+  "ownRoot": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy",
+  "ownHead": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "primaryRoot": "/Volumes/Projects/LetBuyy",
+  "primaryHead": "5614ffa7efcd93759c7bba63d1ea899d21253270",
+  "sourceOnly": true,
+  "hostedStateNotQueried": true,
+  "ownCategory417": {
+    "file": "417_product_category_commands.sql",
+    "sha256": "fb609773625b122f7d85a1ea9c585678675b242164944439c0b324c2973fac92"
+  },
+  "primaryMigrations": [
+    {
+      "prefix": 414,
+      "file": "414_gift_card_issue_replay_integrity.sql",
+      "sha256": "7428049658b49d6223b928cd11f65a6a8f4b809411efbf57417b5862d699da3d",
+      "pairedDownExists": true,
+      "downSha256": "bdafe1e5f805c5feb11f4bcfe491f73b3d4a82c99fa2467513388eae56674432"
+    },
+    {
+      "prefix": 415,
+      "file": "415_atomic_warehouse_commands.sql",
+      "sha256": "a85250a9792e63dfe0bd32c368088781159a7b09985840af651d5bd408e149cd",
+      "pairedDownExists": true,
+      "downSha256": "24ac7e6a80d64a6cc94f3f12d81cc8762210c56b5166d3cbe08bdbd179c25b84"
+    },
+    {
+      "prefix": 416,
+      "file": "416_durable_product_imports.sql",
+      "sha256": "20d4b5e223e5fca53625724af92bb852e800315dd4b22b1be3edf262d98554d5",
+      "pairedDownExists": true,
+      "downSha256": "a8cdcff194a13e4c5b3395554d55d67db8df195214cb33bce68c4e1a8f947753"
+    },
+    {
+      "prefix": 417,
+      "file": "417_managed_sandbox_payment_connections.sql",
+      "sha256": "7032515b61bd20aff4a4f7007a07c1dfd70d61eadf77a276422d11f65a06da50",
+      "pairedDownExists": true,
+      "downSha256": "081e00ec10d4a220a832e30a58bc0af1819353c1dcfcc05f61ec23780d70ce3f"
+    },
+    {
+      "prefix": 418,
+      "file": "418_merchant_accounts_mobile_handoff.sql",
+      "sha256": "439ccfe3d844a0382a2d7662d6995706e59d1c5eebf6c7d8b45ca914de87ce82",
+      "pairedDownExists": true,
+      "downSha256": "fd64d5d984a78d6f42372868714ee7112d5c34a06f57f83546ff17da4bed3eaa"
+    },
+    {
+      "prefix": 419,
+      "file": "419_kyc_private_metadata_gateway_only.sql",
+      "sha256": "938618fa04273a2d114aa2c812d6fc4d247562cfbec3a90303d2d66f9c62ca16",
+      "pairedDownExists": true,
+      "downSha256": "11b294667b9360f8c05a16a2d7ec044d528f92d6583e0cb3ba1710f687c41819"
+    },
+    {
+      "prefix": 420,
+      "file": "420_merchant_razorpay_webhook_secret.sql",
+      "sha256": "7050138ecbe7b9dc2593ef6bd9de7005f532184f85830fd435280fa3f36c7b72",
+      "pairedDownExists": true,
+      "downSha256": "2513fb27bf77428e5c1957233cc3f05751f174a7b840e1079c3602e5623786ee"
+    },
+    {
+      "prefix": 421,
+      "file": "421_kyc_last_four_reference_limit.sql",
+      "sha256": "8f4e2606f19b084f7d80340af32e37908b156cd81b32eccaf5112a8b3e11cf30",
+      "pairedDownExists": true,
+      "downSha256": "d9cc5b67bef8a44472821a00355ba2bce5daf2e14afe7d87c774cfebe0540dbd"
+    },
+    {
+      "prefix": 422,
+      "file": "422_kyc_profile_change_revocation.sql",
+      "sha256": "7c49c5df4b386ed941a49da9f58a1873346fcfe235e9938ac29a1ed04a80e1e5",
+      "pairedDownExists": true,
+      "downSha256": "9604a1c4785a06d42be597a628e7dbeb224cb0af2704d93518dc7ca720bbe3c8"
+    },
+    {
+      "prefix": 423,
+      "file": "423_provider_gated_pricing_copy.sql",
+      "sha256": "71fb50c8961f900b45507213b2167886cf76b354aca2ef9ef1789b15bfe13eec",
+      "pairedDownExists": true,
+      "downSha256": "c39d2ad5852d3ab7aa78e5de9b58864266115cee53b4ddebf64e177d4bee219b"
+    },
+    {
+      "prefix": 424,
+      "file": "424_kyc_private_object_cleanup.sql",
+      "sha256": "7f56750d56d9c0ad3618629dc768bccd9b1326e127234413d7ce2ed8000a08cd",
+      "pairedDownExists": true,
+      "downSha256": "205cbd581dfcc799d9b8e477b281b33c78ce926d6b3f51cee4c02907c1266b18"
+    },
+    {
+      "prefix": 425,
+      "file": "425_kyc_india_upload_intent.sql",
+      "sha256": "8efdd6de9b5e4f5b396138099a57b0f498d48a06bd21c1396ee18936defcf576",
+      "pairedDownExists": true,
+      "downSha256": "d87911f2fd68a38ae5af0d40acdc5b099dc94d3f2b2d88147cc4f58d2f63dec9"
+    },
+    {
+      "prefix": 426,
+      "file": "426_kyc_r2_india_provider_isolation.sql",
+      "sha256": "ef7b5e8dd22d2c987b6b9a2f5ec3021557654a43699ef4542d4ffacc77d53746",
+      "pairedDownExists": true,
+      "downSha256": "991fb06c38302b15a6053368c88b941d9e29e670bedba25f5c3a0acdff6277d5"
+    },
+    {
+      "prefix": 427,
+      "file": "427_kyc_india_scanner_verdict.sql",
+      "sha256": "3e34baeef67d8dd5714e39782f94187f5554a1eb3cb93d3e9c5b3abc2a78e5ca",
+      "pairedDownExists": true,
+      "downSha256": "dc0b26679a347d894caaf63385e0edde494a21482ec52f6d53dcb9878e1690e5"
+    },
+    {
+      "prefix": 428,
+      "file": "428_kyc_india_cleanup_due.sql",
+      "sha256": "0ae5b7de24439398b828da5a9f7f9ab0cad38eddedd7e830ca9bfec9991a636c",
+      "pairedDownExists": true,
+      "downSha256": "dd6409401de55330c6a2a9dfa33b4efe46ce81858ee3378481a7cfa772a191a8"
+    },
+    {
+      "prefix": 429,
+      "file": "429_kyc_india_early_scan_retry.sql",
+      "sha256": "0b8e3be5424b5f1a94f9af84748829d23f0f827588980de7d726a0a7e2248c1c",
+      "pairedDownExists": true,
+      "downSha256": "b1ede24f0e6ed369947d1d3f5958ae0d5d9f02b91c9442c2d7adad33fed71bab"
+    },
+    {
+      "prefix": 430,
+      "file": "430_core_public_contact_footer.sql",
+      "sha256": "3893af02eeb7b1a96707137bc83fe4feedb27654023f5963df3b3bf4dea512c1",
+      "pairedDownExists": true,
+      "downSha256": "12ad607c963937cfeba522ad4a0d15a455227afd89b1cc04b0afe5b2a011247f"
+    },
+    {
+      "prefix": 431,
+      "file": "431_attest_current_definer_role_closure.sql",
+      "sha256": "c42472436f67a5a1e74f1d55abaf2470defd54c081e0f7ba30aae549a423917a",
+      "pairedDownExists": true,
+      "downSha256": "ed3d173510439ff18f599dc45568ca896aff96c5a517d1d31f5f2cbec8ce5596"
+    },
+    {
+      "prefix": 432,
+      "file": "432_niche_theme_catalog_v210.sql",
+      "sha256": "312b7bc22573e06f30481f05b60a6b58307efa02a76c716e6ed1c12bef7861c7",
+      "pairedDownExists": true,
+      "downSha256": "e6609df33120d83be67d2c7b1874a5df8957a6474409d4167d39863d90b4f318"
+    }
+  ],
+  "primaryMigrationWip": []
+}

@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-08T07:23:55.101963+00:00",
+  "supervisor_pid": 59471,
+  "source": "merchant-creation-retirement-source-v101",
+  "source_sha256": "e849c10105c8adf3a7a69079fc3201791f6ce62a195f8a9b39a059ca805e74c8",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "build",
+    "ios",
+    "--device-id=B907B390-5B08-490F-BC6A-8900667B2D94",
+    "--simulator",
+    "--debug",
+    "--no-pub",
+    "--dart-define-from-file=/private/tmp/letbuyy-merchant-build-v98-fik6wsi8/ios-dart-defines.json"
+  ],
+  "status": "RUNNING",
+  "child_pid": 59505
+}

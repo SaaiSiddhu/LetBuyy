@@ -1,0 +1,28 @@
+{
+  "status": "TERMINAL_ALL_REQUIRED_LOCAL_GATES_PASSED",
+  "at": "2026-11-06T03:38:31.782662+00:00",
+  "supervisor_pid": 95908,
+  "source_sha256": "8e7cf5dff2b908436420fb53e90e9340968b8506547ffb8445a604f29868e69a",
+  "preceding": "Original v6 analysis and full Flutter tests passed. Governance v1 failed on a synthetic fixture password expression; old fixture bytes retained, expression replaced by generated random secret. No product input change.",
+  "steps": [
+    {
+      "step": "governance-v2",
+      "exit_code": 0
+    },
+    {
+      "step": "android-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "ios-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "artifact-readback",
+      "exit_code": 0
+    }
+  ],
+  "active_step": null,
+  "source_unchanged": true,
+  "finished_at": "2026-11-06T03:41:02.301179+00:00"
+}

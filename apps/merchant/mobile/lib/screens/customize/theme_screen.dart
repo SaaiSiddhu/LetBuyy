@@ -9,10 +9,11 @@ import '../../models/store_model.dart';
 import '../../models/theme_editor_models.dart';
 import '../../services/theme_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../widgets/shared/cached_merchant_image.dart';
+import '../../widgets/editor/theme_artwork.dart';
 import '../editor/section_editor_screen.dart';
 import '../preview/live_preview_screen.dart';
 import 'theme_versions_screen.dart';
+import 'theme_marketplace_screen.dart';
 
 class ThemeScreen extends StatefulWidget {
   const ThemeScreen({super.key});
@@ -26,8 +27,12 @@ class _ThemeScreenState extends State<ThemeScreen> {
   ThemeCatalogResponse? _catalog;
   ThemeEditorPayload? _editorPayload;
   List<Map<String, dynamic>> _releases = const [];
+  List<ThemeLibraryItem> _library = const [];
+  String? _loadError;
+  String? _libraryError;
   bool _isLoading = true;
   bool _isBusy = false;
+  bool _showLibrary = false;
   Object? _ownedContext;
   int _loadGeneration = 0;
   late AppThemeColors colors;
@@ -39,6 +44,10 @@ class _ThemeScreenState extends State<ThemeScreen> {
       'minimal_modern';
 
   String get _activeThemeName {
+    final installed = _library.where((item) => item.slug == _activeThemeSlug);
+    if (installed.isNotEmpty) return installed.first.name;
+    if (_catalog?.currentThemeRecord != null)
+      return _catalog!.currentThemeRecord!.name;
     final matches = (_catalog?.themes ?? const <ThemeCatalogItem>[]).where(
       (theme) => theme.slug == _activeThemeSlug || theme.active,
     );
@@ -53,7 +62,10 @@ class _ThemeScreenState extends State<ThemeScreen> {
 
   Future<void> _loadThemes() async {
     final generation = ++_loadGeneration;
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
     try {
       final themeService = context.read<ThemeService>();
       final store = await context.read<StoreContext>().ensureSelectedStore();
@@ -85,6 +97,15 @@ class _ThemeScreenState extends State<ThemeScreen> {
         editor = null;
       }
 
+      List<ThemeLibraryItem> library = const [];
+      String? libraryError;
+      try {
+        library = await themeService.fetchLibrary(store.id);
+      } catch (_) {
+        libraryError =
+            'The installed theme library could not load. Retry to confirm your saved designs.';
+      }
+
       if (!mounted ||
           generation != _loadGeneration ||
           themeService.captureContext() != requestContext)
@@ -95,9 +116,16 @@ class _ThemeScreenState extends State<ThemeScreen> {
         _catalog = catalog;
         _editorPayload = editor;
         _releases = releases;
+        _library = library;
+        _libraryError = libraryError;
       });
     } catch (error) {
-      if (mounted) _showMessage('Unable to load themes: $error', isError: true);
+      if (mounted && generation == _loadGeneration) {
+        setState(
+          () => _loadError =
+              'Themes could not load. Retry without changing your existing designs.',
+        );
+      }
     } finally {
       if (mounted && generation == _loadGeneration)
         setState(() => _isLoading = false);
@@ -127,14 +155,22 @@ class _ThemeScreenState extends State<ThemeScreen> {
     }
   }
 
-  Future<void> _installTheme(ThemeCatalogItem theme) {
-    return _runThemeAction(() async {
-      await context.read<ThemeService>().installTheme(
-        storeId: _store!.id,
-        themeSlug: theme.slug,
-      );
-      _showMessage('${theme.name} installed', isSuccess: true);
-    });
+  Future<void> _openMarketplace([ThemeCatalogItem? theme]) async {
+    if (_store == null ||
+        _isBusy ||
+        _ownedContext != context.read<ThemeService>().captureContext())
+      return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ThemeMarketplaceScreen(
+          storeId: _store!.id,
+          storeName: _store!.name,
+          initialTheme: theme,
+        ),
+      ),
+    );
+    if (mounted) await _loadThemes();
   }
 
   Future<void> _publishTheme() {
@@ -163,6 +199,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
           storeId: store.id,
           themeSlug: slug,
           baseVersion: editor.version,
+          makeStoreLive: false,
         );
       }
       if (!mounted ||
@@ -222,57 +259,83 @@ class _ThemeScreenState extends State<ThemeScreen> {
     });
   }
 
-  Future<void> _duplicateDraft() {
-    return _runThemeAction(() async {
-      final editor =
-          _editorPayload ??
-          await context.read<ThemeService>().loadEditor(
-            storeId: _store!.id,
-            themeSlug: _activeThemeSlug,
-          );
-      await context.read<ThemeService>().duplicateDraft(
+  Future<void> _createDraft() async {
+    final editor = _editorPayload;
+    if (editor == null || editor.hasDraft) return;
+    await _runThemeAction(() async {
+      if (editor.store['id'] != _store!.id ||
+          editor.theme['slug'] != _activeThemeSlug)
+        return;
+      await context.read<ThemeService>().saveDraft(
         storeId: _store!.id,
         themeSlug: _activeThemeSlug,
         templateConfig: editor.templateConfig,
         baseVersion: editor.version,
+        templateKey: editor.templateKey,
       );
-      _showMessage('Draft duplicated', isSuccess: true);
+      _showMessage('Draft created', isSuccess: true);
     });
   }
 
   Future<void> _previewTheme() async {
-    if (_store == null) return;
-
+    final store = _store,
+        editor = _editorPayload,
+        service = context.read<ThemeService>();
+    final captured = _ownedContext, slug = _activeThemeSlug;
+    if (store == null ||
+        editor == null ||
+        !editor.hasDraft ||
+        _isBusy ||
+        captured != service.captureContext() ||
+        editor.store['id'] != store.id ||
+        editor.theme['slug'] != slug ||
+        store.subdomain.isEmpty)
+      return;
     setState(() => _isBusy = true);
-    String? previewToken;
     try {
-      if (_editorPayload?.hasDraft == true) {
-        final preview = await context.read<ThemeService>().createPreviewSession(
-          storeId: _store!.id,
-          themeSlug: _activeThemeSlug,
+      final preview = await service.createPreviewSession(
+        storeId: store.id,
+        themeSlug: slug,
+        templateKey: editor.templateKey,
+        expectedDraftVersion: editor.version,
+      );
+      if (!mounted ||
+          captured != service.captureContext() ||
+          _store?.id != store.id ||
+          _activeThemeSlug != slug)
+        return;
+      final url = ThemeService.buildStorefrontPreviewUrl(
+        subdomain: store.subdomain,
+        previewToken: preview['preview_token'] as String,
+        templateKey: editor.templateKey,
+      );
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LivePreviewScreen(
+            storeUrl: url,
+            storeName: '$slug · Preview',
+            expectedThemeContext: captured,
+            notice:
+                'Private preview of your saved design. This does not publish the theme.',
+          ),
+        ),
+      );
+    } on ThemeDraftConflictException {
+      if (mounted && captured == service.captureContext())
+        _showMessage(
+          'This saved design changed. Reload it before previewing.',
+          isError: true,
         );
-        previewToken = preview['preview_token']?.toString();
-      }
     } catch (_) {
-      previewToken = null;
+      if (mounted && captured == service.captureContext())
+        _showMessage(
+          'The saved design preview could not load. Retry after reloading the draft.',
+          isError: true,
+        );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
-
-    final url = ThemeService.buildStorefrontPreviewUrl(
-      subdomain: _store!.subdomain,
-      previewToken: previewToken,
-      viewport: 'phone',
-      settingsData: _store!.templateConfig?.themeSettings.toMap(),
-    );
-    if (!mounted) return;
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            LivePreviewScreen(storeUrl: url, storeName: _store!.name),
-      ),
-    );
   }
 
   Future<void> _openVersions() async {
@@ -290,11 +353,21 @@ class _ThemeScreenState extends State<ThemeScreen> {
     if (changed == true) await _loadThemes();
   }
 
-  void _openEditor() {
-    if (_store == null) return;
+  void _openEditor({ThemeLibraryItem? installed}) {
+    if (_store == null ||
+        _isBusy ||
+        _ownedContext != context.read<ThemeService>().captureContext())
+      return;
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const SectionEditorScreen()),
+      MaterialPageRoute(
+        builder: (_) => SectionEditorScreen(
+          themeSlug: installed?.slug,
+          expectedInstanceId: installed?.instanceId,
+          expectedPackageVersionId: installed?.packageVersionId,
+          expectedStoreId: _store!.id,
+        ),
+      ),
     ).then(
       (_) => _loadThemes(),
     ); // Reload after editor closes in case draft changed
@@ -332,16 +405,44 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     children: [
                       _buildHeader(),
                       const SizedBox(height: 16),
-                      _buildActiveThemePanel(),
+                      if (_loadError != null) _buildReadError(_loadError!),
+                      if (_loadError == null && _store != null)
+                        _buildActiveThemePanel(),
+                      if (_libraryError != null) ...[
+                        const SizedBox(height: 16),
+                        _buildReadError(_libraryError!),
+                      ],
+                      if (_showLibrary && _library.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        _buildSectionHeader(
+                          'Your theme library',
+                          Icons.collections_bookmark_outlined,
+                        ),
+                        const SizedBox(height: 12),
+                        ..._library
+                            .where(
+                              (item) =>
+                                  item.status != 'deleted' &&
+                                  item.status != 'archived',
+                            )
+                            .map(_buildLibraryCard),
+                      ],
                       const SizedBox(height: 20),
                       _buildSectionHeader(
-                        'Theme Library',
+                        'Discover themes',
                         Icons.palette_outlined,
                       ),
-                      const SizedBox(height: 12),
-                      ...(_catalog?.themes ?? const <ThemeCatalogItem>[]).map(
-                        _buildThemeCard,
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _isBusy ? null : () => _openMarketplace(),
+                          child: const Text('Explore all themes'),
+                        ),
                       ),
+                      const SizedBox(height: 12),
+                      ...(_catalog?.themes ?? const <ThemeCatalogItem>[])
+                          .take(5)
+                          .map(_buildThemeCard),
                       if ((_catalog?.themes ?? const []).isEmpty)
                         _buildEmptyState(),
                     ],
@@ -355,6 +456,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
   Widget _buildHeader() {
     return Row(
       children: [
+        if (Navigator.canPop(context)) BackButton(color: colors.textPrimary),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,7 +489,13 @@ class _ThemeScreenState extends State<ThemeScreen> {
     final activeTheme = (_catalog?.themes ?? const <ThemeCatalogItem>[]).where(
       (theme) => theme.slug == _activeThemeSlug || theme.active,
     );
-    final theme = activeTheme.isEmpty ? null : activeTheme.first;
+    final theme =
+        _catalog?.currentThemeRecord ??
+        (activeTheme.isEmpty ? null : activeTheme.first);
+    final installed = _library.where(
+      (item) => item.slug == _activeThemeSlug && item.available,
+    );
+    final captured = installed.isEmpty ? null : installed.first;
     final hasDraft = _editorPayload?.hasDraft == true;
     final recoverPublish =
         _store != null &&
@@ -407,6 +515,21 @@ class _ThemeScreenState extends State<ThemeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (theme != null || captured != null) ...[
+            ThemeArtwork(
+              slug: _activeThemeSlug,
+              name: captured?.name ?? theme!.name,
+              version: captured?.version,
+              thumbnailUrl: captured?.thumbnailUrl ?? theme?.thumbnailUrl,
+              aspectRatio: 1.8,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Theme artwork · Preview your saved design in the editor',
+              style: TextStyle(color: colors.textSecondary, fontSize: 11),
+            ),
+            const SizedBox(height: 16),
+          ],
           Row(
             children: [
               Expanded(
@@ -414,7 +537,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      theme?.name ?? _activeThemeSlug,
+                      captured?.name ?? theme?.name ?? _activeThemeSlug,
                       style: TextStyle(
                         color: colors.textPrimary,
                         fontWeight: FontWeight.w700,
@@ -425,7 +548,11 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     Text(
                       hasDraft
                           ? 'Draft v${_editorPayload?.version ?? 1} ready'
-                          : 'Published theme',
+                          : _editorPayload?.release != null
+                          ? 'Published design'
+                          : _editorPayload != null
+                          ? 'Current design'
+                          : 'Draft status unavailable',
                       style: TextStyle(
                         color: colors.textSecondary,
                         fontSize: 12,
@@ -435,27 +562,40 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 ),
               ),
               _StatusPill(
-                text: hasDraft ? 'Draft' : 'Live',
+                text: hasDraft ? 'Saved draft' : 'Current theme',
                 color: hasDraft ? colors.warning : colors.success,
               ),
             ],
           ),
           const SizedBox(height: 14),
+          if (captured?.version != null) ...[
+            Text(
+              'Installed version ${captured!.version}',
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
+            ),
+            const SizedBox(height: 12),
+          ],
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
               _ActionChipButton(
-                label: 'Edit',
+                label: 'Edit theme',
                 icon: Icons.tune_rounded,
-                onTap: _openEditor,
+                onTap: () => _openEditor(installed: captured),
+                enabled: !_isBusy && _editorPayload != null,
+              ),
+              _ActionChipButton(
+                label: 'Manage themes',
+                icon: Icons.collections_bookmark_outlined,
+                onTap: () => setState(() => _showLibrary = !_showLibrary),
                 enabled: !_isBusy,
               ),
               _ActionChipButton(
                 label: 'Preview',
                 icon: Icons.visibility_outlined,
                 onTap: _previewTheme,
-                enabled: !_isBusy,
+                enabled: !_isBusy && hasDraft,
               ),
               _ActionChipButton(
                 label: 'Versions',
@@ -464,10 +604,10 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 enabled: !_isBusy,
               ),
               _ActionChipButton(
-                label: 'Duplicate',
-                icon: Icons.copy_rounded,
-                onTap: _duplicateDraft,
-                enabled: !_isBusy,
+                label: 'Create draft',
+                icon: Icons.edit_note_rounded,
+                onTap: _createDraft,
+                enabled: !_isBusy && _editorPayload != null && !hasDraft,
               ),
               _ActionChipButton(
                 label: recoverPublish ? 'Recover publish' : 'Publish',
@@ -513,118 +653,241 @@ class _ThemeScreenState extends State<ThemeScreen> {
     );
   }
 
-  Widget _buildThemeCard(ThemeCatalogItem theme) {
-    final isActive = theme.slug == _activeThemeSlug || theme.active;
-    final canInstall = !theme.installed && !isActive;
+  Future<void> _installTheme(ThemeCatalogItem theme) => _runThemeAction(
+    () async {
+      final store = _store!, service = context.read<ThemeService>();
+      final package = await service.loadCatalogPackage(theme.slug);
+      final receipt = await service.installTheme(
+        storeId: store.id,
+        themeSlug: theme.slug,
+        expectedVersion: theme.version,
+        expectedPackageId: package['theme_package_id'] as String,
+        expectedPackageVersionId: package['theme_package_version_id'] as String,
+      );
+      _showMessage(
+        receipt.alreadyInstalled
+            ? 'Theme confirmed in your library'
+            : '${theme.name} added to your library',
+        isSuccess: true,
+      );
+    },
+  );
 
+  Future<void> _demoCatalogTheme(ThemeCatalogItem theme) async {
+    if (_isBusy ||
+        theme.version == null ||
+        _ownedContext != context.read<ThemeService>().captureContext())
+      return;
+    try {
+      final url = ThemeService.buildCatalogDemoUrl(
+        slug: theme.slug,
+        version: theme.version!,
+      );
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LivePreviewScreen(
+            storeUrl: url,
+            storeName: '${theme.name} sample store',
+            notice:
+                'Version ${theme.version} · Sample content. Adding the theme does not import sample products.',
+          ),
+        ),
+      );
+    } catch (_) {
+      if (mounted)
+        _showMessage(
+          'This demo could not be opened. Reload its catalog details.',
+          isError: true,
+        );
+    }
+  }
+
+  Widget _buildThemeCard(ThemeCatalogItem theme) {
+    final matches = _library.where(
+      (item) => item.slug == theme.slug && item.available,
+    );
+    final installed = matches.isEmpty ? null : matches.first;
+    final canAdd =
+        theme.catalogActive &&
+        theme.version != null &&
+        theme.pricingType == 'free' &&
+        theme.priceInr == 0;
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isActive ? AppColors.primary : colors.divider,
-          width: isActive ? 1.5 : 1,
-        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: colors.border),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildThemeThumbnail(theme),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        theme.name,
-                        style: TextStyle(
-                          color: colors.textPrimary,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    if (isActive)
-                      _StatusPill(text: 'Current', color: AppColors.primary)
-                    else if (theme.installed)
-                      _StatusPill(text: 'Installed', color: colors.success)
-                    else if (theme.isPremium)
-                      _StatusPill(text: 'Premium', color: colors.warning),
-                  ],
-                ),
-                if (theme.description != null &&
-                    theme.description!.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    theme.description!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                  ),
-                ],
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        theme.category ?? 'Storefront',
-                        style: TextStyle(
-                          color: colors.textTertiary,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ),
-                    TextButton.icon(
-                      onPressed: canInstall && !_isBusy
-                          ? () => _installTheme(theme)
-                          : null,
-                      icon: Icon(
-                        canInstall
-                            ? Icons.download_rounded
-                            : Icons.check_circle_outline_rounded,
-                        size: 16,
-                      ),
-                      label: Text(canInstall ? 'Install' : 'Ready'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: canInstall
-                            ? AppColors.primary
-                            : colors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+          InkWell(
+            onTap: _isBusy ? null : () => _openMarketplace(theme),
+            child: ThemeArtwork(
+              slug: theme.slug,
+              name: theme.name,
+              version: theme.version,
+              thumbnailUrl: theme.thumbnailUrl,
             ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  theme.name,
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              if (theme.pricingType == 'free' && theme.priceInr == 0)
+                _StatusPill(text: 'Free', color: colors.accent),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '${theme.category ?? 'Storefront'} · ${theme.version ?? 'Version unavailable'}',
+            style: TextStyle(color: colors.textSecondary, fontSize: 12),
+          ),
+          if (installed?.version != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              'In your library · ${installed!.version}',
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            children: [
+              OutlinedButton.icon(
+                onPressed: _isBusy || theme.version == null
+                    ? null
+                    : () => _demoCatalogTheme(theme),
+                icon: const Icon(Icons.visibility_outlined, size: 18),
+                label: const Text('View demo'),
+              ),
+              if (installed != null)
+                FilledButton(
+                  onPressed: _isBusy || installed.packageVersionId == null
+                      ? null
+                      : () => _openEditor(installed: installed),
+                  child: Text(
+                    installed.version == theme.version
+                        ? 'Customize'
+                        : 'Customize installed version',
+                  ),
+                )
+              else
+                FilledButton(
+                  onPressed: _isBusy || !canAdd
+                      ? null
+                      : () => _installTheme(theme),
+                  child: const Text('Add'),
+                ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildThemeThumbnail(ThemeCatalogItem theme) {
-    final thumbnail = ThemeService.resolveCatalogThumbnail(theme.thumbnailUrl);
-    return Container(
-      width: 72,
-      height: 86,
-      decoration: BoxDecoration(
-        color: colors.surfaceVariant,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.divider),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: thumbnail != null
-          ? CachedMerchantImage(
-              imageUrl: thumbnail,
-              fit: BoxFit.cover,
-            )
-          : Icon(Icons.web_rounded, color: colors.textSecondary),
-    );
-  }
+  Widget _buildReadError(String message) => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: colors.card,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: colors.border),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(message, style: TextStyle(color: colors.textPrimary)),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: _isBusy ? null : _loadThemes,
+          icon: const Icon(Icons.refresh),
+          label: const Text('Retry loading themes'),
+        ),
+      ],
+    ),
+  );
+
+  Widget _buildLibraryCard(ThemeLibraryItem item) => Container(
+    margin: const EdgeInsets.only(bottom: 16),
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: colors.card,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: colors.divider),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ThemeArtwork(
+          slug: item.slug,
+          name: item.name,
+          version: item.version,
+          thumbnailUrl: item.thumbnailUrl,
+          aspectRatio: 1.8,
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                item.name,
+                style: TextStyle(
+                  color: colors.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            _StatusPill(
+              text: item.isCurrentlyPublished
+                  ? 'Current theme'
+                  : item.hasDraft
+                  ? 'Saved draft'
+                  : 'In your library',
+              color: item.isCurrentlyPublished
+                  ? colors.success
+                  : colors.textSecondary,
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          item.version == null
+              ? 'Installed version unavailable'
+              : 'Installed version ${item.version}',
+          style: TextStyle(color: colors.textSecondary, fontSize: 12),
+        ),
+        const SizedBox(height: 12),
+        Align(
+          alignment: Alignment.centerRight,
+          child: FilledButton.icon(
+            onPressed:
+                !_isBusy &&
+                    item.available &&
+                    item.instanceId.isNotEmpty &&
+                    item.packageVersionId != null
+                ? () => _openEditor(installed: item)
+                : null,
+            icon: const Icon(Icons.tune, size: 18),
+            label: const Text('Customize'),
+          ),
+        ),
+      ],
+    ),
+  );
 
   Widget _buildEmptyState() {
     return Container(

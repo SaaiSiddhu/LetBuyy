@@ -60,6 +60,11 @@ for (const key of ["vars", "kv_namespaces", "r2_buckets", "queues", "durable_obj
 for (const worker of manifest?.workers || []) {
   reporter.assert(exists(worker.config), `Missing Worker wrangler config: ${worker.config}`);
   const text = readFile(worker.config);
+  const defaultSection = text.split(/\n\[env\.staging\]/)[0];
+  const defaultR2Blocks = arrayTableBlocks(defaultSection, "r2_buckets");
+  const defaultKycBlock = defaultR2Blocks.find((block) => stringValue(block, "binding") === "KYC_PRIVATE_BUCKET");
+  reporter.assert(!defaultKycBlock,
+    `India-only KYC evidence must not use a Cloudflare R2 binding: ${worker.config} default`);
 
   for (const environment of ["staging", "production"]) {
     const expected = worker.environments?.[environment];
@@ -119,6 +124,9 @@ for (const worker of manifest?.workers || []) {
       reporter.assert(r2Blocks.some((block) => stringValue(block, "binding") === binding), `Wrangler env missing R2 binding ${binding}: ${worker.config} ${environment}`);
     }
     reporter.assert(r2Blocks.length === (expected?.r2Buckets || []).length, `Wrangler env R2 binding count must match ownership manifest: ${worker.config} ${environment}`);
+    const kycBlock = r2Blocks.find((block) => stringValue(block, "binding") === "KYC_PRIVATE_BUCKET");
+    reporter.assert(!kycBlock,
+      `India-only KYC evidence must not use a Cloudflare R2 binding: ${worker.config} ${environment}`);
 
     const d1Blocks = arrayTableBlocks(envSection, `env.${environment}.d1_databases`);
     for (const binding of expected?.d1Databases || []) {

@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createFirstPartyCatalogBundle, firstPartyThemeListings } from '@letbuyy/theme-engine';
 import { catalogDemoRoute, selectCatalogDemoProducts } from '../theme-engine/catalog-demo-data';
 import { catalogDemoStateNamespace, resolveCatalogDemoCollection, resolveCatalogDemoContent } from './catalog-demo-dispatch';
 
 const listings = firstPartyThemeListings();
+const v210Artifacts = new URL('../../../../../../docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/', import.meta.url);
 test('catalog samples require the exact selected package slug and version', () => {
     const bundle = createFirstPartyCatalogBundle('letbuyy-sense');
     const template = { liquidBundle: bundle };
@@ -33,6 +35,22 @@ test('every registered v2 leaf has isolated products, collections and presentati
         assert.notEqual(again?.navigation.main, content.navigation.main);
         assert.ok(Object.isFrozen(content));
         assert.ok(Object.isFrozen(content.products[0]));
+    }
+});
+
+test('every admitted 2.1.0 release artifact has an isolated public catalog sample', () => {
+    for (const slug of ['letbuyy-aura', 'letbuyy-bloom', 'letbuyy-craft', 'letbuyy-dawn', 'letbuyy-forge', 'letbuyy-nova', 'letbuyy-refresh', 'letbuyy-ride', 'letbuyy-summit']) {
+        const artifact = JSON.parse(readFileSync(new URL(`${slug}-2.1.0.json`, v210Artifacts), 'utf8')) as { document: Record<string, unknown> };
+        const original = JSON.stringify(artifact.document);
+        const content = resolveCatalogDemoContent(slug, '2.1.0', artifact.document);
+        assert.ok(content, slug);
+        assert.equal(content.version, '2.1.0');
+        assert.ok(content.products.length > 1, slug);
+        assert.ok(content.collections.length > 1, slug);
+        assert.equal(JSON.stringify(artifact.document), original, `${slug}: release bytes must remain untouched`);
+        assert.equal(resolveCatalogDemoContent(slug, '2.0.0', artifact.document), null, `${slug}: a stale URL cannot select a new package`);
+        assert.ok(catalogDemoStateNamespace(slug, '2.1.0', 'visitor_1111111111111111'));
+        assert.notEqual(catalogDemoStateNamespace(slug, '2.0.0', 'visitor_1111111111111111'), catalogDemoStateNamespace(slug, '2.1.0', 'visitor_1111111111111111'));
     }
 });
 

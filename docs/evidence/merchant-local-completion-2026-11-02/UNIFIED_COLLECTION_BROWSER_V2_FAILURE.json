@@ -1,0 +1,12 @@
+{
+  "status": "FAILED_UNACCEPTED",
+  "runId": "f429a4c42416",
+  "passed": 3,
+  "failed": 3,
+  "skipped": 0,
+  "cleanupEmpty": true,
+  "source_sha256": "51fc984e3a3aebf7f1976e283c74bd80d10addc7c5d0dde57258c85ec35560bb",
+  "sourceEntries": 7403,
+  "sourceHeldAndTerminalVerified": true,
+  "finding": "Actual manual create committed201 and response was replaced503 once. Next test assertion matched both responsive table/card DOM copies before waiting for retry acknowledgement; test closed page again. No successful retry or smart acceptance claimed. Now wait for pending request retirement first, then assert the visible semantic table row. Screenshot visually inspected."
+}

@@ -1,0 +1,20 @@
+{
+  "scope": "Read-only decoded actual native screenshot; new full-page composition, default dark theme. This is a confirmed legacy outlined-button foreground pairing, not whole-app color acceptance.",
+  "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v31/native-transfer-quantity-entered-without-scanner.png",
+  "sample": {
+    "page_background": [
+      17,
+      24,
+      39
+    ]
+  },
+  "outlined_label_solid_rgb": [
+    139,
+    92,
+    246
+  ],
+  "solid_accent_pixels_in_label_band": 6006,
+  "contrast": 4.189459005449387,
+  "finding": "UI-FOUND-COLOR-02",
+  "status": "OPEN: fix existing canonical StoreTheme outlined/text/elevated pairing after active source freeze; inspect overrides separately"
+}

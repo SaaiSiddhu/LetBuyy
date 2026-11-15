@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-11-07T05:47:13.217443+00:00",
+  "supervisor_pid": 26362,
+  "source": "merchant-catalog-media-source-v73",
+  "source_sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820",
+  "command": [
+    "python3",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/run_owned_media_source73.py"
+  ],
+  "status": "RUNNING",
+  "child_pid": 26365
+}

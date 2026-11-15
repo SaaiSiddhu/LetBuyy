@@ -12,7 +12,10 @@ export function isOwnedNextIngress(headers, { port, checkoutOrigin, rootDomain }
         const local = incoming.hostname === 'localhost' || /^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.localhost$/.test(incoming.hostname);
         const canonical = rootDomain && rootDomain !== 'localhost'
             && (incoming.hostname === rootDomain || incoming.hostname.endsWith('.' + rootDomain));
-        if (!local && !canonical) return false;
+        // One exact synthetic custom host is admitted only in the localhost
+        // owned fixture. The outer TLS proxy still pins its host and port.
+        const syntheticCustom = rootDomain === 'localhost' && incoming.hostname === 'shop.merchant.test';
+        if (!local && !canonical && !syntheticCustom) return false;
         // Production buyer callbacks canonicalize non-local hosts to HTTPS443.
         // The owned TLS proxy's exact-host allowlist and Chromium resolver map
         // that public address to its ephemeral port without changing Host.

@@ -1,0 +1,22 @@
+{
+  "build_script_sha256": "58caa559d1fdb38158214ab810c984b27a7bb190a1ee8d64614bd477f2e251fd",
+  "status": "RUNNING",
+  "source_sha256": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda",
+  "source_inputs": 8456,
+  "supervisor_pid": 96496,
+  "owned_root": "/private/tmp/letbuyy-web-mobile-switcher-v2-ios-m5x_n83t",
+  "platform": "ios",
+  "started_at": "2026-11-06T05:45:42.506313+00:00",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "ACCOUNTS_ENVIRONMENT": "development",
+    "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+    "API_BASE_URL": "http://127.0.0.1:54350/v1",
+    "IDENTITY_BASE_URL": "http://127.0.0.1:54351",
+    "ADMIN_BASE_URL": "http://127.0.0.1:54353",
+    "STOREFRONT_BASE_URL": "http://127.0.0.1:54354"
+  },
+  "steps": [],
+  "scope": "Normal main.dart debug compile/artifact only. No install, launch, sign-in, provider, web-mobile sync, device, hosted or release acceptance.",
+  "active_child_pid": 96499
+}

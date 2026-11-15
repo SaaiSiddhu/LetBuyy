@@ -1,0 +1,14 @@
+{
+  "source": "merchant-product-media-ios-source-v58",
+  "source_sha256": "55323aae8a88a5f30bef11b75ee2602051cd263b95cda5b75f31369973a4b7c3",
+  "inputs": {
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-product-media-v82-local-ios.postgres.test.ts": "2616193ca813ae7f460a4772f3a3319bdc45cedba9647c46ede9868f4d0017d9",
+    "/private/tmp/letbuyy-ios-ui-20261107-4199bf12a4/MerchantUITests.swift": "30a9cc9efc39089b1e4faf88cfb2c50b178c67219e037286559d6a24e93f01b5",
+    "/private/tmp/letbuyy-ios-ui-20261107-4199bf12a4/create_project.rb": "cc86d29d749cb0bdf52da681077a3ea430368529fc26e5104d3b6c41163d7fda",
+    "/private/tmp/letbuyy-ios-ui-20261107-4199bf12a4/run_fixture.py": "3684577ae9a8c4f6c59b2a84fe060d6eb168ca9545248a1ef84ec47c412c8ed4",
+    "/private/tmp/letbuyy-ios-ui-20261107-4199bf12a4/run_auth_ui.py": "72c88620f214b498d5d2eee8a914471977237c8a6037b36c70d9179bb5c8bb7d",
+    "/private/tmp/letbuyy-ios-ui-20261107-4199bf12a4/device-receipt.json": "bdd737b7650b864a4a7848bbccde70f34a29403d05f9188eab2a67e314dacc3f",
+    "/private/tmp/letbuyy-ios-ui-20261107-4199bf12a4/PHOTO_ADMISSION.json": "43831b5dd8e3fd4effb535b6c36b842a073c1c310c0c0151f187bb8b282b5b36"
+  },
+  "scope": "Prepared normal iOS form Return-key submission and no-session-injection proof. Prior synthetic email may be cleared only by its privately admitted exact task identity. No full acceptance yet."
+}

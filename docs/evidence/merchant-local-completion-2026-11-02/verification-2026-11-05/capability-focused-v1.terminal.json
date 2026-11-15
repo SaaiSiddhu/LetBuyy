@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-05T20:10:37.001096+00:00",
+  "supervisor_pid": 84531,
+  "source": "capability-source-v1",
+  "source_sha256": "7051354b8f4957a22d983e24dd51e973c850dfcbf03ec58850f3d9732e11aa99",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/capability_presentation_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 84533,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T20:10:39.609737+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "7051354b8f4957a22d983e24dd51e973c850dfcbf03ec58850f3d9732e11aa99"
+}

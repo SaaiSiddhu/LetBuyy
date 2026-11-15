@@ -1,0 +1,20 @@
+{
+  "from_source": "cdd6849c07447a0af351c9edf6e11801fa9ac03cf79f38a8e453a698a919c8f6",
+  "to_source": "931546ba50ee33d1675b84e83088eb42cb0abf3e56bf06ee283896be2900a5a6",
+  "delta": [
+    "apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart",
+    "apps/merchant/mobile/test/kyc_containment_test.dart",
+    "apps/merchant/mobile/test/kyc_upload_layout_test.dart"
+  ],
+  "all_inputs_outside_these_three_equal": true,
+  "reused": [
+    "types/shared tests from prior chain",
+    "Dart SDK22fromv7 allSDKandtestinputs unchanged",
+    "Merchant web1732+typing v8: allweb/backend/shared inputs unchanged",
+    "owned Staff50fromv9: actualbackend/SQL/fixtures unchanged",
+    "sealed invitation browser1fromv9: runtime/SDK/serverfixtures unchanged, no mobile surface imported"
+  ],
+  "fresh": "Gateway units/root contracts (some read mobile source);Flutteranalysis/full;governance;Android+iOSartifacts/readback",
+  "focus": "kyc-layout-focused-v4:53PASS/0FAIL/0SKIP",
+  "negative": "Viewport2normalPASS/2largeFAIL;after scroll repair actual GST dropdown63px overflow in2large cases;canonical choice repair passes all4layouts and actualApply controls"
+}

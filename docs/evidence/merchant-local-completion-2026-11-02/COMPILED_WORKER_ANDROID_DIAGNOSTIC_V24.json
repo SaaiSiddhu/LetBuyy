@@ -1,0 +1,63 @@
+{
+  "kind": "BOUNDED_LOCAL_COMPILED_WORKER_ANDROID_DIAGNOSTIC",
+  "status": "PASS",
+  "runId": "dc2d7ab850f6",
+  "globalSourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9.source.json",
+  "globalSourceSha256": "077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576",
+  "runtimeSourceSha256": "6e37d85995170c377e8fc7fee148f42eeb9deccfe95216d13cfe0b62314713a0",
+  "tests": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0
+  },
+  "runnerExit": 0,
+  "controllerExit": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "reverseMapsEmpty": true,
+  "apkSha256": "5d69fcb57c9c6ee24b7782f38d8f8ae6b03bfe3da748af2305a08e18f4e738be",
+  "installedReadback": true,
+  "originalApkRetained": true,
+  "compiledWorkers": {
+    "run_id": "dc2d7ab850f6",
+    "runtime": "workerd",
+    "gateway_sha256": "d2880351cd3a6dd81ee302a816ca058a65d22d901363b3e7ece1b3a3a7ab57b4",
+    "bff_sha256": "1cef74ec3baed72d32afad1e061f58ff4a84bf0c03a432dc4f1ec7588f8d9f63",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "acceptedScope": [
+    "Fresh normal synthetic Accounts credential form through observed Android Custom Tab, exact entered-field readback and automatic PKCE return; no session injection",
+    "Actual canonical Gateway/BFFworkerd modules and owned PG/PostgREST; Node observer is transport/fault harness only",
+    "Normal native reservation read after a canonical prerequisite created through actual compiled Gateway;2unitsActive/Held-until-shipment/readable TR reference",
+    "Independent Android accessibility fields, read-only inventory/document/reservation/receipt state conservation and source invariance",
+    "Private native reservation screenshot visually inspected"
+  ],
+  "notAccepted": [
+    "Stock mutation or setter synchronization",
+    "Complete feature or all119/122",
+    "Staff-native/variant allocation permutations",
+    "iOS UI/hosted/real-provider/release/production readiness"
+  ],
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24/diagnostic-backend-verified.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24/source-snapshot.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24/compiled-workers.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v24/artifact.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v24-controller-inputs.json",
+    "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-v24-launcher-cleanup.json"
+  ],
+  "updatedAt": "2026-11-04T01:17:23.302931+00:00"
+}

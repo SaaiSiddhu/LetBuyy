@@ -16,6 +16,7 @@ import {chromium,expect,type Page} from '@playwright/test';
 import {gatewayEnv,newIdentityKeys,INTERNAL_SECRET,signedIdentityHeaders} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import {expectBuyerHandoff} from '../../services/api-gateway/src/__tests__/owned-db/buyer-handoff-browser';
 import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,startOwnedPooledSqlProxy,createOwnedCheckoutTlsCertificate,type OwnedClientProcess} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import {createLocalTurnstileProvider,LOCAL_TURNSTILE_SECRET} from '../fixtures/local-turnstile-provider';
 const owned=requireOwnedDatabase();
 async function freePort() {
     const s = createServer(); await new Promise<void>(r => s.listen(0,'127.0.0.1',r));
@@ -38,6 +39,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
  const identityPort=await freePort(),merchantPort=await freePort(),commercePort=await freePort();
  const identityOrigin=`http://localhost:${identityPort}`,merchantOrigin=`http://localhost:${merchantPort}`,commerceHttpOrigin=`http://localhost:${commercePort}`;
  const keys=await newIdentityKeys(),pooled=await startOwnedPooledSqlProxy(owned),visitorSigningKey=crypto.randomUUID()+crypto.randomUUID();
+ const challenge=await createLocalTurnstileProvider(owned);
  const mail:{to:string[];subject:string;html:string;text:string}[]=[];let failFirstMail=true;
  const capture=async(request:Request)=>{assert.equal(new URL(request.url).pathname,'/emails');assert.equal(request.method,'POST');mail.push(await request.json() as typeof mail[number]);
   if(failFirstMail){failFirstMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}
@@ -76,9 +78,9 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   console.info('OWNED_SQL_PROTOCOL_TARGET '+JSON.stringify({binding:'HYPERDRIVE-shaped',origin:'owned PostgreSQL wire',managedHyperdrive:false}));
   gateway=await NativeGateway.create(env,capture);
   const shared={STORE_ACCESS_SIGNING_KEY:visitorSigningKey,PREVIEW_SIGNING_KEY:visitorSigningKey,CHECKOUT_ORIGIN:checkoutOrigin,NEXT_PUBLIC_STOREFRONT_URL:commerceOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,LETBUYY_INTERNAL_API_SECRET:INTERNAL_SECRET,INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
-  identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,hostMode:'canonical-storefront-loopback',env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
+  identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,hostMode:'canonical-storefront-loopback',providerFixture:challenge.profile,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
    LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',
-   NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
+   NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:LOCAL_TURNSTILE_SECRET,LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
   merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,hostMode:'canonical-storefront-loopback',env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
   commerce=startOwnedClientRuntime(owned,'commerce-next-production',{port:commercePort,hostMode:'canonical-storefront-loopback',env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1',LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'}});
   for(const[label,app]of [['identity',identity],['merchant',merchant],['commerce',commerce]]as const){
@@ -88,7 +90,15 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    let stages=0;app.stdout.on('data',data=>{for(const line of data.toString().split('\n'))if(stages<20&&/Next\.js|Creating|Compiled|Collecting|Generating|Finalizing|Ready in|Starting|Failed to compile/.test(line)){stages++;console.info('OWNED_NATIVE_BUILD '+JSON.stringify({app:label,stage:line.replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]').slice(0,200)}));}});
   }
   await Promise.all([ready(identityOrigin+'/login',identity,'identity'),ready(merchantOrigin,merchant,'merchant'),ready(commerceHttpOrigin+'/api/buyer-auth/session',commerce,'commerce')]);
-  browser=await chromium.launch({headless:true,args:[`--ignore-certificate-errors-spki-list=${tlsSpki}`,'--no-proxy-server',`--host-resolver-rules=MAP *.${DEFAULT_STOREFRONT_DOMAIN}:443 127.0.0.1:${tlsPort}, MAP *.${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP ${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP checkout.localhost 127.0.0.1, MAP api.localhost 127.0.0.1`]});const context=await browser.newContext();page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);  stage='native-signup';console.info('OWNED_NATIVE_STAGE native-signup');const signup=await page.goto(identityOrigin+'/signup');assert.equal(signup?.status(),200);
+  browser=await chromium.launch({headless:true,args:[`--ignore-certificate-errors-spki-list=${tlsSpki}`,'--no-proxy-server',`--host-resolver-rules=MAP *.${DEFAULT_STOREFRONT_DOMAIN}:443 127.0.0.1:${tlsPort}, MAP *.${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP ${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP checkout.localhost 127.0.0.1, MAP api.localhost 127.0.0.1`]});
+  const makeContext=async()=>{
+   const context=await browser!.newContext();await challenge.attachBrowser(context,[identityOrigin,merchantOrigin,commerceHttpOrigin]);
+   // The existing canonical-host resolver and TLS proxy above map only these
+   // exact fixture origins to owned loopback. No remote provider/SDK is allowed.
+   const localTlsOrigins=new Set([commerceOrigin,checkoutOrigin,`https://api.localhost:${tlsPort}`,`https://${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}:${tlsPort}`,`https://${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`]);
+   await context.route(url=>localTlsOrigins.has(url.origin),route=>route.continue());return context;
+  };
+  const context=await makeContext();page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);  stage='native-signup';console.info('OWNED_NATIVE_STAGE native-signup');const signup=await page.goto(identityOrigin+'/signup');assert.equal(signup?.status(),200);
   const signupCopy=await page.locator('body').innerText();
   await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
   await page.getByLabel('Email',{exact:true}).fill(email);
@@ -109,12 +119,12 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    return (await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':decodeURIComponent(token)},body:JSON.stringify(body)})).status;
   },{path,body});}
   assert.equal(await authPost('/api/auth/set-password',{password,email,userId:crypto.randomUUID()}),403,'a caller-supplied identity cannot replace verified intent');
-  async function enterOtp(code:string){for(let i=0;i<6;i++)await page!.getByLabel(`Digit ${i+1} of 6`,{exact:true}).fill(code[i]);}
-  // The production form automatically submits on the sixth digit.
+  async function enterOtp(code:string){await page!.getByLabel('Email verification code',{exact:true}).fill(code);await page!.getByRole('button',{name:'Verify',exact:true}).click();}
+  // The current shared code input supports paste/autofill and explicit verification.
   const wrongReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/verify-otp'&&r.request().method()==='POST');
   await enterOtp(otp==='000000'?'111111':'000000');
   assert.equal((await wrongReply).status(),400);assert.equal(owned.psql(`SELECT email_verified FROM users_custom WHERE email='${email}';`),'f');
-  await expect(page.getByLabel('Digit 1 of 6',{exact:true})).toHaveValue('');
+  await expect(page.getByLabel('Email verification code',{exact:true})).toHaveValue('');
   const validReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/verify-otp'&&r.request().method()==='POST');
   await enterOtp(otp);assert.equal((await validReply).status(),200);
   await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Confirm password',{exact:true}).fill(password);
@@ -128,7 +138,8 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const [created]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/create-store'&&r.request().method()==='POST'),page.getByRole('button',{name:'Create My Site',exact:true}).click()]);assert.equal(created.status(),200);
   await page.waitForURL(u=>u.origin===merchantOrigin&&u.pathname===`/${subdomain}/access_account/checkout/select-plan`,{timeout:60_000});await expect(page.getByRole('region',{name:'Available plans'})).toBeVisible();
   const store=JSON.parse(owned.psql(`SELECT jsonb_build_object('count',count(*),'trial_days',max(EXTRACT(EPOCH FROM (trial_ends_at-trial_started_at))/86400),'theme',max(theme_id),'status',max(status))::text FROM sites WHERE custom_user_id=(SELECT id FROM users_custom WHERE email='${email}') AND subdomain='${subdomain}';`));assert.equal(store.count,1);assert.equal(store.trial_days,14,'existing persisted trial policy is preserved');assert.equal(store.status,'draft');
-  await page.goto(`${merchantOrigin}/${subdomain}/dashboard`);await expect(page.getByRole('heading',{name:'Where do you want to start?',exact:true})).toBeVisible();
+  await page.goto(`${merchantOrigin}/${subdomain}/dashboard`);await expect(page.getByRole('heading',{level:1,name:/Synthetic Public Store/})).toBeVisible();
+  await expect(page.getByRole('complementary',{name:'Storefront publication status'})).toContainText('Draft — not visible to visitors');
   const siteId=owned.psql(`SELECT id FROM sites WHERE subdomain='${subdomain}';`),productName='Synthetic Native Variant Product';
   assert.equal(store.theme,'letbuyy-forge','Circuit remains the approved new-store default');
   assert.equal(owned.psql(`SELECT template_config->'liquidBundle'->'package'->>'slug' FROM sites WHERE id='${siteId}';`),'letbuyy-forge');
@@ -149,15 +160,15 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const productId=owned.psql(`SELECT id FROM products WHERE store_id='${siteId}' AND name='${productName}';`);assert.match(productId,/^[a-f0-9-]{36}$/);assert.equal(owned.psql(`SELECT count(*) FROM product_variants WHERE product_id='${productId}';`),'2');
   await page.goto(`${merchantOrigin}/${subdomain}/products/${productId}`);await expect(page.getByLabel('Title',{exact:true})).toHaveValue(productName);await expect(page.getByLabel('Stock for Small',{exact:true})).toHaveValue('3');
   stage='merchant-manual-collection';console.info('OWNED_NATIVE_STAGE merchant-manual-collection');const collectionTitle='Synthetic Native Collection';
-  await page.goto(`${merchantOrigin}/${subdomain}/products/collections`);await page.getByRole('button',{name:'New collection',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill(collectionTitle);
-  const [collectionCreated]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/collections')&&r.request().method()==='POST'),page.getByRole('button',{name:'Create collection',exact:true}).first().click()]);assert.equal(collectionCreated.status(),201);
+  await page.goto(`${merchantOrigin}/${subdomain}/products/collections`);await page.getByRole('button',{name:'New collection',exact:true}).click();await page.getByLabel('Collection title',{exact:true}).fill(collectionTitle);
+  const [collectionCreated]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/collections')&&r.request().method()==='POST'),page.locator('section').filter({has:page.getByRole('heading',{name:'Create collection',exact:true})}).getByRole('button',{name:'Create collection',exact:true}).click()]);assert.equal(collectionCreated.status(),201);
   const collectionId=owned.psql(`SELECT id FROM collections WHERE store_id='${siteId}' AND title='${collectionTitle}';`);assert.match(collectionId,/^[a-f0-9-]{36}$/);
   await page.getByRole('row').filter({hasText:collectionTitle}).getByRole('button',{name:'Manage products',exact:true}).click();await page.getByRole('checkbox',{name:productName,exact:true}).check();
   const [membersSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith(`/collections/${collectionId}/products`)&&r.request().method()==='PUT'),page.getByRole('button',{name:'Save products',exact:true}).click()]);assert.equal(membersSaved.status(),200);
   assert.equal(owned.psql(`SELECT count(*) FROM collection_products WHERE collection_id='${collectionId}' AND product_id='${productId}';`),'1');
   await page.goto(`${merchantOrigin}/${subdomain}/products/collections`);
   for(let index=1;index<=25;index++){
-   const title='ZZZ Synthetic Browse '+String(index).padStart(2,'0');await page.getByRole('button',{name:'New collection',exact:true}).click();const createPanel=page.locator('section').filter({has:page.getByRole('heading',{name:'New collection',exact:true})});await createPanel.getByLabel('Title',{exact:true}).fill(title);
+   const title='ZZZ Synthetic Browse '+String(index).padStart(2,'0');await page.getByRole('button',{name:'New collection',exact:true}).click();const createPanel=page.locator('section').filter({has:page.getByRole('heading',{name:'Create collection',exact:true})});await createPanel.getByLabel('Collection title',{exact:true}).fill(title);
    const [createdExtra]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/collections')&&r.request().method()==='POST'),createPanel.getByRole('button',{name:'Create collection',exact:true}).click()]);assert.equal(createdExtra.status(),201);
    await expect(createPanel).toHaveCount(0);
   }
@@ -176,7 +187,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const [rateSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/shipping/rates')&&r.request().method()==='POST'),page.getByRole('button',{name:'Add rate',exact:true}).last().click()]);assert.equal(rateSaved.status(),201);
   stage='merged-theme-workspace';console.info('OWNED_NATIVE_STAGE merged-theme-workspace');await page.goto(`${merchantOrigin}/${subdomain}/online-store/themes`);
   await expect(page.getByRole('region',{name:'Discover themes',exact:true})).toBeVisible();
-  await expect(page.locator('article[aria-label$="catalog theme"]')).toHaveCount(10);
+  await expect(page.getByRole('region',{name:'Discover themes',exact:true}).locator('article[aria-label$=" theme"]')).toHaveCount(5);
   // This journey qualifies the retained Core compatibility package, not the
   // new-store default. Grant only a labelled synthetic upload entitlement and
   // install the real bundle through the normal file input; no store/theme SQL seed.
@@ -203,7 +214,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
 
   assert.equal((await gateway.dispatch(`/v1/storefront/${subdomain}/collections`,{})).status,404,'draft collections are never public');
   assert.equal(owned.psql(`SELECT published FROM sites WHERE id='${siteId}';`),'f','the owner preview does not open the public store');
-  const draftContext=await browser.newContext(),draftVisitor=await draftContext.newPage();const draftResponse=await draftVisitor.goto(`https://${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}:${tlsPort}`);assert.equal(draftResponse?.status(),401);await draftContext.close();
+  const draftContext=await makeContext(),draftVisitor=await draftContext.newPage();const draftResponse=await draftVisitor.goto(`https://${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}:${tlsPort}`);assert.equal(draftResponse?.status(),401);await draftContext.close();
   await expect(page.frameLocator('iframe.te-preview-iframe').locator('[data-letbuyy-preview-route="true"]')).toContainText(marker,{timeout:30_000});await expect(page.frameLocator('iframe.te-preview-iframe').getByText('Discover our latest products.',{exact:true})).toBeVisible();await expect(page.frameLocator('iframe.te-preview-iframe').getByText('Free shipping on fresh drops this week.',{exact:true})).toHaveCount(0);await expect(page.locator('.te-preview-url')).toHaveText(`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`);
   const previewFrame=page.frameLocator('iframe.te-preview-iframe'),editorViewportMeasurements=[];
   for(const [device,expectedWidth] of [['Desktop',1440],['Tablet',820],['Mobile',390],['Desktop',1440]] as const){
@@ -220,7 +231,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const screenshot=`${tmpdir()}/letbuyy-native-core-${owned.runId}.png`;await page.screenshot({path:screenshot,fullPage:true});
   await expect(page.getByRole('button',{name:'Save',exact:true}).first()).toBeDisabled();const [published]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===`/api/themes/${coreSlug}/editor`&&r.request().method()==='PUT'),page.getByRole('button',{name:'Publish',exact:true}).click()]);assert.equal(published.status(),200);
   assert.equal(owned.psql(`SELECT status FROM sites WHERE id='${siteId}';`),'published');
-  stage='public-tenant-storefront';console.info('OWNED_NATIVE_STAGE public-tenant-storefront');const buyerContext=await browser.newContext(),buyer=await buyerContext.newPage();buyerDiagnostic=buyer;buyer.setDefaultTimeout(30_000);buyer.setDefaultNavigationTimeout(60_000);
+  stage='public-tenant-storefront';console.info('OWNED_NATIVE_STAGE public-tenant-storefront');const buyerContext=await makeContext(),buyer=await buyerContext.newPage();buyerDiagnostic=buyer;buyer.setDefaultTimeout(30_000);buyer.setDefaultNavigationTimeout(60_000);
   const tenantOrigin=`https://${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}:${tlsPort}`;
   // The real buyer contract pins non-local callbacks to canonical HTTPS443;
   // Chromium maps that exact owned host to this fixture's TLS listener.
@@ -475,6 +486,46 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   let indexCard=buyer.locator('.lb-category-grid').getByRole('link',{name:collectionTitle,exact:true});if(!await indexCard.count()){await pager.getByRole('link',{name:'Next collections',exact:true}).click();}
   await expect(indexCard).toBeVisible();await indexCard.click();await expect(buyer.getByRole('heading',{level:1,name:collectionTitle,exact:true})).toBeVisible();
   console.info('OWNED_COLLECTION_INDEX '+JSON.stringify({indexCardVisible:true,actualDetailOpened:true,collectionScreenshot,normalMerchantCollections:26,pages:[24,2],previousPageRestored:true,paginationBeforeFooter:true}));
+  stage='smart-collection-liquid-buyer';console.info('OWNED_NATIVE_STAGE smart-collection-liquid-buyer');
+  const smartTitle='Synthetic Rules Buyer Collection',smartSlug='synthetic-rules-buyer-collection';
+  await page.goto(`${merchantOrigin}/${subdomain}/products/smart-collections`);await page.getByRole('button',{name:'Create collection',exact:true}).click();
+  await page.getByLabel('Collection name',{exact:true}).fill(smartTitle);await page.getByLabel('Slug',{exact:true}).fill(smartSlug);
+  await page.getByRole('button',{name:'Add condition',exact:true}).click();await page.getByLabel('Rule 1 value',{exact:true}).fill('Native Variant');
+  await page.getByLabel('Published on storefront',{exact:true}).check();
+  const [smartCreated]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/smart-collections')&&r.request().method()==='POST'),page.getByRole('button',{name:'Save collection',exact:true}).click()]);assert.equal(smartCreated.status(),201);
+  await expect(page.getByRole('button',{name:'Edit '+smartTitle,exact:true})).toBeVisible();
+  const smartId=owned.psql(`SELECT id FROM collections WHERE store_id='${siteId}'AND slug='${smartSlug}'AND deleted_at IS NULL`);assert.match(smartId,/^[a-f0-9-]{36}$/);
+  assert.equal(owned.psql(`SELECT count(*)FROM smart_collections WHERE store_id='${siteId}'`),'0','normal Smart creation writes only the approved collection owner');
+  const smartPath=`${tenantOrigin}/collections/${smartId}`;
+  for(const width of [1280,390]){
+   await buyer.setViewportSize({width,height:900});const response=await buyer.goto(smartPath);assert.equal(response?.status(),200);
+   await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
+   await expect(buyer.getByRole('heading',{level:1,name:smartTitle,exact:true})).toBeVisible();
+   await expect(buyer.locator(`.lb-product-grid a[href="/product/${productId}"]`).filter({hasText:productName}).first()).toBeVisible();
+   assert.equal(await buyer.locator('body').evaluate(el=>el.scrollWidth<=window.innerWidth+1),true);
+   await expect(buyer.locator('link[rel="canonical"]')).toHaveAttribute('href',new RegExp(`/collections/${smartId}$`));
+  }
+  const smartScreenshot=`${tmpdir()}/letbuyy-native-smart-collection-${owned.runId}.png`;await buyer.screenshot({path:smartScreenshot,fullPage:true});
+  await page.getByRole('button',{name:'Edit '+smartTitle,exact:true}).click();await page.getByRole('button',{name:'Preview saved rules',exact:true}).click();
+  await expect(page.getByRole('status').filter({hasText:'1 matching products'})).toBeVisible();
+  await page.getByLabel('Rule 1 value',{exact:true}).fill('no-synthetic-product-matches');
+  await page.getByRole('button',{name:'Save collection',exact:true}).click();await expect(page.getByText('Collection saved.',{exact:true})).toBeVisible();
+  assert.equal((await buyer.goto(smartPath))?.status(),200);await expect(buyer.getByRole('heading',{level:1,name:smartTitle,exact:true})).toBeVisible();
+  await expect(buyer.locator('.lb-product-grid .lb-product-card')).toHaveCount(0);
+  assert.equal((await gateway.dispatch(`/v1/storefront/${subdomain}/collections/${smartId}`,{})).status,200);
+  const smartEmpty=await(await gateway.dispatch(`/v1/storefront/${subdomain}/collections/${smartId}`,{})).json() as {data:{products:unknown[];total:number}};assert.equal(smartEmpty.data.products.length,0);assert.equal(smartEmpty.data.total,0);
+  await page.getByRole('button',{name:'Edit '+smartTitle,exact:true}).click();await page.getByLabel('Rule 1 value',{exact:true}).fill('Native Variant');
+  await page.getByLabel('Published on storefront',{exact:true}).uncheck();await page.getByRole('button',{name:'Save collection',exact:true}).click();await expect(page.getByText('Collection saved.',{exact:true})).toBeVisible();
+  assert.equal((await gateway.dispatch(`/v1/storefront/${subdomain}/collections/${smartId}`,{})).status,404);
+  const hidden=await buyer.goto(smartPath);await expect(buyer.getByRole('heading',{name:'Page not found',exact:true})).toBeVisible();
+  await expect(buyer.locator(`.lb-product-grid a[href="/product/${productId}"]`)).toHaveCount(0);
+  const hiddenStatus=hidden?.status();assert.equal(hiddenStatus,404,'an unpublished collection document must be absent to buyers and crawlers');
+  assert((await buyer.locator('meta[name="robots"]').all()).length>0);await expect(buyer.locator('meta[name="robots"]').first()).toHaveAttribute('content',/noindex/);
+  assert.equal(owned.psql(`SELECT version FROM collections WHERE id='${smartId}'`),'3');
+  assert.equal(owned.psql(`SELECT count(*)FROM collection_metadata_receipts WHERE collection_id='${smartId}'`),'3');
+  await buyer.goto(`${tenantOrigin}/collections`);await expect(buyer.locator('.lb-category-grid').getByRole('link',{name:smartTitle,exact:true})).toHaveCount(0);
+  console.info('OWNED_SMART_COLLECTION_LIQUID '+JSON.stringify({nativeWorkerd:true,normalMerchantCreateUpdateUnpublish:true,normalBuyerLiquid:true,widths:[1280,390],positiveMatches:1,afterRuleChange:0,publicUnpublishedApiStatus:404,hiddenDocumentStatus:hiddenStatus,hiddenNoindex:true,canonicalUuidUrl:true,legacySmartRows:0,metadataReceipts:3,productsPreserved:true,smartScreenshot}));
+  await buyer.setViewportSize({width:1280,height:900});
   collectionListUnavailable=true;await buyer.goto(tenantOrigin);
   await expect(buyer.getByRole('heading',{name:'Something went wrong',exact:true})).toBeVisible();
   await expect(buyer.getByText('No collections yet',{exact:true})).toHaveCount(0);
@@ -525,7 +576,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   assert.equal(await buyer.evaluate(()=>localStorage.getItem('lb_cart_token')),null,'the second confirmed cart is also retired on normal tenant return');
   console.info('OWNED_REPEAT_SHOPPING_FINAL '+JSON.stringify({normalContinueShopping:true,distinctCartCapabilities:true,distinctCanonicalOrders:true,secondVariant:'Small',secondQuantity:1,secondTotalMinor:21900,originalCartByteIdentical:true,originalReceiptRecovered:true,secondCartRetired:true,repeatScreenshot}));
   await buyerContext.close();
-  stage='canonical-buyer-registration';console.info('OWNED_NATIVE_STAGE canonical-buyer-registration');const accountContext=await browser.newContext(),accountPage=await accountContext.newPage();buyerDiagnostic=accountPage;accountPage.setDefaultTimeout(30_000);accountPage.setDefaultNavigationTimeout(60_000);accountPage.on('requestfailed',r=>{const u=new URL(r.url());if(u.hostname===`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`)console.info('OWNED_BUYER_NAV_FAILURE '+JSON.stringify({host:u.host,path:u.pathname,error:r.failure()?.errorText}));});
+  stage='canonical-buyer-registration';console.info('OWNED_NATIVE_STAGE canonical-buyer-registration');const accountContext=await makeContext(),accountPage=await accountContext.newPage();buyerDiagnostic=accountPage;accountPage.setDefaultTimeout(30_000);accountPage.setDefaultNavigationTimeout(60_000);accountPage.on('requestfailed',r=>{const u=new URL(r.url());if(u.hostname===`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`)console.info('OWNED_BUYER_NAV_FAILURE '+JSON.stringify({host:u.host,path:u.pathname,error:r.failure()?.errorText}));});
   await accountPage.goto(`${tenantOrigin}/customers/login`);await expectBuyerHandoff(accountPage,identityOrigin,tenantCallbackOrigin);await expect(accountPage.getByRole('heading',{name:'Sign in',exact:true})).toBeVisible();await accountPage.getByRole('link',{name:'Create an account',exact:true}).click();
   await expect(accountPage.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:90_000});const accountEmail=`syn-core-account-${crypto.randomUUID()}@example.invalid`;await accountPage.getByLabel('Email',{exact:true}).fill(accountEmail);await accountPage.getByLabel('Password',{exact:true}).fill(password);
   const [accountCreated]=await Promise.all([accountPage.waitForResponse(r=>new URL(r.url()).pathname==='/api/buyer/register'&&r.request().method()==='POST'),accountPage.getByRole('button',{name:'Create account',exact:true}).click()]);assert.equal(accountCreated.status(),201);
@@ -559,10 +610,16 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   stage='merchant-order-readback';console.info('OWNED_NATIVE_STAGE merchant-order-readback');await page.goto(`${merchantOrigin}/${subdomain}/orders`);await expect(page.getByText('Synthetic Native Buyer',{exact:true}).filter({visible:true}).first()).toBeVisible({timeout:30_000});
   stage='merchant-domain-labels';console.info('OWNED_NATIVE_STAGE merchant-domain-labels');await page.goto(`${merchantOrigin}/${subdomain}/settings/domains`);await expect(page.locator('.domains-row-domain').filter({hasText:`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`})).toBeVisible();
   await page.goto(`${merchantOrigin}/${subdomain}/online-store/preferences`);await expect(page.getByLabel('Homepage title',{exact:true})).toBeVisible();await expect(page.locator('p').filter({hasText:new RegExp(`^${subdomain}\\.${DEFAULT_STOREFRONT_DOMAIN.replaceAll('.','\\.')}$`)})).toBeVisible();
-  await page.getByLabel('Homepage title',{exact:true}).fill('Synthetic Core Search Listing');const [seoSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/settings')&&r.request().method()==='PATCH'),page.getByRole('button',{name:'Save changes',exact:true}).click()]);assert.equal(seoSaved.status(),200);
+  await page.getByLabel('Homepage title',{exact:true}).fill('Synthetic Core Search Listing');
+  const seoDescription=('Synthetic canonical buyer metadata '+'d'.repeat(200)).slice(0,160);
+  await page.getByLabel('Meta description',{exact:true}).fill(seoDescription);
+  const [seoSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/settings')&&r.request().method()==='PATCH'),page.getByRole('button',{name:'Save changes',exact:true}).click()]);assert.equal(seoSaved.status(),200);
   await page.goto(`${merchantOrigin}/${subdomain}/settings/general`);await expect(page.locator('.settings-general-seo-preview-url')).toHaveText(`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`);await expect(page.locator('.settings-general-seo-preview-title')).toHaveText('Synthetic Core Search Listing');
+  await expect(page.getByLabel('SEO description',{exact:true})).toHaveValue(seoDescription);
+  const visitorContext=await makeContext(),visitor=await visitorContext.newPage();buyerDiagnostic=visitor;visitor.setDefaultTimeout(30_000);visitor.setDefaultNavigationTimeout(60_000);
+  await visitor.goto(tenantOrigin);await expect(visitor).toHaveTitle(/Synthetic Core Search Listing/);
+  await expect(visitor.locator('meta[name="description"]')).toHaveAttribute('content',seoDescription);
   stage='storefront-visitor-access';console.info('OWNED_NATIVE_STAGE storefront-visitor-access');
-  const visitorContext=await browser.newContext(),visitor=await visitorContext.newPage();buyerDiagnostic=visitor;visitor.setDefaultTimeout(30_000);visitor.setDefaultNavigationTimeout(60_000);
   const storePassword=crypto.randomUUID()+crypto.randomUUID(),rotatedPassword=crypto.randomUUID()+crypto.randomUUID();
   const accessHash=await hashStoreAccessPassword(storePassword),rotatedHash=await hashStoreAccessPassword(rotatedPassword);
   owned.psql(`UPDATE sites SET access_mode='password',access_password_hash='${accessHash}' WHERE id='${siteId}';`);
@@ -589,7 +646,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   owned.psql(`UPDATE sites SET access_mode='preview_only' WHERE id='${siteId}';`);assert.equal((await visitor.goto(tenantOrigin))?.status(),401);
   const ownerId=owned.psql(`SELECT custom_user_id FROM sites WHERE id='${siteId}';`);
   const issued=await gateway.dispatch('/v1/store-access/preview-links',{method:'POST',headers:{...await signedIdentityHeaders(ownerId,email,siteId),'X-Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({site_id:siteId,scope:'share-link',host:`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`})});assert.equal(issued.status,200);const issuedPreview=await issued.json() as {data:{token:string;jti:string}};
-  const shareContext=await browser.newContext(),share=await shareContext.newPage();share.setDefaultNavigationTimeout(60_000);buyerDiagnostic=share;
+  const shareContext=await makeContext(),share=await shareContext.newPage();share.setDefaultNavigationTimeout(60_000);buyerDiagnostic=share;
   assert.equal((await share.goto(tenantOrigin+'?lb_preview='+encodeURIComponent(issuedPreview.data.token)))?.status(),200,'first preview request forwards its verified capability before response cookie exists');await expect(share.getByRole('heading',{level:1,name:marker,exact:true})).toBeVisible();
   const previewCookie=(await shareContext.cookies()).find(c=>c.name==='__Host-lb_preview');assert.ok(previewCookie?.httpOnly&&previewCookie.secure);
   assert.equal((await share.goto(`${tenantOrigin}/product/${productId}`))?.status(),200);await expect(share.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();
@@ -602,5 +659,5 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   console.info('OWNED_NATIVE_CORE '+JSON.stringify({nativeWorkerd:true,nativeR2:true,seededAccount:false,seededStore:false,seededProduct:false,productionApps:3,providerFixtureOnly:true,store,productVariants:2,uploadedExactPng:true,imageDimensions:[320,320],normalEditorPublish:true,unpublishedPreviewVerified:true,merchantDomainLabelsVerified:true,preferencesSeoReadback:true,anonymousDraftDenied:true,presets,realTenantTlsHost:true,actualScheduledSearchIndex:true,manualCollectionShopperVerified:true,searchSubmissionVerified:true,canonicalBuyerProfileAddressVerified:true,buyerAddressCrudVerified:true,staleAccountWriteDenied:true,canonicalBuyers:2,unrelatedOrderDenied:true,searchScreenshot,accountScreenshot,addressScreenshot,customerOrders:Number(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${siteId}';`)),codTotalMinor:orders[0].total,screenshot,publicScreenshot,orderScreenshot}));
   assert.doesNotMatch(signupCopy,/₹20|14 days free/);
  }catch(error){console.info('OWNED_NATIVE_CORE_UI_FAILURE '+JSON.stringify({stage,alerts:page?await page.locator('[role=alert]').allTextContents():[],invalid:page?await page.locator(':invalid').evaluateAll(nodes=>nodes.map(node=>({tag:node.tagName,id:node.id,name:node.getAttribute('name'),message:(node as HTMLInputElement).validationMessage}))):[]}));console.info('OWNED_NATIVE_CORE_FAILURE '+JSON.stringify({stage,path:page?new URL(page.url()).pathname:null,buyer:buyerDiagnostic?{host:new URL(buyerDiagnostic.url()).host,path:new URL(buyerDiagnostic.url()).pathname}:null,storeState:owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('status',status,'published',published,'accessMode',access_mode,'theme',theme_id))::text,'[]') FROM sites WHERE subdomain='${subdomain}';`),calls:calls.slice(-15).map(({path,status})=>({path:path.replace(/ct_[A-Za-z0-9_-]+/g,'[redacted-cart-token]'),status})),errors:errors.slice(-3).map(s=>s.replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'))}));throw new Error((error instanceof Error?error.message:String(error)).replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'));
- }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await stopOwnedClientRuntime(commerce);await gateway?.settle();await pooled.stop();if(tls){tls.closeAllConnections();await new Promise<void>(r=>tls!.close(()=>r()));}if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}}
+ }finally{console.info('OWNED_NATIVE_LOCAL_CHALLENGE '+JSON.stringify(challenge.counts));await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await stopOwnedClientRuntime(commerce);await gateway?.settle();await pooled.stop();if(tls){tls.closeAllConnections();await new Promise<void>(r=>tls!.close(()=>r()));}if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}await challenge.close();}
 });

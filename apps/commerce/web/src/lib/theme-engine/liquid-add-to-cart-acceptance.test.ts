@@ -43,6 +43,28 @@ function seedExisting() {
     window.localStorage.setItem('lb_cart_token', 'accepted-token');
     window.localStorage.setItem('lb_cart_server', JSON.stringify({ cart_token: 'accepted-token', lines: [{ product_id: OTHER, title: savedLine.name, quantity: 2, unit_price: 700 }], total: 1400 }));
 }
+
+test('unknown inventory blocks card and PDP cart/checkout traffic while preserving the accepted cart', async () => {
+    await ready(); reset(); seedExisting(); const before = { ...window.localStorage };
+    let requests = 0;
+    globalThis.fetch = (async () => { requests++; throw new Error('Unknown inventory cannot submit'); }) as typeof fetch;
+    try {
+        for (const surface of ['card', 'product'] as const) {
+            const pdp = mount();
+            if (surface === 'card') pdp.element.dataset.inventoryKnown = 'false';
+            else {
+                const section = document.createElement('section'); section.dataset.sectionId = 'unknown-stock';
+                section.dataset.inventoryKnown = 'false'; document.body.append(section); section.append(pdp.element);
+            }
+            // Deliberately enabled controls prove the runtime guard independently
+            // from the server-rendered disabled attribute.
+            pdp.add.click(); pdp.buy.click(); await flush();
+            assert.match(pdp.status()!, /Product unavailable/);
+            assert.doesNotMatch(pdp.status()!, /Added/);
+        }
+        assert.equal(requests, 0); assert.deepEqual({ ...window.localStorage }, before); assert.deepEqual(navigations, []);
+    } finally { reset(); }
+});
 const rejection = (status = 409) => Response.json({ success: false, error: { code: status === 409 ? 'INSUFFICIENT_INVENTORY' : 'INTERNAL_ERROR', message: '<img onerror=untrusted()>' } }, { status });
 const active = () => Response.json({ success: true, data: { cart_status: 'active', checkout_state: null } });
 function receipt(lines: StorefrontCartLineInput[], token = 'accepted-token') {

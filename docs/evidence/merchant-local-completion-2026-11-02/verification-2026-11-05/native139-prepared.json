@@ -1,0 +1,18 @@
+{
+  "root": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0",
+  "fixture": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-catalog-availability-v139-local-ios.postgres.test.ts",
+  "source": "merchant-catalog-availability-source-v106",
+  "Flutter105_reuse": "catalog-availability105-to106-input-equivalence.json; only backend verification checksum changed",
+  "scope": "Normal synthetic auth; real availability7,web stock edit5/native Refresh5,native variant stock edit6/web6 with base0 preserved; then Code creation/lostreply/replay/retirement/history regression. Only task emulator/simulator,54350\u201354353,host9002nevercontacted; iOS139 after Android138cleanup.",
+  "controls": {
+    "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/run_fixture.py": "381b23a7bc59d2b3e6cace3dc1b4df600900e55f57c0db4e3265946c675dccb4",
+    "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/device-receipt.json": "a5a46b4ac71ac3e8b8dddee28efbf09a349fb8d8ed121a2754c8934719b32740",
+    "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Auth.swift": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810",
+    "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/run_chain-reviewed-v2.py": "473b04573f91b61cef9d3fc9b68162829a032aaa999b00453ff6cfc5734659a7",
+    "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/run_ui_guard.py": "c0d679c3c0a24a61ec78b03aeef398b8feef26131d77c76804b200c315d697cd",
+    "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/verify_installed.py": "82a3ef7c3f50229606abfad716b8acd969289e445d19446c1358e6ffc3ca7bc0",
+    "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/run_ui.py": "43d7919b4cb1aa300f2cf19bb159781e341f1376e5fc31bfc6d9bfd6308b410a",
+    "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/control-admission.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Create.swift": "e5ff44da94061309bc32f7a734e88a4df2a7170114258e02733b365c61b4cd26"
+  }
+}

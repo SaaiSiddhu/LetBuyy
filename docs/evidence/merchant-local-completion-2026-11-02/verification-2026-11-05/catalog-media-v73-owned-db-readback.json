@@ -1,0 +1,21 @@
+{
+  "runId": "611e8b5725b2",
+  "suites": 1,
+  "failedSuites": 0,
+  "tests": 12,
+  "assertionsPassed": 12,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source": "merchant-catalog-media-source-v73",
+  "source_sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820",
+  "scope": "Fresh owned local Media compiled Worker/SQL/R2 integration, lost acknowledgements, concurrent effect-once and tenant/security refusal controls; no hosted/provider acceptance"
+}

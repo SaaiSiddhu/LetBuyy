@@ -1,0 +1,11 @@
+{
+  "only_app_difference": "Card.semanticContainer=false plus explanatory comment",
+  "entire_other_app_bytes_unchanged": true,
+  "all_other_source_inputs_unchanged": 8440,
+  "protected_fixture_and_domain_bytes_unchanged": true,
+  "paths": [
+    "apps/merchant/mobile/lib/widgets/shared/warehouse_document_detail.dart",
+    "apps/merchant/mobile/test/warehouse_document_presentation_test.dart"
+  ],
+  "source_sha256": "b1ab9fa3bfb563d17d6285aeaeffbc80845ef39d521c5c0cfdcf028856df8e4d"
+}

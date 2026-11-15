@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-05T20:14:46.525769+00:00",
+  "supervisor_pid": 84953,
+  "source": "help-negative-v2",
+  "source_sha256": "fc0d089f3195a4ad0ac43fec767747ebbb44bc2a82568b43f6f17b06cc7468d7",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "--plain-name",
+    "cover round trip",
+    "test/help_presentation_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 84955
+}

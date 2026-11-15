@@ -1,4 +1,33 @@
 BEGIN;
+-- Refuse ABI drift before any schema mutation; CREATE OR REPLACE must not add an overload.
+DO $rollback_precondition$
+DECLARE
+  v_expected record;
+  v_live pg_catalog.pg_proc%ROWTYPE;
+  v_count integer;
+BEGIN
+  FOR v_expected IN SELECT * FROM (VALUES
+    ('issue_gst_invoice', 'public.issue_gst_invoice(uuid,uuid,text)', ARRAY['p_order_id','p_actor_id','p_request_id']::text[], 'jsonb', false),
+    ('capture_order_lifecycle_email_v1', 'public.capture_order_lifecycle_email_v1()', ARRAY[]::text[], 'trigger', false)
+  ) AS expected(name, signature, input_names, result_type, returns_set)
+  LOOP
+    SELECT count(*) INTO v_count FROM pg_catalog.pg_proc p
+      JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public' AND p.proname = v_expected.name;
+    IF v_count <> 1 OR pg_catalog.to_regprocedure(v_expected.signature) IS NULL THEN
+      RAISE EXCEPTION 'rollback 412 refuses to run: % signature or overload set changed', v_expected.name;
+    END IF;
+    SELECT * INTO v_live FROM pg_catalog.pg_proc p
+     WHERE p.oid = pg_catalog.to_regprocedure(v_expected.signature);
+    IF COALESCE(v_live.proargnames[1:v_live.pronargs], ARRAY[]::text[]) IS DISTINCT FROM v_expected.input_names
+       OR v_live.prorettype IS DISTINCT FROM v_expected.result_type::regtype
+       OR v_live.proretset IS DISTINCT FROM v_expected.returns_set
+       OR v_live.prokind <> 'f' THEN
+      RAISE EXCEPTION 'rollback 412 refuses to run: % input names or result ABI changed', v_expected.name;
+    END IF;
+  END LOOP;
+END;
+$rollback_precondition$;
 DO $$
 DECLARE f regprocedure:='public.create_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,bigint)'::regprocedure; d text;
 BEGIN

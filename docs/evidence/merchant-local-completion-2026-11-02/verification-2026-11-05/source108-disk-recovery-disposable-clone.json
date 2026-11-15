@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-08T10:14:50.444943+00:00",
+  "capsule": "/private/tmp/letbuyy-merchant-catalog-availability-v106-governance-ew3e3wzc",
+  "terminal_receipt": "merchant-catalog-availability-v106-governance.terminal.json",
+  "verified_core_inputs": 8529,
+  "source_sha256": "c872c19cb9e02fa7581afaa64b6dbf0ef4e50dd44ccbfdc5fb1950fa784ded6f",
+  "scope": "Terminal disposable validation copy only. Original source, all reports/manifests, source/artifacts, volumes and device data retained.",
+  "removed": true
+}

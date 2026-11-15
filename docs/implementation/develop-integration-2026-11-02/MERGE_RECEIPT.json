@@ -1,0 +1,28 @@
+{
+  "before": "e4105581e3346041d71694d3db093eb713773e07",
+  "candidate": "81bbec714906b1d5919857158f751b83b6217f62",
+  "candidateTree": "ca538d9dbbf57457729616ed38dbbe716ef060a8",
+  "mergeBase": "e4105581e3346041d71694d3db093eb713773e07",
+  "retainedOwnerStash": "86eda31cd230b5109c8f8e018eae4b4eb2d1f9b3",
+  "merge": "745bcd95cdf0dcf3b23f3242178fd5f3a84d7976",
+  "recordedAt": "2026-11-02T15:33:29.283643+00:00",
+  "mergedIn": "/Volumes/Projects/LetBuyy",
+  "treeMatchesQualifiedCandidate": true,
+  "allExistingLocalTipsContained": 26,
+  "allGithubTopicTipsContained": 3,
+  "githubEnvironmentHeadsUnchanged": true,
+  "originalWorktreesPreserved": true,
+  "newerActiveKycRuntimeWorkMerged": false,
+  "pushPerformed": false,
+  "deployPerformed": false,
+  "primaryPostMergeChecks": {
+    "frozenOfflineDependencyRestore": "PASS",
+    "dependencyBuildTasks": 32,
+    "gatewayTypecheck": "PASS",
+    "overlapRegressionTests": 9,
+    "migrationSequence": "PASS",
+    "rollbackIntegrity": "PASS",
+    "secretScan": "PASS",
+    "branchLedger": "PASS with one existing missing-branch advisory"
+  }
+}

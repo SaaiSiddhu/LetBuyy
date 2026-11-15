@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-08T10:23:07.633686+00:00",
+  "scope": "Hash-verified terminal disposable validation clones only; original sources, reports/manifests, artifacts, backups and device data retained.",
+  "removed": [
+    {
+      "capsule": "/private/tmp/letbuyy-merchant-buyer-inventory-v109-governance-241k5klc",
+      "verified_core_inputs": 8534,
+      "source_sha256": "029101384761ac9dfce54960732891da2f5ed240cc59f2e8b41dce4b1d2a3326",
+      "terminal_receipt": "merchant-buyer-inventory-v109-governance.terminal.json",
+      "removed": true
+    },
+    {
+      "capsule": "/private/tmp/letbuyy-merchant-buyer-inventory-v110-governance-uprievcg",
+      "verified_core_inputs": 8536,
+      "source_sha256": "e4e93c006428649197137a8e9ef3e08efcb9fbee5eb326e2dba70ce5fe0c39f2",
+      "terminal_receipt": "merchant-buyer-inventory-v110-governance.terminal.json",
+      "removed": true
+    }
+  ]
+}

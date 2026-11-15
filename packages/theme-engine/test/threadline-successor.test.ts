@@ -88,9 +88,9 @@ test('actual canonical bundle/schema/manifest validator accepts every default te
     const manifest = buildLiquidThemePackagePersistencePayload(candidate).schemaManifest;
     const runtime = { sectionSchemas: manifest.section_schemas, settingsSchema: manifest.settings_schema } as unknown as ThemeTemplateValidationRuntime;
     const config = { themeId: candidate.package.slug, schema_version: candidate.schema_version, engineVersion: candidate.renderer.renderer_version, rendererEngine: 'liquid', liquidBundle: candidate, sections: {}, templates: candidate.templates, themeSettings: candidate.config.settings_data.current };
-    assert.deepEqual(collectThemeTemplateValidationIssues({ templateConfig: config, runtime, themeSlug: candidate.package.slug }), []);
+    assert.deepEqual(collectThemeTemplateValidationIssues({ templateConfig: config, runtime, trustedPreviousConfig: { templates: candidate.templates }, themeSlug: candidate.package.slug }), []);
     const invalid = structuredClone(config); invalid.templates.index.sections['sense-categoryGrid-index'].settings.notDeclaredBySchema = 'forged';
-    assert.ok(collectThemeTemplateValidationIssues({ templateConfig: invalid, runtime, themeSlug: candidate.package.slug }).some(issue => issue.includes('notDeclaredBySchema')));
+    assert.ok(collectThemeTemplateValidationIssues({ templateConfig: invalid, runtime, trustedPreviousConfig: { templates: candidate.templates }, themeSlug: candidate.package.slug }).some(issue => issue.includes('notDeclaredBySchema')));
   }
 });
 test('new distribution defaults leave automatic headings and previously inert stock subtitle blank without rewriting the frozen package', () => {

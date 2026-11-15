@@ -1,0 +1,59 @@
+{
+  "status": "CONFIRMED_LOCAL_DEFECTS_SHIPMENT_COMMIT_REPAIR_APPROVED",
+  "runId": "6947c206da30",
+  "runnerExit": 1,
+  "tests": 4,
+  "pass": 1,
+  "fail": 3,
+  "skip": 0,
+  "cancelled": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "fixture": "services/api-gateway/src/__tests__/owned-db/merchant-transfer-cart-reservation.postgres.test.ts",
+  "fixtureSha256": "4367682c6f3e204e4974ca5deaa759a68de803e2c72ea7b97978883036674176",
+  "sourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/transfer-cart-negative-v1.source.json",
+  "positive": "Canonical customer hold4in20leaves16; actual public cart16accepted201/17refused409.",
+  "failures": [
+    "Transfer hold4in20produces rawavailable16/reserved4, current public-cart availability12; actual cart16wrongly409.",
+    "Existing canonical reserve kernel also rejects remaining16with INSUFFICIENT_INVENTORY after the transfer hold.",
+    "Customer hold18in20does not prevent transfer4from committing201; expected no-effect409fails."
+  ],
+  "limits": [
+    "No quantity repair or migration has been applied.",
+    "SQL kernel probe uses explicit synthetic database owner/GUC and is not access-control evidence.",
+    "Original v11normal web/Android accepted source/APK remain separately retained."
+  ],
+  "decisionPlan": "TRANSFER_RESERVATION_TIMING_DECISION.md",
+  "humanDecision": {
+    "answer": "Commit when shipped (Recommended)",
+    "recordedAt": "2026-11-03T16:30:51.696441+00:00",
+    "scope": "Recommended local-only existing canonical reserve\u2192shipcommit\u2192destinationreceive plan;436if legitimately unused, paired guarded rollback and owned qualification."
+  },
+  "originalFixtureArchive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/transfer-cart-negative-v1.fixture.ts",
+  "expandedNegative": {
+    "runId": "79e573418e6f",
+    "tests": 6,
+    "pass": 1,
+    "fail": 5,
+    "skip": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "addedFindings": [
+      "Actual private /inventory/levels after canonical hold4in20reports on_hand24and available20 instead of the scoped20physical/16free expected contract.",
+      "Receiving2at another location overwrites product.stockcache with2, although actual default-location public cart20is stillaccepted."
+    ],
+    "fixtureSha256": "3927d763fbb4af8c496ac6e38c8ca947a76cb00ed7770ab4c83be1680183c4f1"
+  }
+}

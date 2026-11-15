@@ -1,0 +1,17 @@
+{
+  "status": "113_PASS_1_FAIL_REFERENCE_REGISTRY",
+  "passed": 113,
+  "failed": 1,
+  "blocked": 0,
+  "skipped": 0,
+  "notApplicable": 1,
+  "regressionsPassed": 109,
+  "sourceManifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v6.source.json",
+  "sourceManifestSha256": "95c15a981c0447a9391e70a0bdfce79006390da8a4fe79f102138e8d6e4d0bb1",
+  "failure": "Imported partial theme-editor reference lacked its required PROMPTS.md registration. Added only the exact historical primary disposition; focused validator now passes. No validator weakened.",
+  "completeGateRerunRequired": true,
+  "activeCheckoutCleanupPerformed": false,
+  "limits": [
+    "Snapshot predates final native fixture selector/lifetime corrections, the accepted collection registry entry and later implementation."
+  ]
+}

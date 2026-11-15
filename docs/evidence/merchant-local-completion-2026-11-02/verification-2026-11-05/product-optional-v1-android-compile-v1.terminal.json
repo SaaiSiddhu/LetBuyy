@@ -1,0 +1,64 @@
+{
+  "build_script_sha256": "879620fcfd4cba6b1204a16f529e01ec531e6f720a5068a169808f63a4dae909",
+  "status": "TERMINAL",
+  "source_sha256": "3bdf36a7aeeda56b390310bb931a9584b784666459ce072fcb7d7113ed97c48d",
+  "source_inputs": 8457,
+  "supervisor_pid": 21654,
+  "owned_root": "/private/tmp/letbuyy-product-optional-v1-android-8whq_r7n",
+  "platform": "android",
+  "started_at": "2026-11-06T06:03:08.880987+00:00",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "ACCOUNTS_ENVIRONMENT": "development",
+    "BFF_BASE_URL": "http://10.0.2.2:54350/v1",
+    "API_BASE_URL": "http://10.0.2.2:54350/v1",
+    "IDENTITY_BASE_URL": "http://10.0.2.2:54351",
+    "ADMIN_BASE_URL": "http://10.0.2.2:54353",
+    "STOREFRONT_BASE_URL": "http://10.0.2.2:54354"
+  },
+  "steps": [
+    {
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "build",
+        "apk",
+        "--debug",
+        "--no-pub",
+        "--config-only",
+        "--target-platform",
+        "android-arm64",
+        "--dart-define-from-file=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/product-optional-v1-android-compile-v1-defines.json"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/android/gradlew",
+        "--offline",
+        "--no-daemon",
+        "-q",
+        "-Ptarget-platform=android-arm64",
+        "-Ptarget=lib/main.dart",
+        "-Pbase-application-name=android.app.Application",
+        "-Pdart-defines=RU5WSVJPTk1FTlQ9bG9jYWw=,QUNDT1VOVFNfRU5WSVJPTk1FTlQ9ZGV2ZWxvcG1lbnQ=,QkZGX0JBU0VfVVJMPWh0dHA6Ly8xMC4wLjIuMjo1NDM1MC92MQ==,QVBJX0JBU0VfVVJMPWh0dHA6Ly8xMC4wLjIuMjo1NDM1MC92MQ==,SURFTlRJVFlfQkFTRV9VUkw9aHR0cDovLzEwLjAuMi4yOjU0MzUx,QURNSU5fQkFTRV9VUkw9aHR0cDovLzEwLjAuMi4yOjU0MzUz,U1RPUkVGUk9OVF9CQVNFX1VSTD1odHRwOi8vMTAuMC4yLjI6NTQzNTQ=",
+        "-Pdart-obfuscation=false",
+        "-Ptrack-widget-creation=true",
+        "-Ptree-shake-icons=false",
+        "assembleDebug"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/android",
+      "exit_code": 0
+    }
+  ],
+  "scope": "Normal main.dart debug compile/artifact only. No install, launch, sign-in, provider, web-mobile sync, device, hosted or release acceptance.",
+  "active_child_pid": 21695,
+  "artifact": {
+    "path": "/private/tmp/letbuyy-product-optional-v1-android-8whq_r7n/merchant-local-debug.apk",
+    "sha256": "bd1e1050fe380cdd8ec5b3e648ae05500697fea9a44aa19ffc8723a55ea45d98",
+    "bytes": 151926546
+  },
+  "exit_code": 0,
+  "finished_at": "2026-11-06T06:03:25.533278+00:00",
+  "source_unchanged": true
+}

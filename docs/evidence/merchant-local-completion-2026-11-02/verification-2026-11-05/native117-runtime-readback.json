@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-07T11:23:14.201716+00:00",
+  "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+  "device": {
+    "dataPath": "/Users/saai_mithra/Library/Developer/CoreSimulator/Devices/B907B390-5B08-490F-BC6A-8900667B2D94/data",
+    "dataPathSize": 2726408192,
+    "logPath": "/Users/saai_mithra/Library/Logs/CoreSimulator/B907B390-5B08-490F-BC6A-8900667B2D94",
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "lastUsedAt": "2026-11-07T11:17:02Z",
+    "isAvailable": true,
+    "logPathSize": 421888,
+    "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17",
+    "state": "Shutdown",
+    "name": "LetBuyy Merchant Local 20261103 br1jhgh8"
+  },
+  "app_data_photos_downloads_preserved": true,
+  "physical_camera_audio_capture": "Not claimed"
+}

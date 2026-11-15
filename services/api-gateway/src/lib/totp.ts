@@ -92,16 +92,21 @@ export async function verifyTotpCode(input: {
     nowMs?: number;
     window?: number;
 }): Promise<boolean> {
+    return (await matchingTotpCounter(input)) !== null;
+}
+
+/** Login consumes the matched counter durably; validation alone grants no session. */
+export async function matchingTotpCounter(input: { secret: string; code: string; nowMs?: number; window?: number }): Promise<number | null> {
     const normalized = input.code.replace(/\s+/g, '');
-    if (!/^\d{6}$/.test(normalized)) return false;
+    if (!/^\d{6}$/.test(normalized)) return null;
     const step = DEFAULT_STEP_SECONDS * 1000;
     const counter = Math.floor((input.nowMs || Date.now()) / step);
     const window = input.window ?? 1;
 
     for (let offset = -window; offset <= window; offset += 1) {
         const expected = await hotp(input.secret, counter + offset);
-        if (timingSafeEqualText(expected, normalized)) return true;
+        if (timingSafeEqualText(expected, normalized)) return counter + offset;
     }
 
-    return false;
+    return null;
 }

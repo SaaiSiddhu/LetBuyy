@@ -2,7 +2,7 @@
 
 import { useReadRequest } from '@/lib/api/use-read-request'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
     Badge,
@@ -221,8 +221,11 @@ const STATUS_OPTIONS = [
 export default function NotificationsSettingsPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
-    const activeStoreRef = useRef(store)
-    activeStoreRef.current = store
+    const lifetime = useRef({ current: false })
+    useLayoutEffect(() => {
+        const surface = { current: true }; lifetime.current = surface
+        return () => { surface.current = false }
+    }, [store])
 
     // ── Preferences state ────────────────────────────────────────────────────
     const [prefsLoading, setPrefsLoading] = useState(true)
@@ -369,6 +372,9 @@ export default function NotificationsSettingsPage() {
     // ── Toggle a preference ──────────────────────────────────────────────────
 
     const handleToggle = useCallback(async (def: PrefDef) => {
+        const surface = lifetime.current
+        const current = () => surface.current && lifetime.current === surface
+        if (!current()) return
         const key = prefKey(def.channel, def.category)
         const flightKey = `${store}::${key}`
         if ([...savingRef.current].some(savedKey => savedKey.startsWith(`${store}::`)) || prefsLoading || prefsError) return
@@ -406,8 +412,9 @@ export default function NotificationsSettingsPage() {
         // A lost PUT response may have committed. The fresh GET is the authority
         // for both that case and an acknowledged write.
         try {
+            if (!current()) return
             const readback = await loadPreferences()
-            if (activeStoreRef.current !== store) return
+            if (!current()) return
             if (readback?.get(key) === nextEnabled) {
                 notify({
                     title: nextEnabled ? 'Notification enabled' : 'Notification disabled',
@@ -422,7 +429,7 @@ export default function NotificationsSettingsPage() {
             }
         } finally {
             savingRef.current.delete(flightKey)
-            setSavingKeys(previous => {
+            if (current()) setSavingKeys(previous => {
                 const next = new Set(previous)
                 next.delete(flightKey)
                 return next

@@ -1,0 +1,30 @@
+[
+  {
+    "path": "apps/merchant/mobile/lib/screens/store_health/store_health_screen.dart",
+    "sha256": "978785502c84ee4205bf17727c535f80774785252fcf033a49c4baeae01bc3b7"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/screens/auth/error_screen.dart",
+    "sha256": "a930b9c4e1cefaf4a06a4a846902d936b60f96a2bf2f3eaeea7ae18d7c82163d"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/widgets/shared/image_source_sheet.dart",
+    "sha256": "e119e75a6610b6dd5d9f323f9a280633f0443ce64f20eb6c5d453a3494fcbd34"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/services/store_service.dart",
+    "sha256": "7a5e497cdda740b2bd0f8f8a3cec24d50a1520d82ec0c365446f9f2b4413e71e"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/app/store_context.dart",
+    "sha256": "b331da49f91090f8d903898bf9eaf47db69e372a8de63abf8c8d44bc14c41106"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/app/auth_wrapper.dart",
+    "sha256": "83e9960498b945feb8f6a1b5c65fff0d4da35f6cf22aed3181088460c3d7cee8"
+  },
+  {
+    "path": "apps/merchant/mobile/lib/app/routes.dart",
+    "sha256": "960468e34f9a3cfb37151955a53ef80d2dffa42b29e5d13ebd9ff491366df27c"
+  }
+]

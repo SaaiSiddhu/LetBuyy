@@ -1,12 +1,39 @@
+import { MerchantKycOverviewSchema, MerchantKycDocumentSchema } from '@letbuyy/shared-types';
+import { PublicUploadRecoveryInputSchema, type PublicUploadRecoveryInput } from '@letbuyy/shared-types';
+import {
+  SmartCollectionSchema, SmartCollectionPageSchema, SmartCollectionListQuerySchema, SmartCollectionPreviewSchema,
+  CreateSmartCollectionSchema, UpdateSmartCollectionSchema, DeleteCollectionMetadataSchema,
+  type SmartConditionField, type SmartConditionOp, type SmartMatchType, type SmartCondition, type SmartCollection,
+  type CreateSmartCollectionInput, type UpdateSmartCollectionInput, type SmartCollectionPreviewResult,
+  type SmartCollectionListQueryInput, type CollectionMetadataReceipt, type DeleteCollectionMetadata,
+} from '@letbuyy/shared-types';
+import { CollectionMetadataSchema, CollectionMetadataCommandIntentSchema, confirmCollectionMetadataReceipt, type CollectionMetadataCommandIntent, type CreateCollectionMetadata, type UpdateCollectionMetadata } from '@letbuyy/shared-types';
+export type { SmartConditionField, SmartConditionOp, SmartMatchType, SmartCondition, SmartCollection,
+  CreateSmartCollectionInput, UpdateSmartCollectionInput, SmartCollectionPreviewResult, CollectionMetadataReceipt } from '@letbuyy/shared-types';
+import { ProductCsvImportSchema, ProductImportRegistrationStopSchema, type ProductImportRegistrationStop, ProductImportJobCommandSchema, ProductImportJobSchema, ProductImportCapabilitiesSchema,
+  ProductImportRowsPageSchema, ProductImportHistoryPageSchema, ProductImportRowsQuerySchema, ProductImportHistoryQuerySchema,
+  type ProductImportJob, type ProductImportJobCommand, type ProductImportRowsQuery } from '@letbuyy/shared-types';
+import {prepareWarehouseCommand,StopWarehouseCommandSchema} from '@letbuyy/shared-types';
+import {WarehouseOptionListQuerySchema,WarehouseLocationSchema,WarehouseSupplierSchema,WarehouseLocationPageSchema,WarehouseSupplierPageSchema,type WarehouseOptionListQuery,type WarehouseLocation,type WarehouseSupplier,type WarehouseLocationInput} from '@letbuyy/shared-types';
+import {WarehousePurchaseOrderSchema,WarehouseTransferSchema,WarehousePurchaseOrderPageSchema,WarehouseTransferPageSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,type WarehousePurchaseOrderListQuery,type WarehouseTransferListQuery,type WarehousePurchaseOrder,type WarehousePurchaseOrderLine,type WarehouseTransfer,type WarehouseTransferLine} from '@letbuyy/shared-types';
+import {WarehouseCommandResultSchema,WarehouseCommandCapabilitiesSchema,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION,type WarehouseCommandOperation,type WarehouseCommandResult,type StopWarehouseCommandInput,type WarehouseCommandCapabilities} from '@letbuyy/shared-types';
+export type {WarehouseCommandIntent,WarehouseCommandResult,StopWarehouseCommandInput} from '@letbuyy/shared-types';
 import type { ShippingCapabilities, ShippingProfile, CreateShippingProfileInput, UpdateShippingProfileInput } from '@letbuyy/shared-types';
 import {CollectionListQuerySchema,type CollectionListQueryInput} from '@letbuyy/shared-types';
 import { StorefrontDirectoryPayloadSchema, type StorefrontDirectoryPayload } from '@letbuyy/shared-types';
 import {CollectionListPageSchema} from '@letbuyy/shared-types';
+import {ProductCategoryPageSchema,ProductCategoryReadSchema,ProductCategoryCommandReceiptSchema,confirmProductCategoryCommandResult,ProductCategoryCommandIntentSchema,
+ CreateCategoryCommandSchema,UpdateCategoryCommandSchema,DeleteCategoryCommandSchema,ProductCategoryListQuerySchema,
+ type CreateCategoryCommand,type UpdateCategoryCommand,type DeleteCategoryCommand} from '@letbuyy/shared-types';
 import { CheckoutDomainSetupSchema, type CheckoutDomainSetup } from '@letbuyy/shared-types';
 export type { CheckoutDomainSetup } from '@letbuyy/shared-types';
 export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
 import { PersonalizationReviewContextSchema, PersonalizationReviewQuerySchema, type PersonalizationReviewContext, type StorefrontDiscoveryQueryInput, type StorefrontDiscoveryMetadata } from '@letbuyy/shared-types';
 import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
+import { InventoryHistoryEntrySchema, InventoryReservationSchema, InventoryReceiptSchema, UuidSchema,
+  type InventoryReservation as CanonicalInventoryReservation, type InventoryReceipt as CanonicalInventoryReceipt } from '@letbuyy/shared-types';
+import { SupplierMetricsResultSchema, WarehouseMetricsResultSchema, TransferMetricsResultSchema, OperationsSummaryResultSchema } from '@letbuyy/shared-types';
+import type { SupplierMetricsRow as CanonicalSupplierMetricsRow, SupplierMetricsResult as CanonicalSupplierMetricsResult, WarehouseMetricsRow as CanonicalWarehouseMetricsRow, WarehouseMetricsResult as CanonicalWarehouseMetricsResult, TransferMetricsResult as CanonicalTransferMetricsResult, OperationsSummaryResult as CanonicalOperationsSummaryResult } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
 import { createReelReviewSdk } from './reels';
 export { createReelReviewSdk } from './reels';
@@ -107,6 +134,7 @@ import type {
   InstalledApp,
   InventoryAdjustmentReason,
   InventoryLevel,
+  InventoryHistoryEntry,
   InternalPermissionScope,
   JsonRecord,
   LineItem,
@@ -2232,82 +2260,12 @@ export type ProductBarcodeLookupResult = ProductBarcodeLookup | {
 
 export interface CategoryListQuery extends StoreScopedQuery {
   flat?: boolean;
+  search?: string;
 }
 
 // ── Smart collections ────────────────────────────────────────────
-export type SmartConditionField =
-  | 'title'
-  | 'product_type'
-  | 'vendor'
-  | 'tag'
-  | 'price'
-  | 'inventory_quantity';
-
-export type SmartConditionOp =
-  | 'equals'
-  | 'not_equals'
-  | 'contains'
-  | 'starts_with'
-  | 'ends_with'
-  | 'gt'
-  | 'lt';
-
-export type SmartMatchType = 'all' | 'any';
-
-export interface SmartCondition {
-  field: SmartConditionField;
-  op: SmartConditionOp;
-  value: string;
-}
-
-export interface SmartCollection {
-  id: string;
-  store_id: string;
-  name: string;
-  slug: string;
-  description?: string | null;
-  conditions: SmartCondition[];
-  match_type: SmartMatchType;
-  created_at: string;
-  created_by?: string | null;
-  updated_by?: string | null;
-  version: number;
-}
-
-export interface CreateSmartCollectionInput {
-  store_id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  conditions: SmartCondition[];
-  match_type?: SmartMatchType;
-}
-
-export type UpdateSmartCollectionInput = Partial<{
-  name: string;
-  slug: string;
-  description: string | null;
-  conditions: SmartCondition[];
-  match_type: SmartMatchType;
-}>;
-
-export interface SmartCollectionListQuery extends QueryParams {
-  store_id: string;
-}
-
-export interface SmartCollectionPreviewQuery extends QueryParams {
-  store_id?: string;
-}
-
-export interface SmartCollectionPreviewResult {
-  collection_id: string;
-  match_type: SmartMatchType;
-  condition_count: number;
-  count: number;
-  sample_product_ids: string[];
-  evaluated_of: number;
-  capped_at: number;
-}
+export type SmartCollectionListQuery = SmartCollectionListQueryInput & QueryParams;
+export type SmartCollectionPreviewQuery = { store_id?: string } & QueryParams;
 
 export interface InventoryLevelQuery extends StoreScopedQuery {
   product_id?: string;
@@ -2342,38 +2300,14 @@ export interface ReceivePurchaseOrderInput {
   idempotency_key: string;
 }
 
-export interface PurchaseOrderLine extends JsonRecord {
-  id: string;
-  purchase_order_id: string;
-  product_id: string;
-  variant_id?: string | null;
-  quantity: number;
-  unit_cost: number;
-  received_quantity: number;
-  created_at: string;
-  updated_at?: string | null;
-}
+export type PurchaseOrderLine=WarehousePurchaseOrderLine;
+export type PurchaseOrder=WarehousePurchaseOrder;
 
-export interface PurchaseOrder extends JsonRecord {
-  id: string;
-  site_id: string;
-  supplier_id?: string | null;
-  location_id: string;
-  status: 'draft' | 'ordered' | 'partial' | 'received' | 'cancelled';
-  po_number?: string | null;
-  expected_at?: string | null;
-  notes?: string | null;
-  total_cost: number;
-  created_at: string;
-  updated_at?: string | null;
-  supplier?: { name: string } | null;
-  lines: PurchaseOrderLine[];
-}
-
-export interface PurchaseOrderListQuery extends StoreScopedQuery {}
+export type PurchaseOrderListQuery=WarehousePurchaseOrderListQuery;
 
 // ── Suppliers ────────────────────────────────────────────────────
 export interface CreateSupplierInput {
+  idempotency_key?:string;
   store_id: string;
   name: string;
   contact_name?: string;
@@ -2382,33 +2316,12 @@ export interface CreateSupplierInput {
   address?: Record<string, unknown>;
 }
 
-export interface Supplier extends JsonRecord {
-  id: string;
-  site_id: string;
-  name: string;
-  contact_name?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  address?: Record<string, unknown> | null;
-  created_at: string;
-}
+export type Supplier=WarehouseSupplier;
 
 // ── Inventory locations ──────────────────────────────────────────
-export interface CreateInventoryLocationInput {
-  store_id: string;
-  name: string;
-  is_default?: boolean;
-  address?: Record<string, unknown>;
-}
+export type CreateInventoryLocationInput=WarehouseLocationInput & {idempotency_key?:string};
 
-export interface InventoryLocation extends JsonRecord {
-  id: string;
-  store_id: string;
-  name: string;
-  is_default: boolean;
-  status: string;
-  created_at: string;
-}
+export type InventoryLocation=WarehouseLocation;
 
 // Phase 5.5 — typed exposure of the existing inventory transfer + reservation + history gateway routes.
 export interface InventoryTransferLineInput {
@@ -2433,7 +2346,7 @@ export interface ShipInventoryTransferInput {
 
 export interface ReceiveInventoryTransferLineInput {
   transfer_line_id: string;
-  quantity_received: number;
+  quantity: number;
 }
 
 export interface ReceiveInventoryTransferInput {
@@ -2442,18 +2355,10 @@ export interface ReceiveInventoryTransferInput {
   idempotency_key: string;
 }
 
-export interface InventoryTransfer extends JsonRecord {
-  id: string;
-  transfer_number: string;
-  source_location_id: string;
-  destination_location_id: string;
-  status: string;
-  created_at: string;
-}
+export type InventoryTransfer=WarehouseTransfer;
+export type InventoryTransferLine=WarehouseTransferLine;
 
-export interface InventoryTransferListQuery extends StoreScopedQuery {
-  status?: string;
-}
+export type InventoryTransferListQuery=WarehouseTransferListQuery;
 
 export interface ReserveInventoryInput {
   store_id: string;
@@ -2480,18 +2385,7 @@ export interface InventoryHistoryQuery extends StoreScopedQuery {
 }
 
 // ── Inventory reservations (read endpoint) ───────────────────────
-export interface InventoryReservation extends JsonRecord {
-  id: string;
-  product_id: string;
-  variant_id?: string | null;
-  location_id?: string | null;
-  quantity: number;
-  status: string;
-  expires_at?: string | null;
-  order_id?: string | null;
-  created_at: string;
-  updated_at?: string | null;
-}
+export type InventoryReservation = CanonicalInventoryReservation;
 
 export interface InventoryReservationListQuery extends StoreScopedQuery {
   status?: string;
@@ -2501,16 +2395,7 @@ export interface InventoryReservationListQuery extends StoreScopedQuery {
 }
 
 // ── Inventory receipts (read endpoint) ───────────────────────────
-export interface InventoryReceipt extends JsonRecord {
-  id: string;
-  receipt_type: 'purchase_order' | 'transfer';
-  purchase_order_id?: string | null;
-  transfer_id?: string | null;
-  quantity_received: number;
-  notes?: string | null;
-  received_at?: string | null;
-  created_at: string;
-}
+export type InventoryReceipt = CanonicalInventoryReceipt;
 
 export interface InventoryReceiptListQuery extends StoreScopedQuery {
   po_id?: string;
@@ -2531,64 +2416,24 @@ export interface InventoryAnalyticsQuery extends StoreScopedQuery {
   [key: string]: string | number | boolean | undefined | null;
 }
 
-export interface InventoryEventRecord extends JsonRecord {
-  id: string;
-  event_type: string;
-  created_at: string;
-}
+/** Compatibility name for the canonical adjustment history contract. */
+export type InventoryEventRecord = InventoryHistoryEntry;
 
 // ── Commerce Analytics types (Phase 5.10) ───────────────────
 
 export interface CommerceAnalyticsQuery {
   store_id: string;
+  page?: number;
+  limit?: number;
   [key: string]: string | number | boolean | undefined | null;
 }
 
-export interface SupplierMetricsRow extends JsonRecord {
-  supplier_id: string | null;
-  supplier_name: string;
-  po_count: number;
-  on_time_rate: number | null;
-  avg_lead_time_days: number | null;
-}
-
-export interface SupplierMetricsResult extends JsonRecord {
-  meta?: GatewayPaginationMeta;
-  suppliers: SupplierMetricsRow[];
-  schema_missing?: boolean;
-}
-
-export interface WarehouseMetricsRow extends JsonRecord {
-  location_id: string;
-  location_name: string;
-  is_default: boolean;
-  sku_count: number;
-  total_units: number;
-}
-
-export interface WarehouseMetricsResult extends JsonRecord {
-  meta?: GatewayPaginationMeta;
-  warehouses: WarehouseMetricsRow[];
-  schema_missing?: boolean | string;
-}
-
-export interface TransferMetricsResult extends JsonRecord {
-  by_status: Record<string, number>;
-  in_transit_count: number;
-  total_count: number;
-  schema_missing?: boolean;
-}
-
-export interface OperationsSummaryResult extends JsonRecord {
-  order_count?: number;
-  open_order_count?: number;
-  po_count?: number;
-  open_po_count?: number;
-  transfer_count?: number;
-  in_transit_transfer_count?: number;
-  low_stock_sku_count?: number;
-  total_sku_count?: number;
-}
+export type SupplierMetricsRow = CanonicalSupplierMetricsRow;
+export type SupplierMetricsResult = CanonicalSupplierMetricsResult;
+export type WarehouseMetricsRow = CanonicalWarehouseMetricsRow;
+export type WarehouseMetricsResult = CanonicalWarehouseMetricsResult;
+export type TransferMetricsResult = CanonicalTransferMetricsResult;
+export type OperationsSummaryResult = CanonicalOperationsSummaryResult;
 
 export interface OrderListQuery extends StoreScopedQuery {
   status?: string;
@@ -3242,19 +3087,17 @@ export interface MediaListQuery extends StoreScopedQuery {
   folder?: string;
   type?: MediaType | 'all';
 }
-export type CreateMediaInput = Pick<MediaAsset, 'store_id' | 'filename' | 'url' | 'mime_type'> & Partial<MediaAsset>;
-export type UpdateMediaInput = Partial<Pick<MediaAsset, 'alt_text' | 'caption' | 'folder' | 'tags' | 'filename'>>;
+export type CreateMediaInput = import('@letbuyy/shared-types').MediaRegistrationInput;
+export type UpdateMediaInput = import('@letbuyy/shared-types').MediaMetadataUpdate;
 export type CreateProductInput = Pick<Product, 'store_id' | 'name' | 'price'> & NewRecord<Product>;
 export type UpdateProductInput = NewRecord<Product> & Pick<Product, 'version'> & {
   /** Retain one UUID for this exact edit through transport retries. */
   idempotency_key: string;
 };
-export type CreateCollectionInput = Pick<Collection, 'store_id' | 'title'> & NewRecord<Collection>;
-export type UpdateCollectionInput = Partial<Pick<Collection, 'title' | 'description' | 'image_url'>> & {
-  is_active?: boolean;
-};
-export type CreateProductCategoryInput = Pick<ProductCategory, 'store_id' | 'name'> & NewRecord<ProductCategory>;
-export type UpdateProductCategoryInput = NewRecord<ProductCategory>;
+export type CreateCollectionInput = CreateCollectionMetadata;
+export type UpdateCollectionInput = UpdateCollectionMetadata;
+export type CreateProductCategoryInput = CreateCategoryCommand;
+export type UpdateProductCategoryInput = UpdateCategoryCommand;
 export type CreateGiftCardInput = Pick<GiftCard, 'store_id' | 'initial_value'> & {
   idempotency_key?: string;
   currency?: string;
@@ -3322,15 +3165,15 @@ export interface ExportJobSummary extends JsonRecord {
   id: string;
   type: 'products' | 'orders' | 'customers' | 'product_import';
   status: 'queued' | 'running' | 'completed' | 'failed';
-  row_count: number;
+  row_count: number | null;
   filename: string;
-  download_url: string;
+  download_url: string | null;
   created_at: string;
   updated_at: string;
   expires_at: string;
 }
 export type ProductImportResult = {
-  job: ExportJobSummary;
+  job: ProductImportJob;
 };
 export type ShippingLabelProvider = 'shiprocket' | 'delhivery' | 'pickrr';
 export type ShippingLabelPackage = {
@@ -3857,6 +3700,21 @@ export class LetbuyyApiError extends Error {
   }
 }
 
+function invalidKycResponse(): LetbuyyApiError {
+  return new LetbuyyApiError({ status: 503, code: 'KYC_INVALID_RESPONSE', message: 'Verification details could not be confirmed. Reload details.' });
+}
+function parseKycOverview(value: unknown, siteId: string): MerchantKycOverview {
+  const parsed = MerchantKycOverviewSchema.safeParse(value);
+  if (!parsed.success || parsed.data.site_id !== siteId) throw invalidKycResponse();
+  return parsed.data;
+}
+function parseKycMutation(value: unknown, siteId: string): { document: MerchantKycDocument; overview: MerchantKycOverview } {
+  if (!isRecord(value) || Object.keys(value).some(key => !['document', 'overview'].includes(key))) throw invalidKycResponse();
+  const document = MerchantKycDocumentSchema.safeParse(value.document);
+  if (!document.success || document.data.site_id !== siteId) throw invalidKycResponse();
+  return { document: document.data, overview: parseKycOverview(value.overview, siteId) };
+}
+
 function idempotencyKeyFromBody(body: unknown): string | null {
   if (!isRecord(body)) return null;
   const value = body.idempotency_key ?? body.idempotencyKey;
@@ -4005,11 +3863,13 @@ export class LetbuyyApiClient {
     publish: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Store>(`/stores/${encodePathSegment(id)}/publish`, { ...options, method: 'POST' }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ id: string }>(`/stores/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+      this.requestData<{ deleted: boolean; closed: boolean }>(`/stores/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
     paymentConfig: {
       get: (id: string, options?: LetbuyyRequestOptions) =>
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, options),
       save: (id: string, input: SaveStorePaymentConfigInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'POST', body: input }),
+      attachWebhook: (id: string, input: import('@letbuyy/shared-types').AttachStorePaymentWebhookInput, options?: LetbuyyRequestOptions) =>
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'POST', body: input }),
       updateMethods: (id: string, input: import('@letbuyy/shared-types').UpdateStorePaymentMethodsInput, options?: LetbuyyRequestOptions) =>
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'PATCH', body: input }),
@@ -4856,8 +4716,32 @@ export class LetbuyyApiClient {
   };
 
   readonly employees = {
-    list: (query: EmployeeListQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<Employee[]>('/employees', { ...options, query }),
+    list: async (query: EmployeeListQuery, options?: LetbuyyRequestOptions): Promise<Employee[]> => {
+      const storeId = query.store_id;
+      const boundOptions = { ...options };
+      const rows: Employee[] = [], ids = new Set<string>();
+      let observedTotal: number | undefined;
+      const unavailable = () => new LetbuyyApiError({ status: 503, code: 'STAFF_LIST_UNVERIFIED',
+        message: 'The complete staff list could not be confirmed. Refresh staff.' });
+      for (let page = 1; page <= 10000; page++) {
+        const result = await this.request<{ success?: boolean; data?: Employee[]; meta?: Record<string, unknown> }>(
+          '/employees', { ...boundOptions, query: { store_id: storeId, page, limit: 50 } });
+        if (!isRecord(result) || result.success !== true || !Array.isArray(result.data) || !isRecord(result.meta)) throw unavailable();
+        const meta = result.meta, total = meta.total;
+        if (typeof total !== 'number' || !Number.isSafeInteger(total) || total < 0 ||
+          meta.page !== page || meta.per_page !== 50 || meta.total_pages !== Math.ceil(total / 50) ||
+          meta.has_prev !== (page > 1) || meta.has_next !== (page * 50 < total) ||
+          observedTotal !== undefined && observedTotal !== total ||
+          result.data.length !== Math.min(50, Math.max(0, total - (page - 1) * 50))) throw unavailable();
+        observedTotal = total;
+        for (const row of result.data) {
+          if (!row || typeof row.id !== 'string' || !row.id || row.store_id !== storeId || ids.has(row.id)) throw unavailable();
+          ids.add(row.id); rows.push(row);
+        }
+        if (meta.has_next === false) return rows;
+      }
+      throw unavailable();
+    },
     limits: (query: EmployeeListQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<EmployeeStaffLimit>('/employees/limits', { ...options, query }),
     create: (input: CreateEmployeeInput, options?: LetbuyyRequestOptions) =>
@@ -4886,6 +4770,8 @@ export class LetbuyyApiClient {
   };
 
   readonly upload = {
+    recover: (input: PublicUploadRecoveryInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<FileUploadResult>('/upload/recover', { ...options, method: 'POST', body: PublicUploadRecoveryInputSchema.parse(input) }),
     file: (formData: FormData, options?: LetbuyyRequestOptions) =>
       this.requestData<FileUploadResult>('/upload', { ...options, method: 'POST', body: formData }),
     remove: (key: string, inputOrOptions?: { store_id?: string } | LetbuyyRequestOptions, options?: LetbuyyRequestOptions) => {
@@ -4970,12 +4856,18 @@ export class LetbuyyApiClient {
           throw new Error('Collection list context could not be confirmed.');
         return result;
       },
-      create: (input: CreateCollectionInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<Collection>('/products/collections', { ...options, method: 'POST', body: input }),
-      update: (id: string, input: UpdateCollectionInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<Collection>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
-      remove: (id: string, options?: LetbuyyRequestOptions) =>
-        this.requestData<{ deleted: boolean; id: string }>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+      get: async (id: string, storeId: string, options?: LetbuyyRequestOptions) => {
+        UuidSchema.parse(id); UuidSchema.parse(storeId);
+        const value = CollectionMetadataSchema.parse(await this.requestData<unknown>(`/products/collections/${encodePathSegment(id)}`, { ...options, storeId, query: { store_id: storeId }, cache: 'no-store' }));
+        if (value.id !== id || value.store_id !== storeId || value.collection_type !== 'manual' || value.deleted_at !== null) throw new Error('Collection detail scope could not be confirmed.');
+        return value;
+      },
+      create: (input: CreateCollectionMetadata, options?: LetbuyyRequestOptions) =>
+        this.requestCollectionMetadataCommand({ operation: 'create', collection_id: null, command: input }, options),
+      update: (id: string, input: UpdateCollectionMetadata, options?: LetbuyyRequestOptions) =>
+        this.requestCollectionMetadataCommand({ operation: 'update', collection_id: id, command: input }, options),
+      remove: (id: string, input: DeleteCollectionMetadata, options?: LetbuyyRequestOptions) =>
+        this.requestCollectionMetadataCommand({ operation: 'delete', collection_id: id, command: input }, options),
       listProducts: async (id: string, options: LetbuyyRequestOptions & { storeId: string }) =>
         CollectionMembershipSnapshotSchema.parse(await this.requestData<unknown>(`/products/collections/${encodePathSegment(id)}/products`, options)),
       replaceProducts: async (id: string, input: ReplaceCollectionMembershipInput, options: LetbuyyRequestOptions & { storeId: string }) =>
@@ -4994,60 +4886,173 @@ export class LetbuyyApiClient {
         this.requestData<GiftCardLifecycleItem>(`/products/gift-cards/${encodePathSegment(id)}/status`, { ...options, method: 'POST', body: input }),
     },
     importCsv: (input: ProductImportInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<ProductImportResult>('/export/import-products', { ...options, method: 'POST', body: input }),
+      this.productImports.register(input, options),
+  };
+
+  readonly productImports = {
+    capabilities: async (storeId: string, options?: LetbuyyRequestOptions) => {
+      const result = ProductImportCapabilitiesSchema.parse(await this.requestData<unknown>('/export/imports/capabilities',
+        {...options, storeId, query:{store_id:storeId}, cache:'no-store'}));
+      if(result.store_id!==storeId)throw new Error('Import store could not be confirmed.');
+      return result;
+    },
+    register: async (input: ProductImportInput, options?: LetbuyyRequestOptions):Promise<ProductImportResult> => {
+      const body=ProductCsvImportSchema.parse(input);
+      const response=await this.requestData<{job:unknown}>('/export/imports/register',
+        {...options,method:'POST',body,storeId:body.store_id,idempotencyKey:body.idempotency_key,cache:'no-store'});
+      const job=ProductImportJobSchema.parse(response.job);
+      const sourceHash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body.csv)))].map(v=>v.toString(16).padStart(2,'0')).join('');
+      if(job.store_id!==body.store_id||job.idempotency_key!==body.idempotency_key||job.source_sha256!==sourceHash)throw new Error('Import acknowledgement could not be confirmed.');
+      return {job};
+    },
+    get: async (storeId:string,id:string,options?:LetbuyyRequestOptions):Promise<ProductImportResult> => {
+      const response=await this.requestData<{job:unknown}>(`/export/imports/${encodePathSegment(UuidSchema.parse(id))}`,
+        {...options,storeId,query:{store_id:storeId},cache:'no-store'});
+      const job=ProductImportJobSchema.parse(response.job);
+      if(job.store_id!==storeId||job.id!==id)throw new Error('Import scope could not be confirmed.');
+      return {job};
+    },
+    byKey: async (storeId:string,key:string,options?:LetbuyyRequestOptions):Promise<{job:ProductImportJob|null}> => {
+      const response=await this.requestData<{job:unknown}>(`/export/imports/by-key/${encodePathSegment(UuidSchema.parse(key))}`,
+        {...options,storeId,query:{store_id:storeId},cache:'no-store'});
+      if(response.job===null)return {job:null};
+      const job=ProductImportJobSchema.parse(response.job);
+      if(job.store_id!==storeId||job.idempotency_key!==key)throw new Error('Original import could not be confirmed.');
+      return {job};
+    },
+    stopRegistration:async(input:ProductImportRegistrationStop,options?:LetbuyyRequestOptions):Promise<ProductImportResult>=>{
+      const body=ProductImportRegistrationStopSchema.parse(input);
+      const response=await this.requestData<{job:unknown}>('/export/imports/stop-registration',
+        {...options,method:'POST',body,storeId:body.store_id,idempotencyKey:body.idempotency_key,cache:'no-store'});
+      const job=ProductImportJobSchema.parse(response.job);
+      if(job.store_id!==body.store_id||job.idempotency_key!==body.idempotency_key||job.source_sha256!==body.source_sha256
+        ||!['stopped','completed','blocked'].includes(job.status))throw new Error('Original import stop could not be confirmed.');
+      return {job};
+    },
+    history: async (query:{store_id:string;page?:number;limit?:number},options?:LetbuyyRequestOptions) => {
+      const q=ProductImportHistoryQuerySchema.parse(query);
+      const result=ProductImportHistoryPageSchema.parse(await this.requestData<unknown>('/export/imports',
+        {...options,storeId:q.store_id,query:q,cache:'no-store'}));
+      if(result.meta.store_id!==q.store_id||result.meta.page!==q.page||result.meta.per_page!==q.limit)throw new Error('Import history scope could not be confirmed.');
+      return result;
+    },
+    rows: async (id:string,query:ProductImportRowsQuery,options?:LetbuyyRequestOptions) => {
+      UuidSchema.parse(id);const q=ProductImportRowsQuerySchema.parse(query);
+      const result=ProductImportRowsPageSchema.parse(await this.requestData<unknown>(`/export/jobs/${encodePathSegment(id)}/rows`,
+        {...options,storeId:q.store_id,query:q,cache:'no-store'}));
+      if(result.meta.store_id!==q.store_id||result.meta.job_id!==id||result.meta.page!==q.page||result.meta.per_page!==q.limit
+        ||(q.status!=='all'&&result.data.some(row=>row.status!==q.status)))throw new Error('Import row scope could not be confirmed.');
+      return result;
+    },
+    command: async (input:ProductImportJobCommand,action:'retry'|'stop',options?:LetbuyyRequestOptions):Promise<ProductImportResult> => {
+      const body=ProductImportJobCommandSchema.parse(input);
+      const response=await this.requestData<{job:unknown}>(`/export/jobs/${encodePathSegment(body.job_id)}/${action}`,
+        {...options,method:'POST',body,storeId:body.store_id,idempotencyKey:body.idempotency_key,cache:'no-store'});
+      const job=ProductImportJobSchema.parse(response.job);
+      if(job.store_id!==body.store_id||job.id!==body.job_id||job.idempotency_key!==body.idempotency_key)throw new Error('Import recovery acknowledgement could not be confirmed.');
+      return {job};
+    },
   };
 
   readonly categories = {
-    list: (query?: CategoryListQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<ProductCategory[]>('/categories', { ...options, query }),
-    get: (id: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<ProductCategory>(`/categories/${encodePathSegment(id)}`, options),
-    create: (input: CreateProductCategoryInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<ProductCategory>('/categories', { ...options, method: 'POST', body: input }),
-    update: (id: string, input: UpdateProductCategoryInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<ProductCategory>(`/categories/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
-    remove: (id: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ deleted: boolean }>(`/categories/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    page: async (input:CategoryListQuery,options?:LetbuyyRequestOptions) => {
+      const q=ProductCategoryListQuerySchema.parse({...input,flat:input.flat===undefined?undefined:String(input.flat)});
+      const result=ProductCategoryPageSchema.parse(await this.request<unknown>('/categories',{...options,query:q,storeId:q.store_id,cache:'no-store'}));
+      if(result.meta.page!==q.page||result.meta.per_page!==q.limit||result.data.some(row=>row.store_id!==q.store_id))throw new Error('Category page scope could not be confirmed.');
+      return result;
+    },
+    list: async (query:CategoryListQuery,options?:LetbuyyRequestOptions) => (await this.categories.page(query,options)).data,
+    get: async (id:string,storeId:string,options?:LetbuyyRequestOptions) => {
+      const result=ProductCategoryReadSchema.parse(await this.requestData<unknown>(`/categories/${encodePathSegment(UuidSchema.parse(id))}`,
+        {...options,query:{store_id:UuidSchema.parse(storeId)},storeId,cache:'no-store'}));
+      if(result.id!==id||result.store_id!==storeId||result.deleted_at!==null)throw new Error('Category scope could not be confirmed.');return result;
+    },
+    create: (input:CreateProductCategoryInput,options?:LetbuyyRequestOptions) =>
+      this.requestCategoryCommand('create',null,CreateCategoryCommandSchema.parse(input),options),
+    update: (id:string,input:UpdateProductCategoryInput,options?:LetbuyyRequestOptions) =>
+      this.requestCategoryCommand('update',UuidSchema.parse(id),UpdateCategoryCommandSchema.parse(input),options),
+    remove: (id:string,input:DeleteCategoryCommand,options?:LetbuyyRequestOptions) =>
+      this.requestCategoryCommand('delete',UuidSchema.parse(id),DeleteCategoryCommandSchema.parse(input),options),
   };
 
   readonly smartCollections = {
-    list: (query: SmartCollectionListQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<SmartCollection[]>('/smart-collections', { ...options, query }),
+    list: async (input: SmartCollectionListQuery, options?: LetbuyyRequestOptions) => {
+      const query = SmartCollectionListQuerySchema.parse(input);
+      const parsed = SmartCollectionPageSchema.safeParse(await this.request<unknown>('/smart-collections', { ...options, query, storeId: query.store_id, cache: 'no-store' }));
+      if (!parsed.success || parsed.data.meta.store_id !== query.store_id || parsed.data.meta.page !== query.page || parsed.data.meta.per_page !== query.limit) {
+        throw new LetbuyyApiError({ status: 503, code: 'COLLECTIONS_UNCONFIRMED', message: 'The collection list could not be confirmed. Retry loading it.' });
+      }
+      return parsed.data;
+    },
+    get: async (id: string, query: { store_id: string }, options?: LetbuyyRequestOptions) => {
+      UuidSchema.parse(id); UuidSchema.parse(query.store_id);
+      const parsed = SmartCollectionSchema.safeParse(await this.requestData<unknown>(`/smart-collections/${encodePathSegment(id)}`, { ...options, query, storeId: query.store_id, cache: 'no-store' }));
+      if (!parsed.success || parsed.data.id !== id || parsed.data.store_id !== query.store_id) throw new LetbuyyApiError({ status: 503, code: 'COLLECTIONS_UNCONFIRMED', message: 'The current collection could not be confirmed. Retry loading it.' });
+      return parsed.data;
+    },
     create: (input: CreateSmartCollectionInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<SmartCollection>('/smart-collections', { ...options, method: 'POST', body: input }),
+      this.requestSmartCollectionCommand('create', null, input, options),
     update: (id: string, input: UpdateSmartCollectionInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<SmartCollection>(`/smart-collections/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
-    preview: (id: string, query?: SmartCollectionPreviewQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<SmartCollectionPreviewResult>(`/smart-collections/${encodePathSegment(id)}/preview`, { ...options, query }),
+      this.requestSmartCollectionCommand('update', id, input, options),
+    remove: (id: string, input: Pick<DeleteCollectionMetadata, 'version'>, options?: LetbuyyRequestOptions) =>
+      this.requestSmartCollectionCommand('delete', id, input, options),
+    preview: async (id: string, query?: SmartCollectionPreviewQuery, options?: LetbuyyRequestOptions) => {
+      UuidSchema.parse(id);
+      const store = UuidSchema.parse(query?.store_id ?? options?.storeId ?? this.defaultStoreId);
+      const parsed = SmartCollectionPreviewSchema.safeParse(await this.requestData<unknown>(`/smart-collections/${encodePathSegment(id)}/preview`, { ...options, query: { store_id: store }, storeId: store, cache: 'no-store' }));
+      if (!parsed.success || parsed.data.collection_id !== id || parsed.data.store_id !== store) throw new LetbuyyApiError({ status: 503, code: 'COLLECTIONS_UNCONFIRMED', message: 'The saved rule preview could not be confirmed. Retry loading it.' });
+      return parsed.data;
+    },
   };
 
   readonly inventory = {
+    capabilities:(query:{store_id:string},options?:LetbuyyRequestOptions)=>
+      this.requestWarehouseCapabilities(query.store_id,options),
+    stopCommand:(input:StopWarehouseCommandInput,options?:LetbuyyRequestOptions)=>
+      this.requestWarehouseAcknowledgement('/inventory/commands/stop',input,input.operation,input.target_id,{...options,storeId:input.store_id}),
     levels: (query?: InventoryLevelQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<InventoryLevel>('/inventory/levels', { ...options, query }),
     adjust: (input: InventoryAdjustInput, options?: LetbuyyRequestOptions) =>
       this.requestData<JsonRecord>('/inventory/adjust', { ...options, method: 'POST', body: input }),
     purchaseOrders: {
+      get:(id:string,query:{store_id:string},options?:LetbuyyRequestOptions)=>
+        this.requestWarehouseDocument(`/inventory/purchase-orders/${encodePathSegment(id)}`,id,query.store_id,WarehousePurchaseOrderSchema,options),
       list: (query: PurchaseOrderListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestData<PurchaseOrder[]>('/inventory/purchase-orders', { ...options, query }),
+        this.requestWarehouseCollection('/inventory/purchase-orders',WarehousePurchaseOrderListQuerySchema.parse(query),WarehousePurchaseOrderPageSchema,options),
       create: (input: CreatePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>('/inventory/purchase-orders', { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement('/inventory/purchase-orders',input,'purchase_order.create',null,{...options,storeId:input.store_id}),
       receive: (id: string, input: ReceivePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>(`/inventory/purchase-orders/${encodePathSegment(id)}/receive`, { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement(`/inventory/purchase-orders/${encodePathSegment(id)}/receive`,input,'purchase_order.receive',id,options),
     },
     suppliers: {
-      list: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
-        this.requestData<Supplier[]>('/inventory/suppliers', { ...options, query }),
+      list: (query: WarehouseOptionListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestWarehouseCollection('/inventory/suppliers',WarehouseOptionListQuerySchema.parse(query),WarehouseSupplierPageSchema,options,'WAREHOUSE_OPTIONS_UNVERIFIED'),
       create: (input: CreateSupplierInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<Supplier>('/inventory/suppliers', { ...options, method: 'POST', body: input }),
+        this.requestWarehouseMetadata('/inventory/suppliers',input,'supplier.create',options),
     },
     locations: {
-      list: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
-        this.requestData<InventoryLocation[]>('/inventory/locations', { ...options, query }),
+      list: (query: WarehouseOptionListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestWarehouseCollection('/inventory/locations',WarehouseOptionListQuerySchema.parse(query),WarehouseLocationPageSchema,options,'WAREHOUSE_OPTIONS_UNVERIFIED'),
       create: (input: CreateInventoryLocationInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<InventoryLocation>('/inventory/locations', { ...options, method: 'POST', body: input }),
+        this.requestWarehouseMetadata('/inventory/locations',input,'location.create',options),
     },
-    history: (query?: InventoryHistoryQuery, options?: LetbuyyRequestOptions) =>
-      this.requestPaginated<InventoryEventRecord>('/inventory/history', { ...options, query }),
+    history: async (query?: InventoryHistoryQuery, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<InventoryHistoryEntry>> => {
+      const body = await this.request<GatewayResponse<unknown[]>>('/inventory/history', { ...options, storeId: query?.store_id ?? options?.storeId, query });
+      const data = InventoryHistoryEntrySchema.array().safeParse(unwrapData<unknown[]>(body, 200, null));
+      const meta = isRecord(body) && isRecord(body.meta) ? body.meta : {};
+      const { total, page, per_page: limit, has_next: more } = meta;
+      if (!data.success || typeof total !== 'number' || !Number.isSafeInteger(total) || total < 0 ||
+          typeof page !== 'number' || page !== (query?.page ?? 1) ||
+          typeof limit !== 'number' || limit !== (query?.limit ?? 20) || typeof more !== 'boolean' ||
+          (query?.store_id && meta.store_id !== query.store_id) ||
+          (data.success && data.data.some(row =>
+            row.products.store_id !== row.store_id ||
+            (query?.store_id && row.store_id !== query.store_id) ||
+            (query?.product_id && row.product_id !== query.product_id)))) {
+        throw new LetbuyyApiError({ status: 503, code: 'INVENTORY_HISTORY_UNVERIFIED', message: 'Inventory history could not be verified. Try again later.' });
+      }
+      return { data: data.data, total, page, limit, has_more: more, next_cursor: null, total_is_exact: Boolean(meta.total_is_exact) };
+    },
     reserve: (input: ReserveInventoryInput, options?: LetbuyyRequestOptions) =>
       this.requestData<JsonRecord>('/inventory/reserve', { ...options, method: 'POST', body: input }),
     commit: (input: InventoryReservationActionInput, options?: LetbuyyRequestOptions) =>
@@ -5055,22 +5060,29 @@ export class LetbuyyApiClient {
     release: (input: InventoryReservationActionInput, options?: LetbuyyRequestOptions) =>
       this.requestData<JsonRecord>('/inventory/release', { ...options, method: 'POST', body: input }),
     transfers: {
+      get:(id:string,query:{store_id:string},options?:LetbuyyRequestOptions)=>
+        this.requestWarehouseDocument(`/inventory/transfers/${encodePathSegment(id)}`,id,query.store_id,WarehouseTransferSchema,options),
       list: (query: InventoryTransferListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestData<InventoryTransfer[]>('/inventory/transfers', { ...options, query }),
+        this.requestWarehouseCollection('/inventory/transfers',WarehouseTransferListQuerySchema.parse(query),WarehouseTransferPageSchema,options),
       create: (input: CreateInventoryTransferInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>('/inventory/transfers', { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement('/inventory/transfers',input,'transfer.create',null,{...options,storeId:input.store_id}),
       ship: (id: string, input: ShipInventoryTransferInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>(`/inventory/transfers/${encodePathSegment(id)}/ship`, { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement(`/inventory/transfers/${encodePathSegment(id)}/ship`,input,'transfer.ship',id,{...options,storeId:input.store_id}),
       receive: (id: string, input: ReceiveInventoryTransferInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<JsonRecord>(`/inventory/transfers/${encodePathSegment(id)}/receive`, { ...options, method: 'POST', body: input }),
+        this.requestWarehouseAcknowledgement(`/inventory/transfers/${encodePathSegment(id)}/receive`,input,'transfer.receive',id,{...options,storeId:input.store_id}),
     },
     reservations: {
       list: (query: InventoryReservationListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestPaginated<InventoryReservation>('/inventory/reservations', { ...options, query }),
+        this.requestInventoryRecords('/inventory/reservations', query, InventoryReservationSchema.array(),
+          (row, store) => row.store_id === store && row.products.store_id === store &&
+            (!query.status || row.status === query.status) && (!query.product_id || row.product_id === query.product_id), options),
     },
     receipts: {
       list: (query: InventoryReceiptListQuery, options?: LetbuyyRequestOptions) =>
-        this.requestPaginated<InventoryReceipt>('/inventory/receipts', { ...options, query }),
+        this.requestInventoryRecords('/inventory/receipts', query, InventoryReceiptSchema.array(),
+          (row, store) => (row.receipt_type === 'purchase_order' ? row.purchase_orders.site_id : row.inventory_transfers.site_id) === store &&
+            (!query.po_id || (row.receipt_type === 'purchase_order' && row.purchase_order_id === query.po_id)) &&
+            (!query.transfer_id || (row.receipt_type === 'transfer' && row.transfer_id === query.transfer_id)), options),
     },
     analytics: (query: InventoryAnalyticsQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<InventoryAnalyticsResult>('/inventory/analytics', { ...options, query }),
@@ -5079,13 +5091,13 @@ export class LetbuyyApiClient {
   // ── Commerce Analytics (Phase 5.10) ─────────────────────────
   readonly commerceAnalytics = {
     supplierMetrics: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<SupplierMetricsResult>('/commerce-analytics/supplier-metrics', { ...options, query }),
+      this.requestCommerceMetric('/commerce-analytics/supplier-metrics', query, SupplierMetricsResultSchema, true, options),
     warehouseMetrics: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<WarehouseMetricsResult>('/commerce-analytics/warehouse-metrics', { ...options, query }),
+      this.requestCommerceMetric('/commerce-analytics/warehouse-metrics', query, WarehouseMetricsResultSchema, true, options),
     transferMetrics: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<TransferMetricsResult>('/commerce-analytics/transfer-metrics', { ...options, query }),
+      this.requestCommerceMetric('/commerce-analytics/transfer-metrics', query, TransferMetricsResultSchema, false, options),
     operationsSummary: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<OperationsSummaryResult>('/commerce-analytics/operations-summary', { ...options, query }),
+      this.requestCommerceMetric('/commerce-analytics/operations-summary', query, OperationsSummaryResultSchema, false, options),
   };
 
   readonly orders = {
@@ -5172,12 +5184,16 @@ export class LetbuyyApiClient {
   };
 
   readonly kyc = {
-    overview: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
-      this.requestData<MerchantKycOverview>('/kyc', { ...options, query }),
-    submitDocument: (input: SubmitKycDocumentInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ document: MerchantKycDocument; overview: MerchantKycOverview }>('/kyc/documents', { ...options, method: 'POST', body: input }),
-    refreshDocument: (id: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ document: MerchantKycDocument; overview: MerchantKycOverview }>(`/kyc/documents/${encodePathSegment(id)}/refresh`, { ...options, method: 'POST' }),
+    overview: async (query: { store_id: string }, options?: LetbuyyRequestOptions) => {
+      const siteId = query.store_id;
+      return parseKycOverview(await this.requestData<unknown>('/kyc', { ...options, query: { store_id: siteId } }), siteId);
+    },
+    submitDocument: async (input: SubmitKycDocumentInput, options?: LetbuyyRequestOptions) => {
+      const captured = { ...input };
+      return parseKycMutation(await this.requestData<unknown>('/kyc/documents', { ...options, method: 'POST', body: captured }), captured.store_id);
+    },
+    refreshDocument: async (id: string, storeId: string, options?: LetbuyyRequestOptions) =>
+      parseKycMutation(await this.requestData<unknown>(`/kyc/documents/${encodePathSegment(id)}/refresh`, { ...options, method: 'POST', query: { store_id: storeId } }), storeId),
   };
 
   readonly twoFactor = {
@@ -5736,20 +5752,184 @@ export class LetbuyyApiClient {
 
   /** Settings screens need the complete bounded configuration, never a hidden first page.
    * Explicit page requests remain paged; the default composes at most 1,000 records. */
+  private async requestCategoryCommand(operation:'create'|'update'|'delete',id:string|null,
+    body:CreateCategoryCommand|UpdateCategoryCommand|DeleteCategoryCommand,options?:LetbuyyRequestOptions) {
+    const response=ProductCategoryCommandReceiptSchema.parse(await this.requestData<unknown>(
+      `/categories${id?`/${encodePathSegment(id)}`:''}`,
+      {...options,method:operation==='create'?'POST':operation==='update'?'PATCH':'DELETE',body,
+        storeId:body.store_id,idempotencyKey:body.idempotency_key,cache:'no-store'}));
+    if(response.store_id!==body.store_id||response.idempotency_key!==body.idempotency_key||response.operation!==operation
+      ||id!==null&&response.id!==id||'version'in body&&response.version<=body.version)throw new Error('Category save could not be confirmed. Retry its original request.');
+    return confirmProductCategoryCommandResult(ProductCategoryCommandIntentSchema.parse({operation,category_id:id,command:body}),response);
+  }
+
   private async requestSettingsList<T>(path: string, query: ShippingTaxListQuery, options?: LetbuyyRequestOptions): Promise<T[]> {
-    if (query.page !== undefined) return (await this.requestPaginated<T>(path, { ...options, query })).data;
+    const store = query.store_id ?? options?.storeId ?? this.defaultStoreId;
+    if (!store) throw new LetbuyyApiError({ status:400, code:'STORE_REQUIRED', message:'Select a store before loading settings.' });
+    const limit = query.page === undefined ? 100 : (query.limit ?? 20);
     const rows: T[] = [];
-    for (let page=1; page<=10; page++) {
-      const result = await this.requestPaginated<T>(path, { ...options, query: { ...query, page, limit: 100 } });
-      rows.push(...result.data);
-      if (!result.has_more) return rows;
+    const ids = new Set<string>();
+    let observedTotal: number | undefined;
+    for (let index=0; index<(query.page === undefined ? 10 : 1); index++) {
+      const page = query.page ?? index+1;
+      const body: GatewayResponse<unknown[]> = await this.request<GatewayResponse<unknown[]>>(path, { ...options, storeId:store, query: { ...query, store_id:store, page, limit } });
+      const data: unknown[] = unwrapData<unknown[]>(body,200,null);
+      const meta: Record<string, unknown> = isRecord(body) && isRecord(body.meta) ? body.meta : {};
+      const total = meta.total;
+      if (!Array.isArray(data) || meta.store_id!==store || meta.page!==page || meta.per_page!==limit ||
+        typeof total!=='number' || !Number.isSafeInteger(total) || total<0 ||
+        meta.has_prev!==(page>1) || meta.total_pages!==Math.ceil(total/limit) ||
+        meta.has_next!==(page*limit<total) || data.length!==Math.max(0,Math.min(limit,total-(page-1)*limit)) ||
+        (observedTotal!==undefined && observedTotal!==total)) {
+        throw new LetbuyyApiError({status:503,code:'SETTINGS_PAGE_UNVERIFIED',message:'The complete settings view could not be verified. Reload settings.'});
+      }
+      if (query.page===undefined && total>1000) throw new LetbuyyApiError({status:409,code:'SETTINGS_LIMIT_REACHED',message:'This settings collection needs a paginated view.'});
+      observedTotal=total;
+      for (const row of data) {
+        if (!isRecord(row) || typeof row.id!=='string' || !row.id || ids.has(row.id) ||
+          (row.store_id!==undefined && row.store_id!==store) || (row.site_id!==undefined && row.site_id!==store) ||
+          (isRecord(row.shipping_zones) && row.shipping_zones.store_id!==store)) {
+          throw new LetbuyyApiError({status:503,code:'SETTINGS_SCOPE_UNVERIFIED',message:'The selected store settings could not be confirmed.'});
+        }
+        ids.add(row.id);
+        rows.push(row as T);
+      }
+      if (query.page!==undefined || !meta.has_next) return rows;
     }
-    throw new Error('Settings exceed the complete-view limit. Use the paginated settings API.');
+    throw new LetbuyyApiError({status:409,code:'SETTINGS_LIMIT_REACHED',message:'This settings collection needs a paginated view.'});
+  }
+
+  private async requestWarehouseCapabilities(store:string,options?:LetbuyyRequestOptions):Promise<WarehouseCommandCapabilities> {
+    try {
+      const parsed=WarehouseCommandCapabilitiesSchema.safeParse(await this.requestData<unknown>('/inventory/command-capabilities',
+        {...options,method:'GET',body:undefined,storeId:store,query:{store_id:store},idempotencyKey:undefined,cache:'no-store',responseType:'json'}));
+      if(!parsed.success||parsed.data.store_id!==store)throw new LetbuyyApiError({status:503,
+        code:'WAREHOUSE_PROTOCOL_UNVERIFIED',message:'Warehouse request support could not be confirmed. Try again later.'});
+      return parsed.data;
+    }catch(error){
+      if(error instanceof LetbuyyApiError&&error.status===404)throw new LetbuyyApiError({status:426,
+        code:'WAREHOUSE_SERVER_UPGRADE_REQUIRED',message:'Warehouse request support needs a server update. No stock change was sent.'});
+      throw error;
+    }
+  }
+
+  private async requestWarehouseAcknowledgement(path:string,input:{idempotency_key:string},operation:WarehouseCommandOperation,
+    target:string|null,options?:LetbuyyRequestOptions):Promise<WarehouseCommandResult> {
+    const store=options?.storeId??this.defaultStoreId;
+    if(!store)throw new LetbuyyApiError({status:400,code:'STORE_REQUIRED',message:'Select a store before changing warehouse stock.'});
+    if(options?.idempotencyKey&&options.idempotencyKey!==input.idempotency_key)
+      throw new LetbuyyApiError({status:400,code:'WAREHOUSE_KEY_CONFLICT',message:'Retry the original warehouse request key.'});
+    let intent:ReturnType<typeof prepareWarehouseCommand>;
+    try{intent=path==='/inventory/commands/stop'?StopWarehouseCommandSchema.parse(input):prepareWarehouseCommand(operation,target,{...input,store_id:store});}
+    catch{throw new LetbuyyApiError({status:400,code:'WAREHOUSE_COMMAND_INVALID',message:'Check the warehouse request before saving.'});}
+    const capabilities=await this.requestWarehouseCapabilities(store,options);
+    const headers=new Headers(options?.headers);headers.set(WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION);
+    const parsed=WarehouseCommandResultSchema.safeParse(await this.requestData<unknown>(path,
+      {...options,headers,storeId:store,idempotencyKey:input.idempotency_key,method:'POST',body:input}));
+    if(!parsed.success||parsed.data.command_receipt.actor_id!==capabilities.actor_id||parsed.data.command_receipt.site_id!==store||parsed.data.command_receipt.operation!==operation||
+      parsed.data.command_receipt.key!==input.idempotency_key||!sameWarehouseValue(parsed.data.command_receipt.command,intent.command)||(target!==null&&parsed.data.command_receipt.target_id!==target))
+      throw new LetbuyyApiError({status:502,code:'WAREHOUSE_ACKNOWLEDGEMENT_UNVERIFIED',message:'The warehouse outcome could not be confirmed. Keep the original request for recovery.'});
+    return parsed.data;
+  }
+
+  private async requestWarehouseDocument<T extends {id:string;site_id:string}>(path:string,id:string,store:string,
+    schema:{safeParse(value:unknown):{success:true;data:T}|{success:false}},options?:LetbuyyRequestOptions):Promise<T> {
+    const parsed=schema.safeParse(await this.requestData<unknown>(path,{...options,method:'GET',storeId:store,query:{store_id:store},cache:'no-store'}));
+    if(!parsed.success||parsed.data.site_id!==store||parsed.data.id!==id)throw new LetbuyyApiError({status:503,
+      code:'WAREHOUSE_DOCUMENTS_UNVERIFIED',message:'This warehouse record could not be confirmed. Reload the current store.'});
+    return parsed.data;
+  }
+
+  private async requestWarehouseMetadata(path:string,input:{store_id:string;name:string;idempotency_key?:string},operation:'location.create'|'supplier.create',options?:LetbuyyRequestOptions):Promise<WarehouseCommandResult> {
+    const key=input.idempotency_key??options?.idempotencyKey;
+    if(!key)throw new LetbuyyApiError({status:400,code:'IDEMPOTENCY_KEY_REQUIRED',message:'Keep one original key for this warehouse setup request.'});
+    return this.requestWarehouseAcknowledgement(path,{...input,idempotency_key:key},operation,null,{...options,storeId:input.store_id});
+  }
+
+  private async requestWarehouseCollection<T extends {id:string;status:string}>(path:string,
+    query:{store_id:string;page:number;limit:number;status?:string},
+    schema:{safeParse(value:unknown):{success:true;data:{data:T[];meta:{store_id:string;page:number;per_page:number;total:number;has_next:boolean}}}|{success:false}},
+    options?:LetbuyyRequestOptions,code='WAREHOUSE_DOCUMENTS_UNVERIFIED'):Promise<PaginatedResponse<T>> {
+    const parsed=schema.safeParse(await this.request<unknown>(path,{...options,storeId:query.store_id,query,cache:'no-store'}));
+    if(!parsed.success||parsed.data.meta.store_id!==query.store_id||parsed.data.meta.page!==query.page||
+      parsed.data.meta.per_page!==query.limit||parsed.data.data.some(row=>query.status&&query.status!=='all'&&row.status!==query.status))
+      throw new LetbuyyApiError({status:503,code,message:'These warehouse records could not be confirmed. Reload the current store.'});
+    return {data:parsed.data.data,total:parsed.data.meta.total,page:query.page,limit:query.limit,
+      has_more:parsed.data.meta.has_next,next_cursor:null,total_is_exact:true};
+  }
+
+  private async requestCollectionMetadataCommand(input: CollectionMetadataCommandIntent, options?: LetbuyyRequestOptions): Promise<CollectionMetadataReceipt> {
+    const intent = CollectionMetadataCommandIntentSchema.parse(input);
+    if (intent.command.collection_type !== 'manual') throw new Error('Use the smart collection transport for smart rules.');
+    const headers = new Headers(options?.headers), actor = headers.get('X-Letbuyy-Expected-Actor');
+    const value = await this.requestData<unknown>(intent.collection_id === null ? '/products/collections' : `/products/collections/${encodePathSegment(intent.collection_id)}`, {
+      ...options, headers, method: intent.operation === 'create' ? 'POST' : intent.operation === 'update' ? 'PATCH' : 'DELETE',
+      storeId: intent.command.store_id, idempotencyKey: intent.command.idempotency_key, body: intent.command, cache: 'no-store',
+    });
+    return confirmCollectionMetadataReceipt(intent, value, actor ?? undefined);
+  }
+
+  private async requestSmartCollectionCommand(operation: 'create' | 'update' | 'delete', id: string | null,
+    input: CreateSmartCollectionInput | UpdateSmartCollectionInput | Pick<DeleteCollectionMetadata, 'version'>,
+    options?: LetbuyyRequestOptions): Promise<CollectionMetadataReceipt> {
+    const key = UuidSchema.parse(options?.idempotencyKey);
+    if (id !== null) UuidSchema.parse(id);
+    const store = UuidSchema.parse('store_id' in input ? input.store_id : options?.storeId ?? this.defaultStoreId);
+    const body = operation === 'create' ? CreateSmartCollectionSchema.parse(input)
+      : operation === 'update' ? UpdateSmartCollectionSchema.parse(input)
+        : { version: DeleteCollectionMetadataSchema.parse({ ...input, collection_type: 'smart', store_id: store, idempotency_key: key }).version };
+    const version = 'version' in body ? body.version : null;
+    const payload: Record<string, unknown> = { collection_type: 'smart' };
+    for (const [field, value] of Object.entries(body)) {
+      if (['store_id', 'version'].includes(field) || value === undefined) continue;
+      payload[field === 'name' ? 'title' : field] = value;
+    }
+    const frozenPayload = JSON.parse(JSON.stringify(payload)) as Record<string, unknown>;
+    const headers = new Headers(options?.headers);
+    const expectedActor = headers.get('X-Letbuyy-Expected-Actor');
+    const intent = CollectionMetadataCommandIntentSchema.parse({ operation, collection_id: id,
+      command: { ...frozenPayload, store_id: store, idempotency_key: key, ...(version === null ? {} : { version }) } });
+    const value = await this.requestData<unknown>(id === null ? '/smart-collections' : `/smart-collections/${encodePathSegment(id)}`, {
+      ...options, headers, method: operation === 'create' ? 'POST' : operation === 'update' ? 'PATCH' : 'DELETE',
+      storeId: store, idempotencyKey: key, body, cache: 'no-store',
+    });
+    return confirmCollectionMetadataReceipt(intent, value, expectedActor ?? undefined);
   }
 
   async requestData<T>(path: string, options?: LetbuyyRequestOptions): Promise<T> {
     const body = await this.request<GatewayResponse<T>>(path, options);
     return unwrapData<T>(body, 200, null);
+  }
+
+  private async requestCommerceMetric<T extends { store_id: string; meta?: { page: number; per_page: number } }>(path: string,
+    query: CommerceAnalyticsQuery, schema: { safeParse(value: unknown): { success: true; data: T } | { success: false } },
+    paged: boolean, options?: LetbuyyRequestOptions): Promise<T> {
+    const body=await this.requestData<unknown>(path,{...options,storeId:query.store_id,query});
+    const parsed=schema.safeParse(body);
+    if(!parsed.success || parsed.data.store_id!==query.store_id ||
+      (paged && (parsed.data.meta?.page!==(query.page ?? 1) || parsed.data.meta?.per_page!==(query.limit ?? 20)))) {
+      throw new LetbuyyApiError({status:503,code:'OPERATIONS_METRICS_UNVERIFIED',message:'These operations metrics could not be verified. Try again later.'});
+    }
+    return parsed.data;
+  }
+
+  private async requestInventoryRecords<T>(path: string, query: InventoryReservationListQuery | InventoryReceiptListQuery,
+    schema: { safeParse(value: unknown): { success: true; data: T[] } | { success: false } },
+    matches: (row: T, store: string) => boolean, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<T>> {
+    const store = query.store_id ?? options?.storeId ?? this.defaultStoreId;
+    const body = await this.request<GatewayResponse<unknown[]>>(path, { ...options, storeId: store, query: { ...query, ...(store ? { store_id: store } : {}) } });
+    const rows = schema.safeParse(unwrapData<unknown[]>(body, 200, null));
+    const meta = isRecord(body) && isRecord(body.meta) ? body.meta : {};
+    const { total, page, per_page: limit, has_next: more } = meta;
+    if (!rows.success || !UuidSchema.safeParse(meta.store_id).success ||
+      (store && meta.store_id !== store) || typeof total !== 'number' || !Number.isSafeInteger(total) || total < 0 ||
+      page !== (query.page ?? 1) || limit !== (query.limit ?? 20) || typeof more !== 'boolean' ||
+      (rows.success && (rows.data.length > Number(limit) || rows.data.length > total ||
+        rows.data.some(row => !matches(row, String(meta.store_id)))))) {
+      throw new LetbuyyApiError({ status: 503, code: 'INVENTORY_RECORDS_UNVERIFIED', message: 'These inventory records could not be verified. Try again later.' });
+    }
+    return { data: rows.data, total, page: Number(page), limit: Number(limit), has_more: more,
+      next_cursor: null, total_is_exact: Boolean(meta.total_is_exact) };
   }
 
   requestPaginated<T>(path: string, options?: LetbuyyRequestOptions): Promise<PaginatedResponse<T>>;
@@ -6091,3 +6271,12 @@ export type {
 // CreatePurchaseOrderInput, ReceivePurchaseOrderInput, ReceivePurchaseOrderLineInput,
 // Supplier, CreateSupplierInput, InventoryLocation, CreateInventoryLocationInput
 // are defined and exported inline above.
+
+function sameWarehouseValue(a:unknown,b:unknown):boolean {
+ if(a===b)return true;
+ if(Array.isArray(a)&&Array.isArray(b))return a.length===b.length&&a.every((value,index)=>sameWarehouseValue(value,b[index]));
+ if(a&&b&&typeof a==='object'&&typeof b==='object'&&!Array.isArray(a)&&!Array.isArray(b)) {
+  const left=a as Record<string,unknown>,right=b as Record<string,unknown>,keys=Object.keys(left);
+  return keys.length===Object.keys(right).length&&keys.every(key=>Object.prototype.hasOwnProperty.call(right,key)&&sameWarehouseValue(left[key],right[key]));
+ }return false;
+}

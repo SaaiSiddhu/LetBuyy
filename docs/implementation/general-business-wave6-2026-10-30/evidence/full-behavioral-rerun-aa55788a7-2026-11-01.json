@@ -1,0 +1,26 @@
+{
+  "dateIst": "2026-11-01",
+  "commitUnderTest": "aa55788a7",
+  "command": "pnpm run test",
+  "result": { "tests": 3156, "passed": 3120, "failed": 9, "skipped": 27, "exitCode": 1 },
+  "earlierComparison": { "commit": "3b6eff5b7", "tests": 3158, "passed": 3104, "failed": 27, "skipped": 27 },
+  "failedAreas": [
+    "App platform lifecycle test VM import map",
+    "Two accepted Core catalog regeneration checks",
+    "Current SECURITY DEFINER function role closure",
+    "Owned database lane fixture ordering",
+    "Reviewed owned database lane inventory",
+    "Owned fixture tsx subprocess under sandbox IPC restrictions",
+    "Two rollback signature guard checks"
+  ],
+  "focusedRepairsAfterRerun": {
+    "lifecycleDependencyAndOwnedFixtureSuites": { "passed": 32, "failed": 0, "skipped": 0 },
+    "gatewayOwnedDatabaseLane": { "passed": 15, "failed": 0, "skipped": 0 }
+  },
+  "stillOpen": [
+    "The full behavioral command has not been rerun after the focused repairs.",
+    "Accepted Core catalog regeneration, definer role closure, and rollback signature guards remain red and require migration-safe resolution.",
+    "The unprivileged full command could not exercise its real Docker-backed live lane; 27 checks were skipped.",
+    "All provider, India AWS, hosted callback, statement, physical-device, and release gates remain separate."
+  ]
+}

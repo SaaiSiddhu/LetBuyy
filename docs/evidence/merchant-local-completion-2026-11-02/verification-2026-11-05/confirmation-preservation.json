@@ -1,0 +1,18 @@
+{
+  "source_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+  "baseline_sha256": "823d816f06cb8b21ecedb637f9ea6dc6cdf390c6caeae5fbb7676cf4231dc37a",
+  "changed": [
+    "apps/merchant/mobile/lib/widgets/shared/confirm_dialog.dart",
+    "apps/merchant/mobile/test/confirmation_presentation_test.dart",
+    "packages/dart/ui_kit/lib/src/widgets/confirmation_dialog.dart"
+  ],
+  "all_other_inputs_unchanged": 8442,
+  "domain_services_callers_routes_identity_persistence_changes": [],
+  "focused_pass": 41,
+  "focused_fail": 0,
+  "focused_skip": 0,
+  "negative_before_adapter": "confirmation-negative-v1:0PASS/7FAIL",
+  "canonical_layout_negative": "confirmation-focused-v1:5PASS/2FAIL;76px overflow before scrollable frame repair",
+  "public_class_fields_constructor_exactly_preserved": true,
+  "original_caller_bytes_unchanged": true
+}

@@ -1,0 +1,7 @@
+{
+  "supervisor_pid": 31473,
+  "capsule": "/private/tmp/letbuyy-security-governance-7ab1drpi",
+  "source_sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+  "status": "TERMINAL",
+  "terminal_receipt": "security-governance-v1.terminal.json"
+}

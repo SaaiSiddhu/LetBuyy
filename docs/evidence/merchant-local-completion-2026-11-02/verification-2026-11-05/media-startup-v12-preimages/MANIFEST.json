@@ -1,0 +1,6 @@
+{
+  "apps/merchant/mobile/lib/services/media_service.dart": "15fd47aaccbd70a5d9cb292d3b5d0c8a3ea5295a708858d7acd1d563dc7fac3e",
+  "apps/merchant/mobile/lib/screens/content/media_library_screen.dart": "7d6e2b77e8923249c6e987872d32654fcc3ad4228a8a23dfa76fb7b510468cfd",
+  "apps/merchant/mobile/lib/services/store_service.dart": "633486fc613694740e3bb78ecf541c2ec03227449c60d6e92f1712068ca57a53",
+  "apps/merchant/mobile/test/mobile_services_test.dart": "f6ca37d2d6713bd91719307ef0a9c071e785b2d33973e7032f0b3c1459968260"
+}

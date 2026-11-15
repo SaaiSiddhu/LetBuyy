@@ -1,0 +1,25 @@
+{
+  "run": "4b1bb61868a5",
+  "native": {
+    "exit": 65,
+    "native_product_saved": false,
+    "normal_auth": false,
+    "run_id": "4b1bb61868a5"
+  },
+  "backend": {
+    "exit": 1,
+    "runner_pid": 81591,
+    "finished_at": "2026-11-06T23:39:13.800487+00:00"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "source59_unchanged": true,
+  "finding": "Window-derived coordinate did not resolve missing first tap; no native success marker emitted."
+}

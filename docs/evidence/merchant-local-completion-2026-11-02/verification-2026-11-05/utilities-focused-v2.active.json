@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-05T20:16:41.508075+00:00",
+  "supervisor_pid": 85136,
+  "source": "utilities-source-v2",
+  "source_sha256": "392d53d26becc93d69c656afaccb8fc7b591c8c0f542b61b3d80ce7fa475aba9",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/help_presentation_test.dart",
+    "test/capability_presentation_test.dart",
+    "test/confirmation_presentation_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 85138
+}

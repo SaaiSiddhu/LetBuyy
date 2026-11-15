@@ -1,3 +1,4 @@
+import {isWarehouseCommandPath,WAREHOUSE_COMMAND_PROTOCOL_HEADER,WAREHOUSE_COMMAND_PROTOCOL_VERSION} from '@letbuyy/shared-types';
 import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
 // Merchant actions must persist through the production Worker, not only render.
 import assert from 'node:assert/strict';
@@ -30,6 +31,7 @@ async function call(path: string, method = 'GET', body?: Record<string, unknown>
         ...await signedIdentityHeaders(owner, email),
         ...(selected ? { 'X-Store-ID': selected } : {}),
         'Content-Type': 'application/json', 'Idempotency-Key': String(body?.idempotency_key || randomUUID()),
+        ...(isWarehouseCommandPath(path) ? {[WAREHOUSE_COMMAND_PROTOCOL_HEADER]: WAREHOUSE_COMMAND_PROTOCOL_VERSION} : {}),
     }, ...(body ? { body: JSON.stringify(body) } : {}) });
     return response;
 }
@@ -72,10 +74,14 @@ test('blog and collection edit/archive actions use authorized tenant predicates'
     assert.equal((await call(`/v1/blog/posts/${post.id}`, 'DELETE', undefined, b.siteId)).status, 403);
     await ok(`/v1/blog/posts/${post.id}`, 'DELETE');
     assert.equal(owned.psql(`SELECT status FROM blog_posts WHERE id='${post.id}'`), 'archived');
-    const collection = await ok('/v1/products/collections', 'POST', { store_id: a.siteId, title: 'Synthetic action collection' });
-    assert.equal((await ok(`/v1/products/collections/${collection.id}`, 'PATCH', { title: 'Synthetic changed collection' })).title, 'Synthetic changed collection');
-    assert.equal((await call(`/v1/products/collections/${collection.id}`, 'DELETE', undefined, b.siteId)).status, 403);
-    await ok(`/v1/products/collections/${collection.id}`, 'DELETE');
+    const legacy = await call('/v1/products/collections', 'POST', {store_id: a.siteId, title: 'Synthetic rejected old client'});
+    assert.equal(legacy.status, 400, 'Unversioned legacy collection input remains rejected');
+    const collection = await ok('/v1/products/collections', 'POST', {store_id: a.siteId, title: 'Synthetic action collection', collection_type: 'manual', idempotency_key: randomUUID()});
+    const edited = await ok(`/v1/products/collections/${collection.id}`, 'PATCH', {store_id: a.siteId, collection_type: 'manual', version: collection.version, idempotency_key: randomUUID(), title: 'Synthetic changed collection'});
+    assert.equal(edited.title, 'Synthetic changed collection');
+    const remove = {store_id: a.siteId, collection_type: 'manual', version: edited.version, idempotency_key: randomUUID()};
+    assert.equal((await call(`/v1/products/collections/${collection.id}`, 'DELETE', remove, b.siteId)).status, 403);
+    await ok(`/v1/products/collections/${collection.id}`, 'DELETE', {...remove, idempotency_key: randomUUID()});
     assert.equal(owned.psql(`SELECT deleted_at IS NOT NULL FROM collections WHERE id='${collection.id}'`), 't');
 });
 
@@ -91,8 +97,11 @@ test('merchant GST percentages round trip to the fractional checkout database au
 });
 
 test('inventory location address and purchase-order receiving persist through real worker/RPCs', async () => {
-    const location = await ok('/v1/inventory/locations', 'POST', { store_id: a.siteId, name: 'Synthetic action warehouse', address: 'Synthetic address', city: 'Chennai', state: 'TN', country: 'IN' });
-    assert.equal(location.city, 'Chennai');
+    const input = {store_id: a.siteId, name: 'Synthetic action warehouse', address: 'Synthetic address', city: 'Chennai', state: 'TN', country: 'IN', idempotency_key: randomUUID()};
+    const legacy = await gateway.request('/v1/inventory/locations', {method: 'POST', headers: {...await signedIdentityHeaders(owner, email), 'X-Store-ID': a.siteId, 'Idempotency-Key': input.idempotency_key}, body: JSON.stringify(input)});
+    assert.equal(legacy.status, 426, 'Missing atomic warehouse protocol must remain rejected');
+    const saved = await ok('/v1/inventory/locations', 'POST', input), location = saved.location;
+    assert.equal(location.address.city, 'Chennai');
     assert.equal(owned.psql(`SELECT address->>'city' FROM inventory_locations WHERE id='${location.id}'`), 'Chennai');
     const created = await ok('/v1/inventory/purchase-orders', 'POST', { store_id: a.siteId, location_id: location.id, lines: [{ product_id: productId, quantity: 2, unit_cost: 25 }], idempotency_key: randomUUID() });
     const po = created.purchase_order;

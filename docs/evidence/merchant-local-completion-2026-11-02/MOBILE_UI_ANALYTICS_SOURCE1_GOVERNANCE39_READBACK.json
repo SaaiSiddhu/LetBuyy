@@ -1,0 +1,16 @@
+{
+  "status": "GOVERNANCE_SOURCE_BYTES_VERIFIED",
+  "source_sha256": "41cd1f4d3ababf053db72bf023b0252830d7fe70ed67cd8d78911cdc3e5c1cb3",
+  "core_inputs": 7489,
+  "actual_clone_core_bytes_match": true,
+  "capsule": "governance-category-capsule-v39",
+  "gate_summary": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "gate_ok": true,
+  "gate_exit": 0
+}

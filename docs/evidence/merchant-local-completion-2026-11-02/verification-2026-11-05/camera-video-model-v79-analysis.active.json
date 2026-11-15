@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-07T06:31:10.751086+00:00",
+  "supervisor_pid": 70061,
+  "source": "merchant-camera-video-model-source-v79",
+  "source_sha256": "e5cd4f338399cb21535dad581af4ad3355a38def06ddeb9f2c5cbda4f65672e6",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "RUNNING",
+  "child_pid": 70222
+}

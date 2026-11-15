@@ -1,0 +1,30 @@
+{
+  "started_at": "2026-11-06T05:41:36.859932+00:00",
+  "supervisor_pid": 85078,
+  "source": "web-mobile-switcher-source-v2",
+  "source_sha256": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "30s",
+    "test/store_switcher_long_population_test.dart",
+    "test/store_membership_pagination_test.dart",
+    "test/store_switcher_presentation_test.dart",
+    "test/settings_optional_reads_test.dart",
+    "test/store_discovery_transport_test.dart",
+    "test/store_session_boundary_test.dart",
+    "test/staff_scope_boundary_test.dart",
+    "test/staff_environment_isolation_test.dart",
+    "test/staff_retry_contract_test.dart",
+    "test/staff_invitation_contract_test.dart",
+    "test/staff_ui_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 85080,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T05:41:45.126207+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda"
+}

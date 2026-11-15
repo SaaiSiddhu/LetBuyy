@@ -1,0 +1,18 @@
+[
+  {
+    "path": "docs/evidence/merchant-local-completion-2026-11-02/MOBILE_UI_CONTINUATION.json",
+    "sha256": "e049864d952a017159d9267b2cb31258751242649d157cc3a65b1ea7aba64fd4"
+  },
+  {
+    "path": "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/FINAL_LOCAL_CHECKPOINT.json",
+    "sha256": "0d7299ab631507fa7966420fb1f11758ee4bebd15187021dfe0d592820f43561"
+  },
+  {
+    "path": "docs/evidence/merchant-local-completion-2026-11-02/HANDOFF.md",
+    "sha256": "e133404ed157d8a640c97840566db9e1b6990b960fdf54c29214ec65c7a440ca"
+  },
+  {
+    "path": "docs/evidence/merchant-local-completion-2026-11-02/MERCHANT_STAFF_KYC_PRODUCT_LOCAL_V1.md",
+    "sha256": "df934b41599fcbfccbf159c2ddbe1cae4ef5cd7084414b7c87b82888a59a4d74"
+  }
+]

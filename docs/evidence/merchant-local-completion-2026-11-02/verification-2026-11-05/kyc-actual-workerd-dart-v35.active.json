@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-06T15:04:45.049365+00:00",
+  "supervisor_pid": 34605,
+  "source": "merchant-kyc-receipt-source-v35",
+  "source_sha256": "084de4c3adc928cd94b7df9bf6ca1f8a31ae6c9c44bd635370e9ada52fde28a9",
+  "command": [
+    "env",
+    "LETBUYY_KYC_PUBLIC_FIXTURE_OUT=/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/kyc-workerd-public-v35.json",
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/kyc_actual_workerd_projection_v35_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 35032
+}

@@ -1,4 +1,5 @@
 import type { GatewayServiceBinding } from './gateway-order-transitions';
+export { normalizeRazorpayRefundLifecycle } from '@letbuyy/infrastructure/razorpay-adapter';
 
 export interface GatewayRefundTransitionEnv {
     API_GATEWAY_SERVICE?: GatewayServiceBinding;
@@ -13,23 +14,6 @@ export type GatewayRefundStatus = 'created' | 'processed' | 'failed';
  * even though the event means only that the refund request was created. Keep the
  * provider event as the lifecycle authority so this event can never post a reversal.
  */
-export function normalizeRazorpayRefundLifecycle(
-    eventType: string,
-    entityStatus: string | null | undefined,
-): { eventType: RazorpayRefundEventType; status: GatewayRefundStatus } | null {
-    if (eventType === 'refund.created') {
-        return ['created', 'pending', 'processed'].includes(entityStatus ?? '')
-            ? { eventType, status: 'created' }
-            : null;
-    }
-    if (eventType === 'refund.processed' && entityStatus === 'processed') {
-        return { eventType, status: 'processed' };
-    }
-    if (eventType === 'refund.failed' && entityStatus === 'failed') {
-        return { eventType, status: 'failed' };
-    }
-    return null;
-}
 
 export async function reconcileGatewayPaymentRefund(
     env: GatewayRefundTransitionEnv,

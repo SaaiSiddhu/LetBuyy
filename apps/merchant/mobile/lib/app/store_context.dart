@@ -4,13 +4,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/store_model.dart';
 import '../services/store_service.dart';
 import '../services/api_client.dart';
+import '../config/app_config.dart';
 
 class StoreContext extends ChangeNotifier {
-  StoreContext({required StoreService storeService, SharedPreferences? prefs})
-    : _storeService = storeService,
-      _prefs = prefs;
+  StoreContext({
+    required StoreService storeService,
+    SharedPreferences? prefs,
+    String environment = AppConfig.environment,
+  }) : _storeService = storeService,
+       _prefs = prefs,
+       _selectedStoreIdKey = environment == 'staging'
+           ? 'letbuyy.selected_store_id.staging'
+           : const {'local', 'development'}.contains(environment)
+           ? 'letbuyy.selected_store_id.${AppConfig.persistenceNamespace(environmentName: environment)}'
+           : 'letbuyy.selected_store_id';
 
-  static const String _selectedStoreIdKey = 'letbuyy.selected_store_id';
+  final String _selectedStoreIdKey;
 
   final StoreService _storeService;
   SharedPreferences? _prefs;
@@ -20,12 +29,15 @@ class StoreContext extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   int _sessionEpoch = 0;
+  int _selectionVersion = 0;
+  Future<void> _selectionPersistence = Future<void>.value();
   Future<List<StoreModel>>? _storesLoading;
   int? _storesLoadingEpoch;
   int get requestContextVersion => _sessionEpoch;
 
   /// Account and selected-store changes both invalidate captured HTTP work.
-  Object get requestContextKey => (_sessionEpoch, _actorId, _selectedStore?.id);
+  Object get requestContextKey =>
+      (_sessionEpoch, _selectionVersion, _actorId, _selectedStore?.id);
   Future<void> _reset = Future<void>.value();
   bool _actorBound = false;
   String? _actorId;
@@ -76,17 +88,28 @@ class StoreContext extends ChangeNotifier {
       return _stores;
     }
 
+    final discoveryKey = requestContextKey;
     _isLoading = true;
     _error = null;
 
     try {
       final stores = await _storeService.fetchStores();
       _checkEpoch(epoch);
+      if (requestContextKey != discoveryKey) {
+        throw const ApiException(
+          message: 'Store access changed. Reload the store list.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      }
       _stores = stores;
       await _selectInitialStore(stores, epoch);
       return _stores;
     } catch (error) {
       _checkEpoch(epoch);
+      if (requestContextKey != discoveryKey ||
+          error is ApiException && error.code == 'SESSION_CONTEXT_CHANGED')
+        rethrow;
       if (error is ApiException &&
           error.statusCode >= 400 &&
           error.statusCode < 500) {
@@ -110,7 +133,10 @@ class StoreContext extends ChangeNotifier {
 
   /// Bind the authenticated actor and finish its reset before store discovery.
   /// A valid empty response alone means onboarding; errors remain errors.
-  Future<StoreModel?> ensureSelectedStoreForActor(String actor) async {
+  Future<StoreModel?> ensureSelectedStoreForActor(
+    String actor, {
+    bool force = false,
+  }) async {
     if (actor.isEmpty)
       throw const ApiException(
         message: 'Sign in again to load store access.',
@@ -125,7 +151,7 @@ class StoreContext extends ChangeNotifier {
         statusCode: 409,
         code: 'SESSION_CONTEXT_CHANGED',
       );
-    final store = await ensureSelectedStore();
+    final store = await ensureSelectedStore(force: force);
     _checkEpoch(epoch);
     if (_actorId != actor)
       throw const ApiException(
@@ -142,22 +168,85 @@ class StoreContext extends ChangeNotifier {
     return _selectedStore;
   }
 
+  /// Refresh the selected member's metadata without trusting a caller-supplied
+  /// model or allowing an old response to undo a store/account switch.
+  Future<StoreModel> reloadSelectedStore(String expectedStoreId) async {
+    final key = requestContextKey;
+    void requireCurrent() {
+      if (requestContextKey != key || selectedStoreId != expectedStoreId) {
+        throw const ApiException(
+          message: 'The selected store changed. Open its settings again.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      }
+    }
+
+    requireCurrent();
+    await _reset;
+    requireCurrent();
+    late final StoreModel fresh;
+    try {
+      fresh = await _storeService.fetchStoreFresh(expectedStoreId);
+    } catch (error) {
+      requireCurrent();
+      if (error is ApiException &&
+          const {401, 403, 404}.contains(error.statusCode)) {
+        await clearSelection();
+      }
+      rethrow;
+    }
+    requireCurrent();
+    _stores = [
+      for (final store in _stores)
+        if (store.id == expectedStoreId) fresh else store,
+    ];
+    await selectStore(fresh);
+    requireCurrent();
+    return fresh;
+  }
+
   Future<void> selectStore(StoreModel store) async {
-    _selectedStore = store;
-    _storeService.setCurrentStore(store);
-    final prefs = await _preferences();
-    await prefs.setString(_selectedStoreIdKey, store.id);
+    StoreModel? availableStore;
+    for (final available in _stores) {
+      if (available.id == store.id) {
+        availableStore = available;
+        break;
+      }
+    }
+    if (availableStore == null) {
+      throw const ApiException(
+        message: 'This store is not available to the signed-in account.',
+        statusCode: 403,
+        code: 'STORE_ACCESS_UNAVAILABLE',
+      );
+    }
+    if (_selectedStore?.id != availableStore.id) _selectionVersion++;
+    _selectedStore = availableStore;
+    _storeService.setCurrentStore(availableStore);
+    // Retire the old visible/private context before asynchronous preferences.
     notifyListeners();
+    await _persistSelection(availableStore.id, requestContextKey);
   }
 
   Future<void> selectStoreById(String storeId) async {
     if (_stores.isEmpty) {
       await loadStores();
     }
-    final store = _stores.firstWhere(
-      (store) => store.id == storeId,
-      orElse: () => _stores.first,
-    );
+    StoreModel? store;
+    for (final available in _stores) {
+      if (available.id == storeId) {
+        store = available;
+        break;
+      }
+    }
+    if (store == null) {
+      throw const ApiException(
+        message: 'This store is not available to the signed-in account.',
+        statusCode: 403,
+        code: 'STORE_ACCESS_UNAVAILABLE',
+      );
+    }
     await selectStore(store);
   }
 
@@ -176,8 +265,10 @@ class StoreContext extends ChangeNotifier {
     _isLoading = false;
     // Invalidate memory synchronously. All subsequent reads await cache reset.
     final resetService = _storeService.clearSessionStores();
+    final pendingSelection = _selectionPersistence;
     _reset = _reset.then((_) async {
       await resetService;
+      await pendingSelection;
       final prefs = await _preferences();
       await prefs.remove(_selectedStoreIdKey);
     });
@@ -188,6 +279,7 @@ class StoreContext extends ChangeNotifier {
   Future<void> _selectInitialStore(List<StoreModel> stores, int epoch) async {
     _checkEpoch(epoch);
     if (stores.isEmpty) {
+      if (_selectedStore != null) _selectionVersion++;
       _selectedStore = null;
       return;
     }
@@ -195,15 +287,35 @@ class StoreContext extends ChangeNotifier {
     final prefs = await _preferences();
     _checkEpoch(epoch);
     final savedId = prefs.getString(_selectedStoreIdKey);
-    final currentId = _selectedStore?.id ?? _storeService.currentStore?.id;
-    final targetId = savedId?.isNotEmpty == true ? savedId : currentId;
+    final targetId =
+        _selectedStore?.id ??
+        (savedId?.isNotEmpty == true
+            ? savedId
+            : _storeService.currentStore?.id);
     final selected = stores.firstWhere(
       (store) => store.id == targetId,
       orElse: () => stores.first,
     );
+    if (_selectedStore?.id != selected.id) _selectionVersion++;
     _selectedStore = selected;
     _storeService.setCurrentStore(selected);
-    await prefs.setString(_selectedStoreIdKey, selected.id);
+    await _persistSelection(selected.id, requestContextKey);
+    _checkEpoch(epoch);
+  }
+
+  Future<void> _persistSelection(String id, Object contextKey) {
+    final reset = _reset;
+    final write = _selectionPersistence.then((_) async {
+      await reset;
+      final prefs = await _preferences();
+      if (requestContextKey != contextKey) return;
+      if (!await prefs.setString(_selectedStoreIdKey, id)) {
+        throw StateError('Store selection was not saved on this device.');
+      }
+    });
+    // Keep later persistence usable even if this caller observes an I/O error.
+    _selectionPersistence = write.catchError((Object _) {});
+    return write;
   }
 
   Future<SharedPreferences> _preferences() async {

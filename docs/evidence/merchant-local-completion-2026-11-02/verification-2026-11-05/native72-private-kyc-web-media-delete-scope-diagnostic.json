@@ -1,0 +1,98 @@
+{
+  "status": "REAL_WEB_GALLERY_DELETE_MISSING_TENANT_CONTEXT_AFTER_NATIVE_KYC_AND_WEB_READBACK",
+  "run_id": "87963572b7ba",
+  "source_manifest": "merchant-kyc-receipt-source-v43",
+  "actual_native_backend_checks": {
+    "run_id": "87963572b7ba",
+    "receipt_same_id_key_hash": true,
+    "one_original_byte_post": true,
+    "one_public_object": true,
+    "one_library_row": true,
+    "public_sha256": "5bdf25a6aaf02df243934f1ce42d40803c06efc171109c5d7fbc46741a20fd7a",
+    "private_objects": 1,
+    "private_public_read_denied": true,
+    "kyc_projection": {
+      "site_id": "a9a0a8a4-f35d-471a-8a19-7c5bb03d076b",
+      "overall_status": "in_progress",
+      "provider_mode": "sandbox",
+      "private_upload_available": true,
+      "india_direct_upload_available": false,
+      "required_documents": [
+        {
+          "document_type": "business_pan",
+          "title": "Business PAN",
+          "required": true,
+          "status": "submitted"
+        },
+        {
+          "document_type": "bank_proof",
+          "title": "Bank proof",
+          "required": true,
+          "status": null
+        },
+        {
+          "document_type": "address_proof",
+          "title": "Business address proof",
+          "required": true,
+          "status": null
+        },
+        {
+          "document_type": "gst_certificate",
+          "title": "GST certificate",
+          "required": false,
+          "status": null
+        },
+        {
+          "document_type": "identity_proof",
+          "title": "Identity proof",
+          "required": false,
+          "status": null
+        }
+      ],
+      "documents": [
+        {
+          "id": "40d1837c-a536-452f-934c-62894ac8035b",
+          "created_at": "2026-11-06T17:17:40.795679+00:00",
+          "updated_at": "2026-11-06T17:17:40.795679+00:00",
+          "deleted_at": null,
+          "site_id": "a9a0a8a4-f35d-471a-8a19-7c5bb03d076b",
+          "document_type": "business_pan",
+          "status": "submitted",
+          "provider": "letbuyy_sandbox_kyc",
+          "provider_mode": "sandbox",
+          "provider_reference": null,
+          "has_private_upload": true,
+          "evidence_scan_status": "pending",
+          "provider_unavailable": false,
+          "requires_resubmission": false,
+          "document_number_last4": "1234",
+          "rejection_reason": null,
+          "submitted_at": "2026-11-06T17:17:40.794+00:00",
+          "verified_at": null,
+          "rejected_at": null
+        }
+      ],
+      "next_action": "Upload the remaining required documents privately. Sandbox uploads are not provider reviewed and cannot enable live payouts."
+    },
+    "scope": "Actual Android picker + compiled Worker + owned PG + separate ephemeral private/public R2; test-only private upload, no India/AWS/provider readiness."
+  },
+  "web_kyc": {
+    "run_id": "87963572b7ba",
+    "canonical_api_projection_equal": true,
+    "native_document_visible": true,
+    "last4_visible": true,
+    "private_upload_received": true,
+    "scan_pending_not_provider_verified": true
+  },
+  "web_gallery": "Actual image decoded4x4 with native saved alt text; normal Delete file returned400 IDEMPOTENCY_SITE_REQUIRED. Canonical backend correctly failed closed.",
+  "repair": "Web media DELETE now calls existing createMerchantApiClient(resolved.storeId) using the authorized route resolver; no backend guard relaxation. Source44 under qualification.",
+  "screenshot_caveat": "Native72 web KYC DOM/API assertions passed; screenshot stayed at top of internal scroll.73 explicitly scrolls status/private received into viewport before its screenshot.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

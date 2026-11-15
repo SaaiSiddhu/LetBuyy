@@ -1,0 +1,28 @@
+{
+  "status": "RED_INTERRUPTED_LOCAL_GATE_NOT_PRODUCTION_EVIDENCE",
+  "scope": "Complete behavioral and contract gate attempted on the corrected migration-428 and 2.1.0 Commerce demo source with LETBUYY_EXECUTABLE_PG_JOBS=1",
+  "command": "LETBUYY_EXECUTABLE_PG_JOBS=1 node scripts/governance/test-behavioral.mjs --with-contracts --report /private/tmp/letbuyy-wave6-428-final-full.json",
+  "exitCode": 130,
+  "reasonStopped": "Six owned PostgreSQL suites had already timed out before producing assertions, so this run could not become green; the remaining suites were not treated as executed",
+  "observed": {
+    "pure": { "tests": 3164, "passed": 3149, "failed": 0, "humanOrProviderSkips": 15 },
+    "ownedSuiteResultLines": 58,
+    "ownedSuiteTimedOutLines": 6,
+    "timedOutSuites": [
+      "money-rpc-idempotency-sweep",
+      "order-fulfillment-variant-type",
+      "payment-webhook-event-reclaim",
+      "purchase-parent-child",
+      "rollback-signature-precondition",
+      "service-role-fresh-db-grants"
+    ],
+    "ownedSuiteTailEvidence": "The timed-out logs ended amid full migration NOTICE output before TAP assertions; this is not evidence that the business assertions failed or passed",
+    "cleanupAfterInterrupt": "Unverified immediately after interruption: the read-only Docker queries used label=letbuyy.executable=1, but the runner's actual label is com.letbuyy.executable-fixture=1. The next full-run lifecycle test observed one stale fixture container, network, and volume and reaped them; its before/after assertion failed because the initial resource set was nonempty. Correct-label cleanup must be verified after the active run ends."
+  },
+  "notClaimed": [
+    "Complete behavioral gate passed",
+    "All owned suites ran",
+    "Hosted or provider acceptance",
+    "Production readiness"
+  ]
+}

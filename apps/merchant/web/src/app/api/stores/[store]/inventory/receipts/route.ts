@@ -30,6 +30,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         return NextResponse.json({
             data: result.data,
             meta: {
+                store_id: resolved.storeId,
                 total: result.total,
                 page: result.page,
                 per_page: result.limit,

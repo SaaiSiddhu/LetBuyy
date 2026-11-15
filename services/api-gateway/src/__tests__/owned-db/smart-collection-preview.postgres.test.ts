@@ -1,20 +1,21 @@
+import {closePooledSqlClients}from '@letbuyy/infrastructure/pooled-sql-adapter';
 import assert from 'node:assert/strict';
 import test, {after, afterEach, before} from 'node:test';
-import {Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest, restJson} from './gateway-harness';
-import {requireOwnedDatabase} from './owned-db-support';
+import {Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders} from './gateway-harness';
+import {requireOwnedDatabase,startOwnedPooledSqlProxy,type OwnedPooledSqlProxy} from './owned-db-support';
 import {newSyntheticTenant, seedSyntheticTenant, type SyntheticTenant} from './synthetic-tenant';
 import type {SmartCondition, SmartMatchType} from '../../lib/smart-collection-eval';
 
-// Real worker + owned PostgREST/PG. This retains the current owner-only boundary.
-// No application/schema changes, fabricated positive result, or protected-row cleanup.
+// Real worker + owned PostgREST/PG. Collections share the canonical product grant authority.
+// Canonical owner seeded only inside this disposable fixture; no positive API fake or protected-row cleanup.
 const owned = requireOwnedDatabase();
 const {psql} = owned;
-let gateway: Gateway;
+let gateway: Gateway;let proxy:OwnedPooledSqlProxy;
 const quote = (s: string) => "'" + s.replaceAll("'", "''") + "'";
 const json = (s: string) => JSON.parse(psql(s));
-before(async () => {gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys()));});
+before(async () => {proxy=await startOwnedPooledSqlProxy(owned);gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(),proxy.env()));});
 afterEach(async () => {await gateway.settle();});
-after(async () => {await gateway?.settle();});
+after(async () => {await gateway?.settle();await closePooledSqlClients();await proxy?.stop();});
 
 function world(tag: string) {
     const a = newSyntheticTenant(tag + '-a'), b = newSyntheticTenant(tag + '-b');
@@ -43,8 +44,8 @@ function product(site: SyntheticTenant, options: {name?: string; stock?: number;
 }
 function collection(site: SyntheticTenant, conditions: SmartCondition[], matchType: SmartMatchType = 'all', deleted = false) {
     const id = crypto.randomUUID();
-    psql('INSERT INTO smart_collections(id,store_id,name,slug,conditions,match_type,deleted_at) VALUES(' +
-        [quote(id), quote(site.siteId), quote('Synthetic saved rules ' + id), quote('syn-sc-' + id), quote(JSON.stringify(conditions)) + '::jsonb', quote(matchType), deleted ? 'now()' : 'NULL'].join(',') + ');');
+    psql('INSERT INTO collections(id,store_id,title,slug,conditions,match_type,deleted_at,collection_type,is_active) VALUES(' +
+        [quote(id), quote(site.siteId), quote('Synthetic saved rules ' + id), quote('syn-sc-' + id), quote(JSON.stringify(conditions)) + '::jsonb', quote(matchType), deleted ? 'now()' : 'NULL',"'smart'",'false'].join(',') + ');');
     return id;
 }
 async function request(w: World, path: string, actor = w.owner, sessionStore = w.a.siteId) {
@@ -56,7 +57,7 @@ function snapshot(w: World) {
     const sites = [quote(w.a.siteId), quote(w.b.siteId)].join(',');
     const productScope = 'SELECT id FROM products WHERE store_id IN (' + sites + ')';
     const predicates: Record<string, string> = {
-        smart_collections: 'store_id IN (' + sites + ')', products: 'store_id IN (' + sites + ')',
+        collections: 'store_id IN (' + sites + ')', smart_collections: 'store_id IN (' + sites + ')', collection_metadata_receipts: 'store_id IN (' + sites + ')', products: 'store_id IN (' + sites + ')',
         product_variants: 'product_id IN (' + productScope + ')', inventory_levels: 'store_id IN (' + sites + ')',
         inventory_adjustments: 'product_id IN (' + productScope + ')',
         outbox_events: 'store_id IN (' + sites + ') OR site_id IN (' + sites + ')', idempotency_keys: 'site_id IN (' + sites + ')',
@@ -89,7 +90,7 @@ test('saved owner rules read canonical product name and stock with actual schema
     const match = product(w.a), nonmatch = product(w.a, {name: 'Synthetic Nonmatch', stock: 0});
     product(w.a, {deleted: true}); product(w.a, {active: false}); product(w.b);
     // Seed one real nonempty stock audit/outbox/cache baseline with the unchanged writer.
-    psql('SELECT set_inventory_level_available(' + [quote(match), 'NULL', quote(w.a.locationId), '5', quote(w.owner)].join(',') + ');');
+    psql("WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id'," + quote(w.a.siteId) + ",true)) SELECT set_inventory_level_available(" + [quote(match), 'NULL', quote(w.a.locationId), '5', quote(w.owner)].join(',') + ') FROM _fixture_inventory_scope436;');
     const id = collection(w.a, [{field: 'title', op: 'contains', value: 'SYN-MATCH'}, {field: 'inventory_quantity', op: 'gt', value: '0'}]);
     const before = snapshot(w);
     const listed = await request(w, '/v1/smart-collections?store_id=' + w.a.siteId);
@@ -122,16 +123,23 @@ test('saved all/any rules retain canonical title, inventory, tag, type, vendor a
     assert.deepEqual(snapshot(w), before);
 });
 
-test('current owner-only preview preserves staff, foreign tenant, bound-store and missing/deleted denials', async () => {
+test('current collection reads permit product-granted staff and deny revoked staff, foreign tenant, bound-store and missing/deleted access', async () => {
     const w = world('sc-p3'); product(w.a); product(w.b);
     const id = collection(w.a, []), foreign = collection(w.b, []), deleted = collection(w.a, [], 'all', true);
     const before = snapshot(w);
-    for (const actor of [w.staff, w.other]) {
+    const staffList = await request(w, '/v1/smart-collections?store_id=' + w.a.siteId, w.staff);
+    assert.equal(staffList.status, 200, staffList.text);
+    assert.ok(staffList.json?.data.some((row: {id: string}) => row.id === id));
+    assert.equal(assertPreview(await preview(w, id, w.staff), id).collection_id, id);
+    assert.deepEqual(snapshot(w), before, 'Authorized preview has no collection, stock or receipt effect');
+    psql('UPDATE employees SET is_active=false WHERE user_id=' + quote(w.staff) + ' AND store_id=' + quote(w.a.siteId));
+    try {for (const actor of [w.staff, w.other]) {
         const list = await request(w, '/v1/smart-collections?store_id=' + w.a.siteId, actor);
         assert.equal(list.status, 403, list.text);
         const denied = await preview(w, id, actor); assert.equal(denied.status, 403, denied.text);
         assert.equal(denied.json?.data, undefined);
-    }
+    }} finally {psql('UPDATE employees SET is_active=true WHERE user_id=' + quote(w.staff) + ' AND store_id=' + quote(w.a.siteId));}
+    assert.equal(assertPreview(await preview(w, id, w.staff), id).collection_id, id, 'Restored current authority can read again');
     // Intentional root-reviewed privacy correction: within the verified A
     // scope, a foreign id is indistinguishable from a nonexistent id (404).
     const hidden = await preview(w, foreign);
@@ -165,25 +173,19 @@ test('a prior owner cannot preview saved rules after live ownership revocation a
 
 test('collection and product read failures stay visible and restored retries evaluate saved rules without effects', async () => {
     const w = world('sc-p5'); const match = product(w.a), id = collection(w.a, []), before = snapshot(w);
-    for (const resource of ['smart_collections', 'products']) {
-        let failedReads = 0;
-        const tap = tapRest(owned.restUrl, async (call, forward) => {
-            if (call.method === 'GET' && call.resource === resource) {
-                failedReads += 1;
-                return restJson(503, {code: 'XX000', message: 'relation "syn_private_preview_fault" does not exist', details: 'synthetic-private-detail', hint: 'synthetic-private-hint'});
-            }
-            return forward();
-        });
+    for (const [table,column] of [['collections','conditions'],['products','stock']] as const) {
+        const temporary='syn_private_preview_read_fault';
+        psql(`ALTER TABLE public.${table} RENAME COLUMN ${column} TO ${temporary}`);
         try {
-            const failed = await preview(w, id);
-            assert.equal(failed.status, 500, failed.text); assert.equal(failedReads, 1);
-            assert.equal(failed.json?.data, undefined);
-            assert.doesNotMatch(failed.text, /syn_private_preview_fault|synthetic-private-detail|synthetic-private-hint/);
-            assert.deepEqual(snapshot(w), before);
-        } finally {tap.restore();}
-        assert.deepEqual(assertPreview(await preview(w, id), id).sample_product_ids, [match]);
-        assert.deepEqual(snapshot(w), before);
+            const during=snapshot(w),failed=await preview(w,id);
+            assert.equal(failed.status,503,failed.text);assert.equal(failed.json?.data,undefined);
+            assert.doesNotMatch(failed.text,/syn_private_preview|42703|record.*field|column.*exist/i);
+            assert.deepEqual(snapshot(w),during,'A failed reader adds no business effect while its dependency is unavailable.');
+        } finally {psql(`ALTER TABLE public.${table} RENAME COLUMN ${temporary} TO ${column}`);}
+        assert.deepEqual(assertPreview(await preview(w,id),id).sample_product_ids,[match]);
+        assert.deepEqual(snapshot(w),before);
     }
+
 });
 
 test('the 500-product bound and ten-id sample remain explicit and repeated preview never writes business state', async () => {

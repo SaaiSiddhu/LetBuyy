@@ -2,6 +2,7 @@
 // prove client recovery; the separate owned Gateway suite proves durable effects.
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { createHash } from 'node:crypto'
 import { createRequire } from 'node:module'
 import React, { act } from 'react'
 import { ApparelFactsSchema, GiftFactsSchema, ProductEditVariantSchema } from '@letbuyy/commerce-core'
@@ -40,35 +41,142 @@ async function clickMedia(container: HTMLElement, label: string) {
     assert.ok(element, `Missing media action ${label}`); assert.equal(element.disabled, false)
     await act(async () => element.click())
 }
-async function uploadSyntheticMedia(container: HTMLElement) {
+async function uploadSyntheticMedia(container: HTMLElement, count = 1) {
     const input = container.querySelector('input[type="file"]') as HTMLInputElement
     assert.ok(input)
-    Object.defineProperty(input, 'files', { configurable: true, value: [new File(['synthetic only'], 'fixture.webp', { type: 'image/webp' })] })
+    Object.defineProperty(input, 'files', { configurable: true, value: Array.from({ length: count }, (_, i) => new File(['synthetic only'], count === 1 ? 'fixture.webp' : `fixture-${i}.webp`, { type: 'image/webp' })) })
     await act(async () => input.dispatchEvent(new window.Event('change', { bubbles: true })))
 }
-const openGiftImage = 'https://cdn.example.test/open.webp', closedGiftImage = 'https://cdn.example.test/closed.webp'
+const openGiftImage = 'https://cdn.example.test/public-media/open.webp', closedGiftImage = 'https://cdn.example.test/public-media/closed.webp'
 const giftProduct = () => ({ ...row(), images: [openGiftImage, closedGiftImage], metadata: {
     privateSupplier: { reference: 'KEEP_PRIVATE' }, books: { kind: 'book', language: 'Hindi' },
     gifts: { schemaVersion: 1, suitabilityNote: 'Original gift note.', contents: [{ label: 'Mug', quantity: 1 }], mediaRoles: { openBox: 0, closedBox: 1 } },
 } })
 const giftFacts = (body: Record<string, unknown>) => GiftFactsSchema.parse((body.metadata as Record<string, unknown>).gifts)
 const mediaSources = (container: HTMLElement) => [...container.querySelectorAll('img[alt^="Product media "]')].map(image => image.getAttribute('src'))
+
+for (const [retained, selected] of [[20, 1], [19, 2]]) test(`product media capacity rejects ${selected} files before upload when ${retained} are retained`, async () => {
+    const images = Array.from({ length: retained }, (_, i) => `https://cdn.example.test/public-media/retained-${i}.webp`)
+    let uploads = 0
+    const h = await mount(async (url) => {
+        if (url.endsWith('/upload')) { uploads++; return json({ url: 'https://cdn.example.test/public-media/new.webp' }) }
+        return json({ ...row(), images })
+    })
+    try {
+        await uploadSyntheticMedia(h.container, selected)
+        assert.equal(uploads, 0, 'No byte or registration request may begin for an oversized product selection')
+        assert.deepEqual(mediaSources(h.container), images)
+        assert.match(document.body.textContent ?? '', /image limit|choose fewer images/i)
+    } finally { await h.close() }
+})
+
+test('the twentieth image saves and disables further additions without changing retained images', async () => {
+    const images = Array.from({ length: 19 }, (_, i) => `https://cdn.example.test/public-media/retained-${i}.webp`)
+    const added = 'https://cdn.example.test/public-media/twentieth.webp'
+    let current = { ...row(), images }, uploads = 0
+    const writes: Array<Record<string, unknown>> = []
+    const h = await mount(async (url, init) => {
+        if (url.endsWith('/upload')) { uploads++; return json({ url: added }) }
+        if (init?.method === 'PATCH') {
+            const body = JSON.parse(String(init.body)); writes.push(body)
+            current = { ...current, ...body, version: current.version + 1 }
+        }
+        return json(current)
+    })
+    try {
+        await uploadSyntheticMedia(h.container)
+        assert.equal(uploads, 1); assert.deepEqual(mediaSources(h.container), [...images, added])
+        assert.equal((h.container.querySelector('input[type="file"]') as HTMLInputElement).disabled, true)
+        await h.click('Save product')
+        assert.deepEqual(writes[0].images, [...images, added])
+    } finally { await h.close() }
+})
+
+test('an oversized retained product can remove media and save without silent truncation', async () => {
+    const images = Array.from({ length: 21 }, (_, i) => `https://cdn.example.test/public-media/legacy-${i}.webp`)
+    let current = { ...row(), images }
+    const writes: Array<Record<string, unknown>> = []
+    const h = await mount(async (_url, init) => {
+        if (init?.method === 'PATCH') {
+            const body = JSON.parse(String(init.body)); writes.push(body)
+            current = { ...current, ...body, version: current.version + 1 }
+        }
+        return json(current)
+    })
+    try {
+        assert.deepEqual(mediaSources(h.container), images)
+        await clickMedia(h.container, 'Remove product media 21')
+        assert.deepEqual(mediaSources(h.container), images.slice(0, 20))
+        await h.click('Save product'); assert.deepEqual(writes[0].images, images.slice(0, 20))
+    } finally { await h.close() }
+})
+
+test('selecting an already attached library image preserves its position and facts', async () => {
+    let writes = 0
+    const current = giftProduct()
+    const h = await mount(async (url, init) => {
+        if (/\/media(?:\?|$)/.test(url)) return new Response(JSON.stringify({ data: [{
+            id: '55555555-5555-4555-8555-555555555555', store_id: row().store_id,
+            filename: 'open.webp', original_name: 'open.webp', url: openGiftImage, mime_type: 'image/webp',
+            media_type: 'image', size_bytes: 10, folder: '/', tags: [],
+            created_at: '2026-11-02T00:00:00Z', updated_at: '2026-11-02T00:00:00Z',
+        }], meta: { page: 1, per_page: 60, has_next: false } }), { headers: { 'Content-Type': 'application/json' } })
+        if (init?.method === 'PATCH') writes++
+        return json(current)
+    })
+    try {
+        await h.click('Browse image library')
+        const item = document.querySelector('[role="dialog"] [role="gridcell"]') as HTMLElement
+        assert.ok(item); await act(async () => item.click())
+        assert.deepEqual(mediaSources(h.container), current.images)
+        assert.match(document.body.textContent ?? '', /Image already attached/)
+        assert.equal(writes, 0)
+    } finally { await h.close() }
+})
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(done => { resolve = done }); return { promise, resolve } }
 
 async function mount(transport: Transport, initialProductId = id) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'https://merchant.example.test/alpha/products/' + id })
-    const names = ['window', 'document', 'navigator', 'fetch', 'HTMLElement', 'Element', 'MutationObserver']
+    const names = ['window', 'document', 'navigator', 'fetch', 'Worker', 'HTMLElement', 'Element', 'MutationObserver', 'getComputedStyle', 'ResizeObserver']
     const previous = Object.fromEntries(names.map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
     for (const name of names.slice(0, 3)) Object.defineProperty(globalThis, name, { configurable: true, writable: true,
         value: name === 'window' ? dom.window : dom.window[name] })
     for (const name of names.slice(4)) Object.defineProperty(globalThis, name, { configurable: true, writable: true, value: dom.window[name] })
-    globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => String(input).includes('marketplace-listings')
-        ? Promise.resolve(json(null)) : transport(String(input), init)) as typeof fetch
+    Object.defineProperty(globalThis, 'getComputedStyle', { configurable: true, writable: true, value: dom.window.getComputedStyle.bind(dom.window) })
+    Object.defineProperty(globalThis, 'ResizeObserver', { configurable: true, writable: true, value: class { observe() {} disconnect() {} } })
+    const tails = new Map<string, Promise<unknown>>()
+    Object.defineProperty(dom.window.navigator, 'locks', { value: { request<T>(name: string, work: () => Promise<T> | T) { const task = (tails.get(name) ?? Promise.resolve()).then(work); tails.set(name, task.catch(() => undefined)); return task } } })
+    // This JSDOM lane supplies the browser worker port and an actual Node SHA-256
+    // over the selected synthetic bytes. The owned browser lane runs real WASM.
+    class DigestWorker {
+        onmessage: ((event: { data: object }) => void) | null = null
+        terminate() {}
+        async postMessage({ requestId, file }: { requestId: string; file: File }) {
+            this.onmessage?.({ data: { requestId, bytes: file.size, sha256: createHash('sha256').update(Buffer.from(await file.arrayBuffer())).digest('hex') } })
+        }
+    }
+    Object.defineProperty(globalThis, 'Worker', { configurable: true, writable: true, value: DigestWorker })
+    const siteId = row().store_id
+    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input)
+        if (url.includes('marketplace-listings')) return json(null)
+        if (url.endsWith('/media') && init?.method === 'POST') {
+            const body = JSON.parse(String(init.body))
+            return json({ ...body, id: '55555555-5555-4555-8555-555555555555', mime_type: body.mime_type, size_bytes: body.size_bytes })
+        }
+        const response = await transport(url, init)
+        if (!url.endsWith('/upload') || !response.ok) return response
+        const payload = await response.json(), file = (init?.body as FormData).get('file') as File
+        return json({ ...payload.data, store_id: siteId, key: new URL(payload.data.url).pathname.slice(1),
+            size: file.size, content_type: file.type, storage: 'r2' })
+    }) as typeof fetch
+    dom.window.fetch = globalThis.fetch
     const { createRoot } = await import('react-dom/client')
     const { PathParamsContext } = await import('next/dist/shared/lib/hooks-client-context.shared-runtime.js')
     const { AppRouterContext } = await import('next/dist/shared/lib/app-router-context.shared-runtime.js')
     const { ToastProvider } = await import('@letbuyy/ui')
     const { MerchantSecurityContext } = await import('../security/MerchantSecurityContext')
+    const { MediaRecoveryProvider } = await import('../media/MediaRecoveryProvider')
     const { MerchantNavigationProvider } = await import('../MerchantNavigationProvider')
     const { default: ProductEditor } = await (async () => {
         const previousCssLoader = requireUI.extensions['.css']
@@ -83,11 +191,11 @@ async function mount(transport: Transport, initialProductId = id) {
     const root = createRoot(container)
     let editorKey = 0
     const departures: string[] = []
-    const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push(href: string) { departures.push(href) }, replace() {}, prefetch() {} }
+    const router = { bfcacheId: 'synthetic-router-cache',  back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push(href: string) { departures.push(href) }, replace() {}, prefetch() {} }
     const render = async (store = 'alpha', productId = id) => { await act(async () => {
         root.render(<AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store, productId }}>
-            <MerchantNavigationProvider><ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store }}>
-                <a href={`/${store}/products`}>Leave editor</a><ProductEditor key={editorKey} />
+            <MerchantNavigationProvider><ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId, store, siteId }}>
+                <MediaRecoveryProvider key={`${actorId}:${store}`} store={store}><a href={`/${store}/products`}>Leave editor</a><ProductEditor key={editorKey} /></MediaRecoveryProvider>
             </MerchantSecurityContext.Provider></ToastProvider></MerchantNavigationProvider>
         </PathParamsContext.Provider></AppRouterContext.Provider>)
     }) }
@@ -653,7 +761,7 @@ test('gift image association stays in its actor/store/product draft scope', asyn
 })
 
 test('actual replacement photograph remains unassigned until the merchant chooses its current role', async () => {
-    const replacement = 'https://cdn.example.test/new-closed-view.webp'
+    const replacement = 'https://cdn.example.test/public-media/new-closed-view.webp'
     let current: Record<string, unknown> = giftProduct()
     const calls: Array<Record<string, unknown>> = []
     const h = await mount(async (url, init) => {
@@ -1037,7 +1145,7 @@ test('unproven option deletion preserves both the original options and bound fac
         assert.match(h.container.textContent!, /Variant combinations are kept/)
         assert.equal(variantControl(h.container, 'Edition finish').value, 'Kept green')
         assert.ok(h.container.querySelector('[aria-label="SKU for M"]'))
-        await clickMedia(h.container, 'Remove variant M')
+        await clickMedia(h.container, 'Retire variant M')
         await h.click('Delete')
         assert.equal(h.container.querySelector('[data-variant-facts]'), null)
         await h.click('Add option')

@@ -1,0 +1,29 @@
+{
+  "from": "70cb44be58fb9a998ef1e35ca2b33bd0ae8c8ed45ddd1742d4723806f0119933",
+  "to": "9022d5635f60b108196bc9863fbd92aaf318fb9d80804e57081a8c97493629f4",
+  "changed": [
+    "apps/platform/identity/src/__tests__/staging-cookie-boundary.test.ts",
+    "apps/platform/identity/src/components/TurnstileWidget.tsx",
+    "apps/platform/identity/src/lib/config/urls.ts",
+    "apps/platform/identity/src/proxy.ts",
+    "packages/typescript/ui/src/turnstile-client.ts",
+    "packages/typescript/ui/src/turnstile.tsx",
+    "packages/typescript/ui/tests/turnstile.test.tsx"
+  ],
+  "byte_equal_groups": {
+    "dart": true,
+    "merchant_mobile": true,
+    "gateway": true,
+    "bff": true,
+    "sql": true
+  },
+  "reuse": "The 1660 passing Flutter tests and analysis belong to source56; all actual Dart/mobile inputs are byte-equal in57. Hosted, iOS, provider and full feature acceptance remain separate.",
+  "react_review": [
+    "Existing shared component and controller retained",
+    "Local SDK URL is a primitive effect dependency",
+    "Callback refs, generation fencing, bounded load retry and teardown remain intact",
+    "Hosted default SDK URL remains fixed; loopback SDK is explicit and validated",
+    "No new component layout, styling system, browser storage or provider bypass"
+  ],
+  "active_native": "Prepared/active native80 local iOS/web fixture; no acceptance until terminal/readback"
+}

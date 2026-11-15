@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T04:33:16.330583+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-switcher-settings-v3-governance-ugtj6_86",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "8c62c4e5ca146aae5e9f7fb3bc08957b88471cb6962bf820a7d4721df0b8500e",
+  "core_inputs_byte_equal": 8452,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "switcher-settings-v3-governance-v1-report.json"
+}

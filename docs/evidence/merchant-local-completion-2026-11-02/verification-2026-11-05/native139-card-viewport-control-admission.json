@@ -1,0 +1,6 @@
+{
+  "reason": "Before launch, require the complete observed card above the actual Products navigation button for visual quantity screenshots; no product or repeated-write logic changed",
+  "control": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Create.swift",
+  "sha256": "a16046085c4d1e706c536aa57b0d9ba0b2667e12cda65461faa49e5c4ffd8c96",
+  "scope": "Task synthetic simulator only; prepared control, not runtime acceptance"
+}

@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-11-06T04:35:30.045729+00:00",
+  "supervisor_pid": 57445,
+  "source": "switcher-settings-source-v3",
+  "source_sha256": "8c62c4e5ca146aae5e9f7fb3bc08957b88471cb6962bf820a7d4721df0b8500e",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/settings_optional_visual_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 57448
+}

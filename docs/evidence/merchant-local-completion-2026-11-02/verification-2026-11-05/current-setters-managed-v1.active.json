@@ -1,0 +1,58 @@
+{
+  "status": "TERMINAL_CURRENT_SOURCE_MANAGED_SETTER_GUARDS_PASS",
+  "supervisor_pid": 34850,
+  "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "started_at": "2026-11-05T19:29:29.057905+00:00",
+  "command": [
+    "node",
+    "scripts/governance/run-executable-suites.mjs",
+    "--jobs",
+    "1",
+    "--no-reap",
+    "--kind",
+    "gateway-db",
+    "--timeout",
+    "600",
+    "--suite",
+    "tests/owned-db/merchant-transfer-managed-admission.postgres.test.ts",
+    "--log-dir",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/current-setters-managed-v1-logs",
+    "--json-out",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/current-setters-managed-v1-runner.json"
+  ],
+  "scope": "Existing unchanged local owned provider-image tests only; no hosted migration/deploy.",
+  "child_pid": 34852,
+  "observed_owned_managed_run_ids": [
+    "0d42211affe2"
+  ],
+  "exit_code": 0,
+  "source_unchanged": true,
+  "finished_at": "2026-11-05T19:30:16.705100+00:00",
+  "run_id": "60743538ffd1",
+  "tests": 20,
+  "pass": 20,
+  "fail": 0,
+  "skip": 0,
+  "cancelled": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "managed_role_setter_denial_cases": 12,
+  "independent_remaining": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "independent_child_remaining": {
+    "0d42211affe2": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

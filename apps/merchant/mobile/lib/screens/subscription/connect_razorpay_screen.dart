@@ -10,8 +10,7 @@ import '../../services/subscription_service.dart';
 import '../../models/store_model.dart';
 import '../../theme/app_theme_colors.dart';
 
-/// Connect Own Razorpay Screen (Professional Plan Only)
-/// Allows sellers to connect their own Razorpay account
+/// Connect the merchant-owned Razorpay sandbox account.
 class ConnectRazorpayScreen extends StatefulWidget {
   const ConnectRazorpayScreen({super.key});
 
@@ -28,7 +27,9 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
   bool _isLoading = false;
   bool _isConnecting = false;
   bool _isConnected = false;
+  bool _replacingConnection = false;
   bool _obscureSecret = true;
+  String? _loadError;
   late AppThemeColors colors;
 
   StoreModel? _store;
@@ -54,7 +55,10 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
     final version = ++_loadVersion;
     final stores = context.read<StoreContext>();
     final epoch = stores.requestContextVersion;
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
     try {
       final subscriptionService = context.read<SubscriptionService>();
 
@@ -63,17 +67,32 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
         final config = await subscriptionService.getPaymentConfigModel(
           store.id,
         );
-        if (!mounted || version != _loadVersion || stores.requestContextVersion != epoch || stores.selectedStoreId != store.id) return;
+        if (!mounted ||
+            version != _loadVersion ||
+            stores.requestContextVersion != epoch ||
+            stores.selectedStoreId != store.id)
+          return;
         setState(() {
           _store = store;
           _paymentConfig = config;
           _isConnected =
-              config?.mode == PaymentMode.ownAccount &&
-              config?.verified == true;
+              config.mode == PaymentMode.ownAccount && config.verified;
         });
+      } else if (mounted && version == _loadVersion) {
+        setState(
+          () => _loadError = 'Select a store before connecting Razorpay.',
+        );
+      }
+    } catch (_) {
+      if (mounted && version == _loadVersion) {
+        setState(
+          () => _loadError =
+              'Payment connection could not be loaded. Check your connection and retry.',
+        );
       }
     } finally {
-      if (mounted && version == _loadVersion) setState(() => _isLoading = false);
+      if (mounted && version == _loadVersion)
+        setState(() => _isLoading = false);
     }
   }
 
@@ -89,8 +108,12 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
 
     try {
       final subscriptionService = context.read<SubscriptionService>();
-      final fingerprint = '$epoch:${store.id}:${_keyIdController.text}:${_keySecretController.text}:${_paymentConfig?.revision}';
-      if (_saveFingerprint != fingerprint) { _saveFingerprint = fingerprint; _saveKey = const Uuid().v4(); }
+      final fingerprint =
+          '$epoch:${store.id}:${_keyIdController.text}:${_keySecretController.text}:${_paymentConfig?.revision}';
+      if (_saveFingerprint != fingerprint) {
+        _saveFingerprint = fingerprint;
+        _saveKey = const Uuid().v4();
+      }
       final response = await subscriptionService.connectOwnRazorpay(
         storeId: store.id,
         keyId: _keyIdController.text.trim(),
@@ -99,18 +122,23 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
         idempotencyKey: _saveKey,
         expectedRevision: _paymentConfig?.revision,
       );
-      if (!mounted || stores.requestContextVersion != epoch || stores.selectedStoreId != store.id) return;
+      if (!mounted ||
+          stores.requestContextVersion != epoch ||
+          stores.selectedStoreId != store.id)
+        return;
       final config = PaymentConfigModel.fromMap(response, store.id);
 
       setState(() {
         _paymentConfig = config;
         _isConnected = config.mode == PaymentMode.ownAccount && config.verified;
+        _replacingConnection = false;
       });
 
       if (config.canEnableOnline) {
         _keyIdController.clear();
         _keySecretController.clear();
-        _saveKey = null; _saveFingerprint = null;
+        _saveKey = null;
+        _saveFingerprint = null;
         _showSuccessDialog();
       } else {
         _showError(
@@ -125,6 +153,31 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
     } finally {
       if (mounted) setState(() => _isConnecting = false);
     }
+  }
+
+  Future<void> _connectManagedTestPayments() async {
+    if (_isConnecting) return;
+    final store = _store;
+    final stores = context.read<StoreContext>();
+    final epoch = stores.requestContextVersion;
+    if (store == null || stores.selectedStoreId != store.id) return;
+    final fingerprint = '$epoch:${store.id}:managed-sandbox:${_paymentConfig?.revision}';
+    if (_saveFingerprint != fingerprint) { _saveFingerprint = fingerprint; _saveKey = const Uuid().v4(); }
+    setState(() => _isConnecting = true);
+    try {
+      final response = await context.read<SubscriptionService>().connectManagedTestPayments(
+        storeId: store.id, idempotencyKey: _saveKey!, expectedRevision: _paymentConfig?.revision);
+      if (!mounted || stores.requestContextVersion != epoch || stores.selectedStoreId != store.id) return;
+      final config = PaymentConfigModel.fromMap(response, store.id);
+      setState(() { _paymentConfig = config; _isConnected = false; });
+      _saveKey = null; _saveFingerprint = null;
+      _keyIdController.clear(); _keySecretController.clear();
+      _showSuccessDialog();
+    } catch (_) {
+      if (mounted && stores.requestContextVersion == epoch && stores.selectedStoreId == store.id) {
+        _showError('Test connection could not be confirmed. Reload the saved settings before retrying.');
+      }
+    } finally { if (mounted) setState(() => _isConnecting = false); }
   }
 
   void _showSuccessDialog() {
@@ -145,7 +198,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              'Test credentials saved',
+              'Test connection saved',
               style: TextStyle(
                 color: colors.textPrimary,
                 fontWeight: FontWeight.bold,
@@ -154,7 +207,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
           ],
         ),
         content: Text(
-          'Your test credentials were verified and saved. Online checkout remains off until explicitly enabled. Test payments do not settle to a bank account; business and bank approval are not confirmed.',
+          'Your test connection was verified and saved. Online checkout remains off until explicitly enabled. Test payments do not settle to a bank account; business and bank approval are not confirmed.',
           style: TextStyle(color: colors.textSecondary),
         ),
         actions: [
@@ -191,6 +244,27 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
         child: SafeArea(
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
+              : _loadError != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _loadError!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: colors.textPrimary),
+                        ),
+                        const SizedBox(height: 16),
+                        FilledButton(
+                          onPressed: _loadData,
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               : _buildContent(),
         ),
       ),
@@ -198,23 +272,34 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
   }
 
   Widget _buildContent() {
-    // Check if Professional plan
-    if (_store?.subscriptionPlan != SubscriptionPlan.professional) {
-      return _buildUpgradeRequired();
-    }
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(),
+          if (_paymentConfig?.managedSandboxAvailable == true) ...[
+            const SizedBox(height: 16),
+            const Text('LetBuyy test payments: no real money or bank settlement. Enable online checkout separately after connecting.'),
+            OutlinedButton.icon(
+              onPressed: _isConnecting || _paymentConfig?.mode == PaymentMode.managedSandbox ? null : _connectManagedTestPayments,
+              icon: const Icon(Icons.science_outlined),
+              label: Text(_paymentConfig?.mode == PaymentMode.managedSandbox ? 'LetBuyy test payments connected' : 'Use LetBuyy test payments'),
+            ),
+          ],
           const SizedBox(height: 24),
           _buildInfoCard(),
           const SizedBox(height: 24),
-          if (_isConnected) ...[
+          if (_isConnected && !_replacingConnection) ...[
             _buildConnectedCard(),
           ] else ...[
+            if (_replacingConnection) ...[
+              Text(
+                'Saving replacement credentials turns online checkout off until the new sandbox connection is verified and explicitly enabled.',
+                style: TextStyle(color: colors.textSecondary),
+              ),
+              const SizedBox(height: 16),
+            ],
             _buildConnectionForm(),
           ],
         ],
@@ -279,7 +364,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Professional Benefit',
+                  'Merchant-owned connection',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: colors.textPrimary,
@@ -287,7 +372,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'LetBuyy charges a 0% transaction fee. Test credentials do not confirm KYC, bank approval or live checkout readiness.',
+                  'LetBuyy charges a 0% transaction fee on every plan. Test credentials do not confirm KYC, bank approval or live checkout readiness.',
                   style: TextStyle(fontSize: 12, color: colors.textSecondary),
                 ),
               ],
@@ -334,7 +419,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
           Row(
             children: [
               Expanded(
-                child: _buildStatusItem('Commission', '0%', Colors.green),
+                child: _buildStatusItem('LetBuyy fee', '0%', Colors.green),
               ),
               Expanded(
                 child: _buildStatusItem(
@@ -344,6 +429,11 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: () => setState(() => _replacingConnection = true),
+            child: const Text('Replace sandbox credentials'),
           ),
         ],
       ),
@@ -564,58 +654,6 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildUpgradeRequired() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF59E0B).withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: Text('👑', style: TextStyle(fontSize: 48)),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Professional Plan Required',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: colors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Upgrade to Professional to connect your own Razorpay account and pay 0% commission.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF59E0B),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: Text('View Plans'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

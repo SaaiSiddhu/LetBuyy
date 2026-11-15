@@ -102,16 +102,19 @@ test('product updates and deletes resolve the real store first, then check owner
     assert.match(adapterSource, /deleted_at:\s*new Date\(\)\.toISOString\(\),\s*\}\)\s*\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)/);
 });
 
-test('collection updates and deletes verify collection ownership before mutation', () => {
-    const routeSource = source('routes/products.ts');
-
-    assert.match(routeSource, /router\.patch\('\/collections\/:id',\s*validate\('json',\s*UpdateCollectionSchema\)/);
-    assert.match(routeSource, /\.from\('collections'\)\s*[\s\S]*\.select\('id, store_id'\)\s*[\s\S]*\.eq\('id',\s*collectionId\)/);
-    assert.match(routeSource, /verifyStoreOwnership\(db,\s*collection\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(routeSource, /\.from\('collections'\)\s*[\s\S]*\.update\(payload\)\s*[\s\S]*\.eq\('id',\s*collectionId\)/);
-    assert.match(routeSource, /router\.delete\('\/collections\/:id'/);
-    assert.match(routeSource, /deleted_at:\s*new Date\(\)\.toISOString\(\)/);
-    assert.match(routeSource, /\.from\('collections'\)\s*[\s\S]*\.delete\(\)\s*[\s\S]*\.eq\('id',\s*collectionId\)/);
+test('collection metadata transports delegate to the canonical guarded receipt owner', () => {
+    const routeSource = source('routes/products.ts'), metadata = source('routes/collection-metadata.ts');
+    assert.match(routeSource, /registerCollectionMetadataRoutes\(router\)/);
+    assert.match(metadata, /validate\('json', UpdateCollectionMetadataSchema\)/);
+    assert.match(metadata, /validate\('json', DeleteCollectionMetadataSchema\)/);
+    assert.match(metadata, /resolveCollectionStoreScope\(c, selected\(c, body.store_id\), 'products:write'\)/);
+    const scope = source('lib/collection-store-scope.ts');
+    assert.match(scope, /evaluateStaffRequest\(c, siteId, customUser.id, permission, 'enforce'\)/);
+    assert.doesNotMatch(scope, /store:owner/);
+    assert.match(metadata, /body.collection_type !== 'manual'/);
+    assert.match(metadata, /executeCollectionMetadataCommand/);
+    assert.doesNotMatch(metadata, /\.from\('collections'\)\.(?:insert|update|delete)/);
+    // Actual authority/replay/no-effect assertions live in the owned API/SQL suites.
 });
 
 test('merchant product proxies resolve the URL store to sites.id before worker calls', () => {

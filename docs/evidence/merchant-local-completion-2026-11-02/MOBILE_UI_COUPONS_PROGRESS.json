@@ -1,0 +1,89 @@
+{
+  "at": "2026-11-05T17:45:06.979560+00:00",
+  "status": "COUPON_SOURCE1_LOCAL_QUALIFIED_1424PASS_1KNOWN_STAFFFAIL_114GOV_ANDROID_IOS_COMPILE_ONLY",
+  "source": {
+    "sha256": "80e4c4f1f08a4b6e06a3b46e1abc76a36e4b164f9b4ae0584fd4a9894e3c1a0f",
+    "entries": 8443,
+    "manifest": "verification-2026-11-05/coupon-source-v1.source.json",
+    "algorithm": "Fresh Git tracked plus unignored existing regular files excluding docs/.codex/.agents; not numerically comparable to historical lost 7504-input algorithm"
+  },
+  "implemented": [
+    "Canonical active status query and real supplied pagination; rows must match requested store/page/limit and current reader generation/context. Missing metadata is unavailable.",
+    "Coupon editor preserves fractional value, original validators/parsers/payload fields/defaults/create omission/patch clears; adds existing starts_at ISO input. Canonical durable editor with scoped dirty/busy Back and explicit unconfirmed-save review without fresh retry.",
+    "Validation moved to a widget-owned canonical short sheet, with actual true/false/unknown availability and checkout authority. Controllers live through actual widget disposal.",
+    "Shared responsive list/metric/status/feedback families; usage_count mapping preserves real zero versus unknown; loaded-page values labelled; same-query failed refresh preserves only permitted snapshot; 401/403 clears private content.",
+    "Covered/disposed actions retired; bounded page/filter controls; one lazy scroll owner. Shared list progress moved above the scroller for all its callers.",
+    "Remove confirmation describes existing soft deactivation and retained saved record; command bodies unchanged."
+  ],
+  "diagnostics": {
+    "negative_v1": "0PASS/4real frontend mapping/precision/false-success failures before edits",
+    "focused_v2": "3PASS/2existing fixture failures: filtered StoreContext initialization lacked mock storage; standalone form lacked StoreContext. Added actual selected-store setup; list status label updated to Enabled and real lazy row scrolled into view.",
+    "focused_v3": "3PASS/1lazy-row test observation failure; no app defect. Scroll before asserting record.",
+    "focused_v4": "4PASS",
+    "lifetime_v5": "30PASS",
+    "existing_v6": "4PASS",
+    "analysis_v1": "9new interpolation infos and2test import findings corrected",
+    "preservation_v1": "AST selector initially matched source text prefix with different generated spacing; corrected to exact AST map key, no app/payload change",
+    "ios_v1": "Compile prerequisite failure: companion target requires explicit simulator device ID. Not an application compile failure; corrected v2 now running against verified prior task-owned shutdown device."
+  },
+  "qualification": {
+    "full_flutter": {
+      "pass": 1424,
+      "fail": 1,
+      "skip": 0,
+      "known_failure": "Unchanged protected staff_scope_boundary_test: positive hosted invitation remains in its existing namespace; local restore cannot adopt it"
+    },
+    "app_analysis_issues": 0,
+    "ui_kit_analysis_issues": 0,
+    "parsed_preservation_checks": 17,
+    "preservation_scope": "Current-turn Coupon command/validator/parser/original payload body equality; not a replay of lost historical626-check verifier",
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "not_applicable": 1,
+      "core_byte_equality": 8443,
+      "original_index_unchanged": true
+    },
+    "source_boundary": "8435of8440entry files unchanged;5existing files changed plus3new files; no other changes. Only new protected client read/presentation exception is CouponService; SDKs/models/StoreContext/backend/database/policy all unchanged from entry."
+  },
+  "android": {
+    "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+    "source_sha256": "80e4c4f1f08a4b6e06a3b46e1abc76a36e4b164f9b4ae0584fd4a9894e3c1a0f",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-coupon-android-7lbg2wcl/merchant-local-debug.apk",
+      "sha256": "66033f5f7d5fd16a8ccc42771f072e273e0146f5f3d028bd6b476100d08440d6",
+      "bytes": 151921237
+    },
+    "actual_sha256": "66033f5f7d5fd16a8ccc42771f072e273e0146f5f3d028bd6b476100d08440d6",
+    "compiled_arm64_engine": true,
+    "debug_kernel_present": true,
+    "normal_main": true,
+    "installed": false,
+    "runtime_verified": false,
+    "limits": "Compile/archive integrity only, no auth/backend/sync/physical/performance/production acceptance."
+  },
+  "ios": {
+    "at": "2026-11-05T17:44:24.522445+00:00",
+    "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+    "source_sha256": "80e4c4f1f08a4b6e06a3b46e1abc76a36e4b164f9b4ae0584fd4a9894e3c1a0f",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-coupon-ios-hgp6k5qx/Runner.app",
+      "files": 377,
+      "manifest_sha256": "a049ec49963e352e76dd2722df529bfe474b93a0b02ec2242544f033232057ad"
+    },
+    "all_retained_files_equal": 377,
+    "bundle_id": "com.letbuyy.store",
+    "executable_architecture": "/private/tmp/letbuyy-coupon-ios-hgp6k5qx/Runner.app/Runner: Mach-O 64-bit executable arm64",
+    "owned_simulator_remains_shutdown": true,
+    "scope": "Compile and artifact equality only; no simulator launch/auth/API/sync/provider/physical/performance/signed-release acceptance."
+  },
+  "runtime_and_release": "No fresh Coupon Android/iOS runtime, real database/web-mobile Coupon readback, buyer checkout, provider, staff, physical/accessibility/performance or hosted/production acceptance. Whole119programme remains open; old native38 terminal missing.",
+  "remaining": [
+    "Compile and source/artifact gates closed; fresh native/database/web-mobile acceptance and independent current device journeys remain open.",
+    "Recover task emulator/native fixture controls and rerun bounded Warehouse and Coupon web-mobile readback.",
+    "Continue complete frontend migration; AI/security/supporting discovery prepared; final unique denominator unresolved.",
+    "Retain all frozen/deferred/forbidden capability policies and no backend/persistence/provider/activation/push/merge/deployment expansion."
+  ]
+}

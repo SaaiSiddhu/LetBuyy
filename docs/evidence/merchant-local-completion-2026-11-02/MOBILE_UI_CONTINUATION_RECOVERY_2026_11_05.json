@@ -1,0 +1,16 @@
+{
+  "at": "2026-11-05T17:17:02.919482+00:00",
+  "status": "PREVIOUS_TEMPORARY_RUN_UNRECOVERABLE_ACCEPTANCE_OPEN",
+  "observed": {
+    "previous_exec_session": "82887 unknown process",
+    "previous_temp_root_exists": false,
+    "owned_fixture_process_match": false,
+    "ports_54350_to_54353_listening": false
+  },
+  "lost_raw_evidence": "Historical /private/tmp source archives, manifests, test logs, 626-check verifier, launcher/controller, native38 terminal and prepared iOS16 helper are unavailable. Persistent reports remain historical receipts; no new verification of their hashes/results is claimed.",
+  "native38": "No terminal PASS or cleanup receipt recoverable; preterminal focus observation remains historical only. Fresh compiled acceptance required. No destructive cleanup attempted.",
+  "new_source_manifest": "verification-2026-11-05/recovery-entry-source.json",
+  "new_source_hash": "9349b035abf8377d45b428d8fa44719d39896bdc111081506627004cc2362fed",
+  "new_source_inputs": 8440,
+  "scope": "Same frontend-only task; all unrelated dirty source preserved; no providers, backend changes, activation, deployments, push or merge."
+}

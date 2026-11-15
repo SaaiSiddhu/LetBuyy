@@ -1,0 +1,21 @@
+{
+  "started_at": "2026-11-05T19:54:42.237697+00:00",
+  "supervisor_pid": 57824,
+  "source": "saved-fields-negative-v5",
+  "source_sha256": "943668c2555c6f7b97ebbb80b1635e764ca8585cbb98e89e5817b26bc5e0a95e",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/shipping_rate_preservation_test.dart",
+    "test/navigation_item_preservation_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 57826,
+  "exit_code": 1,
+  "finished_at": "2026-11-05T19:54:45.857935+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "943668c2555c6f7b97ebbb80b1635e764ca8585cbb98e89e5817b26bc5e0a95e"
+}

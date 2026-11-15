@@ -1,0 +1,13 @@
+{
+  "source_sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+  "scope": "Future brief confirmation presentation only. Current native39 source remains frozen. Callers,auth,store/domain operations/routes protected.",
+  "files": {
+    "apps/merchant/mobile/lib/widgets/shared/confirm_dialog.dart": "3c936e9a28d76d75c7c61d20a79d1acb175a437f39d3ed54dfa30307b27041a3",
+    "packages/dart/ui_kit/lib/src/widgets/confirmation_dialog.dart": "d1d89682e35d35ed580d34859f8ad0df5b3f9faf04f3101d1883263f99bb76f9",
+    "apps/merchant/mobile/lib/app/store_context.dart": "b331da49f91090f8d903898bf9eaf47db69e372a8de63abf8c8d44bc14c41106",
+    "apps/merchant/mobile/lib/screens/settings/settings_screen.dart": "6c7f364efa59558e3c1d2488402a956fbbfc0b850d2abb82b3627866e1376192",
+    "apps/merchant/mobile/lib/screens/settings/store_details_screen.dart": "7f51be99ec1c1a6323abf9193fb3c497a687422d2c3b02fd8ae28414c0af2913",
+    "apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart": "68c4d18e28cdf2c008f312be19f6bad1876eb3f7e14053b8d1249302b313f2aa",
+    "apps/merchant/mobile/lib/app/routes.dart": "960468e34f9a3cfb37151955a53ef80d2dffa42b29e5d13ebd9ff491366df27c"
+  }
+}

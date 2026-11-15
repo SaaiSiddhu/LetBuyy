@@ -1,0 +1,45 @@
+{
+  "basis": "Original helpers, thresholds, public parameters, enums and navigation arguments against saved preimages. Presentation scopes/host/container/colors intentionally changed; full protected bytes verified separately.",
+  "checks": [
+    {
+      "owner": "Health._intValue complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "Health._scoreLabel complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "Health._statusIcon complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "Health._scoreColor original conditions; colors only now semantic",
+      "unchanged": true
+    },
+    {
+      "owner": "Health._statusColor original conditions; colors only now semantic",
+      "unchanged": true
+    },
+    {
+      "owner": "Image source original public parameters",
+      "unchanged": true
+    },
+    {
+      "owner": "Image source original return type",
+      "unchanged": true
+    },
+    {
+      "owner": "Image source original camera/gallery values",
+      "unchanged": true
+    },
+    {
+      "owner": "ErrorScreen original public parameters",
+      "unchanged": true
+    },
+    {
+      "owner": "ErrorScreen original default login navigation args",
+      "unchanged": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Read-only staging webhook route presence and post-deploy gate",
+  "observed": {
+    "health": { "url": "https://webhooks.staging.letbuyy.com/health", "status": 200 },
+    "invalidScopeMerchantCallback": {
+      "url": "https://webhooks.staging.letbuyy.com/razorpay/merchant/not-a-site/not-a-credential",
+      "method": "POST",
+      "requestBody": false,
+      "credentialsOrSignature": false,
+      "status": 404,
+      "response": "404 Not Found"
+    }
+  },
+  "sourceChecks": {
+    "probeContractTests": "2/2 passed",
+    "stagingHealthPreflight": "passed",
+    "liveStagingProbe": "failed as required on HTTP 404",
+    "governanceGate": "114/114 passed, zero failed or skipped",
+    "gitDiffCheck": "passed"
+  },
+  "conclusion": "The staging host is healthy but the merchant-specific Razorpay callback route is not deployed. A worker deployment now requires the exact invalid-scope route response before its post-deploy health gate passes.",
+  "notVerified": [
+    "Signed Razorpay callback delivery",
+    "Own-account sandbox charge",
+    "Canonical ledger/statement reconciliation for a real provider transaction",
+    "Production merchant callback deployment"
+  ]
+}

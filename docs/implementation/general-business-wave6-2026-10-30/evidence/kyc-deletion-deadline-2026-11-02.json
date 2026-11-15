@@ -1,0 +1,35 @@
+{
+  "scope": "Local Mumbai KYC deletion-deadline clock and aggregate overdue monitoring; synthetic objects only",
+  "date": "2026-11-02",
+  "owned_database_run": {
+    "id": "969de5e63c08",
+    "command": "node scripts/governance/run-executable-suites.mjs --gateway-db --suite services/api-gateway/src/__tests__/owned-db/kyc-india-cleanup.postgres.test.ts --jobs 1 --prepared-transactions 2 --json",
+    "suites": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "readback": "Pre-use paired 431 rollback/forward; exact-key cleanup; 30-day pending expiry; site closure; delayed retry remains overdue; original deletion timestamp immutable; upload intent expiry counted; tenant cannot execute aggregate; post-use rollback refused",
+    "fixture_cleanup": "runner reported no remaining containers, networks, or volumes"
+  },
+  "checks": {
+    "gateway_typecheck": "passed",
+    "migration_safety": "passed",
+    "migration_safety_tests": "11/11 passed",
+    "rollback_integrity": "passed after staging 431",
+    "sequential_migration": "passed after staging 431",
+    "staged_diff_check": "passed"
+  },
+  "source_sha256": {
+    "database/supabase/migrations/431_kyc_india_deletion_deadline.sql": "1a7ec6a6cc31332a69831639aba5158d3d49e3011869fa1ec6d3b29df4bd8766",
+    "database/supabase/rollback/431_kyc_india_deletion_deadline.rollback.sql": "c2cfa4228e41b7210b3a5f93415be004248ff6d67f4d1775925781b80142e916",
+    "services/api-gateway/src/lib/kyc-india-object-cleanup.ts": "21f8bbbf6fd618ec6860f8628f69f5c9822f49970f612242a8e6921fb75c4443",
+    "services/api-gateway/src/index.ts": "fd61f137bf28805a714a8f0c0e2f2a500a66c938fba47ab42700a0008d45b9d9",
+    "services/api-gateway/src/__tests__/owned-db/kyc-india-cleanup.postgres.test.ts": "b8a8a721c9f5d58cf8fb2ff6bb4e24bc1217825dd6596cb75bf943481dccde81"
+  },
+  "limits": [
+    "KYC India cleanup remains disabled outside ENVIRONMENT=test; no AWS account or Mumbai bucket was used",
+    "The cron emits a structured error but no operator-delivered deletion-deadline alert has been configured or observed",
+    "A real provider final-decision transfer, legal holds, redacted-record expiry, and live India-only retention acceptance remain open",
+    "The prior full local behavioral gate predates migration 431"
+  ]
+}

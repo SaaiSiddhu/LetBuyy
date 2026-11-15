@@ -1,0 +1,8 @@
+{
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261107-577958f058",
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "fixture_sha256": "83ac90a39a37212b9e113784414eca6bb04e970780b6c976dac1981fcdba663d",
+  "swift_sha256": "dcac5f43628902bd4c2c3679f2f8ace12311b0ddfa57900414a12bd8e97b1b45",
+  "launcher_sha256": "72eae015254608e81d04e7d01e1f2e7f2db8ad39b820d275b478fe5927881ccf",
+  "scope": "Fresh local normal credential/picker flow. Explicitly activate app and assert foreground before a single Update tap; no retry in this controller. Real SQL/web/readback assertions unchanged."
+}

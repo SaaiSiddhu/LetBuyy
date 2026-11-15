@@ -1,0 +1,66 @@
+{
+  "status": "ALL11_FONT_BYTES_AND_ALL9_CANONICAL_INTER_WEIGHTS_PASS",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "artifact": {
+    "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/artifacts/local-operational-proof/merchant-mobile/source16-ios-compile/Runner.app",
+    "files": 260,
+    "manifest_sha256": "f046d31fc936e38ca9198ac9b9ff55b9d3b0f15b7b385fa7b5871e45fea45b91",
+    "bundle_identifier": "com.letbuyy.store"
+  },
+  "fonts": [
+    {
+      "path": "Frameworks/App.framework/flutter_assets/fonts/MaterialIcons-Regular.otf",
+      "sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf",
+      "sha256": "67c44fe9183b002e79dde7f6977e2988661c9a3e4a3c5fce968787efdbed823c"
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/letbuyy_ui_kit/assets/fonts/Inter-Black.ttf",
+      "sha256": "7485a755eabadd6c1b38664e848793fd919674ab8d09c25e9347e93bea9a7177",
+      "canonical_source_byte_equal": true
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/letbuyy_ui_kit/assets/fonts/Inter-Bold.ttf",
+      "sha256": "b7e339223d56e8c4210c86f1ba87b3d43d6c47e03956ea56f0a7a938ae61b2a3",
+      "canonical_source_byte_equal": true
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/letbuyy_ui_kit/assets/fonts/Inter-ExtraBold.ttf",
+      "sha256": "06fb8b97ad04af6b7fa9f2fb17d3763d28f6694f777f33dcf147e84c55a4e81a",
+      "canonical_source_byte_equal": true
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/letbuyy_ui_kit/assets/fonts/Inter-ExtraLight.ttf",
+      "sha256": "590cd28bff41a00881b08db47d628291d96c50084f2710c9400c57c39cd2e4eb",
+      "canonical_source_byte_equal": true
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/letbuyy_ui_kit/assets/fonts/Inter-Light.ttf",
+      "sha256": "2e9b3d490cbe065fcdc783c1c6220b6f2ce5f1b1c5b81b0c8a9f8b4f27519257",
+      "canonical_source_byte_equal": true
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/letbuyy_ui_kit/assets/fonts/Inter-Medium.ttf",
+      "sha256": "492dec3bc33255f9d81bd5fb18704ad72f96f9b9318e4171bc9f9be9dd4bf44b",
+      "canonical_source_byte_equal": true
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/letbuyy_ui_kit/assets/fonts/Inter-Regular.ttf",
+      "sha256": "ecdb53099b1a68cd24c6900ea5beeafec81bd3c8cb9d0f3c51b9986583ba3982",
+      "canonical_source_byte_equal": true
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/letbuyy_ui_kit/assets/fonts/Inter-SemiBold.ttf",
+      "sha256": "d7ba633bab7f40576e539a7e934a1301d7618dceea59c743de477c2c493462fc",
+      "canonical_source_byte_equal": true
+    },
+    {
+      "path": "Frameworks/App.framework/flutter_assets/packages/letbuyy_ui_kit/assets/fonts/Inter-Thin.ttf",
+      "sha256": "19eb90a3227963d8c124046ae8af15e44fecb8736a27b4ab7092e81251addb6a",
+      "canonical_source_byte_equal": true
+    }
+  ],
+  "scope": "All actual font files, including Inter loaded as package assets outside FontManifest. Exact source bytes; compile-only, no iOS runtime certification."
+}

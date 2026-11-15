@@ -1,0 +1,35 @@
+{
+  "scope": "Local Wave 6 India KYC pending-attempt expiry; no real document or provider used",
+  "date": "2026-11-02",
+  "owned_database_run": {
+    "id": "7e6024f50adb",
+    "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/kyc-india-cleanup.postgres.test.ts --kind gateway-db --jobs 1 --timeout 600",
+    "suites": 1,
+    "passed": 1,
+    "failed": 0,
+    "assertions": "Expiry, exact-key deletion, stale scan and approval denial, fresh upload, signed merchant Gateway overview and refresh readback, private-key non-disclosure",
+    "fixture_cleanup": "exact-run-id container, network, and volume queries returned no resources"
+  },
+  "checks": {
+    "gateway_typecheck": "passed",
+    "kyc_unit_tests": "7 passed, 0 failed",
+    "older_kyc_migration_replay_suites": "6 passed, 0 failed; run 64a64f583384",
+    "migration_safety": "passed",
+    "sequential_migration": "passed after staging migration 429",
+    "rollback_integrity": "passed",
+    "staged_diff_check": "passed"
+  },
+  "source_sha256": {
+    "database/supabase/migrations/429_kyc_india_pending_retention.sql": "d7596f061a584da6c6e8976d1bba4eb1febb480f2340d585f15e15b0d529fa19",
+    "database/supabase/rollback/429_kyc_india_pending_retention.rollback.sql": "fdb28ae07efdc7d6252ff937795aca101039e654999c6424ddaa8de22f05c802",
+    "services/api-gateway/src/lib/kyc-india-object-cleanup.ts": "6de29de24c36412c41ef0f0d3af8b15e22a6af35640656883b66f8d9634b86c9",
+    "services/api-gateway/src/routes/kyc.ts": "5ea46f457346cdd07fc5b0e8fdf08bebbd2bb0613bc3eb4cb1f519edf5ba91c9",
+    "services/api-gateway/src/__tests__/owned-db/kyc-india-cleanup.postgres.test.ts": "5c2f5657ed1e2a0b2fda087d2a96468cd672007dc7f2c1566219cb68df134448"
+  },
+  "limits": [
+    "Cleanup remains enabled only for ENVIRONMENT=test; no deployed India bucket, scanner, or provider was exercised",
+    "The earlier 5738-pass full local gate predates migration 429 and does not certify this delta",
+    "Final-decision and closure deletion, legal holds, 24-hour deadline alerting, and redacted audit expiry remain open",
+    "No live KYC or payout approval is authorized by this result"
+  ]
+}

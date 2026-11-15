@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../config/app_config.dart';
+import '../../widgets/shared/merchant_turnstile_attempt.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
@@ -17,18 +19,12 @@ class _TurnstileChallengeScreenState extends State<TurnstileChallengeScreen> {
   WebViewController? _controller;
   bool _isReady = false;
   String? _error;
+  final _attempt = MerchantTurnstileAttempt();
 
   bool get _hasConfiguredSiteKey => AppConfig.hasTurnstileSiteKey;
 
   /// True when retrying cannot help — the sitekey itself is absent.
   bool get _isUnrecoverable => !_hasConfiguredSiteKey;
-
-  String _formatTurnstileError(String raw) {
-    if (raw.contains('300030') || raw.contains('100000') || raw.contains('domain')) {
-      return 'Verification challenge is unavailable for this domain. Please check network or site configuration.';
-    }
-    return raw.replaceAll('Exception: ', '');
-  }
 
   @override
   void didChangeDependencies() {
@@ -47,7 +43,22 @@ class _TurnstileChallengeScreenState extends State<TurnstileChallengeScreen> {
       return;
     }
 
-    final isDark = AppThemeColors.of(context).isDark;
+    final isDark = AppThemeColors.of(context).isDark,
+        generation = _attempt.begin();
+    bool active() => mounted && _attempt.current(generation);
+    void failed({bool expired = false}) {
+      if (!active()) return;
+      setState(() {
+        if (expired) {
+          _attempt.expire(generation);
+        } else {
+          _attempt.fail(generation);
+        }
+        _error = expired
+            ? 'Verification expired. Please retry the security check.'
+            : 'Verification could not be completed. Check your connection and retry.';
+      });
+    }
 
     setState(() {
       _error = null;
@@ -58,34 +69,49 @@ class _TurnstileChallengeScreenState extends State<TurnstileChallengeScreen> {
         ..setNavigationDelegate(
           NavigationDelegate(
             onPageFinished: (_) {
-              if (mounted) setState(() => _isReady = true);
+              if (active()) setState(() => _isReady = true);
             },
             onWebResourceError: (error) {
-              if (!mounted) return;
-              setState(() => _error = _formatTurnstileError(error.description));
+              if (error.isForMainFrame != false) failed();
             },
           ),
         )
         ..addJavaScriptChannel(
           'TurnstileToken',
           onMessageReceived: (message) {
-            final token = message.message.trim();
-            if (token.isEmpty || !mounted) return;
-            Navigator.pop(context, token);
+            if (!active() || ModalRoute.of(context)?.isCurrent != true) return;
+            _attempt.succeed(generation, message.message);
+            final token = _attempt.takeToken();
+            if (token != null) Navigator.pop(context, token);
           },
         )
         ..addJavaScriptChannel(
           'TurnstileError',
-          onMessageReceived: (message) {
-            if (!mounted) return;
-            setState(() => _error = _formatTurnstileError(message.message));
-          },
+          onMessageReceived: (_) => failed(),
         )
-        ..loadHtmlString(
-          _turnstileHtml(AppConfig.turnstileSiteKey, isDark: isDark),
-          baseUrl: AppConfig.identityBaseUrl,
+        ..addJavaScriptChannel(
+          'TurnstileExpired',
+          onMessageReceived: (_) => failed(expired: true),
         );
+      unawaited(
+        _controller!
+            .loadHtmlString(
+              merchantTurnstileDocument(
+                AppConfig.turnstileSiteKey,
+                isDark: isDark,
+                centered: true,
+              ),
+              baseUrl: AppConfig.identityBaseUrl,
+            )
+            .catchError((Object _) => failed()),
+      );
     });
+  }
+
+  @override
+  void dispose() {
+    _attempt.invalidate();
+    super.dispose();
   }
 
   @override
@@ -226,84 +252,4 @@ class _TurnstileChallengeScreenState extends State<TurnstileChallengeScreen> {
       ),
     );
   }
-}
-
-String _turnstileHtml(String siteKey, {required bool isDark}) {
-  // The document is injected into a themed card, so its own palette has to
-  // follow the app theme — light-on-dark was previously unreadable.
-  final textColor = isDark ? '#e2e8f0' : '#0f172a';
-  final hintColor = isDark ? '#94a3b8' : '#64748b';
-  final widgetTheme = isDark ? 'dark' : 'light';
-
-  return '''
-<!doctype html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-      color: $textColor;
-    }
-    .wrap {
-      min-height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      box-sizing: border-box;
-    }
-    .panel {
-      width: 100%;
-      max-width: 360px;
-      text-align: center;
-    }
-    #turnstile {
-      display: inline-block;
-      min-height: 70px;
-    }
-    .hint {
-      margin-top: 16px;
-      color: $hintColor;
-      font-size: 14px;
-      line-height: 1.4;
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="panel">
-      <div id="turnstile"></div>
-      <div class="hint">This token is sent only to the LetBuyy identity platform.</div>
-    </div>
-  </div>
-  <script>
-    function renderTurnstile() {
-      if (!window.turnstile) {
-        window.setTimeout(renderTurnstile, 100);
-        return;
-      }
-      window.turnstile.render('#turnstile', {
-        sitekey: '$siteKey',
-        theme: '$widgetTheme',
-        callback: function(token) {
-          TurnstileToken.postMessage(token);
-        },
-        'error-callback': function(code) {
-          TurnstileError.postMessage('Turnstile failed: ' + code);
-        },
-        'expired-callback': function() {
-          TurnstileError.postMessage('Turnstile token expired. Please reopen the challenge.');
-        }
-      });
-    }
-    renderTurnstile();
-  </script>
-</body>
-</html>
-''';
 }

@@ -1,0 +1,15 @@
+{
+  "root": "/private/tmp/letbuyy-merchant-local-20261108-fb0373bcc4",
+  "fixture": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-create-retire-v134-local-android.postgres.test.ts",
+  "source": "merchant-creation-retirement-source-v102",
+  "reason": "132 fixture incorrectly applied multipart observation to JSON product requests. Failed132 is retained and disposed, no product committed.134 contains no multipart observer and uses observed Add and explicit stock0 inputs.",
+  "controls": {
+    "/private/tmp/letbuyy-merchant-local-20261108-fb0373bcc4/Auth.py": "b32eb4d2f7e8e1f49e762ad45cea06d6743fcbcb6588f34eaba1ebf3a4c83dd7",
+    "/private/tmp/letbuyy-merchant-local-20261108-fb0373bcc4/run_fixture.py": "2d36dd3c8ac3e881644131cf2b969ab0d37c5749207d25680afd979842333db1",
+    "/private/tmp/letbuyy-merchant-local-20261108-fb0373bcc4/ui_helpers.py": "29f37e915804fc22aa85849b03d32f4be500684e18b2241a19885093c60108ae",
+    "/private/tmp/letbuyy-merchant-local-20261108-fb0373bcc4/Create.py": "01bee1f6e8c729434049da88a82060d858434f80a4ca35636cdbecec8d26720c",
+    "/private/tmp/letbuyy-merchant-local-20261108-fb0373bcc4/run_ui_guard.py": "08f2cdd91075adee4d086e118d1166799b4bee2b3abceb07c1a874967fe8acd7",
+    "/private/tmp/letbuyy-merchant-local-20261108-fb0373bcc4/run_ui.py": "40b8a87c32f20100dc056ae376605909a5d8e8890ff753b8afe7a6994c627a3d",
+    "/private/tmp/letbuyy-merchant-local-20261108-fb0373bcc4/run_chain.py": "a4ef25508f1e2e274f4bacd0e0f1d6cfca9cacde2112afcd9980c8c29079647f"
+  }
+}

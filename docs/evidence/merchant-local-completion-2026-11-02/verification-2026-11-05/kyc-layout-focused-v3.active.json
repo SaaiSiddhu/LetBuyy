@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-06T08:41:50.199904+00:00",
+  "supervisor_pid": 62720,
+  "source": "kyc-layout-source-v3",
+  "source_sha256": "56033e51a45c492dd9b09698934b5fae636ca371ad43e7a076dc30e5dacc63a3",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/kyc_upload_layout_test.dart",
+    "test/kyc_upload_surface_test.dart",
+    "test/kyc_containment_test.dart",
+    "test/kyc_provider_lifetime_test.dart",
+    "test/kyc_selection_frame_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 62753
+}

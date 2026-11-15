@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-07T04:27:33.046000+00:00",
+  "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+  "name": "LetBuyy Merchant Local 20261103 br1jhgh8",
+  "before": "Booted",
+  "after": "Shutdown",
+  "userdata_and_photos_retained": true,
+  "only_task_simulator_controlled": true,
+  "scope": "Owned final shutdown only. No erase/reset/uninstall/Photos changes or other simulator control."
+}

@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-05T20:30:53.054924+00:00",
+  "source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+  "status": "ACTUAL_WIDGET_RENDER_CAPTURE_PASS;INDEPENDENT_VISUAL_REVIEW",
+  "files": {
+    "capability-large-action-dark.png": {
+      "sha256": "33083149e35880e2ed57166ae31b2f855898f95a6a1f3620facad1179ba216f7",
+      "bytes": 25652
+    },
+    "capability-large-action-light.png": {
+      "sha256": "f414165dd65a30028079b1de1288c346fd685b89a318403b33314a122e1be802",
+      "bytes": 25048
+    },
+    "capability-large-top-dark.png": {
+      "sha256": "3a2e00379d6e65b6f7e74a46f56e7f1ad93318cc52d94b44e54fb36c32ddea28",
+      "bytes": 22698
+    },
+    "capability-large-top-light.png": {
+      "sha256": "1815c85bea642404219eb42a650f0b3bc1654fa21044b7f6012f11f1b60aa6bf",
+      "bytes": 22762
+    },
+    "confirmation-large-dark.png": {
+      "sha256": "cfdd88ca681a387157b2d07aa566aa5db4405be2541486a89b7f0c0ab054e419",
+      "bytes": 41562
+    },
+    "confirmation-large-light.png": {
+      "sha256": "c572134b493dbb9a882b4563c5c52882f2e4d10bb011835858058121f301a26c",
+      "bytes": 41179
+    },
+    "help-large-dark.png": {
+      "sha256": "e1ccfab13beed38a340e6a99d4fce5e5f1675e21adf30b9af0c50f3269e28a17",
+      "bytes": 34444
+    },
+    "help-large-light.png": {
+      "sha256": "f097d2334bda447d445ffb31112a7cc7102e5b588588cfa50c64fbd91b4dae08",
+      "bytes": 33037
+    },
+    "help-normal-dark.png": {
+      "sha256": "f27e73f96a1727dd1e712fa6912daa8c1e6da0981c85356af1335cc27d770d94",
+      "bytes": 58464
+    },
+    "help-normal-light.png": {
+      "sha256": "3eca07894b56efd9c87a03bf0d7c1f7eed153e742b2ac11d3c03f5a3c2e6063f",
+      "bytes": 60856
+    }
+  },
+  "conditions": "Light/dark,390x844@1;320x620@2.4;320x360@2.4. Actual StoreTheme, bundled Inter and MaterialIcons;debug banner matches app setting.",
+  "reviewed": [
+    "help-normal-light.png",
+    "help-normal-dark.png",
+    "help-large-dark.png",
+    "confirmation-large-dark.png",
+    "capability-large-top-light.png",
+    "capability-large-action-dark.png"
+  ],
+  "scope": "Widget render/geometry/visual evidence only, not Android/iOS/native plugin/physical/hosted acceptance. Original v1 font-placeholder and negative pill-shape images preserved.",
+  "review_note": "Normal Help actions and actual icons visibly distinct/readable in both themes. Large text remains full-size and scrollable; complete action labels stay within paired rounded surfaces. Long dialog title/message use their bounded scroll area; not a claim every line fits simultaneously."
+}

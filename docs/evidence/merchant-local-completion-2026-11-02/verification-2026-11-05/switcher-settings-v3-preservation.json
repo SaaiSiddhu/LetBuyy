@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-06T04:35:29.965445+00:00",
+  "baseline": "utilities-source-v4",
+  "source": "8c62c4e5ca146aae5e9f7fb3bc08957b88471cb6962bf820a7d4721df0b8500e",
+  "inputs": 8452,
+  "changed": [
+    "apps/merchant/mobile/lib/app/store_context.dart",
+    "apps/merchant/mobile/lib/screens/settings/settings_screen.dart",
+    "apps/merchant/mobile/lib/services/staff_service.dart",
+    "apps/merchant/mobile/lib/services/store_service.dart",
+    "apps/merchant/mobile/lib/widgets/store/store_switcher_button.dart",
+    "apps/merchant/mobile/test/settings_optional_reads_test.dart",
+    "apps/merchant/mobile/test/staff_environment_isolation_test.dart",
+    "apps/merchant/mobile/test/store_discovery_transport_test.dart",
+    "apps/merchant/mobile/test/store_switcher_presentation_test.dart"
+  ],
+  "unchanged_baseline_inputs": 8443,
+  "backend_sql_sdk_identity_models_ui_kit_unchanged": true,
+  "original_staff_scope_regression_unchanged": true,
+  "scope": "Five existing app implementations and four new tests only. Original Staff assertion preserved. No backend/schema/SDK/auth-policy or money formula edits."
+}

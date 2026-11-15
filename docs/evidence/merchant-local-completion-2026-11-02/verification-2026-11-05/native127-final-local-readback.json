@@ -1,0 +1,137 @@
+{
+  "at": "2026-11-08T04:14:19.243563+00:00",
+  "status": "BOUNDED_CURRENT_ANDROID_VARIANTS_AND_PRIVATE_KYC_COMMITTED_LOST_REPLY_RESTART_ORIGINAL_REPLAY_WEB_SYNC_PASS;FULL122_OPEN",
+  "source": "merchant-variant-kyc-source-v93",
+  "source_sha256": "fbde9fe512840dcdc0d84ace8143a461aafbdfdac65fd14b626f2187234c10d7",
+  "run_id": "fd613ef5b3fc",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261108-05ac03ddb1",
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "phase_terminals": {
+    "Kyc-terminal.json": {
+      "phase": "Kyc",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "fd613ef5b3fc",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-05ac03ddb1/Kyc.py",
+      "control_sha256": "3f034087eeb4dc2c5b596e001c1a9fd707a49fee94245ddd114c9c9c47500aad"
+    },
+    "Variants-terminal.json": {
+      "phase": "Variants",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "fd613ef5b3fc",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-05ac03ddb1/Variants.py",
+      "control_sha256": "e81a5263fb0f062b065a91c8b47809806d9ee96f0585baea9724e41cb84b1a72"
+    },
+    "Auth-terminal.json": {
+      "phase": "Auth",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "fd613ef5b3fc",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261108-05ac03ddb1/Auth.py",
+      "control_sha256": "824278b74443b845d3759103f847bb6e4ece10d8832f7f5d12b6fc42fe964310"
+    }
+  },
+  "variant_invalid_no_write": {
+    "run_id": "fd613ef5b3fc",
+    "accepted": true
+  },
+  "variants": [
+    {
+      "id": "4fb3f851-3e00-479f-a266-8313a8c612bf",
+      "sku": "M-BLUE",
+      "price": 140,
+      "stock": 0,
+      "title": "M / Blue",
+      "option1": "M",
+      "option2": "Green"
+    },
+    {
+      "id": "9ee02062-7924-43a1-8390-441925e9f34d",
+      "sku": "L-BLUE",
+      "price": 110,
+      "stock": 0,
+      "title": "L / Blue",
+      "option1": "L",
+      "option2": "Blue"
+    }
+  ],
+  "private_documents": [
+    {
+      "id": "0ae2425d-b065-455b-907e-a01312532e93",
+      "scan": "pending",
+      "status": "submitted",
+      "private": true,
+      "reference": "1234",
+      "document_type": "bank_proof"
+    }
+  ],
+  "private_storage": {
+    "private_object_sha256": "b8ec3cfc25009404006e7cd46de32c3d324d8b8dacd47e40e1c4d39405134aa0",
+    "private_objects": 1,
+    "public_objects": 0,
+    "private_upload_requests": 2,
+    "original_key_equal": true
+  },
+  "declared_private_MIME_matches_actual_wire_bytes": true,
+  "wire_bytes_equal_private_object_SHA": true,
+  "anonymous_compiled_assets_request_denied": true,
+  "original_type_reference_locked_after_restart": true,
+  "original_key_and_retained_file_explicitly_reused": true,
+  "same_record_web_native_readback": true,
+  "web_kyc_title": "Settlement bank account",
+  "web_scan_status": "No scan result yet",
+  "artifact": {
+    "run_id": "fd613ef5b3fc",
+    "source_sha256": "0b4316db1cce3cdf5cb06c2613e432fd61aae31e32575d8300946772ecb8ad1d",
+    "apk_sha256": "c5f73a7b2478fffad9bb0a5efad2183cbdd2972bca5a3fe719d25cb7773a6084",
+    "installed_equals_retained": true,
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:60112/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "scope": "Current local debug Android artifact only."
+  },
+  "source_projection_core_paths_equal": 4891,
+  "proof_png_sha256": {
+    "native-private-gallery.png": "86d07c7c32997a059f32b35ab7cc008fecf374d21e42abe62a970c188cb25133",
+    "web-variant-native-readback.png": "4b07ea7940cf9c8f76986d2974126fd1e49e869876f2052efce82a8dd128be03",
+    "native-private-kyc-web-readback.png": "58a491e6a67d8eddb8d8f450b2e8f33f771cb81cf75483b3dd43b602b6062c79",
+    "web-private-kyc-native-readback.png": "0070416490c0590b86bd268caf9476ebde63f4021f74000a63a198119afdcf3a",
+    "native-web-variant-price-readback.png": "64524c096869401ca8a9b9bb84fd08aee81453db06771f5c1009b454620ded0b"
+  },
+  "failed_prior_candidates_retained": [
+    "native124-failed-private-mime.json",
+    "native126-partial-private-web-selector-fail.json"
+  ],
+  "whole_features_accepted": 0,
+  "limits": [
+    "Exact Android15/API35task emulator;owned isolated R2 private fixture,not deployed India S3/provider/scan acceptance",
+    "Variant existing2-axis value edit,price/zero stock/stable IDs and web140readback only;global matrix manager/creation/deletion/buyer outcomes remain open",
+    "Private native JPEG/PNG path,not native PDF/physical/hosted/full122acceptance"
+  ]
+}

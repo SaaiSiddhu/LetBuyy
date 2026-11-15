@@ -694,6 +694,31 @@ function applyLiquidSectionSchemaDefaults(
     return merged ?? settings;
 }
 
+// Older persisted first-party Liquid footers read section.settings.contactEmail
+// directly. Bind an absent setting to the already-public shop contact drop so
+// existing releases follow General's storefront opt-in without rewriting the
+// merchant's draft or a historical release. Explicit merchant settings win.
+function bindPublicFooterContact(
+    resolvedType: string,
+    configured: Record<string, unknown>,
+    settings: Record<string, unknown>,
+    schemaFields: ReadonlyArray<{ id: string }>,
+    shop: Record<string, unknown> | undefined,
+): Record<string, unknown> {
+    if (resolvedType !== 'footer') return settings;
+    const fields = new Set(schemaFields.map((field) => field.id));
+    let next: Record<string, unknown> | null = null;
+    for (const [field, shopKey] of [['contactEmail', 'contact_email'], ['contactPhone', 'contact_phone']] as const) {
+        if (!fields.has(field)) continue;
+        const explicit = Object.prototype.hasOwnProperty.call(configured, field);
+        if (explicit && !(field === 'contactEmail' && configured[field] === 'help@letbuyy.com')) continue;
+        const publicValue = shop?.[shopKey];
+        next ??= { ...settings };
+        next[field] = typeof publicValue === 'string' ? publicValue : '';
+    }
+    return next ?? settings;
+}
+
 // C1: returns sectionErrors count so the caller can determine 'rendered' vs 'error' status.
 //
 // F2 — Parallel Section Rendering: sections are rendered concurrently via Promise.allSettled.
@@ -753,9 +778,12 @@ async function renderLiquidTemplateSections(
             // deliberately empty string, which stays present as an own key) always wins, then
             // schema default, then genuinely nothing. Computed once, outside the try, so both the
             // success path and the error-placeholder path report the same resolved settings.
-            const defaultedSectionSettings = applyLiquidSectionSchemaDefaults(
+            const defaultedSectionSettings = bindPublicFooterContact(
+                resolvedType,
                 templateSection.settings,
+                applyLiquidSectionSchemaDefaults(templateSection.settings, sectionFile.schema.settings),
                 sectionFile.schema.settings,
+                input.liquidContext?.shop,
             );
 
             // C1: per-section try/catch — a single bad section must not crash the full page render.

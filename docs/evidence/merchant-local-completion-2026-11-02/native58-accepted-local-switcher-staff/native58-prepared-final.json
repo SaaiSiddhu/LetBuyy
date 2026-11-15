@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-06T06:45:53.718345+00:00",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c",
+  "source_manifest": "web-viewport-source-v1.source.json",
+  "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "inputs": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/run-switcher-v58.py",
+      "sha256": "8a6c5369e1aecefcd349c1366e1eb01d194070c835f707c23022768736be6a96"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/android-device-receipt-switcher-v58.json",
+      "sha256": "7f68e99095a60f9b35ddaa90998c90f9b6d2e68476c286f16933faf310e645d3"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v58.py",
+      "sha256": "9ea54fe22959838700bb58c0519678d1d249466c33b36a0231b7ebf952c84aec"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v58-local-android.postgres.test.ts",
+      "sha256": "fe4508373307f4089c2a3e3026590f4b0930e39ac287ba45f458004b0ef4e2fd"
+    }
+  ],
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "scope": "Same qualified source and full business/security assertions.57 failed at exact accessible name because canonical link includes product descriptor.58 uses observed link role containing exact product-name span, requires one visible match, and retains additional private failure diagnostics. No source or business-response changes."
+}

@@ -1,0 +1,61 @@
+{
+  "basis": "Current preimages; presentation dispatch/settlement guards deliberately changed, original action bodies/native input arguments unchanged. Service, proof, SDK, command storage and route-policy bytes verified separately.",
+  "checks": [
+    {
+      "owner": "TwoFactorScreen.approve complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "TwoFactorScreen._enroll complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "TwoFactorScreen._activate complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "TwoFactorScreen._acknowledge complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "TwoFactorScreen._disableFactor complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "TwoFactorScreen._approve complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "TwoFactorScreen.dispose complete body",
+      "unchanged": true
+    },
+    {
+      "owner": "Security input original controller",
+      "unchanged": true
+    },
+    {
+      "owner": "Security input original obscureText",
+      "unchanged": true
+    },
+    {
+      "owner": "Security input original autocorrect",
+      "unchanged": true
+    },
+    {
+      "owner": "Security input original enableSuggestions",
+      "unchanged": true
+    },
+    {
+      "owner": "Security input original keyboardType",
+      "unchanged": true
+    },
+    {
+      "owner": "Security input original inputFormatters",
+      "unchanged": true
+    },
+    {
+      "owner": "Security input original autofillHints",
+      "unchanged": true
+    }
+  ]
+}

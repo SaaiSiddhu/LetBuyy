@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-11-07T06:38:43.899569+00:00",
+  "supervisor_pid": 71579,
+  "source": "merchant-camera-video-model-source-v81",
+  "source_sha256": "5b8e0195e33aa978957abdf557a3dfd49b9ddcd9b2febd28111856d6a12727d4",
+  "command": [
+    "pnpm",
+    "--dir",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy",
+    "test:contracts"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 71587,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T06:38:46.570355+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "5b8e0195e33aa978957abdf557a3dfd49b9ddcd9b2febd28111856d6a12727d4"
+}

@@ -1,0 +1,41 @@
+{
+  "at": "2026-11-06T11:24:54.201546+00:00",
+  "status": "PASS_WITH_RETAINED_INFRASTRUCTURE_FAILURE_DIAGNOSTIC",
+  "source_manifest": "merchant-recovery-source-v13.source.json",
+  "source_sha256": "97d73c40813b6f0e0c458ca33fbaedfe0fc3559fbb4c6fbc22a56b6d759e4cb3",
+  "private_upload": {
+    "run_id": "53735deb8bfb",
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "india_receipt": {
+    "run_id": "ab22f751cfbd",
+    "passed": 1,
+    "failed": 0,
+    "scope": "Existing India receipt schema/version/tenancy suite; no actual AWS/provider operation."
+  },
+  "first_attempt": {
+    "run_id": "ab22f751cfbd",
+    "private_passed": 3,
+    "private_failed": 2,
+    "reason": "Docker spawnSync ETIMEDOUT, original15s bounds retained. Retry passed without source/assertion/timeout change.",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "input_reuse": "Only KYC screen/test label differs from v12. No backend, shared contract or database file differs; server suites remain matching-input evidence."
+}

@@ -1,0 +1,19 @@
+{
+  "results": [
+    {
+      "stage": "analysis",
+      "exit": 0,
+      "source_unchanged": true
+    },
+    {
+      "stage": "full-flutter",
+      "exit": 0,
+      "source_unchanged": true
+    },
+    {
+      "stage": "governance",
+      "exit": 0,
+      "source_unchanged": true
+    }
+  ]
+}

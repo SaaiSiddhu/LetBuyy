@@ -1,0 +1,103 @@
+{
+  "at": "2026-11-06T08:56:21.189523+00:00",
+  "status": "INDEPENDENT_LOCAL_SOURCE_DEBUG_AND_SCOPED_REUSE_PASS",
+  "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "entries": 8467,
+  "gateway": {
+    "tests": 2087,
+    "pass": 2087,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "root_contracts": {
+    "tests": 389,
+    "pass": 389,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "full_flutter": {
+    "pass": 1602,
+    "fail": 0,
+    "skip": 0
+  },
+  "app_analysis": 0,
+  "focused_kyc_shared_fields": {
+    "pass": 61,
+    "overlaps_full": true
+  },
+  "web": {
+    "tests": 1732,
+    "pass": 1732,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "web_scope_reused_by_input_equality": true,
+  "owned_staff_db": {
+    "pass": 50,
+    "fail": 0,
+    "skip": 0,
+    "cleanup_empty": true,
+    "source": "merchant-recovery-source-v9"
+  },
+  "sealed_invitation_browser": {
+    "pass": 1,
+    "fail": 0,
+    "cleanup_empty": true,
+    "source": "merchant-recovery-source-v9",
+    "scope": "Actual normal owner invitation/wrong-account/verified consent/downgrade/removal,local-provider only;no inbox/provider delivery certification"
+  },
+  "delta_from_reused_backend_scope": [
+    "apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart",
+    "apps/merchant/mobile/test/kyc_containment_test.dart",
+    "apps/merchant/mobile/test/kyc_upload_layout_test.dart"
+  ],
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "governance_advisories": 211,
+  "android": {
+    "at": "2026-11-06T08:54:33.553446+00:00",
+    "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+    "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-merchant-recovery-v11-android-j3m1jdlx/merchant-local-debug.apk",
+      "sha256": "b3f214713da48efa3ee710373f222a7ef8c9700422d767dbad85ff22261bac7e",
+      "bytes": 151928275
+    },
+    "actual_sha256": "b3f214713da48efa3ee710373f222a7ef8c9700422d767dbad85ff22261bac7e",
+    "compiled_arm64_engine": true,
+    "debug_kernel_present": true,
+    "normal_main": true,
+    "installed": false,
+    "runtime_verified": false,
+    "scope": "Normal debug compile/archive only. Native58 preserves its own prior StoreSwitcher/Staff artifact acceptance; current KYC changes have no new native acceptance.",
+    "material_icons_bytes": 1645184,
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "ios": {
+    "at": "2026-11-06T08:54:33.553446+00:00",
+    "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+    "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-merchant-recovery-v11-ios-7m7xzeil/Runner.app",
+      "files": 377,
+      "manifest_sha256": "7c6ec3f04918384fb9cc77cc56d2a4207dd6bee50dc0ae4a3a1f2c53fd165d6a"
+    },
+    "all_retained_files_equal": 377,
+    "bundle_id": "com.letbuyy.store",
+    "executable_architecture": "/private/tmp/letbuyy-merchant-recovery-v11-ios-7m7xzeil/Runner.app/Runner: Mach-O 64-bit executable arm64",
+    "owned_simulator_remains_shutdown": true,
+    "scope": "Debug compile/archive only; no iOS launch, auth, backend, sync or release acceptance.",
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "native_current_accepted": false,
+  "full_feature_set_accepted": false,
+  "no_hosted_changes": true
+}

@@ -1,0 +1,70 @@
+{
+  "at": "2026-11-07T10:54:22.471681+00:00",
+  "status": "BOUNDED_CURRENT_ANDROID_CAMERA_MOV_WEBM_AND_IOS_MOV_WEBKIT_WEBM_WEB_SYNC_PASS;FULL122_OPEN",
+  "source": "merchant-webm-ios-source-v86",
+  "source_sha256": "72eea74898f1efecbb91bd868e286deeeefc42324ff59b6733f288262185cc8e",
+  "inputs": 8505,
+  "gates": {
+    "flutter": {
+      "pass": 1731,
+      "fail": 0,
+      "skip": 0
+    },
+    "analysis_issues": 0,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "NOT_APPLICABLE": 1
+    }
+  },
+  "changes": [
+    "iOS WebM decoder uses already locked WebKit with existing native control/lifecycle surface",
+    "Nonce-bound bridge,initial-document navigation fence,CSP,escaped public URL,late-event suppression and finite playback validation",
+    "Private KYC photo-picker denial reuses shared recovery,preserves draft and starts no upload",
+    "Inherited source85 iOS microphone/camera purpose strings and image/video unavailable message"
+  ],
+  "dependency_lockfile_unchanged": true,
+  "backend_schema_shared_contract_files_unchanged": true,
+  "delta": "webm-ios-v86-source-delta.json",
+  "prior_failed_ios": "native113-failed-local-readback.json",
+  "whole_features_accepted": 0,
+  "limits": "Local synthetic Accounts/Next/native emulator-simulator/compiled Gateway+BFF/owned PostgreSQL/R2 only. Silent generated H264 MOV/VP8 WebM clips;not all codecs/OS versions. Physical/provider/inbox/buyer-Liquid/hosted/signed-release/production and full122 acceptance not certified.",
+  "source_frozen": false,
+  "android": {
+    "report": "native114-final-local-readback.json",
+    "run_id": "13b749d73f7a",
+    "apk_sha256": "e1e873bb41a6345a6c59ca21af0c47d5d046cbf8e6d14ba309083beda6fb5a10",
+    "os": "Android15/API35",
+    "uploads": 4,
+    "media_rows": 4,
+    "objects": 4,
+    "camera": "Virtual/emulated photo and record,not host camera/audio",
+    "formats": [
+      "camera JPEG/MP4",
+      "MOV/H264",
+      "WebM/VP8"
+    ],
+    "actual_decode_seek_pause_mute_background_and_web_captions": true
+  },
+  "ios": {
+    "report": "native115-final-local-readback.json",
+    "run_id": "2e7021b40e61",
+    "os": "iOS26.5 task simulator",
+    "installed_files_match_retained": 401,
+    "decoders": {
+      "MOV/H264": "AVPlayer",
+      "WebM/VP8": "in-app WebKit"
+    },
+    "uploads": 2,
+    "objects": 2,
+    "actual_decode_seek_pause_mute_background_and_web_caption": true,
+    "camera_capture": "Simulator unavailable;recording usage descriptions packaged,butno physical camera/microphone acceptance"
+  },
+  "custody": "source86-final-custody.json",
+  "next": [
+    "Implement actor/store/purpose-bound Android native-picker process-death recovery before byte upload;no retrieveLostData handling exists yet. Never auto-import an unknown/private KYC selection into public Media.",
+    "Continue variants/options,reordering and actual buyer Liquid outcomes plus remaining feature-specific web/mobile/buyer journeys.",
+    "Complete owner/staff/revocation/store-switch matrices and each remaining Accounts,store,theme,domain,order,tax,money,growth/settings criterion.",
+    "Keep provider/hosted/release acceptance separate from local fixtures;public marketplaces51/122 remain frozen/paused and120/121outsideMerchant scope."
+  ]
+}

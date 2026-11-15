@@ -66,8 +66,21 @@ const CANDIDATE_ROLLBACKS = new Map([
     [324, '324_canonical_merchant_staff_invitations'],
     [328, '328_subscription_checkout_source'],
     [329, '329_approved_operator_mfa_reset'],
+    [401, '401_included_theme_library_allowance'],
+    [410, '410_checkout_custom_host_derivation'],
+    [411, '411_authoritative_checkout_gst'],
+    [412, '412_invoice_checkout_fact_parity'],
+    [414, '414_gift_card_issue_replay_integrity'],
+    [420, '420_merchant_razorpay_webhook_secret'],
+    [425, '425_kyc_india_upload_intent'],
+    [426, '426_kyc_r2_india_provider_isolation'],
+    [428, '428_kyc_india_cleanup_due'],
+    [429, '429_kyc_india_early_scan_retry'],
 ]);
 const ALL_SNAPSHOTS = new Map([...GUARDED_ROLLBACKS, ...CANDIDATE_ROLLBACKS]);
+// The November 2 identity reconciliation preserved historical SQL bytes,
+// including these diagnostics. Pin their original IDs without rewriting SQL.
+const DECLARED_GUARD_IDS = new Map([[420, 416], [425, 421], [426, 422], [428, 424], [429, 425]]);
 
 function psql(sql, targetDatabase = databaseName) {
     return execFileSync(
@@ -157,6 +170,7 @@ const restoredFunctions = (sql, db) => {
     return JSON.parse(psql(`SELECT jsonb_agg(jsonb_build_object(
         'name', p.proname, 'signature', p.oid::regprocedure::text,
         'definition', pg_get_functiondef(p.oid), 'input_names', p.proargnames[1:p.pronargs],
+        'result_type', format_type(p.prorettype,NULL),
         'arguments', (SELECT string_agg(format('%I %s', p.proargnames[i+1], format_type(p.proargtypes[i],NULL)), ', ' ORDER BY i)
             FROM generate_series(0,p.pronargs-1) i)) ORDER BY p.proname)
         FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
@@ -180,34 +194,45 @@ test('every candidate restorer refuses an extra overload, changed typed ABI, inp
     let checked = 0;
     for (const [number, name] of CANDIDATE_ROLLBACKS) {
         const db = snapshotFor(number), rollback = transactionBody(rollbackSql(name));
+        const declaredGuardId = DECLARED_GUARD_IDS.get(number) ?? number;
         for (const fn of restoredFunctions(rollback,db)) {
             const before = functionState(db);
-            const stub = `CREATE FUNCTION public.${fn.name}(synthetic_argument integer) RETURNS integer LANGUAGE sql AS $$ SELECT 1 $$;`;
+            const stub = `CREATE FUNCTION public.${fn.name}(synthetic_argument bytea) RETURNS integer LANGUAGE sql AS $$ SELECT 1 $$;`;
+            const alternateResult = fn.result_type === 'text' ? 'jsonb' : 'text';
+            const alternateValue = alternateResult === 'jsonb' ? "'{}'::jsonb" : "'synthetic ABI drift'::text";
             for (const drift of [stub, `DROP FUNCTION ${fn.signature} CASCADE; ${stub}`,
-                `DROP FUNCTION ${fn.signature} CASCADE; CREATE FUNCTION public.${fn.name}(${fn.arguments ?? ''}) RETURNS text LANGUAGE sql AS $$ SELECT 'synthetic ABI drift'::text $$;`]) {
+                `DROP FUNCTION ${fn.signature} CASCADE; CREATE FUNCTION public.${fn.name}(${fn.arguments ?? ''}) RETURNS ${alternateResult} LANGUAGE sql AS $$ SELECT ${alternateValue} $$;`]) {
                 const error = psqlExpectingFailure(`BEGIN; ${drift}\n${rollback}\nCOMMIT;`,db);
-                assert.match(error ?? '',new RegExp(`rollback ${number} refuses to run`),`${number}/${fn.name}: drift must be refused by the guard`);
+                assert.match(error ?? '',new RegExp(`rollback ${declaredGuardId} refuses to run`),`${number}/${fn.name}: drift must be refused by the guard`);
                 assert.equal(functionState(db),before,`${number}/${fn.name}: refusal preserves all function bodies/owners/ACLs`);
             }
             if (fn.input_names?.length) {
                 const renamed = fn.definition.replace(new RegExp(`\\b${fn.input_names[0]}\\b`,'g'),'synthetic_renamed_input');
                 const error = psqlExpectingFailure(`BEGIN; DROP FUNCTION ${fn.signature} CASCADE; ${renamed};\n${rollback}\nCOMMIT;`,db);
-                assert.match(error ?? '',new RegExp(`rollback ${number} refuses to run: .*input names`));
+                assert.match(error ?? '',new RegExp(`rollback ${declaredGuardId} refuses to run: .*input names`));
                 assert.equal(functionState(db),before);
             }
             // A negative control proves that the historical script itself accepts a
             // different typed ABI and adds its original overload when the guard is absent.
             const withoutGuard = stripPrecondition(rollback);
             assert.ok(!withoutGuard.includes('$rollback_precondition$'));
-            const result = psql(`BEGIN; DROP FUNCTION ${fn.signature} CASCADE; ${stub}\n${withoutGuard}
-                SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-                WHERE n.nspname='public' AND p.proname=${quote(fn.name)}; ROLLBACK;`,db);
-            assert.equal(result.split('\n').at(-1),'2',`${number}/${fn.name}: removing the guard reproduces two overloads`);
+            if (number === 401) {
+                // 401 already had a full body/profile fence. The new typed
+                // precondition is redundant defense; removing it must still
+                // leave the older fence refusing the synthetic replacement.
+                const error=psqlExpectingFailure(`BEGIN; DROP FUNCTION ${fn.signature} CASCADE; ${stub}\n${withoutGuard}\nCOMMIT;`,db);
+                assert.match(error ?? '',/Migration401 refuses changed installer definition/);
+            } else {
+                const result = psql(`BEGIN; DROP FUNCTION ${fn.signature} CASCADE; ${stub}\n${withoutGuard}
+                    SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+                    WHERE n.nspname='public' AND p.proname=${quote(fn.name)}; ROLLBACK;`,db);
+                assert.equal(result.split('\n').at(-1),'2',`${number}/${fn.name}: removing the guard reproduces two overloads`);
+            }
             assert.equal(functionState(db),before,'negative control rolls back its own synthetic drift and effects');
             checked += 1;
         }
     }
-    assert.equal(checked,20,'each of the 20 current restored signatures receives real database drift/negative controls, including both intentional MFA overloads');
+    assert.equal(checked,34,'each of the 34 current restored signatures receives real database drift/negative controls, including both intentional MFA overloads');
 });
 
 test('the database starts clean: exactly one create_checkout_order, taking 20 parameters', { skip }, () => {

@@ -3,13 +3,18 @@
 import { useReadRequest } from '@/lib/api/use-read-request'
 
 import Image from 'next/image'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { MediaAssetSchema, MediaMetadataUpdateSchema, type MediaAsset } from '@letbuyy/shared-types'
+import { MediaRecoveryNotice, useMediaRecovery } from '@/components/media/MediaRecoveryProvider'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
+import { useCallback, useEffect, useMemo, useState, useLayoutEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { Button,
     Badge,
     Banner,
     Card,
     ConfirmDialog,
+    Input,
+    Modal,
     FileText,
     Image as ImageIcon,
     Page,
@@ -24,20 +29,7 @@ import { Button,
 import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
-interface MediaItem {
-    id: string
-    filename?: string | null
-    original_name?: string | null
-    url?: string | null
-    mime_type?: string | null
-    size_bytes?: number | null
-    file_name?: string | null
-    file_url?: string | null
-    file_type?: string | null
-    file_size?: number | null
-    alt_text: string | null
-    created_at: string
-}
+type MediaItem = MediaAsset
 
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -55,19 +47,19 @@ function getErrorMessage(payload: unknown, fallback: string) {
 }
 
 function fileNameFor(item: MediaItem) {
-    return item.filename || item.original_name || item.file_name || 'Untitled file'
+    return item.filename || item.original_name || 'Untitled file'
 }
 
 function fileUrlFor(item: MediaItem) {
-    return item.url || item.file_url || ''
+    return item.url || ''
 }
 
 function fileTypeFor(item: MediaItem) {
-    return item.mime_type || item.file_type || 'application/octet-stream'
+    return item.mime_type || 'application/octet-stream'
 }
 
 function fileSizeFor(item: MediaItem) {
-    return item.size_bytes ?? item.file_size ?? 0
+    return item.size_bytes ?? 0
 }
 
 function formatSize(bytes: number) {
@@ -91,21 +83,32 @@ function mediaTypeLabel(type: string) {
 export default function GalleryPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
+    const { actorId, siteId } = useMerchantSecurityContext(store)
+    const recovery = useMediaRecovery(store)
+    const blocked = !recovery.ready || recovery.busy || Boolean(recovery.pending)
+    const surfaceKey = `${actorId}:${siteId}:${store}`
+    const life = useRef({ key: surfaceKey, current: false })
+    useLayoutEffect(() => { const value = { key: surfaceKey, current: true }; life.current = value; return () => { value.current = false } }, [surfaceKey])
+    const [page, setPage] = useState(1), [hasNext, setHasNext] = useState(false)
+    const [editing, setEditing] = useState<MediaItem | null>(null)
+    const [filename, setFilename] = useState(''), [altText, setAltText] = useState(''), [caption, setCaption] = useState('')
+    const [editError, setEditError] = useState('')
+    const [folder, setFolder] = useState('/'), [tags, setTags] = useState('')
     const [items, setItems] = useState<MediaItem[]>([])
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [mediaToDelete, setMediaToDelete] = useState<MediaItem | null>(null)
     const [deleting, setDeleting] = useState(false)
 
-    const beginRead = useReadRequest(store)
+    const beginRead = useReadRequest(surfaceKey)
     const load = useCallback(async (options?: { quiet?: boolean }) => {
         const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/media?limit=100`, {
-                cache: 'no-store', signal: request.signal,
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/media?limit=60&page=${page}`, {
+                cache: 'no-store', signal: request.signal, headers: { 'X-LetBuyy-Merchant-Context': actorId },
             })
             const payload = await response.json().catch(() => null)
             if (!request.isCurrent()) return
@@ -114,7 +117,8 @@ export default function GalleryPage() {
                 throw new Error(getErrorMessage(payload, 'Unable to load media'))
             }
 
-            setItems(Array.isArray(payload?.data) ? payload.data : [])
+            setItems(MediaAssetSchema.array().parse(payload?.data))
+            setHasNext(payload?.meta?.has_next === true)
         } catch (error) {
             if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load media'
@@ -128,11 +132,11 @@ export default function GalleryPage() {
         } finally {
             if (request.isCurrent()) setLoading(false)
         }
-    }, [beginRead, notify, store])
+    }, [beginRead, notify, store, actorId, page])
 
     useEffect(() => {
         void load()
-    }, [load])
+    }, [load, recovery.revision])
 
     const stats = useMemo(() => {
         const imageCount = items.filter((item) => isImageType(fileTypeFor(item))).length
@@ -146,38 +150,35 @@ export default function GalleryPage() {
     }, [items])
 
     const handleDelete = useCallback(async () => {
-        if (!mediaToDelete || deleting) return
-
+        if (!mediaToDelete || deleting || blocked) return
+        const current = life.current
         setDeleting(true)
-
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/media/${encodeURIComponent(mediaToDelete.id)}`, {
-                method: 'DELETE',
-            })
-            const payload = await response.json().catch(() => null)
-
-            if (!response.ok) {
-                throw new Error(getErrorMessage(payload, 'Unable to delete media'))
-            }
-
-            notify({
-                title: 'File deleted',
-                description: `${fileNameFor(mediaToDelete)} was removed from the media library.`,
-                variant: 'success',
-            })
+            await recovery.change(mediaToDelete.id)
+            if (!current.current || current !== life.current) return
             setMediaToDelete(null)
-            await load({ quiet: true })
+            notify({ title: 'Removed from Media', description: 'Existing storage references are retained.', variant: 'success' })
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unable to delete media'
-            notify({
-                title: 'Could not delete file',
-                description: message,
-                variant: 'critical',
-            })
-        } finally {
-            setDeleting(false)
+            if (current.current && current === life.current) {
+                setMediaToDelete(null)
+                notify({ title: 'Removal needs confirmation', description: error instanceof Error ? error.message : 'Confirm the saved media request.', variant: 'warning' })
+            }
+        } finally { if (current.current && current === life.current) setDeleting(false) }
+    }, [blocked, deleting, mediaToDelete, notify, recovery.change])
+    const saveMetadata = async () => {
+        if (!editing || blocked) return
+        const current = life.current
+        setEditError('')
+        const input = MediaMetadataUpdateSchema.safeParse({ filename: filename.trim(), alt_text: altText, caption,
+            folder: folder.trim() || '/', tags: tags.split(',').map(tag => tag.trim()).filter(Boolean) })
+        if (!input.success) { setEditError('Review the filename and field lengths. Use at most 20 tags with 50 characters each.'); return }
+        try {
+            await recovery.change(editing.id, input.data)
+            if (current.current && current === life.current) setEditing(null)
+        } catch (error) {
+            if (current.current && current === life.current) setEditError(error instanceof Error ? error.message : 'Confirm the saved media request.')
         }
-    }, [deleting, load, mediaToDelete, notify, store])
+    }
 
     if (loading) {
         return (
@@ -190,6 +191,7 @@ export default function GalleryPage() {
                 />
                 <Card>
                     <Section title="Media library">
+                        <MediaRecoveryNotice store={store} />
                         <Skeleton variant="table" lines={5} />
                     </Section>
                 </Card>
@@ -213,6 +215,7 @@ export default function GalleryPage() {
                 ]}
             />
 
+            <MediaRecoveryNotice store={store} />
             {loadError && (
                 <Banner
                     variant="critical"
@@ -231,7 +234,7 @@ export default function GalleryPage() {
                                 <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                             </span>
                             <div>
-                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Total files</p>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Files listed</p>
                                 <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{stats.total}</p>
                             </div>
                         </div>
@@ -244,7 +247,7 @@ export default function GalleryPage() {
                                 <ImageIcon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                             </span>
                             <div>
-                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Images</p>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Images listed</p>
                                 <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{stats.images}</p>
                             </div>
                         </div>
@@ -257,7 +260,7 @@ export default function GalleryPage() {
                                 <FileText className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                             </span>
                             <div>
-                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Other files</p>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Other files listed</p>
                                 <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{stats.files}</p>
                             </div>
                         </div>
@@ -326,16 +329,17 @@ export default function GalleryPage() {
                                                 <div className="flex flex-wrap items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                                     <span>{formatSize(fileSize)}</span>
                                                     <span aria-hidden="true">/</span>
-                                                    <span>{formatDate(item.created_at)}</span>
+                                                    <span>{item.created_at ? formatDate(item.created_at) : 'Date unavailable'}</span>
                                                 </div>
                                             </div>
                                             <div className="flex items-center justify-between gap-[var(--lb-space-2)]">
                                                 <Badge label={mediaTypeLabel(fileType)} variant={isImageType(fileType) ? 'success' : 'default'} />
+                                                <Button variant="secondary" size="sm" disabled={blocked} onClick={() => { setEditing(item); setFilename(item.filename); setAltText(item.alt_text ?? ''); setCaption(item.caption ?? ''); setFolder(item.folder); setTags(item.tags.join(', ')); setEditError('') }}>Edit details</Button>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => setMediaToDelete(item)}
-                                                    disabled={deleting}
+                                                    disabled={deleting || blocked}
                                                 >
                                                     <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                                     Delete
@@ -350,10 +354,24 @@ export default function GalleryPage() {
                 </Section>
             </Card>
 
+            <div className="flex items-center gap-[var(--lb-space-3)]">
+                <Button variant="secondary" disabled={loading || page === 1} onClick={() => setPage(value => value - 1)}>Previous page</Button>
+                <span>Page {page}</span>
+                <Button variant="secondary" disabled={loading || !hasNext} onClick={() => setPage(value => value + 1)}>Next page</Button>
+            </div>
+            <Modal open={Boolean(editing)} title="Edit media details" onClose={() => setEditing(null)} footer={<Button disabled={blocked} onClick={() => void saveMetadata()}>Save media details</Button>}>
+                <MediaRecoveryNotice store={store} />
+                {editError && <Banner variant="critical" title="Media details need review">{editError}</Banner>}
+                <Input label="Filename" value={filename} maxLength={500} disabled={blocked} onChange={event => setFilename(event.target.value)} />
+                <Input label="Alternative text" value={altText} maxLength={500} disabled={blocked} onChange={event => setAltText(event.target.value)} />
+                <Input label="Caption" value={caption} maxLength={1000} disabled={blocked} onChange={event => setCaption(event.target.value)} />
+                <Input label="Folder" value={folder} maxLength={200} disabled={blocked} onChange={event => setFolder(event.target.value)} />
+                <Input label="Tags (comma separated)" value={tags} disabled={blocked} onChange={event => setTags(event.target.value)} />
+            </Modal>
             <ConfirmDialog
                 open={Boolean(mediaToDelete)}
                 title="Delete file?"
-                description={mediaToDelete ? `This permanently removes ${fileNameFor(mediaToDelete)} from the media library.` : 'This permanently removes the selected file from the media library.'}
+                description={mediaToDelete ? `Remove ${fileNameFor(mediaToDelete)} from Media. Stored bytes used by existing references are retained.` : 'Remove the selected file from Media. Existing storage references are retained.'}
                 confirmLabel={deleting ? 'Deleting...' : 'Delete file'}
                 destructive
                 onClose={() => {

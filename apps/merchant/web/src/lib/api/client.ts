@@ -9,7 +9,7 @@ import {
     type LetbuyyApiClient,
 } from '@letbuyy/api-client'
 import {
-    LETBUYY_MERCHANT_SESSION_COOKIE,
+    resolveLetbuyyPlatformCookieNames,
     createLetbuyyInternalSessionHeaders,
     getLetbuyyInternalAuthSecret,
 } from '@letbuyy/auth-core'
@@ -51,7 +51,8 @@ export async function merchantApiFetch(path: string, init: MerchantApiFetchInit 
     const cleanPath = path.startsWith('/') ? path : `/${path}`
     const headers = new Headers(init.headers)
     const cookieStore = await cookies()
-    const sessionToken = cookieStore.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value
+    const names = resolveLetbuyyPlatformCookieNames(process.env.NEXT_PUBLIC_ENV)
+    const sessionToken = cookieStore.get(names.session)?.value
 
     if (init.requireSession && !sessionToken) {
         return new Response(JSON.stringify({ error: { code: 'UNAUTHORIZED', message: 'Authentication required' } }), {

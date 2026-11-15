@@ -4,6 +4,7 @@
 // Real Gateway/DB. Provider-confirmed IDs and zero-value payout setup are
 // synthetic authorization fixtures, not provider approval/capture evidence.
 import assert from 'node:assert/strict';
+import {createHmac} from 'node:crypto';
 import test,{beforeEach} from 'node:test';
 import {readFileSync}from 'node:fs';
 import {verifySensitiveActionStepUp}from '../../lib/security-controls';
@@ -15,6 +16,8 @@ import {merchantFixture,activeFactor,issue,otp,explain,STEP_SECRET}from './merch
 import {bindSyntheticRefundCredential}from './refund-credential-fixture';
 const owned=requireOwnedDatabase();
 const paymentAccounts=new Map<string,string>(),refundProofs=new Map<string,{payment:string;amount:number}>();
+const callbackCredentials=new Map<string,{id:string;webhookSecret:string}>();
+const providerPaymentId=(id:string)=>'pay_'+id.replaceAll('-','');
 beforeEach(t=>{
  if(!('mock' in t))throw new Error('Owned refund fixture requires the test context mock lifecycle');
  const original=globalThis.fetch;
@@ -24,15 +27,19 @@ beforeEach(t=>{
    assert.equal(init?.method||'GET','GET','manual-refund authorization tests never create a provider refund');
    const id=decodeURIComponent(url.pathname.split('/').at(-1)!),proof=refundProofs.get(id);assert.ok(proof,'explicit synthetic provider proof is required');
    assert.equal(new Headers(init?.headers).get('Authorization'),paymentAccounts.get(proof.payment));
-   return Response.json({id,payment_id:'syn-pay-'+proof.payment,amount:proof.amount,currency:'INR',status:'processed'});
+   return Response.json({id,payment_id:providerPaymentId(proof.payment),amount:proof.amount,currency:'INR',status:'processed'});
   }
   return original(input,init);
  });
 });
 const proofHeaders=(r:{json:Record<string,unknown>|null})=>{const d=r.json?.data as {step_up_token:string;verified_at:string};return{'X-Step-Up-Token':d.step_up_token,'X-Step-Up-Verified-At':d.verified_at};};
-async function payment(f:Awaited<ReturnType<typeof merchantFixture>>,currency='INR'){
- const order=seedSyntheticOrder(owned.psql,f),id=crypto.randomUUID();owned.psql(`INSERT INTO payments(id,site_id,order_id,provider,mode,status,amount_minor,currency,provider_payment_id,idempotency_key)VALUES('${id}','${f.siteId}','${order.orderId}','razorpay','sandbox','captured',10000,'${currency}','syn-pay-${id}','syn-payment-${id}');`);
- const credential=await bindSyntheticRefundCredential(owned,f.gateway,f.siteId,[id]);paymentAccounts.set(id,credential.authorization);return id;
+async function payment(f:Awaited<ReturnType<typeof merchantFixture>>,currency='INR',signedCallback=false){
+ const order=seedSyntheticOrder(owned.psql,f),id=crypto.randomUUID();owned.psql(`INSERT INTO payments(id,site_id,order_id,provider,mode,status,amount_minor,currency,provider_payment_id,idempotency_key)VALUES('${id}','${f.siteId}','${order.orderId}','razorpay','sandbox','captured',10000,'${currency}','${providerPaymentId(id)}','syn-payment-${id}');`);
+ const webhookSecret=signedCallback?'synthetic-refund-webhook-'+crypto.randomUUID():undefined;
+ const credential=await bindSyntheticRefundCredential(owned,f.gateway,f.siteId,[id],webhookSecret);
+ paymentAccounts.set(id,credential.authorization);
+ if(webhookSecret)callbackCredentials.set(id,{id:credential.id,webhookSecret});
+ return id;
 }
 async function statement(f:Awaited<ReturnType<typeof merchantFixture>>){const id=crypto.randomUUID();owned.psql(`INSERT INTO payout_statements(id,site_id,statement_number,status,provider,provider_mode,rail,currency)VALUES('${id}','${f.siteId}','SYN-MFA-${id}','pending','razorpay_route','sandbox','pa_split','INR');`);return id;}
 async function disable(f:Awaited<ReturnType<typeof merchantFixture>>,factor:{id:string;secret:string}){const r=await f.call('POST','/2fa/disable',{factor_id:factor.id,code:otp(factor.secret)});assert.equal(r.status,200,explain(r));}
@@ -44,6 +51,33 @@ test('disabled factor proof cannot reserve or finalize a new manually recorded p
 test('disabled factor payout proof is refused before provider configuration is consulted',async()=>{
  const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor,crypto.randomUUID(),'payout.release'),id=await statement(f);assert.equal(proof.status,201,explain(proof));await disable(f,factor);
  const result=await f.call('POST','/payouts/'+id+'/settle',{idempotency_key:crypto.randomUUID()},proofHeaders(proof));assert.equal(result.status,428,explain(result));assert.equal(owned.psql(`SELECT status FROM payout_statements WHERE id='${id}';`),'pending');
+});
+test('global live Route credentials and approval reference cannot release a merchant payout',async()=>{
+ const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor,crypto.randomUUID(),'payout.release'),id=await statement(f);
+ assert.equal(proof.status,201,explain(proof));
+ owned.psql(`UPDATE payout_statements SET provider_mode='live' WHERE id='${id}';`);
+ Object.assign(f.gateway.env,{
+  RAZORPAY_KEY_ID:'synthetic-route-key-id',
+  RAZORPAY_ROUTE_KEY_SECRET:'synthetic-never-contacted-route-secret',
+  RAZORPAY_ROUTE_ACCOUNT_ID:'acc_global_not_site_bound',
+  RAZORPAY_ROUTE_MODE:'live',
+  RAZORPAY_ROUTE_PROVIDER_ENABLED:'true',
+  RAZORPAY_ROUTE_LIVE_APPROVAL_REFERENCE:'synthetic-global-reference',
+ });
+ const result=await f.call('POST','/payouts/'+id+'/settle',{idempotency_key:crypto.randomUUID()},proofHeaders(proof));
+ assert.equal(result.status,503,explain(result));
+ assert.equal(owned.psql(`SELECT status FROM payout_statements WHERE id='${id}';`),'pending');
+ assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE resource_id='${id}' AND action='merchant.payout_release.authorized';`),'0');
+});
+test('a live payout statement cannot be released through sandbox Route credentials',async()=>{
+ const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor,crypto.randomUUID(),'payout.release'),id=await statement(f);
+ assert.equal(proof.status,201,explain(proof));
+ owned.psql(`UPDATE payout_statements SET provider_mode='live' WHERE id='${id}';`);
+ configured(f);
+ const result=await f.call('POST','/payouts/'+id+'/settle',{idempotency_key:crypto.randomUUID()},proofHeaders(proof));
+ assert.equal(result.status,503,explain(result));
+ assert.equal(owned.psql(`SELECT status FROM payout_statements WHERE id='${id}';`),'pending');
+ assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE resource_id='${id}' AND action='merchant.payout_release.authorized';`),'0');
 });
 test('payment refund checks current approval again when disable wins before the reserve transaction',async()=>{
  const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor),id=await payment(f);assert.equal(proof.status,201,explain(proof));let disabled=false;
@@ -81,10 +115,17 @@ test('a committed full refund with lost HTTP receipt recovers the original sourc
  const recovered=await manual(f,id,proof,key,ref,10000);assert.equal(recovered.status,200,explain(recovered));assert.equal(recovered.json?.data.refunded,true);assert.equal(owned.psql(`SELECT count(*)FROM ledger_transactions WHERE site_id='${f.siteId}'AND source_type='refund'AND source_id='${ref}';`),'1');
 });
 test('a cached pending reply follows a subsequently reconciled trusted callback without another provider action',async()=>{
- const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor),id=await payment(f),key=crypto.randomUUID(),ref='syn-callback-'+crypto.randomUUID();
+ const f=await merchantFixture(owned),factor=await activeFactor(f),proof=await issue(f,factor),id=await payment(f,'INR',true),key=crypto.randomUUID(),ref='rfnd_'+crypto.randomUUID().replaceAll('-','');
  const tap=tapRest(owned.restUrl,async(call,forward)=>call.resource==='rpc/reconcile_payment_refund_attempt'?restJson(503,{message:'synthetic-provider-confirmed-local-reconcile-outage'}):forward());
  try{const pending=await manual(f,id,proof,key,ref,10000);assert.equal(pending.status,202,explain(pending));}finally{tap.restore();}
- const callback=await f.gateway.request('/v1/storefront/internal/payments/refund-event',{method:'POST',headers:{'Content-Type':'application/json','X-Internal-API-Secret':INTERNAL_SECRET},body:JSON.stringify({provider:'razorpay',providerPaymentId:'syn-pay-'+id,providerRefundId:ref,providerEventId:'refund.processed:'+ref,eventType:'refund.processed',status:'processed',amountMinor:10000,currency:'INR'})});assert.equal(callback.status,200,explain(callback));
+ const legacyBody={provider:'razorpay',providerPaymentId:providerPaymentId(id),providerRefundId:ref,providerEventId:'refund.processed:'+ref,eventType:'refund.processed',status:'processed',amountMinor:10000,currency:'INR'};
+ const unbound=await f.gateway.request('/v1/storefront/internal/payments/refund-event',{method:'POST',headers:{'Content-Type':'application/json','X-Internal-API-Secret':INTERNAL_SECRET},body:JSON.stringify(legacyBody)});
+ assert.equal(unbound.status,409,explain(unbound));
+ const bound=callbackCredentials.get(id);assert.ok(bound);
+ const raw=JSON.stringify({event:'refund.processed',id:'evt_'+crypto.randomUUID().replaceAll('-',''),payload:{refund:{entity:{id:ref,payment_id:providerPaymentId(id),amount:10000,currency:'INR',status:'processed'}}}});
+ const signature=createHmac('sha256',bound.webhookSecret).update(raw).digest('hex');
+ const callback=await f.gateway.request(`/v1/storefront/internal/payments/merchant-razorpay/${f.siteId}/${bound.id}`,{method:'POST',headers:{'Content-Type':'application/json','X-Internal-API-Secret':INTERNAL_SECRET,'X-Razorpay-Signature':signature},body:raw});
+ assert.equal(callback.status,200,explain(callback));
  const current=await manual(f,id,proof,key,ref,10000);assert.equal(current.status,200,explain(current));assert.equal(current.json?.data.refunded,true);assert.equal(current.json?.data.payment.status,'refunded');
 });
 test('legacy body-carried approval is transient intent so a fresh valid proof can retry the same financial key',async()=>{

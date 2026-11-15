@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-11-07T05:44:24.626149+00:00",
+  "supervisor_pid": 13683,
+  "source": "merchant-catalog-media-source-v73",
+  "source_sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820",
+  "command": [
+    "pnpm",
+    "--dir",
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy",
+    "test:contracts"
+  ],
+  "status": "RUNNING",
+  "child_pid": 13694
+}

@@ -9,11 +9,12 @@ import type { Env } from '../index';
 
 const key='11111111-1111-4111-8111-111111111111';
 
-test('only exact product UUID PATCH hands off to its canonical receipt; all other generic key guards remain', async()=>{
+test('exact product and collection command routes own their receipts; unrelated generic key guards remain', async()=>{
     const app=new Hono<{Bindings:Env}>();app.use('*',protectedMutationIdempotency);app.all('*',c=>c.json({reached:true}));
     const accepted=await app.request('/v1/products/'+key,{method:'PATCH'});
     assert.equal(accepted.status,200);
-    for(const [path,method] of [['/v1/products','POST'],['/v1/products/'+key,'DELETE'],['/v1/products/collections/'+key,'PATCH'],['/v1/products/not-a-uuid','PATCH'],['/v1/products/bulk','POST']]) {
+    assert.equal((await app.request('/v1/products/collections/'+key,{method:'PATCH'})).status,200);
+    for(const [path,method] of [['/v1/products','POST'],['/v1/products/'+key,'DELETE'],['/v1/products/not-a-uuid','PATCH'],['/v1/products/bulk','POST']]) {
         const denied=await app.request(path,{method});assert.equal(denied.status,400,path+method);
         const body=await denied.json() as {error:{code:string}};
         assert.equal(body.error.code,'IDEMPOTENCY_KEY_REQUIRED');

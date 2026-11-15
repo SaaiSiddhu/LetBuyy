@@ -1,0 +1,12 @@
+{
+  "stage": "flutter-analysis",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "source_sha256": "7b3d68cff186f04b58661b987e52954d2b63ae452e0d7befcfbda20a108d355e",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile"
+}

@@ -16,7 +16,11 @@ const match=historical.match(/\$liquidbundle\$([\s\S]*?)\$liquidbundle\$/);
 if(!match)throw new Error('Historical Core bundle is unavailable');
 // Migration367 corrects the starter sentence before this migration runs.
 const before=LiquidThemePackageBundleSchema.parse(JSON.parse(match[1].replaceAll('Free shipping on fresh drops this week.',LETBUYY_CORE_STARTER_ANNOUNCEMENT)));
-const after=createLetbuyyCoreLiquidThemeBundleFixture();
+// This generator reproduces accepted migration 368 and its frozen seed. Later
+// source changes require a new forward migration; Wave 6's public-contact
+// footer must not be silently folded into the already accepted section set.
+const current=createLetbuyyCoreLiquidThemeBundleFixture();
+const after={...current,sections:{...current.sections,footer:before.sections.footer}};
 const stable=value=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
 const changed=Object.keys(after.sections).filter(key=>stable(before.sections[key])!==stable(after.sections[key]));
 if(changed.length!==13)throw new Error('Core refresh scope changed; prepare a new reviewed forward migration');

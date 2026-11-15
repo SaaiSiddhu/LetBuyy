@@ -1,0 +1,128 @@
+{
+  "status": "PASS_BOUNDED_COMPILED_ANDROID_WEB_FUNCTIONAL_REGRESSION; UI_FINDINGS_OPEN",
+  "at": "2026-11-04T08:34:42.378347+00:00",
+  "fullAppAccepted": false,
+  "source": {
+    "sha256": "c0a13561f3a3e9e7b3b83792637b60ad46d6f0400318bd2a12d610ff20900ac2",
+    "entries": 7444,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-foundations-v4.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-foundations-v4-qualified-source",
+    "heldAndTerminalVerified": true
+  },
+  "run": {
+    "runId": "49939e72818b",
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "wallSeconds": 917.6,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "artifact": {
+    "run_id": "49939e72818b",
+    "source_sha256": "424c3b7c6413e330c4d76188706f2e965f31d76994048255caa667412b089c45",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v31/qualified-artifact/merchant-local-debug.apk",
+    "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "original_bytes_retained": true,
+    "sha256": "8910fdab0b5d04972c57e5158846e045df91b982b6bfc1dea9485e388a7eed50",
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:51118/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "compiledWorkers": {
+    "run_id": "49939e72818b",
+    "runtime": "workerd",
+    "gateway_sha256": "555853cc5d735552c834697e7c4624af1cfb432af330d09bcdb36ca820b5dd34",
+    "bff_sha256": "4db6627fabda2fc4ff8140faadbd7cd5e2c315b3c7b427553a8b8630456ca8a5",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "compiledServerBytesUnchangedFromV30": true,
+  "launcherCleanup": {
+    "at": "2026-11-04T08:31:59.941259+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "staffObservation": {
+    "run_id": "49939e72818b",
+    "status": "OBSERVED_OWNER_EMPTY_ROSTER_REQUIRED_INPUT_KEYBOARD_CANCEL_FRESH_READ",
+    "evidence": [
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v31/native-staff-empty-roster.png",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v31/native-staff-required-email.png",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v31/native-staff-email-keyboard.png",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v31/native-staff-cancelled-roster.png"
+    ],
+    "scope": "Actual normal APK and local owner roster read; no invitation submission, staff consent, role/removal effects, web sync, hosted/provider or release acceptance"
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-v31-native-transfer-quantity-entered-without-scanner.png",
+      "sha256": "de7b98be46c6b22742b18e95bc13dbebf61e47b97c508d35b3b1f318fb5008f3",
+      "visuallyInspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-v31-native-staff-email-keyboard.png",
+      "sha256": "5e34360dbf714b29e926d770788de0d410d818631a0d8a94bae4f823a6f5370c",
+      "visuallyInspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-v31-native-staff-empty-roster.png",
+      "sha256": "9c70e4367f66750e64b124f8f33e800f49a0824b1e2bc61c7147fb80589589ce",
+      "visuallyInspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-v31-native-web-absolute-stock-read.png",
+      "sha256": "ce1da3078b5661155f7fb046980e247092c6141a1bfd9d7e97676478a93de7aa",
+      "visuallyInspected": false
+    }
+  ],
+  "proof": [
+    "Rebuilt normal debug APK, ordinary Accounts login/PKCE return, current full-page location creation with committed reply loss/process restart/original retry",
+    "Supplier sheet creation, bidirectional metadata/profile readback with ordinary Merchant web",
+    "Full-page PO/transfer creation through current pickers; partial receipt/restart/original retry; reservation held until ship; destination receipt and independent web completion",
+    "Native stock +2 with committed reply loss/restart/original retry; web absolute4; fresh native4free/1held/5physical; original receipts and finite synthetic customer hold conserved",
+    "Actual Staff owner empty roster, required-email validation, exact draft with real Android email keyboard/action visible, cancellation and fresh roster; no invitation command submitted"
+  ],
+  "openFindings": [
+    "UI-FOUND-COLOR-02: actual dark outlined label 4.189459:1 below4.5, inherited StoreTheme overrides; fix follows this snapshot",
+    "UI-STAFF-05: required email error persists after valid editing; actual keyboard screenshot proves it",
+    "DEP-STAFF-01: existing local/hosted invitation storage namespace still fails its active regression"
+  ],
+  "limits": [
+    "No Staff invitation/consent/role/removal effects or Staff web synchronization proof",
+    "No iOS runtime, physical performance, provider delivery, hosted/production acceptance or app-wide completion",
+    "This functional pass is preserved independently from subsequent frontend corrections; rebuild/recheck affected artifact after changes"
+  ]
+}

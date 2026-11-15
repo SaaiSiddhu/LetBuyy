@@ -1,0 +1,137 @@
+{
+  "at": "2026-11-07T19:28:31.637704+00:00",
+  "status": "BOUNDED_CURRENT_IOS_INTERRUPTED_FILES_DISCARD_NO_WRITE_AND_MOV_WEBKIT_WEBM_NATIVE_WEB_SYNC_PASS;FULL122_OPEN",
+  "source": "merchant-native-selection-source-v91",
+  "source_sha256": "5b655a37c2bcc1b2f6e79cea831340addb0329c8b4b60b4a1f4aff33bafdec6c",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757",
+  "run_id": "5251418aa52f",
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "interruption": {
+    "actual_native_files_termination_relaunch_review_and_discard": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "5251418aa52f",
+      "phase": "Interrupted",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757/Interrupted.swift",
+      "control_sha256": "7146652cc34c850af003121f78b24997242e6618827e9f5b66cdc0caa1e9eea5"
+    },
+    "no_write_before_reselection": {
+      "run_id": "5251418aa52f",
+      "accepted": true,
+      "uploads": 0,
+      "media_rows": 0
+    },
+    "boundary": "iOS does not supply Android retrieveLostData;unreturned OS selection stays unavailable and requires explicit discard/reselect,no silent import"
+  },
+  "uploads": 2,
+  "media_rows": 2,
+  "objects": 2,
+  "hashes": {
+    "video/quicktime": "41df40017e22408682731f8eb5686d16b1cdc52d9a9ee0623d98b2dbed62e3c3",
+    "video/webm": "87d37fd5c013df089147c9f05f2bf8962e55906cc3ff8c4ec79017551d18954a"
+  },
+  "actual_MOV_AVPlayer_and_WebM_in_app_WebKit_controls": true,
+  "native_caption_web_edit_native_readback": true,
+  "installed_artifact": {
+    "run_id": "5251418aa52f",
+    "all_files_equal": true,
+    "files": 401,
+    "manifest_sha256": "eedf279bc57a24af0d50697589753b4e3bda51bb1adb275bceb05be13d73759f",
+    "recording_camera_microphone_descriptions_packaged": true,
+    "retained": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757/native-ios-v123/qualified-artifact/Runner.app",
+    "installed": "/Users/saai_mithra/Library/Developer/CoreSimulator/Devices/B907B390-5B08-490F-BC6A-8900667B2D94/data/Containers/Bundle/Application/59CF59B7-403C-4068-9FB4-75B75EF3122D/Runner.app"
+  },
+  "phase_terminals": {
+    "Readback-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "5251418aa52f",
+      "phase": "Readback",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757/Readback.swift",
+      "control_sha256": "9856a62543de2af7f35a48b7fefebd3a872b8818f94f9352483837352f3a9122"
+    },
+    "Download-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "5251418aa52f",
+      "phase": "Download",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757/Download.swift",
+      "control_sha256": "889a37818d66ebc7fbe999f64824c217fa9f925a437cf7dd7c8b373de15ed286"
+    },
+    "Preview-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "5251418aa52f",
+      "phase": "Preview",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757/Preview.swift",
+      "control_sha256": "964651c23cb713bcd2ab5bb761f06bd7032003cbe4ad93e39ec29133104753d1"
+    },
+    "Interrupted-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "5251418aa52f",
+      "phase": "Interrupted",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757/Interrupted.swift",
+      "control_sha256": "7146652cc34c850af003121f78b24997242e6618827e9f5b66cdc0caa1e9eea5"
+    },
+    "Auth-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "5251418aa52f",
+      "phase": "Auth",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757/Auth.swift",
+      "control_sha256": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810"
+    },
+    "Import-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "5251418aa52f",
+      "phase": "Import",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-46beaed757/Import.swift",
+      "control_sha256": "dffc175a7565c7ca37356ff9f92d4f3d7eb3573ba54ca43c53eed953da22c6c7"
+    }
+  },
+  "device_custody": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "existing_files_and_photos_preserved": true
+  },
+  "fixture_source_projection": {
+    "core_paths_hash_equal": 4888,
+    "different_digest_basis": "Ordered runtime/dependency array versus full qualification core-file map;overlapping path bytes all equal"
+  },
+  "manually_inspected_preview_sha256": {
+    "0E9D54DC-D5F2-452C-8A2F-5B07067977E8.png": "125852f1be0b2970da5edb430c501304d9b6e8d6fb39aea0be89775edd300bd3",
+    "EB22EFA9-28DE-4166-AB0A-B49A415A26D5.png": "894bc1ee43803b19b3fcb772d549d20bf39bab422bcc9c0b0c4f9a3dc805825a"
+  },
+  "historical_failures": [
+    "native121-failed-harness-precondition.json",
+    "native122-failed-harness-inputs.json"
+  ],
+  "whole_features_accepted": 0,
+  "limits": [
+    "Exact iOS26.5task simulator;no physical camera/microphone/Photos-provider proof",
+    "Files MOV/H264 and WebM/VP8 only;not every codec/OS",
+    "Private KYC native/provider,full122,hosted and signed-release acceptance open"
+  ]
+}

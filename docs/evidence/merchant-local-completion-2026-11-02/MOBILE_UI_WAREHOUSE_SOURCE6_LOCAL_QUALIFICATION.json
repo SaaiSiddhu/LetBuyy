@@ -1,0 +1,71 @@
+{
+  "at": "2026-11-05T07:15:05.213576+00:00",
+  "status": "LOCAL_SOURCE6_QUALIFIED_WITH_EXISTING_PROTECTED_STAFF_FAILURE_DEVICE_PENDING",
+  "source_sha256": "c6cdc0e5e85cafa2e699ba482d151087a8031ca13045ea61e8780fd2aaef6846",
+  "source_entries": 7504,
+  "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-warehouse-v6-qualified-source",
+  "focused45": {
+    "pass": 84,
+    "fail": 0,
+    "document_cases": 18
+  },
+  "full_flutter": {
+    "pass": 1394,
+    "fail": 1,
+    "skip": 0,
+    "known_failure": "Unchanged Staff hosted invitation namespace isolation policy; assertions not weakened"
+  },
+  "analyses": {
+    "app_issues": 0,
+    "ui_kit_issues": 0
+  },
+  "parsed_preservation_checks": 626,
+  "parsed_verifier_sha256": "db4b118aeba8b7ace0e52405c6cd74e86bb7323ef7d4196a0d35a4813ca37e01",
+  "governance": {
+    "capsule": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v44",
+    "pass": 114,
+    "fail": 0,
+    "not_applicable": 1,
+    "actual_core_byte_equality": 7504
+  },
+  "protected_readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source6-protected-readback-v25.json",
+  "new_protected_exceptions": 0,
+  "steps": [
+    {
+      "step": "full-flutter",
+      "exit": 1,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source6-full-flutter.log",
+      "pass": 1394,
+      "fail": 1,
+      "known_protected_failure_only": true
+    },
+    {
+      "step": "app-analysis",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source6-app-analysis.log"
+    },
+    {
+      "step": "ui-kit-analysis",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source6-ui-kit-analysis.log"
+    },
+    {
+      "step": "parsed-preservation",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source6-parsed-preservation.log"
+    },
+    {
+      "step": "source-readback",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source6-source-readback.log"
+    },
+    {
+      "step": "governance44",
+      "exit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-source6-governance44.log"
+    }
+  ],
+  "android": "Prepared38; not started/accepted",
+  "ios": "Prepared16 source6 compile-only; not started/accepted",
+  "scope": "Frontend-only current source qualification. Canonical field adds only a semantic boundary; all original native input/validation/controller/focus body/argument comparisons unchanged. Shared current document reader uses existing strict service calls with complete supplied lines, exact model quantities/cost and scope-safe return. No whole119feature/hosted/provider/physical/release/entire-app acceptance."
+}

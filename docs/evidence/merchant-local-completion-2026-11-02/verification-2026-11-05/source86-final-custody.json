@@ -1,0 +1,50 @@
+{
+  "at": "2026-11-07T10:52:42.082640+00:00",
+  "source": "merchant-webm-ios-source-v86",
+  "source_sha256": "72eea74898f1efecbb91bd868e286deeeefc42324ff59b6733f288262185cc8e",
+  "all_core_inputs_equal": 8505,
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "branch": "codex/merchant-mobile-parity",
+  "staged_entries_equal_HEAD": true,
+  "staged_entries_sha256": "67a04f878906e4a92b9a852969da907cd465dc8b3df2be0083d6d42262986c9d",
+  "raw_index_sha256": "6b2e1ed2424e517f7c943e6e3a27f0846cc9607455ef7a95fe3b7941724bea46",
+  "raw_index_note": "Matches the current86governance receipt;older84raw index cache difference remains historical and was not restored.",
+  "runs": {
+    "android114": {
+      "run_id": "13b749d73f7a",
+      "chain": {
+        "backend_exit": 0,
+        "ui_exit": 0,
+        "at": "2026-11-07T10:42:55.954630+00:00"
+      },
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "ios115": {
+      "run_id": "2e7021b40e61",
+      "chain": {
+        "backend_exit": 0,
+        "ui_exit": 0,
+        "at": "2026-11-07T10:23:01.441003+00:00"
+      },
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  },
+  "android_device": "native114-device-final-readback.json",
+  "ios_device": "native115-runtime-readback.json",
+  "source_frozen": false,
+  "scope": "Owned local completion checkpoint only;no push,merge,hosted activation,release or whole-feature certification."
+}

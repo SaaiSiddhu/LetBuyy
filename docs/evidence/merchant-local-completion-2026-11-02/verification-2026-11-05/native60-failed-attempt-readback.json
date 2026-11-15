@@ -1,0 +1,10 @@
+{
+  "run_id": "9114cdc4433f",
+  "status": "NOT_ACCEPTED_UI_DRIVER_LACKED_OBSERVED_RETIRED_SESSION_RECOVERY_ACTION",
+  "runner_exit": 1,
+  "controller_exit": 1,
+  "owned_cleanup_empty": true,
+  "reverse_maps_restored": true,
+  "source_unchanged": true,
+  "next": "Fresh61 normal visible Back to Login path;all60assertions retained"
+}

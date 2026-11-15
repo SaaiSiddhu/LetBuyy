@@ -1,0 +1,23 @@
+{
+  "primary_root": "/Volumes/Projects/LetBuyy",
+  "reason": "Current copied KYC contract imports source template absent from worktree; test byte-identical to primary. Restore only its exact static template and inactive-source README.",
+  "files": [
+    {
+      "path": "infrastructure/deployment/kyc-india-mumbai.cfn.json",
+      "sha256": "6fb4fd1f7286f54f291d279d53d24473fa34288fe93a62f7acd8d874fd2aee59",
+      "bytes": 20835
+    },
+    {
+      "path": "infrastructure/deployment/kyc-india-mumbai.README.md",
+      "sha256": "52ae600328b6002812b3f22b1dd91985cc8ff3d1aa2911b90c97b873120ca90c",
+      "bytes": 8568
+    }
+  ],
+  "delta": [
+    "infrastructure/deployment/kyc-india-mumbai.README.md",
+    "infrastructure/deployment/kyc-india-mumbai.cfn.json"
+  ],
+  "from_source": "4cb99d2b9f97e0a9d6cf117bd6ff21264ecdc318b22efed6fe91dd6f24c93499",
+  "to_source": "8e456fc19e2ff8f5a348e9f31ce5d9bd66b4c4364f4367c66324ab258d909c76",
+  "no_hosted_activation": true
+}

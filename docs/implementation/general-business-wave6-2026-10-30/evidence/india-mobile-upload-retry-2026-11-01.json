@@ -1,0 +1,21 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Flutter Merchant KYC service and screen tests with synthetic API and Mumbai S3 poster",
+  "checks": {
+    "indiaUploadServiceTests": { "passed": 5, "failed": 0 },
+    "kycContainmentTests": { "passed": 38, "failed": 0 },
+    "editedFileFlutterAnalyze": "no issues",
+    "gitDiffCheck": "passed"
+  },
+  "verified": [
+    "Unavailable overview blocks a mobile document upload before file read or SDK transport",
+    "A failed direct POST leaves the previous mobile KYC status visible and does not call completion",
+    "Retry uses a fresh receipt and idempotency key; completion uses the retry key",
+    "The returned replacement remains pending scan"
+  ],
+  "notVerified": [
+    "Physical Android or iOS device upload",
+    "Hosted Gateway and Merchant mobile production configuration",
+    "Real AWS S3 Mumbai POST, GuardDuty scan, or KYC provider approval"
+  ]
+}

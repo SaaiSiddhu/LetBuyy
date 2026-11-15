@@ -1,0 +1,116 @@
+{
+  "at": "2026-11-04T16:50:13.098602+00:00",
+  "status": "CATALOG_V40_LOCAL_QUALIFIED_ANDROID_V15_BOUNDED_PASS_IOS_V5_COMPILING_OPEN_UI_FINDINGS",
+  "last_qualified_source": "f4b5fa798ec9c20035f509e34b870191fa62a72bfef2ee651eb9e4e25227a9e4/7456; Androidv11boundedpass and iOSv4compile-only",
+  "source_review": "Products1856lines,ProductForm1828lines,CsvImport609lines and existing share45lines read; catalogue plan records exact preservation and open dependencies",
+  "implemented_current": [
+    "Existing CustomAppBar extended responsive native theme title with measured text scale/geometry and preferred size; original legacy glass API remains intact and unused in Merchant",
+    "Existing ChoiceField gains compact toolbar variant retaining same draft/Cancel/Apply, validators and original defaults",
+    "Products uses one vertical scroll viewport, native toolbar, canonical input and7status/6sort choices, truthful visible initial pending, bounded natural-height cards and exact PriceFormatter values",
+    "Product card native focus/checkbox lifetimes; no shrunken price/name labels",
+    "Page-owned selected-product actions pinned above native navigation; existing root owns FAB suppression/restoration keyed by ephemeral owner and active tab; no business state authority added",
+    "Preserved original numeric helpers, status command/recovery bodies, query mappings and5x350ms original-job polling; added presentation guards before old-query dispatch and native export handoff",
+    "Initial pending visible; status enum readback separate from operational availability; unknown rawprice/stock/activeflag never presented as zero/available",
+    "Export and all13status/sort choices use draft Cancel/Apply; queued exports say Update rather than Success; current scope retires sheet input",
+    "Private search/debounce, stale editor return/sample/export acknowledgements and A→B→A frames fenced; private search cleared on view retirement",
+    "Choice sheets own signal until route disposal and retire input after origin removal/value/options changes; optional exporthelper UI predicate preserves exact original CSV protocol",
+    "Legacy fixture interactions updated to actual native focus nodes, radio drafts and viewport; original sample/updatepayload/key/version/selection/keyboard assertions retained",
+    "ProductForm uses canonical full-page editor and reusable canonical5section body; inactive forms retain validation/draft while retiring input/focus/semantics/tickers",
+    "Variant8field draft now full-page editor with dirtyBack and original typed return/_save; all original ProductForm submit/save/signature/options/variant/tag/metadata helpers preserved",
+    "Canonical fields, supported categorysheet including unknown savedvalue, media actions/URL/specshortsheets, nativecamera/library/scanner retained",
+    "Originalimageorderedpayload now has accessible moveearlier/laterdraftcontrols; original5image limit retained; no dragclaim",
+    "Trending/NewArrival controls were never written byexistingcommands; now honest unavailablecopy instead of fakeeditable persistence",
+    "Missingfreshprice/stock denied initialeditor admission; currentconflictdraft stayskept andblocked; existingparser/model untouched",
+    "Live dirty/busy presentation checks protect same-frame Back; pendingedit exit explicitly describes memory-only retryhandle and possiblecommittedresult",
+    "Price input supports originaldecimalservercontract/units and existingparser; nofinancialrule change",
+    "CSV canonical full-page draft host, row-choice sheet and guarded stop confirmations; all5originalqueryvalues and history/row pagination preserved",
+    "CSV read-current guards between awaits stop retired follow-up dispatch; original registration/stop/filebytes/parsing/recovery stay unchanged",
+    "Queued export retains knownjob only in current UI view and manualCheck reads samejob withoutpreparinganother; original5x350ms loopunchanged; no new durablejournal orprovider policy"
+  ],
+  "checks": {
+    "v1": "Fixture compile failure: discarded Dart underscore parameter; fixed, no product finding claimed",
+    "v2_negative": {
+      "passed": 0,
+      "failed": 2,
+      "observed": "Both themes320dp scale2.4:127px/37px right overflows and35px bottom overflow"
+    },
+    "v3": "Integration compile errors: wrong prefixIcon type, indicator name collision and const Semantics; corrected",
+    "v4": "Compiled; fixture target not yet built in lazy sliver; corrected with actual viewport scroll",
+    "v5": {
+      "passed": 2,
+      "failed": 0,
+      "proof": "Both themes320dp scale2.4; each exact current/compare price separately within actual viewport bounds, no exceptions"
+    },
+    "v6": {
+      "passed": 2,
+      "failed": 1,
+      "reason": "New root fixture attempted offscreen card before a layout frame; fixed active Products scroll scope/pump/hit target assertion"
+    },
+    "v7": {
+      "passed": 0,
+      "failed": 1,
+      "reason": "Fixture attempted offscreen horizontal Home nav target under default theme; actual Merchant theme and explicit visible native target used"
+    },
+    "v8": {
+      "passed": 1,
+      "failed": 0,
+      "proof": "Actual Merchant theme root360x800; pinned Set as draft above nav; global FABs retire for selection, restore on Home, retire on retained Products, restore on Cancel; one catalogue read and no mutation"
+    },
+    "v9": "Fixture cast RawTooltip to IconButton corrected; no app negative claimed",
+    "v10_negative": "0PASS/1FAIL: pre-frame replacement store dispatched captured old selected store",
+    "v11": "3PASS/0FAIL: capture fence plus both scaled themes",
+    "v12_negative": "0PASS/1FAIL: old search debounce carried private query into replacement store before its frame",
+    "v13": "4PASS/0FAIL: debounce scope fence plus preceding cases",
+    "v14_negative": "0PASS/1FAIL: originating choice removed while old Apply remained enabled",
+    "v15": "5PASS/0FAIL: initial choice retirement; subsequent route-lifetime refinement included v16",
+    "v16": "20PASS/0FAIL: combined catalogue and original product status recovery fixtures",
+    "v17": "22PASS/0FAIL: added export Cancel/retired choice and one-request original5poll/Update feedback",
+    "v18_negative": "0PASS/1FAIL: partial product fields displayed fabricated ₹0.00",
+    "v19": "23PASS/0FAIL: known-field view mapping plus preceding catalog/status fixtures",
+    "v20": "227PASS/4FAIL in broader mobile_services: prior layout/focus/label fixture assumptions; no provider/database acceptance",
+    "v21": "5PASS/1FAIL: targeted sample fixture lacked preference initialization, initial pump timed out; fixed",
+    "v22": "6PASS/0FAIL: sample exactstorepayload, importer exactsavedfields, pinned actions, bulk keyboardselection, status draft/Apply keyboard and existing importfeedback",
+    "v23": "1033PASS/4FAIL:1existing protected namespace+3obsolete lazyviewport/filterfixtures;analyses0issues;70ASTpreserved",
+    "v24": "13PASS/1FAIL: remaining fixture omitted viewport preparation on later-page Next;fixed",
+    "v25": "14PASS/0FAIL: original serverquery/page/stockrefusal/precisepaise/errorPrevious assertions retained",
+    "v26": "1036PASS/1existing protected Staff namespace FAIL/0SKIP;analyses0issues;70parsed AST preservation checks;source966d2024...7457unchanged/archiveverified",
+    "v27_negative": "0PASS/4FAIL: missingprice/stock authorized fabricatedzero;320dp scale2.4both-theme pricing overflow170px/86px",
+    "v28": "Compile integration error:PriceFormatter.format doesnotexist;corrected canonicalformatPrice",
+    "v29": "17PASS/0FAIL: original product concurrency/recovery and initial new presentation cases",
+    "v30": "247PASS/1FAIL: image semantics fixture offviewport; corrected actual viewport preparation",
+    "v31": "249PASS/3FAIL: new pre-frame dirtyBack defect, duplicate category label finder, mergedimagecaptionsemantics; corrected live dirty/busy readers, scoped sheetfinder and distinct image node",
+    "v32": "252PASS/0FAIL: combined existing mobile_services+product concurrency+editor presentation;overlapping suites not summed",
+    "v33": "89parsed AST preservation checks unchanged",
+    "v34": "CSV fixture compile error:missing PendingSecurityCommand import; corrected; no app finding claimed",
+    "v35_negative": "0PASS/4FAIL: retired detail/history dispatched later rows/pendingreads;both-theme320dp scale2.4pagination329px/531pxoverflows",
+    "v36": "24PASS/0FAIL: CSV lifetime fences and natural pagination with original registration/recovery/stop fixtures",
+    "v37": "26PASS/0FAIL: all5originalrowvalues draft/Cancel/Apply plus CSV dirtyBack and originals",
+    "v38": "23PASS/0FAIL: catalog/status plus queued export original5polls and manual6th samejobread with1prepare, no Successfeedback",
+    "v39": "100parsedASTchecks unchanged",
+    "v40": "1051fullPASS/1existingprotected Staff namespaceFAIL/0SKIP;app/UIkit0issues;100ASTunchanged;114governancePASS1N/A;all7461sourcehashesmatchownedclone"
+  },
+  "next": [
+    "Collect iOSv5exactsourcecompile/bundle proof;current nativev15passedwithopenCSVhelper/listgeometryfindings",
+    "Recompile current iOS bundle after Android completes; runtime/VoiceOver/physical gates remain separate",
+    "Further export mismatch/expired-link/manualrecheck states and true persisted product/CSV/websync acceptance remain bounded independent journeys",
+    "Continue collections/orders/customers and remaining frontend cohorts; reconcile actual unique surface denominator and keep119feature ledger open"
+  ],
+  "scope": "Frontend only. No API/BFF/SQL/migrations/persistence/auth/provider/infra/deployment edits; one agent and same checkout.",
+  "current_source": {
+    "sha256": "98b6bd6a9f48efdab7b349fb4683f60c35d237735b0017e3128b9ab0954661e4",
+    "entries": 7461,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-catalog-v40.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-catalog-v40-qualified-source",
+    "unchanged_through_local_checks": true
+  },
+  "last_catalog_qualified_source": {
+    "sha256": "966d2024bf79f37b48889a371ce2f6271c15c00a11a89ed173be287c1eeeb3ab",
+    "entries": 7457,
+    "full_flutter": "1036PASS/1existing protected Staff namespace FAIL/0SKIP",
+    "analyses": "App/UIkit0issues",
+    "parsed_preservation": 70,
+    "runtime": "No newer Android/iOS proof;last native/dashboardv36 retained"
+  },
+  "qualification": "MOBILE_UI_CATALOG_V40_QUALIFICATION.json",
+  "native_current_report": "COMPILED_MOBILE_UI_CATALOG_ANDROID_WEB_V15_QUALIFICATION.json"
+}

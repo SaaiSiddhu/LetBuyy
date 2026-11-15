@@ -14,7 +14,7 @@ import {
     type MerchantPayoutRail,
     type PayoutTransferMode,
 } from '@letbuyy/infrastructure/payout-transfer-adapter';
-import { isLivePASplitProviderReady, requireZeroPlatformTransactionFee } from '@letbuyy/payments';
+import { requireZeroPlatformTransactionFee } from '@letbuyy/payments';
 import { MerchantPayoutListSchema, MerchantPayoutStatementSchema, MerchantPayoutSummarySchema } from '@letbuyy/shared-types';
 import {
     type SettlementLedgerLine,
@@ -139,9 +139,10 @@ export function payoutProviderConfigured(env: Env): boolean {
         && envRecord.RAZORPAY_ROUTE_PROVIDER_ENABLED === 'true',
     );
     if (payoutMode(env) === 'live') {
-        return isLivePASplitProviderReady('razorpay_route', {
-            razorpay_route: env.RAZORPAY_ROUTE_LIVE_APPROVAL_REFERENCE,
-        }, providerConfigurationReady);
+        // A global Route account ID cannot establish which merchant receives this payout.
+        // Keep live release closed until the linked account, verified bank destination,
+        // and provider approval are persisted and checked against this statement's site.
+        return false;
     }
     return providerConfigurationReady;
 }
@@ -751,6 +752,11 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
     if (statement.status !== 'pending' && statement.status !== 'processing') {
         return c.json({ success: false, error: { code: 'PAYOUT_NOT_SETTLEABLE', message: 'This payout cannot be settled.' } }, 409);
     }
+    if (statement.provider_mode !== payoutMode(c.env)) {
+        return c.json(payoutProviderUnavailableBody(
+            new PayoutProviderUnavailable('Payout statement provider mode does not match the configured Route environment'),
+        ), 503);
+    }
 
     const stepUp = await verifyMerchantStepUp(db, {
         action: 'payout.release',
@@ -766,7 +772,7 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
 
     if (!payoutProviderConfigured(c.env)) {
         return c.json(payoutProviderUnavailableBody(
-            new PayoutProviderUnavailable('Razorpay Route payout provider is gated off until PA credentials and provider client are configured'),
+            new PayoutProviderUnavailable('Razorpay Route payout release requires a site-bound linked account, current verified bank destination, and provider approval'),
         ), 503);
     }
 

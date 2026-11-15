@@ -23,7 +23,8 @@ class OrderService extends ChangeNotifier {
   }) : _api = api,
        _cache = cache,
        _appBadgeService = appBadgeService,
-       _securityCommands = securityCommands ?? SecurityCommandStore();
+       _securityCommands = securityCommands ?? SecurityCommandStore(),
+       _ordersContext = api.captureRequestContext();
 
   final SecurityCommandStore _securityCommands;
   Object? get requestContext => _api.captureRequestContext();
@@ -52,13 +53,40 @@ class OrderService extends ChangeNotifier {
   // ── Cached state ─────────────────────────────────────────
 
   List<OrderContract> _orders = [];
-  List<OrderContract> get orders => List.unmodifiable(_orders);
+  Object? _ordersContext, _loadingContext, _ordersDeniedContext;
+  String? _ordersQueryKey;
+  int _listReadGeneration = 0;
+  bool _ordersFresh = false, _disposed = false, _ordersDenied = false;
+  final _detailGenerations = <String, int>{};
+  final _detailStates = <String, ({Object? context, bool fresh})>{};
+  final _deniedDetails = <({Object? context, String id})>{};
+  bool get _ordersCurrent => !_disposed && _ordersContext == requestContext;
+  List<OrderContract> get orders =>
+      _ordersCurrent ? List.unmodifiable(_orders) : const [];
+
+  /// Presentation provenance only; saved rows never stand in for a live grant.
+  bool get hasFreshOrders => _ordersCurrent && _ordersFresh;
+
+  bool hasFreshOrder(String id) {
+    final state = _detailStates[id];
+    return !_disposed &&
+        state?.context == requestContext &&
+        state?.fresh == true;
+  }
 
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool get isLoading =>
+      !_disposed && _isLoading && _loadingContext == requestContext;
 
   String? _ordersNextCursor;
-  String? get ordersNextCursor => _ordersNextCursor;
+  String? get ordersNextCursor => _ordersCurrent ? _ordersNextCursor : null;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _listReadGeneration++;
+    super.dispose();
+  }
 
   // ── Read ─────────────────────────────────────────────────
 
@@ -71,7 +99,14 @@ class OrderService extends ChangeNotifier {
     int limit = 20,
     String? cursor,
   }) async {
+    if (_disposed) throw TwoFactorService.changed();
+    final captured = requestContext, generation = ++_listReadGeneration;
+    bool current() =>
+        !_disposed &&
+        requestContext == captured &&
+        generation == _listReadGeneration;
     _isLoading = true;
+    _loadingContext = captured;
     final normalizedCursor = cursor?.trim();
     final cacheKey = CacheService.ordersKey(
       storeId,
@@ -81,14 +116,28 @@ class OrderService extends ChangeNotifier {
       page: page,
       limit: limit,
     );
-    final cachedRows = _cache?.readJsonList(cacheKey) ?? [];
+    if (_ordersContext != captured || _ordersQueryKey != cacheKey) {
+      _orders = [];
+      _ordersNextCursor = null;
+    }
+    _ordersContext = captured;
+    _ordersQueryKey = cacheKey;
+    _ordersFresh = false;
+    final allowSaved = !_ordersDenied || _ordersDeniedContext != captured;
+    final List<Map<String, dynamic>> cachedRows = allowSaved
+        ? _cache?.readJsonList(cacheKey) ?? []
+        : [];
     if (cachedRows.isNotEmpty) {
-      _orders = cachedRows.map(OrderContract.fromJson).toList(growable: false);
+      final saved = cachedRows
+          .map(OrderContract.fromJson)
+          .toList(growable: false);
+      if (saved.every((order) => order.storeId == storeId)) _orders = saved;
     }
     notifyListeners();
 
     try {
       final pageResult = await _api.orders.list(
+        options: ApiRequestOptions(expectedContextVersion: captured),
         query: {
           'store_id': storeId,
           'page': page,
@@ -100,45 +149,116 @@ class OrderService extends ChangeNotifier {
             'customer_email': customerEmail.trim(),
         },
       );
-      _ordersNextCursor = pageResult.nextCursor;
-      _orders = pageResult.data
+      if (!current()) throw TwoFactorService.changed();
+      final rows = pageResult.data
           .map(OrderContract.fromJson)
           .toList(growable: false);
+      if (rows.any((order) => order.storeId != storeId)) {
+        throw const FormatException(
+          'The order data does not match the selected store.',
+        );
+      }
+      _ordersNextCursor = pageResult.nextCursor;
+      _orders = rows;
+      _ordersFresh = true;
+      _ordersDenied = false;
       await _cache?.writeJson(
         cacheKey,
         _orders.map((order) => order.toJson()).toList(growable: false),
       );
+      if (!current()) throw TwoFactorService.changed();
       for (final order in _orders) {
         await _cache?.writeJson(
           CacheService.orderDetailKey(order.id),
           order.toJson(),
         );
+        if (!current()) throw TwoFactorService.changed();
       }
       await syncOpenOrderBadge();
+      if (!current()) throw TwoFactorService.changed();
       return _orders;
     } catch (e) {
-      debugPrint('❌ fetchOrders error: $e');
+      if (!current()) throw TwoFactorService.changed();
+      _ordersFresh = false;
+      if (e is ApiException &&
+              (const [401, 403, 404].contains(e.statusCode) ||
+                  e.code == 'SESSION_CONTEXT_CHANGED') ||
+          e is FormatException) {
+        _orders = [];
+        _ordersNextCursor = null;
+        _ordersDenied = true;
+        _ordersDeniedContext = captured;
+        rethrow;
+      }
       if (_orders.isNotEmpty) {
         await syncOpenOrderBadge();
+        if (!current()) throw TwoFactorService.changed();
         return _orders;
       }
       rethrow;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (current()) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 
   /// Get a single order by ID.
-  Future<OrderContract> fetchOrder(String id) async {
+  Future<OrderContract> fetchOrder(String id, {String? expectedStoreId}) async {
+    if (_disposed) throw TwoFactorService.changed();
+    final captured = requestContext;
+    final generation = (_detailGenerations[id] ?? 0) + 1;
+    _detailGenerations[id] = generation;
+    _detailStates[id] = (context: captured, fresh: false);
+    final detailKey = (context: captured, id: id);
+    bool current() =>
+        !_disposed &&
+        requestContext == captured &&
+        _detailGenerations[id] == generation;
+    void admit(OrderContract order) {
+      if (order.id != id ||
+          (expectedStoreId != null && order.storeId != expectedStoreId)) {
+        _deniedDetails.add(detailKey);
+        throw const FormatException(
+          'The order data does not match the requested order and store.',
+        );
+      }
+    }
+
     try {
-      final order = OrderContract.fromJson(await _api.orders.get(id));
+      final order = OrderContract.fromJson(
+        await _api.orders.get(
+          id,
+          options: ApiRequestOptions(expectedContextVersion: captured),
+        ),
+      );
+      if (!current()) throw TwoFactorService.changed();
+      admit(order);
       await _cache?.writeJson(CacheService.orderDetailKey(id), order.toJson());
+      if (!current()) throw TwoFactorService.changed();
+      _detailStates[id] = (context: captured, fresh: true);
+      _deniedDetails.remove(detailKey);
       return order;
     } catch (e) {
-      debugPrint('❌ fetchOrder error: $e');
+      if (!current()) throw TwoFactorService.changed();
+      _detailStates[id] = (context: captured, fresh: false);
+      if (e is ApiException &&
+              (const [401, 403, 404].contains(e.statusCode) ||
+                  e.code == 'SESSION_CONTEXT_CHANGED') ||
+          e is FormatException) {
+        _deniedDetails.add(detailKey);
+        rethrow;
+      }
+      if (_deniedDetails.contains(detailKey) ||
+          (_ordersDenied && _ordersDeniedContext == captured))
+        rethrow;
       final cached = _cache?.readJsonMap(CacheService.orderDetailKey(id));
-      if (cached != null) return OrderContract.fromJson(cached);
+      if (cached != null) {
+        final saved = OrderContract.fromJson(cached);
+        admit(saved);
+        return saved;
+      }
       rethrow;
     }
   }
@@ -146,8 +266,11 @@ class OrderService extends ChangeNotifier {
   OrderContract? cachedOrder(String id) {
     final trimmedId = id.trim();
     if (trimmedId.isEmpty) return null;
+    if (_ordersDenied && _ordersDeniedContext == requestContext) return null;
+    if (_deniedDetails.contains((context: requestContext, id: trimmedId)))
+      return null;
 
-    for (final order in _orders) {
+    for (final order in orders) {
       if (order.id == trimmedId) return order;
     }
 
@@ -384,6 +507,24 @@ class OrderService extends ChangeNotifier {
     });
   }
 
+  /// Existing provider/capability read for the current fulfillment view only.
+  /// Mode is not permission to book; the separate server capability owns that.
+  Future<Map<String, dynamic>> fetchShippingProviderMode(String storeId) async {
+    final captured = requestContext;
+    if (_disposed) throw TwoFactorService.changed();
+    final result = await _api.requestJson(
+      '/shipping/labels/provider-mode',
+      options: ApiRequestOptions(
+        storeId: storeId,
+        expectedContextVersion: captured,
+        query: {'store_id': storeId},
+      ),
+    );
+    if (_disposed || captured != requestContext)
+      throw TwoFactorService.changed();
+    return Map<String, dynamic>.from(result);
+  }
+
   Future<Map<String, dynamic>> buyShippingLabel(
     String orderId, {
     String provider = 'shiprocket',
@@ -529,7 +670,7 @@ class OrderService extends ChangeNotifier {
   /// Quick counts per status (uses the cached list).
   Map<String, int> get statusCounts {
     final counts = <String, int>{};
-    for (final o in _orders) {
+    for (final o in orders) {
       final key = o.status.isEmpty ? 'unknown' : o.status;
       counts[key] = (counts[key] ?? 0) + 1;
     }

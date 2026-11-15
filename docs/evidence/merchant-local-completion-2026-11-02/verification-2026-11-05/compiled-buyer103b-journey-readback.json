@@ -1,0 +1,235 @@
+{
+  "nativeWorkerd": true,
+  "nativeR2": true,
+  "seededAccount": false,
+  "seededStore": false,
+  "seededProduct": false,
+  "productionApps": 3,
+  "providerFixtureOnly": true,
+  "store": {
+    "count": 1,
+    "theme": "letbuyy-forge",
+    "status": "draft",
+    "trial_days": 14
+  },
+  "productVariants": 2,
+  "uploadedExactPng": true,
+  "imageDimensions": [
+    320,
+    320
+  ],
+  "normalEditorPublish": true,
+  "unpublishedPreviewVerified": true,
+  "merchantDomainLabelsVerified": true,
+  "preferencesSeoReadback": true,
+  "anonymousDraftDenied": true,
+  "presets": [
+    {
+      "name": "Forge",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    },
+    {
+      "name": "Sense",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    },
+    {
+      "name": "Aura",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    },
+    {
+      "name": "Craft",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    },
+    {
+      "name": "Refresh",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    },
+    {
+      "name": "Ride",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    },
+    {
+      "name": "Dawn",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    },
+    {
+      "name": "Bloom",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    },
+    {
+      "name": "Nova",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    },
+    {
+      "name": "Summit",
+      "applied": true,
+      "reloaded": true,
+      "published": true,
+      "exactStoredValues": true,
+      "widths": [
+        1280,
+        360
+      ],
+      "renderedPrimary": true,
+      "routes": [
+        "home",
+        "product",
+        "collection-index"
+      ],
+      "variantSelection": true,
+      "mobileMenu": true
+    }
+  ],
+  "realTenantTlsHost": true,
+  "actualScheduledSearchIndex": true,
+  "manualCollectionShopperVerified": true,
+  "searchSubmissionVerified": true,
+  "canonicalBuyerProfileAddressVerified": true,
+  "buyerAddressCrudVerified": true,
+  "staleAccountWriteDenied": true,
+  "canonicalBuyers": 2,
+  "unrelatedOrderDenied": true,
+  "searchScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-search-75deb1788eef.png",
+  "accountScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-account-75deb1788eef.png",
+  "addressScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-address-75deb1788eef.png",
+  "customerOrders": 3,
+  "codTotalMinor": 26900,
+  "screenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-75deb1788eef.png",
+  "publicScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-store-75deb1788eef.png",
+  "orderScreenshot": "/var/folders/wd/gmphl3nn7vx7m9jrzc3r8zgh0000gn/T/letbuyy-native-core-order-75deb1788eef.png"
+}

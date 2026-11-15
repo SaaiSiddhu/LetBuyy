@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 import '../../app/store_context.dart';
-
 import '../../app/routes.dart';
+import '../../services/api_client.dart';
 import '../../services/staff_service.dart';
-import '../../theme/app_theme_colors.dart';
+import '../../widgets/shared/merchant_store_view.dart';
 
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
+const _staffRoles = [
+  'manager',
+  'editor',
+  'fulfillment',
+  'viewer',
+  'support',
+  'marketing',
+  'staff',
+];
 
 class StaffScreen extends StatefulWidget {
   const StaffScreen({super.key});
@@ -18,508 +27,242 @@ class StaffScreen extends StatefulWidget {
 }
 
 class _StaffScreenState extends State<StaffScreen> {
-  static const _roles = [
-    'manager',
-    'editor',
-    'fulfillment',
-    'viewer',
-    'support',
-    'marketing',
-    'staff',
-  ];
-
   List<StaffMemberContract> _members = const [];
-  bool _isLoading = true;
+  Object? _viewKey;
   String? _storeId;
   String? _error;
-
-  late AppThemeColors colors;
+  bool _loading = true;
+  bool _busy = false;
+  bool _commandRunning = false;
+  int _generation = 0;
+  MerchantStoreView? get _view =>
+      _storeId == null ? null : (key: _viewKey, storeId: _storeId!);
+  bool _current(MerchantStoreView? view) =>
+      merchantStoreViewCurrent(context, view);
+  bool get _canEdit => !_loading && !_busy && _error == null && _current(_view);
 
   @override
   void initState() {
     super.initState();
+    _viewKey = context.read<StoreContext>().requestContextKey;
     _load();
   }
 
   Future<void> _load() async {
+    if (!mounted || _busy) return;
+    final generation = ++_generation;
+    final stores = context.read<StoreContext>();
     setState(() {
-      _isLoading = true;
+      _loading = true;
       _error = null;
     });
-
     try {
-      _storeId ??=
-          (await context.read<StoreContext>().ensureSelectedStore())?.id;
-      if (_storeId == null) {
-        if (mounted) {
-          setState(() {
-            _members = const [];
-            _isLoading = false;
-          });
-        }
+      await stores.ensureSelectedStore();
+      if (!mounted || generation != _generation) return;
+      _viewKey = stores.requestContextKey;
+      _storeId = stores.selectedStoreId;
+      final view = _view;
+      if (view == null) {
+        setState(() {
+          _members = const [];
+          _error = 'Select a store to manage staff.';
+          _loading = false;
+        });
         return;
       }
-
-      final members = await context.read<StaffService>().fetchStaff(_storeId!);
-      if (mounted) {
-        setState(() {
-          _members = members;
-          _isLoading = false;
-        });
-      }
+      final rows = await context.read<StaffService>().fetchStaff(view.storeId);
+      if (!_current(view) || generation != _generation) return;
+      setState(() {
+        _members = rows;
+        _loading = false;
+      });
     } catch (error) {
-      if (mounted) {
-        setState(() {
-          _error = error.toString();
-          _isLoading = false;
-        });
-      }
+      if (!mounted ||
+          generation != _generation ||
+          _viewKey != stores.requestContextKey)
+        return;
+      setState(() {
+        _members = const [];
+        _error = _staffError(error, loading: true);
+        _loading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    colors = AppThemeColors.of(context);
+    final stores = context.watch<StoreContext>();
+    if (_viewKey != stores.requestContextKey) {
+      _viewKey = stores.requestContextKey;
+      ++_generation;
+      _storeId = null;
+      _members = const [];
+      _error = null;
+      _loading = true;
+      _busy = false;
+      _commandRunning = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _load();
+      });
+    }
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: colors.bgStart,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _storeId == null ? null : _inviteStaff,
-        backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.person_add_alt_1_outlined),
-        label: const Text('Add staff'),
-      ),
-      body: Container(
-        decoration: colors.backgroundGradient,
-        child: SafeArea(
-          child: Column(
-            children: [
-              _header(),
-              _roleSummary(),
-              Expanded(child: _isLoading ? _loading() : _body()),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _header() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-      child: Row(
-        children: [
+      appBar: AppBar(
+        title: const Text('Users & Permissions'),
+        actions: [
           IconButton(
-            tooltip: 'Back',
-            icon: Icon(Icons.arrow_back_rounded, color: colors.textPrimary),
-            onPressed: () => Navigator.maybePop(context),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Users & Permissions',
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
+            tooltip: 'Review staff invitation',
+            onPressed: _busy
+                ? null
+                : () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.acceptStaffInvitation,
                   ),
-                ),
-                Text(
-                  'Staff accounts, roles, and access',
-                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                ),
-              ],
-            ),
+            icon: const Icon(Icons.mail_outline),
           ),
-          IconButton(tooltip: 'Review staff invitation', icon: const Icon(Icons.mail_outline),
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.acceptStaffInvitation)),
           IconButton(
             tooltip: 'Refresh staff',
-            icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
-            onPressed: _load,
+            onPressed: _busy || _loading ? null : _load,
+            icon: const Icon(Icons.refresh),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _roleSummary() {
-    final roleCounts = <String, int>{};
-    for (final member in _members) {
-      roleCounts[member.role] = (roleCounts[member.role] ?? 0) + 1;
-    }
-
-    return SizedBox(
-      height: 48,
-      child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) {
-          final role = _roles[index];
-          return Chip(
-            avatar: const Icon(Icons.verified_user_outlined, size: 18),
-            label: Text('${_titleCase(role)} ${roleCounts[role] ?? 0}'),
-            backgroundColor: colors.card,
-            side: BorderSide(color: colors.cardBorder),
-            labelStyle: TextStyle(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w700,
+      body: SafeArea(
+        top: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    stores.selectedStore?.name ?? 'Staff access',
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: LetbuyySpacingTokens.space8),
+                  Text(
+                    'Manage invitations and access for this store.',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ],
+              ),
             ),
-          );
-        },
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemCount: _roles.length,
+            if (_commandRunning)
+              const LinearProgressIndicator(semanticsLabel: 'Updating staff'),
+            if (_loading)
+              const LinearProgressIndicator(semanticsLabel: 'Loading staff'),
+            Expanded(child: _body()),
+          ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.all(LetbuyySpacingTokens.space16),
+        child: FilledButton.icon(
+          onPressed: _canEdit ? _inviteStaff : null,
+          icon: const Icon(Icons.person_add_alt_1_outlined),
+          label: const Text('Add staff'),
+        ),
       ),
     );
   }
 
   Widget _body() {
     if (_error != null) {
-      return _centerState(
-        Icons.error_outline_rounded,
-        'Could not load staff',
-        _error!,
+      return ErrorView(
+        title: 'Could not load staff',
+        message: _error!,
+        onRetry: _load,
       );
+    }
+    if (_loading && _members.isEmpty) {
+      return const Center(child: Text('Loading staff…'));
     }
     if (_members.isEmpty) {
-      return _centerState(
-        Icons.manage_accounts_outlined,
-        'No staff users',
-        'Add staff when you need shared store operations.',
+      return const EmptyState(
+        title: 'No staff users',
+        message: 'Invite staff when you need shared store operations.',
+        icon: Icons.manage_accounts_outlined,
       );
     }
-
+    final theme = Theme.of(context);
     return RefreshIndicator(
-      color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
       onRefresh: _load,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
-        itemCount: _members.length,
-        itemBuilder: (context, index) => _memberCard(_members[index]),
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
+        itemCount: _members.length + 1,
+        separatorBuilder: (_, __) =>
+            const SizedBox(height: LetbuyySpacingTokens.space12),
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Text(
+              '${_members.length} loaded staff records',
+              style: theme.textTheme.bodySmall,
+            );
+          }
+          return _memberCard(_members[index - 1]);
+        },
       ),
     );
   }
 
   Widget _memberCard(StaffMemberContract member) {
-    final labels = member.granted.map(staffPermissionLabel);
-    final statusTone = member.isActive && member.status != 'removed'
-        ? colors.success
-        : colors.error;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colors.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.cardBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary
-                    .withValues(alpha: 0.12),
-                child: Icon(
-                  Icons.person_outline_rounded,
-                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      member.displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Text(
-                      member.email,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colors.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              _statusChip(member.status, statusTone),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _accessChip(_titleCase(member.role), Icons.badge_outlined),
-              for (final label in labels) _accessChip(label, Icons.lock_open),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (member.status == 'invited') TextButton(
-                onPressed: () => _renewInvitation(member), child: const Text('Renew invitation')),
-              OutlinedButton.icon(
-                onPressed: member.status == 'active' ? () => _changeRole(member) : null,
-                icon: const Icon(Icons.admin_panel_settings_outlined, size: 18),
-                label: const Text('Role'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor:
-                      mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                ),
-              ),
-              const SizedBox(width: 8),
-              TextButton.icon(
-                onPressed: () => _remove(member),
-                icon: const Icon(Icons.delete_outline_rounded, size: 18),
-                label: const Text('Remove'),
-                style: TextButton.styleFrom(foregroundColor: colors.error),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _statusChip(String label, Color tone) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: tone.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        _titleCase(label),
-        style: TextStyle(
-          color: tone,
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-
-  Widget _accessChip(String label, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: colors.surfaceVariant,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: colors.textTertiary),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: colors.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _inviteStaff() async {
-    final input = await showModalBottomSheet<StaffInviteInput>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: colors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (_) =>
-          _InviteStaffForm(storeId: _storeId!, colors: colors, roles: _roles),
-    );
-    if (input == null) return;
-
-    try {
-      final invitation = await context.read<StaffService>().inviteStaff(input);
-      if (mounted) {
-        await _showInvitation(invitation);
-        if (mounted) _load();
-      }
-    } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
-    }
-  }
-
-  Future<void> _showInvitation(StaffInvitationResult invitation) async {
-    await showDialog<void>(context: context, builder: (dialog) => AlertDialog(
-      title: const Text('Staff invitation created'),
-      content: Text('Acceptance is required before access starts. Delivery is queued. Expires: ${invitation.expiresAt}'),
-      actions: [
-        TextButton(onPressed: () async {
-          await Clipboard.setData(ClipboardData(text: invitation.url));
-          if (dialog.mounted) Navigator.pop(dialog);
-        }, child: const Text('Copy invitation link')),
-        TextButton(onPressed: () => Navigator.pop(dialog), child: const Text('Done')),
-      ],
-    ));
-  }
-  Future<void> _renewInvitation(StaffMemberContract member) async {
-    try {
-      final result = await context.read<StaffService>().inviteStaff(
-        StaffInviteInput(storeId: member.storeId, email: member.email, role: member.role), renew: member);
-      if (!mounted) return;
-      await _showInvitation(result);
-      if (mounted) _load();
-    } catch (_) {
-      if (mounted) _showSnackBar('Unable to renew invitation. Reload the current member and retry.', isError: true);
-    }
-  }
-
-  Future<void> _changeRole(StaffMemberContract member) async {
-    var selected = member.role;
-    final role = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: colors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (_) => StatefulBuilder(
-        builder: (context, setSheetState) => Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Change role',
-                style: TextStyle(
-                  color: colors.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 14),
-              DropdownButtonFormField<String>(
-                value: _roles.contains(selected) ? selected : 'staff',
-                dropdownColor: colors.card,
-                style: TextStyle(color: colors.textPrimary),
-                items: [
-                  for (final role in _roles)
-                    DropdownMenuItem(
-                      value: role,
-                      child: Text(_titleCase(role)),
-                    ),
-                ],
-                onChanged: (value) {
-                  if (value != null) setSheetState(() => selected = value);
-                },
-              ),
-              const SizedBox(height: 14),
-              FilledButton.icon(
-                onPressed: () => Navigator.pop(context, selected),
-                icon: const Icon(Icons.save_outlined),
-                label: const Text('Save role'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-    if (role == null || role == member.role) return;
-
-    try {
-      await context.read<StaffService>().updateRole(member, role);
-      if (mounted) {
-        _showSnackBar('Role updated');
-        _load();
-      }
-    } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
-    }
-  }
-
-  Future<void> _remove(StaffMemberContract member) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        title: Text(
-          'Remove staff',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: Text(
-          member.email,
-          style: TextStyle(color: colors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: colors.error),
-            child: const Text('Remove'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
-
-    try {
-      await context.read<StaffService>().removeStaff(member);
-      if (mounted) {
-        _showSnackBar('Staff removed');
-        _load();
-      }
-    } catch (error) {
-      if (mounted) _showSnackBar(error.toString(), isError: true);
-    }
-  }
-
-  Widget _loading() {
-    return Center(
-      child: CircularProgressIndicator(
-        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-      ),
-    );
-  }
-
-  Widget _centerState(IconData icon, String title, String subtitle) {
-    return Center(
+    final theme = Theme.of(context);
+    return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(LetbuyySpacingTokens.space16),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: colors.textTertiary, size: 48),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w800,
-              ),
+            Text(member.displayName, style: theme.textTheme.titleMedium),
+            const SizedBox(height: LetbuyySpacingTokens.space8),
+            SelectableText(member.email, style: theme.textTheme.bodyMedium),
+            const SizedBox(height: LetbuyySpacingTokens.space12),
+            Wrap(
+              spacing: LetbuyySpacingTokens.space8,
+              runSpacing: LetbuyySpacingTokens.space8,
+              children: [
+                Chip(
+                  avatar: const Icon(Icons.badge_outlined),
+                  label: Text(_titleCase(member.role)),
+                ),
+                Chip(
+                  avatar: const Icon(Icons.info_outline),
+                  label: Text(_titleCase(member.status)),
+                ),
+                if (!member.isActive)
+                  const Chip(label: Text('Access inactive')),
+                for (final permission in member.granted)
+                  Chip(label: Text(staffPermissionLabel(permission))),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary),
+            const SizedBox(height: LetbuyySpacingTokens.space12),
+            Wrap(
+              spacing: LetbuyySpacingTokens.space8,
+              runSpacing: LetbuyySpacingTokens.space8,
+              children: [
+                if (member.status == 'invited')
+                  TextButton(
+                    onPressed: _canEdit ? () => _renewInvitation(member) : null,
+                    child: const Text('Renew invitation'),
+                  ),
+                OutlinedButton.icon(
+                  onPressed: _canEdit && member.status == 'active'
+                      ? () => _changeRole(member)
+                      : null,
+                  icon: const Icon(Icons.admin_panel_settings_outlined),
+                  label: const Text('Role'),
+                ),
+                TextButton.icon(
+                  onPressed: _canEdit ? () => _remove(member) : null,
+                  icon: const Icon(Icons.person_remove_outlined),
+                  label: const Text('Remove'),
+                ),
+              ],
             ),
           ],
         ),
@@ -527,112 +270,330 @@ class _StaffScreenState extends State<StaffScreen> {
     );
   }
 
-  void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? colors.error : colors.success,
-        behavior: SnackBarBehavior.floating,
+  Future<void> _inviteStaff() async {
+    final view = _view;
+    if (!_canEdit || view == null) return;
+    final service = context.read<StaffService>();
+    setState(() => _busy = true);
+    try {
+      final result = await showLetbuyyFormSheet<StaffInvitationResult>(
+        context: context,
+        builder: (_) => guardMerchantStoreView(
+          view,
+          _StaffEditor<StaffInvitationResult>(
+            title: 'Add staff',
+            actionLabel: 'Send staff invitation',
+            showEmail: true,
+            initialEmail: '',
+            initialRole: 'staff',
+            submit: (email, role) => service.inviteStaff(
+              StaffInviteInput(storeId: view.storeId, email: email, role: role),
+            ),
+          ),
+        ),
+      );
+      if (!_current(view) || result == null) return;
+      await _showInvitation(result, view);
+    } finally {
+      if (_current(view)) {
+        setState(() => _busy = false);
+        await _load();
+      }
+    }
+  }
+
+  Future<void> _showInvitation(
+    StaffInvitationResult result,
+    MerchantStoreView view,
+  ) async {
+    if (!_current(view)) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialog) => guardMerchantStoreView(
+        view,
+        AlertDialog(
+          title: const Text('Staff invitation created'),
+          content: SingleChildScrollView(
+            child: Text(
+              'Acceptance is required before access starts. This does not confirm email delivery. '
+              '${result.expiresAt.isEmpty ? 'Expiry unavailable.' : 'Expires: ${result.expiresAt}'}',
+            ),
+          ),
+          actions: [
+            if (result.url.isNotEmpty)
+              TextButton(
+                onPressed: () async {
+                  if (!_current(view)) return;
+                  await Clipboard.setData(ClipboardData(text: result.url));
+                  if (dialog.mounted && _current(view)) Navigator.pop(dialog);
+                },
+                child: const Text('Copy invitation link'),
+              ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialog),
+              child: const Text('Done'),
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  Future<void> _renewInvitation(StaffMemberContract member) async {
+    final view = _view;
+    if (!_canEdit || view == null || member.storeId != view.storeId) return;
+    final service = context.read<StaffService>();
+    setState(() {
+      _busy = true;
+      _commandRunning = true;
+    });
+    try {
+      final result = await service.inviteStaff(
+        StaffInviteInput(
+          storeId: member.storeId,
+          email: member.email,
+          role: member.role,
+        ),
+        renew: member,
+      );
+      if (_current(view)) {
+        setState(() => _commandRunning = false);
+        await _showInvitation(result, view);
+      }
+    } catch (error) {
+      if (_current(view)) setState(() => _error = _staffError(error));
+    } finally {
+      if (_current(view)) {
+        setState(() {
+          _busy = false;
+          _commandRunning = false;
+        });
+        // Keep actionable failure visible; refresh is explicit.
+        if (_error == null) await _load();
+      }
+    }
+  }
+
+  Future<void> _changeRole(StaffMemberContract member) async {
+    final view = _view;
+    if (!_canEdit || view == null || member.storeId != view.storeId) return;
+    final service = context.read<StaffService>();
+    setState(() => _busy = true);
+    try {
+      final result = await showLetbuyyFormSheet<StaffMemberContract>(
+        context: context,
+        builder: (_) => guardMerchantStoreView(
+          view,
+          _StaffEditor<StaffMemberContract>(
+            title: 'Change role',
+            actionLabel: 'Save role',
+            showEmail: false,
+            initialEmail: member.email,
+            initialRole: member.role,
+            submit: (_, role) => service.updateRole(member, role),
+          ),
+        ),
+      );
+      if (_current(view) && result != null) {
+        showLetbuyyOperationFeedback(context, message: 'Role updated');
+      }
+    } finally {
+      if (_current(view)) {
+        setState(() => _busy = false);
+        await _load();
+      }
+    }
+  }
+
+  Future<void> _remove(StaffMemberContract member) async {
+    final view = _view;
+    if (!_canEdit || view == null || member.storeId != view.storeId) return;
+    final service = context.read<StaffService>();
+    // Guard the confirmation itself as well as the final action.
+    setState(() => _busy = true);
+    try {
+      final confirmed = await showLetbuyyConfirmation(
+        context: context,
+        title: 'Remove staff',
+        message: 'Remove access for ${member.email}?',
+        confirmLabel: 'Remove',
+        destructive: true,
+        guard: (_, child) => guardMerchantStoreView(view, child),
+      );
+      if (confirmed != true || !_current(view)) return;
+      setState(() => _commandRunning = true);
+      await service.removeStaff(member);
+      if (_current(view))
+        showLetbuyyOperationFeedback(context, message: 'Staff removed');
+    } catch (error) {
+      if (_current(view)) setState(() => _error = _staffError(error));
+    } finally {
+      if (_current(view)) {
+        setState(() {
+          _busy = false;
+          _commandRunning = false;
+        });
+        if (_error == null) await _load();
+      }
+    }
+  }
 }
 
-class _InviteStaffForm extends StatefulWidget {
-  const _InviteStaffForm({
-    required this.storeId,
-    required this.colors,
-    required this.roles,
+/// One form body for invitation and role editing. Draft and operation identity
+/// remain in their existing owners; an uncertain response keeps the exact input.
+class _StaffEditor<T> extends StatefulWidget {
+  const _StaffEditor({
+    required this.title,
+    required this.actionLabel,
+    required this.showEmail,
+    required this.initialEmail,
+    required this.initialRole,
+    required this.submit,
   });
-
-  final String storeId;
-  final AppThemeColors colors;
-  final List<String> roles;
-
+  final String title, actionLabel, initialEmail, initialRole;
+  final bool showEmail;
+  final Future<T> Function(String email, String role) submit;
   @override
-  State<_InviteStaffForm> createState() => _InviteStaffFormState();
+  State<_StaffEditor<T>> createState() => _StaffEditorState<T>();
 }
 
-class _InviteStaffFormState extends State<_InviteStaffForm> {
-  final _email = TextEditingController();
-  String _role = 'staff';
-
+class _StaffEditorState<T> extends State<_StaffEditor<T>> {
+  final _form = GlobalKey<FormState>();
+  late final _email = TextEditingController(text: widget.initialEmail);
+  late String _role = widget.initialRole;
+  bool _saving = false, _uncertain = false;
+  String? _error;
   @override
   void dispose() {
     _email.dispose();
     super.dispose();
   }
 
+  Future<void> _save() async {
+    if (_saving || !_form.currentState!.validate()) return;
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+    try {
+      final result = await widget.submit(_email.text, _role);
+      if (mounted) Navigator.pop(context, result);
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _saving = false;
+        _uncertain =
+            error is! ApiException ||
+            error.statusCode == 0 ||
+            error.statusCode >= 500;
+        _error = _staffError(error);
+      });
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
-    final colors = widget.colors;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        18,
-        18,
-        18,
-        MediaQuery.of(context).viewInsets.bottom + 18,
+  Widget build(BuildContext context) => LetbuyyFormSheet(
+    title: widget.title,
+    description: widget.showEmail
+        ? 'Access starts only after the invited person accepts.'
+        : widget.initialEmail,
+    canDismiss: !_saving,
+    actions: [
+      TextButton(
+        onPressed: _saving ? null : () => Navigator.maybePop(context),
+        child: const Text('Cancel'),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Add staff',
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 14),
-          TextField(
-            controller: _email,
-            keyboardType: TextInputType.emailAddress,
-            style: TextStyle(color: colors.textPrimary),
-            decoration: const InputDecoration(labelText: 'Email'),
-          ),
-          const SizedBox(height: 10),
-          DropdownButtonFormField<String>(
-            value: _role,
-            dropdownColor: colors.card,
-            style: TextStyle(color: colors.textPrimary),
-            decoration: const InputDecoration(labelText: 'Role'),
-            items: [
-              for (final role in widget.roles)
-                DropdownMenuItem(value: role, child: Text(_titleCase(role))),
-            ],
-            onChanged: (value) {
-              if (value != null) setState(() => _role = value);
-            },
-          ),
-          const SizedBox(height: 14),
-          FilledButton.icon(
-            onPressed: () {
-              if (_email.text.trim().isEmpty) return;
-              Navigator.pop(
-                context,
-                StaffInviteInput(
-                  storeId: widget.storeId,
-                  email: _email.text,
-                  role: _role,
+      FilledButton.icon(
+        onPressed: _saving || (!widget.showEmail && _role == widget.initialRole)
+            ? null
+            : _save,
+        icon: _saving
+            ? SizedBox.square(
+                dimension: LetbuyySpacingTokens.space20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
-              );
-            },
-            icon: const Icon(Icons.person_add_alt_1_outlined),
-            label: const Text('Send staff invitation'),
+              )
+            : const Icon(Icons.check),
+        label: Text(
+          _saving
+              ? 'Saving…'
+              : _uncertain
+              ? 'Retry same request'
+              : widget.actionLabel,
+        ),
+      ),
+    ],
+    child: Form(
+      key: _form,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (widget.showEmail) ...[
+            CustomTextField(
+              controller: _email,
+              label: 'Email',
+              enabled: !_saving && !_uncertain,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.email],
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              autocorrect: false,
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Enter an email address.'
+                  : null,
+            ),
+            const SizedBox(height: LetbuyySpacingTokens.space16),
+          ],
+          LetbuyyChoiceField<String>(
+            value: _staffRoles.contains(_role) ? _role : null,
+            label: 'Role',
+            choices: [
+              for (final role in _staffRoles)
+                LetbuyyChoice(value: role, label: _titleCase(role)),
+            ],
+            onChanged: _saving || _uncertain
+                ? null
+                : (value) {
+                    setState(() => _role = value);
+                  },
+            validator: (value) =>
+                value == null ? 'Choose a supported role.' : null,
           ),
+          if (_error != null) ...[
+            const SizedBox(height: LetbuyySpacingTokens.space16),
+            Semantics(liveRegion: true, child: Text(_error!)),
+            if (_uncertain)
+              const Text(
+                'These details are kept unchanged. Retry to reconcile the same request, '
+                'or close and refresh staff before starting another action.',
+              ),
+          ],
         ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-String _titleCase(String value) {
-  if (value.isEmpty) return value;
-  return value
-      .split(RegExp(r'[\s_-]+'))
-      .where((part) => part.isNotEmpty)
-      .map((part) => part[0].toUpperCase() + part.substring(1))
-      .join(' ');
+String _staffError(Object error, {bool loading = false}) {
+  if (error is ApiException) {
+    if (error.statusCode == 401)
+      return 'Your session expired. Sign in again to continue.';
+    if (error.statusCode == 403)
+      return 'Staff management is unavailable with your current store permissions.';
+    if (error.statusCode == 409)
+      return 'Staff access or this record changed. Close this form and refresh staff before continuing.';
+    if (error.statusCode == 400 || error.statusCode == 422)
+      return 'The request was rejected. Check the email and role, then try again.';
+  }
+  return loading
+      ? 'Staff could not be loaded. Check your connection and current store permissions, then retry.'
+      : 'The result could not be confirmed. Check your connection and refresh staff, or retry the same request.';
 }
+
+String _titleCase(String value) => value
+    .split(RegExp(r'[\s_-]+'))
+    .where((part) => part.isNotEmpty)
+    .map((part) => part[0].toUpperCase() + part.substring(1))
+    .join(' ');

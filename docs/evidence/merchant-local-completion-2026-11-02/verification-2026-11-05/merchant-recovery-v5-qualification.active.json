@@ -1,0 +1,28 @@
+{
+  "started_at": "2026-11-06T08:18:49.713554+00:00",
+  "supervisor_pid": 38279,
+  "source_sha256": "f831b5d9bcb222612c5e79a5e11b79a1f7702d0aec5a537241a818353b2b255d",
+  "status": "RUNNING",
+  "steps": [
+    {
+      "step": "shared-types",
+      "exit_code": 0
+    },
+    {
+      "step": "gateway-types",
+      "exit_code": 0
+    },
+    {
+      "step": "ts-sdk-types",
+      "exit_code": 0
+    },
+    {
+      "step": "shared-tests",
+      "exit_code": 0
+    }
+  ],
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "active_step": "gateway-unit",
+  "child_pid": 38629,
+  "source_unchanged": true
+}

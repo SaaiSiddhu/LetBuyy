@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../services/storage_service.dart';
+import '../../services/native_media_selection.dart';
+import '../../services/security_command_store.dart';
 import 'cached_merchant_image.dart';
 import 'image_source_sheet.dart';
 import 'merchant_media_picker.dart';
@@ -12,11 +14,13 @@ class ImagePickerWidget extends StatefulWidget {
   final ValueChanged<String?> onChanged;
   final String label;
   final String storagePath;
+  final String recoveryPurpose;
 
   const ImagePickerWidget({
     super.key,
     this.initialUrl,
     required this.onChanged,
+    required this.recoveryPurpose,
     this.label = 'Upload Image',
     this.storagePath = 'uploads',
   });
@@ -29,8 +33,18 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
   final ImagePicker _picker = ImagePicker();
   bool _isUploading = false;
   String? _error;
+  MerchantSecurityContext? _selectionContext;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _selectionContext ??= context
+        .read<NativeMediaSelection?>()
+        ?.captureContext();
+  }
 
   Future<void> _pickImage() async {
+    NativeMediaSelection? nativeSelection;
+    String? nativeUploadKey;
     try {
       final source = await showImageSourceSheet(context);
       if (source == null) return;
@@ -41,21 +55,36 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
         _error = null;
       });
 
-      final image = await pickMerchantMedia(context, source: source,
-          pick: () => _picker.pickImage(source: source));
+      final image = await pickMerchantMedia(
+        context,
+        source: source,
+        purpose: widget.recoveryPurpose,
+        expectedContext: _selectionContext,
+        pick: () => _picker.pickImage(source: source),
+      );
       if (!mounted || image == null) return;
       final storageService = context.read<StorageService>();
+      final selection = context.read<NativeMediaSelection>();
+      nativeSelection = selection;
+      final selectionKey = selection.claimUpload(image);
+      nativeUploadKey = selectionKey;
       final downloadUrl = await storageService.uploadImage(
         File(image.path),
         path: widget.storagePath,
+        options: selection.optionsForFile(image),
       );
 
-      if (mounted) widget.onChanged(downloadUrl);
+      if (mounted) {
+        selection.keyForFile(image);
+        widget.onChanged(downloadUrl);
+        await selection.completeKey(selectionKey);
+      }
     } catch (error) {
       if (!mounted) return;
       setState(() => _error = 'Image upload failed.');
       debugPrint('Image upload failed: $error');
     } finally {
+      nativeSelection?.releaseUpload(nativeUploadKey);
       if (mounted) setState(() => _isUploading = false);
     }
   }

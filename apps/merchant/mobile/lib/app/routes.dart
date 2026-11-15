@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import '../widgets/shared/native_media_recovery_frame.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
 // All other screens are imported but Flutter's tree-shaking
 // will handle optimization at build time
 
 import '../screens/splash/splash_screen.dart';
-import '../screens/auth/login_screen.dart';
-import '../screens/auth/otp_screen.dart';
+import '../screens/auth/hosted_account_screen.dart';
 import '../screens/auth/error_screen.dart';
 import '../screens/auth/turnstile_challenge_screen.dart';
-import '../screens/wizard/create_store_wizard.dart';
-import '../screens/wizard/store_published_screen.dart';
 import '../screens/main/store_main_screen.dart';
 import '../screens/premium/upgrade_screen.dart';
 import '../screens/preview/live_preview_screen.dart';
@@ -43,6 +41,9 @@ import '../screens/content/media_library_screen.dart';
 import '../screens/content/navigation_screen.dart';
 import '../screens/content/pages_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
+import '../screens/inventory/history_screen.dart';
+import '../screens/inventory/records_screen.dart';
+import '../screens/inventory/operations_screen.dart';
 import '../screens/inventory/locations_screen.dart';
 import '../screens/inventory/purchase_orders_screen.dart';
 import '../screens/inventory/suppliers_screen.dart';
@@ -52,9 +53,9 @@ import '../screens/orders/orders_screen.dart';
 import '../screens/orders/returns_screen.dart';
 import '../screens/money/money_screen.dart';
 import '../screens/kyc/kyc_screen.dart';
-import '../screens/security/two_factor_screen.dart';
 import '../screens/products/products_screen.dart';
 import '../screens/products/collections_screen.dart';
+import '../screens/products/categories_screen.dart';
 import '../screens/store_health/store_health_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
 import '../screens/subscription/connect_razorpay_screen.dart';
@@ -105,11 +106,16 @@ enum AppRouteId {
   navigation,
   media,
   inventory,
+  inventoryHistory,
+  inventoryReservations,
+  inventoryReceipts,
+  inventoryOperations,
   inventoryLocations,
   inventorySuppliers,
   purchaseOrders,
   inventoryTransfers,
   collections,
+  categories,
   products,
   orders,
   orderDetail,
@@ -236,11 +242,16 @@ class AppRoutes {
   static const String navigation = '/navigation';
   static const String media = '/media';
   static const String inventory = '/inventory';
+  static const String inventoryHistory = '/inventory/history';
+  static const String inventoryReservations = '/inventory/reservations';
+  static const String inventoryReceipts = '/inventory/receipts';
+  static const String inventoryOperations = '/inventory/operations';
   static const String inventoryLocations = '/inventory/locations';
   static const String inventorySuppliers = '/inventory/suppliers';
   static const String purchaseOrders = '/inventory/purchase-orders';
   static const String inventoryTransfers = '/inventory/transfers';
   static const String collections = '/collections';
+  static const String categories = '/categories';
   static const String products = '/products';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
@@ -293,19 +304,13 @@ class AppRoutes {
     AppRouteSpec(
       id: AppRouteId.login,
       path: login,
-      builder: (_) => const LoginScreen(),
+      builder: (_) => const HostedAccountScreen(),
     ),
     AppRouteSpec(
       id: AppRouteId.otp,
       path: otp,
-      builder: (settings) {
-        final args = settings.arguments as Map<String, dynamic>? ?? {};
-        return OtpScreen(
-          email: args['email'] as String? ?? '',
-          password: args['password'] as String? ?? '',
-          name: args['name'] as String?,
-        );
-      },
+      // Old deep routes restart the hosted flow; credentials are never read here.
+      builder: (_) => const HostedAccountScreen(),
     ),
     AppRouteSpec(
       id: AppRouteId.turnstileChallenge,
@@ -326,24 +331,17 @@ class AppRoutes {
     AppRouteSpec(
       id: AppRouteId.onboarding,
       path: onboarding,
-      builder: (_) => const CreateStoreWizard(),
+      builder: (_) => const HostedAccountScreen(purpose: 'create_store'),
     ),
     AppRouteSpec(
       id: AppRouteId.createStore,
       path: createStore,
-      builder: (_) => const CreateStoreWizard(),
+      builder: (_) => const HostedAccountScreen(purpose: 'create_store'),
     ),
     AppRouteSpec(
       id: AppRouteId.storePublished,
       path: storePublished,
-      builder: (settings) {
-        final args = settings.arguments as Map<String, dynamic>?;
-        return StorePublishedScreen(
-          storeId: args?['storeId'] ?? '',
-          storeName: args?['storeName'] ?? '',
-          subdomain: args?['subdomain'] ?? '',
-        );
-      },
+      builder: (_) => const AuthWrapper(),
     ),
     AppRouteSpec(
       id: AppRouteId.main,
@@ -527,6 +525,58 @@ class AppRoutes {
       builder: (_) => const InventoryScreen(),
     ),
     AppRouteSpec(
+      id: AppRouteId.inventoryHistory,
+      path: inventoryHistory,
+      builder: (settings) {
+        final args = settings.arguments;
+        return InventoryHistoryScreen(
+          productId: args is Map && args['product_id'] is String
+              ? args['product_id'] as String
+              : null,
+          productName: args is Map && args['product_name'] is String
+              ? args['product_name'] as String
+              : null,
+        );
+      },
+    ),
+    AppRouteSpec(
+      id: AppRouteId.inventoryReservations,
+      path: inventoryReservations,
+      builder: (settings) {
+        final args = settings.arguments;
+        return InventoryRecordsScreen(
+          kind: InventoryRecordKind.reservations,
+          productId: args is Map && args['product_id'] is String
+              ? args['product_id'] as String
+              : null,
+          productName: args is Map && args['product_name'] is String
+              ? args['product_name'] as String
+              : null,
+        );
+      },
+    ),
+    AppRouteSpec(
+      id: AppRouteId.inventoryOperations,
+      path: inventoryOperations,
+      builder: (_) => const InventoryOperationsScreen(),
+    ),
+    AppRouteSpec(
+      id: AppRouteId.inventoryReceipts,
+      path: inventoryReceipts,
+      builder: (settings) {
+        final args = settings.arguments;
+        return InventoryRecordsScreen(
+          kind: InventoryRecordKind.receipts,
+          purchaseOrderId: args is Map && args['po_id'] is String
+              ? args['po_id'] as String
+              : null,
+          transferId: args is Map && args['transfer_id'] is String
+              ? args['transfer_id'] as String
+              : null,
+        );
+      },
+    ),
+    AppRouteSpec(
       id: AppRouteId.inventoryLocations,
       path: inventoryLocations,
       builder: (_) => const InventoryLocationsScreen(),
@@ -550,6 +600,11 @@ class AppRoutes {
       id: AppRouteId.collections,
       path: collections,
       builder: (_) => const CollectionsScreen(),
+    ),
+    AppRouteSpec(
+      id: AppRouteId.categories,
+      path: categories,
+      builder: (_) => const CategoriesScreen(),
     ),
     AppRouteSpec(
       id: AppRouteId.products,
@@ -591,7 +646,7 @@ class AppRoutes {
     AppRouteSpec(
       id: AppRouteId.twoFactor,
       path: twoFactor,
-      builder: (_) => const TwoFactorScreen(),
+      builder: (_) => const HostedAccountScreen(purpose: 'manage_security'),
     ),
     AppRouteSpec(
       id: AppRouteId.pricing,
@@ -754,7 +809,7 @@ class AppRoutes {
     AppRouteSpec(
       id: AppRouteId.featureTwoFactor,
       path: '/features/two-factor',
-      builder: (_) => const TwoFactorScreen(),
+      builder: (_) => const HostedAccountScreen(purpose: 'manage_security'),
     ),
     AppRouteSpec(
       id: AppRouteId.featureBusiness,
@@ -873,10 +928,27 @@ class AppRoutes {
   }
 
   /// Fast route for root auth wrapper - no animation delay
+  static String? nativeSelectionRoute(String purpose) =>
+      purpose.startsWith('private-kyc-')
+      ? kyc
+      : purpose.startsWith('product-image')
+      ? products
+      : purpose.startsWith('store-logo:')
+      ? storeDetails
+      : purpose.startsWith('theme-')
+      ? null
+      : media;
+
+  static Widget withNativeMediaRecovery(Widget page) =>
+      NativeMediaRecoveryFrame(
+        routeForPurpose: nativeSelectionRoute,
+        child: page,
+      );
+
   static PageRoute _buildFastRoute(Widget page, RouteSettings settings) {
     return PageRouteBuilder(
       settings: settings,
-      pageBuilder: (_, __, ___) => page,
+      pageBuilder: (_, __, ___) => withNativeMediaRecovery(page),
       transitionDuration: Duration.zero,
       reverseTransitionDuration: Duration.zero,
     );
@@ -884,6 +956,9 @@ class AppRoutes {
 
   /// Standard route with smooth animation
   static MaterialPageRoute _buildRoute(Widget page, RouteSettings settings) {
-    return MaterialPageRoute(builder: (_) => page, settings: settings);
+    return MaterialPageRoute(
+      builder: (_) => withNativeMediaRecovery(page),
+      settings: settings,
+    );
   }
 }

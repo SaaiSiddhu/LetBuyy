@@ -6,6 +6,8 @@ import '../services/language_service.dart';
 import '../services/telemetry_service.dart';
 import '../theme/store_theme.dart';
 import '../services/theme_provider.dart';
+import '../services/merchant_browser_auth.dart';
+import '../services/store_auth_service.dart';
 import 'routes.dart';
 import 'auth_wrapper.dart';
 
@@ -45,17 +47,60 @@ class StoreBuilderApp extends StatelessWidget {
         );
       },
       builder: (context, child) {
-        final media = MediaQuery.of(context);
-        final scale = media.textScaler.scale(1);
-        return MediaQuery(
-          data: media.copyWith(
-            textScaler: TextScaler.linear(scale.clamp(1.0, 1.35)),
-          ),
-          child: child ?? const SizedBox.shrink(),
+        final accounts = context.watch<MerchantBrowserAuth?>();
+        final accountTransition =
+            context.watch<StoreAuthService?>()?.accountTransition ?? false;
+        return Stack(
+          children: [
+            ExcludeSemantics(
+              excluding: accountTransition,
+              child: IgnorePointer(
+                ignoring: accountTransition,
+                child: child ?? const SizedBox.shrink(),
+              ),
+            ),
+            if (accountTransition && accounts != null)
+              Positioned.fill(
+                child: Scaffold(
+                  body: SafeArea(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (accounts.busy)
+                              const CircularProgressIndicator(),
+                            const SizedBox(height: 20),
+                            Semantics(
+                              liveRegion: true,
+                              child: Text(
+                                accounts.message ??
+                                    'Finishing your account action…',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            if (accounts.status ==
+                                BrowserAuthStatus.unavailable)
+                              FilledButton(
+                                onPressed: accounts.retryVerification,
+                                child: const Text('Retry verification'),
+                              ),
+                            TextButton(
+                              onPressed: accounts.cancel,
+                              child: const Text('Cancel and return'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         );
       },
-      home:
-          const AuthWrapper(), // Use home instead of initialRoute for stability
+      home: AppRoutes.withNativeMediaRecovery(const AuthWrapper()),
       onGenerateRoute: AppRoutes.generateRoute,
       navigatorObservers: telemetry == null
           ? const <NavigatorObserver>[]

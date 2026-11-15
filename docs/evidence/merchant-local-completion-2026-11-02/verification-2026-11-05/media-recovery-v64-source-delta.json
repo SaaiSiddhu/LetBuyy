@@ -1,0 +1,119 @@
+{
+  "prior_source": "8e2b9f6b03ff9ea79a70dd6cd0c17f2af00bd10eafac03df6119d8ba08c4b5a4",
+  "source": "2df1c6d19fa4ea3ee9672b3428eb6b0c3092ef494839689acfec737943042042",
+  "entries": 8494,
+  "changed": {
+    "apps/merchant/mobile/lib/screens/content/media_library_screen.dart": {
+      "before": "6c3f0c51209d9a24946ddd0b058bfcc67a7f7bc3fb334c2ebecab6f235a8e58c",
+      "after": "667f87fd0a9a9ca3e86ce4f183f4b99e73aeaf4df27693ab485f35302f72fe51"
+    },
+    "apps/merchant/mobile/lib/services/media_service.dart": {
+      "before": "c1681e77489be312b544d9e1127463783da262dcfa4bb31293f4044a96222969",
+      "after": "71b452a60e3f05ca87c037ea235659ebe9d20eee7bc2b8df12882379ed8bc386"
+    },
+    "apps/merchant/mobile/test/media_change_recovery_test.dart": {
+      "before": null,
+      "after": "0fc0575baf429a0b091098e45308c0bd37b10deb66d535f99150b0034cdf379d"
+    },
+    "apps/merchant/mobile/test/media_library_recovery_test.dart": {
+      "before": "f1e67e6ff3f6281e1ae30e8d849f03fa3a28a3c3bab205a576a337854cfcb79e",
+      "after": "17124445a82f4e7a21e870e4193fed2450370e4d59b5bc20e44ffcb928e1112b"
+    },
+    "apps/merchant/web/package.json": {
+      "before": "ea875a10bf012e78cc0107b7b8f8fb6cc7fe61adc029cc09ac2cccd199321295",
+      "after": "04f82b7894e08369535c2cc2c20f1d5a52a4d7d35c3e5b8edcc36c1dc508aeae"
+    },
+    "apps/merchant/web/src/app/[store]/gallery/page.tsx": {
+      "before": "67977d9caefc3ff85cf0a655e0d1918dcb588e0898e3cc88cab287dbe0e58ad7",
+      "after": "85043e15db0ba84a9a049acc8d653f467e1dae054c318387fb6c1116978bc022"
+    },
+    "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx": {
+      "before": "8cc83db00b98224b84fe0bea9883e996ee23f2a76244ca1f1df5137c1bf64ce2",
+      "after": "4a1df7805e00917d4e08548834691f9bdf99a26bf1520d37dbcf3ccb8a686b1c"
+    },
+    "apps/merchant/web/src/app/[store]/products/new/page.tsx": {
+      "before": "bc6ffb8fb29f66dea7f596ad3e08a84eeb6b5b1f397f1a814793242a3bcd1be2",
+      "after": "0ad9d44ea07459cff07f3fd25528be831538a84ba2ebabe60d381e76ff3ee8c9"
+    },
+    "apps/merchant/web/src/app/[store]/settings/notifications/page.tsx": {
+      "before": "e91fae90e11336cde3dbfea927d04bd63905264017e6cea7ce92569cb4cbbac1",
+      "after": "290948489c9e78a9ef6b9511975c4904a99d7c676dd820a3bd597c437ca79dd9"
+    },
+    "apps/merchant/web/src/app/api/stores/[store]/media/[mediaId]/route.ts": {
+      "before": "026b9c72381f6c925eb5e1f2a27bc2b5988f30e7ea9dd768f8d56eb5240b2789",
+      "after": "d67219951f230f75712f18da104b28e16700d2bcb7938094b6791c553aaedb3b"
+    },
+    "apps/merchant/web/src/app/api/stores/[store]/media/route.ts": {
+      "before": "6e2527a3f71a0a06b56730748ef87734582624f491ffe536a6807eec5bee9e8f",
+      "after": "6c42da01c1981dc0caa1ef951e11d263818227a9bee43e0a9fc4e1069699201d"
+    },
+    "apps/merchant/web/src/app/api/stores/[store]/themes/media-library/route.ts": {
+      "before": "10fc08352d499974b27b903ca25489ac3020ebbac41ffad7a21ff47332ffa35a",
+      "after": "f8c12b3276410a6b512c1a943c8a898e090d31c531fcf7fdb550a9fd0b754358"
+    },
+    "apps/merchant/web/src/app/api/stores/[store]/upload/recover/route.ts": {
+      "before": null,
+      "after": "ea40beb09b382f0a376e1a9472b1aaa852251ffb654876f30478d9f8f6524a7d"
+    },
+    "apps/merchant/web/src/app/api/stores/[store]/upload/route.ts": {
+      "before": "6ff32f2b1329bf2ac858df59b8b430c4cb5d4dbd81f53e57450ebff0b7b1fc76",
+      "after": "31e9b7b7653faec31b1bec2c7ac2be89b3f5d1a6a2fbcfd7868ca2672bda7e03"
+    },
+    "apps/merchant/web/src/components/AdminShell.tsx": {
+      "before": "c61ba64e83208cc3856ed254aaed72c5ef3a45ec934632ac8af70edc233e4bca",
+      "after": "fb3781dffcb33ef3ee8528b5db0768a01b6bb9f671edbb3526a32492360ae8ff"
+    },
+    "apps/merchant/web/src/components/media/MediaRecoveryProvider.tsx": {
+      "before": null,
+      "after": "7481584104c216c530c5529ea32c40acf0dbd07ff37b2fc79d03b6b68aef6e9d"
+    },
+    "apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx": {
+      "before": "37d71edee334719e2d44e30512eeb695d56cda86dc67b40fe5e092631c4582f4",
+      "after": "3d81490fba5b8c19120514f9ee740740634f837e9c8042b1c942c3875b352b7f"
+    },
+    "apps/merchant/web/src/components/theme-editor/controls/ImagePickerControl.tsx": {
+      "before": "59d1c012220378d52c3dc5a0325d298b21cddfaba35a47a65f5525392c0a58af",
+      "after": "1da6301df28c4db301c6d0bdd21943ea731e811ef48c97f0d5bb874e3aa19f9a"
+    },
+    "apps/merchant/web/src/components/theme-editor/controls/MediaLibrary.tsx": {
+      "before": "a7e4b385ac17d170422170d055c125b7f507fa4c8f0ff3e2257f92a9f3a5d501",
+      "after": "82b85d34c48af7b88be5a35346fa8d2f5a592ff1ea2a01902cd9f2593c113d05"
+    },
+    "apps/merchant/web/src/components/theme-editor/controls/VideoControl.tsx": {
+      "before": "e7849cec8de53f4015570aa8ed93ec9e603d03d862006c1b6fb80c5bc64a29f6",
+      "after": "72e4bc45e2640bbec785556fe509bd01c835717cb2b20f94d79840e2bb1f6363"
+    },
+    "apps/merchant/web/src/lib/api/scoped-command-journal.ts": {
+      "before": "88b15553e2437f34619063419ee91e107d0f8a2f126e34fb9d72d700dff39160",
+      "after": "49c7dd09d46362dfe9d7370c253d0e8a6b4ede5e6b476cad72799a2b35cfdfb7"
+    },
+    "apps/merchant/web/src/lib/media/media-command-recovery.ts": {
+      "before": null,
+      "after": "35df089d0c8d57f8275c3ca7f9d87b0321d94e337c3dcef6a134a1b989ad163a"
+    },
+    "apps/merchant/web/tests/media-command-recovery.test.ts": {
+      "before": null,
+      "after": "17b5ba970c004eed323e1ad84ffd011423f0a97edaff089bb1bafa86a40e3ca2"
+    },
+    "apps/merchant/web/tests/media-lifecycle.test.tsx": {
+      "before": null,
+      "after": "c2f604b4df6b63138f567eea3167fc799b11458ac9d9ae4e6d3fcf579ca14434"
+    },
+    "apps/merchant/web/tests/media-proxy.test.ts": {
+      "before": null,
+      "after": "e3e1211760a149ae2a629dd201aa332a8a010740b8d0ca3423bb5f7bb19544da"
+    },
+    "apps/merchant/web/tests/read-lifecycle.test.tsx": {
+      "before": "88d629e325202bd9aa87db10e32f1ee3df0c05c8a4da2dfdbca8ca57fd10d95f",
+      "after": "07f05d38f3f83648cd2f2c228788ce1780feb2fde7b66cb637fe6ab5c616c8c4"
+    },
+    "packages/dart/models/lib/src/media_contracts.dart": {
+      "before": "d02b4e4509debf8461c5eda7d1140ac59ec53e07b47c1ca31cd206fd05331b3d",
+      "after": "525d139ff121ee2897f2f246567b4a116dfd704698f16f0c32c13b71e099f995"
+    },
+    "packages/typescript/api-client/src/index.ts": {
+      "before": "af8fa9d8c5bb01308fca71f7c51b9a9e819898455acc784ab132816bbb4935be",
+      "after": "077df94ccc7c2075bde507d8274cd46d8c86dbe6d858a5faa768bd799003cf26"
+    }
+  }
+}

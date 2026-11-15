@@ -4,24 +4,26 @@
 // Cross-runtime integration: normal Identity -> Merchant Next -> Gateway -> owned PG.
 // No positive credential injection, fake collection API, or provider transaction.
 import assert from 'node:assert/strict';
+import {createLocalTurnstileProvider,LOCAL_TURNSTILE_SECRET} from '../fixtures/local-turnstile-provider';
 import test, {after, before} from 'node:test';
 import {createServer, type Server} from 'node:http';
 import {exportJWK} from 'jose';
 import {chromium, expect, type Browser, type BrowserContext, type Page} from '@playwright/test';
 import {hashMerchantPassword} from '../../services/api-gateway/src/lib/merchant-password';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
-import {Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET, tapRest, restJson, type RestTap} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
+import {Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import {requireOwnedDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime,
     type OwnedClientProcess, type OwnedPooledSqlProxy} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {newSyntheticTenant, seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
+let challenge:Awaited<ReturnType<typeof createLocalTurnstileProvider>>|undefined;
 const owned=requireOwnedDatabase(),site=newSyntheticTenant('sc-preview');
 const ownerId=crypto.randomUUID();
 const email=(id:string)=>`syn-sc-browser-${id}@example.invalid`;
 let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined;
 let proxy:OwnedPooledSqlProxy|undefined,gateway:Gateway|undefined,browser:Browser|undefined;
 let identityOrigin='',merchantOrigin='';
-let failProductReads=false, failedProductReads=0, restTap:RestTap|undefined;
+let previewFunctionRenamed=false, failedPreviewReads=0;
 let owner:BrowserContext;
 const calls:{path:string;method:string;status:number}[]=[];
 const checkpoints:string[]=[];
@@ -46,7 +48,7 @@ async function signIn(context:BrowserContext,id:string,password:string){
 }
 before(async()=>{
     // The actual Gateway may reach only this fixture's loopback services.
-    // Identity's existing official challenge-test transport is a separate child.
+    // Identity verifies one-use challenges only through this run's owned local provider.
     globalThis.fetch=(async(input,init)=>{
         const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);
         if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)&&!url.hostname.endsWith('.localhost')){
@@ -74,22 +76,16 @@ before(async()=>{
     await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));
     const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
     const shared={INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
-    identity=startOwnedClientRuntime(owned,'identity-next',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
+    challenge=await createLocalTurnstileProvider(owned);
+    identity=startOwnedClientRuntime(owned,'identity-next',{port:identityPort,providerFixture:challenge.profile,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
         LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
         ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',
-        NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:LOCAL_TURNSTILE_SECRET,
         LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
     merchant=startOwnedClientRuntime(owned,'merchant-next',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
     await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
-    restTap=tapRest(owned.restUrl,async(call,forward)=>{
-        if(failProductReads&&call.method==='GET'&&call.resource==='products'){
-            failedProductReads++;
-            return restJson(503,{code:'XX000',message:'relation "syn_private_preview_fault" does not exist',details:'synthetic-private-detail'});
-        }
-        return forward();
-    });
     browser=await chromium.launch({headless:true});owner=await browser.newContext();
-    owner.setDefaultTimeout(30000);owner.setDefaultNavigationTimeout(90000);
+    await challenge.attachBrowser(owner,[identityOrigin,merchantOrigin]);owner.setDefaultTimeout(30000);owner.setDefaultNavigationTimeout(90000);
     await signIn(owner,ownerId,password);
     checkpoints.push('one_normal_identity_owner_sign_in');
 },{timeout:660000});
@@ -99,31 +95,50 @@ after(async()=>{
         positiveCredentialInjection:false,positiveAPIFake:false,
         fixtureKind:'local Next development runtimes + actual Gateway/PostgREST/owned PostgreSQL',
         previewCalls:calls.filter(c=>c.path.startsWith('/v1/smart-collections')),
-        failedProductReads,gatewayExternalRequestsRefused:refusedGatewayExternalRequests,
-        challengeMode:'Existing official Turnstile test-key transport; production anti-bot unverified',
+        failedPreviewReads,gatewayExternalRequestsRefused:refusedGatewayExternalRequests,
+        challengeMode:'Owned local one-use challenge provider; production anti-bot unverified',localChallengeCounts:challenge?.counts,
         runtimeSupervisors:[{kind:'merchant-next',pid:merchant?.pid},{kind:'identity-next',pid:identity?.pid}],
         providerTransactions:0,hostedVerified:false,privateScreenshots:false}));
-    failProductReads=false;
-    await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);
-    await gateway?.settle();restTap?.restore();await closePooledSqlClients();await proxy?.stop();
+    if(previewFunctionRenamed)setPreviewFault(false);
+    await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await challenge?.close();
+    await gateway?.settle();await closePooledSqlClients();await proxy?.stop();
     if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}
     globalThis.fetch=originalFetch;
     assert.equal(refusedGatewayExternalRequests,0,'The preview journey attempted an undeclared external Gateway request');
 });
 
 const quote=(value:string)=>"'"+value.replaceAll("'","''")+"'";
-function savedCollection(){
-    const id=crypto.randomUUID(),match=crypto.randomUUID(),other=crypto.randomUUID(),name='Synthetic saved rules '+id;
+async function savedCollection(){
+    const fixtureId=crypto.randomUUID(),match=crypto.randomUUID(),other=crypto.randomUUID(),name='Synthetic saved rules '+fixtureId;
     owned.psql('INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status) VALUES '+
-        '('+[quote(match),quote(site.siteId),quote(site.siteId),quote('SYN-MATCH '+id+' Collection Shoe'),quote('syn-sc-'+match),'100','5','true',quote('active')].join(',')+'),'+
+        '('+[quote(match),quote(site.siteId),quote(site.siteId),quote('SYN-MATCH '+fixtureId+' Collection Shoe'),quote('syn-sc-'+match),'100','5','true',quote('active')].join(',')+'),'+
         '('+[quote(other),quote(site.siteId),quote(site.siteId),quote('Synthetic Other'),quote('syn-sc-'+other),'50','0','true',quote('active')].join(',')+');'+
-        'INSERT INTO smart_collections(id,store_id,name,slug,conditions,match_type) VALUES('+[quote(id),quote(site.siteId),quote(name),quote('syn-sc-'+id),
-        quote(JSON.stringify([{field:'title',op:'contains',value:'SYN-MATCH '+id},{field:'inventory_quantity',op:'gt',value:'0'}]))+'::jsonb',quote('all')].join(',')+');');
+        `INSERT INTO inventory_levels(store_id,product_id,location_id,available,reserved)VALUES('${site.siteId}','${match}','${site.locationId}',5,0),('${site.siteId}','${other}','${site.locationId}',0,0);`);
+    //435 seals smart_collections. The authenticated BFF creates the canonical
+    // document and its receipt; the browser previews that actual saved version.
+    const key=crypto.randomUUID();
+    const created=await owner.request.post(merchantOrigin+bffListPath,{headers:{Origin:merchantOrigin,'X-Idempotency-Key':key,'X-LetBuyy-Merchant-Context':ownerId},data:{
+        store_id:site.siteId,idempotency_key:key,collection_type:'smart',title:name,slug:'syn-sc-'+fixtureId,
+        conditions:[{field:'title',op:'contains',value:'SYN-MATCH '+fixtureId},{field:'inventory_quantity',op:'gt',value:'0'}],match_type:'all',
+    }});
+    assert.equal(created.status(),201,'canonical collection setup must commit through the normal owner BFF');
+    const receipt=(await created.json()).data;assert.equal(receipt.idempotency_key,key);assert.equal(receipt.store_id,site.siteId);
+    const id:string=receipt.id;assert.match(id,/^[a-f0-9-]{36}$/);
     return{id,match,other,name};
 }
-type Saved=ReturnType<typeof savedCollection>;
+type Saved=Awaited<ReturnType<typeof savedCollection>>;
+function previewFunction(){return owned.psql("SELECT jsonb_build_object('oid',oid,'definition',pg_get_functiondef(oid),'owner',proowner,'acl',proacl::text)FROM pg_proc WHERE oid='public.preview_collection_rules_v1(uuid,uuid,uuid)'::regprocedure;");}
+function setPreviewFault(enabled:boolean){
+    assert.notEqual(previewFunctionRenamed,enabled);
+    //Only this proven-owned disposable database is changed. Renaming the exact
+    //read RPC exercises the real pooled-SQL unavailable path without an API fake.
+    owned.psql(enabled?'ALTER FUNCTION public.preview_collection_rules_v1(uuid,uuid,uuid)RENAME TO syn_private_preview_fault;'
+        :'ALTER FUNCTION public.syn_private_preview_fault(uuid,uuid,uuid)RENAME TO preview_collection_rules_v1;');
+    previewFunctionRenamed=enabled;
+}
 function state(){
-    const predicates:Record<string,string>={smart_collections:'store_id='+quote(site.siteId),products:'store_id='+quote(site.siteId),
+    const predicates:Record<string,string>={collections:'store_id='+quote(site.siteId),collection_metadata_receipts:'store_id='+quote(site.siteId),
+        audit_activity_events:'store_id='+quote(site.siteId),smart_collections:'store_id='+quote(site.siteId),products:'store_id='+quote(site.siteId),
         product_variants:'product_id IN(SELECT id FROM products WHERE store_id='+quote(site.siteId)+')',
         inventory_levels:'store_id='+quote(site.siteId),inventory_adjustments:'product_id IN(SELECT id FROM products WHERE store_id='+quote(site.siteId)+')',
         outbox_events:'store_id='+quote(site.siteId)+' OR site_id='+quote(site.siteId),idempotency_keys:'site_id='+quote(site.siteId)};
@@ -139,21 +154,20 @@ async function openSaved(saved:Saved){
         const[listed]=await Promise.all([page.waitForResponse(response=>new URL(response.url()).pathname===bffListPath&&response.request().method()==='GET',{timeout:90000}),
             page.goto(merchantOrigin+'/'+site.subdomain+'/products/smart-collections')]);
         assert.equal(listed.status(),200);
-        const row=page.getByRole('row').filter({has:page.getByText(saved.name,{exact:true})});
-        await expect(row).toBeVisible();await row.getByRole('button',{name:'Edit',exact:true}).click();
-        const dialog=page.getByRole('dialog',{name:'Edit smart collection',exact:true});await expect(dialog).toBeVisible();
-        await expect(dialog.getByLabel('Collection name',{exact:true})).toHaveValue(saved.name);
+        await page.getByRole('button',{name:'Edit '+saved.name,exact:true}).click();
+        await expect(page.getByRole('heading',{name:'Edit smart collection',exact:true})).toBeVisible();
+        await expect(page.getByLabel('Collection name',{exact:true})).toHaveValue(saved.name);
         return page;
     }catch(error){await page.close();throw error;}
 }
 async function preview(page:Page,saved:Saved){
     const[reply]=await Promise.all([page.waitForResponse(response=>new URL(response.url()).pathname===bffListPath+'/'+saved.id+'/preview'&&response.request().method()==='GET'),
-        page.getByRole('dialog').getByRole('button',{name:/Preview (?:matching products|saved rules)/}).click()]);
+        page.getByRole('button',{name:'Preview saved rules',exact:true}).click()]);
     return reply;
 }
 
 test('a normally signed-in owner previews saved rules through the maintained page and canonical name/stock projection',{timeout:300000},async()=>{
-    const saved=savedCollection(),page=await openSaved(saved),before=state();
+    const saved=await savedCollection(),beforeCalls=calls.length,page=await openSaved(saved),before=state();
     try{
         const reply=await preview(page,saved);assert.equal(reply.status(),200);
         const data=(await reply.json()).data;
@@ -161,34 +175,35 @@ test('a normally signed-in owner previews saved rules through the maintained pag
         assert.equal(data.match_type,'all');assert.deepEqual(data.sample_product_ids,[saved.match]);
         assert.equal(data.evaluated_of,Number(owned.psql('SELECT count(*)FROM products WHERE store_id='+quote(site.siteId)+' AND is_active AND deleted_at IS NULL;')));
         assert.equal(data.capped_at,500);
-        await expect(page.getByRole('dialog')).toContainText('1 product match');
+        await expect(page.getByRole('status').filter({hasText:'Preview uses saved rules.'})).toContainText('1 matching products');
         assert.deepEqual(state(),before);
-        assert.ok(calls.filter(call=>call.path.startsWith('/v1/smart-collections')).every(call=>call.method==='GET'));
+        assert.ok(calls.slice(beforeCalls).filter(call=>call.path.startsWith('/v1/smart-collections')).every(call=>call.method==='GET'));
         checkpoints.push('normal_owner_saved_rules_real_name_stock_preview_no_effects');
     }finally{await page.close();}
 });
 
-test('a real preview product-read fault is visible and an explicit restored retry shows the current saved-rule result',{timeout:300000},async()=>{
-    const saved=savedCollection(),page=await openSaved(saved),before=state(),beforeFailures=failedProductReads;
+test('a real canonical preview SQL fault is visible and an explicit restored retry shows the current saved-rule result',{timeout:300000},async()=>{
+    const saved=await savedCollection(),beforeCalls=calls.length,page=await openSaved(saved),before=state(),functionBefore=previewFunction();
     try{
-        failProductReads=true;
+        setPreviewFault(true);
         try{
-            const failed=await preview(page,saved);assert.equal(failed.status(),500);
-            assert.equal(failedProductReads-beforeFailures,1);
-            const errorBody=await failed.text();assert.doesNotMatch(errorBody,/syn_private_preview_fault|synthetic-private-detail/);
-            await expect(page.getByText('Unable to load preview. Please try again.',{exact:true})).toBeVisible();
-            await expect(page.getByRole('dialog')).not.toContainText('0 products match');
+            const failed=await preview(page,saved);assert.equal(failed.status(),503);
+            const actualFailures=calls.slice(beforeCalls).filter(call=>call.path===`/v1/smart-collections/${saved.id}/preview`&&call.status===503);
+            assert.equal(actualFailures.length,1);failedPreviewReads+=actualFailures.length;
+            const errorBody=await failed.text();assert.doesNotMatch(errorBody,/syn_private_preview_fault|preview_collection_rules_v1|42703|42883/);
+            await expect(page.getByRole('alert').filter({hasText:'Collection unavailable'})).toContainText('Collections are temporarily unavailable.');
+            await expect(page.getByRole('status').filter({hasText:'Preview uses saved rules.'})).toHaveCount(0);
             assert.deepEqual(state(),before);
-        }finally{failProductReads=false;}
+        }finally{setPreviewFault(false);assert.equal(previewFunction(),functionBefore,'read RPC identity, body, owner and ACL are restored exactly');}
         const restored=await preview(page,saved);assert.equal(restored.status(),200);
         const data=(await restored.json()).data;
         assert.equal(data.count,1);assert.equal(data.evaluated_of,Number(owned.psql('SELECT count(*)FROM products WHERE store_id='+quote(site.siteId)+' AND is_active AND deleted_at IS NULL;')));
         assert.equal(data.capped_at,500);assert.deepEqual(data.sample_product_ids,[saved.match]);
-        await expect(page.getByRole('dialog')).toContainText('1 product match');
-        await expect(page.getByText('Unable to load preview. Please try again.',{exact:true})).toHaveCount(0);
+        await expect(page.getByRole('status').filter({hasText:'Preview uses saved rules.'})).toContainText('1 matching products');
+        await expect(page.getByRole('alert').filter({hasText:'Collection unavailable'})).toHaveCount(0);
         assert.deepEqual(state(),before);
-        assert.ok(calls.filter(call=>call.path.startsWith('/v1/smart-collections')).every(call=>call.method==='GET'));
-        checkpoints.push('negative_only_real_REST_fault_visible_then_explicit_successful_read_retry_no_effects');
-    }finally{failProductReads=false;await page.close();}
+        assert.ok(calls.slice(beforeCalls).filter(call=>call.path.startsWith('/v1/smart-collections')).every(call=>call.method==='GET'));
+        checkpoints.push('negative_only_real_pooled_SQL_fault_visible_then_explicit_successful_read_retry_no_effects');
+    }finally{if(previewFunctionRenamed)setPreviewFault(false);await page.close();}
 });
 

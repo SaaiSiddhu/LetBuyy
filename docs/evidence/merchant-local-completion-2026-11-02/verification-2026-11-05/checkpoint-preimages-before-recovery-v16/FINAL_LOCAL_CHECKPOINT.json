@@ -1,0 +1,158 @@
+{
+  "at": "2026-11-06T10:25:05.558956+00:00",
+  "status": "CURRENT_LOCAL_SOURCE_DEBUG_AND_BOUNDED_NATIVE64_ACCEPTED;FULL122_AND_RELEASE_OPEN",
+  "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "source_inputs": 8467,
+  "source_manifest": "merchant-recovery-source-v11.source.json",
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "branch": "codex/merchant-mobile-parity",
+  "report": "../MERCHANT_STAFF_KYC_PRODUCT_LOCAL_V2.md",
+  "independent_current_gates": "merchant-recovery-v11-independent-gates-readback.json",
+  "full_flutter": {
+    "pass": 1602,
+    "fail": 0,
+    "skip": 0
+  },
+  "gateway": {
+    "tests": 2087,
+    "pass": 2087,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "root_contracts": {
+    "tests": 389,
+    "pass": 389,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "app_analysis_issues": 0,
+  "web": {
+    "tests": 1732,
+    "pass": 1732,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "web_scope_reused_by_input_equality": true,
+  "owned_staff_db": {
+    "pass": 50,
+    "fail": 0,
+    "skip": 0,
+    "cleanup_empty": true,
+    "source": "merchant-recovery-source-v9"
+  },
+  "sealed_invitation_browser": {
+    "pass": 1,
+    "fail": 0,
+    "cleanup_empty": true,
+    "source": "merchant-recovery-source-v9",
+    "scope": "Actual normal owner invitation/wrong-account/verified consent/downgrade/removal,local-provider only;no inbox/provider delivery certification"
+  },
+  "scope_reuse_proofs": [
+    "merchant-recovery-v10-reused-scopes.json",
+    "merchant-recovery-v11-reused-scopes.json"
+  ],
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "governance_advisories": 211,
+  "android_debug_compile": {
+    "at": "2026-11-06T08:54:33.553446+00:00",
+    "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+    "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-merchant-recovery-v11-android-j3m1jdlx/merchant-local-debug.apk",
+      "sha256": "b3f214713da48efa3ee710373f222a7ef8c9700422d767dbad85ff22261bac7e",
+      "bytes": 151928275
+    },
+    "actual_sha256": "b3f214713da48efa3ee710373f222a7ef8c9700422d767dbad85ff22261bac7e",
+    "compiled_arm64_engine": true,
+    "debug_kernel_present": true,
+    "normal_main": true,
+    "installed": false,
+    "runtime_verified": false,
+    "scope": "Normal debug compile/archive only. Native58 preserves its own prior StoreSwitcher/Staff artifact acceptance; current KYC changes have no new native acceptance.",
+    "material_icons_bytes": 1645184,
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "ios_debug_compile": {
+    "at": "2026-11-06T08:54:33.553446+00:00",
+    "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+    "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+    "artifact": {
+      "path": "/private/tmp/letbuyy-merchant-recovery-v11-ios-7m7xzeil/Runner.app",
+      "files": 377,
+      "manifest_sha256": "7c6ec3f04918384fb9cc77cc56d2a4207dd6bee50dc0ae4a3a1f2c53fd165d6a"
+    },
+    "all_retained_files_equal": 377,
+    "bundle_id": "com.letbuyy.store",
+    "executable_architecture": "/private/tmp/letbuyy-merchant-recovery-v11-ios-7m7xzeil/Runner.app/Runner: Mach-O 64-bit executable arm64",
+    "owned_simulator_remains_shutdown": true,
+    "scope": "Debug compile/archive only; no iOS launch, auth, backend, sync or release acceptance.",
+    "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+  },
+  "native64": {
+    "status": "INDEPENDENT_BOUNDED_PASS",
+    "run_id": "84dbe0869504",
+    "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+    "apk_sha256": "fdf3cfcf138d6aea80c7f7f96ffcf3f62125a558d8c2a677a91c23edfec3609c",
+    "actual_process_restart": {
+      "run_id": "84dbe0869504",
+      "before_pid": 15921,
+      "after_pid": 18144,
+      "force_stop_absence": true,
+      "products_tab_visible": true,
+      "saved_beta_visible": true,
+      "evidence": [
+        "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v64/native-beta-restart-selection.png"
+      ]
+    },
+    "readback": "native64-independent-readback.json",
+    "cold_custody": {
+      "status": "SAFE_ALLOWLIST_AND_EXACT_IGNORED_BINARY_CUSTODY_PASS",
+      "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+      "run_id": "84dbe0869504",
+      "cold_files": 42,
+      "manifest": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/native64-accepted-local-staff-product/MANIFEST.json",
+      "artifact_manifest": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/artifacts/local-operational-proof/merchant-mobile/native64-84dbe0869504/artifact-manifest.json",
+      "source_unchanged": true,
+      "android_original_bytes_equal": true,
+      "ios_original_files_equal": 377,
+      "full_feature_set_accepted": false
+    },
+    "untraced_kernel": "native64-uninstrumented-kernel-readback.json"
+  },
+  "resource_state": {
+    "at": "2026-11-06T10:15:57.234049+00:00",
+    "verified_pid": 88554,
+    "avd": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "graceful_exact_emulator_stop_requested": true,
+    "process_stopped": true,
+    "userdata_preserved": true,
+    "scope": "Only task emulator after native64terminal/independent readback/coldcustody. Isolated ADB server not reset;no other device or container action."
+  },
+  "active_session": null,
+  "source_frozen": false,
+  "next": "KYC: implement durable original intent and same-key recovery using canonical SecurityCommandStore.replaceIntent and current actor/store providers; do not persist raw documents, STS fields or credentials. Trace unknown direct-storage version before permitting another POST. KYC: validate canonical public overview/document/list shapes against shared schemas and real Gateway fixtures, preserving existing context/race tests. Investigate the earlier61observed90secondloadingwait with actual ingress/timing/process evidence and read-timeout budget;62diagnostic and64current passes do not prove rootcause fixed. Complete media upload/create/reorder/remove, other product fields, native invitation consent/delivery/allroles and web long-name presentation. Continue remaining ledger journeys;35source rows unreviewed and unique surface denominator unresolved.",
+  "open_reliability_finding": "Native61heldLoadingstore90seconds;completed-responseobserver couldnotprovenoarrival.62asserttracefullpassnotrepair,4preimages/whole85restored;63prematurePIDqueryharnessfailure,64boundedread-onlyPIDpollandfullsourcepass. No rootcausefixedclaim.",
+  "earlier_attempts": "59/60/61/63notaccepted;62diagnosticpassonly;retain original terminals/preimages/trace/restoration.",
+  "unreviewed_source_rows": 35,
+  "unique_surface_denominator": null,
+  "full_feature_set_accepted": false,
+  "ios_runtime_accepted": false,
+  "signed_release": false,
+  "hosted_mutations": false,
+  "programme_boundaries": "120/121excluded;122paused;51frozen;schema414\u2013437unchanged",
+  "checkpoint_preimages": [
+    "checkpoint-preimages-before-native60/",
+    "checkpoint-preimages-before-recovery-v6/"
+  ]
+}

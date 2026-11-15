@@ -1,0 +1,5 @@
+{
+  "sha256": "ac02e7bd08e0075e4f2bfa3b645a27c049bd92e062841b6fc3002fadefb741de",
+  "change": "Use the owned fixture documented /rest/v1 prefix and assert RLS result inside SQL, preserving psql command tags. Prior transport/parser failures retained; product candidate unchanged.",
+  "source": "103 unchanged"
+}

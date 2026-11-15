@@ -1,0 +1,29 @@
+{
+  "started_at": "2026-11-06T06:23:27.335702+00:00",
+  "supervisor_pid": 39185,
+  "source_sha256": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "status": "TERMINAL_SCOPED_GATES_PASS_RUNTIME_WEB_BUILD_PENDING",
+  "steps": [
+    {
+      "step": "web-tests",
+      "exit_code": 0
+    },
+    {
+      "step": "web-types",
+      "exit_code": 0
+    },
+    {
+      "step": "governance",
+      "exit_code": 0
+    },
+    {
+      "step": "mobile-artifact-readback",
+      "exit_code": 0
+    }
+  ],
+  "mobile_reuse": "web-viewport-v1-preservation-mobile-reuse.json;1580PASS/analysis/builds;onlywebCSSchanged",
+  "web_production_build": "Pending exact native56 actual owned Next production runtime and browser story.",
+  "active_step": null,
+  "finished_at": "2026-11-06T06:24:52.980761+00:00",
+  "source_unchanged": true
+}

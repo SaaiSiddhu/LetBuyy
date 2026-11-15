@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:letbuyy_store/app/routes.dart';
 import 'package:letbuyy_store/config/v1_capability_policy.dart';
 import 'package:letbuyy_store/screens/apps/apps_screen.dart';
+import 'package:letbuyy_store/screens/subscription/connect_razorpay_screen.dart';
 import 'package:letbuyy_store/widgets/shared/capability_gate.dart';
+import 'package:letbuyy_store/widgets/shared/native_media_recovery_frame.dart';
 
 /// Scenario 19 ("deep links cannot bypass capability gates") and scenario 20
 /// ("excluded V1 features are not reachable") from the launch-readiness
@@ -14,7 +16,9 @@ void main() {
   Widget pageFor(String path) {
     final route =
         AppRoutes.generateRoute(RouteSettings(name: path)) as MaterialPageRoute;
-    return route.builder(_FakeContext());
+    final frame = route.builder(_FakeContext());
+    expect(frame, isA<NativeMediaRecoveryFrame>());
+    return (frame as NativeMediaRecoveryFrame).child;
   }
 
   group('V1 capability policy', () {
@@ -40,11 +44,7 @@ void main() {
     });
 
     test('deferred capabilities are gated but not marked forbidden', () {
-      for (final id in [
-        AppRouteId.giftCards,
-        AppRouteId.featureGiftCards,
-        AppRouteId.connectRazorpay,
-      ]) {
+      for (final id in [AppRouteId.giftCards, AppRouteId.featureGiftCards]) {
         expect(V1CapabilityPolicy.isGated(id), isTrue, reason: '$id');
         expect(
           V1CapabilityPolicy.isForbidden(id),
@@ -65,6 +65,7 @@ void main() {
         AppRouteId.customers,
         AppRouteId.analytics,
         AppRouteId.taxes,
+        AppRouteId.connectRazorpay,
       ]) {
         expect(
           V1CapabilityPolicy.availabilityFor(id),
@@ -124,6 +125,10 @@ void main() {
           isA<Scaffold>().having((s) => s.body, 'body', isA<CapabilityGate>()),
         ),
       );
+    });
+
+    test('merchant-owned sandbox setup route builds its native screen', () {
+      expect(pageFor(AppRoutes.connectRazorpay), isA<ConnectRazorpayScreen>());
     });
   });
 }

@@ -1,8 +1,10 @@
 import 'dart:async';
-import 'dart:ui' show PlatformDispatcher;
+import 'package:flutter/foundation.dart';
+import 'services/merchant_browser_auth.dart';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart'
+    show initializeLetbuyyTypography;
 import 'package:letbuyy_models/merchant_contracts.dart';
 import 'package:provider/provider.dart';
 
@@ -32,6 +34,7 @@ import 'services/coupon_service.dart';
 import 'services/cms_service.dart';
 import 'services/custom_domains.dart';
 import 'services/media_service.dart';
+import 'services/native_media_selection.dart';
 import 'services/metafield_service.dart';
 import 'services/notification_settings_service.dart';
 import 'services/platform_blocked_service.dart';
@@ -57,10 +60,34 @@ void main() {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
-      GoogleFonts.config.allowRuntimeFetching = true;
+      final configurationError = AppConfig.endpointConfigurationError();
+      if (configurationError != null) {
+        runApp(
+          MaterialApp(
+            home: Scaffold(
+              body: SafeArea(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(configurationError),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        return;
+      }
+
+      await initializeLetbuyyTypography();
       late final StoreAuthService authService;
       final cacheService = await CacheService.open(
-        actorIdProvider: () => authService.currentUser?.id,
+        actorIdProvider: () {
+          final actor = authService.currentUser?.id;
+          return actor == null
+              ? null
+              : '${AppConfig.persistenceNamespace()}$actor';
+        },
       );
 
       // Shared API gateway client injected into all services.
@@ -69,11 +96,15 @@ void main() {
         baseUrl: AppConfig.apiBaseUrl,
         tokenProvider: () => authService.accessToken,
         storeIdProvider: () => storeContext.selectedStoreId,
-        contextVersionProvider: () =>
-            (authService.currentUser?.id, storeContext.requestContextKey),
+        contextVersionProvider: () => (
+          authService.currentUser?.id,
+          authService.privateContextVersion,
+          storeContext.requestContextKey,
+        ),
         unauthorizedHandler: (exception) =>
             authService.handleUnauthorized(exception),
         attachSessionCookie: true,
+        sessionCookieName: AppConfig.sessionCookieName,
         headers: const {'X-Client': 'flutter-builder'},
         requestIdFactory: () =>
             'flutter-builder-${DateTime.now().microsecondsSinceEpoch}',
@@ -82,7 +113,20 @@ void main() {
         api: apiClient,
         identityBaseUrl: AppConfig.identityBaseUrl,
         mobileBffBaseUrl: AppConfig.bffBaseUrl,
+        sessionCookieName: AppConfig.sessionCookieName,
+        csrfCookieName: AppConfig.csrfCookieName,
+        storageNamespace: AppConfig.environment == 'staging'
+            ? ''
+            : AppConfig.persistenceNamespace(),
         turnstileTokenProvider: () => AppConfig.turnstileToken,
+      );
+      final browserAuth = MerchantBrowserAuth(
+        auth: authService,
+        identityBaseUrl: AppConfig.identityBaseUrl,
+        environment: AppConfig.accountsEnvironment,
+        clientId: defaultTargetPlatform == TargetPlatform.iOS
+            ? 'merchant_ios'
+            : 'merchant_android',
       );
       final nativePush = NativePushService(
         actorId: () => authService.currentUser?.id,
@@ -105,6 +149,7 @@ void main() {
         ),
       );
       authService.beforeSignOut = () async {
+        await browserAuth.cancel();
         await nativePush.bindActor(null);
         final registration = pushService.lastAttempt;
         try {
@@ -122,6 +167,21 @@ void main() {
       const appBadgeService = AppBadgeService();
       final storeService = StoreService(api: apiClient, cache: cacheService);
       storeContext = StoreContext(storeService: storeService);
+      final nativeSelection = NativeMediaSelection(
+        contextProvider: () {
+          final actor = authService.currentUser?.id,
+              store = storeContext.selectedStoreId;
+          return actor == null || store == null
+              ? null
+              : (
+                  actorId: actor,
+                  storeId: store,
+                  version: apiClient.captureRequestContext(),
+                );
+        },
+      );
+      // Optional file recovery never holds up authentication/startup rendering.
+      unawaited(nativeSelection.initialize());
       final telemetryService = TelemetryService(
         sink: await SharedPreferencesTelemetrySink.open(),
         storeIdProvider: () => storeContext.selectedStoreId,
@@ -168,7 +228,10 @@ void main() {
           );
         }
 
+        if (state.event == AuthChangeEvent.verificationUnavailable) return;
         final eventName = switch (state.event) {
+          AuthChangeEvent.verificationUnavailable =>
+            MerchantTelemetryEventNames.authSignedOut,
           AuthChangeEvent.signedIn => MerchantTelemetryEventNames.authSignedIn,
           AuthChangeEvent.initialSession =>
             MerchantTelemetryEventNames.authSessionRestored,
@@ -178,18 +241,21 @@ void main() {
             MerchantTelemetryEventNames.authSignedOut,
           AuthChangeEvent.tokenRefreshed =>
             MerchantTelemetryEventNames.authSessionRestored,
+          AuthChangeEvent.sessionUnavailable => null,
         };
-        unawaited(
-          telemetryService.track(
-            eventName,
-            userId: state.session?.user.id,
-            metadata: {'auth_event': state.event.name},
-          ),
-        );
+        if (eventName != null)
+          unawaited(
+            telemetryService.track(
+              eventName,
+              userId: state.session?.user.id,
+              metadata: {'auth_event': state.event.name},
+            ),
+          );
       });
       final staffService = StaffService(api: apiClient);
       await staffService.restorePendingInvitation();
       await authService.restoreSession();
+      await browserAuth.initialize();
       unawaited(
         telemetryService.track(
           MerchantTelemetryEventNames.appOpened,
@@ -220,13 +286,23 @@ void main() {
 
             // Auth
             ChangeNotifierProvider<StoreAuthService>.value(value: authService),
+            ChangeNotifierProvider<MerchantBrowserAuth>.value(
+              value: browserAuth,
+            ),
             ChangeNotifierProvider<StoreContext>.value(value: storeContext),
+            ChangeNotifierProvider<NativeMediaSelection>.value(
+              value: nativeSelection,
+            ),
 
             // Data services
             ChangeNotifierProvider<StoreService>.value(value: storeService),
             ChangeNotifierProvider<ProductService>(
-              create: (_) =>
-                  ProductService(api: apiClient, cache: cacheService),
+              create: (_) => ProductService(
+                api: apiClient,
+                cache: cacheService,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<OrderService>(
               create: (_) => OrderService(
@@ -252,7 +328,11 @@ void main() {
               create: (_) => MoneyService(api: apiClient),
             ),
             ChangeNotifierProvider<KycService>(
-              create: (_) => KycService(api: apiClient),
+              create: (_) => KycService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<TwoFactorService>(
               create: (_) => TwoFactorService(
@@ -262,7 +342,11 @@ void main() {
               ),
             ),
             ChangeNotifierProvider<InventoryService>(
-              create: (_) => InventoryService(api: apiClient),
+              create: (_) => InventoryService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<CouponService>(
               create: (_) => CouponService(api: apiClient),
@@ -274,13 +358,20 @@ void main() {
               create: (_) => DomainService(api: apiClient),
             ),
             ChangeNotifierProvider<MediaService>(
-              create: (_) => MediaService(api: apiClient),
+              create: (_) => MediaService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<MetafieldService>(
               create: (_) => MetafieldService(api: apiClient),
             ),
             ChangeNotifierProvider<ShippingTaxService>(
-              create: (_) => ShippingTaxService(api: apiClient),
+              create: (_) => ShippingTaxService(
+                api: apiClient,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<StaffService>.value(value: staffService),
             ChangeNotifierProvider<ReviewService>(

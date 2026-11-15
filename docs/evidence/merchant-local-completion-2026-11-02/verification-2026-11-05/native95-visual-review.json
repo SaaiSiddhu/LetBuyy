@@ -1,0 +1,10 @@
+{
+  "source": "source70",
+  "run_id": "123f4ecc5372",
+  "reviewed": [
+    "native95-reviewed-images/ios-five-web-metadata-fields.png",
+    "native95-reviewed-images/web-native-caption-readback.png"
+  ],
+  "observations": "Actual native five-field editor and actual browser readback of the native caption reviewed. Native Save/Cancel visible; no layout overlap in these normal-size views. Flutter narrow320dp/2.4xtext/keyboard regression passes separately.",
+  "limits": "These specific screens only; no whole-app design, VoiceOver/TalkBack, physical device or buyer Liquid rendering acceptance."
+}

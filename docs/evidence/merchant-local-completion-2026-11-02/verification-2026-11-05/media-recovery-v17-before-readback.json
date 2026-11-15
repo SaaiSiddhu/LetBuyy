@@ -1,0 +1,21 @@
+{
+  "source": "merchant-media-recovery-probe-v1",
+  "run": "901803b0e68b",
+  "tests": 3,
+  "pass": 0,
+  "fail": 3,
+  "positive_controls": "Each original mutation/storage effect and the current-owner read succeeded before the denial assertion.",
+  "confirmed": [
+    "Identical bytes with fresh multipart boundary conflict409",
+    "Changed same-length bytes with fixed envelope replay201",
+    "Revoked owner fresh read403 but cached mutation replay201"
+  ],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

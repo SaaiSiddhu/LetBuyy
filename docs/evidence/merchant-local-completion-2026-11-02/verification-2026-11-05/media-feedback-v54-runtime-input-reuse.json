@@ -1,0 +1,12 @@
+{
+  "source53": "8d91014727d143e0fce8e1ee5e3dc578c1d4c89f5cafc0eaaca0e50c14e6286a",
+  "source54": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+  "only_change": [
+    "apps/merchant/mobile/lib/screens/content/media_library_screen.dart"
+  ],
+  "all_backend_web_sdk_model_database_owned_helper_inputs_byte_equal": true,
+  "source53_local_gates": "media-atomic-v53-pipeline.terminal.json",
+  "source53_native": "native77-independent-readback.json",
+  "source53_custody": "native77-cold-custody-readback.json",
+  "boundary": "Reuse only unchanged backend/type/contract/database evidence; frontend validation54andnewnative78required for the new toast composition."
+}

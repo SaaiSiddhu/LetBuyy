@@ -1,0 +1,71 @@
+{
+  "at": "2026-11-07T08:23:35.907233+00:00",
+  "source_manifest": "merchant-camera-video-model-source-v84.source.json",
+  "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+  "source_entries": 8502,
+  "all_core_inputs_equal": true,
+  "index_entries_equal_HEAD": true,
+  "index_entries_sha256": "67a04f878906e4a92b9a852969da907cd465dc8b3df2be0083d6d42262986c9d",
+  "index_sha256": "6b2e1ed2424e517f7c943e6e3a27f0846cc9607455ef7a95fe3b7941724bea46",
+  "prior_governance_index_sha256": "70093e9e3001a3b3e8769c109c01384e08169200420511ee064a0771b5c91a50",
+  "raw_index_bytes_equal_prior_governance": false,
+  "index_note": "Raw index cache bytes differ from prior governance receipt; staged path/mode/blob entries exactly equal HEAD. No staged-content change, restoration, commit or merge performed. Do not claim raw index equality.",
+  "all_owned_backend_jobs_terminal": true,
+  "ports54350_to54353_free": true,
+  "native_device_restoration": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "name": "LetBuyy Merchant Local 20261103 br1jhgh8",
+    "state": "Shutdown",
+    "restored_original103_admission_state": true,
+    "camera_consent_restored_to_not_determined": true,
+    "no_photo_or_download_deletion": true,
+    "app_and_data_retained": true,
+    "host9002": "Never touched"
+  },
+  "host9002": "Never contacted/bound/stopped",
+  "android_device": "Current source84 Android109/110 installed/runtime pass; exact task AVD remains Booted, app force-stopped, data/Photos retained and original forward/reverse tables restored.",
+  "android_device_restoration": {
+    "at": "2026-11-07T08:18:52.786422+00:00",
+    "state": "Booted, as admitted",
+    "app": "Force-stopped by fixture;installed app/data/Photos preserved",
+    "camera_one_time_permission_now_denied": true,
+    "camera_permissions_readback": [
+      "android.permission.CAMERA: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|ONE_TIME]"
+    ],
+    "forward_reverse_empty_restored": true,
+    "generated_inputs_retained": {
+      "run_id": "6058badcda4b",
+      "files": [
+        {
+          "path": "/sdcard/Download/letbuyy-synthetic-6058badcda4b/synthetic-owned-model-6058badcda4b.gltf",
+          "sha256": "ed10bedd7a8def287f1becb69b44c27b92be54106690468ce80e30d65798feed",
+          "bytes": 659
+        },
+        {
+          "path": "/sdcard/Download/letbuyy-synthetic-6058badcda4b/synthetic-owned-binarymodel-6058badcda4b.glb",
+          "sha256": "771aab1e5dc970de039ae87cbbd6268d4186a6e5185963bd267e14d5b56e98a3",
+          "bytes": 632
+        },
+        {
+          "path": "/sdcard/Download/letbuyy-synthetic-6058badcda4b/synthetic-owned-video-6058badcda4b.mp4",
+          "sha256": "7d3ae55c4de9cdb5e6ace4fd41382b13dfeac881a4e9366f659d16f5edfc2940",
+          "bytes": 5585
+        }
+      ],
+      "existing_photos_data_preserved": true,
+      "seed": "Create-only generated fixtures in one unique Download directory;actual OS picker still required"
+    },
+    "virtual_camera": {
+      "owner_avd": true,
+      "camera": {
+        "hw.camera.back": "emulated",
+        "hw.camera.back.orientation": "90",
+        "hw.camera.front": "none",
+        "hw.camera.front.orientation": "90"
+      },
+      "host_webcam": false
+    },
+    "host9002": "Never contacted/bound/stopped;only emulator9002\u2192Mac54351during test"
+  },
+  "current_android_installed_apk_sha256": "8891ce4feb5b11e05be8858ac940ce7e6f708755f10fd2c0895b191f3dddc0c8"
+}

@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-07T19:19:29.081373+00:00",
+  "phase": "AFTER_ANDROID120_BEFORE_IOS122",
+  "emulator_pid": 79160,
+  "baseline_booted_emulator_preserved": true,
+  "merchant_process_absent": true,
+  "camera_permission": [
+    "android.permission.CAMERA: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|ONE_TIME]"
+  ],
+  "original_empty_adb_mappings_restored": true,
+  "existing_app_userdata_photos_downloads": "preserved;unique generated fixture folder retained",
+  "no_host_camera_audio": true
+}

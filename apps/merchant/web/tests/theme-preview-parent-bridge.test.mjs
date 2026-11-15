@@ -13,14 +13,14 @@ const code = ts.transpileModule(handler.getText(source), { compilerOptions: { ta
 const context = { sessionId: '33333333-3333-4333-8333-333333333333', revision: 4, templateKey: 'page.faq' };
 const origin = 'https://storefront.example.invalid';
 function fixture() {
-    const frame = {}, calls = { section: [], block: [], hover: [], add: [], ready: 0 };
+    const frame = {}, calls = { section: [], block: [], hover: [], add: [], ready: 0, viewport: 0 };
     const iframeLoadedRef = { current: false }, previewReadyRef = { current: false };
     const dependencies = {
         ...protocol, previewOrigin: origin, previewContext: context, iframeRef: { current: { contentWindow: frame } },
         identities: protocol.createEditorPreviewIdentityIndex([{ id: 'hero', type: 'Hero', blocks: [{ id: 'parent', children: [{ id: 'second' }] }] }]),
         onSelectSection: id => calls.section.push(id), onSelectBlock: (...ids) => calls.block.push(ids),
         setHoveredSection: value => calls.hover.push(value), onHoverSection: () => {}, onAddSectionIntent: (...args) => calls.add.push(args),
-        iframeLoadedRef, previewReadyRef, setFrameError: value => calls.frameError = value, postSelectionToPreview: () => calls.ready++,
+        iframeLoadedRef, previewReadyRef, setFrameError: value => calls.frameError = value, postSelectionToPreview: () => calls.ready++, postViewportToPreview: () => calls.viewport++,
     };
     const receive = new Function(...Object.keys(dependencies), code + ';return handleMessage;')(...Object.values(dependencies));
     const send = (data, changes = {}) => receive({ origin, source: frame, data: { context, ...data }, ...changes });
@@ -38,8 +38,9 @@ test('the current iframe ready handshake reapplies selection/mode after its list
     f.send({ type: protocol.EDITOR_READY_MESSAGE });
     assert.equal(f.iframeLoadedRef.current, true); assert.equal(f.calls.ready, 1);
     assert.equal(f.previewReadyRef.current, true); assert.equal(f.calls.frameError, null);
+    assert.equal(f.calls.viewport, 1);
     f.send({ type: protocol.EDITOR_READY_MESSAGE, context: { ...context, revision: 3 } });
-    assert.equal(f.calls.ready, 1);
+    assert.equal(f.calls.ready, 1); assert.equal(f.calls.viewport, 1);
 });
 test('parent rejects wrong source/origin, stale context, forged ancestry and unknown/prototype IDs after a positive control', () => {
     const f = fixture(); f.send(selection); assert.equal(f.calls.block.length, 1);

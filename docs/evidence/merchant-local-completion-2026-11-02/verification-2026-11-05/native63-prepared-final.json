@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-06T09:52:10.828347+00:00",
+  "root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4",
+  "source_manifest": "merchant-recovery-source-v11.source.json",
+  "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "inputs": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v63.py",
+      "sha256": "e30e150ef628a8c3f1e78702f48a80ff2ea4328ac5f61bfee8d6b1a847b445ac"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v63.json",
+      "sha256": "6515856e3f52973697f1d1079faa491e4e90a4911883fdfd1c1f00f768c7cca3"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v63.py",
+      "sha256": "fb1d55a67d42398d099f38d97cd4fef9146b0f8f9f4c27e53cd74cc36ccadb2e"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v63-local-android.postgres.test.ts",
+      "sha256": "f82cfea5d313a19ae24752d3a09188429247d22f15288355185266ae96572c52"
+    }
+  ],
+  "protected_fixture_sha256": "12917f372dee1ecf6610c8888af1caa9a5a80b545388ba0b58570c6b9c6f8510",
+  "scope": "Exact uninstrumented source85c6 restored. All61business/security assertions retained;explicit actual old-process absence/newPID and saved Beta UI after restart. Read-only fixture-side wire ingress observes arrival separately from response,with no auth data.61intermittenthang remains unproven until this run and further diagnosis.",
+  "status": "READY_NOT_LAUNCHED"
+}

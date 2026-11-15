@@ -1,0 +1,119 @@
+{
+  "at": "2026-11-07T10:49:55.832259+00:00",
+  "status": "BOUNDED_CURRENT_ANDROID_CAMERA_MOV_WEBM_PLAYBACK_WEB_SYNC_PASS",
+  "source": "merchant-webm-ios-source-v86",
+  "source_sha256": "72eea74898f1efecbb91bd868e286deeeefc42324ff59b6733f288262185cc8e",
+  "fixture_source_sha256": "04cfdeccde911fa1d40e561de5ce1b8c9075a4a58c16ef6fff03326a3e951b76",
+  "fixture_inputs_matching_source86": 4880,
+  "run_id": "13b749d73f7a",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261107-545c02880a",
+  "runner": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "normal_auth": true,
+  "actual_emulated_camera_photo_recording": true,
+  "formats": [
+    "image/jpeg",
+    "video/mp4 camera recording",
+    "video/quicktime H264",
+    "video/webm VP8"
+  ],
+  "uploads": 4,
+  "media_rows": 4,
+  "objects": 4,
+  "hashes": {
+    "image/jpeg": "7d1e8d2634b276159dab73e0f48211860761e55e74afb93a911f8c73ad91e856",
+    "video/mp4": "a624e465e3ea70ebb222ddb26a1a296d51e1cba7b1d719d3f5c37eaca3c6c8d4",
+    "video/quicktime": "41df40017e22408682731f8eb5686d16b1cdc52d9a9ee0623d98b2dbed62e3c3",
+    "video/webm": "87d37fd5c013df089147c9f05f2bf8962e55906cc3ff8c4ec79017551d18954a"
+  },
+  "actual_camera_and_formats_decode_progress_pause_mute_seek_background": true,
+  "no_passive_video_fetch": true,
+  "web_camera_and_WebM_caption_native_readback": true,
+  "installed_apk_sha256": "e1e873bb41a6345a6c59ca21af0c47d5d046cbf8e6d14ba309083beda6fb5a10",
+  "installed_equals_retained": true,
+  "phase_terminals": {
+    "Readback-terminal.json": {
+      "phase": "Readback",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "13b749d73f7a",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-545c02880a/Readback.py",
+      "control_sha256": "36c2ef715947c50862bef870573dc7675de2e468b7156f7a52f4eee11cc4b665"
+    },
+    "Photo-terminal.json": {
+      "phase": "Photo",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "13b749d73f7a",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-545c02880a/Photo.py",
+      "control_sha256": "b46a71da66985d3c718337b69cbb80f36bcaf89223de349793ea67dca652801e"
+    },
+    "Video-terminal.json": {
+      "phase": "Video",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "13b749d73f7a",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-545c02880a/Video.py",
+      "control_sha256": "0445b4bc5ed7a6ff7538bc32e628b6e78f90e0e43892944a7386dbbb7387f090"
+    },
+    "Preview-terminal.json": {
+      "phase": "Preview",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "13b749d73f7a",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-545c02880a/Preview.py",
+      "control_sha256": "5303e4ce493f6feb64514eeb63d485e8cc7d231b2659b62dd1bfe8a6483a703e"
+    },
+    "CameraPreview-terminal.json": {
+      "phase": "CameraPreview",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "13b749d73f7a",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-545c02880a/CameraPreview.py",
+      "control_sha256": "27ed70475544d1a1a01fd7fa4ed8542fc754b79e34f6044b40e53936539461bd"
+    },
+    "Auth-terminal.json": {
+      "phase": "Auth",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "13b749d73f7a",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-545c02880a/Auth.py",
+      "control_sha256": "64d4f98434d10a225a341a1bcf771440eb8bded854ada2e09cd629b8e5c3d299"
+    },
+    "Import-terminal.json": {
+      "phase": "Import",
+      "attempt": 1,
+      "exit": 0,
+      "accepted": true,
+      "run_id": "13b749d73f7a",
+      "control_file": "/private/tmp/letbuyy-merchant-local-20261107-545c02880a/Import.py",
+      "control_sha256": "7a6ff80392aea41d99d981abf2048d0781a70f8c5cf99ac4a1059758dfe14dbd"
+    }
+  },
+  "mapping_custody": {
+    "run_id": "13b749d73f7a",
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "host9002_never_touched": true
+  },
+  "whole_features_accepted": 0,
+  "limits": "Task emulator uses emulated camera and no host audio. Generated silent H264 MOV/VP8 WebM clips only. Normal local Accounts/Next/compiled Workers/owned PostgreSQL/R2. No physical camera/microphone,all codecs/OS versions,pre-upload picker process-death/provider/buyer/hosted/release/full122 acceptance."
+}

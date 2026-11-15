@@ -1,0 +1,31 @@
+{
+  "at": "2026-11-06T23:31:51.847245+00:00",
+  "run": "116729e08ccf",
+  "diagnostic_source_sha256": "737c9bfdd8a1f91072dd49d58069c29778f9459e07c66f5391c94251bf997f50",
+  "first_synthesized_tap_stages": [],
+  "same_editor_second_tap_positive_control": [
+    "pointer-down",
+    "enter-current:true-busy:false",
+    "validation:true-name-empty:false-price-empty:false-stock-empty:false",
+    "store-current:true-same:true",
+    "existing-product-save"
+  ],
+  "first_stage_verdict": "No button pointer/submit event; cannot attribute to validation or tenant-scope rejection. Coordinate/input handling needs separate first-tap proof.",
+  "functional_with_second_tap": {
+    "exit": 0,
+    "run_id": "116729e08ccf",
+    "accepted": true,
+    "web_name_readback": true,
+    "normal_native_refresh": true
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "diagnostic_source_unchanged": true,
+  "delivery_qualification": false
+}

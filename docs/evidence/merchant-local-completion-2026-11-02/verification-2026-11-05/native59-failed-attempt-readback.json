@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-06T09:11:37.183458+00:00",
+  "status": "NOT_ACCEPTED_IMAGE_DECODE_ASSERTION_FAILED",
+  "run_id": "81588348f135",
+  "runner_exit": 1,
+  "controller_exit": -15,
+  "owned_cleanup_empty": true,
+  "reverse_maps_restored": true,
+  "source": "merchant-recovery-source-v11",
+  "partial_observations_only": [
+    "Normal password login/automaticreturn",
+    "53memberships/page2",
+    "Native53staffroster",
+    "NativeAlpha save/webread/websave/nativeAlpha read",
+    "Beta after restart",
+    "Native Staff product save/nullcategory/typedmetadata conserved"
+  ],
+  "remaining_unreached": [
+    "webimage decode",
+    "live Staffdowngrade/removal",
+    "finalreceipt/stock/sourceindependentacceptance"
+  ],
+  "next": "Actual Merchant media diagnostic normalbrowser/ownedGateway; isolated exactPNG direct decode and twooriginHTTP fence decode pass; no appbug asserted yet."
+}

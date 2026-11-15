@@ -1,0 +1,9 @@
+{
+  "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+  "name": "LetBuyy Merchant Local 20261103 br1jhgh8",
+  "before": "Booted",
+  "after": "Shutdown",
+  "userdata_retained": true,
+  "only_task_simulator_controlled": true,
+  "scope": "Scoped final simulator shutdown; no erase/reset/uninstall/Photos deletion or other simulator control."
+}

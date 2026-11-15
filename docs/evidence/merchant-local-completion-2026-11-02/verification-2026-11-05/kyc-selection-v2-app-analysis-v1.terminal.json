@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-06T07:07:58.687192+00:00",
+  "supervisor_pid": 99427,
+  "source": "kyc-selection-source-v2",
+  "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 99443,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T07:08:06.424424+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769"
+}

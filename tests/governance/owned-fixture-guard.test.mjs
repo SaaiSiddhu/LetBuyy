@@ -386,8 +386,7 @@ test('a gateway suite cannot obtain a database except through the guard: with no
             '    process.exit(3);',
             '}',
         ].join('\n'));
-        const tsx = join(repoRoot, 'node_modules/.bin/tsx');
-        const attempt = (extra) => spawnSync(tsx, [probe], { encoding: 'utf8', env: { ...env, ...extra }, cwd: repoRoot });
+        const attempt = (extra) => spawnSync(process.execPath, ['--import', 'tsx', probe], { encoding: 'utf8', env: { ...env, ...extra }, cwd: repoRoot });
 
         const none = attempt({});
         assert.equal(none.status, 3, `${none.stdout}${none.stderr}`);

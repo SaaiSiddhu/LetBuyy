@@ -1,0 +1,191 @@
+{
+  "at": "2026-11-04T14:20:36.328677+00:00",
+  "status": "FIXED_V36_ARCHIVED_ANDROID_V11_RUNNING",
+  "last_qualified": "46f88d64f62e614f2ad9bbd0be5693abb77e224c3366e94584d2c2eb063323e6/7452; v9 bounded native/web category pass archived",
+  "current_changes": [
+    "AI collapsed native suggestion disclosure with explicit controller/focus; same4literal drafts; Run keyboard fixture reachable; no command/service changes",
+    "SettingsTile explicit trailingBelow=false default; wide Theme/product usage/actions below, metadata chevrons/Switch inline",
+    "Choice FormField revalidates on user interaction; validator unchanged",
+    "Chart fractional ticks use canonical decimal formatter below1000; original plot/financial values unchanged",
+    "Segment geometry test now checks transformed painted label versus preceding outline in both themes/scales1and2.4, not a mirrored padding token",
+    "New shared MerchantProductUsage presentation owner; Settings reuses original billing model labels/fraction/unknown/unlimited rules",
+    "Hero existing owner uses responsive theme Card/native actions, stopped decorative pulse/shimmer/blur, exact original URL copy/visit/share; original view lifetime guards, no fake0/5percent product meters",
+    "QR existing owner uses canonical scrolling sheet/long-text card, current view guards across awaits; samePNG/pixelRatio3/temp filename/native share protocol, no new storage rule. Original PNG image now disposed after encoding.",
+    "Unused private Hero stat/action helpers retained pending replacement native qualification; no file/asset cleanup yet",
+    "AI/chart disclosure use installed SDK no-animation style under reduced motion; Hero pending publish uses existing shared LoadingIndicator. These last small changes await next qualification.",
+    "PremiumHeader canonical account/store sheets with draft/Cancel/Apply, exact original StoreContext.selectStore; actor/frame retirement and disposed callback guard",
+    "Existing AccessibleTapRegion forwards actual native focus nodes without creating another focus owner; Header and Hero copy use it",
+    "Home requests and publication callbacks fenced to captured view/query; disposal and A-B-A retirement; cleared access requires explicit recovery instead of a discovery loop",
+    "Publication uses unchanged publish/unpublish commands plus existing StoreContext.reloadSelectedStore readback; cached acknowledgement alone no longer represents a fresh status",
+    "Responsive exact monetary/count metric cards and full payout captions; same original summary arithmetic, availability flags, period codes, minor/100 conversion and home-widget/badge dispatch arguments",
+    "Home reporting period canonical scoped draft/Cancel/Apply; no old metrics displayed under a newly applied period while pending",
+    "Home/Activity no decorative entry animations; static skeleton boxes with one reduced-motion-aware pending owner; native keyboard-focusable QuickActions preserve all5destinations",
+    "Activity aggregate captions explicitly state selected reporting period; published state reflects saved publication, not asserted route health",
+    "Canonical EmptyState optional action and ErrorView optional retry label preserve existing defaults and Home recovery action"
+  ],
+  "checks": {
+    "v14_followups": {
+      "passed": 30,
+      "failed": 0
+    },
+    "v15_followups": {
+      "passed": 9,
+      "failed": 0
+    },
+    "v16_hero_negative": {
+      "passed": 0,
+      "failed": 4,
+      "findings": [
+        "Unknown billing fabricated0percent meter",
+        "Unlimited fabricated5percent meter",
+        "Two ticking decorative controllers under reduced motion",
+        "Large text128px hero row overflow before QR entry"
+      ]
+    },
+    "v17_hero_focused": {
+      "passed": 14,
+      "failed": 1,
+      "reason": "New fixture attempted offscreen semantics label; scroll actual Tooltip into viewport first"
+    },
+    "v18_hero_focused": {
+      "passed": 3,
+      "failed": 1,
+      "reason": "Native IconButton exposes accessible tooltip rather than label; test now checks actual tooltip semantics and action"
+    },
+    "v19_hero_focused": {
+      "passed": 4,
+      "failed": 0
+    },
+    "v20_hero_protocol": {
+      "passed": 5,
+      "failed": 2,
+      "findings": [
+        "Visible default native action geometry40px; explicit existing48px minimum added",
+        "PNG fixture blocked fake async callback progression while awaiting5seconds; diagnosis corrected fixture to alternate actual frames/host callbacks under same5second budget; no production capture workaround added"
+      ]
+    },
+    "v21_hero_protocol": {
+      "passed": 2,
+      "failed": 0,
+      "proof": "Real PNG signature/file, original path/MIME/text/subject, mocked native handoff, busy Back and native dismissal without delivery claim; existing root keyboard/clipboard/action geometry passes"
+    },
+    "v22_analysis": {
+      "issues": 4,
+      "kind": "Only unused import and optional interpolation braces; corrected"
+    },
+    "v23_qualification": {
+      "source": "8873b44ec69f71434c549ee9cd85c4dd23649ca5a657592637f60ad38555809f",
+      "entries": 7454,
+      "full_passed": 1005,
+      "full_failed": 3,
+      "failures": [
+        "Protected existing Staff namespace",
+        "Two obsolete fixture assumptions: icons use native tooltip semantics, AI suggestions now collapsed"
+      ],
+      "app_analysis_issues": 0,
+      "ui_kit_analysis_issues": 0,
+      "domain_preservation": 36
+    },
+    "v24_entries": {
+      "passed": 2,
+      "failed": 0,
+      "changes": "Root AI opens disclosure before checking preserved suggestion; Store settings uses native tooltip while retaining enabled/destination assertions"
+    },
+    "v25_header_negative": {
+      "passed": 0,
+      "failed": 2,
+      "findings": [
+        "Store selection changed before Apply",
+        "Old account action survived actor transition"
+      ]
+    },
+    "v28_header_focused": {
+      "passed": 5,
+      "failed": 0,
+      "proof": "Actual keyboard focus flags, draft/Cancel/Apply, actor retirement,320dp scale2.4 both themes and no disposed Header callback"
+    },
+    "v29_composition_focused": {
+      "passed": 15,
+      "failed": 0,
+      "proof": "Header/Hero/QR plus existing root clipboard/keyboard/period journey; fixture native share channel remains mocked"
+    },
+    "v30_home_negative": {
+      "passed": 0,
+      "failed": 3,
+      "findings": [
+        "setState after disposal",
+        "Old-store command from captured callback",
+        "Late old-store result redundantly reloaded replacement store"
+      ]
+    },
+    "v31_home_focused": {
+      "passed": 3,
+      "failed": 0
+    },
+    "v32_home_composition": {
+      "passed": 9,
+      "failed": 0
+    },
+    "v33_publication_readback_negative": {
+      "passed": 0,
+      "failed": 1,
+      "finding": "Acknowledged publication left StoreContext cached status unchanged"
+    },
+    "v34_shell": {
+      "passed": 16,
+      "failed": 2,
+      "reason": "Two exact fixture contracts rejected newly added real focus actions/flags; strengthened to require those native semantics without weakening keyboard/target checks"
+    },
+    "v35_home_all": {
+      "passed": 11,
+      "failed": 0
+    },
+    "v36_fixed_source": {
+      "source": "f4b5fa798ec9c20035f509e34b870191fa62a72bfef2ee651eb9e4e25227a9e4",
+      "entries": 7456,
+      "full_passed": 1023,
+      "full_failed": 1,
+      "protected_failure": "Staff hosted/local invitation namespace policy, unchanged",
+      "app_analyze_issues": 0,
+      "ui_kit_analyze_issues": 0,
+      "parsed_preservation_checks": 53,
+      "protected_baseline_files": 5195,
+      "root_lock_unchanged": true,
+      "governance": {
+        "capsule": "governance-category-capsule-v26",
+        "passed": 114,
+        "failed": 0,
+        "blocked": 0,
+        "skipped": 0,
+        "not_applicable": 1,
+        "all7456code_inputs_match": true
+      },
+      "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-dashboard-v36-qualified-source"
+    },
+    "native_v10_diagnostic": {
+      "run_id": "177269987d4a",
+      "pass": 0,
+      "fail": 1,
+      "suite_seconds": 188.2,
+      "wall_seconds": 190,
+      "runner_exit": 1,
+      "controller_exit": 1,
+      "owned_resources_remaining": [],
+      "reverse_maps_restored": true,
+      "finding": "Exact companion action label expected Run; actual native accessibility action is Run command. Retained failed compound run, no app change. A later read-only post-cleanup diagnostic found the app no longer present and asserted without input or screenshot; no positive proof claimed from it."
+    },
+    "native_v11_active": {
+      "source": "same fixed v36 application inputs; no source changes",
+      "actual_AI_keyboard_screenshot_inspected": true,
+      "run_fully_visible_with_actual_keyboard": true,
+      "no_AI_command_submitted": true,
+      "chart_and_category_sync": "pending terminal run and independent screenshot review"
+    }
+  },
+  "remaining": [
+    "Governance v26 terminal verdict and7456code-input match; archive fixed source, then bounded Android v10 rebuild with actual date/value row and AI Run above actual keyboard",
+    "Real publication persistence/provider/route health acceptance remains separate from held-service UI fixtures; no native publish/share/AI command authorized by these UI checks",
+    "Native homescreen widget fixed-key persistence/owner transition requires separate protected-owner review; UI dispatch fencing does not prove its later persistence lifetime",
+    "Other app surfaces still need source/caller/migration/runtime reconciliation; denominator remains null;119programme not closed; current iOS runtime and physical performance pending"
+  ]
+}

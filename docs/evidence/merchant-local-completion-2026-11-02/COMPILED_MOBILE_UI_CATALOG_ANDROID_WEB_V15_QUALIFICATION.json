@@ -1,0 +1,298 @@
+{
+  "at": "2026-11-04T16:49:52.272211+00:00",
+  "status": "PASS_BOUNDED_LOCAL_CATEGORY_SYNC_AND_CATALOG_DRAFT_PRESENTATION_WITH_OPEN_UI_FINDINGS",
+  "fullAppAccepted": false,
+  "source": {
+    "sha256": "98b6bd6a9f48efdab7b349fb4683f60c35d237735b0017e3128b9ab0954661e4",
+    "entries": 7461,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-catalog-v40.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-catalog-v40-qualified-source",
+    "terminal_unchanged": true,
+    "native_manifest_entries": 4781,
+    "all_native_inputs_match_broad_snapshot": true
+  },
+  "run": {
+    "runId": "a7f0d8460025",
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "wallSeconds": 631.7,
+    "suiteSeconds": 630.2,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "artifact": {
+    "run_id": "a7f0d8460025",
+    "source_sha256": "861c86c7015373bb0181c41e77338090e59b36f5747e7ebf8314d59b7eedbd43",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v15/qualified-artifact/merchant-local-debug.apk",
+    "sha256": "5d8e2d587ffab7c016eed8b40a6cdf0d25b23f01ed004617d3e3949cee8ddaab",
+    "original_bytes_retained": true,
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "driver": {
+    "hash_manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/category-v15-controller-inputs.json",
+    "global_name_preflight_passed": true,
+    "launcher_companion_receipt_binding_verified": true,
+    "prior_diagnostics": "v12 interrupted launcher-companion mismatch;v13 UIautomatorIMEbounds omitted;v14 leftover verifier variable;all preserved/cleaned with no appfixoracceptance from those runs"
+  },
+  "launcher_cleanup": {
+    "at": "2026-11-04T16:47:15.717863+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "forward_maps_preserved": {
+    "before": [
+      [
+        "emulator-5580",
+        "tcp:52367",
+        "localabstract:chrome_devtools_remote"
+      ]
+    ],
+    "after": [
+      [
+        "emulator-5580",
+        "tcp:52367",
+        "localabstract:chrome_devtools_remote"
+      ]
+    ]
+  },
+  "integration": {
+    "normal_native_accounts_pkce_return": true,
+    "normal_web_accounts_sign_in": true,
+    "gateway_bff": "Actual existing Hono source handlers/BFF plus owned PostgreSQL/PostgREST and production-mode local Accounts/Merchant Next; category journey doesnotcompileWorkerd or exercisehostedCloudflare.",
+    "category": {
+      "native_rename_lost_reply_original_key_body_retry": true,
+      "one_native_effect": true,
+      "web_read_native_rename_then_saved_description": true,
+      "fresh_native_editor_exact_web_description": true,
+      "version": 3,
+      "category_receipts": 2,
+      "audits": 2,
+      "outbox": 2,
+      "assigned_product_labels_propagated": 2
+    },
+    "proof": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v15/backend-verified.json"
+  },
+  "native_presentation": {
+    "catalog": {
+      "run_id": "a7f0d8460025",
+      "status": "BOUNDED_NATIVE_PRODUCT_VARIANT_URL_CSV_PRESENTATION",
+      "actual_product_and_price_keyboards": true,
+      "update_fully_inside_native_viewport": true,
+      "update_bounds": [
+        42,
+        1349,
+        1038,
+        1475
+      ],
+      "pinned_update_above_actual_keyboard": "PENDING_INDEPENDENT_IMAGE_REVIEW",
+      "uiautomator_keyboard_window_not_projected": true,
+      "exact_decimal_draft": "129.75",
+      "product_cancelled_back_kept_draft": true,
+      "variant_full_page_cancelled_back_kept_draft": true,
+      "url_sheet_actual_keyboard": true,
+      "csv_actual_keyboard_cancelled_back_kept_draft": true,
+      "product_or_variant_save_submitted": false,
+      "csv_import_or_stop_submitted": false,
+      "export_or_share_submitted": false,
+      "evidence": [
+        "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v15/native-products-exact-current-row.png",
+        "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v15/native-product-name-keyboard.png",
+        "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v15/native-product-decimal-keyboard-draft.png",
+        "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v15/native-variant-full-page-keyboard.png",
+        "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v15/native-product-url-sheet-keyboard.png",
+        "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v15/native-csv-contents-keyboard-draft.png"
+      ],
+      "scope": "Normal compiled main APK and fresh current product read; drafts and navigation only. No product/variant/CSV effects or their web sync accepted; unchanged category effect journey remains separate."
+    },
+    "independent_image_review": {
+      "product_Update_above_actual_keyboard": true,
+      "native_Update_bounds": [
+        42,
+        1349,
+        1038,
+        1475
+      ],
+      "variant_Add_variant_above_actual_keyboard": true,
+      "decimal_draft_exact_129_75_INR": true,
+      "URL_sheet_label_and_Cancel_Add_clear_of_keyboard": true,
+      "CSV_keyboard_and_exact_draft": true,
+      "CSV_real_capability_unavailable_start_disabled": true,
+      "category_web_description_readback_visually_inspected": true,
+      "chart_actual_dated_zero_row_visually_inspected": true,
+      "chart_row": {
+        "date": "6 Oct 2026",
+        "date_bounds": [
+          368,
+          2063,
+          570,
+          2116
+        ],
+        "amount": "₹0.00",
+        "amount_bounds": [
+          612,
+          2063,
+          712,
+          2116
+        ]
+      }
+    },
+    "other_bounded_observations": "Both themes/navigation/searchconfirmedempty+keyboard;AI draft/close;Staffrequiredemail/Viewerrole draft/cancel/freshroster;segmentdraft/choice/dirtyBack;noneoftheircommands submitted"
+  },
+  "fixture_qualification": {
+    "full_passed": 1051,
+    "full_failed": 1,
+    "protected_failure": "Existing Staff hosted/local invitation namespace policy",
+    "app_analysis_issues": 0,
+    "ui_kit_analysis_issues": 0,
+    "parsed_preservation_checks": 100,
+    "governance_passed": 114,
+    "governance_not_applicable": 1,
+    "all7461governance_inputs_match": true
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-ai-operator-keyboard-draft.png",
+      "sha256": "f67b61f2dcfb1308b2e77c5e16be42b284937c87474e8b25ebb4663b4d0ca66e"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-canonical-search-keyboard.png",
+      "sha256": "4a579810a82b7ac95caa950b36fcddf67dd86ffb706b53feee0d12a368142e46"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-category-committed-reply-loss.png",
+      "sha256": "1803dcb3acfcd127f81cd87198aed2c94a1b788e16e7181715e82e63af1b13fa"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-category-full-page-keyboard.png",
+      "sha256": "5eaa1c090f391a924b24a0572297c328ac54e60669aa9aeeb650d39618d99db2"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-category-original-confirmed.png",
+      "sha256": "3c3913dbb3b4096e4e14a5a1f18a60202b3fe0a36e15f0e6cf50b46e48f63e80"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-category-retained-draft.png",
+      "sha256": "7dbc9723869f15dfa4e5e07409494ac0cc831f5a7908a320f97749984e11af91"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-category-web-description-readback.png",
+      "sha256": "f8212aefab2538b034a98cae62795ee58d21bd843b74de15ff5271bc1aaae243"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-csv-contents-keyboard-draft.png",
+      "sha256": "dc9c6ce824bec587518115d49925ab7c5ad2c095b4c52800d45e52c425fb0540"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-home-qr-sheet.png",
+      "sha256": "a417d8c00e1bad62875af884d1d34ac8e6319ca1716119e428d8e53a760ee1ad"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-product-decimal-keyboard-draft.png",
+      "sha256": "464d7809bfe831428f84631a3cd3c3d2feb1391b650ed419889b13eb7150f1c2"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-product-name-keyboard.png",
+      "sha256": "0765a820b4096c1b1d43d21fe394fcb16913b0db4724ffebd8f0bde7f288c415"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-product-url-sheet-keyboard.png",
+      "sha256": "e3a78ebac95e9c05105beb6ba977a0151c50a58af9e4ccdcf0002b12e4ab2bf3"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-products-exact-current-row.png",
+      "sha256": "79ed9c5f6603377027a1f3725b559fb85d5bd1ed58e1e4473f6e2e666d75cc12"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-revenue-exact-values.png",
+      "sha256": "396c0ec34bb45a8ce39f4d9802fa28237680180fbafac5313acd6f2e92a0bf77"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-revenue-recorded-history.png",
+      "sha256": "ee04d900c08138c67341adb14cb7d953116089433945b13ac8d26b1759d6b798"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-root-navigation-dark.png",
+      "sha256": "98cd3ab612b50899e0fa6a05dda673c924fa524c8821013625c4dbe00a2f185c"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-root-navigation-light.png",
+      "sha256": "5a5e17a78bcd7e30caa75899167fa02ac3f352b58d680d1e72c585b38db1335f"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-search-confirmed-empty-keyboard.png",
+      "sha256": "83afb66a89cee23d39b98b920efe467c70e08a463bd898c0a8b02f6f427f1da8"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-segment-choice-applied-draft.png",
+      "sha256": "e3a3c3aff9c4780fbb4e5db430c4de0f592a5f50a0aea45453c3d8ae51c77dc4"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-segment-full-page-keyboard.png",
+      "sha256": "aee93943b603627441a5a5c4675f90dda2ea3ec58a92fe8a461ba5e682ce8fd7"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-staff-cancelled-roster.png",
+      "sha256": "e3ee52ac553308d3df1f0f9679e9e43855f5225429767ab808ad87e7dada71f3"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-staff-email-keyboard.png",
+      "sha256": "b2438364d470ea1992e06f52c078229e3a6657b189c51373848208c22640e0db"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-staff-empty-roster.png",
+      "sha256": "411be6b62b3e22f64dda8f9531916a958d694de8d4c4241218e7cbae2f024a9a"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-staff-required-email.png",
+      "sha256": "0aa3f8728e69212e7955edbfdb936610161a9add97b1e4bf1ca77218cd5be5d1"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-staff-role-applied-draft.png",
+      "sha256": "1009863ec38ef1841cd7e6b225ef061a8fdb2556280175b1c581c2a91b5bc25e"
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-catalog-v15-native-variant-full-page-keyboard.png",
+      "sha256": "c22ab2219de5ec310d91e796fb87d00392ed6c1715794536c2346bfceb602ecc"
+    }
+  ],
+  "visually_inspected_here": [
+    "native-products-exact-current-row.png",
+    "native-product-name-keyboard.png",
+    "native-product-decimal-keyboard-draft.png",
+    "native-variant-full-page-keyboard.png",
+    "native-product-url-sheet-keyboard.png",
+    "native-csv-contents-keyboard-draft.png",
+    "native-category-web-description-readback.png",
+    "native-revenue-exact-values.png"
+  ],
+  "open_findings": [
+    "ActualCSVhelpertextellipsized beside longcharcounter andfieldlabelcrowds ChooseCSVborder;canonicalhelper/errorwrapping andcaller spacing planned after this freeze",
+    "InitialProductlistimagehaspartialcards andfloatingactionsoverprice;clippednativeSemanticboundsdo not prove entirecardpainted/unobstructed. No fullcardruntimeacceptance from this image.",
+    "CSVnewimportcapability unavailable inthis unchangedlocalcategoryfixture;draftcancellation observed,notpersistedCSV/provideracceptance"
+  ],
+  "limits": [
+    "One bounded categoryeffect/sync journey andnamedpresentationobservationsonly;no wholeapp/119featurecertification",
+    "No product/variant save,mediaupload/OSpicker,CSVimport/stop,export/share,Staff/segment/AI/provider effect acceptance from thisrun",
+    "Current iOSv5 compileinprogress;no iOSruntime/VoiceOver/physical/performance/releaseacceptance",
+    "Known exportjobmanualread isUIlifetimeonly;missingresponse/processdeathcannotinventdurableauthority",
+    "Otherfrontendcohorts/unique surface denominator andoldfeatureprogramme remainopen;no push/merge/deploy/hosted activation"
+  ]
+}

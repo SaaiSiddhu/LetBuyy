@@ -1,0 +1,10 @@
+{
+  "source_sha256": "392d53d26becc93d69c656afaccb8fc7b591c8c0f542b61b3d80ce7fa475aba9",
+  "files": {
+    "apps/merchant/mobile/lib/screens/settings/help_screen.dart": "6cba8470301daab012715ed49d49bbb476dd47bfdcdde29d09c8c023899a4bec",
+    "apps/merchant/mobile/lib/widgets/shared/capability_gate.dart": "69c469dcdd284aad4c042d86e7c58782be2feea641d8df9d04bdc46e50d4c645",
+    "apps/merchant/mobile/test/capability_presentation_test.dart": "1ff13a88ccbd05a8d80c9a5b0f11120a0839544927c6760fa9f8897508dbc120",
+    "apps/merchant/mobile/test/help_presentation_test.dart": "c1cad486625ea710b7989857b1f4152a814202571b50473fcba78b5b46c8e8e4"
+  },
+  "role": "Exact4changed presentation/test inputs from confirmation2;29focusedPASS,broad qualification pending."
+}

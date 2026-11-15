@@ -1,0 +1,55 @@
+{
+  "status": "ADMITTED_V200_SOURCE_RECOVERED_RUNTIME_CUTOVER_UNQUALIFIED",
+  "date": "2026-11-02",
+  "admissionManifest": "docs/implementation/niche-theme-programme/release-v2/proposals/9b2e045a696940bc80ead069c5b8b74ea45bc74b971e7cded2138d087a630d8b/manifest.json",
+  "recoveryManifest": "docs/implementation/niche-theme-programme/release-v2/recovered-admitted-source/recovery-manifest.json",
+  "recovery": {
+    "unreachableGitBlobsExamined": 6594,
+    "exactAdmittedSourcesRecoveredFromBlobs": 17,
+    "exactAdmittedSourcesAlreadyInRepositorySnapshots": 4,
+    "originalSourcesVerified": 21,
+    "originalThemeSourceFiles": 20,
+    "originalLockfile": "not recovered from reachable history or examined unreachable blobs"
+  },
+  "lockfileSuccessorReview": {
+    "previousPinnedSha256": "b4cf0213a9236c586a29a809f0f7c3966b0c4d3a965dc1fd9f22a2876ba6acf0",
+    "previousPinnedCommit": "d0afb90600b2c60c296220cdd8e53e757bdb2bf1",
+    "currentSha256": "0af8a0c0ff84853eca5938614dd9ecc1c4476f0d06db1f401d85a3974b1e9e52",
+    "diff": "Six added importer lines only: zod for apps/merchant/web and saxes for apps/platform/identity; no theme importer or package resolution changed.",
+    "record": "docs/evidence/consolidation-2026-10-25/PROMOTION_SOURCE_COMPATIBILITY.json"
+  },
+  "reproduction": {
+    "command": "node --import tsx scripts/governance/check-admitted-theme-v200-source.mjs",
+    "result": "HISTORICAL_FACTORY_PARITY_ONLY",
+    "frozenDefaultBundles": { "match": 10, "total": 10 },
+    "admittedV200Bundles": { "match": 9, "total": 9 },
+    "mismatches": []
+  },
+  "versionedRuntimeTrial": {
+    "method": "An uncommitted trial routed bare 2.0.0 factory selection to adapted recovered theme/discovery modules while keeping current successor modules.",
+    "bundleParity": "9/9 admitted 2.0.0 bundles matched",
+    "typecheck": "passed after building the existing shared-types prerequisite",
+    "themeEngineTests": { "tests": 2214, "pass": 2194, "fail": 20, "skipped": 0 },
+    "finding": "Newer successor tests and builders assume later search, filter, typography, and heading changes inside the nominal 2.0.0 base. A production cutover requires moving those behaviors to explicit successor versions and requalifying their deltas against the admitted 2.0.0 base.",
+    "disposition": "Trial runtime imports and adapted modules removed. No active factory, admitted release, database migration, or published merchant snapshot was changed."
+  },
+  "editorCompatibilityDiagnostic": {
+    "method": "For each immutable admitted artifact, build its section/settings manifest and run collectThemeTemplateValidationIssues against its stored theme document using the current canonical editor validator.",
+    "validArtifacts": ["letbuyy-craft"],
+    "invalidArtifacts": {
+      "letbuyy-aura": ["undeclared list-collections subtitle"],
+      "letbuyy-bloom": ["undeclared list-collections subtitle", "undeclared search title"],
+      "letbuyy-dawn": ["undeclared list-collections subtitle"],
+      "letbuyy-forge": ["undeclared bodyFont", "undeclared experienceId", "undeclared headingFont"],
+      "letbuyy-nova": ["undeclared fontFamily"],
+      "letbuyy-refresh": ["undeclared list-collections subtitle"],
+      "letbuyy-ride": ["undeclared list-collections subtitle"],
+      "letbuyy-summit": ["undeclared list-collections subtitle"]
+    },
+    "admittedArtifactsFailingCurrentEditorValidation": 8,
+    "admittedArtifactCount": 9,
+    "trialLatest210FailingAfterHistoricalBaseSwitch": ["letbuyy-dawn", "letbuyy-nova", "letbuyy-summit"],
+    "implication": "An exact-hash historical factory is necessary for provenance, but cannot be routed into new installs or editor drafts without a versioned successor and an explicit compatibility or upgrade path."
+  },
+  "qualification": "Exact historical package reproduction is proven, but current runtime promotion and reviewed successor source pins are not. The historical theme promotion gate remains red; no green behavioral gate or Wave 6 release is claimed."
+}

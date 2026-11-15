@@ -1,0 +1,10 @@
+{
+  "run_id": "92d452e8952f",
+  "steps": [
+    "normal-native-refresh-removes-revoked-beta",
+    "remaining-owned-alpha-positive-selection"
+  ],
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v58/native-revoked-beta-absent.png"
+  ]
+}

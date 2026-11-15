@@ -1,18 +1,15 @@
 'use client'
+import { ManualCollectionMetadataPanel } from '@/components/products/ManualCollectionMetadataPanel'
+import { discoverMemberships, retainMembership, markMembershipMissing, forgetMembershipRecovery, type PendingMembership } from '@/lib/products/collection-membership-journal'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { CollectionMembershipSnapshotSchema, CollectionMembershipProductSchema, ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput, CollectionSummarySchema, CollectionListPageSchema, type CollectionSummary } from '@letbuyy/shared-types'
+import { CollectionMembershipSnapshotSchema, CollectionMembershipProductSchema, ReplaceCollectionMembershipSchema, CollectionSummarySchema, CollectionListPageSchema, type CollectionSummary } from '@letbuyy/shared-types'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
-import { Button, Input, Table, Avatar, Badge, Banner, Card, Checkbox, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
+import { Button, ConfirmDialog, Input, Table, Avatar, Badge, Banner, Card, Checkbox, Package, Page, PageHeader, Plus, RefreshCw, Section, Skeleton, useToast } from '@letbuyy/ui'
 import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
 
 type CollectionRow = CollectionSummary
-
-interface CollectionFormState {
-    title: string
-    description: string
-}
 
 interface ProductRow {
     id: string
@@ -22,7 +19,6 @@ interface ProductRow {
     is_active?: boolean
 }
 
-type PendingMembership = { actorId: string; store: string; storeId: string; collectionId: string; command: ReplaceCollectionMembershipInput }
 interface ManageProductsState {
     collectionId: string
     collectionTitle: string
@@ -45,11 +41,6 @@ interface ManageProductsState {
     pageError: string | null
 }
 
-const emptyForm: CollectionFormState = {
-    title: '',
-    description: '',
-}
-
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
         const error = (payload as { error?: unknown }).error
@@ -63,10 +54,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function formsEqual(a: CollectionFormState, b: CollectionFormState) {
-    return a.title === b.title && a.description === b.description
 }
 
 function normalizeCollection(row: Record<string, unknown>): CollectionRow { return CollectionSummarySchema.parse(row) }
@@ -92,34 +79,17 @@ function normalizeProduct(row: Record<string, unknown>): ProductRow {
     }
 }
 
-function recoveryKey(actorId: string, store: string, collectionId: string) {
-    return `letbuyy.collection-membership.v1:${actorId}:${store}:${collectionId}`
-}
-function restoreMembership(raw: string, actorId: string, store: string, collectionId: string): PendingMembership {
-    const saved = JSON.parse(raw)
-    if (!saved || saved.actorId !== actorId || saved.store !== store || saved.collectionId !== collectionId ||
-        typeof saved.storeId !== 'string' || !/^[0-9a-f-]{36}$/i.test(saved.storeId)) throw new Error('Saved collection context changed')
-    return { actorId, store, collectionId, storeId: saved.storeId, command: ReplaceCollectionMembershipSchema.parse(saved.command) }
-}
-
-
-function forgetMembershipRecovery(pending: PendingMembership) {
-    const key = recoveryKey(pending.actorId, pending.store, pending.collectionId), raw = window.sessionStorage.getItem(key)
-    if (raw !== null) {
-        const stored = restoreMembership(raw, pending.actorId, pending.store, pending.collectionId)
-        if (stored.storeId !== pending.storeId || stored.command.idempotency_key !== pending.command.idempotency_key
-            || stored.command.expected_version !== pending.command.expected_version
-            || JSON.stringify(stored.command.product_ids) !== JSON.stringify(pending.command.product_ids)) {
-            throw new Error('Another pending collection save is retained. Reload and review it before clearing this request.')
-        }
-    }
-    window.sessionStorage.removeItem(key)
-}
+const isDenial = (response: Response, payload: { error?: { code?: string } } | null) =>
+        response.status === 401 || response.status === 403 || response.status === 409 && payload?.error?.code === 'SESSION_CONTEXT_CHANGED'
 
 export default function CollectionsPage() {
-    const { store } = useParams<{ store: string }>()
-    const { actorId } = useMerchantSecurityContext(store)
-    const context = `${actorId}:${store}`, currentContext = useRef(context), generation = useRef(0), listGeneration = useRef(0), inFlight = useRef<string | null>(null)
+    const { store } = useParams<{ store: string }>(), scope = useMerchantSecurityContext(store)
+    if (!scope.siteId) return <Page><Banner variant="critical">Reload the selected store before opening collections.</Banner></Page>
+    return <CollectionsWorkspace key={`${scope.actorId}:${scope.siteId}`} store={store} actorId={scope.actorId} siteId={scope.siteId} />
+}
+function CollectionsWorkspace({ store, actorId, siteId }: { store: string; actorId: string; siteId: string }) {
+    const context = `${actorId}:${siteId}:${store}`, currentContext = useRef(context), generation = useRef(0), listGeneration = useRef(0), inFlight = useRef<string | null>(null)
+    const active = useRef(true)
     currentContext.current = context
     const { notify } = useToast()
     const [collections, setCollections] = useState<CollectionRow[]>([])
@@ -128,26 +98,43 @@ export default function CollectionsPage() {
     const [listContext, setListContext] = useState<string | null>(null)
     const listPage = useRef(1)
     const [listMeta, setListMeta] = useState({page:1,total:0,has_next:false,has_prev:false})
-    const [showCreate, setShowCreate] = useState(false)
-    const [form, setForm] = useState<CollectionFormState>(emptyForm)
-    const [creating, setCreating] = useState(false)
+    const [metadataId, setMetadataId] = useState<string | null>(null)
     const [manage, setManage] = useState<ManageProductsState>(emptyManageState)
+    const [denied, setDenied] = useState(false)
+    const [recoveries, setRecoveries] = useState<PendingMembership[]>([])
+    const [recoveryError, setRecoveryError] = useState<string | null>(null)
+    const [recoveryNotice, setRecoveryNotice] = useState<string | null>(null)
+    const [recoveryBusy, setRecoveryBusy] = useState(false)
+    const [discardMissing, setDiscardMissing] = useState<PendingMembership | null>(null)
+    const refreshRecoveries = useCallback(() => {
+        if (!active.current) return
+        try { setRecoveries(discoverMemberships(window.sessionStorage, actorId, siteId, store)); setRecoveryError(null) }
+        catch { setRecoveries([]); setRecoveryError('Saved collection recovery could not be read. The original request is retained. Retry recovery before starting another save.') }
+    }, [actorId, siteId, store])
+    const retireAccess = useCallback(() => {
+        active.current = false; generation.current++; listGeneration.current++; inFlight.current = null
+        setDenied(true); setCollections([]); setMetadataId(null); setManage(emptyManageState)
+        setRecoveries([]); setDiscardMissing(null); setRecoveryBusy(false); setLoading(false)
+    }, [])
     useEffect(() => {
-        generation.current++; inFlight.current = null; setManage(emptyManageState); listPage.current=1; setListMeta({page:1,total:0,has_next:false,has_prev:false})
-        return () => { generation.current++; listGeneration.current++; inFlight.current = null }
-    }, [context])
+        active.current = true; setDenied(false); refreshRecoveries(); generation.current++; inFlight.current = null; setManage(emptyManageState); listPage.current=1; setListMeta({page:1,total:0,has_next:false,has_prev:false})
+        return () => { active.current = false; generation.current++; listGeneration.current++; inFlight.current = null }
+    }, [context, refreshRecoveries])
 
     const loadCollections = useCallback(async (requestedPage = listPage.current) => {
+        if (!active.current) return
         const captured = context, epoch = ++listGeneration.current
         setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/collections?page=${requestedPage}&limit=20`, {
-                cache: 'no-store', signal: AbortSignal.timeout(15_000),
+                cache: 'no-store', signal: AbortSignal.timeout(15_000), headers: { 'X-LetBuyy-Merchant-Context': actorId },
             })
             const payload = await response.json().catch(() => null)
 
+            if (captured !== currentContext.current || epoch !== listGeneration.current || !active.current) return
+            if (isDenial(response, payload)) { retireAccess(); return }
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load collections'))
             }
@@ -173,80 +160,21 @@ export default function CollectionsPage() {
         } finally {
             if (captured === currentContext.current && epoch === listGeneration.current) setLoading(false)
         }
-    }, [context, notify, store])
+    }, [context, notify, store, actorId, retireAccess])
 
     useEffect(() => {
         void loadCollections()
     }, [loadCollections])
 
-    const hasUnsavedCreate = showCreate && !formsEqual(form, emptyForm)
-    const saveState = creating ? 'saving' : hasUnsavedCreate ? 'unsaved' : 'saved'
-
-    const resetCreateForm = useCallback(() => {
-        setShowCreate(false)
-        setForm(emptyForm)
-    }, [])
-
-    const updateForm = useCallback(<Key extends keyof CollectionFormState>(key: Key, value: CollectionFormState[Key]) => {
-        setForm((current) => ({ ...current, [key]: value }))
-    }, [])
-
-    const handleCreate = useCallback(async () => {
-        if (creating) return
-        const title = form.title.trim()
-        if (!title) {
-            notify({
-                title: 'Collection title is required',
-                description: 'Add a title before creating the collection.',
-                variant: 'warning',
-            })
-            return
-        }
-
-        setCreating(true)
-
-        try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/collections`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title,
-                    description: form.description.trim() || null,
-                }),
-            })
-            const payload = await response.json().catch(() => null)
-
-            if (!response.ok) {
-                throw new Error(getErrorMessage(payload, 'Unable to create collection'))
-            }
-
-            setShowCreate(false)
-            setForm(emptyForm)
-            notify({
-                title: 'Collection created',
-                description: `${title} is ready for product organization.`,
-                variant: 'success',
-            })
-            await loadCollections()
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unable to create collection'
-            notify({
-                title: 'Could not create collection',
-                description: message,
-                variant: 'critical',
-            })
-        } finally {
-            setCreating(false)
-        }
-    }, [creating, form.description, form.title, loadCollections, notify, store])
-
     const requestHeaders = useCallback(() => ({ 'X-LetBuyy-Merchant-Context': actorId }), [actorId])
-    const openManageProducts = useCallback(async (collection: Pick<CollectionSummary, 'id' | 'title'>) => {
+    const openManageProducts = useCallback(async (collection: Pick<CollectionSummary, 'id' | 'title'>, reviewing?: PendingMembership) => {
+        if (!active.current || inFlight.current) return
         const epoch = ++generation.current, captured = context
         let pending: PendingMembership | null = null, corruptRecovery = false
         try {
-            const raw = window.sessionStorage.getItem(recoveryKey(actorId, store, collection.id))
-            if (raw) pending = restoreMembership(raw, actorId, store, collection.id)
+            const saved = discoverMemberships(window.sessionStorage, actorId, siteId, store).filter(row => row.collectionId === collection.id)
+            if (saved.length > 1) throw new Error('More than one original selection needs recovery.')
+            pending = saved[0] ?? null
         } catch { corruptRecovery = true }
         setManage({ ...emptyManageState, collectionId: collection.id, collectionTitle: collection.title,
             open: true, loading: true, pending, corruptRecovery, saveError: pending ? 'This save could not be confirmed. Retry the same save before changing this selection.' : null, assignedIds: new Set(pending?.command.product_ids || []) })
@@ -256,9 +184,11 @@ export default function CollectionsPage() {
                 fetch(`/api/stores/${encodeURIComponent(store)}/collections/${encodeURIComponent(collection.id)}/products`, { cache: 'no-store', signal: AbortSignal.timeout(15_000), headers: requestHeaders() }),
             ])
             const [productsPayload, assignedPayload] = await Promise.all([productsRes.json().catch(() => null), assignedRes.json().catch(() => null)])
+            if (epoch !== generation.current || captured !== currentContext.current || !active.current) return
+            if (isDenial(productsRes, productsPayload) || isDenial(assignedRes, assignedPayload)) { retireAccess(); return }
             if (!productsRes.ok || !assignedRes.ok) throw new Error('Collection products are unavailable. Retry the read before changing this collection.')
             const loaded = CollectionMembershipSnapshotSchema.parse(assignedPayload?.data)
-            if (loaded.collection_id !== collection.id || pending && pending.storeId !== loaded.store_id) throw new Error('The collection context changed. Reload this store.')
+            if (loaded.collection_id !== collection.id || loaded.store_id !== siteId || pending && pending.storeId !== loaded.store_id) throw new Error('The collection context changed. Reload this store.')
             const choices = CollectionMembershipProductSchema.array().max(100).parse(productsPayload?.data)
             const meta = productsPayload?.meta
             if (!meta || meta.page !== 1 || typeof meta.has_next !== 'boolean' || !Number.isInteger(meta.per_page) || meta.per_page > 100 || meta.per_page < 1) throw new Error('Product pagination could not be confirmed.')
@@ -267,22 +197,28 @@ export default function CollectionsPage() {
             // unavailable assignment is visible and can be removed explicitly.
             for (const id of loaded.unavailable_product_ids) byId.set(id, { id, name: 'Unavailable assigned product' })
             if (epoch !== generation.current || captured !== currentContext.current) return
-            setManage(prev => ({ ...prev, loading: false, storeId: loaded.store_id, version: loaded.membership_version,
+            if (reviewing) {
+                if (!pending || JSON.stringify(pending.command) !== JSON.stringify(reviewing.command)) throw new Error('The original selection changed. Reload before reviewing it.')
+                forgetMembershipRecovery(window.sessionStorage, reviewing); refreshRecoveries(); pending = null
+            }
+            setManage(prev => ({ ...prev, loading: false, storeId: loaded.store_id, version: loaded.membership_version, pending,
                 allProducts: [...byId.values()], assignedIds: new Set(pending?.command.product_ids || loaded.product_ids), hasNext: meta.has_next,
                 saveError: pending ? 'This save could not be confirmed. Retry the same save before changing this selection.' : null }))
         } catch (error) {
             if (epoch !== generation.current || captured !== currentContext.current) return
             setManage(prev => ({ ...prev, loading: false, loadError: error instanceof Error ? error.message : 'Unable to load collection products.' }))
         }
-    }, [actorId, context, requestHeaders, store])
+    }, [actorId, context, requestHeaders, store, siteId, retireAccess, refreshRecoveries])
 
     const loadMoreProducts = useCallback(async () => {
-        if (manage.loadingMore || !manage.hasNext) return
+        if (!active.current || manage.loadingMore || !manage.hasNext) return
         const epoch = generation.current, captured = context, page = manage.page + 1
         setManage(prev => ({ ...prev, loadingMore: true }))
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100&page=${page}&view=summary`, { cache: 'no-store', signal: AbortSignal.timeout(15_000), headers: requestHeaders() })
             const payload = await response.json().catch(() => null)
+            if (epoch !== generation.current || captured !== currentContext.current || !active.current) return
+            if (isDenial(response, payload)) { retireAccess(); return }
             if (!response.ok) throw new Error('Unable to load more products. Retry this page.')
             const choices = CollectionMembershipProductSchema.array().max(100).parse(payload?.data), meta = payload?.meta
             if (!meta || meta.page !== page || typeof meta.has_next !== 'boolean' || !Number.isInteger(meta.per_page) || meta.per_page > 100 || meta.per_page < 1) throw new Error('Product pagination could not be confirmed.')
@@ -292,8 +228,8 @@ export default function CollectionsPage() {
         } catch (error) {
             if (epoch === generation.current && captured === currentContext.current) setManage(prev => ({ ...prev, loadingMore: false, pageError: error instanceof Error ? error.message : 'Unable to load more products.' }))
         }
-    }, [context, manage.hasNext, manage.loadingMore, manage.page, requestHeaders, store])
-    const cancelManage = useCallback(() => { generation.current++; setManage(prev => ({ ...prev, open: false })) }, [])
+    }, [context, manage.hasNext, manage.loadingMore, manage.page, requestHeaders, store, retireAccess])
+    const cancelManage = useCallback(() => { generation.current++; setManage(emptyManageState); refreshRecoveries() }, [refreshRecoveries])
     const toggleProductAssignment = useCallback((productId: string) => {
         setManage(prev => {
             if (prev.loading || prev.saving || prev.pending || prev.conflict || prev.loadError || prev.corruptRecovery) return prev
@@ -303,18 +239,16 @@ export default function CollectionsPage() {
         })
     }, [])
     const saveManageProducts = useCallback(async (retry = false) => {
-        if (inFlight.current || manage.saving || manage.loading || manage.corruptRecovery || manage.conflict || !retry && (manage.pending || manage.loadError || !manage.version)) return
-        const captured = context, epoch = generation.current, key = recoveryKey(actorId, store, manage.collectionId)
+        if (!active.current || inFlight.current || manage.saving || manage.loading || manage.corruptRecovery || manage.conflict || !retry && (manage.pending || manage.loadError || recoveryError || !manage.version)) return
+        const captured = context, epoch = generation.current
         let intent = retry ? manage.pending : null
         try {
             if (!intent) {
                 if (retry) return
                 const command = ReplaceCollectionMembershipSchema.parse({ product_ids: [...manage.assignedIds], expected_version: manage.version, idempotency_key: crypto.randomUUID() })
                 intent = { actorId, store, storeId: manage.storeId, collectionId: manage.collectionId, command }
-                window.sessionStorage.setItem(key, JSON.stringify(intent))
-                // A failed readback of the durable client intent must not send
-                // an action whose exact retry cannot survive this page.
-                if (window.sessionStorage.getItem(key) !== JSON.stringify(intent)) throw new Error('Save recovery storage is unavailable. Keep this selection and retry.')
+                retainMembership(window.sessionStorage, intent)
+                refreshRecoveries()
             }
         } catch (error) {
             setManage(prev => ({ ...prev, saveError: error instanceof Error ? error.message : 'Save recovery storage is unavailable.' })); return
@@ -324,17 +258,21 @@ export default function CollectionsPage() {
         setManage(prev => ({ ...prev, saving: true, pending: sending, saveError: null }))
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/collections/${encodeURIComponent(sending.collectionId)}/products`, {
-                method: 'PUT', headers: { ...requestHeaders(), 'Content-Type': 'application/json', 'X-Idempotency-Key': sending.command.idempotency_key }, body: JSON.stringify(sending.command),
+                method: 'PUT', headers: { ...requestHeaders(), 'Content-Type': 'application/json', 'X-Idempotency-Key': sending.command.idempotency_key }, body: JSON.stringify(sending.command), signal: AbortSignal.timeout(20000),
             })
             const payload = await response.json().catch(() => null)
             if (epoch !== generation.current || captured !== currentContext.current) return
-            if (response.status === 409) {
+            if (isDenial(response, payload)) { retireAccess(); return }
+            if (response.status === 409 && payload?.error?.code === 'COLLECTION_MEMBERSHIP_VERSION_CONFLICT') {
                 setManage(prev => ({ ...prev, saving: false, conflict: true, saveError: getErrorMessage(payload, 'Collection membership changed. Reload the current collection.') })); return
+            }
+            if (response.status === 404 && payload?.error?.code === 'COLLECTION_MEMBERSHIP_NOT_FOUND') {
+                markMembershipMissing(window.sessionStorage, sending); refreshRecoveries()
             }
             if (!response.ok) throw new Error('This save could not be confirmed. Retry the same save before changing this selection.')
             const saved = CollectionMembershipSnapshotSchema.parse(payload?.data)
-            if (saved.collection_id !== sending.collectionId || saved.store_id !== sending.storeId || JSON.stringify(saved.product_ids) !== JSON.stringify(sending.command.product_ids)) throw new Error('This save could not be confirmed. Retry the same save.')
-            forgetMembershipRecovery(sending)
+            if (saved.membership_version <= sending.command.expected_version || saved.collection_id !== sending.collectionId || saved.store_id !== sending.storeId || JSON.stringify(saved.product_ids) !== JSON.stringify(sending.command.product_ids)) throw new Error('This save could not be confirmed. Retry the same save.')
+            forgetMembershipRecovery(window.sessionStorage, sending); refreshRecoveries()
             setManage(prev => ({ ...prev, saving: false, pending: null, open: false }))
             notify({ title: 'Products updated', description: `${manage.collectionTitle} product list saved.`, variant: 'success' })
             await loadCollections()
@@ -343,14 +281,61 @@ export default function CollectionsPage() {
         } finally {
             if (inFlight.current === flightToken) inFlight.current = null
         }
-    }, [actorId, context, loadCollections, manage, notify, requestHeaders, store])
+    }, [actorId, context, loadCollections, manage, notify, requestHeaders, store, refreshRecoveries, retireAccess, recoveryError])
     const reloadCurrentProducts = useCallback(() => {
-        // Explicit actor action discards this failed/conflicting intent, then
-        // loads the server version. A new key is never manufactured by a retry.
-        try { if (manage.pending) forgetMembershipRecovery(manage.pending); else window.sessionStorage.removeItem(recoveryKey(actorId, store, manage.collectionId)) }
-        catch { setManage(prev => ({ ...prev, corruptRecovery: true })); return }
-        void openManageProducts({ id: manage.collectionId, title: manage.collectionTitle })
-    }, [actorId, manage.collectionId, manage.collectionTitle, manage.pending, openManageProducts, store])
+        if (!active.current || !manage.conflict || !manage.pending || inFlight.current) return
+        // Only a fresh, current-owner snapshot may release the rejected
+        // version. A denial/outage retains the original request unchanged.
+        void openManageProducts({ id: manage.collectionId, title: manage.collectionTitle }, manage.pending)
+    }, [manage, openManageProducts])
+
+    const retryRecovery = useCallback(async (pending: PendingMembership, allowMissingDiscard = false) => {
+        if (!active.current || inFlight.current) return
+        const captured = context, epoch = generation.current, token = `${context}:recovery:${crypto.randomUUID()}`
+        inFlight.current = token; setRecoveryBusy(true); setRecoveryNotice(null)
+        try {
+            const current = discoverMemberships(window.sessionStorage, actorId, siteId, store).find(row =>
+                row.store === pending.store && row.collectionId === pending.collectionId && JSON.stringify(row.command) === JSON.stringify(pending.command))
+            if (!current) throw new Error('The original selection changed. Reload collections before retrying.')
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/collections/${encodeURIComponent(pending.collectionId)}/products`, {
+                method: 'PUT', headers: { ...requestHeaders(), 'Content-Type': 'application/json', 'X-Idempotency-Key': pending.command.idempotency_key },
+                body: JSON.stringify(pending.command), signal: AbortSignal.timeout(20000),
+            })
+            const payload = await response.json().catch(() => null)
+            if (!active.current || captured !== currentContext.current || epoch !== generation.current) return
+            if (isDenial(response, payload)) { retireAccess(); return }
+            if (response.status === 404 && payload?.error?.code === 'COLLECTION_MEMBERSHIP_NOT_FOUND') {
+                if (allowMissingDiscard) {
+                    forgetMembershipRecovery(window.sessionStorage, pending)
+                    setRecoveryNotice('Rejected product selection discarded. The collection remains deleted.')
+                    setManage(emptyManageState)
+                } else {
+                    markMembershipMissing(window.sessionStorage, pending)
+                    setRecoveryNotice('The collection was removed before this selection was saved. The original request is retained for explicit review.')
+                }
+                return
+            }
+            if (response.status === 409 && payload?.error?.code === 'COLLECTION_MEMBERSHIP_VERSION_CONFLICT') {
+                // The original is still retained until a current owner read and
+                // explicit review in the editor; unrelated409s never release it.
+                inFlight.current = null
+                const opening = openManageProducts({ id: pending.collectionId, title: 'Saved product selection' }), editEpoch = generation.current
+                await opening
+                if (active.current && captured === currentContext.current && editEpoch === generation.current) setManage(prev => ({ ...prev, conflict: true, saveError: 'Collection membership changed. Reload the current collection to review your selection.' }))
+                return
+            }
+            if (!response.ok) throw new Error('The original save could not be confirmed. Keep the saved selection and retry.')
+            const saved = CollectionMembershipSnapshotSchema.parse(payload?.data)
+            if (saved.collection_id !== pending.collectionId || saved.store_id !== siteId || saved.membership_version <= pending.command.expected_version || JSON.stringify(saved.product_ids) !== JSON.stringify(pending.command.product_ids)) throw new Error('The original collection receipt could not be confirmed.')
+            forgetMembershipRecovery(window.sessionStorage, pending); setManage(emptyManageState)
+            setRecoveryNotice('Original product selection confirmed.'); await loadCollections()
+        } catch (error) {
+            if (active.current && captured === currentContext.current && epoch === generation.current) setRecoveryNotice(error instanceof Error && error.name !== 'ZodError' ? error.message : 'The original collection receipt could not be confirmed.')
+        } finally {
+            if (inFlight.current === token) inFlight.current = null
+            if (active.current && captured === currentContext.current) { setRecoveryBusy(false); refreshRecoveries() }
+        }
+    }, [actorId, context, siteId, store, requestHeaders, retireAccess, refreshRecoveries, openManageProducts, loadCollections])
 
     const filteredManageProducts = useMemo(() => {
         const q = manage.searchQuery.trim().toLowerCase()
@@ -397,18 +382,15 @@ export default function CollectionsPage() {
             key: 'actions',
             header: '',
             render: (row: CollectionRow) => (
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    type="button"
-                    onClick={() => void openManageProducts(row)}
-                >
-                    Manage products
-                </Button>
+                <div className="flex gap-[var(--lb-space-2)]">
+                    <Button variant="secondary" size="sm" disabled={metadataId !== null || recoveryBusy} onClick={() => setMetadataId(row.id)}>Edit details</Button>
+                    <Button variant="secondary" size="sm" disabled={metadataId !== null || recoveryBusy} onClick={() => void openManageProducts(row)}>Manage products</Button>
+                </div>
             ),
         },
-    ], [openManageProducts])
+    ], [openManageProducts, metadataId, recoveryBusy])
 
+    if (denied) return <Page><Banner variant="critical" title="Store access changed">Reload this store before viewing collections. Original save requests are retained.</Banner></Page>
     if (loading || listContext !== context) {
         return (
             <Page>
@@ -435,16 +417,17 @@ export default function CollectionsPage() {
                 description="Group products into merchandising sets for storefront browsing."
                 breadcrumbs={[{ label: 'Products' }, { label: 'Collections' }]}
                 primaryAction={{
-                    label: showCreate ? 'Create collection' : 'New collection',
-                    onClick: showCreate ? () => void handleCreate() : () => setShowCreate(true),
-                    disabled: creating || (showCreate && !form.title.trim()),
+                    label: 'New collection',
+                    onClick: () => setMetadataId('create'),
+                    disabled: metadataId !== null || recoveryBusy,
                     icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                 }}
                 secondaryActions={[
+                    { label: 'Smart collections', href: `/${store}/products/smart-collections` },
                     {
                         label: 'Refresh',
                         onClick: () => void loadCollections(),
-                        disabled: creating,
+                        disabled: metadataId !== null,
                         icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                     },
                 ]}
@@ -460,46 +443,18 @@ export default function CollectionsPage() {
                 </Banner>
             )}
 
-            {showCreate && (
-                <Card>
-                    <Section
-                        title="New collection"
-                        description="Create a product grouping that can be featured in storefront navigation and sections."
-                    >
-                        <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-2">
-                            <Input
-                                label="Title"
-                                value={form.title}
-                                onChange={(event) => updateForm('title', event.target.value)}
-                                placeholder="Summer sale"
-                                disabled={creating}
-                            />
-                            <Textarea
-                                label="Description"
-                                value={form.description}
-                                onChange={(event) => updateForm('description', event.target.value)}
-                                placeholder="Describe what belongs in this collection."
-                                rows={3}
-                                disabled={creating}
-                            />
-                        </div>
-                        <div className="mt-[var(--lb-space-4)] flex flex-wrap gap-[var(--lb-space-2)]">
-                            <Button
-                                type="button"
-                                onClick={() => void handleCreate()}
-                                loading={creating}
-                                disabled={creating || !form.title.trim()}
-                            >
-                                <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                Create collection
-                            </Button>
-                            <Button type="button" variant="secondary" onClick={resetCreateForm} disabled={creating}>
-                                Cancel
-                            </Button>
-                        </div>
-                    </Section>
-                </Card>
-            )}
+            {recoveryError && <Banner variant="critical" action={<Button onClick={refreshRecoveries}>Retry saved recovery read</Button>}>{recoveryError}</Banner>}
+            {recoveryNotice && <Banner variant="info">{recoveryNotice}</Banner>}
+            {recoveries.map(pending => <Banner key={pending.store + ':' + pending.collectionId} variant="warning" title="Saved product selection needs confirmation">
+                <p>The original selection and save key are retained. Retry uses your current store access.</p>
+                <Button disabled={recoveryBusy || manage.open} onClick={() => void retryRecovery(pending)}>Retry saved product selection</Button>
+                {pending.outcome === 'missing' && <Button disabled={recoveryBusy || manage.open} onClick={() => setDiscardMissing(pending)}>Discard rejected product selection</Button>}
+            </Banner>)}
+            <ConfirmDialog open={discardMissing !== null} title="Discard rejected product selection?" description="We will check the original request again with your current store access before discarding it. Products remain in your catalog."
+                confirmLabel="Discard selection" onClose={() => setDiscardMissing(null)} onConfirm={() => { const pending = discardMissing; setDiscardMissing(null); if (pending) void retryRecovery(pending, true) }} />
+
+            <ManualCollectionMetadataPanel store={store} actorId={actorId} siteId={siteId} selected={metadataId}
+                onClose={() => setMetadataId(null)} onSaved={() => void loadCollections()} />
 
             <Card>
                 <Section
@@ -516,8 +471,8 @@ export default function CollectionsPage() {
                         <EmptyState scene="collections"
                             title={listMeta.total === 0 ? "No collections yet" : "No collections on this page"}
                             body={listMeta.total === 0 ? "Organize products into collections so shoppers can browse by theme, season, category, or campaign." : "Use the previous-page control to return to your collections."}
-                            primaryAction={!showCreate && listMeta.total === 0 ? (
-                                <Button type="button" onClick={() => setShowCreate(true)}>
+                            primaryAction={metadataId === null && listMeta.total === 0 ? (
+                                <Button type="button" onClick={() => setMetadataId('create')}>
                                     <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                     Create collection
                                 </Button>
@@ -539,13 +494,6 @@ export default function CollectionsPage() {
                 </Section>
             </Card>
 
-            <SaveBar
-                state={saveState}
-                onSave={() => void handleCreate()}
-                onDiscard={resetCreateForm}
-                saveLabel="Create collection"
-            />
-
             {manage.open && (
                 <Card>
                     <Section
@@ -557,7 +505,7 @@ export default function CollectionsPage() {
                                     type="button"
                                     onClick={() => void saveManageProducts()}
                                     loading={manage.saving}
-                                    disabled={manage.saving || manage.loading || !!manage.loadError || !!manage.pending || manage.conflict || manage.corruptRecovery || !manage.version}
+                                    disabled={manage.saving || manage.loading || !!manage.loadError || !!manage.pending || manage.conflict || manage.corruptRecovery || !!recoveryError || !manage.version}
                                 >
                                     Save products
                                 </Button>
@@ -575,7 +523,7 @@ export default function CollectionsPage() {
                         {manage.loadError && <Banner variant="critical" title="Could not load collection products"
                             action={<Button variant="secondary" onClick={() => void openManageProducts({ id: manage.collectionId, title: manage.collectionTitle })}>Retry products</Button>}>{manage.loadError}</Banner>}
                         {manage.corruptRecovery && <Banner variant="critical" title="Could not recover collection save"
-                            action={<Button variant="secondary" onClick={reloadCurrentProducts}>Discard saved recovery</Button>}>The saved request could not be read. Check the current collection before starting another save.</Banner>}
+                            action={<Button variant="secondary" onClick={() => { refreshRecoveries(); void openManageProducts({ id: manage.collectionId, title: manage.collectionTitle }) }}>Retry saved recovery read</Button>}>The saved request could not be read. Its original details are retained; a new save is unavailable.</Banner>}
                         {manage.saveError && <Banner variant="critical" title={manage.conflict ? 'Collection membership changed' : 'Collection save could not be confirmed'}
                             action={manage.conflict ? <Button variant="secondary" onClick={reloadCurrentProducts}>Reload current products</Button> : manage.pending ? <Button variant="secondary" onClick={() => void saveManageProducts(true)} disabled={manage.saving || manage.loading}>Retry same save</Button> : undefined}>{manage.saveError}</Banner>}
                         <p>{manage.assignedIds.size} products selected</p>

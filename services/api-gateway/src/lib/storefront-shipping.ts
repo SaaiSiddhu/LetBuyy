@@ -160,6 +160,7 @@ export async function loadStorefrontSubtotalMinor(
         const { data: variantData, error: variantError } = await db
             .from('product_variants')
             .select('id, product_id, price')
+            .is('deleted_at', null)
             .in('id', variantIds);
         if (variantError) throw new Error(`Checkout variant pricing lookup failed: ${variantError.message}`);
         for (const variant of (variantData || []) as Array<{ id: string; product_id: string; price: number | string | null }>) {

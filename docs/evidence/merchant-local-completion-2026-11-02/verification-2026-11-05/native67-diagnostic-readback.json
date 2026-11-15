@@ -1,0 +1,16 @@
+{
+  "at": "2026-11-06T16:11:40.777874+00:00",
+  "source_sha256": "e8cc94edd6649a1fbbeebf1f797d1d65a4959fe87851467d1c37f28399ddc0a4",
+  "run_id": "318bd4e63606",
+  "status": "FAIL_METADATA_FIELD_LABEL_SELECTOR_AFTER_SUCCESSFUL_NATIVE_RECOVERY",
+  "checks_reached": "Actual native OS picker; one realR2object; SQLcompletion503; originalreceiptprocessing; no libraryrow; force-stop/oldPIDabsence/newPID; exactnewpickerfile removed; original no-file recover200; librarycreate201; visible Edit media dialog. No metadata write or KYC acceptance.",
+  "diagnostic": "The populated Alt text EditText is exposed as its current value1000000018; test required a separate label node. Correct to observed current Edit media title followed by existing exact ordered-field fill with focused value readback. No app-source change or assertion weakening.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

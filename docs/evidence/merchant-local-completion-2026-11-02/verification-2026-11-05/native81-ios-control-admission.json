@@ -1,0 +1,14 @@
+{
+  "source": "merchant-product-media-ios-source-v58",
+  "source_sha256": "55323aae8a88a5f30bef11b75ee2602051cd263b95cda5b75f31369973a4b7c3",
+  "inputs": {
+    "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-product-media-v81-local-ios.postgres.test.ts": "40daaa5e934bbd5e3736af012a016f2458f18c9f1d4faef0860b1700d213cbbb",
+    "/private/tmp/letbuyy-ios-ui-20261107-7848db07ad/create_project.rb": "cc86d29d749cb0bdf52da681077a3ea430368529fc26e5104d3b6c41163d7fda",
+    "/private/tmp/letbuyy-ios-ui-20261107-7848db07ad/MerchantUITests.swift": "a415a5d26d1f7aab1f4dc1ad169d456351abf785591d2cea0a93c0fb1794788e",
+    "/private/tmp/letbuyy-ios-ui-20261107-7848db07ad/run_fixture.py": "fdfe7b1e34b08862d7aa86d6a2701ee11b59d9e6ff5123e089835b47f0676d73",
+    "/private/tmp/letbuyy-ios-ui-20261107-7848db07ad/run_auth_ui.py": "03fe3201bb139774b054394bd18f4ed0bdbe92e8226068fecfa5df74414c7129",
+    "/private/tmp/letbuyy-ios-ui-20261107-7848db07ad/device-receipt.json": "77126b90eb3abe476e4aff960baf73980fafc3471031551b515132663437c5d2",
+    "/private/tmp/letbuyy-ios-ui-20261107-7848db07ad/PHOTO_ADMISSION.json": "43831b5dd8e3fd4effb535b6c36b842a073c1c310c0c0151f187bb8b282b5b36"
+  },
+  "scope": "Prepared exact simulator/normal browser/OS picker controls only. Local provider origin explicitly allowed by test network guard. No acceptance yet."
+}

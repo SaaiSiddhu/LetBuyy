@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { StorePaymentSetupSchema } from './payment-setup';
+import { WarehouseTransferStatusSchema } from './warehouse-documents';
 
 export * from './brand';
 export * from './console-overview';
@@ -29,12 +30,7 @@ export {
 import { UuidSchema } from './uuid';
 export { UuidSchema } from './uuid';
 
-export const ProductCsvImportSchema = z.object({
-  store_id: UuidSchema,
-  // Keep quoted field whitespace and line breaks intact.
-  csv: z.string().min(1).max(1_048_576).refine(value => value.trim().length > 0, 'A product CSV is required'),
-});
-export type ProductCsvImportInput = z.infer<typeof ProductCsvImportSchema>;
+export * from './product-import';
 
 export const QueryBooleanSchema = z.preprocess((value) => {
   if (value === undefined || value === null || value === '') return false;
@@ -103,6 +99,7 @@ export const HsnCodeSchema = z
 
 export const AddressSchema = z.object({
   name: z.string().max(200).optional(),
+  attention: z.string().max(200).optional(),
   line1: z.string().min(1).max(500),
   line2: z.string().max(500).optional(),
   city: z.string().min(1).max(100),
@@ -133,7 +130,8 @@ export const BusinessProfileSchema = z.object({
   pan_last4: z.string().trim().toUpperCase().regex(/^[A-Z0-9]{4}$/).optional(),
   email: EmailSchema.optional(),
   phone: z.string().max(30).optional(),
-  website: UrlSchema.optional(),
+  website: UrlSchema.refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP or HTTPS website URL.').optional(),
+  public_contact_enabled: z.boolean().optional(),
 }).passthrough();
 
 export const InvoiceAddressSchema = AddressSchema.partial().passthrough();
@@ -1067,22 +1065,27 @@ export const CodReconciliationOverviewSchema = z.object({
   }),
 });
 
-export const MerchantKycDocumentSchema = AuditedEntitySchema.extend({
+/** Merchant-visible KYC status only. Private object keys and scanner/provider payloads stay in the Gateway. */
+export const MerchantKycDocumentSchema = TimestampedEntitySchema.extend({
+  created_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
+  deleted_at: z.string().datetime({ offset: true }).optional().nullable(),
   site_id: UuidSchema,
   document_type: MerchantKycDocumentTypeSchema,
   status: MerchantKycDocumentStatusSchema,
   provider: z.string().min(1).max(80),
   provider_mode: MerchantKycProviderModeSchema,
   provider_reference: z.string().optional().nullable(),
+  has_private_upload: z.boolean(),
+  evidence_scan_status: z.enum(['pending', 'clean', 'rejected']).optional().nullable(),
+  provider_unavailable: z.boolean().optional(),
+  requires_resubmission: z.boolean().optional(),
   document_number_last4: z.string().optional().nullable(),
-  file_url: UrlSchema.optional().nullable(),
-  file_name: z.string().optional().nullable(),
   rejection_reason: z.string().optional().nullable(),
-  metadata: MetadataSchema.default({}),
-  submitted_at: z.string().datetime().optional().nullable(),
-  verified_at: z.string().datetime().optional().nullable(),
-  rejected_at: z.string().datetime().optional().nullable(),
-}).passthrough();
+  submitted_at: z.string().datetime({ offset: true }).optional().nullable(),
+  verified_at: z.string().datetime({ offset: true }).optional().nullable(),
+  rejected_at: z.string().datetime({ offset: true }).optional().nullable(),
+}).strict();
 
 export const MerchantKycRequirementSchema = z.object({
   document_type: MerchantKycDocumentTypeSchema,
@@ -1095,9 +1098,19 @@ export const MerchantKycOverviewSchema = z.object({
   site_id: UuidSchema,
   overall_status: MerchantKycOverallStatusSchema,
   provider_mode: MerchantKycProviderModeSchema,
+  private_upload_available: z.boolean(),
+  india_direct_upload_available: z.boolean().optional(),
   required_documents: z.array(MerchantKycRequirementSchema).default([]),
   documents: z.array(MerchantKycDocumentSchema).default([]),
   next_action: z.string().optional().nullable(),
+}).strict().superRefine((overview, context) => {
+  const ids = new Set<string>();
+  for (const [index, document] of overview.documents.entries()) {
+    if (document.site_id !== overview.site_id || ids.has(document.id)) {
+      context.addIssue({ code: 'custom', message: 'KYC document identity does not match its overview', path: ['documents', index] });
+    }
+    ids.add(document.id);
+  }
 });
 
 export const MerchantTwoFactorSchema = AuditedEntitySchema.extend({
@@ -1147,6 +1160,9 @@ export const AuthSessionResponseSchema = z.object({
 }).passthrough();
 
 export const StoreSchema = AuditedEntitySchema.extend({
+  // Full authorized reads carry the sites revision. Older summaries may omit
+  // it; clients must not invent a revision when admitting a profile edit.
+  version: z.number().int().positive().optional(),
   user_id: UuidSchema,
   name: z.string().min(1).max(100),
   subdomain: z.string().min(3).max(63),
@@ -1175,7 +1191,6 @@ export const StoreSchema = AuditedEntitySchema.extend({
   business_profile: BusinessProfileSchema.optional().nullable(),
   invoice_address: InvoiceAddressSchema.optional().nullable(),
   invoice_footer: z.string().max(1000).optional().nullable(),
-  invoice_number_next: z.number().int().positive().optional().nullable(),
   theme_config: MetadataSchema.default({}),
   settings: MetadataSchema.default({}),
   navigation: MetadataSchema.default({}),
@@ -1460,6 +1475,9 @@ export const ProductSchema = AuditedEntitySchema.extend({
   barcode: z.string().max(100).optional().nullable(),
   stock: z.number().int().min(0).default(0),
   track_inventory: z.boolean().default(true),
+  // Read-only free units for live SKUs at their canonical active locations.
+  // `stock` remains the editable base-SKU quantity; unknown inventory is null.
+  catalog_available_quantity: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).nullable().optional(),
   inventory_policy: InventoryPolicySchema.default('deny'),
   images: z.array(UrlSchema).max(50).default([]),
   category: z.string().max(100).optional().nullable(),
@@ -1504,6 +1522,75 @@ export const ProductCategorySchema = AuditedEntitySchema.extend({
   children: z.array(z.unknown()).optional(),
 });
 
+// The existing product.category label remains the assignment contract.
+// Category metadata carries a server-observed revision and complete counts.
+export const ProductCategoryImageUrlSchema = UrlSchema.refine(value=>/^https?:\/\//.test(value),{message:'Use an HTTP or HTTPS image URL.'});
+export const ProductCategoryReadSchema = ProductCategorySchema.omit({children:true}).extend({
+  created_at:z.string().datetime({offset:true}),updated_at:z.string().datetime({offset:true}),
+  deleted_at:z.string().datetime({offset:true}).nullable(),
+  version:z.number().int().positive().max(2147483647),
+  description:z.string().max(500).nullable(),image_url:ProductCategoryImageUrlSchema.nullable(),
+  parent_id:UuidSchema.nullable(),display_order:z.number().int().min(0).max(2147483647),
+  is_visible:z.boolean(),level:z.number().int().min(0),path:z.string().min(1).max(500),
+  created_by:UuidSchema.nullable(),updated_by:UuidSchema.nullable(),deleted_by:UuidSchema.nullable(),
+  products_count:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+  children_count:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+}).strict();
+export const CreateCategoryCommandSchema = z.object({
+  store_id:UuidSchema,idempotency_key:UuidSchema,
+  name:z.string().trim().min(1).max(100),slug:SlugSchema.optional(),
+  description:z.string().max(500).nullable().optional(),
+  image_url:ProductCategoryImageUrlSchema.nullable().optional(),parent_id:UuidSchema.nullable().optional(),
+  display_order:z.number().int().min(0).max(2147483647).default(0),is_visible:z.boolean().default(true),
+}).strict();
+export const UpdateCategoryCommandSchema = CreateCategoryCommandSchema.omit({name:true,display_order:true,is_visible:true}).extend({
+  version:z.number().int().positive().max(2147483647),name:z.string().trim().min(1).max(100).optional(),
+  display_order:z.number().int().min(0).max(2147483647).optional(),is_visible:z.boolean().optional(),
+}).refine(value=>(['name','slug','description','image_url','parent_id','display_order','is_visible']as const).some(key=>value[key]!==undefined),{message:'Choose at least one category field to change.'});
+export const DeleteCategoryCommandSchema = z.object({store_id:UuidSchema,version:z.number().int().positive().max(2147483647),idempotency_key:UuidSchema}).strict();
+export const ProductCategoryListQuerySchema = z.object({
+  store_id:UuidSchema,page:z.coerce.number().int().min(1).max(10000).default(1),
+  limit:z.coerce.number().int().min(1).max(100).default(20),
+  search:z.string().trim().max(200).optional(),flat:z.literal('true').optional(),
+}).strict();
+export const ProductCategoryPageSchema = z.object({success:z.literal(true),data:z.array(ProductCategoryReadSchema).max(100),
+  meta:z.object({page:z.number().int().min(1).max(10000),per_page:z.number().int().min(1).max(100),
+    total:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),total_pages:z.number().int().nonnegative(),
+    has_prev:z.boolean(),has_next:z.boolean()}).strict(),
+}).strict().superRefine((value,context)=>{
+  const m=value.meta,remaining=Math.max(0,m.total-(m.page-1)*m.per_page);
+  if(value.data.length!==Math.min(m.per_page,remaining)||new Set(value.data.map(row=>row.id)).size!==value.data.length
+    ||value.data.some(row=>row.deleted_at!==null)||m.total_pages!==Math.ceil(m.total/m.per_page)
+    ||m.has_prev!==(m.page>1)||m.has_next!==(m.page<m.total_pages))context.addIssue({code:'custom',message:'The category page could not be confirmed.'});
+});
+export const ProductCategoryCommandReceiptSchema = ProductCategoryReadSchema.extend({
+  idempotency_key:UuidSchema,operation:z.enum(['create','update','delete']),
+  affected_products:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+}).superRefine((value,context)=>{
+  if((value.operation==='delete')!==(value.deleted_at!==null))context.addIssue({code:'custom',message:'The category command outcome could not be confirmed.'});
+});
+export type ProductCategoryRead = z.infer<typeof ProductCategoryReadSchema>;
+export type ProductCategoryPage = z.infer<typeof ProductCategoryPageSchema>;
+export type CreateCategoryCommand = z.infer<typeof CreateCategoryCommandSchema>;
+export type UpdateCategoryCommand = z.infer<typeof UpdateCategoryCommandSchema>;
+export type DeleteCategoryCommand = z.infer<typeof DeleteCategoryCommandSchema>;
+export type ProductCategoryCommandReceipt = z.infer<typeof ProductCategoryCommandReceiptSchema>;
+export const ProductCategoryCommandIntentSchema = z.discriminatedUnion('operation',[
+ z.object({operation:z.literal('create'),category_id:z.null(),command:CreateCategoryCommandSchema}).strict(),
+ z.object({operation:z.literal('update'),category_id:UuidSchema,command:UpdateCategoryCommandSchema}).strict(),
+ z.object({operation:z.literal('delete'),category_id:UuidSchema,command:DeleteCategoryCommandSchema}).strict(),
+]);
+export type ProductCategoryCommandIntent=z.infer<typeof ProductCategoryCommandIntentSchema>;
+export function confirmProductCategoryCommandResult(intent:ProductCategoryCommandIntent,value:unknown):ProductCategoryCommandReceipt {
+ const receipt=ProductCategoryCommandReceiptSchema.parse(value),body=intent.command;
+ if(receipt.store_id!==body.store_id||receipt.idempotency_key!==body.idempotency_key||receipt.operation!==intent.operation
+  ||intent.category_id!==null&&receipt.id!==intent.category_id||'version'in body&&receipt.version<=body.version)
+  throw new Error('The original category acknowledgement could not be confirmed.');
+ for(const [key,expected]of Object.entries(body))if(!['store_id','idempotency_key','version'].includes(key)
+  &&receipt[key as keyof ProductCategoryCommandReceipt]!==expected)throw new Error('The category acknowledgement differs from the original fields.');
+ return receipt;
+}
+
 export const CollectionRuleSchema = z.object({
   field: z.string().min(1).max(80),
   relation: z.enum(['equals', 'not_equals', 'contains', 'greater_than', 'less_than']),
@@ -1529,6 +1616,8 @@ export const CollectionSchema = AuditedEntitySchema.extend({
 export const CollectionListPaginationSchema = z.object({
   page: z.coerce.number().int().min(1).max(10000).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().trim().max(200).optional(),
+  status: z.enum(['all','active','inactive']).optional(),
 }).strict();
 export const CollectionListQuerySchema = CollectionListPaginationSchema.extend({ store_id: UuidSchema }).strict();
 export const CollectionSummarySchema = z.object({
@@ -1555,6 +1644,193 @@ export type CollectionListPage = z.infer<typeof CollectionListPageSchema>;
 export type CollectionListQuery = z.infer<typeof CollectionListQuerySchema>;
 export type CollectionListQueryInput = z.input<typeof CollectionListQuerySchema>;
 export type CollectionListPagination = z.infer<typeof CollectionListPaginationSchema>;
+
+// Canonical existing smart-rule vocabulary and confirmed merchant projections.
+// Existing collections is the sole persisted owner following the approved
+// 3November2026 decision; smart transports are compatibility projections.
+export const SmartConditionFieldSchema = z.enum(['title', 'product_type', 'vendor', 'tag', 'price', 'inventory_quantity']);
+export const SmartConditionOpSchema = z.enum(['equals', 'not_equals', 'contains', 'starts_with', 'ends_with', 'gt', 'lt']);
+export const SmartMatchTypeSchema = z.enum(['all', 'any']);
+export const SmartConditionSchema = z.object({
+  field: SmartConditionFieldSchema, op: SmartConditionOpSchema, value: z.string().max(2000),
+}).strict();
+// Owner decision3November2026: one persisted collection identity for manual
+// membership and smart rules. Compatibility smart transports are projections.
+const CollectionMetadataBaseSchema = z.object({
+  id: UuidSchema, store_id: UuidSchema, title: z.string().min(1).max(200),
+  slug: SlugSchema.nullable(), description: z.string().max(2000).nullable(),
+  image_url: UrlSchema.nullable(), is_active: z.boolean().nullable(),
+  match_type: SmartMatchTypeSchema, version: z.number().int().positive(),
+  membership_version: z.number().int().positive(),
+  created_at: z.string().datetime({ offset: true }).nullable(),
+  updated_at: z.string().datetime({ offset: true }).nullable(),
+  deleted_at: z.string().datetime({ offset: true }).nullable(),
+  created_by: UuidSchema.nullable(), updated_by: UuidSchema.nullable(),
+});
+const ManualCollectionMetadataSchema = CollectionMetadataBaseSchema.extend({
+  collection_type: z.literal('manual'), conditions: z.json(),
+}).strict();
+const SmartCollectionMetadataSchema = CollectionMetadataBaseSchema.extend({
+  collection_type: z.literal('smart'), slug: SlugSchema,
+  conditions: z.array(SmartConditionSchema).max(50), is_active: z.boolean(),
+}).strict();
+export const CollectionMetadataSchema = z.discriminatedUnion('collection_type', [
+  ManualCollectionMetadataSchema, SmartCollectionMetadataSchema,
+]);
+const CollectionMetadataReceiptFields = {
+  operation: z.enum(['create', 'update', 'delete']), idempotency_key: UuidSchema,
+  actor_id: UuidSchema, expected_version: z.number().int().positive().nullable(),
+  request: z.record(z.string(), z.json()),
+};
+export const CollectionMetadataReceiptSchema = z.discriminatedUnion('collection_type', [
+  ManualCollectionMetadataSchema.extend(CollectionMetadataReceiptFields).strict(),
+  SmartCollectionMetadataSchema.extend(CollectionMetadataReceiptFields).strict(),
+]).superRefine((value, ctx) => {
+  if (value.operation === 'create' ? value.expected_version !== null || value.version !== 1
+    : value.expected_version === null || value.version !== value.expected_version + 1) {
+    ctx.addIssue({ code: 'custom', message: 'The original collection revision could not be confirmed.' });
+  }
+  if (value.operation === 'delete' && (value.deleted_at === null || value.is_active !== false)) {
+    ctx.addIssue({ code: 'custom', message: 'The collection removal could not be confirmed.' });
+  }
+});
+const CollectionMetadataFieldsSchema = z.object({
+  title: z.string().trim().min(1).max(200), slug: SlugSchema.nullable().optional(),
+  description: z.string().max(2000).nullable().optional(), image_url: UrlSchema.nullable().optional(),
+  is_active: z.boolean().optional(), conditions: z.array(SmartConditionSchema).max(50).optional(),
+  match_type: SmartMatchTypeSchema.optional(),
+}).strict();
+export const CreateCollectionMetadataSchema = CollectionMetadataFieldsSchema.extend({
+  store_id: UuidSchema, idempotency_key: UuidSchema, collection_type: z.enum(['manual', 'smart']),
+}).strict().superRefine((value, ctx) => {
+  if (value.collection_type === 'smart' && !value.slug) ctx.addIssue({ code: 'custom', path: ['slug'], message: 'A smart collection slug is required.' });
+  if (value.collection_type === 'smart' && (value.conditions === undefined || value.match_type === undefined)) ctx.addIssue({ code: 'custom', message: 'Supply the reviewed smart rules and match type.' });
+  if (value.collection_type === 'manual' && (value.title.length > 160 || (value.description?.length ?? 0) > 1000
+    || (value.conditions?.length ?? 0) > 0 || value.match_type === 'any')) {
+    ctx.addIssue({ code: 'custom', message: 'Use the existing manual collection fields; smart rules require a smart collection.' });
+  }
+});
+export const UpdateCollectionMetadataSchema = CollectionMetadataFieldsSchema.partial().extend({
+  collection_type: z.enum(['manual', 'smart']).optional(),
+  store_id: UuidSchema, idempotency_key: UuidSchema, version: z.number().int().positive(),
+}).strict().refine(value => Object.keys(value).some(key => !['store_id', 'idempotency_key', 'version', 'collection_type'].includes(key)), {
+  message: 'Supply the reviewed collection changes.',
+});
+export const DeleteCollectionMetadataSchema = z.object({
+  collection_type: z.enum(['manual', 'smart']),
+  store_id: UuidSchema, idempotency_key: UuidSchema, version: z.number().int().positive(),
+}).strict();
+export const CollectionMetadataPageSchema = z.object({
+  success: z.literal(true), data: z.array(CollectionMetadataSchema).max(100),
+  meta: z.object({ store_id: UuidSchema, page: z.number().int().positive().max(10000),
+    per_page: z.number().int().min(1).max(100), total: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+    total_pages: z.number().int().nonnegative(), total_is_exact: z.literal(true), has_next: z.boolean(), has_prev: z.boolean(),
+  }).strict(),
+}).strict().superRefine((value, ctx) => {
+  const m = value.meta;
+  if (value.data.some(row => row.store_id !== m.store_id || row.deleted_at !== null)
+    || new Set(value.data.map(row => row.id)).size !== value.data.length
+    || value.data.length !== Math.min(m.per_page, Math.max(0, m.total - (m.page - 1) * m.per_page))
+    || m.total_pages !== Math.ceil(m.total / m.per_page) || m.has_next !== (m.page < m.total_pages) || m.has_prev !== (m.page > 1)) {
+    ctx.addIssue({ code: 'custom', message: 'The collection population could not be confirmed.' });
+  }
+});
+export type CollectionMetadata = z.infer<typeof CollectionMetadataSchema>;
+export type CollectionMetadataReceipt = z.infer<typeof CollectionMetadataReceiptSchema>;
+export type CollectionMetadataPage = z.infer<typeof CollectionMetadataPageSchema>;
+export type CreateCollectionMetadata = z.infer<typeof CreateCollectionMetadataSchema>;
+export type UpdateCollectionMetadata = z.infer<typeof UpdateCollectionMetadataSchema>;
+export type DeleteCollectionMetadata = z.infer<typeof DeleteCollectionMetadataSchema>;
+
+export const CollectionMetadataCommandIntentSchema = z.discriminatedUnion('operation', [
+  z.object({ operation: z.literal('create'), collection_id: z.null(), command: CreateCollectionMetadataSchema }).strict(),
+  z.object({ operation: z.literal('update'), collection_id: UuidSchema, command: UpdateCollectionMetadataSchema }).strict(),
+  z.object({ operation: z.literal('delete'), collection_id: UuidSchema, command: DeleteCollectionMetadataSchema }).strict(),
+]);
+export type CollectionMetadataCommandIntent = z.infer<typeof CollectionMetadataCommandIntentSchema>;
+// Compare JSON values rather than serialization order. Commands are cloned by
+// their canonical schema before transport; unknown acknowledgements grant none.
+function collectionJsonEqual(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (Array.isArray(a) || Array.isArray(b)) return Array.isArray(a) && Array.isArray(b)
+    && a.length === b.length && a.every((v, i) => collectionJsonEqual(v, b[i]));
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
+  const left = a as Record<string, unknown>, right = b as Record<string, unknown>;
+  return Object.keys(left).length === Object.keys(right).length
+    && Object.keys(left).every(key => Object.hasOwn(right, key) && collectionJsonEqual(left[key], right[key]));
+}
+export function confirmCollectionMetadataReceipt(intent: CollectionMetadataCommandIntent, value: unknown, actorId?: string): CollectionMetadataReceipt {
+  const receipt = CollectionMetadataReceiptSchema.parse(value), command = intent.command;
+  const payload = Object.fromEntries(Object.entries(command).filter(([key, value]) =>
+    !['store_id', 'idempotency_key', 'version'].includes(key) && value !== undefined));
+  if (receipt.store_id !== command.store_id || receipt.idempotency_key !== command.idempotency_key
+    || receipt.operation !== intent.operation || intent.collection_id !== null && receipt.id !== intent.collection_id
+    || receipt.expected_version !== ('version' in command ? command.version : null)
+    || command.collection_type !== undefined && receipt.collection_type !== command.collection_type
+    || actorId !== undefined && receipt.actor_id !== actorId || !collectionJsonEqual(payload, receipt.request)) {
+    throw new Error('The original collection acknowledgement could not be confirmed. Keep the original request.');
+  }
+  return receipt;
+}
+
+export const SmartCollectionSchema = z.object({
+  id: UuidSchema, store_id: UuidSchema, name: z.string().min(1), slug: z.string().min(1),
+  description: z.string().nullable().optional(), conditions: z.array(SmartConditionSchema),
+  is_active: z.boolean(),
+  match_type: SmartMatchTypeSchema, created_at: z.string().datetime({ offset: true }).nullable(),
+  created_by: UuidSchema.nullable().optional(), updated_by: UuidSchema.nullable().optional(),
+  version: z.number().int().positive(),
+}).strict();
+export const SmartCollectionListQuerySchema = CollectionListPaginationSchema.pick({ page: true, limit: true, search: true }).extend({
+  store_id: UuidSchema,
+}).strict();
+export const SmartCollectionPageSchema = z.object({
+  success: z.literal(true), data: z.array(SmartCollectionSchema).max(100),
+  meta: z.object({ store_id: UuidSchema, page: z.number().int().positive().max(10000),
+    per_page: z.number().int().min(1).max(100), total: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+    total_pages: z.number().int().nonnegative(), total_is_exact: z.literal(true), has_next: z.boolean(), has_prev: z.boolean(),
+  }).strict(),
+}).strict().superRefine((value, ctx) => {
+  const m = value.meta;
+  if (new Set(value.data.map(row => row.id)).size !== value.data.length || value.data.some(row => row.store_id !== m.store_id) ||
+    value.data.length !== Math.min(m.per_page, Math.max(0, m.total - (m.page - 1) * m.per_page)) ||
+    m.total_pages !== Math.ceil(m.total / m.per_page) || m.has_next !== (m.page < m.total_pages) || m.has_prev !== (m.page > 1)) {
+    ctx.addIssue({ code: 'custom', message: 'Smart collection pagination could not be confirmed.' });
+  }
+});
+const SmartCollectionFieldsSchema = z.object({
+  name: z.string().trim().min(1).max(200), slug: SlugSchema,
+  description: z.string().max(2000).nullable().optional(),
+  conditions: z.array(SmartConditionSchema).max(50), match_type: SmartMatchTypeSchema, is_active: z.boolean().optional(),
+}).strict();
+export const CreateSmartCollectionSchema = SmartCollectionFieldsSchema.extend({ store_id: UuidSchema,
+  conditions: SmartCollectionFieldsSchema.shape.conditions.default([]), match_type: SmartMatchTypeSchema.default('all'),
+}).strict();
+export const UpdateSmartCollectionSchema = SmartCollectionFieldsSchema.partial().extend({ version: z.number().int().positive() }).strict()
+  .refine(value => Object.keys(value).some(key => key !== 'version'), { message: 'Supply the reviewed smart collection changes.' });
+export const SmartCollectionPreviewQuerySchema = z.object({ store_id: UuidSchema.optional() }).strict();
+export const SmartCollectionPreviewSchema = z.object({
+  store_id: UuidSchema, collection_id: UuidSchema, collection_version: z.number().int().positive(), match_type: SmartMatchTypeSchema,
+  condition_count: z.number().int().nonnegative(), count: z.number().int().nonnegative(),
+  sample_product_ids: z.array(UuidSchema).max(10), evaluated_of: z.number().int().nonnegative(),
+  capped_at: z.literal(500), catalog_count: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER), count_is_exact: z.boolean(),
+}).strict().superRefine((value, ctx) => {
+  if (value.evaluated_of !== Math.min(value.catalog_count, value.capped_at) || value.count > value.evaluated_of ||
+    value.count_is_exact !== (value.evaluated_of === value.catalog_count) ||
+    value.sample_product_ids.length !== Math.min(value.count, 10) || new Set(value.sample_product_ids).size !== value.sample_product_ids.length) {
+    ctx.addIssue({ code: 'custom', message: 'Smart collection preview could not be confirmed.' });
+  }
+});
+export type SmartConditionField = z.infer<typeof SmartConditionFieldSchema>;
+export type SmartConditionOp = z.infer<typeof SmartConditionOpSchema>;
+export type SmartCondition = z.infer<typeof SmartConditionSchema>;
+export type SmartMatchType = z.infer<typeof SmartMatchTypeSchema>;
+export type SmartCollection = z.infer<typeof SmartCollectionSchema>;
+export type SmartCollectionPage = z.infer<typeof SmartCollectionPageSchema>;
+export type SmartCollectionListQueryInput = z.input<typeof SmartCollectionListQuerySchema>;
+export type CreateSmartCollectionInput = z.input<typeof CreateSmartCollectionSchema>;
+export type UpdateSmartCollectionInput = z.infer<typeof UpdateSmartCollectionSchema>;
+export type SmartCollectionPreviewResult = z.infer<typeof SmartCollectionPreviewSchema>;
 
 // Complete manual membership and an explicit ordered replacement intent. These
 // contracts do not change the metadata Collection shape or public projections.
@@ -1620,6 +1896,149 @@ export const ProductReviewSchema = AuditedEntitySchema.extend({
   merchant_reply_at: z.string().datetime().optional().nullable(),
 }).passthrough();
 
+// Stored audit reasons differ from the command aliases accepted by adjust.
+export const InventoryHistoryReasonSchema = z.enum(['sale', 'return', 'adjustment', 'recount', 'transfer', 'damaged', 'reserved', 'unreserved']);
+export const InventoryHistoryEntrySchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  location_id: UuidSchema,
+  quantity_change: z.number().int(),
+  reason: InventoryHistoryReasonSchema,
+  reference_id: UuidSchema.optional().nullable(),
+  note: z.string().optional().nullable(),
+  created_by: UuidSchema.optional().nullable(),
+  created_at: z.string().datetime({ offset: true }),
+  products: z.object({ name: z.string(), store_id: UuidSchema }),
+});
+export type InventoryHistoryEntry = z.infer<typeof InventoryHistoryEntrySchema>;
+
+export const InventoryReservationStatusSchema = z.enum(['active', 'hold', 'committed', 'released', 'expired', 'fulfilled', 'cancelled']);
+export const InventoryTransferReservationReferenceSchema = z.object({
+  id: UuidSchema,
+  reservation_id: UuidSchema,
+  line_id: UuidSchema,
+  site_id: UuidSchema,
+  source_location_id: UuidSchema,
+  product_id: UuidSchema,
+  variant_id: UuidSchema.nullable(),
+  transfer_number: z.string().min(1),
+  status: WarehouseTransferStatusSchema,
+  quantity_requested: z.number().int().positive().max(2147483647),
+  quantity_received: z.number().int().nonnegative().max(2147483647),
+  base_received: z.number().int().nonnegative().max(2147483647),
+});
+export type InventoryTransferReservationReference = z.infer<typeof InventoryTransferReservationReferenceSchema>;
+export const InventoryReservationSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  location_id: UuidSchema,
+  order_id: UuidSchema.optional().nullable(),
+  quantity: z.number().int().positive().max(2147483647),
+  status: InventoryReservationStatusSchema,
+  expires_at: z.string().datetime({ offset: true }).nullable(),
+  created_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
+  products: z.object({ id: UuidSchema.optional(), name: z.string(), store_id: UuidSchema }),
+  transfer: InventoryTransferReservationReferenceSchema.nullable().optional(),
+}).superRefine((row, ctx) => {
+  const reference = row.transfer;
+  if (row.products.store_id !== row.store_id || row.products.id && row.products.id !== row.product_id) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Reservation product scope could not be confirmed.' });
+  }
+  if (!reference) {
+    if (row.expires_at === null) ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Reservation lifetime could not be confirmed.' });
+    return;
+  }
+  if (row.expires_at !== null || row.order_id != null || reference.reservation_id !== row.id ||
+      !['reserved', 'shipped', 'partially_received', 'received'].includes(reference.status) ||
+      reference.site_id !== row.store_id || reference.source_location_id !== row.location_id ||
+      reference.product_id !== row.product_id || reference.variant_id !== (row.variant_id ?? null) ||
+      reference.base_received > reference.quantity_received || reference.quantity_received > reference.quantity_requested ||
+      reference.quantity_requested - reference.base_received !== row.quantity ||
+      reference.status === 'reserved' && !['active', 'hold'].includes(row.status) ||
+      ['shipped', 'partially_received', 'received'].includes(reference.status) && row.status !== 'committed') {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Transfer reservation scope or lifetime could not be confirmed.' });
+  }
+});
+export type InventoryReservation = z.infer<typeof InventoryReservationSchema>;
+
+const InventoryReceiptParentSchema = z.object({ id: UuidSchema, site_id: UuidSchema });
+const InventoryReceiptBaseSchema = z.object({
+  id: UuidSchema,
+  quantity_received: z.number().int().positive(),
+  notes: z.string().optional().nullable(),
+  received_at: z.string().datetime({ offset: true }),
+  created_at: z.string().datetime({ offset: true }),
+});
+export const InventoryReceiptSchema = z.discriminatedUnion('receipt_type', [
+  InventoryReceiptBaseSchema.extend({
+    receipt_type: z.literal('purchase_order'), purchase_order_id: UuidSchema,
+    transfer_id: z.null().optional(), purchase_orders: InventoryReceiptParentSchema,
+    inventory_transfers: z.null().optional(),
+  }),
+  InventoryReceiptBaseSchema.extend({
+    receipt_type: z.literal('transfer'), transfer_id: UuidSchema,
+    purchase_order_id: z.null().optional(), inventory_transfers: InventoryReceiptParentSchema,
+    purchase_orders: z.null().optional(),
+  }),
+]).refine(row => row.receipt_type === 'purchase_order'
+  ? row.purchase_order_id === row.purchase_orders.id : row.transfer_id === row.inventory_transfers.id,
+  { message: 'The receipt parent could not be confirmed' });
+export type InventoryReceipt = z.infer<typeof InventoryReceiptSchema>;
+
+const InventoryMetricCountSchema = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+export const InventoryMetricPageSchema = z.object({
+  page: z.number().int().positive(), per_page: z.number().int().min(1).max(100),
+  total: InventoryMetricCountSchema, total_pages: InventoryMetricCountSchema,
+  has_next: z.boolean(), has_prev: z.boolean(),
+}).refine(m => m.total_pages === Math.ceil(m.total / m.per_page) && m.has_next === (m.page < m.total_pages) && m.has_prev === (m.page > 1),
+  { message: 'The inventory metric page could not be confirmed' });
+export type InventoryMetricPage = z.infer<typeof InventoryMetricPageSchema>;
+export const SupplierMetricsRowSchema = z.object({
+  supplier_id: UuidSchema.nullable(), supplier_name: z.string(), po_count: InventoryMetricCountSchema,
+  on_time_rate: z.number().min(0).max(1).nullable(), avg_lead_time_days: z.number().int().nonnegative().nullable(),
+});
+export const SupplierMetricsResultSchema = z.object({
+  store_id: UuidSchema, suppliers: z.array(SupplierMetricsRowSchema), meta: InventoryMetricPageSchema,
+}).refine(r => r.suppliers.length === Math.min(r.meta.per_page, Math.max(0, r.meta.total - (r.meta.page - 1) * r.meta.per_page)) &&
+  new Set(r.suppliers.map(row => row.supplier_id)).size === r.suppliers.length,
+  { message: 'The supplier metric rows could not be confirmed' });
+export type SupplierMetricsRow = z.infer<typeof SupplierMetricsRowSchema>;
+export type SupplierMetricsResult = z.infer<typeof SupplierMetricsResultSchema>;
+export const WarehouseMetricsRowSchema = z.object({
+  location_id: UuidSchema, location_name: z.string(), is_default: z.boolean(),
+  sku_count: InventoryMetricCountSchema, total_units: InventoryMetricCountSchema,
+});
+export const WarehouseMetricsResultSchema = z.object({
+  store_id: UuidSchema, warehouses: z.array(WarehouseMetricsRowSchema), meta: InventoryMetricPageSchema,
+}).refine(r => r.warehouses.length === Math.min(r.meta.per_page, Math.max(0, r.meta.total - (r.meta.page - 1) * r.meta.per_page)) &&
+  new Set(r.warehouses.map(row => row.location_id)).size === r.warehouses.length,
+  { message: 'The warehouse metric rows could not be confirmed' });
+export type WarehouseMetricsRow = z.infer<typeof WarehouseMetricsRowSchema>;
+export type WarehouseMetricsResult = z.infer<typeof WarehouseMetricsResultSchema>;
+export const TransferMetricsResultSchema = z.object({
+  store_id: UuidSchema, by_status: z.record(z.string(), InventoryMetricCountSchema),
+  in_transit_count: InventoryMetricCountSchema, total_count: InventoryMetricCountSchema,
+}).refine(r => Object.values(r.by_status).reduce((sum, count) => sum + count, 0) === r.total_count &&
+  r.in_transit_count === (r.by_status.shipped ?? 0) + (r.by_status.partially_received ?? 0),
+  { message: 'The transfer metric totals could not be confirmed' });
+export type TransferMetricsResult = z.infer<typeof TransferMetricsResultSchema>;
+export const OperationsSummaryResultSchema = z.object({
+  store_id: UuidSchema, order_count: InventoryMetricCountSchema.optional(), open_order_count: InventoryMetricCountSchema.optional(),
+  po_count: InventoryMetricCountSchema.optional(), open_po_count: InventoryMetricCountSchema.optional(),
+  transfer_count: InventoryMetricCountSchema.optional(), in_transit_transfer_count: InventoryMetricCountSchema.optional(),
+  low_stock_sku_count: InventoryMetricCountSchema.optional(), total_sku_count: InventoryMetricCountSchema.optional(),
+}).refine(r => Object.keys(r).some(key => key !== 'store_id') &&
+  (r.open_order_count === undefined || (r.order_count !== undefined && r.open_order_count <= r.order_count)) &&
+  (r.open_po_count === undefined || (r.po_count !== undefined && r.open_po_count <= r.po_count)) &&
+  (r.in_transit_transfer_count === undefined || (r.transfer_count !== undefined && r.in_transit_transfer_count <= r.transfer_count)),
+  { message: 'The available operations counts could not be confirmed' });
+export type OperationsSummaryResult = z.infer<typeof OperationsSummaryResultSchema>;
+
 export const InventoryLevelSchema = z.object({
   id: z.string().min(1),
   product_id: UuidSchema,
@@ -1638,6 +2057,36 @@ export const InventoryLevelSchema = z.object({
   track_inventory: z.boolean(),
   updated_at: z.string().datetime().optional().nullable(),
 });
+
+// Durable command confirmation, not a current inventory read. `available`
+// here is the raw physical snapshot; clients refresh InventoryLevelSchema for
+// the current free/sellable projection after acknowledging a command.
+export const InventoryAdjustmentAcknowledgementSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  product_id: UuidSchema,
+  variant_id: UuidSchema.nullable(),
+  location_id: UuidSchema,
+  available: z.number().int().nonnegative(),
+  reserved: z.number().int().nonnegative(),
+  available_quantity: z.number().int().nonnegative(),
+  reserved_quantity: z.number().int().nonnegative(),
+  on_hand_quantity: z.number().int().nonnegative(),
+}).passthrough().refine(row => row.reserved <= row.available
+  && row.available_quantity === row.available - row.reserved
+  && row.reserved_quantity === row.reserved && row.on_hand_quantity === row.available,
+{message: 'Inventory acknowledgement counters disagree'});
+
+export const InventoryBatchAdjustmentResultSchema = z.object({
+  results: z.array(z.discriminatedUnion('status', [
+    z.object({product_id: UuidSchema, status: z.literal('adjusted'), level: InventoryAdjustmentAcknowledgementSchema}),
+    z.object({product_id: UuidSchema, status: z.literal('not_found')}),
+    z.object({product_id: UuidSchema, status: z.literal('failed'), level: z.null(), error: z.literal('Inventory adjustment failed')}),
+  ])).min(1).max(100),
+  total: z.number().int().min(1).max(100),
+}).refine(value => value.results.length === value.total, {message: 'Inventory batch result count disagrees'});
+export type InventoryAdjustmentAcknowledgement = z.infer<typeof InventoryAdjustmentAcknowledgementSchema>;
+export type InventoryBatchAdjustmentResult = z.infer<typeof InventoryBatchAdjustmentResultSchema>;
 
 export const CustomerAddressSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
@@ -2131,6 +2580,7 @@ export const SubscriptionCancelResultSchema = z.object({
 }).passthrough();
 
 export const SubscriptionOrderResultSchema = z.object({
+  provider_mode: z.enum(['sandbox', 'live']).nullable().optional(),
   tax:SubscriptionTaxSummarySchema.optional(),
   razorpay_order_id: z.string().min(1).optional().nullable(),
   razorpay_subscription_id: z.string().min(1).optional().nullable(),
@@ -2165,11 +2615,11 @@ export const SubscriptionVerificationResultSchema = z.object({
   message: z.string().max(500).optional(),
 }).passthrough();
 
-export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, UpdateStorePaymentMethodsSchema,
-  type StorePaymentSetup, type SaveStorePaymentConfigInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
+export { StorePaymentSetupSchema, SaveStorePaymentConfigSchema, AttachStorePaymentWebhookSchema, UpdateStorePaymentMethodsSchema,
+  type StorePaymentSetup, type SaveStorePaymentConfigInput, type AttachStorePaymentWebhookInput, type UpdateStorePaymentMethodsInput } from './payment-setup';
 
 export const StorePaymentSettingsSchema = z.object({
-  mode: z.enum(['unconfigured', 'shared', 'ownAccount']).default('unconfigured'),
+  mode: z.enum(['unconfigured', 'shared', 'ownAccount', 'managedSandbox']).default('unconfigured'),
   gateways: z.array(z.string().min(1).max(80)).default([]),
   razorpay: z.object({
     key_id: z.string().max(120).optional().nullable(),
@@ -2178,6 +2628,7 @@ export const StorePaymentSettingsSchema = z.object({
     connected_at: z.string().datetime({ offset: true }).optional().nullable(),
     updated_at: z.string().datetime({ offset: true }).optional().nullable(),
     secret_configured: z.boolean().default(false),
+    webhook_secret_configured: z.boolean().default(false),
   }).nullable().default(null),
 }).passthrough();
 
@@ -2186,6 +2637,7 @@ export const StorePaymentConfigSchema = z.object({
   online_payment_enabled: z.boolean().default(false),
   cod_enabled: z.boolean().default(false),
   provider_mode: z.enum(['sandbox', 'live']).nullable().default(null),
+  webhook_callback_url: z.string().url().nullable().optional(),
   payment_settings: StorePaymentSettingsSchema,
   schema_ready: z.boolean().optional(),
   setup: StorePaymentSetupSchema.optional(),
@@ -2193,6 +2645,12 @@ export const StorePaymentConfigSchema = z.object({
 }).passthrough();
 
 export const EmployeeStatusSchema = z.enum(['invited', 'active', 'inactive', 'removed', 'suspended']);
+
+export const EmployeeListQuerySchema = z.object({
+  store_id: UuidSchema.optional(),
+  page: z.coerce.number().int().min(1).max(10000).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(50),
+}).strict();
 
 export const EmployeeSchema = z.object({
   id: UuidSchema,
@@ -2228,10 +2686,60 @@ export const MediaAssetSchema = z.object({
   folder: z.string().max(200).default('/'),
   media_type: MediaTypeSchema.default('other'),
   tags: z.array(z.string().max(50)).default([]),
-  created_at: z.string().datetime().optional().nullable(),
-  updated_at: z.string().datetime().optional().nullable(),
-  deleted_at: z.string().datetime().optional().nullable(),
+  created_at: z.string().datetime({ offset: true }).optional().nullable(),
+  updated_at: z.string().datetime({ offset: true }).optional().nullable(),
+  deleted_at: z.string().datetime({ offset: true }).optional().nullable(),
 }).passthrough();
+
+/** Canonical public Media registration and metadata commands. No database row
+ * identity, actor, usage counters or receipt state is accepted from callers. */
+const PublicMediaUrlSchema = z.string().min(1).max(200000).url().refine(value => {
+  try { const protocol = new URL(value).protocol; return protocol === 'https:' || protocol === 'http:'; }
+  catch { return false; }
+}, 'Use an HTTP media URL');
+export const MediaMetadataUpdateSchema = z.object({
+  alt_text: z.string().max(500).nullable().optional(),
+  caption: z.string().max(1000).nullable().optional(),
+  folder: z.string().max(200).optional(),
+  tags: z.array(z.string().max(50)).max(20).optional(),
+  filename: z.string().min(1).max(500).optional(),
+}).strict().refine(input => Object.keys(input).length > 0, 'Provide media metadata to update');
+export const MediaRegistrationInputSchema = z.object({
+  store_id: UuidSchema,
+  filename: z.string().min(1).max(500),
+  original_name: z.string().max(500).nullable().optional(),
+  url: PublicMediaUrlSchema,
+  thumbnail_url: PublicMediaUrlSchema.nullable().optional(),
+  mime_type: z.string().min(1).max(160),
+  size_bytes: z.number().int().min(0).max(100 * 1024 * 1024).optional(),
+  width: z.number().int().min(0).max(2147483647).nullable().optional(),
+  height: z.number().int().min(0).max(2147483647).nullable().optional(),
+  alt_text: z.string().max(500).nullable().optional(),
+  caption: z.string().max(1000).nullable().optional(),
+  folder: z.string().max(200).optional(),
+  tags: z.array(z.string().max(50)).max(20).optional(),
+  storage_key: z.string().min(1).max(512).optional(),
+  object_key: z.string().min(1).max(512).optional(),
+  storage_path: z.string().min(1).max(512).optional(),
+  checksum_sha256: z.string().regex(/^[a-f0-9]{64}$/i).nullable().optional(),
+  channel: z.enum(['web', 'whatsapp', 'instagram', 'pos', 'api']).optional(),
+}).strict().superRefine((input, context) => {
+  const keys = [input.storage_key, input.object_key, input.storage_path].filter(value => value !== undefined);
+  if (new Set(keys).size > 1) context.addIssue({code: 'custom', path: ['storage_key'], message: 'Media storage keys disagree'});
+});
+export type MediaRegistrationInput = z.infer<typeof MediaRegistrationInputSchema>;
+export type MediaMetadataUpdate = z.infer<typeof MediaMetadataUpdateSchema>;
+
+/** Read-only recovery of a committed /upload acknowledgement; never resends bytes. */
+export const PublicUploadRecoveryInputSchema = z.object({
+  store_id: UuidSchema,
+  idempotency_key: z.string().trim().min(8).max(200),
+  filename: z.string().min(1).max(500),
+  folder: z.string().max(200),
+  content_type: z.string().min(1).max(255),
+  byte_size: z.number().int().min(0).max(100 * 1024 * 1024),
+  sha256_hex: z.string().regex(/^[a-f0-9]{64}$/),
+}).strict();
 
 export const FileUploadResultSchema = z.object({
   url: z.string().min(1).max(200000),
@@ -4809,6 +5317,7 @@ export type EmployeeStatus = z.infer<typeof EmployeeStatusSchema>;
 export type Employee = z.infer<typeof EmployeeSchema>;
 export type MediaAsset = z.infer<typeof MediaAssetSchema>;
 export type FileUploadResult = z.infer<typeof FileUploadResultSchema>;
+export type PublicUploadRecoveryInput = z.infer<typeof PublicUploadRecoveryInputSchema>;
 export type AnalyticsMetric = z.infer<typeof AnalyticsMetricSchema>;
 export type AnalyticsPeriodWindow = z.infer<typeof AnalyticsPeriodWindowSchema>;
 export type AnalyticsComparison = z.infer<typeof AnalyticsComparisonSchema>;
@@ -5162,3 +5671,9 @@ export { calculateGstAmounts } from './gst-amounts';
 export * from './personalization-contracts';
 export * from './storefront-discovery-contracts';
 export * from './checkout-totals-quote';
+
+export * from './warehouse-command';
+export * from './warehouse-documents';
+export * from './warehouse-options';
+
+export * from './warehouse-command-inputs';

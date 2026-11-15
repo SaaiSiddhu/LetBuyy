@@ -1,0 +1,17 @@
+{
+  "from_source": "8e456fc19e2ff8f5a348e9f31ce5d9bd66b4c4364f4367c66324ab258d909c76",
+  "to_source": "dd0512dbc5d9f017eec2d8eaef23c3885380abfccdffe414db9df5dfc650a6cf",
+  "delta": [
+    "apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart"
+  ],
+  "reason": "Only reorder named constructor arguments for lint, no behavior change. All other inputs equal.",
+  "reused": [
+    "shared-types typing/tests v5",
+    "Gateway typing v5",
+    "TS SDK typing v5",
+    "2087Gateway units v6",
+    "389root contracts v7",
+    "Dart SDK v7"
+  ],
+  "fresh": "App analysis and all remaining current gates including full Flutter"
+}

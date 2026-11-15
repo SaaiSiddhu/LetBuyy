@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import {CreateLocationSchema,CreateSupplierSchema,PurchaseOrderLineSchema,CreatePurchaseOrderSchema,ReceivePurchaseOrderLineSchema,ReceivePurchaseOrderSchema,TransferLineSchema,CreateTransferSchema,ReceiveTransferLineSchema,ReceiveTransferSchema,ShipTransferSchema,StopWarehouseCommandSchema,prepareWarehouseCommand} from '@letbuyy/shared-types';
+export {CreateLocationSchema,CreateSupplierSchema,PurchaseOrderLineSchema,CreatePurchaseOrderSchema,ReceivePurchaseOrderLineSchema,ReceivePurchaseOrderSchema,TransferLineSchema,CreateTransferSchema,ReceiveTransferLineSchema,ReceiveTransferSchema,ShipTransferSchema,StopWarehouseCommandSchema,prepareWarehouseCommand} from '@letbuyy/shared-types';
 export * from './storefront-discovery';
 export { summarizeProductFacts, type ProductFactSummarySection, type ProductFactSummaryRow } from './product-facts-summary';
 export { ProductFactSnapshotSchema, PersonalizationCartDraftSchema, PersonalizationReviewQuerySchema, PersonalizationReviewContextSchema, prepareProductFactSnapshot, readProductFactSnapshot, personalizationReviewFingerprint, validatePersonalizationRevisionTransition, type ProductFactSnapshot, type PersonalizationCartDraft, type PersonalizationReviewContext, type ProductFactSnapshotSource, type PreparedProductFactSnapshot } from './product-fact-snapshot';
@@ -20,7 +22,8 @@ export { SportsFactsSchema, SportsVariantFactsSchema, readSportsFacts, resolveSp
 export { BooksFactsSchema, BooksVariantFactsSchema, readBooksFacts, mergeBooksVariantFacts, type BooksFacts, type BooksVariantFacts } from './marginalia-facts';
 export { ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 export { CollectionListPaginationSchema, CollectionListQuerySchema, type CollectionListPagination, type CollectionListQuery, type CollectionListQueryInput } from '@letbuyy/shared-types';
-import { CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
+export {WarehouseOptionListQuerySchema,WarehouseDocumentScopeQuerySchema,WarehouseDocumentParamsSchema,WarehousePurchaseOrderListQuerySchema,WarehouseTransferListQuerySchema,WarehouseCommandCapabilitiesQuerySchema,type WarehouseCommandCapabilitiesQuery} from '@letbuyy/shared-types';
+import { CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema, InventoryReservationStatusSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
 
@@ -69,6 +72,8 @@ function validateProductFactReferences(data: {
   }
 }
 
+export const PRODUCT_IMAGE_LIMIT = 20;
+
 export const CreateProductSchema = z
   .object({
     store_id: UuidSchema,
@@ -78,7 +83,7 @@ export const CreateProductSchema = z
     compare_price: MoneySchema.optional().nullable(),
     cost_price: MoneySchema.optional().nullable(),
     cost_per_item: MoneySchema.optional().nullable(),
-    images: z.array(UrlSchema).max(20).default([]),
+    images: z.array(UrlSchema).max(PRODUCT_IMAGE_LIMIT).default([]),
     category: z.string().max(100).optional(),
     product_type: z.string().max(100).optional().nullable(),
     vendor: z.string().max(100).optional().nullable(),
@@ -117,7 +122,7 @@ export const UpdateProductSchema = z.object({
   price: MoneySchema.optional(),
   compare_price: MoneySchema.optional().nullable(),
   cost_per_item: MoneySchema.optional().nullable(),
-  images: z.array(UrlSchema).max(20).optional(),
+  images: z.array(UrlSchema).max(PRODUCT_IMAGE_LIMIT).optional(),
   category: z.string().max(100).optional().nullable(),
   product_type: z.string().max(100).optional().nullable(),
   vendor: z.string().max(100).optional().nullable(),
@@ -163,6 +168,7 @@ export const ListProductsQuery = z.object({
   store_id: UuidSchema.optional(),
   view: z.enum(['full', 'summary']).default('full'),
   status: z.enum(['active', 'draft', 'archived', 'inactive', 'all']).default('all'),
+  stock_filter: z.enum(['out_of_stock', 'low_stock']).optional(),
   category: z.string().max(100).optional(),
   search: z.string().max(200).optional(),
   page: z.coerce.number().int().min(1).default(1),
@@ -341,15 +347,30 @@ export const GiftCardStatusUpdateSchema = z.object({
   reason: z.string().max(500).trim().optional().nullable(),
 });
 
-export const CreateLocationSchema = z.object({
-  store_id: UuidSchema,
-  name: z.string().min(1).max(200).trim(),
-  address: z.string().max(500).optional(),
-  city: z.string().max(100).optional(),
-  state: z.string().max(100).optional(),
-  country: z.string().length(2).toUpperCase().default('IN'),
-  is_default: z.boolean().default(false),
-});
+export const InventoryHistoryQuerySchema = PaginationQuery.pick({ page: true, limit: true }).extend({
+  store_id: UuidSchema.optional(),
+  product_id: UuidSchema.optional(),
+}).refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The history page is out of range' });
+export type InventoryHistoryQuery = z.infer<typeof InventoryHistoryQuerySchema>;
+
+export const InventoryReservationListQuerySchema = PaginationQuery.pick({ page: true, limit: true }).extend({
+  store_id: UuidSchema.optional(), product_id: UuidSchema.optional(), status: InventoryReservationStatusSchema.optional(),
+}).refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The reservation page is out of range' });
+export type InventoryReservationListQuery = z.infer<typeof InventoryReservationListQuerySchema>;
+
+export const InventoryReceiptListQuerySchema = PaginationQuery.pick({ page: true, limit: true }).extend({
+  store_id: UuidSchema.optional(), po_id: UuidSchema.optional(), transfer_id: UuidSchema.optional(),
+}).refine(q => !q.po_id || !q.transfer_id, { message: 'Choose a purchase order or a transfer filter' })
+  .refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The receipt page is out of range' });
+export type InventoryReceiptListQuery = z.infer<typeof InventoryReceiptListQuerySchema>;
+
+export const CommerceMetricStoreQuerySchema = z.object({ store_id: UuidSchema });
+export const CommerceMetricPageQuerySchema = PaginationQuery.pick({ page: true, limit: true }).extend({ store_id: UuidSchema })
+  .refine(q => Number.isSafeInteger((q.page - 1) * q.limit), { message: 'The metric page is out of range' });
+export type CommerceMetricStoreQuery = z.infer<typeof CommerceMetricStoreQuerySchema>;
+export type CommerceMetricPageQuery = z.infer<typeof CommerceMetricPageQuerySchema>;
+
+
 
 export const AdjustInventorySchema = z.object({
   product_id: UuidSchema,
@@ -376,70 +397,7 @@ export const BulkAdjustSchema = z.object({
   adjustments: z.array(AdjustInventorySchema).min(1).max(100),
 });
 
-export const CreateSupplierSchema = z.object({
-  store_id: UuidSchema,
-  name: z.string().min(1).max(200).trim(),
-  contact_name: z.string().max(200).optional(),
-  email: EmailSchema.optional(),
-  phone: z.string().max(30).optional(),
-  address: z.record(z.string(), z.unknown()).optional(),
-});
-
-export const PurchaseOrderLineSchema = z.object({
-  product_id: UuidSchema,
-  variant_id: UuidSchema.optional().nullable(),
-  quantity: z.number().int().min(1).max(999999),
-  unit_cost: z.number().min(0).max(999999).default(0),
-});
-
-export const CreatePurchaseOrderSchema = z.object({
-  store_id: UuidSchema,
-  supplier_id: UuidSchema.optional().nullable(),
-  location_id: UuidSchema,
-  expected_at: z.coerce.date().optional(),
-  notes: z.string().max(1000).optional(),
-  lines: z.array(PurchaseOrderLineSchema).min(1).max(200),
-  idempotency_key: z.string().min(8).max(200),
-});
-
-export const ReceivePurchaseOrderLineSchema = z.object({
-  purchase_order_line_id: UuidSchema,
-  quantity: z.number().int().min(1).max(999999),
-});
-
-export const ReceivePurchaseOrderSchema = z.object({
-  lines: z.array(ReceivePurchaseOrderLineSchema).min(1).max(200).optional(),
-  idempotency_key: z.string().min(8).max(200),
-});
-
-export const TransferLineSchema = z.object({
-  product_id: UuidSchema,
-  variant_id: UuidSchema.optional().nullable(),
-  quantity: z.number().int().min(1).max(999999),
-});
-
-export const CreateTransferSchema = z.object({
-  store_id: UuidSchema,
-  source_location_id: UuidSchema,
-  destination_location_id: UuidSchema,
-  notes: z.string().max(1000).optional(),
-  lines: z.array(TransferLineSchema).min(1).max(200),
-  idempotency_key: z.string().min(8).max(200),
-});
-
-export const ReceiveTransferLineSchema = z.object({
-  transfer_line_id: UuidSchema,
-  quantity: z.number().int().min(1).max(999999),
-});
-
-export const ReceiveTransferSchema = z.object({
-  lines: z.array(ReceiveTransferLineSchema).min(1).max(200).optional(),
-  idempotency_key: z.string().min(8).max(200),
-});
-
-export const ShipTransferSchema = z.object({
-  idempotency_key: z.string().min(8).max(200),
-});
+export type {StopWarehouseCommandInput} from '@letbuyy/shared-types';
 
 export const ReserveInventorySchema = z.object({
   store_id: UuidSchema,
@@ -614,7 +572,8 @@ export interface ProductModel extends ProductNicheFacts {
   category?: string;
   countryOfOrigin?: string;
   importerDetails?: string;
-  stock: number;
+  /** Public free units from the inventory read projection; null is unconfirmed. */
+  stock: number | null;
   isActive?: boolean;
   rating?: number;
   reviewCount?: number;
@@ -1197,9 +1156,10 @@ export function mapProductStockInventoryRecord(product: ProductInventoryFallback
 }
 
 export function mapInventoryLevelRecord(level: InventoryLevelSourceRow): InventoryLevel {
-  const available = commerceNumber(level.available);
+  const onHand = commerceNumber(level.available);
   const reserved = commerceNumber(level.reserved);
   const incoming = commerceNumber(level.incoming);
+  const available = Math.max(0, onHand - reserved);
 
   return {
     id: level.id,
@@ -1214,8 +1174,8 @@ export function mapInventoryLevelRecord(level: InventoryLevelSourceRow): Invento
     available,
     reserved,
     incoming,
-    on_hand: available + reserved,
-    sellable: Math.max(0, available - reserved),
+    on_hand: onHand,
+    sellable: available,
     track_inventory: level.products?.track_inventory !== false,
     updated_at: level.updated_at,
   };

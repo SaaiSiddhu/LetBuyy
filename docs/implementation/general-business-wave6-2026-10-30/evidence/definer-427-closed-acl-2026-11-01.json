@@ -1,0 +1,31 @@
+{
+  "dateIst": "2026-11-01",
+  "scope": "Typed source closure for four current SECURITY DEFINER functions after invoice, gift-card and KYC replacements",
+  "migration": "427_attest_current_definer_role_closure.sql",
+  "forwardContract": "Refuses a missing or changed definer ABI and any effective PUBLIC, anon, or authenticated EXECUTE before issuing four exact named REVOKEs. On an admitted database those REVOKEs have no ACL delta.",
+  "rollbackContract": "Refuses a missing or changed ABI or unexpectedly open Data API ACL; otherwise leaves the previously closed ACL unchanged because the forward path admitted no privilege delta.",
+  "checks": {
+    "sourceRoleClosure": { "passed": 21, "failed": 0, "skipped": 0 },
+    "sequentialMigration": "passed",
+    "migrationSafety": "passed",
+    "rollbackIntegrity": "passed",
+    "ownedCurrentHeadPostgres": {
+      "runId": "76401ea2d6fd",
+      "tests": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "cleanupFailures": 0,
+      "remainingOwnedContainers": 0,
+      "remainingOwnedNetworks": 0,
+      "remainingOwnedVolumes": 0,
+      "injectedCase": "An anon EXECUTE grant caused both forward and rollback to refuse; cleanup restored the exact prior definer catalog snapshot."
+    }
+  },
+  "notEstablished": [
+    "Hosted staging or production function ACL readback",
+    "A green full behavioral run on this migration",
+    "The separate 401–425 rollback signature guard failures",
+    "Any live KYC provider or payout authority"
+  ]
+}

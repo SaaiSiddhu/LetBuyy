@@ -1,0 +1,8 @@
+{
+  "at": "2026-11-07T04:07:36.847107+00:00",
+  "source": "merchant-media-recovery-source-v70",
+  "private_runtime": "/private/tmp/letbuyy-ios-ui-20261107-ttu3p4av",
+  "fixture": "merchant-product-media-v93-local-ios.postgres.test.ts",
+  "scope": "Local synthetic task-owned iOS simulator/compiled Worker/Postgres/PostgREST/R2 and normal Accounts only. No hosted or whole-feature acceptance.",
+  "status": "RUNNING_NOT_ACCEPTED"
+}

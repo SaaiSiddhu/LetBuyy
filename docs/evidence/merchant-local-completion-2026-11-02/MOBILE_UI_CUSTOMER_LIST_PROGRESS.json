@@ -1,0 +1,67 @@
+{
+  "at": "2026-11-05T00:27:37.603157+00:00",
+  "status": "Source2 archived; local checks/bounded Android26/iOS11compile terminal with known protected Staff failure",
+  "source": {
+    "source_sha256": "4b2f91c5e74ff028a025bdee21c7216151011e6472d61b7d91913dc6335d1cbb",
+    "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e"
+  },
+  "input_entries": 7482,
+  "scope": "Frontend presentation/controller/lifetime only. No hosted changes or backend/API/SQL/RLS/auth/financial/persistence semantics changed.",
+  "implemented": [
+    "Independent primary/optional Customer reads; exact current-page provenance and current observed denial before stale publication.",
+    "One flowing canonical list/query/action/record/page viewport; original calculations retained; unknown raw fields remain unavailable.",
+    "Exact existing server/cursor versus segment page-local query authority; same-query refresh retains labelled rows; new populations retire old rows.",
+    "Existing export request/job/download contract; one start at a time, persistent same-job recheck, no fresh retry after unknown start; explicit new intent only after a confirmed failed job.",
+    "Shared UI-kit StatTile/StatGrid with original public inputs; Analytics adapter/value formulas retained.",
+    "Canonical chip foreground/selected/checkmark pairing; existing Material wrapping passed stress tests without another chip component.",
+    "Open create/segment view retirement on current denial/API context change; no new operation identity, cache namespace or journal.",
+    "Return required field error de-duplicated and cleared on corrected input."
+  ],
+  "focused": "60PASS in31; pending-create1PASS in33; original review/negative failures retained.",
+  "pending": [
+    "Android26 terminal verdict and source/APK readback, independent keyboard/image review and exact owned cleanup",
+    "Current iOS11 compile/runtime boundary",
+    "Customer Detail and9task rows,114unreviewed candidates, full119programme acceptance"
+  ],
+  "known_protected_failure": "Staff existing hosted invitation namespace adoption assertion; preserve policy/test, never mark full suite green.",
+  "denominator": "198ledger rows include aliases/hosts,114candidate records remain unreviewed; final unique surface denominator null.",
+  "local_qualification": {
+    "flutter_full": {
+      "pass": 1210,
+      "fail": 1,
+      "skip": 0,
+      "failure": "Existing protected Staff namespace assertion; unchanged."
+    },
+    "app_analyze": "0issues",
+    "ui_kit_analyze": "0issues",
+    "parsed_preservation": {
+      "checks": 489,
+      "pass": 489
+    },
+    "protected_readback": {
+      "baseline_files": 5195,
+      "classified_client_read_exceptions": 4,
+      "all_other_files_unchanged": true,
+      "prior_three_exceptions_unchanged": true
+    },
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "not_applicable": 1,
+      "actual_clone_core_bytes_equal": 7482
+    },
+    "evidence": [
+      "mobile-ui-customer-list-v35-full-flutter.log",
+      "mobile-ui-customer-list-v36-analyze.log",
+      "mobile-ui-customer-list-v37-ui-kit-analyze.log",
+      "mobile-ui-customer-list-v38-preservation.json",
+      "mobile-ui-protected-readback-v15.json",
+      "customer-list-v2-governance35-readback.json"
+    ]
+  },
+  "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-list-v2-qualified-source",
+  "android26": "COMPILED_MOBILE_UI_CUSTOMER_LIST_ANDROID_WEB_V26_QUALIFICATION.json",
+  "ios11": "MOBILE_UI_CUSTOMER_LIST_IOS_V11_COMPILE_QUALIFICATION.json"
+}

@@ -1,0 +1,48 @@
+{
+  "at": "2026-11-07T07:57:06.445683+00:00",
+  "status": "BOUNDED_CURRENT_ANDROID_CORE_CATEGORY_PHOTO_MEDIA_ENCRYPTED_RESTART_WEB_SYNC_PASS",
+  "source": "merchant-camera-video-model-source-v84",
+  "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+  "inputs": 8502,
+  "run_id": "1092fb014df9",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261107-22bd5374cb",
+  "normal_auth_return": true,
+  "native_category_page2_photo_product_save_web_decode": true,
+  "web_category_name_native_readback": true,
+  "web_to_native_metadata_fields": 5,
+  "native_encrypted_restart_original_key_body_replay": true,
+  "native_receipt_replay_updated_at_unchanged": true,
+  "web_upload_edit_delete_original_recovery": true,
+  "compiled_workers": {
+    "run_id": "1092fb014df9",
+    "runtime": "workerd",
+    "gateway_sha256": "268451af3840c7b6a5b3fae821d10396b0854b75d4fb732bef52303a8fdeea4f",
+    "bff_sha256": "a69d2c007207f8e72813af19f7aa7e93f26409b1bf0e4450e6aeef4ffd0d3b42",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "installed_apk_equals_retained_after_runtime": true,
+  "apk_sha256": "a2db11b87e62a2c5a93df201bd39465f832b78f3e8ed123589bf52e2ae26b71c",
+  "controls_admission_unchanged": true,
+  "adb_mapping_custody": {
+    "run_id": "1092fb014df9",
+    "reverse_baseline_restored": true,
+    "forward_baseline_restored": true,
+    "host9002_never_touched": true
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "readback_sha256": "3ae330011ff0eb14ea060fbf34c7c1e714a1a62f145ad367159e3783c3971c41",
+  "whole_features_accepted": 0,
+  "limits": "New native camera/video/GLB/GLTF Android runtime in following110;buyer/provider/hosted/release/full122 open."
+}

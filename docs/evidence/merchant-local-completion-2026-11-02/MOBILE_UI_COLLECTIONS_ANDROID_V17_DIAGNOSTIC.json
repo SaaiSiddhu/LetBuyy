@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-04T17:44:38.970785+00:00",
+  "status": "INTERRUPTED_CONTROLLER_IDENTITY_DIAGNOSTIC_NOT_ACCEPTED",
+  "run_id": "868a80b12022",
+  "runner_pid": 90324,
+  "runner_exit": 130,
+  "controller_exit": 1,
+  "input_sent": false,
+  "cause": "Launcher still referenced the v16 companion; its executable file/receipt guard rejected the v17 run before input. The v17 controller itself had the correct v17 identity.",
+  "correction": "V18 preparation executes the actual controller header with its real filename and receipt; launcher requires receipt, executed companion and itself to equal the exact manifest paths before backend start.",
+  "preflight_note": "The first v18 preparation used the wrong old header string and failed its assertion. No launcher was created and attempted execution returned ENOENT; no backend started. Corrected to the actual inspected v17 header, then real-header preflight passed.",
+  "cleanup": {
+    "at": "2026-11-04T17:41:12.259543+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 130,
+    "controller_exit": 1,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "app_source": "Unchanged collectionsv11; no application fix inferred."
+}

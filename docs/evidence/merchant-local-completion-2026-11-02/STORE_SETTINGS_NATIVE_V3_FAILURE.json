@@ -1,0 +1,42 @@
+{
+  "run_id": "2c48a4bcf58a",
+  "status": "FAILED NATIVE ACCEPTANCE; REPAIRED SOURCE AWAITS NEW ARTIFACT",
+  "tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "cancelled": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_archive": {
+    "source_sha256": "fd4db296753bd042a5d6ab62d7831c7a094167db48e08cd02fb1cce5eae6e75f",
+    "apk_sha256": "9c1508ebb47964829d31a856b3611d569e97c534f77dd07681472763a5584c60",
+    "files": 4591,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-settings-v3/qualified-source",
+    "scope": "Exact local observed source; no production records or authentication material exported."
+  },
+  "observation": {
+    "run_id": "2c48a4bcf58a",
+    "observation": "Unconfirmed name save disables Save, but a whole-body AbsorbPointer prevents both upward scroll gestures from revealing the explanatory banner. Actual screenshot/semantics show business-profile fields after both gestures.",
+    "source_sha256": "fd4db296753bd042a5d6ab62d7831c7a094167db48e08cd02fb1cce5eae6e75f",
+    "screenshot": "native-store-save-pending-view.png",
+    "required_step_not_claimed": "committed-reply-loss-visible",
+    "disposition": "fail acceptance and cleanup before source repair"
+  },
+  "repair": "Keep recovery status above scrolling content; disable fields/logo rather than absorbing the entire scroll surface. Targeted actual-widget repair14pass.",
+  "failed_runs_retained": [
+    "native-settings-v3",
+    "store-scrolled-recovery-negative-v1.log (scroll finder harness ambiguity)",
+    "store-scrolled-recovery-negative-v2.log (actual offscreen notice plus FormField disposal on list insertion)"
+  ],
+  "limits": [
+    "Four web writers were not reached in this run.",
+    "v4 artifact acceptance is pending; do not inherit v2 or source tests."
+  ]
+}

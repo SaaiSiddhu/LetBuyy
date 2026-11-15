@@ -1,0 +1,37 @@
+{
+  "scope": "Reviewable India-region infrastructure candidate for private KYC storage and scan-result delivery",
+  "date": "2026-11-02",
+  "owner_runtimes": ["services/api-gateway", "services/queue-workers"],
+  "artifact": "infrastructure/deployment/kyc-india-mumbai.cfn.json",
+  "result": {
+    "json_parse": "passed",
+    "static_contract_command": "node --import tsx --test tests/contracts/kyc-india-mumbai-stack.test.ts",
+    "static_contract_passed": 7,
+    "static_contract_failed": 0,
+    "git_diff_check": "passed"
+  },
+  "candidate_properties": [
+    "Private, versioned, SSE-S3 bucket with retained deletion policy, TLS-only bucket policy, no replication configuration, and exact Merchant HTTPS POST CORS",
+    "GuardDuty Malware Protection plan scoped to the kyc/ prefix in the same Mumbai stack",
+    "GuardDuty role object reads and tags narrowed to kyc/*, with only an exact validation-object exception",
+    "Exact-account and exact-rule EventBridge to encrypted SQS with retry and dead-letter queues",
+    "Separate upload source, exact-upload STS role, version HEAD, clean-tag reviewer, version cleanup, and exact-queue polling identities; no generated access keys",
+    "GuardDuty object tagging enabled so reviewer IAM denies unscanned or threat-tagged versions; AWS charges for tagging",
+    "Same-region SNS email topic, exact-source publish policy, CloudWatch alarms for dead letters and queue age, and a redacted exact-plan Warning/Error/tag-failure EventBridge alert; subscription is not confirmed",
+    "No AWS access keys, document bytes, or signed URLs in the template"
+  ],
+  "source_sha256": {
+    "cloudformation_json": "6fb4fd1f7286f54f291d279d53d24473fa34288fe93a62f7acd8d874fd2aee59",
+    "runbook": "52ae600328b6002812b3f22b1dd91985cc8ff3d1aa2911b90c97b873120ca90c",
+    "static_contract_test": "d855065c533f7dff7dd671b74815ec4b9a90d30d20b37c570522f28cf056a5d7"
+  },
+  "not_verified": [
+    "No owner-controlled AWS account is ready; AWS validate-template, change-set review, GuardDuty ACTIVE state, real S3 and SQS operations, IAM principal denial checks, and cost acceptance have not run",
+    "Local cfn-lint and AWS CLI were absent; an attempted temporary cfn-lint install failed because the sandbox could not resolve pypi.org, so JSON/static checks are the only machine validation of this template",
+    "The application IAM identities are source-only; no account exists, no credentials or managed secrets were created, and denial/clean-tag behavior has not been tested in AWS",
+    "Selected product retention policy is documented but final-decision, timeout, closure, legal-hold and post-closure deletion are not implemented or provider-approved",
+    "Queue and GuardDuty health alerts are source-only; SNS subscription and synthetic delivery for every alert class are unverified",
+    "Signed provider verification and real India-only data-residency/scanning acceptance remain open",
+    "Gateway upload and worker scan polling remain test-only; real KYC intake and live payouts are closed"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-04T22:59:53.999970+00:00",
+  "run_id": "1f37938e8669",
+  "terminal": "0compoundPASS/1FAIL/0SKIP;279.1suite/280.7wallseconds;not timeout",
+  "source": "CustomerCreate3 unchanged",
+  "diagnostic": "Native helper required standalone/first-line customer name; failure-time Card semantics contains the exact name as an interior line. No app defect inferred from that stop.",
+  "immediate_semantic_evidence": {
+    "source": "failure-time ui-attention, not later post-cleanup hierarchy",
+    "block_title": "Customer",
+    "exact_expected_line_present": true
+  },
+  "post_cleanup_read": "Later one-shot hierarchy found no matching name; not used as failure-time evidence.",
+  "observed_scope": "Normal sign-in/return, original manual collection retry, fresh web order readback, real canonical one-item/199INR list semantic read and accepted Order Detail. Two images independently reviewed; the list image has its card partly below fold, so visual count/read-form acceptance remains pending.",
+  "not_accepted": "Compound journey, provider read, fulfillment/Return/Customer form/keyboard/cancel, current iOS runtime/full119programme",
+  "remaining": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "source_sha256": "676be4ba5ff701263b5835ae818ab215a4b926b06418aa12b0ab4157eeb15c65"
+}

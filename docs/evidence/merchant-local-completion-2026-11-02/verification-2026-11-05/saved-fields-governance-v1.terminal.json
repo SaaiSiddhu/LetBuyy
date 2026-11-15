@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-05T20:00:00.877578+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-saved-fields-governance-yf6bynbv",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "823d816f06cb8b21ecedb637f9ea6dc6cdf390c6caeae5fbb7676cf4231dc37a",
+  "core_inputs_byte_equal": 8444,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "saved-fields-governance-v1-report.json"
+}

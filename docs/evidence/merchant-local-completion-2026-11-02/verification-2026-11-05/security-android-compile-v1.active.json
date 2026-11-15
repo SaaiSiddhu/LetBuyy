@@ -1,0 +1,39 @@
+{
+  "build_script_sha256": "46002cca4fde88249698a8ef8c8f5bcd6ad19f02cfb14a3db45c83058e5f114f",
+  "status": "TERMINAL",
+  "source_sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+  "source_inputs": 8444,
+  "supervisor_pid": 42005,
+  "owned_root": "/private/tmp/letbuyy-security-android-n_tb5q4u",
+  "platform": "android",
+  "started_at": "2026-11-05T17:57:17.114079+00:00",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "ACCOUNTS_ENVIRONMENT": "development",
+    "BFF_BASE_URL": "http://10.0.2.2:54350/v1",
+    "API_BASE_URL": "http://10.0.2.2:54350/v1",
+    "IDENTITY_BASE_URL": "http://10.0.2.2:54351",
+    "ADMIN_BASE_URL": "http://10.0.2.2:54353",
+    "STOREFRONT_BASE_URL": "http://10.0.2.2:54354"
+  },
+  "steps": [
+    {
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "build",
+        "apk",
+        "--debug",
+        "--no-pub",
+        "--config-only",
+        "--target-platform",
+        "android-arm64",
+        "--dart-define-from-file=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/security-android-compile-v1-defines.json"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile",
+      "exit_code": 0
+    }
+  ],
+  "scope": "Normal main.dart debug compile/artifact only. No install, launch, sign-in, provider, web-mobile sync, device, hosted or release acceptance.",
+  "active_child_pid": 42049,
+  "terminal_receipt": "security-android-compile-v1.terminal.json"
+}

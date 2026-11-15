@@ -1,0 +1,44 @@
+{
+  "source_sha256": "ad36cabb72ba7d40cb240194e1f1a749f7e97dba355d0cff6c9554c7a3b54f32",
+  "comparisons": {
+    "105": {
+      "source_sha256": "fc30461575a839bc0d3e11b1ad2109c803bdfeeb1befef33b6dd076c3c4eeb35",
+      "scopes": [
+        "apps/merchant/mobile/",
+        "packages/dart/"
+      ],
+      "inputs": 884,
+      "byte_equal": true
+    },
+    "106": {
+      "source_sha256": "c872c19cb9e02fa7581afaa64b6dbf0ef4e50dd44ccbfdc5fb1950fa784ded6f",
+      "scopes": [
+        "apps/merchant/mobile/",
+        "packages/dart/"
+      ],
+      "inputs": 884,
+      "byte_equal": true
+    },
+    "110": {
+      "source_sha256": "e4e93c006428649197137a8e9ef3e08efcb9fbee5eb326e2dba70ce5fe0c39f2",
+      "scopes": [
+        "packages/theme-engine/"
+      ],
+      "inputs": 363,
+      "byte_equal": true
+    },
+    "111": {
+      "source_sha256": "f572b869ac94a24fc7a2f5f9a4c14907fd614995be3f9df7057097fcc6648460",
+      "scopes": [
+        "services/api-gateway/",
+        "database/",
+        "packages/infrastructure/",
+        "packages/commerce-core/",
+        "packages/shared-types/"
+      ],
+      "inputs": 1676,
+      "byte_equal": true
+    }
+  },
+  "scope": "Reuse only named unchanged consumed-input proofs; no new native/physical/hosted acceptance"
+}

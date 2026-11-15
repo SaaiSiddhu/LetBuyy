@@ -1,0 +1,10 @@
+{
+  "run_id": "03b416dab193",
+  "status": "NOT_ACCEPTED_RESTART_HELD_AT_LOADING_STORE",
+  "runner_exit": 1,
+  "controller_exit": 1,
+  "owned_cleanup_empty": true,
+  "reverse_maps_restored": true,
+  "source": "merchant-recovery-source-v11",
+  "observation": "After normal A/B/roster53/store sync, apprestart stuckLoadingstore90sec. Identitysession200,nomembershipBFFrequest afterrestart;causeunderinvestigation,notwaivedwithtimeout."
+}

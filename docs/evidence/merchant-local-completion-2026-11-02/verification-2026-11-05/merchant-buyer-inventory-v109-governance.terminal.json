@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-08T10:18:41.286650+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-buyer-inventory-v109-governance-241k5klc",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "029101384761ac9dfce54960732891da2f5ed240cc59f2e8b41dce4b1d2a3326",
+  "core_inputs_byte_equal": 8534,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "original_index_entries_unchanged": true,
+  "index_sha256_before": "9d8cd5e8af49bc7604a1d4477a9d2601eb5bbaaff4385d9d7ecd69c9fa462522",
+  "index_sha256_after": "9d8cd5e8af49bc7604a1d4477a9d2601eb5bbaaff4385d9d7ecd69c9fa462522",
+  "report": "merchant-buyer-inventory-v109-governance-report.json"
+}

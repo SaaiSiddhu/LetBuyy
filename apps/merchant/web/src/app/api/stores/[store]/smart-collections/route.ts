@@ -1,48 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { SmartCollectionListQuerySchema } from '@letbuyy/shared-types'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
-import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
-import type { CreateSmartCollectionInput } from '@letbuyy/api-client'
-
-type RouteParams = { params: Promise<{ store: string }> }
-
-export async function GET(
-    _request: NextRequest,
-    { params }: RouteParams
-) {
+import { merchantSecurityScope, privateSecurityResponse } from '@/lib/api/merchant-security-scope'
+import { collectionMetadataMutation } from '@/lib/products/collection-metadata-proxy'
+type Params = { params: Promise<{ store: string }> }
+export async function GET(request: NextRequest, { params }: Params) {
     try {
-        const { store } = await params
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
-
-        if (resolved.error) return resolved.error
-
-        const data = await createMerchantApiClient().smartCollections.list({
-            store_id: resolved.storeId,
-        })
-
-        return NextResponse.json({ data })
-    } catch (err) {
-        return merchantApiErrorResponse(err, 'Unable to load smart collections')
-    }
+        const scope = await merchantSecurityScope(request, params, false)
+        if (scope.error) return scope.error
+        const query = SmartCollectionListQuerySchema.safeParse({ ...Object.fromEntries(request.nextUrl.searchParams), store_id: scope.storeId })
+        if (!query.success) return privateSecurityResponse(NextResponse.json({ error: { code: 'VALIDATION_ERROR', message: 'Choose a valid collection page.' } }, { status: 400 }))
+        return privateSecurityResponse(NextResponse.json(await createMerchantApiClient(scope.storeId).smartCollections.list(query.data)))
+    } catch (error) { return privateSecurityResponse(merchantApiErrorResponse(error, 'The collection list could not be confirmed.')) }
 }
-
-export async function POST(
-    request: NextRequest,
-    { params }: RouteParams
-) {
-    try {
-        const { store } = await params
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
-
-        if (resolved.error) return resolved.error
-
-        const body = await request.json() as Omit<CreateSmartCollectionInput, 'store_id'>
-        const data = await createMerchantApiClient().smartCollections.create({
-            ...body,
-            store_id: resolved.storeId,
-        })
-
-        return NextResponse.json({ data }, { status: 201 })
-    } catch (err) {
-        return merchantApiErrorResponse(err, 'Unable to create smart collection')
-    }
-}
+export const POST = (request: NextRequest, { params }: Params) => collectionMetadataMutation(request, params, 'smart', 'create', null)

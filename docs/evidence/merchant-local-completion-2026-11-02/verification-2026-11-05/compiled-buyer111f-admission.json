@@ -1,0 +1,23 @@
+{
+  "source_manifest": "merchant-buyer-inventory-source-v111.source.json",
+  "source_sha256": "f572b869ac94a24fc7a2f5f9a4c14907fd614995be3f9df7057097fcc6648460",
+  "fixture": "merchant-inventory-core-buyer-v111f-focused.postgres.test.ts",
+  "fixture_sha256": "144c3d26506589ff86740193b263f9102a540d4dbc230fada6cdbc0a556d40e9",
+  "predecessor": "merchant-creation-core-buyer-v103b.postgres.test.ts",
+  "changes": [
+    "Optional no-JavaScript browser context",
+    "Real public variant quantity7/base0 + Liquid Offer InStock and selectable SKU",
+    "Normal API zero product \u2192 no-JS Soldout/OutOfStock",
+    "Explicit owned missing-level product base99 \u2192 null quantity/no-JS unknown/Offer availability omitted",
+    "Hydrated unknown control stale enable cannot write cart; unknown collection copy and disabled state"
+  ],
+  "scope": "Focused local compiled signup/product/Core publication/positive7base0/zero/unknown/no-JS/guard acceptance. Full long order/account/preset replay is a separate pending gate.",
+  "retry_reason": "Launch products=null is an existing canonical unlimited allowance. Preserve persisted plan and require null-or-valid-enough numeric quota; no fallback or plan edit. Split long replay from new stock-specific acceptance so fixture failures surface early.",
+  "failed_receipt": "compiled-buyer111.json",
+  "failed_receipts": [
+    "compiled-buyer111.json",
+    "compiled-buyer111b.json",
+    "compiled-buyer111c.json",
+    "compiled-buyer111d.json"
+  ]
+}

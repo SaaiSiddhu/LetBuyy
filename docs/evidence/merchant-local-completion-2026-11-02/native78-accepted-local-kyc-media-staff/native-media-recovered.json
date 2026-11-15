@@ -1,0 +1,13 @@
+{
+  "run_id": "26e80c9a199c",
+  "before_pid": 5396,
+  "after_pid": 7198,
+  "original_picker_cache_removed": [
+    "cache/863e60a8-04eb-41d4-b6c4-d19a5cc55bde/1000000018.png"
+  ],
+  "recovered_without_original_file": true,
+  "metadata_saved": true,
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v78/native-media-recovered-and-edited.png"
+  ]
+}

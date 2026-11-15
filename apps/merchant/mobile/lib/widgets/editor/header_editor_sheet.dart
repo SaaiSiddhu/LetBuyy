@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../models/store_model.dart';
 import '../../services/store_service.dart';
+import '../../services/native_media_selection.dart';
+import '../../services/security_command_store.dart';
 import '../shared/cached_merchant_image.dart';
 import '../shared/image_source_sheet.dart';
 import '../shared/merchant_media_picker.dart';
@@ -49,6 +53,14 @@ class _HeaderEditorSheetState extends State<HeaderEditorSheet> {
   bool _isSaving = false;
   bool _isUploadingLogo = false;
   String? _logoUrl;
+  MerchantSecurityContext? _selectionContext;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _selectionContext ??= context
+        .read<NativeMediaSelection?>()
+        ?.captureContext();
+  }
 
   // Default nav pages
   final List<Map<String, dynamic>> _defaultNavPages = [
@@ -123,31 +135,52 @@ class _HeaderEditorSheetState extends State<HeaderEditorSheet> {
 
     if (!mounted || _isUploadingLogo) return;
     setState(() => _isUploadingLogo = true);
+    NativeMediaSelection? nativeSelection;
+    String? nativeUploadKey;
     try {
-      final pickedFile = await pickMerchantMedia(context, source: source,
-          pick: () => picker.pickImage(source: source, maxWidth: 512));
+      if (_selectionContext?.storeId != widget.store.id) return;
+      final pickedFile = await pickMerchantMedia(
+        context,
+        source: source,
+        purpose:
+            'theme-header:${widget.store.id}:${sha256.convert(utf8.encode(jsonEncode(widget.settings))).toString().substring(0, 24)}',
+        expectedContext: _selectionContext,
+        pick: () => picker.pickImage(source: source, maxWidth: 512),
+      );
       if (!mounted || pickedFile == null) return;
       final file = File(pickedFile.path);
       final storeService = context.read<StoreService>();
+      final selection = context.read<NativeMediaSelection>();
+      nativeSelection = selection;
+      final selectionKey = selection.claimUpload(pickedFile);
+      nativeUploadKey = selectionKey;
       final downloadUrl = await storeService.uploadImage(
         file,
         folder: 'stores/${widget.store.id}',
+        options: selection.optionsForFile(pickedFile),
       );
 
       if (!mounted) return;
+      selection.keyForFile(pickedFile);
       setState(() {
         _logoUrl = downloadUrl;
         _settings['logoUrl'] = downloadUrl;
       });
 
       HapticFeedback.mediumImpact();
+      await selection.completeKey(selectionKey);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error uploading logo: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Logo upload was not confirmed. Review the saved selection before trying again.',
+            ),
+          ),
+        );
       }
     } finally {
+      nativeSelection?.releaseUpload(nativeUploadKey);
       if (mounted) setState(() => _isUploadingLogo = false);
     }
   }

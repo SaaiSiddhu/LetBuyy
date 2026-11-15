@@ -1,0 +1,15 @@
+{
+  "owner": "merchant-mobile-local-completion",
+  "root": "/private/tmp/letbuyy-merchant-emulator-de849422c5",
+  "avd_name": "LetBuyy_Merchant_Parity_20261106_c6cefc",
+  "serial": "emulator-5580",
+  "emulator_pid": 79160,
+  "sdk_root": "/Volumes/Developer Tools/SDKs/android-sdk",
+  "adb_port": 15038,
+  "run_root": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v74",
+  "flow": "warehouse",
+  "compiledWorkers": true,
+  "verifyStockLifecycle": false,
+  "verifyStockAdjustments": false,
+  "offlineGradle": true
+}

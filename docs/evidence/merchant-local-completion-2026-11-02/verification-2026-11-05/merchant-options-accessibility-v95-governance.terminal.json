@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-08T05:41:16.669451+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-options-accessibility-v95-governance-gegwal3w",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "6a9dffa117db5c1be62f26f57d8f031910f3e599fc966a1eb0cfc87392519a18",
+  "core_inputs_byte_equal": 8519,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "original_index_entries_unchanged": true,
+  "index_sha256_before": "8a1272236d22f4689fb94c792da0ec8b5f7de41983877a15e7f346bcd1327bc3",
+  "index_sha256_after": "8a1272236d22f4689fb94c792da0ec8b5f7de41983877a15e7f346bcd1327bc3",
+  "report": "merchant-options-accessibility-v95-governance-report.json"
+}

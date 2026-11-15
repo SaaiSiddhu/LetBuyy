@@ -56,6 +56,7 @@ function backend(models: Model[]) {
   const byId = new Map(models.map(item => [item.id, item]));
   let cartFailure: string | null = null;
   let lastReceipt: unknown;
+  let nextCommitBarrier: Promise<void> | undefined, heldCommit = false, readsDuringHeldCommit = 0;
   const fetcher = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = new URL(String(input), window.location.origin);
     if (url.pathname.endsWith('/personalization-review')) {
@@ -65,9 +66,11 @@ function backend(models: Model[]) {
     }
     if (url.pathname.endsWith('/checkout-status')) return response({ cart_status: 'active', checkout_state: null });
     assert.match(url.pathname, /\/cart(?:\/[^/]+)?$/);
-    if ((init?.method || 'GET') === 'GET') return response(lastReceipt);
+    if ((init?.method || 'GET') === 'GET') { if (heldCommit) readsDuringHeldCommit++; return response(lastReceipt); }
     const body = JSON.parse(String(init?.body)) as { lines: unknown[] };
     const lines = body.lines.map(line => StorefrontCartLineInputSchema.parse(line)); writes.push(lines);
+    const barrier = nextCommitBarrier; nextCommitBarrier = undefined;
+    if (barrier) { heldCommit = true; await barrier; heldCommit = false; }
     if (cartFailure) { const code = cartFailure; cartFailure = null; return response({ code, message: 'Controlled failure' }, code === 'CART_UNAVAILABLE' ? 503 : 409); }
     const saved = await Promise.all(lines.map(async line => {
       const item = byId.get(line.product_id); assert.ok(item);
@@ -81,7 +84,14 @@ function backend(models: Model[]) {
     lastReceipt = { cart_token: 'madeyours-test-receipt', status: 'active', updated_at: '2026-10-25T00:00:00.000Z', lines: saved, currency: 'INR', subtotal: 1290, total: 1290, discount_total: 0, shipping_total: 0, tax_total: 0, coupon_codes: [] };
     return response(lastReceipt);
   }) as typeof fetch;
-  return { fetcher, writes, contexts, failNextCart(code: string) { cartFailure = code; } };
+  return { fetcher, writes, contexts, failNextCart(code: string) { cartFailure = code; },
+    get readsDuringHeldCommit() { return readsDuringHeldCommit; },
+    holdNextCartCommit() {
+      assert.equal(nextCommitBarrier, undefined);
+      let release!: () => void; nextCommitBarrier = new Promise<void>(resolve => { release = resolve; });
+      return release;
+    },
+  };
 }
 
 test('actual MadeYours mapper/Liquid/native review retains separate configurations through receipts, quantity, removal and rehydrate', async () => {
@@ -126,6 +136,62 @@ test('actual MadeYours mapper/Liquid/native review retains separate configuratio
     assert.match(rehydrated.textContent!, /Asha/); assert.doesNotMatch(rehydrated.textContent!, /Kabir/);
     assert.equal(rehydrated.querySelector<HTMLElement>('[data-lb-cart-step="up"]')!.dataset.cartLineKey, ashaId);
   } finally { clear(); globalThis.fetch = original; }
+});
+
+test('cart remount waits for an in-flight drawer removal before reading its canonical receipt', async () => {
+  await ready(); clear(); const item = model(), api = backend([item]), original = globalThis.fetch;
+  globalThis.fetch = api.fetcher;
+  let release: (() => void) | undefined;
+  try {
+    document.body.innerHTML = (await render(item)).html; const section = root();
+    choose(section, 'Walnut'); await flush(); review(section, 'Asha'); purchase(section).click();
+    await waitForReceipt(() => cached().length === 1 && typeof cached()[0].serverLineId === 'string' && !purchase(section).disabled, 'first configuration must be acknowledged');
+    review(section, 'Kabir'); purchase(section).click();
+    await waitForReceipt(() => api.writes.length === 2 && cached().length === 2 && cached().every(line => typeof line.serverLineId === 'string') && !purchase(section).disabled, 'both configurations must be acknowledged');
+    const ashaId = cached()[0].serverLineId;
+    const page = document.createElement('lb-cart'), drawer = document.createElement('lb-cart-drawer'); document.body.append(page, drawer);
+    await waitForReceipt(() => page.querySelector('[data-lb-cart-status]') === null, 'initial cart read must finish before holding the next mutation');
+    release = api.holdNextCartCommit();
+    const remove = [...drawer.querySelectorAll<HTMLButtonElement>('[data-lb-cart-remove]')].find(button => button.dataset.cartLineKey !== ashaId)!;
+    assert.ok(remove); remove.click();
+    await waitForReceipt(() => api.writes.length === 3 && cached().length === 1, 'the removal must be in flight with its optimistic draft retained');
+    page.remove(); const rehydrated = document.createElement('lb-cart'); document.body.append(rehydrated);
+    assert.ok(rehydrated.querySelector('[data-lb-cart-status]'), 'remount must keep checkout unconfirmed while its existing write is pending');
+    await flush(); // Let the real mount/read path run while the mutation is held.
+    release(); release = undefined;
+    await waitForReceipt(() => rehydrated.querySelector('[data-lb-cart-status]') === null && cached().length === 1 && !/Kabir/.test(rehydrated.textContent || ''), 'the acknowledged removal must survive remount');
+    assert.equal(api.readsDuringHeldCommit, 0, 'a canonical read must not race the existing unacknowledged write');
+    assert.equal(api.writes.length, 3, 'recovery must not replay the mutation');
+    assert.equal(cached()[0].serverLineId, ashaId); assert.match(rehydrated.textContent!, /Asha/);
+    assert.doesNotMatch(rehydrated.textContent!, /Kabir/);
+  } finally { release?.(); clear(); globalThis.fetch = original; }
+});
+
+test('cart remount keeps a failed queued drawer removal unconfirmed until explicit saved-cart reload', async () => {
+  await ready(); clear(); const item = model(), api = backend([item]), original = globalThis.fetch;
+  globalThis.fetch = api.fetcher;
+  let release: (() => void) | undefined;
+  try {
+    document.body.innerHTML = (await render(item)).html; const section = root();
+    choose(section, 'Walnut'); await flush(); review(section, 'Asha'); purchase(section).click();
+    await waitForReceipt(() => cached().length === 1 && typeof cached()[0].serverLineId === 'string' && !purchase(section).disabled, 'the saved configuration must be acknowledged');
+    const page = document.createElement('lb-cart'), drawer = document.createElement('lb-cart-drawer'); document.body.append(page, drawer);
+    await waitForReceipt(() => page.querySelector('[data-lb-cart-status]') === null, 'the initial saved-cart read must finish');
+    release = api.holdNextCartCommit(); api.failNextCart('CART_UNAVAILABLE');
+    drawer.querySelector<HTMLButtonElement>('[data-lb-cart-remove]')!.click();
+    await waitForReceipt(() => api.writes.length === 2 && cached().length === 0, 'the removal must reach the held transport outcome');
+    page.remove(); const rehydrated = document.createElement('lb-cart'); document.body.append(rehydrated); await flush();
+    release(); release = undefined;
+    await waitForReceipt(() => cached().length === 1 && Boolean(rehydrated.querySelector('[data-lb-cart-refresh]')), 'an unavailable queued write must leave its recovered receipt explicitly unconfirmed');
+    assert.equal(api.readsDuringHeldCommit, 0); assert.equal(api.writes.length, 2);
+    assert.equal(rehydrated.querySelector('a.lb-cart__checkout'), null);
+    assert.ok(rehydrated.querySelector('.lb-cart__checkout[aria-disabled="true"]'));
+    assert.match(rehydrated.textContent!, /could not confirm/);
+    rehydrated.querySelector<HTMLButtonElement>('[data-lb-cart-refresh]')!.click();
+    await waitForReceipt(() => rehydrated.querySelector('[data-lb-cart-status]') === null && Boolean(rehydrated.querySelector('a.lb-cart__checkout')), 'only an explicit fresh saved-cart read may clear the unavailable state');
+    assert.equal(api.writes.length, 2, 'the explicit read must never replay the removal');
+    assert.match(rehydrated.textContent!, /Asha/);
+  } finally { release?.(); clear(); globalThis.fetch = original; }
 });
 
 test('late variant responses are aborted and cannot authorize another selection, including unavailable options', async () => {

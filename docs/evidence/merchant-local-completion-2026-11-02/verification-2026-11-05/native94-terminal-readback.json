@@ -1,0 +1,15 @@
+{
+  "run_id": "676593abf98a",
+  "source": "source70",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261107-3vphed5i",
+  "build": "PASS",
+  "native_product_ui_exit": 0,
+  "native_metadata_ui_exit": 65,
+  "aggregate_exit": 1,
+  "normal_auth_accepted": true,
+  "browser_upload_and_metadata_recovery": "Reached the web-media-metadata-saved marker only after real committed lost-ACK upload/registration and five-field metadata replay assertions. No complete delete/readback acceptance.",
+  "observed_native_label": "synthetic-web-renamed.png; Image type/size; Synthetic retained web description; recovery folder",
+  "failure": "Driver required exact standalone filename; real native AX card has composite label. Exact form and final native/web readback not reached.",
+  "source_unchanged_after_teardown": true,
+  "whole_features_accepted": 0
+}

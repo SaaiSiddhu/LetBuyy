@@ -8,6 +8,7 @@ import { MerchantNavigationLink } from './MerchantNavigationLink'
 import { MerchantNavigationProvider, MerchantNavigationFeedback } from './MerchantNavigationProvider'
 import HeaderBar from './HeaderBar'
 import { MerchantSecurityContext } from './security/MerchantSecurityContext'
+import { MediaRecoveryProvider } from './media/MediaRecoveryProvider'
 import type { SessionUser } from '@/lib/auth/session'
 import { AlertTriangle, AppNavigation, ArrowLeft, Button, LayoutDashboard, Navigation, NavigationLinkProvider, ToastProvider, acquireScrollLock, isNavItemActive, type AppNavigationSection, type NavigationItem } from '@letbuyy/ui'
 import { getMerchantNavigation, type MerchantNavItem } from './merchantNavigation'
@@ -210,8 +211,8 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
 
     // Full-screen flows bypass the admin shell entirely
     if (isFullScreenFlow) {
-        return <NavigationLinkProvider linkComponent={MerchantNavigationLink}><ToastProvider><MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
-                                    {children}
+        return <NavigationLinkProvider linkComponent={MerchantNavigationLink}><ToastProvider><MerchantSecurityContext.Provider key={`${user.id}:${store}:${storeData.id}`} value={{ actorId: user.id, store, siteId:storeData.id }}>
+                                    <MediaRecoveryProvider store={store}>{children}</MediaRecoveryProvider>
                                 </MerchantSecurityContext.Provider></ToastProvider></NavigationLinkProvider>
     }
 
@@ -370,8 +371,8 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                                 </div>
                             )}
 
-                            <MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
-                                    {children}
+                            <MerchantSecurityContext.Provider key={`${user.id}:${store}:${storeData.id}`} value={{ actorId: user.id, store, siteId:storeData.id }}>
+                                    <MediaRecoveryProvider store={store}>{children}</MediaRecoveryProvider>
                                 </MerchantSecurityContext.Provider>
                         </div>
                     ) : (
@@ -391,8 +392,8 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                                     </div>
                                 )}
 
-                                <MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
-                                    {children}
+                                <MerchantSecurityContext.Provider key={`${user.id}:${store}:${storeData.id}`} value={{ actorId: user.id, store, siteId:storeData.id }}>
+                                    <MediaRecoveryProvider store={store}>{children}</MediaRecoveryProvider>
                                 </MerchantSecurityContext.Provider>
 
                             </div>

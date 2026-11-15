@@ -1,0 +1,15 @@
+{
+  "source_sha256": "3825de3424739ed105f842a151f4ae9a5f2379936911885833da89b6bc04d3d7",
+  "core_inputs": 7489,
+  "actual_clone_core_bytes_equal": true,
+  "capsule": "governance-category-capsule-v41",
+  "counts": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "ok": true,
+  "exit": 0
+}

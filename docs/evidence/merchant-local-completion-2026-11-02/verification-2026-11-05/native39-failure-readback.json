@@ -1,0 +1,41 @@
+{
+  "at": "2026-11-05T18:58:17.766842+00:00",
+  "status": "TERMINAL_FAILED_NOT_ACCEPTED_DOCUMENT_ACCESSIBILITY_REPRODUCED",
+  "run_id": "48646a456c6c",
+  "runner_exit": 1,
+  "ui_exit": 1,
+  "pass": 0,
+  "fail": 1,
+  "skip": 0,
+  "source_sha256": "a2a5672ed7707f9b10a0aa6fd49fadb27227410002e60a56af97c23f3c6d9cb3",
+  "source_inputs": 8442,
+  "source_unchanged_at_terminal": true,
+  "apk_sha256": "3a6b4978e4dd2a228ecebb495e48f7435e10b990371ab88dfa89c5330d044a91",
+  "retained_and_installed_apk_equal": true,
+  "cause": "Saved transfer line is visually complete but native accessibility exposes only selectable Product ID; controller cannot observe full saved product/quantity facts, then correctly refuses unobserved scroll input. Actual screenshot and native semantics inspected.",
+  "observed_substeps_only": [
+    "Normal Accounts/browser login and automatic return",
+    "Location lost-reply/restart/original-key recovery",
+    "Supplier creation",
+    "Web metadata read/create and native readback; strict profile save/web read",
+    "PO ordered4units at125.50; native partial3receipt/restart/original replay",
+    "Transfer reserve2, held lifetime web/DB read, ship2, committed lifetime, partial receive1",
+    "Web final receive1for both documents; native current transfer list read"
+  ],
+  "not_reached": [
+    "Full saved transfer/PO line read acceptance",
+    "Native delta setter and web absolute setter acceptance",
+    "Native Staff form acceptance"
+  ],
+  "independent_cleanup": {
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "forward_baseline_restored": true,
+    "reverse_baseline_restored": true,
+    "credentials_retired": true
+  },
+  "scope": "Current normal compiled local owner journey only; no full stock/full-feature acceptance, no hosted/provider/physical/iOS/release claims."
+}

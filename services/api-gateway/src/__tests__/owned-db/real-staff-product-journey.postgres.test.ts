@@ -51,6 +51,8 @@ import assert from 'node:assert/strict';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import test, {before,after} from 'node:test';
 import { Hono } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
+import { AppError, formatAppError } from '../../lib/errors';
 import { createLetbuyyInternalIdentityHeaders } from '@letbuyy/auth-core';
 import { authMiddleware } from '../../middleware/auth';
 import employeeRouter from '../../routes/employee';
@@ -98,6 +100,13 @@ async function identityHeaders(userId: string, email: string): Promise<Record<st
 
 function gateway() {
     const api = new Hono<{ Bindings: Env }>();
+    // Match the mounted gateway's known-error contract. Hono's default would
+    // misreport a thrown canonical ForbiddenError as a plain-text500.
+    api.onError((error, context) => {
+        if (!(error instanceof AppError)) throw error;
+        const { body, status } = formatAppError(error);
+        return context.json(body, status as ContentfulStatusCode);
+    });
     api.use('/*', authMiddleware);
     api.route('/employees', employeeRouter);
     api.route('/products', productsRouter);
@@ -249,18 +258,26 @@ test('D03 real staff product journey: independently authenticated staff, real em
     }
 
     // ============================================================
-    // 4. Staff attempts a forbidden operation -- collection management has no staff path at all
-    //    (verifyStoreOwnership only, routes/products.ts), regardless of products:write.
+    // 4. Canonical collections honor products:write in the staff member's own
+    //    store. That grant never authorizes a foreign store's collections.
     // ============================================================
     {
-        const res = await gateway().request('/products/collections', {
-            method: 'POST',
-            headers: { ...(await identityHeaders(STAFF, staffEmail)), 'Content-Type': 'application/json' },
-            body: JSON.stringify({ store_id: SITE_A, title: 'Should not be allowed' }),
-        }, env());
+        const create = async (store: string, title: string) => {
+            const key = crypto.randomUUID();
+            return gateway().request('/products/collections', {
+                method: 'POST',
+                headers: { ...(await identityHeaders(STAFF, staffEmail)), 'Content-Type': 'application/json', 'X-Idempotency-Key': key },
+                body: JSON.stringify({ store_id: store, title, collection_type: 'manual', idempotency_key: key }),
+            }, env());
+        };
+        const allowed = await create(SITE_A, 'Authorized synthetic staff collection');
+        assert.equal(allowed.status, 201, JSON.stringify(await readJson(allowed)));
+        assert.equal(psql(`SELECT count(*) FROM collections WHERE store_id='${SITE_A}' AND title='Authorized synthetic staff collection';`), '1');
+        const res = await create(SITE_B, 'Should not be allowed');
         const body = await readJson(res);
         assert.equal(res.status, 403, `a forbidden operation must be refused: ${JSON.stringify(body)}`);
         assert.equal((body.error as { code: string }).code, 'FORBIDDEN');
+        assert.equal(psql(`SELECT count(*) FROM collections WHERE store_id='${SITE_B}' AND title='Should not be allowed';`), '0');
     }
 
     // ============================================================

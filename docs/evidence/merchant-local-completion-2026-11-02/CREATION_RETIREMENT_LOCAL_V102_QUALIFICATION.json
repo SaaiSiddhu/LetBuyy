@@ -1,0 +1,50 @@
+{
+  "at": "2026-11-08T07:39:33.699867+00:00",
+  "source_sha256": "a7fe3f7c0040e74fe50f47ab69354d5ecfe8e67c69a151cad95ef98ff478f857",
+  "core_inputs": 8524,
+  "scope": "Approved source/local implementation, synthetic tests and debug builds only",
+  "implementation": [
+    "image/description-free creation using existing canonical contract",
+    "option rows inherit final entered price",
+    "original creation key/body recovery and stable created ID",
+    "quota draft preservation and current permission retirement",
+    "approved canonical variant retirement438 with guarded paired DOWN, live/cart/checkout readers and stock/reference fences"
+  ],
+  "verified": {
+    "Flutter": {
+      "source": "v98 application inputs unchanged at102",
+      "passed": 1783,
+      "failed": 0
+    },
+    "analysis": 0,
+    "web_editor": 63,
+    "gateway_types": "PASS",
+    "governance": {
+      "passed": 114,
+      "not_applicable": 1
+    },
+    "owned_products_current102": {
+      "passed": 106,
+      "failed": 0,
+      "report": "verification-2026-11-05/product-retire438-final102.json"
+    },
+    "inventory_audit": 16,
+    "inventory_reservation_compound": 1,
+    "cart_order_facts": 21,
+    "tenant_redteam_compound": 2,
+    "Android_debug_build": "PASS, retained, source98 application inputs unchanged",
+    "iOS_debug_build": "PASS exact simulator destination,401files,source101; no install/runtime claim",
+    "retirement_buyer_cart": "PASS owned run084b8da0c3eb: live sibling order first; retired accepted cart/order/new/PATCH refusals, zero effects, default+compat public read/cache-refresh exclusion and unchanged original order facts"
+  },
+  "runtime": {
+    "Android132": "FAILED and preserved: stale-PID preflight, Add/stock driver assumptions, then multipart-only fixture observer intercepted JSON and produced BFF500 before Gateway product effects. Normal auth passed; no creation acceptance.",
+    "iOS133": "PASS81e0152fda73 normal auth and complete creation/original replay/web135/native retirement/history/web+native readback;401installed files equal normal build;cleanup empty and restoredShutdown",
+    "compiled_buyer": "PENDING",
+    "Android134": "PASS e70ef7247567; actual normal auth/creation/lost201->503/original2ndPOST/web135/native retirement/history retention/web+native readback; cleanup/maps restored"
+  },
+  "whole_features_accepted": 0,
+  "host9002": "Never contacted",
+  "hosted_release": "None",
+  "source_frozen_during_owned_runtime": true,
+  "scopeNote": "102bounded native proof remains valid; next103 fixes an independently reproduced Code-key creation regression; full current-app acceptance waits for136/137."
+}

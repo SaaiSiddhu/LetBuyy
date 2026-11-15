@@ -1,0 +1,25 @@
+{
+  "started_at": "2026-11-05T20:24:58.864316+00:00",
+  "supervisor_pid": 97833,
+  "source": "utilities-source-v3",
+  "source_sha256": "9e72b01bf6982eddfba179198661090219e338977f150b81e518209fad8f5642",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "45s",
+    "test/filled_button_readability_test.dart",
+    "test/help_presentation_test.dart",
+    "test/capability_presentation_test.dart",
+    "test/confirmation_presentation_test.dart",
+    "test/merchant_goldens_test.dart",
+    "test/order_detail_golden_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 97835,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T20:25:02.557917+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "9e72b01bf6982eddfba179198661090219e338977f150b81e518209fad8f5642"
+}

@@ -1,0 +1,17 @@
+{
+  "from_source": "4cb99d2b9f97e0a9d6cf117bd6ff21264ecdc318b22efed6fe91dd6f24c93499",
+  "to_source": "8e456fc19e2ff8f5a348e9f31ce5d9bd66b4c4364f4367c66324ab258d909c76",
+  "delta": [
+    "infrastructure/deployment/kyc-india-mumbai.README.md",
+    "infrastructure/deployment/kyc-india-mumbai.cfn.json"
+  ],
+  "all_other_inputs_equal": true,
+  "reused": [
+    "shared-types typing v5",
+    "Gateway typing v5",
+    "TS SDK typing v5",
+    "shared-types tests v5",
+    "all2087Gateway tests v6"
+  ],
+  "root_contracts": "Fresh full run required for recovered fixture;prior382PASS/1missing-fileFAIL preserved"
+}

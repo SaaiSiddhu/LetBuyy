@@ -1,4 +1,5 @@
 import 'package:letbuyy_models/letbuyy_models.dart';
+import '../storefront_config.dart' as storefront;
 
 /// Store status enum
 enum StoreStatus { draft, published, suspended }
@@ -93,6 +94,9 @@ class StoreModel {
   final String? invoiceFooter;
   final int invoiceNumberNext;
 
+  /// Unknown in older read caches; never invent a revision for an edit.
+  final int? version;
+
   // Timestamps
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -152,14 +156,18 @@ class StoreModel {
     this.invoiceAddress = const {},
     this.invoiceFooter,
     this.invoiceNumberNext = 1,
+    this.version,
     required this.createdAt,
     required this.updatedAt,
     this.publishedAt,
   });
 
-  /// Generate store URL from subdomain (new format: subdomain.letbuyy.com)
+  /// Merchant display/link projection of the governed storefront root.
+  /// Host ownership, publication and checkout authority remain server-owned.
+  static const storefrontRootDomain = storefront.storefrontRootDomain;
+
   static String generateStoreUrl(String subdomain) {
-    return 'https://$subdomain.letbuyy.com';
+    return 'https://$subdomain.$storefrontRootDomain';
   }
 
   /// Generate the public storefront URL.
@@ -231,8 +239,14 @@ class StoreModel {
       ),
       teamMemberCount:
           data['teamMemberCount'] ?? data['team_member_count'] ?? 0,
-      seoTitle: data['seoTitle'] ?? data['seo_title'],
-      seoDescription: data['seoDescription'] ?? data['seo_description'],
+      // sites owns metadata under meta_*. Existing cache/API aliases are read
+      // only when that canonical key is absent; an explicit clear must win.
+      seoTitle: data.containsKey('meta_title')
+          ? data['meta_title']
+          : data['seoTitle'] ?? data['seo_title'],
+      seoDescription: data.containsKey('meta_description')
+          ? data['meta_description']
+          : data['seoDescription'] ?? data['seo_description'],
       totalVisitors: data['totalVisitors'] ?? data['total_visitors'] ?? 0,
       totalOrders: data['totalOrders'] ?? data['total_orders'] ?? 0,
       domainStatus: data['domainStatus'] ?? data['domain_status'] ?? 'pending',
@@ -272,6 +286,9 @@ class StoreModel {
       invoiceFooter: data['invoiceFooter'] ?? data['invoice_footer'],
       invoiceNumberNext:
           data['invoiceNumberNext'] ?? data['invoice_number_next'] ?? 1,
+      version: data['version'] is int && (data['version'] as int) > 0
+          ? data['version'] as int
+          : null,
       createdAt:
           _parseTimestamp(data['createdAt'] ?? data['created_at']) ??
           DateTime.now(),
@@ -319,6 +336,7 @@ class StoreModel {
       'team_member_count': teamMemberCount,
       'seo_title': seoTitle,
       'seo_description': seoDescription,
+      if (version != null) 'version': version,
       'total_visitors': totalVisitors,
       'total_orders': totalOrders,
       'domain_status': domainStatus,
@@ -352,6 +370,7 @@ class StoreModel {
 
   /// Copy with new values
   StoreModel copyWith({
+    int? version,
     String? id,
     String? sellerId,
     String? name,
@@ -409,6 +428,7 @@ class StoreModel {
     StoreTemplateModel? templateConfig,
   }) {
     return StoreModel(
+      version: version ?? this.version,
       id: id ?? this.id,
       sellerId: sellerId ?? this.sellerId,
       name: name ?? this.name,
@@ -483,15 +503,17 @@ class StoreModel {
   /// Get the public URL for the store
   String get publicUrl {
     // Priority: custom domain > subdomain
-    if (customDomain != null && customDomainStatus == 'active') {
+    if (customDomain != null &&
+        customDomain!.isNotEmpty &&
+        customDomainStatus == 'active' &&
+        sslActive) {
       return 'https://$customDomain';
     }
-    // With Load Balancer + wildcard SSL, subdomain always works instantly!
-    return 'https://$subdomain.letbuyy.com';
+    return generateStoreUrl(subdomain);
   }
 
-  /// Get the preview URL (same as public URL with Load Balancer)
-  String get previewUrl => 'https://$subdomain.letbuyy.com';
+  /// The platform preview address does not publish a private store.
+  String get previewUrl => generateStoreUrl(subdomain);
 
   /// Get the number of products (from selectedProductIds)
   int get productCount => selectedProductIds.length;
@@ -513,18 +535,9 @@ class StoreModel {
     return PlanConfig.productLimits[plan] ?? productLimit;
   }
 
-  /// Get effective commission based on subscription plan and Razorpay connection
-  /// Professional: 0% if own Razorpay connected, 2% if using shared
-  double get effectiveCommission {
-    final plan = subscriptionPlan ?? SubscriptionPlan.trial;
-
-    // Professional plan special case
-    if (plan == SubscriptionPlan.professional) {
-      return isUsingOwnRazorpay ? 0.0 : 2.0;
-    }
-
-    return PlanConfig.commissionPercents[plan] ?? commissionPercent;
-  }
+  /// LetBuyy transaction fees are permanently zero across plans and rails.
+  /// The server-owned ledger remains the authority for actual amounts.
+  double get effectiveCommission => 0.0;
 
   /// Check if using own Razorpay account
   bool get isUsingOwnRazorpay => paymentMode == PaymentMode.ownAccount;
@@ -632,6 +645,9 @@ class StoreModel {
         return PaymentMode.ownAccount;
       case 'shared':
         return PaymentMode.shared;
+      case 'managedsandbox':
+      case 'managed_sandbox':
+        return PaymentMode.managedSandbox;
       default:
         return PaymentMode.notConnected;
     }

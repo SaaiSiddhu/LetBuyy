@@ -1,0 +1,58 @@
+{
+  "status": "CATEGORY_AND_CURRENT_TENANT_PASSED_FOUNDATION_CLUSTER_CONFLICT",
+  "runId": "acdeff953c62",
+  "results": [
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/final-tenant-table-access.postgres.test.ts",
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-category-commands.postgres.test.ts",
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "path": "tests/executable/tenant-redteam-postgres.test.mjs",
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "skipped": 0,
+      "cleanup": null
+    }
+  ],
+  "category": {
+    "passed": 9,
+    "failed": 0,
+    "migration": 433
+  },
+  "currentTenantControls": {
+    "passed": 8,
+    "failed": 0
+  },
+  "foundationControls": {
+    "passed": 0,
+    "failed": 2,
+    "cause": "Legacy foundation test resets app_tenant role; the same cluster retained796 grants in letbuyy_tpl_gateway from prior Gateway suites. No RT assertion reached. Rerun unchanged fixture alone in a fresh owned cluster; do not remove assertions or erase the migrated template grants."
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

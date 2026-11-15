@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-07T19:16:23.040785+00:00",
+  "status": "FAILED_TEST_HARNESS_PRECONDITION;NO_APP_BUILD_LOGIN_OR_RUNTIME_PROOF",
+  "source": "merchant-native-selection-source-v91",
+  "run_id": "ee50e817f8c1",
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261108-f4ac2189ea",
+  "failure": "ENOENT device-receipt.json before native runtime initialization",
+  "chain": {
+    "backend_exit": 1,
+    "ui_exit": 1,
+    "at": "2026-11-07T19:15:37.417518+00:00"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "device": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "existing_files_and_photos_preserved": true
+  },
+  "continuation": "Fresh122 includes explicit exact task simulator/run root receipt;no assertion weakened/source changed/successful write reset",
+  "whole_features_accepted": 0
+}

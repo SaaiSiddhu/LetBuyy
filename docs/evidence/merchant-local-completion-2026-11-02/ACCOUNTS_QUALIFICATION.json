@@ -1,0 +1,190 @@
+{
+  "kind": "local-evidence-not-release-certificate",
+  "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "provider": "owned loopback Turnstile simulation and captured mail transport; no external service proof",
+  "nativeUI": "not yet run in this cohort",
+  "cohorts": [
+    {
+      "runId": "8425fff1804c",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "failedSuites": 0,
+      "tests": 40,
+      "assertionsPassed": 40,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "artifact": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/access-baseline.json",
+      "artifactSha256": "706baccf730eb9b3151960bf5e0a53db1cf30d10736c09073b9e4b2a884926d5",
+      "suites": [
+        {
+          "name": "merchant-challenge-authority.postgres",
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-challenge-authority.postgres.test.ts",
+          "code": 0,
+          "tests": 15,
+          "pass": 15,
+          "fail": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cleanup": {
+            "rest": true,
+            "database": true
+          }
+        },
+        {
+          "name": "merchant-staff-lifecycle.postgres",
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-staff-lifecycle.postgres.test.ts",
+          "code": 0,
+          "tests": 19,
+          "pass": 19,
+          "fail": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cleanup": {
+            "rest": true,
+            "database": true
+          }
+        },
+        {
+          "name": "store-password-admission.postgres",
+          "path": "services/api-gateway/src/__tests__/owned-db/store-password-admission.postgres.test.ts",
+          "code": 0,
+          "tests": 6,
+          "pass": 6,
+          "fail": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cleanup": {
+            "rest": true,
+            "database": true
+          }
+        }
+      ]
+    },
+    {
+      "runId": "b4939cfe48a1",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "failedSuites": 0,
+      "tests": 5,
+      "assertionsPassed": 5,
+      "assertionsFailed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      },
+      "artifact": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/accounts-browser-v3.json",
+      "artifactSha256": "c6ddd248d3a83ebe8a6120966c1a3c4b30b73da69512c7fcc5da38fc90c80b5a",
+      "suites": [
+        {
+          "name": "local-turnstile-provider.postgres",
+          "path": "services/api-gateway/src/__tests__/owned-db/local-turnstile-provider.postgres.test.ts",
+          "code": 0,
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cleanup": {
+            "rest": true,
+            "database": true
+          }
+        },
+        {
+          "name": "merchant-mfa-browser.postgres",
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-mfa-browser.postgres.test.ts",
+          "code": 0,
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cleanup": {
+            "rest": true,
+            "database": true
+          }
+        },
+        {
+          "name": "merchant-staff-invitation-browser.postgres",
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-staff-invitation-browser.postgres.test.ts",
+          "code": 0,
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cleanup": {
+            "rest": true,
+            "database": true
+          }
+        },
+        {
+          "name": "merchant-public-signup-browser.postgres",
+          "path": "tests/owned-db/merchant-public-signup-browser.postgres.test.ts",
+          "code": 0,
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cleanup": {
+            "rest": true,
+            "database": true
+          }
+        }
+      ]
+    }
+  ],
+  "retainedFailures": [
+    {
+      "artifact": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/accounts-browser-v2.log",
+      "reason": "test-fixture env argument and duplicate lifecycle stop; corrected and requalified by v3"
+    }
+  ],
+  "currentAcceptance": {
+    "runId": "2071399380d1",
+    "tests": 65,
+    "assertionsPassed": 65,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "artifact": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/accounts-recovery-v4.json",
+    "sha256": "11f5da31170222fe3fbf9da0332c43bc15be1219bab3e7eec3d52b740a769677",
+    "scope": "65 is the current cohort, not an addition to overlapping older 40/5 counts"
+  },
+  "negativeControl": {
+    "artifact": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/magic-mfa-negative-baseline.json",
+    "runId": "9d51e714c941",
+    "tests": 1,
+    "failed": 1,
+    "behavior": "magic link produced authenticated=true for a normal MFA-enrolled Merchant",
+    "businessSourceBeforeRepair": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "repairedIn": "accounts-recovery-v4 / real browser MFA test"
+  }
+}

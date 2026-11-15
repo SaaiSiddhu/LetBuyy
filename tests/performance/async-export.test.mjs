@@ -30,10 +30,14 @@ test('gateway CSV export no longer performs unbounded select star or in-memory C
 });
 
 test('product CSV import is capped and processed as an async job', () => {
-  assert.match(exportRoute, /PRODUCT_IMPORT_MAX_ROWS = 500/);
-  assert.match(exportRoute, /IMPORT_TOO_LARGE/);
-  assert.match(exportRoute, /c\.executionCtx\.waitUntil\(processProductImport\(c, job\.id\)\)/);
-  assert.match(importProxy, /status: 202/);
-  assert.match(exportPage, /Import queued/);
+  const contract = read('packages/shared-types/src/product-import.ts');
+  const csv = read('services/api-gateway/src/execution/product-csv-input.ts');
+  assert.match(contract, /PRODUCT_IMPORT_MAX_ROWS = 500/);
+  assert.match(csv, /PRODUCT_IMPORT_MAX_ROWS/);
+  assert.match(csv, /IMPORT_TOO_LARGE/);
+  assert.match(exportRoute, /c\.executionCtx\.waitUntil\(service\.process\(jobId\)/);
+  assert.match(importProxy, /status:202/);
+  assert.match(exportPage, /products\/import/);
+  assert.match(exportPage, /Open CSV imports/);
   assert.doesNotMatch(exportPage, /Successfully imported/);
 });

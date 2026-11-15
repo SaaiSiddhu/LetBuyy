@@ -1,0 +1,104 @@
+{
+  "capturedAt": "2026-11-02T15:28:38.799537+00:00",
+  "status": "VERIFIED_LOCAL_CANDIDATE_NOT_DEPLOYED",
+  "sourceCandidate": "4c3608060",
+  "scope": "All input snapshots and completed qualified supplemental stack/policy work; later active KYC retention implementation is outside the cutoff.",
+  "tests": {
+    "root_behavioral": {
+      "tests": 3209,
+      "pass": 3194,
+      "fail": 0,
+      "skipped": 15,
+      "cancelled": 0,
+      "log": "/private/tmp/letbuyy-integrate-20261102/root-pure-final.log",
+      "sha256": "c7b6b0baaf213550f372aef91d7a067ac2f160b6960ec1eebebd6ac0357a214c"
+    },
+    "gateway_units_contracts": {
+      "tests": 2430,
+      "pass": 2430,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "log": "/private/tmp/letbuyy-integrate-20261102/gateway-units-contracts-final.log",
+      "sha256": "08c073a9897d511d9e2e0056282173830e8c77d5876bbbceaea3b4a4583961f9"
+    },
+    "merchant_web": {
+      "tests": 1672,
+      "pass": 1672,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "log": "/private/tmp/letbuyy-integrate-20261102/merchant-tests-final.log",
+      "sha256": "f9183c4b5ac824ef8df3b0ed8137b0e746d115083e11684d281317b2c061f2c5"
+    },
+    "theme_engine": {
+      "tests": 2222,
+      "pass": 2222,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "log": "/private/tmp/letbuyy-integrate-20261102/theme-engine-final.log",
+      "sha256": "6e7396e98f21f60dfd1ebed7c298bbac3f9659bc506c9f9cce87209a57b89fbe"
+    },
+    "identity": {
+      "tests": 71,
+      "pass": 71,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "log": "/private/tmp/letbuyy-integrate-20261102/identity-tests.log",
+      "sha256": "c8bd7c940342d5d692d30c5b8437c97bfedfc03030708693e3d9084719810734"
+    },
+    "governance_negative_controls": {
+      "tests": 125,
+      "pass": 125,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "log": "/private/tmp/letbuyy-integrate-20261102/governance-negative-controls.log",
+      "sha256": "90d24c76a1e85c0160f9212bb4aab2ce6e915661d4930bd2946dc027935b0301"
+    }
+  },
+  "database": {
+    "suites": 25,
+    "tests": 289,
+    "passed": 289,
+    "failed": 0
+  },
+  "flutter": {
+    "passed": 813,
+    "failed": 0,
+    "skipped": 0,
+    "analysis": "No issues found",
+    "androidDebug": "BUILD_PASS",
+    "iosSimulatorUnsigned": "BUILD_PASS",
+    "note": "The iOS build required an explicit existing simulator destination; no device or simulator installation/launch occurred."
+  },
+  "webBuild": {
+    "successfulTasks": 33,
+    "totalTasks": 33,
+    "apps": [
+      "Merchant",
+      "Accounts",
+      "Commerce",
+      "Console",
+      "Marketing"
+    ]
+  },
+  "gatewayTypecheck": "PASS",
+  "governance": {
+    "activePassed": 114,
+    "failed": 0,
+    "blocked": 0,
+    "notApplicable": 1,
+    "discovered": 115,
+    "receipt": "/private/tmp/letbuyy-integrate-20261102/governance-final.json",
+    "note": "Final whitespace/document-only follow-up is rechecked before merge."
+  },
+  "nonAdditiveTotals": true,
+  "limits": [
+    "15 root suite skips remain reported, not promoted to acceptance.",
+    "No new device deep-link, hosted migration, live AWS scan, delivered alert email, Cashfree, live payment or payout acceptance.",
+    "No GitHub push or staging/main promotion."
+  ]
+}

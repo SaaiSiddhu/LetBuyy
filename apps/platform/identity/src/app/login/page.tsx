@@ -1,14 +1,13 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
-import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
+import { safePlatformReturnTo, authPathWithReturnTo, accountResultPath } from '@/lib/auth/return-to'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
-import { features } from '@/lib/config/features'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
-import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
+import { MfaLoginFields } from '@/components/MfaLoginFields'
 import { Button, Input } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -79,8 +78,12 @@ function LoginContent() {
     const redirectTo = searchParams.get('redirect') || searchParams.get('return_to') || ''
 
     const [lang, setLang] = useState<Lang>('en')
-    const [email, setEmail] = useState('')
+    const [email, setEmail] = useState(searchParams.get('email') || '')
     const [password, setPassword] = useState('')
+    const [mfaRequired, setMfaRequired] = useState(false)
+    const [mfaCode, setMfaCode] = useState('')
+    const [recoveryCode, setRecoveryCode] = useState('')
+    const [useRecovery, setUseRecovery] = useState(false)
     const [showPasswordField, setShowPasswordField] = useState(false)
     const [showPasswordVisible, setShowPasswordVisible] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -101,17 +104,17 @@ function LoginContent() {
         // Check if already authenticated → redirect
         const checkSession = async () => {
             try {
-                const res = await fetch('/api/auth/session')
+                const res = await fetch('/api/auth/session', { cache: 'no-store', signal: AbortSignal.timeout(20000) })
                 const data = await res.json()
-                if (data.authenticated) {
-                    window.location.href = returnTo || '/select'
+                if (res.ok && data.authenticated && searchParams.get('choose_account') !== '1') {
+                    window.location.href = accountResultPath(data, returnTo)
                 }
             } catch {
                 // Not authenticated — stay on login page
             }
         }
         checkSession()
-    }, [returnTo])
+    }, [returnTo, searchParams])
 
     const cycleLang = () => {
         const langs: Lang[] = ['en', 'hi', 'ta']
@@ -131,11 +134,16 @@ function LoginContent() {
         try {
             const res = await fetch('/api/auth/lookup', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: email.trim() }),
             })
             const data = await res.json()
 
+            if (!res.ok || typeof data.exists !== 'boolean') {
+                setError(data.error || 'Unable to check your account. Please retry.')
+                return
+            }
             if (data.exists && data.hasPassword) {
                 setShowPasswordField(true)
             } else if (data.exists && !data.hasPassword) {
@@ -165,10 +173,13 @@ function LoginContent() {
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({
                     email: email.trim(),
                     password,
+                    mfaCode: mfaRequired && !useRecovery ? mfaCode : undefined,
+                    recoveryCode: mfaRequired && useRecovery ? recoveryCode : undefined,
                     turnstileToken: turnstileTokenRef.current || undefined,
                     redirect: redirectTo || undefined,
                 }),
@@ -176,9 +187,10 @@ function LoginContent() {
 
             const data = await res.json()
 
-            if (data.success) {
-                window.location.href = returnTo || data.redirectTo || '/select'
+            if (res.ok && data.success) {
+                window.location.href = accountResultPath(data, returnTo)
             } else {
+                if (data.mfaRequired) setMfaRequired(true)
                 setError(data.error || t.invalidCredentials)
                 turnstileRef.current?.reset()
                 setTurnstileToken(null)
@@ -192,11 +204,7 @@ function LoginContent() {
         } finally {
             setLoading(false)
         }
-    }, [email, password, redirectTo, returnTo, t.invalidCredentials, turnstileEnabled])
-
-    const handleOAuth = useCallback(async (provider: 'google' | 'apple') => {
-        setError(`${provider === 'google' ? 'Google' : 'Apple'} sign-in is not configured. Use email sign-in.`)
-    }, [])
+    }, [email, password, mfaRequired, mfaCode, recoveryCode, useRecovery, redirectTo, returnTo, t.invalidCredentials, turnstileEnabled])
 
     const handleTurnstileVerify = useCallback((token: string) => {
         setTurnstileToken(token)
@@ -250,27 +258,7 @@ function LoginContent() {
                             </Button>
                         </form>
 
-                        <div className="auth-divider">
-                            <span>{t.or}</span>
-                        </div>
 
-                        {features.passkey && (
-                            <Button unstyled className="auth-btn-secondary" disabled>
-                                <AuthIcon name="passkey" size={18} style={{ marginRight: 6 }} /> {t.signInWithPasskey}
-                            </Button>
-                        )}
-
-                        <div className="auth-oauth-row">
-                            <Button unstyled className="auth-btn-oauth unavailable" onClick={(e) => e.preventDefault()} aria-disabled="true">
-                                <OAuthBrandIcon provider="apple" className="auth-oauth-brand-icon" />
-                                {t.apple}
-                                <span className="auth-unavailable-badge">{t.unavailable}</span>
-                            </Button>
-                            <Button unstyled className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
-                                <OAuthBrandIcon provider="google" className="auth-oauth-brand-icon" />
-                                {t.google}
-                            </Button>
-                        </div>
 
                         <div className="auth-bottom-link">
                             <span>{t.newToLetBuyy}</span>{' '}
@@ -295,6 +283,9 @@ function LoginContent() {
                                         className="auth-edit-btn"
                                         onClick={() => {
                                             setShowPasswordField(false)
+                                            setMfaRequired(false)
+                                            setMfaCode('')
+                                            setRecoveryCode('')
                                             setPassword('')
                                             setError(null)
                                         }}
@@ -326,6 +317,8 @@ function LoginContent() {
                                 </div>
                             </div>
 
+                            {mfaRequired && <MfaLoginFields lang={lang} code={mfaCode} onCode={setMfaCode} recovery={recoveryCode} onRecovery={setRecoveryCode} useRecovery={useRecovery} onMode={() => { setUseRecovery(!useRecovery); setMfaCode(''); setRecoveryCode('') }} />}
+
                             {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
 
                             <Button unstyled
@@ -337,27 +330,14 @@ function LoginContent() {
                             </Button>
                         </form>
 
-                        <div className="auth-divider">
-                            <span>{t.or}</span>
-                        </div>
-
-                        {features.magicLink && (
-                            <Button unstyled
-                                className="auth-btn-secondary"
-                                disabled={loading}
-                            >
-                                <AuthIcon name="mail" size={18} style={{ marginRight: 6 }} /> {t.emailMeLink}
-                            </Button>
-                        )}
-
-                        <a href="/forgot-password" className="auth-forgot-link">
+                        <a href={authPathWithReturnTo('/forgot-password', returnTo)} className="auth-forgot-link">
                             {t.forgotPassword}
                         </a>
                     </>
                 )}
 
                 {/* Visible Turnstile widget */}
-                <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
+                <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} onExpire={() => { setTurnstileToken(null); turnstileTokenRef.current = null }} />
             </div>
         </main>
     )

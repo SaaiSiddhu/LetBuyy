@@ -1,0 +1,68 @@
+{
+  "at": "2026-11-04T14:25:41.297158+00:00",
+  "status": "SOURCE_REVIEWED_NEXT_COHORT_NO_CODE_EDITS_DURING_NATIVE_V11",
+  "scope": "Frontend only; preserve protected services, all original command fields/versions/identity/parsers/storage and provider policies. One agent in existing checkout.",
+  "baseline": "mobile-ui-dashboard-v36 archived f4b5fa798ec9c20035f509e34b870191fa62a72bfef2ee651eb9e4e25227a9e4/7456",
+  "reviewed": {
+    "ProductsScreen": 1856,
+    "ProductFormScreen": 1828,
+    "CsvImportScreen": 609,
+    "shareMerchantExport": 45,
+    "ProductService": "fetchProducts369-470 and exact page/cache/access contract; remaining write helpers require focused inspection before edits",
+    "ui_kit": "Choice/FormSheet/EditorScaffold/CustomTextField and existing CustomAppBar; existing SearchBarWidget file is empty, not a usable field owner"
+  },
+  "sequence": [
+    {
+      "owner": "ProductsScreen + existing canonical CustomAppBar/input/choice/confirmation owners",
+      "work": [
+        "Reflow current fixed action/filter/search/header/grid/bulk controls through one scrollable composition while retaining5root tabs/menu destinations and page semantics",
+        "7status/stock and6sort choices retain exact server mapping; draft sheet selection does not issue reads before Apply; preserve original query300ms debounce and page20",
+        "Exact full currency/counts, availability and separate saved product status versus stock; no FittedBox to hide values",
+        "Retire private query/debounce/editor/sample/export late responses on view changes; original status command and retry/review helpers remain byte/AST checked",
+        "Export selection/confirmation become canonical scoped hosts; preserve5poll attempts350ms and exact native share helper bytes/filename/URL validation; distinguish queued/failed/prepared/dismissed outcomes without delivery claims"
+      ],
+      "acceptance": [
+        "Both themes320dp and2.4text, actual keyboard/action geometry, page-empty/pending/denied/error/offline",
+        "Existing server query/stock-filter conformance, keyboard selection, sample/editor positive and negative tests",
+        "Existing status lost-reply/retry/exact key+version/conflict fixtures; fresh local readback required for runtime acceptance"
+      ]
+    },
+    {
+      "owner": "ProductFormScreen",
+      "work": [
+        "Keep complex5step full-page editor; migrate to canonical editor host with dirty/busy/uncertain Back and persistent actions; same controller values and original commands",
+        "Canonical field labels/units/theme and long-text reflow; category retains original6supported values and unknown current value without dropdown assertion",
+        "Short image-action/image-URL/spec forms use scoped canonical sheets; variant8field draft is a complex full-page editor with existing typed return and exact _save/fromContract/toJson helpers",
+        "Native camera/library/barcode remain native; original max5images/image upload args unchanged; claimed drag reordering currently lacks a handler\u2014present supported controls or truthful copy under original list-write order",
+        "Two existing badge chips Trending/New Arrival change local flags but neither existing create/edit payload includes them. Trace accepted server/write authority before disposition; no invented metadata persistence",
+        "Sale/original UI digitsOnly blocks fractional editing although existing model/parser can represent fractions. Verify canonical accepted input contract and reproduce; preserve server financial rules"
+      ],
+      "preserve_exact": [
+        "Product _submitProduct and _saveExistingProduct protocol/uncertain retry semantics",
+        "_editFields/_editDraftSignature/_productOptionPayloads/_variantPayloads/_tagValues/_metadataPayload/_nullableTrim",
+        "Original variant identity/other-options map, stock fallback, price/nullability, revision and operation key"
+      ],
+      "open_dependencies": [
+        "Existing pending edit is in-memory; no process-death persistence may be invented in frontend scope",
+        "Create unknown-outcome retry requires existing authoritative reconciliation; UI must not imply cancellation or exactly-once from disabling",
+        "Merchant SEO fields require same saved fields and safe buyer projection; no public/web redesign or release"
+      ]
+    },
+    {
+      "owner": "CsvImportScreen",
+      "work": [
+        "Canonical scoped stop confirmations, row-status selector sheet, persistent labels, readable cards and responsive pagination; preserve exact UTF8/file-size/row parsing and original job identity",
+        "Visible initial/refresh/job pending and static reduced-motion equivalent; dirty input exit acknowledges continuing accepted jobs",
+        "Before each later UI-initiated dispatch, fence current actor/store/job/query after previous await without changing original request arguments or durable recovery",
+        "Preserve _submit/_recoverRegistration/_command/_stopRegistration effects/retained identity and existing file-picker native boundary"
+      ],
+      "acceptance": [
+        "Existing CSV registration ambiguity, original-file replay, worker row conflicts/stops and reopen/readback fixtures stay intact",
+        "All5row statuses/history pages, unsupported/denied/empty/pending,2.4text/keyboard and stop Cancel/confirm cases",
+        "Native/local CSV write/sync is a separate owned journey; category run does not accept it"
+      ]
+    }
+  ],
+  "shared_followup": "Review optional UI-current predicate for existing shareMerchantExport before any native handoff; preserve unchanged configured-BFF download and original CSV bytes/filename contract. Caller scope and helper checks need positive/late-response negatives. No secret, storage or auth policy changes.",
+  "whole_app": "Other source/caller cohorts and final unique surface denominator remain unreconciled;119-feature programme remains open. No push/merge/deploy."
+}

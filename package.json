@@ -2,6 +2,7 @@
   "name": "letbuyy-store",
   "private": true,
   "scripts": {
+    "test:merchant-media-worker:browser": "node --import tsx --test tests/browser/merchant-media-checksum-csp.test.ts",
     "lcis": "tsx packages/lcis-cli/src/cli.ts",
     "lcis:mcp": "tsx packages/lcis-mcp/src/server.ts",
     "lcis:api": "tsx services/lcis-api/src/server.ts",
@@ -163,7 +164,7 @@
     "@letbuyy/shared-types": "workspace:*",
     "@playwright/test": "1.60.0",
     "eslint": "9.39.2",
-    "hono": "4.12.4",
+    "hono": "4.13.11",
     "jose": "6.1.3",
     "stylelint": "17.13.0",
     "stylelint-config-standard": "40.0.0",
@@ -171,21 +172,41 @@
     "turbo": "2.8.9",
     "typescript": "5.9.3",
     "miniflare": "4.20260611.0",
-    "esbuild": "0.27.3"
+    "esbuild": "0.27.3",
+    "deepmerge": "4.3.1"
   },
   "pnpm": {
     "overrides": {
+      "eslint-plugin-react-hooks@^7.0.1": "7.0.1",
       "defu@<=6.1.4": "6.1.5",
-      "fast-uri@<=3.1.1": "3.1.2",
       "flatted@<=3.4.1": "3.4.2",
-      "hono@<4.12.4": "4.12.4",
       "minimatch@<3.1.4": "3.1.4",
       "minimatch@>=9.0.0 <9.0.7": "9.0.7",
       "minimatch@>=10.0.0 <10.2.1": "10.2.5",
       "picomatch@<2.3.2": "2.3.2",
       "picomatch@>=4.0.0 <4.0.4": "4.0.4",
-      "socket.io-parser@>=4.0.0 <4.2.6": "4.2.6",
-      "undici@<6.24.0": "6.24.0"
+      "undici@<6.24.0": "6.24.0",
+      "hono@<4.13.11": "4.13.11",
+      "fast-uri@>=3 <3.1.9": "3.1.9",
+      "postcss@>=8 <8.5.23": "8.5.23",
+      "ws@>=8 <8.21.0": "8.21.0",
+      "uuid@>=9 <11.1.1": "11.1.1",
+      "undici@>=7 <7.30.1": "7.30.1",
+      "@babel/core@>=7 <7.29.6": "7.29.6",
+      "brace-expansion@>=5 <5.0.12": "5.0.12",
+      "engine.io@>=6 <6.6.10": "6.6.10",
+      "socket.io-parser@>=4 <4.2.7": "4.2.7",
+      "ip-address@>=10 <10.7.4": "10.7.4",
+      "nanoid@>=3 <3.3.18": "3.3.18",
+      "browserslist@>=4 <4.28.7": "4.28.7",
+      "qs@>=6 <6.16.1": "6.16.1",
+      "baseline-browser-mapping@>=2 <2.11.0": "2.11.0",
+      "source-map-js@>=1 <1.2.2": "1.2.2",
+      "proxy-addr@>=2 <2.0.8": "2.0.8",
+      "body-parser@>=2 <2.4.0": "2.4.0"
+    },
+    "patchedDependencies": {
+      "deepmerge@4.3.1": "patches/deepmerge@4.3.1.patch"
     }
   },
   "packageManager": "pnpm@10.6.2",

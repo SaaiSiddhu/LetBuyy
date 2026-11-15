@@ -23,6 +23,8 @@ export async function verifyCanonicalRazorpayCapture(c:Context<{Bindings:Env}>,p
         throw new AppError('The saved payment amount needs review before verification.',409,'PAYMENT_AMOUNT_UNAVAILABLE');
     }
     const row=await hydratePaymentCredential(getSupabaseAdmin(c),{id:payment.site_id},{credentialId:payment.credential_id});
+    if(row.payment_settings?.mode==='managedSandbox'&&c.env.ENVIRONMENT==='production')
+        throw new AppError('Managed test payments are unavailable in production.',503,'PAYMENT_LIVE_NOT_READY');
     const credentials=await readStoreRazorpayTestCredentials(row.payment_settings,c.env.PAYMENT_CONFIG_ENCRYPTION_KEY,payment.site_id);
     if(!credentials)throw new AppError('The original payment connection is unavailable for verification.',503,'PAYMENT_CONFIG_UNAVAILABLE');
     let observed:Awaited<ReturnType<typeof fetchRazorpayPayment>>;

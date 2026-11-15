@@ -1,0 +1,15 @@
+{
+  "status": "POSITIVE_DIAGNOSTIC_CONTROL_AND_CURRENT_ABSENCE_PASS",
+  "rows": [
+    {
+      "run": 62,
+      "trace_marker_present": true,
+      "apk_sha256": "f9d54bc2d46f3f3e6c14b2303a07fa79e7f9ad25a7cde5bc63aa8d5b6ce9c335"
+    },
+    {
+      "run": 65,
+      "trace_marker_present": false,
+      "apk_sha256": "c715d877ec4998c14dce5d52a2f34341e87ecce2ef733d367437b71f10c1e31a"
+    }
+  ]
+}

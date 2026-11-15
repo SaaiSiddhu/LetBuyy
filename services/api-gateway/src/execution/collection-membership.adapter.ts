@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import {CollectionSummarySchema,CollectionListPageSchema,UuidSchema,type CollectionListPage} from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import type { OwnedStoreScope } from '../lib/tenant-context';
@@ -12,7 +13,7 @@ function failure(error: unknown): never {
     if (error instanceof TenantTransactionUnavailableError) throw new AppError('Collection saving is temporarily unavailable. Keep this save and retry.', 503, 'COLLECTION_MEMBERSHIP_UNAVAILABLE');
     const code = (error as {code?: string})?.code, message = error instanceof Error ? error.message : '';
     if (message.includes('COLLECTION_MEMBERSHIP_FORBIDDEN') || code === '42501') throw new ForbiddenError('Your access to this store changed.');
-    if (message.includes('COLLECTION_MEMBERSHIP_NOT_FOUND')) throw new NotFoundError('Collection not found');
+    if (message.includes('COLLECTION_MEMBERSHIP_NOT_FOUND')) throw new AppError('This collection is no longer available. The selection was not applied.', 404, 'COLLECTION_MEMBERSHIP_NOT_FOUND');
     if (message.includes('COLLECTION_MEMBERSHIP_VERSION_CONFLICT') || code === '40P01' || code === '40001') throw new AppError('Collection membership changed. Your selection is kept; reload the current collection.', 409, 'COLLECTION_MEMBERSHIP_VERSION_CONFLICT');
     if (message.includes('COLLECTION_MEMBERSHIP_LEGACY_KEY')) throw new AppError('This key belongs to an older collection save. Reload the current collection before starting another save.', 409, 'COLLECTION_MEMBERSHIP_LEGACY_KEY');
     if (message.includes('COLLECTION_MEMBERSHIP_KEY_CONFLICT')) throw new AppError('This key belongs to a different collection save. Recover the original save.', 409, 'COLLECTION_MEMBERSHIP_KEY_CONFLICT');
@@ -25,7 +26,7 @@ export async function readCollectionMembership(scope: OwnedStoreScope, collectio
         // Bracket junction/products with the monotonic parent revision. A
         // change (including ABA) across these reads is an explicit conflict.
         const {data: collection, error} = await scope.db.from('collections')
-            .select('id, store_id, membership_version').eq('store_id', scope.siteId).eq('id', collectionId).is('deleted_at', null).maybeSingle();
+            .select('id, store_id, membership_version').eq('collection_type', 'manual').eq('store_id', scope.siteId).eq('id', collectionId).is('deleted_at', null).maybeSingle();
         if (error) throw error;
         if (!collection) throw new NotFoundError('Collection not found');
         const {data: assignments, error: assignedError} = await scope.db.from('collection_products')
@@ -45,7 +46,7 @@ export async function readCollectionMembership(scope: OwnedStoreScope, collectio
         // old owner's response. The SQL command repeats this fence under locks.
         if (!await verifySiteOwnership(scope.db, scope.siteId, scope.customUser.id, scope.authUser.storeId)) throw new ForbiddenError('Your access to this store changed.');
         const {data: confirmed, error: confirmError} = await scope.db.from('collections')
-            .select('id, store_id, membership_version').eq('store_id', scope.siteId).eq('id', collectionId).is('deleted_at', null).maybeSingle();
+            .select('id, store_id, membership_version').eq('collection_type', 'manual').eq('store_id', scope.siteId).eq('id', collectionId).is('deleted_at', null).maybeSingle();
         if (confirmError) throw confirmError;
         if (!confirmed || confirmed.membership_version !== collection.membership_version) {
             throw new AppError('Collection membership changed while loading. Retry to read the current collection.', 409, 'COLLECTION_MEMBERSHIP_READ_CONFLICT');
@@ -72,6 +73,7 @@ export async function replaceCollectionMembership(env: Env, scope: OwnedStoreSco
 // Closed read operation: no transaction, callback, SQL, role or ID batch crosses this boundary.
 export async function readOwnedCollectionList(env: Env, scope: OwnedStoreScope, intent: CollectionListPagination): Promise<CollectionListPage> {
     const page = CollectionListPaginationSchema.parse(intent);
+    const search=page.search||'',active=page.status==='active'?true:page.status==='inactive'?false:null;
     const expected = {site:scope.siteId,actor:scope.customUser.id,request:scope.tenant.requestId};
     if (!UuidSchema.safeParse(expected.site).success || !UuidSchema.safeParse(expected.actor).success ||
         scope.storeId!==expected.site || scope.tenant.siteId!==expected.site || scope.tenant.userId!==expected.actor ||
@@ -97,20 +99,26 @@ export async function readOwnedCollectionList(env: Env, scope: OwnedStoreScope, 
                 return row as Record<string,unknown>;
             };
             const baseline=await context('app_tenant');
-            const owners=await tx.unsafe(`/* collection-list:owner */ SELECT id FROM public.sites WHERE id=$1::uuid
-                AND deleted_at IS NULL AND(custom_user_id=$2::uuid OR user_id=$2::uuid) FOR SHARE`,[expected.site,expected.actor]);
+            const owners=await tx.unsafe(`/* collection-list:owner */ SELECT id,
+                CASE WHEN custom_user_id=$2::uuid OR user_id=$2::uuid THEN NULL
+                ELSE public.read_collection_metadata_page_v1($1::uuid,$2::uuid,'manual',1,1,'') END AS authorized
+                FROM public.sites WHERE id=$1::uuid AND deleted_at IS NULL FOR SHARE`,[expected.site,expected.actor]);
             if(owners.length!==1 || owners[0].id!==expected.site) throw new ForbiddenError('Your access to this store changed.');
             const rows=await tx.unsafe(`/* collection-list:parents */ WITH parent_page AS MATERIALIZED (
-                SELECT c.id,c.store_id,c.title,c.description,c.image_url,c.created_at,c.is_active,c.membership_version
-                FROM public.collections c WHERE c.store_id=$1::uuid AND c.deleted_at IS NULL
-                ORDER BY c.created_at DESC,c.id DESC LIMIT $2::integer OFFSET $3::integer FOR SHARE),
-                parent_total AS (SELECT count(*)::integer AS total FROM public.collections WHERE store_id=$1::uuid AND deleted_at IS NULL)
+                SELECT c.id,c.store_id,c.title,c.description,c.image_url,c.created_at,c.is_active,c.membership_version,c.version AS metadata_version
+                FROM public.collections c WHERE c.store_id=$1::uuid AND c.deleted_at IS NULL AND c.collection_type='manual'
+                AND ($4::text='' OR strpos(lower(c.title),lower($4::text))>0 OR strpos(lower(coalesce(c.description,'')),lower($4::text))>0)
+                AND ($5::boolean IS NULL OR c.is_active=$5::boolean)
+                ORDER BY c.created_at DESC,c.id DESC LIMIT $2::integer OFFSET $3::integer),
+                parent_total AS (SELECT count(*)::integer AS total FROM public.collections WHERE store_id=$1::uuid AND deleted_at IS NULL AND collection_type='manual'
+                  AND ($4::text='' OR strpos(lower(title),lower($4::text))>0 OR strpos(lower(coalesce(description,'')),lower($4::text))>0)
+                  AND ($5::boolean IS NULL OR is_active=$5::boolean))
                 SELECT (SELECT total FROM parent_total) AS total,
                 coalesce((SELECT jsonb_agg(to_jsonb(p) ORDER BY p.created_at DESC,p.id DESC) FROM parent_page p),'[]'::jsonb) AS items`,
-                [expected.site,page.limit,(page.page-1)*page.limit]);
+                [expected.site,page.limit,(page.page-1)*page.limit,search,active]);
             if(rows.length!==1 || !Number.isSafeInteger(rows[0].total) || rows[0].total<0 || !Array.isArray(rows[0].items)) throw new Error('Collection parent page unavailable');
             const total=rows[0].total as number;
-            const parents=CollectionSummarySchema.omit({product_count:true}).array().max(100).parse(rows[0].items);
+            const parents=CollectionSummarySchema.omit({product_count:true}).extend({metadata_version:z.number().int().positive()}).array().max(100).parse(rows[0].items);
             if(parents.some(parent=>parent.store_id!==expected.site) || new Set(parents.map(parent=>parent.id)).size!==parents.length ||
                 parents.length!==Math.min(page.limit,Math.max(0,total-(page.page-1)*page.limit))) throw new Error('Collection parent page unavailable');
             const counts=new Map<string,number>();
@@ -161,10 +169,10 @@ export async function readOwnedCollectionList(env: Env, scope: OwnedStoreScope, 
                         counts.set(row.id,row.product_count);
                     }
                     if(counts.size!==parents.length) throw new Error('Collection counts unavailable');
-                    const confirmed=await tx.unsafe(`/* collection-list:confirm */ SELECT id,membership_version FROM public.collections
+                    const confirmed=await tx.unsafe(`/* collection-list:confirm */ SELECT id,membership_version,version AS metadata_version FROM public.collections
                         WHERE store_id=$1::uuid AND id=ANY($2::uuid[]) AND deleted_at IS NULL ORDER BY id`,[expected.site,parents.map(parent=>parent.id)]);
-                    const versions=new Map(parents.map(parent=>[parent.id,parent.membership_version]));
-                    if(confirmed.length!==parents.length||new Set(confirmed.map(row=>row.id)).size!==parents.length||confirmed.some(row=>versions.get(row.id)!==row.membership_version)) throw new Error('Collection page changed');
+                    const versions=new Map(parents.map(parent=>[parent.id,parent]));
+                    if(confirmed.length!==parents.length||new Set(confirmed.map(row=>row.id)).size!==parents.length||confirmed.some(row=>versions.get(row.id)?.membership_version!==row.membership_version||versions.get(row.id)?.metadata_version!==row.metadata_version)) throw new Error('Collection page changed');
                     await context('app_tenant',baseline);
                     await tx.unsafe('RELEASE SAVEPOINT collection_assignment_count');
                 } catch(error) {
@@ -176,7 +184,7 @@ export async function readOwnedCollectionList(env: Env, scope: OwnedStoreScope, 
                 }
             }
             await context('app_tenant',baseline);
-            return CollectionListPageSchema.parse({success:true,data:parents.map(parent=>({...parent,product_count:counts.get(parent.id)})),
+            return CollectionListPageSchema.parse({success:true,data:parents.map(({metadata_version: _version,...parent})=>({...parent,product_count:counts.get(parent.id)})),
                 meta:{page:page.page,per_page:page.limit,total,total_pages:Math.ceil(total/page.limit),has_next:page.page<Math.ceil(total/page.limit),has_prev:page.page>1}});
         });
         console.info(JSON.stringify({event:'collection.list.read',outcome:'success',parents:result.data.length,duration_ms:Date.now()-started}));
@@ -184,6 +192,7 @@ export async function readOwnedCollectionList(env: Env, scope: OwnedStoreScope, 
     } catch(error) {
         console.error(JSON.stringify({event:'collection.list.read',outcome:error instanceof ForbiddenError?'forbidden':'unavailable',code:'COLLECTION_LIST_UNAVAILABLE'}));
         if(error instanceof ForbiddenError) throw error;
+        if((error as {code?:string})?.code==='42501') throw new ForbiddenError('Your access to this store changed.');
         throw new AppError('Collections are temporarily unavailable. Retry the read.',503,'COLLECTION_LIST_UNAVAILABLE');
     }
 }

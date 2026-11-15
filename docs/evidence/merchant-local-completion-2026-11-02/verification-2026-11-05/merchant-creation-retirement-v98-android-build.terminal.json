@@ -1,0 +1,25 @@
+{
+  "started_at": "2026-11-08T07:19:10.276005+00:00",
+  "supervisor_pid": 56235,
+  "source": "merchant-creation-retirement-source-v98",
+  "source_sha256": "d66668acf9a4f83f5a7b7728f465b4d6b1132ee02046067d2abae688ce40d79e",
+  "command": [
+    "/usr/bin/env",
+    "ANDROID_HOME=/Volumes/Developer Tools/SDKs/android-sdk",
+    "ANDROID_SDK_ROOT=/Volumes/Developer Tools/SDKs/android-sdk",
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "build",
+    "apk",
+    "--debug",
+    "--no-pub",
+    "--target-platform",
+    "android-arm64",
+    "--dart-define-from-file=/private/tmp/letbuyy-merchant-build-v98-fik6wsi8/android-dart-defines.json"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 56241,
+  "exit_code": 0,
+  "finished_at": "2026-11-08T07:19:56.566650+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "d66668acf9a4f83f5a7b7728f465b4d6b1132ee02046067d2abae688ce40d79e"
+}

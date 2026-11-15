@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-06T07:10:55.036235+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-kyc-selection-v2-governance-9aw7wrmh",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "9924957f802fbd5b77c395e3ad18b19573d7ad5fbb886a9ad39419b4ba456769",
+  "core_inputs_byte_equal": 8459,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "kyc-selection-v2-governance-v1-report.json"
+}

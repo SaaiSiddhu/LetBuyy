@@ -1,0 +1,100 @@
+{
+  "at": "2026-11-06T16:44:52.117957+00:00",
+  "status": "REAL_NATIVE_METADATA_DISMISSAL_ASSERTION_SOURCE39_NOT_ACCEPTED",
+  "run_id": "03eb44d48d54",
+  "app_source_manifest": "merchant-kyc-receipt-source-v39",
+  "apk_sha256": "ed1acabfcfeb9e570964819b954b45e64c721c28cc0eb06729a076be324fcc05",
+  "reached": [
+    "Native normal Accounts login and real two-store discovery/owner53Staff.",
+    "Native OS photo picker reached realR2 write; injected original receipt completion failed503 with COMMAND_RECEIPT_UNAVAILABLE.",
+    "Original native operation persisted across process stop and actual newPID, with picked cache removed; recover200 followed by librarycreate201, no second bytePOST.",
+    "Native metadata PATCH200 and library GET200; actual public asset GET200.",
+    "Subsequent screen red assertion _dependents.isEmpty, preserved native-failure-state.png. No privateKYC/browser-sync/Staff-revocation acceptance from this run."
+  ],
+  "cause_proof": {
+    "at": "2026-11-06T16:42:57.053828+00:00",
+    "status": "REPRODUCED",
+    "results": [
+      {
+        "action": "Cancel",
+        "exit_code": 1,
+        "production_file_matches_exact39": true,
+        "disposed_controller_error": true,
+        "dependents_assertion": true,
+        "semantics_handle_leak": false,
+        "log": "media-metadata-source39-cancel-async-clean-fixture-before.log"
+      },
+      {
+        "action": "Save",
+        "exit_code": 1,
+        "production_file_matches_exact39": true,
+        "disposed_controller_error": true,
+        "dependents_assertion": true,
+        "semantics_handle_leak": false,
+        "log": "media-metadata-source39-save-async-clean-fixture-before.log"
+      }
+    ],
+    "fixed_source_restored": true,
+    "fixed_source_sha256": "7b3d68cff186f04b58661b987e52954d2b63ae452e0d7befcfbda20a108d355e",
+    "purpose": "Same corrected regression isolated per action against the exact source39 production file; source42 implementation restored in finally. No hosted/provider/data change."
+  },
+  "repair": "Route widget now owns metadata text controllers until actual dialog disposal; source43. Callback/fields/order/APIinput/context guards retained. Source43 full qualification running; native70 still pending.",
+  "safe_calls": [
+    {
+      "method": "GET",
+      "path": "/v1/media",
+      "status": 200,
+      "error_code": null
+    },
+    {
+      "method": "POST",
+      "path": "/v1/upload",
+      "status": 503,
+      "error_code": "COMMAND_RECEIPT_UNAVAILABLE"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/media",
+      "status": 200,
+      "error_code": null
+    },
+    {
+      "method": "POST",
+      "path": "/v1/upload/recover",
+      "status": 200,
+      "error_code": null
+    },
+    {
+      "method": "POST",
+      "path": "/v1/media",
+      "status": 201,
+      "error_code": null
+    },
+    {
+      "method": "GET",
+      "path": "/v1/media",
+      "status": 200,
+      "error_code": null
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/media/a51a829e-f150-4682-8a04-647e46ed5faa",
+      "status": 200,
+      "error_code": null
+    },
+    {
+      "method": "GET",
+      "path": "/v1/media",
+      "status": 200,
+      "error_code": null
+    }
+  ],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}

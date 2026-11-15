@@ -1,0 +1,11 @@
+{
+  "run_id": "abac88df509d",
+  "status": "OBSERVED_OWNER_EMPTY_ROSTER_REQUIRED_INPUT_KEYBOARD_CANCEL_FRESH_READ",
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v41/native-staff-empty-roster.png",
+    "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v41/native-staff-required-email.png",
+    "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v41/native-staff-email-keyboard.png",
+    "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v41/native-staff-cancelled-roster.png"
+  ],
+  "scope": "Actual normal APK and local owner roster read; no invitation submission, staff consent, role/removal effects, web sync, hosted/provider or release acceptance"
+}

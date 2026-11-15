@@ -10,7 +10,7 @@ import { MerchantEmptyState as EmptyState } from '@/components/empty-states/Merc
 
 type ProductRow = Pick<
     SharedProduct,
-    'version' | 'id' | 'name' | 'status' | 'stock' | 'price' | 'compare_price' | 'images' | 'category' | 'product_type' | 'vendor' | 'is_active' | 'created_at'
+    'version' | 'id' | 'name' | 'status' | 'stock' | 'catalog_available_quantity' | 'price' | 'compare_price' | 'images' | 'category' | 'product_type' | 'vendor' | 'is_active' | 'created_at'
 >
 
 type TabFilter = 'all' | 'active' | 'draft' | 'archived'
@@ -372,7 +372,11 @@ export default function ProductsPage() {
             header: 'Inventory',
             sortable: true,
             shrink: true,
-            render: (product) => <span className="tabular-nums">{typeof product.stock === 'number' && Number.isFinite(product.stock) ? `${product.stock} in stock` : 'Stock unavailable'}{typeof product.stock === 'number' && product.stock <= 5 && <span className="ml-[var(--lb-space-2)] text-[color:var(--lb-color-warning)]">Low stock</span>}</span>,
+            render: (product) => {
+                const value = product.catalog_available_quantity
+                const stock = typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : null
+                return <span className="tabular-nums">{stock !== null ? `${stock} in stock` : 'Stock unavailable'}{stock !== null && stock <= 5 && <span className="ml-[var(--lb-space-2)] text-[color:var(--lb-color-warning)]">Low stock</span>}</span>
+            },
         },
         {
             key: 'category',
@@ -415,7 +419,7 @@ export default function ProductsPage() {
                 description="Manage products, inventory, publishing status, vendors, and storefront visibility."
                 breadcrumbs={[{ label: 'Home', href: `/${store}/dashboard` }, { label: 'Products' }]}
                 primaryAction={{ label: 'Add product', href: `/${store}/products/new`, icon: <MaterialIcon name="add" /> }}
-                secondaryActions={[{ label: 'Collections', href: `/${store}/products/collections` }]}
+                secondaryActions={[{ label: 'CSV imports', href: `/${store}/products/import` }, { label: 'Collections', href: `/${store}/products/collections` }]}
             />
 
             {accessChanged && <Banner title="Account or store access changed" variant="critical">Reload this store with the intended account before continuing.</Banner>}

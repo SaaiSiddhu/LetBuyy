@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-06T05:23:54.577333+00:00",
+  "baseline": "switcher-settings-source-v3",
+  "source": "store-pages-source-v3",
+  "sha256": "dee2756c4b94267b7bf2b3b9bcb01a9fcafd87b86643f375b55232523f518e32",
+  "entries": 8454,
+  "changed": [
+    "apps/merchant/mobile/lib/services/store_service.dart",
+    "apps/merchant/mobile/test/catalog_scope_boundary_test.dart",
+    "apps/merchant/mobile/test/category_recovery_test.dart",
+    "apps/merchant/mobile/test/collection_membership_recovery_test.dart",
+    "apps/merchant/mobile/test/merchant_goldens_test.dart",
+    "apps/merchant/mobile/test/mobile_services_test.dart",
+    "apps/merchant/mobile/test/product_status_recovery_test.dart",
+    "apps/merchant/mobile/test/shipping_settings_scope_test.dart",
+    "apps/merchant/mobile/test/store_details_scope_test.dart",
+    "apps/merchant/mobile/test/store_discovery_transport_test.dart",
+    "apps/merchant/mobile/test/store_membership_pagination_test.dart",
+    "apps/merchant/mobile/test/store_session_boundary_test.dart",
+    "apps/merchant/mobile/test/support/loyalty_fixture.dart",
+    "apps/merchant/mobile/test/support/membership_page.dart",
+    "apps/merchant/mobile/test/two_factor_security_test.dart"
+  ],
+  "production_changes": [
+    "apps/merchant/mobile/lib/services/store_service.dart"
+  ],
+  "original_staff_assertion_byte_unchanged": true,
+  "backend_sql_sdk_identity_models_ui_kit_unchanged": true,
+  "test_change_scope": "Thirteen new actual SDK paging cases and one shared canonical single-page synthetic metadata helper; existing store-list transport fixtures now supply real endpoint metadata. Original assertions/goldens retained. No existing business result changed."
+}

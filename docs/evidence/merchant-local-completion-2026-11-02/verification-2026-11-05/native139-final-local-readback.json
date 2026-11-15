@@ -1,0 +1,126 @@
+{
+  "at": "2026-11-08T09:25:52.816601+00:00",
+  "source": "c872c19cb9e02fa7581afaa64b6dbf0ef4e50dd44ccbfdc5fb1950fa784ded6f",
+  "root": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0",
+  "chain": {
+    "backend_exit": 0,
+    "ui_exit": 0,
+    "at": "2026-11-08T09:24:20.818063+00:00"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "result": {
+    "run_id": "921ee95f027a",
+    "product_id": "bce1e151-042f-40d1-bc31-771d15413a5f",
+    "variant_id": "6dfaaaae-6e8a-4a2b-b5e8-a042654c7f20",
+    "created_products": 1,
+    "create_requests": 2,
+    "original_key_equal": true,
+    "original_body_equal": true,
+    "images": 0,
+    "inherited_variant_price": 125,
+    "web_variant_price": 135,
+    "retired_uuid_retained": true,
+    "price_history_retained": true,
+    "catalog_availability": {
+      "initial": 7,
+      "web": 5,
+      "native": 6,
+      "base": 0
+    },
+    "ui": {
+      "accepted": true,
+      "run_id": "921ee95f027a"
+    },
+    "whole_features_accepted": 0,
+    "scope": "Actual normal iOS auth; image/description-free creation; options before price; lost201->503 reply, original replay; web135 native readback; zero-stock native retirement and web live-read removal; no provider or whole122 acceptance."
+  },
+  "availability": {
+    "run_id": "921ee95f027a",
+    "available": 6,
+    "parent_stock": 0,
+    "live_variants": [
+      2,
+      4
+    ],
+    "accepted": true
+  },
+  "device_custody": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "existing_files_and_photos_preserved": true
+  },
+  "control_history": [
+    {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "921ee95f027a",
+      "phase": "Auth",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Auth.swift",
+      "control_sha256": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810"
+    },
+    {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "921ee95f027a",
+      "phase": "Create",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Create.swift",
+      "control_sha256": "a16046085c4d1e706c536aa57b0d9ba0b2667e12cda65461faa49e5c4ffd8c96"
+    },
+    {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "921ee95f027a",
+      "phase": "Create",
+      "attempt": 2,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Create-visible-card-drag.swift",
+      "control_sha256": "c7f69838c692e34d4e1b0d1038fd25d2f3b8e88078a3ab848e2e2965b3b0167f"
+    },
+    {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "921ee95f027a",
+      "phase": "Create",
+      "attempt": 3,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Create-observed-card-drag-v3.swift",
+      "control_sha256": "2e888e74285c5217180ea05982d929a7e48c6d7681f7a29003d1c2c47b957d03"
+    },
+    {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "921ee95f027a",
+      "phase": "Create",
+      "attempt": 4,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Create-observed-vertical-viewport-v4.swift",
+      "control_sha256": "ea119da5fcbcb5face819f81d1d2a88a37ee62f6fb9eb60efe9f0f1b7c04a976"
+    },
+    {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "921ee95f027a",
+      "phase": "Create",
+      "attempt": 5,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Create-resume-web-five-settled-v5.swift",
+      "control_sha256": "4e835bedb04778195630196cc9730be351cee5534a087eb7eafd85bffcb8ee60"
+    },
+    {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "921ee95f027a",
+      "phase": "Create",
+      "attempt": 6,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-2dc682c2c0/Create-resume-functional-stock-five-v6.swift",
+      "control_sha256": "7d4309bdea2659e2ff5974784ef34e62ccafd779072539eb30570c4243fa01f0"
+    }
+  ],
+  "verification_boundary": "Functional canonical stock7\u2192web5\u2192native6/base0 and creation/exact replay/retire/history PASS. Auth first and Create sixth accepted; initial five Create-driver failures retained. Final control resumed acknowledged5 and used a fresh observed center without repeating7/web5. Whole-card screenshot constraints/default post-scroll tap and generic VoiceOver/alignment remain unaccepted separately.",
+  "whole_features_accepted": 0
+}

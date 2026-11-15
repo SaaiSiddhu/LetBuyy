@@ -1,0 +1,40 @@
+--- qualified-native41/apps/merchant/mobile/lib/screens/settings/shipping_screen.dart
++++ saved-fields4/apps/merchant/mobile/lib/screens/settings/shipping_screen.dart
+@@ -322,7 +322,12 @@
+                 children: [
+                   DropdownButtonFormField<String>(
+                     value: zoneId,
+-                    decoration: const InputDecoration(labelText: 'Zone'),
++                    decoration: InputDecoration(
++                      labelText: 'Zone',
++                      helperText: rate == null
++                          ? null
++                          : 'Zone is fixed for a saved rate.',
++                    ),
+                     items: _zones
+                         .map(
+                           (zone) => DropdownMenuItem(
+@@ -331,9 +336,11 @@
+                           ),
+                         )
+                         .toList(growable: false),
+-                    onChanged: (value) {
+-                      setDialogState(() => zoneId = value ?? zoneId);
+-                    },
++                    onChanged: rate == null
++                        ? (value) {
++                            setDialogState(() => zoneId = value ?? zoneId);
++                          }
++                        : null,
+                   ),
+                   const SizedBox(height: 12),
+                   TextField(
+@@ -463,6 +470,8 @@
+                       name: name,
+                       type: type,
+                       price: price,
++                      minWeightGrams: rate?.minWeightGrams,
++                      maxWeightGrams: rate?.maxWeightGrams,
+                       minOrderAmount: _optionalDouble(minOrderController.text),
+                       maxOrderAmount: _optionalDouble(maxOrderController.text),
+                       estimatedDaysMin: _optionalInt(etaMinController.text),

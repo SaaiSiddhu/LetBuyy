@@ -126,7 +126,22 @@ export function classifyAppApiRoute(file) {
 // generation, current job access, expiry and R2 writes remain Gateway-owned.
 // Approved branded checkout: one owned-store, origin/key-guarded readiness proxy.
 // DNS/provider ownership, derivation, TLS and lifecycle remain in the Gateway.
-export const APP_API_ROUTE_RATCHET = 231;
+// Wave 6 private KYC evidence: Merchant's bounded document-upload transport and
+// Console's stepped-up, audited evidence download transport are gateway-proxy.
+// Storage, scan verdict, provider approval and disclosure authority remain Gateway-owned.
+// Wave 6 India candidate: two JSON-only Merchant proxies forward the owned
+// upload intent and exact-version completion. Document bytes go directly from
+// the browser to Mumbai S3; both proxies remain gateway-proxy.
+// MERCHANT-WAREHOUSE-RECOVERY (2026-10-31): one versioned, current-actor/site/key
+// guarded stop proxy. Existing gateway-proxy class; effects and receipts stay in
+// Gateway/SQL. Its exact path is also registered in the lint baseline.
+// MERCHANT-WAREHOUSE-PREFLIGHT: one scoped, no-store protocol descriptor proxy.
+// It grants no lease/readiness and stays in the same existing gateway-proxy class.
+// MERCHANT-WAREHOUSE-DETAIL: two fresh owner-scoped document read proxies.
+// MERCHANT-MEDIA-RECOVERY: one thin session/actor/store-bound proxy to the existing
+// /v1/upload/recover receipt endpoint; no new upload or Media authority.
+// Recovery integration: exact MFA-bound Console legal-hold proxy, Gateway/SQL-owned.
+export const APP_API_ROUTE_RATCHET = 249;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

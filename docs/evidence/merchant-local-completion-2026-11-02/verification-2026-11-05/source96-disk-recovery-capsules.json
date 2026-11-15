@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-08T07:05:10.022565+00:00",
+  "scope": "Only four verified terminal disposable validation clones; original source/evidence/devices retained",
+  "removed": [
+    {
+      "receipt": "merchant-native-selection-v90-governance-v2.terminal.json",
+      "capsule": "/private/tmp/letbuyy-merchant-native-selection-v90-governance-utw1o6bs",
+      "source_manifest": "merchant-native-selection-source-v90.source.json",
+      "core_inputs_byte_equal": 8513
+    },
+    {
+      "receipt": "merchant-native-selection-v91-governance-v2.terminal.json",
+      "capsule": "/private/tmp/letbuyy-merchant-native-selection-v91-governance-ji_0l1xf",
+      "source_manifest": "merchant-native-selection-source-v91.source.json",
+      "core_inputs_byte_equal": 8513
+    },
+    {
+      "receipt": "merchant-variant-kyc-v92-governance-v2.terminal.json",
+      "capsule": "/private/tmp/letbuyy-merchant-variant-kyc-v92-governance-47so2bnc",
+      "source_manifest": "merchant-variant-kyc-source-v92.source.json",
+      "core_inputs_byte_equal": 8515
+    },
+    {
+      "receipt": "merchant-variant-kyc-v93-governance-v2.terminal.json",
+      "capsule": "/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu",
+      "source_manifest": "merchant-variant-kyc-source-v93.source.json",
+      "core_inputs_byte_equal": 8516
+    }
+  ]
+}

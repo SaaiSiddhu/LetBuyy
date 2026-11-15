@@ -1,0 +1,12 @@
+{
+  "from_source": "227c67d04d52c7d0cad74e5709db40e4dd93ca7917d7317a1d29a7fe680ac508",
+  "to_source": "d8bb3cf5df966db7f0003c964399c5b89d985a6014a3b4287a6df4405b8a5c39",
+  "changed": [
+    "apps/merchant/mobile/lib/screens/products/product_form_screen.dart",
+    "apps/merchant/mobile/test/product_category_parity_test.dart",
+    "apps/merchant/mobile/test/product_editor_presentation_test.dart",
+    "apps/merchant/mobile/test/product_media_attachment_test.dart",
+    "packages/dart/models/lib/src/shared_contracts.dart"
+  ],
+  "reuse": "All web/TS/identity/gateway/BFF/SQL/R2/browser-worker/security policy/dependency inputs unchanged from source70; web phases655/818/295/13, types, real checksum-CSP and owned media SQL12 remain bounded byte-equal evidence. FullFlutter1688 and analysis rerun on72; new root contracts and normal Android runtime under qualification."
+}

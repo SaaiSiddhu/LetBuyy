@@ -1,0 +1,1834 @@
+{
+  "createdAt": "2026-11-02T20:07:02.302114+05:30",
+  "sources": {
+    "primary": {
+      "root": "/Volumes/Projects/LetBuyy",
+      "head": "e4105581e3346041d71694d3db093eb713773e07",
+      "entries": [
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/android/app/build.gradle.kts",
+          "exists": true,
+          "sha256": "c8bc2156079e2711965a4a96770ec51d9d3dbeb176ad6156cc1299ec3ee07fc4",
+          "bytes": 3566
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/android/app/src/debug/AndroidManifest.xml",
+          "exists": true,
+          "sha256": "831dd68aa1f71f9c8afe3fbe8b772200db2c25af987cbade57924070bfd2739a",
+          "bytes": 955
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/android/app/src/main/AndroidManifest.xml",
+          "exists": true,
+          "sha256": "624520705485fb7bd133c9d4679f28c992fa95d14fe4c1db0d03fa88c54c9d54",
+          "bytes": 4118
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/android/app/src/main/kotlin/com/letbuyy/store/MainActivity.kt",
+          "exists": true,
+          "sha256": "1cbbd06d5b0fea2222ddf292d463b0f38708598b71a926d53f5ee1014bf68ba6",
+          "bytes": 4909
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/ios/Podfile.lock",
+          "exists": true,
+          "sha256": "e71c09db0e38f7c0f186830e351ed9694e917626dded6b447c25b186e0a3db00",
+          "bytes": 2978
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/ios/Runner/AppDelegate.swift",
+          "exists": true,
+          "sha256": "8ed39141d4a2f7f952c0b66f9bb1a5e8627c6e7517bea8ae5e9ba4d0bbc610c1",
+          "bytes": 9297
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/ios/Runner/Info.plist",
+          "exists": true,
+          "sha256": "b3ae81f84d43563efc1b997de9464ced13b8f1dbf8b4871ed33b7305a9a80ddc",
+          "bytes": 3088
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/lib/app/app.dart",
+          "exists": true,
+          "sha256": "46bb27bae0450e52dab6e78a6f52fe402a68ce09fd9b0dca1f34599b8f9e5afc",
+          "bytes": 4758
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/lib/app/auth_wrapper.dart",
+          "exists": true,
+          "sha256": "2d71f78e628d632936154d46f77b042b7e153ae60dcf4b316cc7e64c8284366f",
+          "bytes": 8706
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/lib/app/routes.dart",
+          "exists": true,
+          "sha256": "c2828fac82db387d9f5c7bfbb7ccd5c348817a0a9b6dfd0ae2800f1a76183f62",
+          "bytes": 26277
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/lib/app/store_context.dart",
+          "exists": true,
+          "sha256": "ecef66ae0eca5f0faaca5ff01aad66858429c329c4ba0fff4b7c6df72a7f5971",
+          "bytes": 6698
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/lib/config/app_config.dart",
+          "exists": true,
+          "sha256": "0913b1e3a5f18b4ff4d6f535b01f9fb47cf0b0c8cf890b696c9fb9a5bce8d392",
+          "bytes": 5129
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/lib/main.dart",
+          "exists": true,
+          "sha256": "aff4ea08616979511e1bdfa3229b18017b123d1a67a512e667607487d2192e1b",
+          "bytes": 15304
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/lib/screens/subscription/connect_razorpay_screen.dart",
+          "exists": true,
+          "sha256": "e73f8d0fe6157b81903e5591baac812f8035544862c6b667d683a6615db44eeb",
+          "bytes": 21923
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+          "exists": true,
+          "sha256": "7b6560f9f9a3a42d1ccaf88e541e1f41440ac41c609bd276c1cc952df798a501",
+          "bytes": 23574
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/lib/services/subscription_service.dart",
+          "exists": true,
+          "sha256": "9e7a6e21411e278a83beed91db1121e318e64b734933ce9427ff0ebd48edbb15",
+          "bytes": 21901
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/pubspec.yaml",
+          "exists": true,
+          "sha256": "9025a691b58b5fb0dfb9ff986c9f02869df22150d4aa0d36be01f3f855509336",
+          "bytes": 1979
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/test/merchant_mfa_login_test.dart",
+          "exists": true,
+          "sha256": "b320aac8a73a7dcd50f93692dcccfe7f8ad9934c24f01ec432c903f94e8c138f",
+          "bytes": 3392
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/mobile/test/mobile_services_test.dart",
+          "exists": true,
+          "sha256": "53f94c1283ae9e2c7d65017d4a2886fd928a8c9473ef2abc7495076f20fa4fb9",
+          "bytes": 403957
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/web/src/app/[store]/access_account/checkout/checkout/CheckoutClient.tsx",
+          "exists": true,
+          "sha256": "201b0a26d26645c19012f73345acff08edc30cba3e2c031c367fbc2ee49a51f8",
+          "bytes": 41546
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/web/src/app/[store]/access_account/checkout/checkout/page.tsx",
+          "exists": true,
+          "sha256": "f7076d4ac5550d5c7f1f6a4d07063a15523dc8b6316f82a45d54554a43aec31e",
+          "bytes": 2384
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/web/src/app/[store]/settings/payments/page.tsx",
+          "exists": true,
+          "sha256": "a8fabcd119defe27ecd30681b931cc59ecc39d06a1bd938939c2f64396dcf190",
+          "bytes": 12424
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/web/src/app/[store]/settings/payments/payment-setup-overview.tsx",
+          "exists": true,
+          "sha256": "f9923a3c70fe1498d47eb5704fea4459fe50227b4847a82e3cbb0d40fc979099",
+          "bytes": 5081
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/web/src/app/globals.css",
+          "exists": true,
+          "sha256": "bb162c753929205435892bc16690feb652bf8ba0fc72221c39335b60a985827a",
+          "bytes": 292068
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/web/src/lib/billing/subscription-checkout-intent.test.ts",
+          "exists": true,
+          "sha256": "32a59d7275c10257e4ca10960bc970840e8b3d12c62d24ead1b2092d4a13a53f",
+          "bytes": 7715
+        },
+        {
+          "status": " M",
+          "path": "apps/merchant/web/src/lib/billing/subscription-checkout-intent.ts",
+          "exists": true,
+          "sha256": "ed118aa54a46740a7567b47c72002c5efc5c490fd623dd511c3a7c945adfdc78",
+          "bytes": 5477
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/next.config.ts",
+          "exists": true,
+          "sha256": "0630cd0b2af7d0dcc59f434d8a4e61b167a407de36580453ff217694a0b9acc3",
+          "bytes": 3740
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/__tests__/auth-flow.test.ts",
+          "exists": true,
+          "sha256": "56e271f9798a7f02715b21eb76697ec043608b03b03fe6094046a9b1ea5bb25b",
+          "bytes": 4870
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/__tests__/auth-switch-guard.test.ts",
+          "exists": true,
+          "sha256": "95707d05dbf5bf9823d24e3da62158654b808d71c5c60f438a0da8f884d15d40",
+          "bytes": 3941
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/create-store/route.ts",
+          "exists": true,
+          "sha256": "f3d4548c1a24eb64609c3058773dd5d664bc0856347642c2b113f07f09230459",
+          "bytes": 10461
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/login/route.ts",
+          "exists": true,
+          "sha256": "765ba2dbe04376017abd66fa0d2ee3dada03da080ab2316bbeb01674334c36f2",
+          "bytes": 7524
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/logout/route.ts",
+          "exists": true,
+          "sha256": "b79f1ba5708fdcb60cae44b7aadf22da53145b5bc072375300aaf5c3aaf0c60e",
+          "bytes": 2842
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/lookup/route.ts",
+          "exists": true,
+          "sha256": "5d1c4d647d1da8b59366637669a16ebe2a383cc0fca6d88501693ea259ab5cb1",
+          "bytes": 2451
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/send-reset/route.ts",
+          "exists": true,
+          "sha256": "bf55595c5c6e0089861d0d9411c2d294b11864b9d7f33dc033e4fce764fb1d15",
+          "bytes": 3533
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/session/route.ts",
+          "exists": true,
+          "sha256": "b8852b487e33aa449ac0ed0e8953c4391108ff386f27ee7702d0f5d22484a243",
+          "bytes": 2079
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/set-password/route.ts",
+          "exists": true,
+          "sha256": "07b1637c5bb83c6bf0982fa96ae6c665d9b88d53f3b38674d6bbfaed90564dd1",
+          "bytes": 6471
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/signup/route.ts",
+          "exists": true,
+          "sha256": "a576d7984211f0bf35dd251663dae91006138684c7463b8a71e58c29a6170115",
+          "bytes": 5921
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/stores/route.ts",
+          "exists": true,
+          "sha256": "529ec9e1dbcbedd640317462e4ecc9344f3d85d220b9af945674d15fd3fcf3de",
+          "bytes": 2119
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/switch/route.ts",
+          "exists": true,
+          "sha256": "cc62dc6bc667b4a6c9a8a585d4da7cbb95e2d8050d294a2a920ccf87caa8d2c2",
+          "bytes": 3938
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/verify-otp/route.ts",
+          "exists": true,
+          "sha256": "8a7d2d1066550a48bec6ba315b6adb94d949c38d7c4de5cd3f1385b0645b07e5",
+          "bytes": 3654
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/api/auth/verify/route.ts",
+          "exists": true,
+          "sha256": "f0f7d58c5d777c21271bb8459b3a55bc2fc1199f683a3d44bb1ffa86db39d2ba",
+          "bytes": 4369
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/forgot-password/page.tsx",
+          "exists": true,
+          "sha256": "93f6561ad72d7fda859cfcdaa8380c5ca2a7ca924dcb7b1f2ff054bdd2117250",
+          "bytes": 8177
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/login/page.tsx",
+          "exists": true,
+          "sha256": "142cb9e5357528c39a69caa1514eb00cc7bee6ad6ad934d7f649bf91400ba667",
+          "bytes": 15882
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/lookup/page.tsx",
+          "exists": true,
+          "sha256": "e771e4611bae4f23f82b127550f251074b6561243a88238bec27476c1d96d12e",
+          "bytes": 29710
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/onboarding/page.tsx",
+          "exists": true,
+          "sha256": "9abd68ac6a3a73e4dd01b49c46dc573ba12680c5af00ff3aed26f9be5a3d6c2a",
+          "bytes": 44877
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/reset-password/page.tsx",
+          "exists": true,
+          "sha256": "fb344f7f7fa846d4d0de00d7109b16489f74e53f18a189a381db22463df5f94e",
+          "bytes": 13383
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/select/page.tsx",
+          "exists": true,
+          "sha256": "788402d5e536a389b64ded8aa1c216965410951d73e3192755c9b950cca221e2",
+          "bytes": 10157
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/set-password/page.tsx",
+          "exists": true,
+          "sha256": "98a2c6e2f31c72cc799015322364d7767d6511bdf68147bc2b29eee5a45fb335",
+          "bytes": 15637
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/app/signup/page.tsx",
+          "exists": true,
+          "sha256": "b7e75aed5d71be08490b02e9c4f78ad2521ec291f223355a663492364455099e",
+          "bytes": 32105
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/lib/api/client.ts",
+          "exists": true,
+          "sha256": "b45327e2e95b96969ebbdaf1968009b027d9c3a67d3504bc4de5b26ddf3ba350",
+          "bytes": 6428
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/lib/auth/return-to.ts",
+          "exists": true,
+          "sha256": "67c0f74e4d4b97159444f0078d65d73d989b8d987974fc7ae639df663946d76b",
+          "bytes": 2072
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/lib/auth/session.ts",
+          "exists": true,
+          "sha256": "87481814dbe2cb4f3af89e2d7679f6718f1bd324358ac761322f24bcfbd070ab",
+          "bytes": 3000
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/lib/rate-limit.ts",
+          "exists": true,
+          "sha256": "1d121d7fa21c56f36f2c0a007576f7cab7ea4e9e58f1aa0e68c2a3eee0ed74ff",
+          "bytes": 4996
+        },
+        {
+          "status": " M",
+          "path": "apps/platform/identity/src/proxy.ts",
+          "exists": true,
+          "sha256": "5b61aad00a97b223a14ecb464efac5ea56079874579105b5f32c873d9d9326b2",
+          "bytes": 2806
+        },
+        {
+          "status": " M",
+          "path": "config/env/schemas/next-app.schema.json",
+          "exists": true,
+          "sha256": "608ec3eef9ebc9777447c9871ae6a1413df805e2b23805ba95f44650ea4420ed",
+          "bytes": 5027
+        },
+        {
+          "status": " M",
+          "path": "config/env/schemas/worker.schema.json",
+          "exists": true,
+          "sha256": "7cf2dc4b17f52903baa7c70556ed06b905a8f982a96021e55dc519694378c32b",
+          "bytes": 13168
+        },
+        {
+          "status": " M",
+          "path": "config/env/templates/next-app.env.example",
+          "exists": true,
+          "sha256": "27e5c45f7df1566e1c9d6a55c25f209de87d587528c27833c50792ca7ebbc817",
+          "bytes": 4023
+        },
+        {
+          "status": " M",
+          "path": "config/env/templates/worker.env.example",
+          "exists": true,
+          "sha256": "8399561143e3346cfb2ddb5d9c5388ff044431816602439a246e56e64387102c",
+          "bytes": 6624
+        },
+        {
+          "status": "A ",
+          "path": "database/supabase/migrations/415_managed_sandbox_payment_connections.sql",
+          "exists": true,
+          "sha256": "7032515b61bd20aff4a4f7007a07c1dfd70d61eadf77a276422d11f65a06da50",
+          "bytes": 10929
+        },
+        {
+          "status": "A ",
+          "path": "database/supabase/rollback/415_managed_sandbox_payment_connections.rollback.sql",
+          "exists": true,
+          "sha256": "56a172e9abeb43d3b3cad6ebb6c8e1cbe7948014e3fa50901f22301b9091930a",
+          "bytes": 8777
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/payments-2026-10-28/EXECUTION.md",
+          "exists": true,
+          "sha256": "59ebbd7e78dca5e785ae47562b3d9143f2c0be2a0415f49435a5959e84a9a9df",
+          "bytes": 64661
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/payments-2026-10-28/work-items.json",
+          "exists": true,
+          "sha256": "241760236a7a3a6126f31dea33d3dcb76eaf28a2d15184371ad731bbf4a2ec57",
+          "bytes": 21671
+        },
+        {
+          "status": " M",
+          "path": "docs/implementation/niche-theme-programme/OWNERSHIP.md",
+          "exists": true,
+          "sha256": "24350bfe8f11915130ed5191e46eb01e5b90d06fd185103697726464fb3aad59",
+          "bytes": 9967
+        },
+        {
+          "status": " M",
+          "path": "packages/auth-core/src/index.ts",
+          "exists": true,
+          "sha256": "d8c55fcbc9580dfd1d31bb992e9957a4e411ef424dccaad3bbfc5103e63c81d1",
+          "bytes": 73958
+        },
+        {
+          "status": " M",
+          "path": "packages/dart/models/lib/src/merchant_app/store_model.dart",
+          "exists": true,
+          "sha256": "1cbe45cf87eee017ff741ea184ee6c87cd6f62124b9a58fcf5dfe6a5febd140f",
+          "bytes": 23431
+        },
+        {
+          "status": " M",
+          "path": "packages/dart/models/lib/src/payment_config_model.dart",
+          "exists": true,
+          "sha256": "d750669478cda6ddc739c76ba5ec42ddb0a8e36c4b75b794c2c851af9a72f6c4",
+          "bytes": 10640
+        },
+        {
+          "status": " M",
+          "path": "packages/dart/models/test/payment_config_model_test.dart",
+          "exists": true,
+          "sha256": "b07c7afcab66299faa606d8c411551c20909931e5dfe96b9595506cee8188498",
+          "bytes": 3917
+        },
+        {
+          "status": " M",
+          "path": "packages/infrastructure/razorpay-adapter/index.test.ts",
+          "exists": true,
+          "sha256": "01bca99098c6b10cde801ae3e47e20963ee61f38504c92fa80b6006656990c3e",
+          "bytes": 12754
+        },
+        {
+          "status": " M",
+          "path": "packages/infrastructure/razorpay-adapter/index.ts",
+          "exists": true,
+          "sha256": "cef77446029c99597f0fddfe01a142a86f0980e556a7a85de9b4cef6f120bd4a",
+          "bytes": 23038
+        },
+        {
+          "status": " M",
+          "path": "packages/payments/src/store-payment-readiness.ts",
+          "exists": true,
+          "sha256": "a3d0531e70b946a36838d0bd7bef3cb319fb9978f41fafda8ffe602dbf30b5c8",
+          "bytes": 2351
+        },
+        {
+          "status": " M",
+          "path": "packages/payments/test/store-payment-readiness.test.ts",
+          "exists": true,
+          "sha256": "026e0748715790cf39c544edc84c2d9bc7f9d544cea99da6efae3a2a6be3a672",
+          "bytes": 5397
+        },
+        {
+          "status": " M",
+          "path": "packages/shared-types/src/index.ts",
+          "exists": true,
+          "sha256": "893a7ad6d54f12bdf3620711b86a02f7f123e0bf92bf51d025eda517a2f9e0e4",
+          "bytes": 227385
+        },
+        {
+          "status": " M",
+          "path": "packages/shared-types/src/payment-setup.ts",
+          "exists": true,
+          "sha256": "abbbf7b9d2ef94b2ff8b5d5010aa13dc32cff07c80110b2918597b878a699bf0",
+          "bytes": 2474
+        },
+        {
+          "status": " M",
+          "path": "scripts/governance/identity-security-gate.mjs",
+          "exists": true,
+          "sha256": "a1e910d070c15f6cc102fe8a6b949350e10bf8f1df36b0b8426e865cbd79b214",
+          "bytes": 3882
+        },
+        {
+          "status": " M",
+          "path": "scripts/governance/test-suite-catalog.mjs",
+          "exists": true,
+          "sha256": "5f9662feb59c8ed46d61ca9b8bc61259f0cfb5a65332615edad1491786b07335",
+          "bytes": 11002
+        },
+        {
+          "status": " M",
+          "path": "scripts/validators/session-security-validator.mjs",
+          "exists": true,
+          "sha256": "46219cbe75e46b26e465c1cdf9bbfa471b8a24ac7e569bd59bcf3568fe96c127",
+          "bytes": 32815
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/__tests__/hosted-razorpay-credentials.test.ts",
+          "exists": true,
+          "sha256": "1805e464a8a1934c20dd6ddde3edf9231bef7d84fd7ddf1a9047d72bef5c004b",
+          "bytes": 3907
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts",
+          "exists": true,
+          "sha256": "c8ea2b79369b888f9b17e5659f876170f93df3ece13e362c255544f63cb1abbb",
+          "bytes": 46634
+        },
+        {
+          "status": "A ",
+          "path": "services/api-gateway/src/__tests__/owned-db/managed-sandbox-payments.postgres.test.ts",
+          "exists": true,
+          "sha256": "df6eacfd89827e137fe364275ae4b4887ef90d0e9a81db84151b5bfdce393b31",
+          "bytes": 8240
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts",
+          "exists": true,
+          "sha256": "55cad89951ac5bdccd26a83b066e3279369fa52669a2bf6cf81bd767b8dd6c5c",
+          "bytes": 22286
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/index.ts",
+          "exists": true,
+          "sha256": "ac65a48c1ea61d1c1d03013bacd600ecc67699e19ea0fa13072c24dfb573e099",
+          "bytes": 48685
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/lib/hosted-razorpay-credentials.ts",
+          "exists": true,
+          "sha256": "b61cc4e5a40ad142b2daf267da46239ff41a988a40a769ddffdd16cef39e923c",
+          "bytes": 2708
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/lib/payment-capture-proof.ts",
+          "exists": true,
+          "sha256": "3503e4ab7d6ebc195df7319ae9fee9040fce0017bc2ccec98b54e2cc7b7193b8",
+          "bytes": 3641
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/lib/payment-credential-history.ts",
+          "exists": true,
+          "sha256": "ebc2771374457e7b7895f65f2d3aafb1fd019c6d7917834a8c6a271f99c7d1b6",
+          "bytes": 5325
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/lib/payment-refund-proof.ts",
+          "exists": true,
+          "sha256": "1021cdc9c82d8ea6e0132bcbe52989232012b8cdede8415fa4c1ee34ac174af2",
+          "bytes": 2763
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/lib/store-payment-config.ts",
+          "exists": true,
+          "sha256": "54f17fe6e724efbeae9184db8b32ca5bff2847fd3d6b8f6d75569ab0a01df13e",
+          "bytes": 10192
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/lib/subscription-checkout.ts",
+          "exists": true,
+          "sha256": "415da557987a6505daa35ab62b348841f97ccedd4342a8e957435346f689d93e",
+          "bytes": 18374
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/lib/totp.ts",
+          "exists": true,
+          "sha256": "f59790b2cad666bcd669020cc9fc36e308e1dda659b5d7174d20ee923f2a76a7",
+          "bytes": 3704
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/routes/auth.ts",
+          "exists": true,
+          "sha256": "fec56a5ab9cb7662c5539f629b74dc5522bdb05bb6a786eed849df6f6f13af2e",
+          "bytes": 53484
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/routes/onboarding.ts",
+          "exists": true,
+          "sha256": "53318e410c05c388561622b2fecb212a4c4d1252c14fdefd1fed903ff0c6b360",
+          "bytes": 26001
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/routes/stores.ts",
+          "exists": true,
+          "sha256": "e6e8b16cb14a5ea008014dfbc493158f418c2efe18842a58f7cd4cd7a5dac2ea",
+          "bytes": 50001
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/routes/two-factor.ts",
+          "exists": true,
+          "sha256": "418ce5ef1b1fb14fcd379d0ae368acd68eceb93ad3d219185dec84ab9b6ff9f6",
+          "bytes": 12801
+        },
+        {
+          "status": " M",
+          "path": "services/api-gateway/src/tenant/tenant-tables.registry.ts",
+          "exists": true,
+          "sha256": "1eb79083497c05b05629521a560060070d372e42c25c92fecab3ef31350b3dd2",
+          "bytes": 77929
+        },
+        {
+          "status": " M",
+          "path": "tests/auth/identity-email-delivery-feedback.test.mjs",
+          "exists": true,
+          "sha256": "4daadc00b36b3df2ddcaa15dbf85cc3d3c453f0b3859b1efad16eca1f3fdd60c",
+          "bytes": 6107
+        },
+        {
+          "status": " M",
+          "path": "tests/auth/identity-password-setup-recovery.test.mjs",
+          "exists": true,
+          "sha256": "d87fb3736fbbad317708ec57c1c8e75b281e72fe2c8cdad99e0131488918c4c9",
+          "bytes": 8253
+        },
+        {
+          "status": " M",
+          "path": "tests/auth/rbac-categories.test.mjs",
+          "exists": true,
+          "sha256": "e70a4c9c7e184b795b895133e93fc1653fa261961d416e7ac57c4fe84f34edc5",
+          "bytes": 4433
+        },
+        {
+          "status": " M",
+          "path": "tests/auth/session-verifier.test.mjs",
+          "exists": true,
+          "sha256": "24f2bec2668f40b61ea0f75f41e9320e5f513f2ccdb166f01af338ac10409719",
+          "bytes": 15420
+        },
+        {
+          "status": " M",
+          "path": "tests/governance/gateway-db-lane.test.mjs",
+          "exists": true,
+          "sha256": "88ab2a5597a65271e2306db94ce4502aeccbb31cf29ed9237c5c0bb23199a615",
+          "bytes": 29746
+        },
+        {
+          "status": " M",
+          "path": "tests/governance/session-security-validator.test.mjs",
+          "exists": true,
+          "sha256": "cceb76d7fb68aa0f3e402bbd741d4ccf0f587f93dfe18cf5717da482ccc6f62d",
+          "bytes": 18103
+        },
+        {
+          "status": "A ",
+          "path": "tests/owned-db/managed-standard-checkout.manual.ts",
+          "exists": true,
+          "sha256": "d6ab085510339b6a8606e1c6975d21aff8a4e9eedcade8f3c2b4ddaa29462f08",
+          "bytes": 24241
+        },
+        {
+          "status": " M",
+          "path": "tests/owned-db/merchant-public-signup-browser.postgres.test.ts",
+          "exists": true,
+          "sha256": "2f1ea0f004c778b85be08692c73c09d6b058ee36907a218d3b47c93405bee901",
+          "bytes": 12438
+        },
+        {
+          "status": "??",
+          "path": "apps/merchant/mobile/lib/screens/auth/hosted_account_screen.dart",
+          "exists": true,
+          "sha256": "4a374ce2a528072c8c5991c78226b8ef509c62b541e84b44415dbdc5bea74926",
+          "bytes": 6267
+        },
+        {
+          "status": "??",
+          "path": "apps/merchant/mobile/lib/services/authentication_browser.dart",
+          "exists": true,
+          "sha256": "cf6e1c74e0eda100caed855c41a6a1a4eccc838f64f8cceba464b5ca36480ce2",
+          "bytes": 1350
+        },
+        {
+          "status": "??",
+          "path": "apps/merchant/mobile/lib/services/merchant_auth_contract.g.dart",
+          "exists": true,
+          "sha256": "91a03e34b02706b050bf45e69b0a9854ee310a0690633286843233a73162fb9c",
+          "bytes": 766
+        },
+        {
+          "status": "??",
+          "path": "apps/merchant/mobile/lib/services/merchant_browser_auth.dart",
+          "exists": true,
+          "sha256": "19a91d13de89ebe9ef0ae596bdd6b52b070a3f26161ac181da08404fbf9f8d07",
+          "bytes": 13849
+        },
+        {
+          "status": "??",
+          "path": "apps/merchant/mobile/test/merchant_browser_auth_test.dart",
+          "exists": true,
+          "sha256": "55114aa0a64cbbb6150fe92ae7a7db15b23cd2237db449cd309c8b8e6e9130ad",
+          "bytes": 14876
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/.well-known/assetlinks.json/route.ts",
+          "exists": true,
+          "sha256": "a49579064b8617b75637787272aa0f4260e6c7b97ed9dc38951a0f1ad24137e8",
+          "bytes": 836
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/api/auth/mobile/abandon/route.ts",
+          "exists": true,
+          "sha256": "de5263823cdc993d0587c02f9233bc9aea1cfb40b84645a05d0a1ec4e390fc02",
+          "bytes": 187
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/api/auth/mobile/approve/route.ts",
+          "exists": true,
+          "sha256": "0f9c8bdb5aadc6085a473008164a0c32ed58c2f33ea49168a2f954f0ee02844b",
+          "bytes": 187
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/api/auth/mobile/bind/route.ts",
+          "exists": true,
+          "sha256": "3855a266eb792cdf9f59f9bd959df638a3870b907d588dabe810eb6d02000827",
+          "bytes": 184
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/api/auth/mobile/cancel/route.ts",
+          "exists": true,
+          "sha256": "3afb3d1443b285ef567061f8d1d8b00dadfd834fd5db77bdbca5f929f656fad8",
+          "bytes": 186
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/api/auth/mobile/complete/route.ts",
+          "exists": true,
+          "sha256": "3321d767cafbeeb779cae1e7778562c51fae24caf76832ff69f58ebd827a1991",
+          "bytes": 188
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/api/auth/mobile/exchange/route.ts",
+          "exists": true,
+          "sha256": "56d4b1316e3d1bd83bdef873c913ebc0539569808aa81b5e49725dadde505b03",
+          "bytes": 188
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/api/auth/mobile/requests/route.ts",
+          "exists": true,
+          "sha256": "920bbbd33e1f287a38631a5e10b13ae554089eba2409e9e55e09c364081b5a2e",
+          "bytes": 188
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/api/auth/security/route.ts",
+          "exists": true,
+          "sha256": "7f4b423a7e0d42683d8a04a62e54ee8a13a8f031c82716a5a1757e42a413a6e9",
+          "bytes": 4155
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/merchant/auth/callback/page.tsx",
+          "exists": true,
+          "sha256": "25c47ccdefff4d702f3137c02078345b17f6de498e26c318310d805a9a9866a6",
+          "bytes": 436
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/mobile/authorize/page.tsx",
+          "exists": true,
+          "sha256": "04385f57e187758ea1086f187d7a296650f23e78a1654da0110771c8bd270bc9",
+          "bytes": 1602
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/mobile/page.tsx",
+          "exists": true,
+          "sha256": "37937fbabd0d9605daa9a0ae0dbb490011ddfef440d2851a02d2533528d9ba05",
+          "bytes": 1696
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/mobile/return/page.tsx",
+          "exists": true,
+          "sha256": "b477a58d46882653c54e51e86dd6d93c43b27f6ad6abde1edebdb39ec8305f74",
+          "bytes": 314
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/app/security/page.tsx",
+          "exists": true,
+          "sha256": "f282ce22f69bd77cf14d25cb726fb27b6fab18f2a9908ccd031b37fe0dc10f54",
+          "bytes": 6373
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/components/MfaLoginFields.tsx",
+          "exists": true,
+          "sha256": "7fb350b1bfb0eddd91a2cb762f9b8fad4246425f2eb6674f69eac411fb129175",
+          "bytes": 2420
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/components/MobileAccountReturn.tsx",
+          "exists": true,
+          "sha256": "33ec80696df3b67e7f9784a682835e30d4d0b17cc02722245aaf42122972c6a3",
+          "bytes": 3799
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/lib/auth/mobile-http.ts",
+          "exists": true,
+          "sha256": "ad5b9f28dda34302b7347f09c544c716036d08496bf3c3ab878d4da486a35021",
+          "bytes": 6574
+        },
+        {
+          "status": "??",
+          "path": "apps/platform/identity/src/lib/auth/mobile.ts",
+          "exists": true,
+          "sha256": "3bd1dd549991509d2a4b9c7c0ebbaaea9a7c5555fd64ec93061cf0f2e9b696e5",
+          "bytes": 5273
+        },
+        {
+          "status": "??",
+          "path": "database/supabase/migrations/416_merchant_accounts_mobile_handoff.sql",
+          "exists": true,
+          "sha256": "439ccfe3d844a0382a2d7662d6995706e59d1c5eebf6c7d8b45ca914de87ce82",
+          "bytes": 15354
+        },
+        {
+          "status": "??",
+          "path": "database/supabase/rollback/416_merchant_accounts_mobile_handoff.rollback.sql",
+          "exists": true,
+          "sha256": "fd64d5d984a78d6f42372868714ee7112d5c34a06f57f83546ff17da4bed3eaa",
+          "bytes": 1101
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/accounts-browser-auth-2026-11-02/01_PRODUCT_AND_UX.md",
+          "exists": true,
+          "sha256": "e6b6fe306a01ff27778c3b916f90bbcec4bbcb912b80186ef7555cd485abae17",
+          "bytes": 19860
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/accounts-browser-auth-2026-11-02/02_PROTOCOL_AND_BACKEND.md",
+          "exists": true,
+          "sha256": "0b0de882187f157ef515b5c7bdec1958aee80f5ec326e9ecb3593738579f261f",
+          "bytes": 26798
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/accounts-browser-auth-2026-11-02/03_DELIVERY_AND_VERIFICATION.md",
+          "exists": true,
+          "sha256": "062d7b99e4942b7b8af7dcfec3577da9429c595731fba4b56d332d33f16477db",
+          "bytes": 22200
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/accounts-browser-auth-2026-11-02/04_CAPABILITY_AND_SOURCE_INVENTORY.md",
+          "exists": true,
+          "sha256": "c5575ff46da0ce2375cf20c6913ec870f9f881c2fc3e3925a51a59f466b34a97",
+          "bytes": 13546
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/accounts-browser-auth-2026-11-02/EXECUTION.md",
+          "exists": true,
+          "sha256": "564b7a6fac14404ec7f044f8ea8e9f64e7e859d29c9168a60aa917db0e1dfe8a",
+          "bytes": 18645
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/accounts-browser-auth-2026-11-02/README.md",
+          "exists": true,
+          "sha256": "fc8986bafc53d32857ec77aae05c3cec940da852a1ad5513230db413a1bdc47c",
+          "bytes": 9805
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/accounts-browser-auth-2026-11-02/verification.json",
+          "exists": true,
+          "sha256": "fef2655312cdd3a8f8f5a32e0492955b53e5b94c4bac1a3c473fc7ee33d7ff01",
+          "bytes": 3739
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/merchant-canonical-ui-2026-10-30/PRODUCTION_ATTEMPT_2026-11-01.md",
+          "exists": true,
+          "sha256": "345faf442bb0c3b823341fb1abaf1569e44438c9a4eaa4632316c4ec28e4838c",
+          "bytes": 3135
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/merchant-canonical-ui-2026-10-30/PROPOSED_ACCOUNT_AND_STORE_CREATION_FLOW.md",
+          "exists": true,
+          "sha256": "385c3675ae88e0f04178aebe21a7efbc8d12707edb10803856f47ab84218b7b7",
+          "bytes": 26580
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/merchant-canonical-ui-2026-10-30/WEB_FLUTTER_ACCOUNT_FLOW_AUDIT_2026-11-02.md",
+          "exists": true,
+          "sha256": "7740e9484cbf368b087d92ffd62ecdbfac3c9665004f044d5397c90d22ffadbc",
+          "bytes": 23729
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/ALLOCATION.json",
+          "exists": true,
+          "sha256": "6407ac256cd8a9437f358d8a3b28f195514cfc04a93b654b660ff613670ff89f",
+          "bytes": 12398
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/ALLOCATION_02.json",
+          "exists": true,
+          "sha256": "d897cf057b0641994dbbf9a86ef847b5e3610cfabb7bba26bcfdfe6bfa00f0c2",
+          "bytes": 14394
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/ALLOCATION_03.json",
+          "exists": true,
+          "sha256": "7e37ba0b8ff13c2194ea224f9292964fbede70c6fb7b0fb2aaf2e9963077f396",
+          "bytes": 17704
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/ALLOCATION_04.json",
+          "exists": true,
+          "sha256": "8b15d3b149400f057204b7362af8dcbd7a332e570ac0fe5ac889f7dcd53f26ce",
+          "bytes": 22251
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/ALLOCATION_05.json",
+          "exists": true,
+          "sha256": "a7bf1e7c866c24f961fd71210cbcaa3ff71cc8d4b79d3e66022072edb08a8bff",
+          "bytes": 12293
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/HANDOFF.json",
+          "exists": true,
+          "sha256": "34d78fbe34cbac466cf1e4f6e7a58f892288bb0621b38a93c286875911f6001d",
+          "bytes": 2467
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/SHOPIFY_READONLY_AUDIT_BROWSER_ALLOCATION_01.json",
+          "exists": true,
+          "sha256": "569b39eac10d1a66c6966e83fcf1db32ed5866e01900c64aa464205b87a35257",
+          "bytes": 4116
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/SOURCE_LEASE_WITHDRAWAL_01.json",
+          "exists": true,
+          "sha256": "40aff82749ede05cbaed040a3e262dad5e98dac0cdad63f2e6fcc06b34199b9b",
+          "bytes": 1219
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/SOURCE_REVIEW_01.json",
+          "exists": true,
+          "sha256": "ce421967c3e8caf68e17330466447720c7bfa835b6f63cb2bb2dd774d3896171",
+          "bytes": 5461
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/review01/counterexamples-result.json",
+          "exists": true,
+          "sha256": "2c3dc1c70ed0a0bbf0b5b339613dcc63028607aa0828dcaf824b9feb1fc2e198",
+          "bytes": 773
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/review01/counterexamples-v2-result.json",
+          "exists": true,
+          "sha256": "5dbcafca61347c639688401db10b52b41293331cb978a7b808946e1213758d2c",
+          "bytes": 700
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/review01/counterexamples-v2.ts",
+          "exists": true,
+          "sha256": "7acba3cabaff730683abb26461d438f8c78e4e0f60dc3b054ad275bf86c6c5b5",
+          "bytes": 5270
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/review01/counterexamples.ts",
+          "exists": true,
+          "sha256": "c66ceff802e65989a75a976df5b25ee601a73b0d48d79576537e62c197b28f8e",
+          "bytes": 5231
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/review01/focused-tests-result.json",
+          "exists": true,
+          "sha256": "f68e0c100a246fcb15423769502e15d5ff4c6d941ff249698825d84a1979085f",
+          "bytes": 8710
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/niche-theme-programme/editor-slice-2026-10-30-01/review01/mounted-correct-tsconfig-result.json",
+          "exists": true,
+          "sha256": "0146e45b6512462c6724efa12f8dd0b1b7110a3f3c66f2decff1b665ef6135cc",
+          "bytes": 1035
+        },
+        {
+          "status": "??",
+          "path": "docs/implementation/theme-editor-2026-10-30/ANALYSIS_AND_DELIVERY_PLAN.md",
+          "exists": true,
+          "sha256": "5bb38695d5802d1d5e63dd2fae014e4599ae7351799abe1fe73d2d74f51aa32e",
+          "bytes": 14828
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/EVIDENCE_INDEX.md",
+          "exists": true,
+          "sha256": "3e0fbbb4410000448a2d2e92bb40206051f33a188ebf945643ccb9d53be7096c",
+          "bytes": 6384
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/FEATURE_PARITY_MATRIX.md",
+          "exists": true,
+          "sha256": "a83c5e90fb47c00041520edcfaf29ddf3a5b3b7f93b6dc59540ecd08e9dfce24",
+          "bytes": 7928
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/FIELD_RENDER_TRACE.md",
+          "exists": true,
+          "sha256": "318a96cd24e86e57d05ffb2d1022a13ec913580c5c7205006829277ebf34fd63",
+          "bytes": 5858
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/FIELD_SOURCE_REFERENCE_AUDIT.md",
+          "exists": true,
+          "sha256": "fd8631d7aa30df7e94f2f38db7230ddab713395d618a49da28d51aefdaea44e8",
+          "bytes": 87727
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/GAPS_AND_RISKS.md",
+          "exists": true,
+          "sha256": "69ddfc0cb762a7f18b1b1f2d330db2d1e70b627d75bdab0b16ebd69077f0a03b",
+          "bytes": 4376
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/IMPLEMENTATION_BLUEPRINT.md",
+          "exists": true,
+          "sha256": "a1709a45a4e42e53d491ba2283549eb3127289594c4011d4348f3915e5c93c9f",
+          "bytes": 6500
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/LETBUYY_ARCHITECTURE.md",
+          "exists": true,
+          "sha256": "7de183ce07c3b4de918727c331ecdf1b34b705cd07de35740ad60f5eb58b2605",
+          "bytes": 11400
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/OPEN_QUESTIONS.md",
+          "exists": true,
+          "sha256": "ecf7f528ea552a9c21223d3a75ef009cc3fff5be1761ff7fa82057c59851c773",
+          "bytes": 3050
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/README.md",
+          "exists": true,
+          "sha256": "d945bd6af560f82bf4665d8a670f5445844055d133ea4db252d4114212687418",
+          "bytes": 3604
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/SHOPIFY_PUBLIC_CONTRACTS.md",
+          "exists": true,
+          "sha256": "282b9cb3cff97d81385ab9541840907057dae24efa1d708728e1b0768ec69cd1",
+          "bytes": 5214
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/SHOPIFY_UI_WORKFLOWS.md",
+          "exists": true,
+          "sha256": "5e3a2896288d9e94badf9c70a26e16c875f32ef07d1c46ca2373571962ca4ca0",
+          "bytes": 6229
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/TEN_THEME_INVENTORY.md",
+          "exists": true,
+          "sha256": "3bdbc9c45c12804de1b0fb9678aaf723d20dbd41b6f88dd9e811cc890a508f6c",
+          "bytes": 4780
+        },
+        {
+          "status": "??",
+          "path": "docs/research/theme-editor-end-to-end-2026-10-30/TEN_THEME_SOURCE_CATALOG.md",
+          "exists": true,
+          "sha256": "df9216406b8acfd36dc2e4ecfe15d2c716c5188fa7a9c8d7bdc2451542d50099",
+          "bytes": 62634
+        },
+        {
+          "status": "??",
+          "path": "output/ui-mockups/online-store-overview-v1.png",
+          "exists": true,
+          "sha256": "aa92d56892ce2a565eea0c211cbef84d2a807ea5de4e274496db30b5772d5a3b",
+          "bytes": 1731617
+        },
+        {
+          "status": "??",
+          "path": "packages/auth-core/src/merchant-native-registry.ts",
+          "exists": true,
+          "sha256": "a41b15dc83d97f74952735362bcfaec17798b63b20de891be7c142c09858463f",
+          "bytes": 923
+        },
+        {
+          "status": "??",
+          "path": "packages/auth-core/src/merchant-native.ts",
+          "exists": true,
+          "sha256": "c3fddafc783b7e06631dafe2a6c21e094594ce4d5092fe8872afadafcbd299ee",
+          "bytes": 3723
+        },
+        {
+          "status": "??",
+          "path": "packages/auth-core/test/merchant-native.test.ts",
+          "exists": true,
+          "sha256": "8eb416c0b2495eb4cecf9070b89035d607bd11ec18520b2dfb9ee01e6a976c25",
+          "bytes": 2673
+        },
+        {
+          "status": "??",
+          "path": "scripts/generators/generate-merchant-auth-contract.ts",
+          "exists": true,
+          "sha256": "50385a51fb65acec7ab306b1a4bc180f29de71c52335e002b8c41c8a2de0122f",
+          "bytes": 1027
+        },
+        {
+          "status": "??",
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-auth.postgres.test.ts",
+          "exists": true,
+          "sha256": "f2da7943f0251b75c406951d9a16eae9692f782bfac714c03b46de964a5aefd6",
+          "bytes": 14931
+        },
+        {
+          "status": "??",
+          "path": "services/api-gateway/src/routes/merchant-mobile-auth.ts",
+          "exists": true,
+          "sha256": "0744e8b889570b2d3da85b0cf74baefd30694c1e38214fe638d88a41f7e8566b",
+          "bytes": 6696
+        },
+        {
+          "status": "??",
+          "path": "tests/owned-db/merchant-accounts-browser.postgres.test.ts",
+          "exists": true,
+          "sha256": "d6aef484c49e3526b5d351f95d8efadcbb7ce5a343f316d21fd384e9c957e377",
+          "bytes": 26791
+        }
+      ],
+      "snapshotBranch": "codex/integration-snapshot-primary-20261102",
+      "snapshotCommit": "409ace5f055e829440f57d659412f7209505e94c"
+    },
+    "kyc": {
+      "root": "/Users/saai_mithra/.codex/worktrees/general-business-kyc/LetBuyy",
+      "head": "4e6df6546de288288a1b2a6c0b52c9ba8dd6657e",
+      "entries": [
+        {
+          "status": "M ",
+          "path": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.test.ts",
+          "exists": true,
+          "sha256": "fa44ac605a046fbde8e67d3b84a40e99f16e796f1e89eb62dd77601cc6ccdce9",
+          "bytes": 8268
+        },
+        {
+          "status": "M ",
+          "path": "apps/commerce/web/src/lib/demo/catalog-demo-dispatch.ts",
+          "exists": true,
+          "sha256": "9d6fab19fbacb25972b5aa4d1a8b5c166f85734a554246550c707bdab4b52b21",
+          "bytes": 9170
+        },
+        {
+          "status": "A ",
+          "path": "apps/commerce/web/src/lib/demo/catalog-demo-versions.ts",
+          "exists": true,
+          "sha256": "f0b8c6d83f1600b9b5139c95bbb10f7f6aeb738edcc8cf9b39cc152af0619d2d",
+          "bytes": 201
+        },
+        {
+          "status": "M ",
+          "path": "apps/commerce/web/src/lib/demo/circuit-demo.ts",
+          "exists": true,
+          "sha256": "5965ccaa0c87f26a4c50332f17e4ff759db5ba4146ee66c5719b429442b9c78f",
+          "bytes": 9410
+        },
+        {
+          "status": "M ",
+          "path": "apps/commerce/web/src/lib/demo/habitat-demo.ts",
+          "exists": true,
+          "sha256": "8fe3e9212eb7ed95650be68452beee5d8d5885baadf636d2ca81268762e0d8c3",
+          "bytes": 7508
+        },
+        {
+          "status": "M ",
+          "path": "apps/commerce/web/src/lib/demo/kindred-demo.test.ts",
+          "exists": true,
+          "sha256": "66fa8cdaa8e3978603e6534a7b4015ac24f5160a0b45a7c2c5e27a6cd5145313",
+          "bytes": 5967
+        },
+        {
+          "status": "M ",
+          "path": "apps/commerce/web/src/lib/demo/kindred-demo.ts",
+          "exists": true,
+          "sha256": "2a1e1f68458ae0782ab29f92d3db4341f35e5e3f1fddceffc6ed42286d8d33be",
+          "bytes": 5990
+        },
+        {
+          "status": "M ",
+          "path": "apps/commerce/web/src/lib/demo/trailmark-demo.ts",
+          "exists": true,
+          "sha256": "3ff2fd113ddbaf3ee156d380d54e7c1e8e17378249a350c1b99cf7588018d8cc",
+          "bytes": 8117
+        },
+        {
+          "status": "A ",
+          "path": "database/supabase/migrations/428_niche_theme_catalog_v210.sql",
+          "exists": true,
+          "sha256": "a2622ffa92adae84caa247fddc01b5ead57b882bade97fe564fe3044ba0b5149",
+          "bytes": 5893018
+        },
+        {
+          "status": "A ",
+          "path": "database/supabase/rollback/428_niche_theme_catalog_v210.rollback.sql",
+          "exists": true,
+          "sha256": "eb32fb29346132d8c0a7a331fd8ddd2ba8cf45e2325d2cd2714fa871643f1648",
+          "bytes": 2748
+        },
+        {
+          "status": "M ",
+          "path": "docs/evidence/consolidation-2026-10-25/DEPENDENT_SOURCE_REVIEW.json",
+          "exists": true,
+          "sha256": "dbcbebde7d3ec1fb4537a1b0b13b41f64c96faf89c2411a1d140691a1c30b530",
+          "bytes": 1193
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/aura-1280.png",
+          "exists": true,
+          "sha256": "050b1b205b80ee7e4ca50d1f0228a3280bf9493f40ff54c72ab0cfd05af8d224",
+          "bytes": 506993
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/aura-360.png",
+          "exists": true,
+          "sha256": "edcb8431298f9cc1f6ecd65024b74a6f3a6f2d029e97007def51d40375ac5e25",
+          "bytes": 200415
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/bloom-1280.png",
+          "exists": true,
+          "sha256": "802e9f264e982a25ef9dd1c6f7cf16c377bb419dda615921490fbc3122897e17",
+          "bytes": 472108
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/bloom-360.png",
+          "exists": true,
+          "sha256": "08ac50eb92488437fcf81918065222bd24c1f2365d3fcb7cd1af4fac5c56b96e",
+          "bytes": 204492
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/craft-1280.png",
+          "exists": true,
+          "sha256": "1f414b5986825f5ecd74a44feb506a0529e99f5b3bbb44f19bc3ca9a99c7ba72",
+          "bytes": 435950
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/craft-360.png",
+          "exists": true,
+          "sha256": "a64a8959fa6f1cf500e289cf456f44ffb9abe7d2b4088f10b1ed830cdfe09a3d",
+          "bytes": 202466
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/dawn-1280.png",
+          "exists": true,
+          "sha256": "fa0aa2ecf70805182f6995858b36ff5efd77e384c6226535794b03777c234d26",
+          "bytes": 451047
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/dawn-360.png",
+          "exists": true,
+          "sha256": "03cb1e32276cabf228f7d352d13666f335758b8ee9860fb6d6c8061d04bab4c8",
+          "bytes": 206497
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/editor-1280-dark.png",
+          "exists": true,
+          "sha256": "0f073ff939226203c9c1485f369caf4dfa03b55220df22dd2a2df51d54445a71",
+          "bytes": 194409
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/editor-1280-light.png",
+          "exists": true,
+          "sha256": "7fde0c8d1811e2ac7550ac5f4c8939174378f2594b2f0ed919ebea30ddffba41",
+          "bytes": 194407
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/editor-360-dark.png",
+          "exists": true,
+          "sha256": "9746c0d3f4f7401194b5f5f333dd636da3d01b42586499f24078da16f64204d2",
+          "bytes": 67698
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/editor-360-light.png",
+          "exists": true,
+          "sha256": "93f7422b8133eaf733daa96837f201bb6fea41974ca65e6009c65165d660687f",
+          "bytes": 67880
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/editor-414-dark.png",
+          "exists": true,
+          "sha256": "14176e2d3785247f50907c8e0f14d657dd90ebf7d2c791b78396793cd9a38029",
+          "bytes": 67499
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/editor-414-light.png",
+          "exists": true,
+          "sha256": "14176e2d3785247f50907c8e0f14d657dd90ebf7d2c791b78396793cd9a38029",
+          "bytes": 67499
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/editor-768-dark.png",
+          "exists": true,
+          "sha256": "35bfa8c64bf3a6d7ae1c10570d51489afb9aa86319d91e426bfdb470a939b8e3",
+          "bytes": 121940
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/editor-768-light.png",
+          "exists": true,
+          "sha256": "a6c027ecdb89a2767ccd0bbff90354adb3167b06069ee6bafb47a17d706b6e22",
+          "bytes": 121820
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/forge-1280.png",
+          "exists": true,
+          "sha256": "4339c4c6b7eadf74d0d2de3c4a46e7191b288aa5cc1cf1d30436eca3d114074e",
+          "bytes": 356206
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/forge-360.png",
+          "exists": true,
+          "sha256": "5b3931104128419db69a4978b07766db0ab0c5757555e930988116ff907b5b8a",
+          "bytes": 195058
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/nova-1280.png",
+          "exists": true,
+          "sha256": "5599480c3504fc2e6ff35bb5ec74d0a7932da3216ed103679d0bf85302f4bddf",
+          "bytes": 480686
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/nova-360.png",
+          "exists": true,
+          "sha256": "d8d7f7d3796f86b25537759313e99a59760485c41f7768680616b33bef3fbbf0",
+          "bytes": 198389
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/refresh-1280.png",
+          "exists": true,
+          "sha256": "2c1e257cb7b1441bd4f2a3fad9eaf8f0962347fa429b6244f99720ca2bb5c3b5",
+          "bytes": 480146
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/refresh-360.png",
+          "exists": true,
+          "sha256": "3bb081a39cddea23e54323ebdc589b2b2db31c2d220bf152e9b3593441f65e6a",
+          "bytes": 202536
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/ride-1280.png",
+          "exists": true,
+          "sha256": "b1a9392c57aa4100d11a8824035565dae3467dbafb57de7d52378a5c2b15f35f",
+          "bytes": 531786
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/ride-360.png",
+          "exists": true,
+          "sha256": "329add5930274137a8b098763a909d1acf51697c9ab0f71a909477b747788320",
+          "bytes": 194202
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/sense-1280.png",
+          "exists": true,
+          "sha256": "23e999ffdc8137817085d55d4d9d5e2a08b0267ba3d5b8cbd08f1270c7ad969f",
+          "bytes": 360216
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/sense-360.png",
+          "exists": true,
+          "sha256": "c96d366c42d81c16bb46170951ce37af0308ed6eb3fe44f02e6299c82a5450a8",
+          "bytes": 175569
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/summit-1280.png",
+          "exists": true,
+          "sha256": "4fad6249696312ae6f61c0ea122aeee2ca66cf83518da0a449b9e8e2701cc1b5",
+          "bytes": 261229
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/summit-360.png",
+          "exists": true,
+          "sha256": "534c7e20a5d8b7d1e5e8aa8b44710e7d3c1de99c81a5e4e501091a7afb0ffed9",
+          "bytes": 157365
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/viewport-1280-dark.png",
+          "exists": true,
+          "sha256": "4fad6249696312ae6f61c0ea122aeee2ca66cf83518da0a449b9e8e2701cc1b5",
+          "bytes": 261229
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/viewport-1280-light.png",
+          "exists": true,
+          "sha256": "4fad6249696312ae6f61c0ea122aeee2ca66cf83518da0a449b9e8e2701cc1b5",
+          "bytes": 261229
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/viewport-360-dark.png",
+          "exists": true,
+          "sha256": "534c7e20a5d8b7d1e5e8aa8b44710e7d3c1de99c81a5e4e501091a7afb0ffed9",
+          "bytes": 157365
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/viewport-360-light.png",
+          "exists": true,
+          "sha256": "534c7e20a5d8b7d1e5e8aa8b44710e7d3c1de99c81a5e4e501091a7afb0ffed9",
+          "bytes": 157365
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/viewport-414-dark.png",
+          "exists": true,
+          "sha256": "e43256c4b53649e9233ad470ce4a3c45df16845758ec740a0f80ef8ac22c5fa1",
+          "bytes": 168313
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/viewport-414-light.png",
+          "exists": true,
+          "sha256": "e43256c4b53649e9233ad470ce4a3c45df16845758ec740a0f80ef8ac22c5fa1",
+          "bytes": 168313
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/viewport-768-dark.png",
+          "exists": true,
+          "sha256": "3aeae9b91901118b9d59ca544f5b37905c793a773edaed1b0401eb1baf7f8244",
+          "bytes": 190909
+        },
+        {
+          "status": " M",
+          "path": "docs/evidence/web-launch-week1-2026-10-21/screenshots/viewport-768-light.png",
+          "exists": true,
+          "sha256": "3aeae9b91901118b9d59ca544f5b37905c793a773edaed1b0401eb1baf7f8244",
+          "bytes": 190909
+        },
+        {
+          "status": "M ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/READINESS.md",
+          "exists": true,
+          "sha256": "fa4c8bb0c18828a7f1ec71d63183f829aaf93c367cc9b9a0067d0074daa60cd1",
+          "bytes": 142931
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/full-behavioral-a38102d11dc4-2026-11-02.json",
+          "exists": true,
+          "sha256": "ca6e85eb64d742ad8eca8438cbc9a0b850430d8da7e2954c80b1ee6a0372fd87",
+          "bytes": 3138
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/full-behavioral-db95f89e48fc-2026-11-02.json",
+          "exists": true,
+          "sha256": "2a33c0620aa696a1897926d0b4c0a6b3e302fa6ac748222f864b67cfeede09bd",
+          "bytes": 2418
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/full-behavioral-fbe4474033c7-2026-11-02.json",
+          "exists": true,
+          "sha256": "dc28c91ef06277e4edd8955800ba3e8cbe0de89d1a4b1b3ce179d73d9935261b",
+          "bytes": 4884
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/full-behavioral-interrupted-2026-11-02.json",
+          "exists": true,
+          "sha256": "d810701139ad7e7b46f8270d5a4bdd5ae5f1e26bb3a048df98a5347e251ef74a",
+          "bytes": 2783
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/full-behavioral-sequential-interrupted-2026-11-02.json",
+          "exists": true,
+          "sha256": "37048258ebbf8485e97656bfaa4823e6722a03a887bc8033e5bd9d2501d949f4",
+          "bytes": 1821
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/full-behavioral-singlecluster-interrupted-2026-11-02.json",
+          "exists": true,
+          "sha256": "3a4d02df7a51cdf50e6d33e87a43123f5aa6193048d285ab6c2c2f864bffd249",
+          "bytes": 2027
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/kyc-mumbai-stack-candidate-2026-11-02.json",
+          "exists": true,
+          "sha256": "b199c97c6a3e7c0136552f1b0068ed8d47fdd9ba6f440bb5269b7b73d1c94480",
+          "bytes": 1914
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/post-published-general-browser-2026-11-02.json",
+          "exists": true,
+          "sha256": "983161318a7b8f727be23e7f1a5b5cf030eba9253d7cc1c59c46e5e846436352",
+          "bytes": 1731
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/general-business-wave6-2026-10-30/evidence/theme-v210-promotion-2026-11-02.json",
+          "exists": true,
+          "sha256": "4d7d6a24a95a48fe95e66879d274764eda4e5b4fdf55a2721e4adf287af3ae3c",
+          "bytes": 2939
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/README.md",
+          "exists": true,
+          "sha256": "621f45ba4b25f0440215cfcd3e342fbf97d7d3ab4725da354523e528a39d1916",
+          "bytes": 2076
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/generate-release.test.ts",
+          "exists": true,
+          "sha256": "f31e2632a94a567d160f08bf83328e6ccf92510a0cf290cc249bd8d564501663",
+          "bytes": 5465
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/generate-release.ts",
+          "exists": true,
+          "sha256": "01fcbc8ff817e679615fae8bf3a71d6effa3b999d0fb4ed6cec1e1f0fd783c0b",
+          "bytes": 25734
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/letbuyy-aura-2.1.0.json",
+          "exists": true,
+          "sha256": "1468c6c48664e592df9071eda55d5e7294630df0de73a90890feb422b2e2c183",
+          "bytes": 646376
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/letbuyy-bloom-2.1.0.json",
+          "exists": true,
+          "sha256": "d4b8ef80349866fda7f01122d45ab84c79a2aca113fd8a825003aca8e07aef61",
+          "bytes": 648694
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/letbuyy-craft-2.1.0.json",
+          "exists": true,
+          "sha256": "aa7b667aa9f850880ce64df0bcbdad97bc3797b0aab3a66eb764d84ae17cc95e",
+          "bytes": 731622
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/letbuyy-dawn-2.1.0.json",
+          "exists": true,
+          "sha256": "136b32ec901710d8aeb3090062a9edd281f9e096380611096e43c7b2d5f9f115",
+          "bytes": 665868
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/letbuyy-forge-2.1.0.json",
+          "exists": true,
+          "sha256": "5874ad90d4aeae3599b32e65b4dc7addb74052f64afaafc68527eb176cb8c950",
+          "bytes": 663502
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/letbuyy-nova-2.1.0.json",
+          "exists": true,
+          "sha256": "eb944ba9d58c2295cbfbe0ceabd90abd55ee781847532cc0a69587800f3631c6",
+          "bytes": 620406
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/letbuyy-refresh-2.1.0.json",
+          "exists": true,
+          "sha256": "4167dac5949ee5cbf75b1f33a1b35517d83dcaa4580edd5216385f31ebd019bb",
+          "bytes": 630514
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/letbuyy-ride-2.1.0.json",
+          "exists": true,
+          "sha256": "c84350114256cfeac0f2b174c785c42d9fdc0c7516f318b441de817e26a8afaa",
+          "bytes": 649778
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/letbuyy-summit-2.1.0.json",
+          "exists": true,
+          "sha256": "0195c55a035ce0a470db510c595e58d4dd2591c23c8eba2d1a280af98b75c17d",
+          "bytes": 629667
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/proposals/6e8408ba3449a0feb08d131e7d46764e64d686271f4c72998205ba17c49fbdb2/manifest.json",
+          "exists": true,
+          "sha256": "ad43015f1bd979e68eb49808eb9d9f7a8464e78df5d743ce0947c95a3b15c319",
+          "bytes": 13130
+        },
+        {
+          "status": "A ",
+          "path": "docs/implementation/niche-theme-programme/release-v210/tsconfig.json",
+          "exists": true,
+          "sha256": "bc1e35cb3bd1bb8da4293ffdb31d132e2c8329898f443d9ffc85ea683d22664b",
+          "bytes": 472
+        },
+        {
+          "status": "A ",
+          "path": "infrastructure/deployment/kyc-india-mumbai.README.md",
+          "exists": true,
+          "sha256": "54bbc46759de7cd3a1c0eb5d18091606939b81c9eb793b78ee24172cc2ce0df1",
+          "bytes": 6327
+        },
+        {
+          "status": "A ",
+          "path": "infrastructure/deployment/kyc-india-mumbai.cfn.json",
+          "exists": true,
+          "sha256": "41c00d8865426753ecb45e2e03646691d7c70a5f7608678df203b7f2a4317c24",
+          "bytes": 10071
+        },
+        {
+          "status": "M ",
+          "path": "scripts/governance/run-executable-suites.mjs",
+          "exists": true,
+          "sha256": "25d590cb764e542e25613383e297196ef8d3bed86998303531ea508054a57242",
+          "bytes": 36996
+        },
+        {
+          "status": "M ",
+          "path": "scripts/governance/test-suite-catalog.mjs",
+          "exists": true,
+          "sha256": "cbddcbaef54329dfc1f6b45c233c0c6f9a1cc88335c5c1b0a519ca5038d26350",
+          "bytes": 11351
+        },
+        {
+          "status": "M ",
+          "path": "services/api-gateway/src/__tests__/owned-db/console-session-fixture.ts",
+          "exists": true,
+          "sha256": "9ee2545ee2b98e76435fd8827ace931ed9e56dd8be33f571739759e1ce39a77e",
+          "bytes": 7136
+        },
+        {
+          "status": "M ",
+          "path": "services/api-gateway/src/__tests__/owned-db/merchant-library-artwork.postgres.test.ts",
+          "exists": true,
+          "sha256": "75e3521c041a517aa8c627642444add0a3eba336db6213c088cd45f9e57874a9",
+          "bytes": 3250
+        },
+        {
+          "status": "M ",
+          "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+          "exists": true,
+          "sha256": "aacb4649f7b9065fc5287af45f59053393a095b01140134fb94d8929a4f51761",
+          "bytes": 52877
+        },
+        {
+          "status": "A ",
+          "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-v210-editor.postgres.test.ts",
+          "exists": true,
+          "sha256": "22ea67c4dffcdfcb32f061af7e3d070cb915f11b03dcf4e8eb362cf010590023",
+          "bytes": 7082
+        },
+        {
+          "status": "A ",
+          "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-v210-promotion.postgres.test.ts",
+          "exists": true,
+          "sha256": "84c8e3c63dcb909542b9d624a97952ece5b09abb5f8025fb17f1c595e1061662",
+          "bytes": 7642
+        },
+        {
+          "status": "M ",
+          "path": "services/api-gateway/src/__tests__/owned-db/theme-catalog-install.postgres.test.ts",
+          "exists": true,
+          "sha256": "af1e145dbd758601701a23e2254d8aa7b47c4692b4d3ad8ac6408be2075aa259",
+          "bytes": 24351
+        },
+        {
+          "status": "A ",
+          "path": "tests/contracts/kyc-india-mumbai-stack.test.ts",
+          "exists": true,
+          "sha256": "0e92785b2bc1a78a21b345d7ee8c3e9c64fac947c5b5d93e4eea7ba9499fc22d",
+          "bytes": 7515
+        },
+        {
+          "status": "A ",
+          "path": "tests/governance/admitted-theme-v200-source.test.mjs",
+          "exists": true,
+          "sha256": "5fa8d04eaae455e573056b0af6bb50f0178d42aabc5f4abb1fc3d500ee633541",
+          "bytes": 1217
+        },
+        {
+          "status": "M ",
+          "path": "tests/governance/gateway-db-lane.test.mjs",
+          "exists": true,
+          "sha256": "397485493f167b849d64ba6356b2281fec99f68545afbae3b8f55eb57ce8b6c4",
+          "bytes": 30271
+        },
+        {
+          "status": "M ",
+          "path": "tests/governance/gateway-db-lifecycle.test.mjs",
+          "exists": true,
+          "sha256": "1f27067c3413c1a24694924943b220686000fc043b039e64a78d4d38c63eef0f",
+          "bytes": 24614
+        },
+        {
+          "status": "M ",
+          "path": "tests/owned-db/published-storefront-recovery-browser.postgres.test.ts",
+          "exists": true,
+          "sha256": "b9e9d37206ea74a545ca90a6084d4f26361d75e0f0ca7d47e86421c37b3be0df",
+          "bytes": 82651
+        }
+      ],
+      "snapshotBranch": "codex/integration-snapshot-kyc-20261102",
+      "snapshotCommit": "b9f05f02e2e3dc8c70f87a0ffea020f20bcd58ef"
+    }
+  }
+}

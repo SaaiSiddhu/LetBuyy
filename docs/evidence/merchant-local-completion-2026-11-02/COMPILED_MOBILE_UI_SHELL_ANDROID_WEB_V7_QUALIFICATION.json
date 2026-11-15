@@ -1,0 +1,230 @@
+{
+  "at": "2026-11-04T11:43:28.767299+00:00",
+  "status": "PASS_BOUNDED_NATIVE_FUNCTIONAL_WITH_UI_SPACING_FINDING",
+  "fullAppAccepted": false,
+  "source": {
+    "sha256": "93b08cadbd7ec7b420616ac583b67825e69db5b512d413bae3ee0571273426ab",
+    "entries": 7448,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-shell-v12.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-shell-v12-qualified-source",
+    "heldAndTerminalVerified": true
+  },
+  "run": {
+    "runId": "5c8bdb36198b",
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "wallSeconds": 392.2,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "artifact": {
+    "run_id": "5c8bdb36198b",
+    "source_sha256": "80b713590e3182551c1d691532205177f53dd597fe93fe2000dc5c69790f9b28",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v7/qualified-artifact/merchant-local-debug.apk",
+    "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "original_bytes_retained": true,
+    "sha256": "0af61ed268bd42103ee63526e698913d1dbdcb9d5d427b68766b543106b18e5a",
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:57944/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "launcherCleanup": {
+    "at": "2026-11-04T11:38:44.552728+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "nativeUi": {
+    "run_id": "5c8bdb36198b",
+    "original_theme": "Dark",
+    "restored_theme": "Dark",
+    "native_themes": [
+      "Dark",
+      "Light"
+    ],
+    "search_actual_keyboard": true,
+    "segment_actual_keyboard": true,
+    "segment_dirty_back_cancel_retained": true,
+    "segment_choice_applied_to_draft_only": true,
+    "segment_command_submitted": false,
+    "segment_discarded_explicitly": true,
+    "evidence": [
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v7/native-root-navigation-dark.png",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v7/native-root-navigation-light.png",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v7/native-canonical-search-keyboard.png",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v7/native-segment-full-page-keyboard.png",
+      "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v7/native-segment-choice-applied-draft.png"
+    ],
+    "scope": "Compiled normal APK UI only; category effect proof remains in its unchanged paired harness; no new segment effect/websync or iOS acceptance."
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v7-native-root-navigation-dark.png",
+      "sha256": "8e05e735c63c6c7f5432a0f7d465bc344be976b71df8bf9751af6cfb5425f3fa",
+      "visuallyInspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v7-native-root-navigation-light.png",
+      "sha256": "2e5888c6cd19122549ecd5bbc26c011256ff7f11697031da5fd30846619a0d78",
+      "visuallyInspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v7-native-canonical-search-keyboard.png",
+      "sha256": "1b305e7e40344ff226703753e1da92b8e3141c4817c199ed347272b7c05336c1",
+      "visuallyInspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v7-native-segment-full-page-keyboard.png",
+      "sha256": "5ac1102a34edd30049925a7e7e48b909c51927df7ebfb5543cf586f4c034ff30",
+      "visuallyInspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v7-native-segment-choice-applied-draft.png",
+      "sha256": "1810cf7a82406589e46b39c08f50f4e8925304f2911e9822a7aa19b65a4753e0",
+      "visuallyInspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-shell-v7-native-category-web-description-readback.png",
+      "sha256": "120e9b7479c24467dd3c70e6f8f93e1dfa81293d5a16d855fee69530a1544129",
+      "visuallyInspected": true
+    }
+  ],
+  "category": {
+    "webBidirectional": true,
+    "persisted": {
+      "category": {
+        "id": "9da4c113-991e-403b-a466-f7df0768bd77",
+        "name": "Synthetic native renamed cotton",
+        "path": "synthetic-native-cotton",
+        "slug": "synthetic-native-cotton",
+        "level": 0,
+        "version": 3,
+        "store_id": "eebb5b30-6ab0-440b-b567-22b98ec93c21",
+        "image_url": null,
+        "parent_id": null,
+        "created_at": "2026-11-04T11:32:47.676279+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "deleted_by": null,
+        "is_visible": true,
+        "updated_at": "2026-11-04T11:38:27.419144+00:00",
+        "updated_by": "a39f33f8-4d87-4a6f-8a57-68092f50c3e0",
+        "description": "Synthetic web category readback",
+        "display_order": 0,
+        "children_count": 0,
+        "products_count": 2
+      },
+      "receipts": 2,
+      "audits": 2,
+      "outbox": 2,
+      "products": [
+        {
+          "id": "c5725f85-2980-4392-9a94-a906822319e9",
+          "category": "Synthetic native renamed cotton"
+        },
+        {
+          "id": "afe7b784-35e7-454f-b63f-101125213fa9",
+          "category": "Synthetic native renamed cotton"
+        }
+      ],
+      "product_receipts": 2
+    },
+    "receipts": [
+      {
+        "expected_version": 1,
+        "result_version": 2,
+        "payload": {
+          "name": "Synthetic native renamed cotton",
+          "slug": "synthetic-native-cotton",
+          "image_url": null,
+          "parent_id": null,
+          "is_visible": true,
+          "description": null,
+          "display_order": 0
+        }
+      },
+      {
+        "expected_version": 2,
+        "result_version": 3,
+        "payload": {
+          "name": "Synthetic native renamed cotton",
+          "slug": "synthetic-native-cotton",
+          "image_url": null,
+          "parent_id": null,
+          "is_visible": true,
+          "description": "Synthetic web category readback",
+          "display_order": 0
+        }
+      }
+    ],
+    "scope": "Normal local Android and Merchant web category metadata -> Identity/BFF/Gateway/owned PostgreSQL; other features, buyer renderer, hosted/provider/iOS remain separate.",
+    "server": "Actual existing Hono Gateway/BFF source handlers, real owned PostgreSQL/PostgREST and normal production-mode Next Accounts/Merchant; this flow is not compiled Workerd"
+  },
+  "segmentTransportObservation": {
+    "mutations": 0,
+    "meaning": "No segment Save/Preview command submitted by this native diagnostic; no segment effect/web-sync acceptance"
+  },
+  "checks": {
+    "fullFlutter": {
+      "pass": 981,
+      "fail": 1,
+      "skip": 0,
+      "dependency": "DEP-STAFF-01 protected namespace"
+    },
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "block": 0,
+      "skip": 0,
+      "notApplicable": 1
+    },
+    "domainASTPreservation": 35,
+    "analyses": {
+      "app": 0,
+      "uiKit": 0
+    }
+  },
+  "openFindings": [
+    {
+      "id": "UI-SEGMENT-01",
+      "finding": "Native adjacent segment text fields have no vertical separation; persistent labels touch the preceding border. Add composition spacing without changing field validators/rules/units."
+    },
+    {
+      "id": "UI-SEARCH-02",
+      "finding": "Source review: no-match may be rendered during the debounce before a response. Add a positive-response presentation gate; request timing/parameters remain unchanged."
+    }
+  ],
+  "limits": [
+    "No full122-feature or whole-app certification; actual unique surface denominator still under reconciliation.",
+    "Segment native draft/choice/keyboard/Back only; no segment effect, process-death or web synchronization acceptance.",
+    "iOS compile only; no iOS UI, spoken screen-reader, physical performance, hosted/provider or release acceptance.",
+    "Other app-local colors/layouts/legacy cleanup and protected dependencies remain open."
+  ]
+}

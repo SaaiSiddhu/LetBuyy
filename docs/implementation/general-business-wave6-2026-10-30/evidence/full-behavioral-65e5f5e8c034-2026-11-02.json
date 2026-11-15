@@ -1,0 +1,53 @@
+{
+  "status": "FULL_RUN_RED_TWO_FOCUSED_RERUNS_GREEN",
+  "date": "2026-11-02",
+  "sourceCommit": "14ea96ca878500cffc6ab483e42262adb01061cd",
+  "command": "node scripts/governance/test-behavioral.mjs --with-contracts --report /private/tmp/letbuyy-wave6-behavioral-14ea96ca8.json",
+  "fullRun": {
+    "exitCode": 1,
+    "tests": 5746,
+    "pass": 5728,
+    "fail": 3,
+    "skipped": 15,
+    "pure": { "suites": 208, "tests": 3163, "pass": 3148, "fail": 0, "skipped": 15 },
+    "postgres": { "suites": 63, "tests": 320, "pass": 320, "fail": 0, "skipped": 0 },
+    "gatewayDatabase": { "suites": 218, "tests": 1899, "pass": 1896, "fail": 3, "skipped": 0 },
+    "contracts": { "tests": 364, "pass": 364, "fail": 0, "skipped": 0 },
+    "ownedRunner": {
+      "runId": "65e5f5e8c034",
+      "suites": 281,
+      "tests": 2219,
+      "pass": 2216,
+      "fail": 3,
+      "cleanup": { "failures": [], "remaining": { "containers": [], "networks": [], "volumes": [] } }
+    },
+    "failures": [
+      "niche-theme-promotion.postgres: admitted 2.0.0 source provenance mismatch, beginning at pnpm-lock.yaml; separate historical theme gate remains red",
+      "storefront-customer-profile.postgres: Playwright execution context destroyed during a cross-tab navigation, after signed-in buyer/API controls passed",
+      "core-catalog-refresh.postgres: current catalog footer from migration 426 was compared with the deliberately frozen pre-426 factory"
+    ]
+  },
+  "focusedReruns": [
+    {
+      "suite": "core-catalog-refresh.postgres",
+      "sourceChange": "The assertion compares migration 426's exact source footer with the frozen factory and its exact target footer with the migrated catalog; all other sections retain factory comparison.",
+      "runId": "02cc9db7fd61",
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": { "failures": [], "remaining": { "containers": [], "networks": [], "volumes": [] } }
+    },
+    {
+      "suite": "storefront-customer-profile.postgres",
+      "sourceChange": "None; exact browser suite rerun to distinguish a navigation race from a repeatable failure.",
+      "runId": "500eac391f47",
+      "tests": 12,
+      "pass": 12,
+      "fail": 0,
+      "skipped": 0,
+      "cleanup": { "failures": [], "remaining": { "containers": [], "networks": [], "volumes": [] } }
+    }
+  ],
+  "qualification": "The full-run result remains red. Focused reruns do not establish a green full gate. The 15 skips are explicit human/provider gates; theme 2.0 provenance, real FUCOMES test charge and statement, India-only AWS intake/scanning, KYC provider approval, hosted/custom-domain/device acceptance, and production gates remain open."
+}

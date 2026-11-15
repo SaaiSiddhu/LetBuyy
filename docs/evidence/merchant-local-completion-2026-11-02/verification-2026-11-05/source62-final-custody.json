@@ -1,0 +1,10 @@
+{
+  "source_sha256": "8e2b9f6b03ff9ea79a70dd6cd0c17f2af00bd10eafac03df6119d8ba08c4b5a4",
+  "entries": 8487,
+  "source62_all_inputs_equal": true,
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "branch": "codex/merchant-mobile-parity",
+  "temporary_trace_absent": true,
+  "owned_jobs_terminal": true,
+  "scoped_device_state": "native88-final-device-state.json"
+}

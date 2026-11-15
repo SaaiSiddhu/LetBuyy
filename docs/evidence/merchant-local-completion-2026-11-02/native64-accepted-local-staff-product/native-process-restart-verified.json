@@ -1,0 +1,11 @@
+{
+  "run_id": "84dbe0869504",
+  "before_pid": 15921,
+  "after_pid": 18144,
+  "force_stop_absence": true,
+  "products_tab_visible": true,
+  "saved_beta_visible": true,
+  "evidence": [
+    "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v64/native-beta-restart-selection.png"
+  ]
+}

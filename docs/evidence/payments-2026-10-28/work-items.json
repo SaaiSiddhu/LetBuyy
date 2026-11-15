@@ -21,7 +21,7 @@
       "id": "A03",
       "work": "Resolve managed vs merchant account UI labels",
       "status": "IMPLEMENTED_LOCAL",
-      "evidence_or_next": "Two choices; managed unavailable without provider approval; no PA ownership claim."
+      "evidence_or_next": "2 November: own-account and explicit LetBuyy-managed sandbox choices implemented locally. The platform test account was verified through genuine plan and storefront payments; live managed approval remains absent. See EXECUTION.md managed sandbox follow-up."
     },
     {
       "id": "A04",
@@ -375,7 +375,7 @@
       "id": "G04",
       "work": "Hosted staging browser/provider journey",
       "status": "NOT_OBSERVED",
-      "evidence_or_next": "No hosted staging or real provider acceptance under this programme."
+      "evidence_or_next": "Hosted staging is still unobserved. The 2 November isolated local candidate passed genuine Razorpay sandbox plan and HTTPS storefront collection journeys; this does not establish hosted staging acceptance."
     },
     {
       "id": "G05",

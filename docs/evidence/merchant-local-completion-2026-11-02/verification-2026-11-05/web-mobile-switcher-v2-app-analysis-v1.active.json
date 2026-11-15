@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-06T05:42:53.021173+00:00",
+  "supervisor_pid": 85377,
+  "source": "web-mobile-switcher-source-v2",
+  "source_sha256": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "RUNNING",
+  "child_pid": 85379
+}

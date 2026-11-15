@@ -1,0 +1,51 @@
+{
+  "status": "source-local-artifacts-qualified-hosted416-unapproved",
+  "sourceRevision": "e8d1ac3c177775606378487378f665cac8013536",
+  "supersedesNativeArtifactIn": "CSV_IMPORT_QUALIFICATION.json",
+  "priorQualifiedBackendWebRevision": "9bffaca702c579ee675530a5242dd416d1059617",
+  "backendWebSchemaBuildInputsIdentical": true,
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "merchantFlutter": 786,
+  "merchantAnalysis": "clean",
+  "newNativeTests": [
+    "toolbar, overflow and empty import entries use one CSV workspace",
+    "catalog readback on return without a success flag",
+    "old-store return never reloads a retired store",
+    "live capability denial clears private content and retains original recovery intent",
+    "available-panel grid sizing has no overflow"
+  ],
+  "privateDenialBaseline": {
+    "revision": "9bffaca702c579ee675530a5242dd416d1059617",
+    "privateRowPersistsAfter403": true,
+    "log": "csv-import-native-denial-before-v2-20261102.log",
+    "sourceRestored": true,
+    "unchangedTestSha256": "12e8bc4022e9ae8436296460aa277a998d76eaa1b4bbf9b1e054e3455aee571a"
+  },
+  "native": {
+    "builtSourceRevision": "e8d1ac3c177775606378487378f665cac8013536",
+    "bytes": 219944828,
+    "sha256": "b55efe36ba368963e156c3e3ad49021378d2f917dce9cc10cabe3dd1681b3273",
+    "interFontAssets": 9,
+    "fontBytesMatchSource": true,
+    "fontLicenseVerified": true,
+    "turnstileTokenIsExistingNoncredentialHumanRequiredSentinel": true,
+    "otherTokenOrSecretDefinesEmpty": true,
+    "testFilesPackaged": false,
+    "csvWidgetFixtureOrOwnedDeviceEntrypointInKernel": false,
+    "configuredStagingBffAccountsAdminUrlsInKernel": true,
+    "installed": false,
+    "signing": "debug",
+    "hostedAcceptance": false
+  },
+  "otherRuntimeArtifactsAndDatabaseEvidence": "CSV_IMPORT_QUALIFICATION.json (native row superseded; other runtime inputs identical)",
+  "staging416Activated": false,
+  "normal415EmulatorUnchanged": true,
+  "productionActivation": false,
+  "all122Accepted": false
+}

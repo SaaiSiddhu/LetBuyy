@@ -1,0 +1,12 @@
+{
+  "stage": "gateway-db-lane",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "source_sha256": "24650e42a918adc8d2a6fada709de8753049c99bc1b2fcc5ad555e4069564a2e",
+  "command": [
+    "node",
+    "--test",
+    "tests/governance/gateway-db-lane.test.mjs"
+  ],
+  "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy"
+}

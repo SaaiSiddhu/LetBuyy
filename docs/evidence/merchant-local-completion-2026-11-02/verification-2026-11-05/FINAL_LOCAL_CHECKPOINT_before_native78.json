@@ -1,0 +1,63 @@
+{
+  "at": "2026-11-06T18:42:00.990623+00:00",
+  "status": "SOURCE53_LOCAL_BACKEND_GATES_PASS;NATIVE_INTEGRATION_PENDING;FULL122_OPEN",
+  "source_sha256": "8d91014727d143e0fce8e1ee5e3dc578c1d4c89f5cafc0eaaca0e50c14e6286a",
+  "source_inputs": 8484,
+  "source_manifest": "merchant-media-atomic-source-v53.source.json",
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "branch": "codex/merchant-mobile-parity",
+  "native_readback": "native74-independent-readback.json",
+  "custody_readback": "native74-cold-custody-readback.json",
+  "native_run": "54ecf4a294b8",
+  "apk_sha256": "7ba46ca33e36e35274bf847ae28c57f2425e5bb1b0c6ccfcb3613fb7b793c1c1",
+  "installed_bytes_independently_equal": true,
+  "cleanup": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "full_flutter": {
+    "pass": 1656,
+    "fail": 0,
+    "skip": 0,
+    "source": "source43, exact app/Dart bytes in44"
+  },
+  "analysis_issues": 0,
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "web_typecheck": "PASS",
+  "root_contracts": {
+    "pass": 408,
+    "fail": 0
+  },
+  "source_frozen": true,
+  "active_session": 95840,
+  "active": "Private KYC actual-owned regression before Native77oncurrent53. Broad source53gates PASS; newroot Media12PASS.",
+  "next": [
+    "Collect owned Media failure tests and repair confirmed canonical-writer defects.",
+    "Repeat relevant local gates for changes; preserve accepted44 runtime snapshot.",
+    "Continue119applicable feature traces/journeys with independent acceptance."
+  ],
+  "full_feature_set_accepted": false,
+  "programme": {
+    "applicable_open": 119,
+    "excluded": [
+      120,
+      121
+    ],
+    "paused": [
+      122
+    ],
+    "frozen": [
+      51
+    ],
+    "unique_surface_denominator": null
+  },
+  "limits": "Synthetic local only; private test R2 does not certify India/provider KYC. No current iOS runtime, physical device, provider delivery, signed release or production certification.",
+  "runtime_reuse": "media-atomic-v51-scoped-runtime-reuse.json",
+  "root_suite": "tests/owned-db/merchant-media-commands-workerd.postgres.test.ts",
+  "report": "media-atomic-v53-local-readback.json"
+}

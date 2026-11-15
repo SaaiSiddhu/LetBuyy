@@ -200,7 +200,6 @@ export default async function CheckoutOriginPage({
             {verified.presentation?.paymentMode === 'sandbox' ? <p role="status" className="mx-auto max-w-5xl px-4 py-3 text-sm text-theme-secondary">Razorpay test mode — payments are simulated. No real money will be charged.</p> : null}
             <CheckoutClient
                 storeId={store.id}
-                sellerId={store.sellerId}
                 subdomain={store.subdomain}
                 storeName={store.name}
                 codEnabled={store.codEnabled !== false}

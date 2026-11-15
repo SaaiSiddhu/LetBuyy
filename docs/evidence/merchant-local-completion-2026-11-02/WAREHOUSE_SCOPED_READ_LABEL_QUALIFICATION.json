@@ -1,0 +1,144 @@
+{
+  "status": "LOCALLY_ACCEPTED_BOUNDED_WAREHOUSE_SCOPED_READS_AND_NATIVE_WEB_STOCK_JOURNEY",
+  "source": {
+    "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "snapshotSha256": "23b83f0f827178f495923b9cb9e07ddb48ff423179cdbdb34441461fb99cdad6",
+    "entries": 7414,
+    "verifiedUnchangedAfterTerminal": true,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-labels-v2-qualified-source"
+  },
+  "finding": "Actual Android cards showed generic Product labels and raw location IDs. Existing list/detail reads omitted bounded product, variant and location relations; passthrough schemas did not reject injected foreign relation labels.",
+  "repair": [
+    "Existing Gateway PO/transfer list/detail now select minimal product, variant and location references using existing FKs.",
+    "Canonical TS/Dart contracts bind referenced IDs, site and variant product before presenting any label.",
+    "Web and native receipt review/card presentation use current scoped names and variant SKU; missing/deleted historical references have explicit states.",
+    "Private read enrichment never rewrites existing immutable command receipts."
+  ],
+  "negative": {
+    "runId": "379a4848a5c1",
+    "tests": 3,
+    "pass": 0,
+    "fail": 3,
+    "skip": 0,
+    "fixture": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-labels-negative-original-test.ts",
+    "fixtureSha256": "06425986318c7e2a5a1dc93540dfcf13f37c1092a8de81edfc49fcf73b60a6ca",
+    "notes": "Actual creates201 and reads200 established positive controls. Missing relation assertions failed; an injected foreign product label was returned200 before repair. First sandbox-only attempt d9208fd23756 ran0tests due Docker access and is infrastructure evidence only."
+  },
+  "database": {
+    "originalCases": {
+      "runId": "07af8505f012",
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    "expandedVariantAndAllReadBoundaryCases": {
+      "runId": "f8229f004555",
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "skip": 0
+    },
+    "coverage": "Actual selected variant rows/joins, both list/detail endpoints, product ID/site, variant ID/parent and location ID/site refusals; explicit null historical relations; exact original receipt rows unchanged. Internal signed synthetic owner assertions, not browser/native authentication proof.",
+    "cleanup": "Both owned runners empty;0failures."
+  },
+  "tests": {
+    "gatewayUnits": {
+      "pass": 2070,
+      "fail": 0,
+      "skip": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-labels-full-gateway-unit-v2.log"
+    },
+    "sharedDartFocused": {
+      "pass": 60,
+      "fail": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-labels-dart-v2.log"
+    },
+    "nativeFocused": {
+      "pass": 35,
+      "fail": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-labels-native-widget-v2.log"
+    },
+    "nativeFull": {
+      "pass": 922,
+      "fail": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-labels-full-mobile-v2.log"
+    },
+    "webFullPhases": [
+      594,
+      818,
+      295,
+      13
+    ],
+    "types": "shared build/Gateway/Merchant web/TS SDK exited0; Flutter analysis clean.",
+    "nonOverlappingFeatureCount": false,
+    "sharedDartFull": {
+      "pass": 109,
+      "fail": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-labels-full-models-v1.log"
+    },
+    "bff": {
+      "pass": 28,
+      "fail": 0,
+      "skip": 0,
+      "typesExit": 0,
+      "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/warehouse-labels-bff-tests-v1.log"
+    }
+  },
+  "preservedFailures": [
+    "Dart malformed-JSON fixture maps initially inferred String values and rejected int mutation before parser. Explicit dynamic test maps corrected; no production-validation relaxation.",
+    "Focused UI broad SKU selector initially matched the new behind-dialog card too; corrected to active AlertDialog.",
+    "Full mobile old raw-ID expectation failed; explicit historical missing-state expectation replaced it.",
+    "Full Gateway unit launcher sandbox EPERM ran0tests; scoped local-IPC execution passed."
+  ],
+  "pending": [
+    "Combined transfer/customer reservation defect confirmed in separate6947c206da30; repair awaits explicit stock-timing choice.",
+    "Broader warehouse permutations and feature programme remain open."
+  ],
+  "limits": [
+    "No new migration or command behavior changes in this slice.",
+    "Combined canonical checkout reservation and transfer-hold semantics remain separate open work.",
+    "No hosted/provider/iOS/signing/release/full122 certification."
+  ],
+  "governance": {
+    "run": "governance-category-capsule-v13",
+    "exit": 0,
+    "pass": 114,
+    "notApplicable": 1,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "report": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v13.gate.json",
+    "scope": "Exact source in task-owned disposable clone; no integration/release claim."
+  },
+  "nativeWeb": {
+    "runId": "3acddf6ca92e",
+    "runnerExit": 0,
+    "uiExit": 0,
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0,
+    "wallSeconds": 518.6,
+    "apkSha256": "1561ad8e7049012deb841054aabd934e498eb57c000fd2637fb1f86cc04bdfc6",
+    "installedReadback": true,
+    "originalArtifact": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v11/qualified-artifact/merchant-local-debug.apk",
+    "evidenceRoot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v11",
+    "visibleChecks": [
+      "Normal web PO destination and receipt-dialog product name.",
+      "Normal web transfer source/destination and receipt-dialog product name.",
+      "Native final received PO and transfer cards show scoped product/location names; screenshots inspected."
+    ],
+    "stock": "Final available2+2,reserved0,incoming0,11warehouse receipts; original partial receipt row unchanged.",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "runtime": "Actual local Android debug APK + production-mode local Accounts/Merchant Next + Node BFF/Gateway modules + owned realPG/PostgREST. No compiled Workerd phone claim."
+  }
+}

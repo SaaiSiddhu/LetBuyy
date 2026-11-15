@@ -1,0 +1,42 @@
+{
+  "at": "2026-11-05T06:28:42.336424+00:00",
+  "status": "FAILED_COMPOUND_NATIVE_RUN_RECEIPT_FIELD_FOCUS_DIAGNOSTIC_NOT_ACCEPTED",
+  "run_id": "b288d9ca56c1",
+  "runner_exit": 1,
+  "controller_exit": 1,
+  "tests": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "cancelled": 0
+  },
+  "wall_seconds": 492.2,
+  "source_sha256": "11e1ba4a435cc492137c2ca15c4edc809bad1fc22656a0f5757ebcd23b7bc4e7",
+  "native_inputs_match_broad": 4821,
+  "external_inputs_match": 4,
+  "apk_sha256": "2ac471b0d381792217ee053bfc5af782778c5544279f43414888ec49cb669e4b",
+  "installed_apk_matches": true,
+  "owned_resources_empty": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "reverse_restored": [],
+  "forward_preserved": [
+    [
+      "emulator-5580",
+      "tcp:52367",
+      "localabstract:chrome_devtools_remote"
+    ]
+  ],
+  "fixture_ports_clear": true,
+  "awake_retired": true,
+  "observed_not_complete_acceptance": [
+    "Normal PKCE return; native location committed-reply-loss/restart/original retry; supplier create",
+    "Normal web metadata read/create and native current read; strict existing profile acknowledgement",
+    "PO create progressed to real receipt editor; no receipt quantity sent when focus unconfirmed"
+  ],
+  "failure": "Controller refused quantity input because Android focus flag/text could not be confirmed. App versus selector not yet determined. Fixture force-stopped owned app in finally; later read-only receipt observations therefore correctly refused current-surface admission.",
+  "next": "Preserve diagnostic; improve controller-only safe pre/post-focus recording before next run; fix measured UI status contrast after source unfreeze. No backend changes.",
+  "limits": "No stock/transfer/setter/fullfeature/hosted/provider/iOS/release acceptance from failed compound test."
+}

@@ -7,17 +7,21 @@ import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const script='scripts/liquid-parity/build-letbuyy-core-bundle.mjs';
+const footerScript='scripts/liquid-parity/build-core-public-contact-footer.mjs';
 const migration='database/supabase/migrations/368_core_section_catalog_refresh.sql';
 const rollback='database/supabase/rollback/368_core_section_catalog_refresh.rollback.sql';
+const footerMigration='database/supabase/migrations/430_core_public_contact_footer.sql';
+const footerRollback='database/supabase/rollback/430_core_public_contact_footer.rollback.sql';
 const historical='database/supabase/migrations/200_letbuyy_core_liquid_bundle_attach.sql';
 const seed='database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json';
 function fixture(){
  const dir=mkdtempSync(resolve(tmpdir(),'letbuyy-core-generator-'));
- for(const path of [script,migration,rollback,historical,seed]){mkdirSync(dirname(resolve(dir,path)),{recursive:true});writeFileSync(resolve(dir,path),readFileSync(resolve(root,path)));}
+ for(const path of [script,footerScript,migration,rollback,footerMigration,footerRollback,historical,seed]){mkdirSync(dirname(resolve(dir,path)),{recursive:true});writeFileSync(resolve(dir,path),readFileSync(resolve(root,path)));}
  mkdirSync(resolve(dir,'packages'),{recursive:true});symlinkSync(resolve(root,'packages/theme-engine'),resolve(dir,'packages/theme-engine'),'dir');symlinkSync(resolve(root,'node_modules'),resolve(dir,'node_modules'),'dir');
  return dir;
 }
 function run(dir,args=[]){return execFileSync(process.execPath,['--import','tsx',resolve(dir,script),...args],{cwd:dir,encoding:'utf8',stdio:['ignore','pipe','pipe']});}
+function runFooter(dir,args=[]){return execFileSync(process.execPath,['--import','tsx',resolve(dir,footerScript),...args],{cwd:dir,encoding:'utf8',stdio:['ignore','pipe','pipe']});}
 test('Core regeneration checks current artifact and preserves historical migration200 bytes',()=>{
  const dir=fixture();try{
   const before=readFileSync(resolve(dir,historical),'utf8'),a=readFileSync(resolve(dir,migration),'utf8');
@@ -30,5 +34,18 @@ test('Core generator refuses an altered accepted migration before changing any a
   const before=readFileSync(resolve(dir,seed),'utf8'),old=readFileSync(resolve(dir,historical),'utf8');writeFileSync(resolve(dir,migration),'-- synthetic reviewed different migration\n');
   assert.throws(()=>run(dir),error=>String(error.stderr).includes('Refusing to rewrite accepted migration'));
   assert.equal(readFileSync(resolve(dir,seed),'utf8'),before);assert.equal(readFileSync(resolve(dir,historical),'utf8'),old);
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
+test('public-contact footer generator checks its paired migration and refuses accepted-history edits',()=>{
+ const dir=fixture();try{
+  const historicalBefore=readFileSync(resolve(dir,historical),'utf8');
+  assert.equal(JSON.parse(runFooter(dir,['--check'])).check,true);
+  const accepted=readFileSync(resolve(dir,footerMigration),'utf8');
+  writeFileSync(resolve(dir,footerMigration),'-- synthetic altered accepted migration\n');
+  assert.throws(()=>runFooter(dir),error=>String(error.stderr).includes('Refusing to rewrite accepted migration'));
+  assert.equal(readFileSync(resolve(dir,footerRollback),'utf8'),readFileSync(resolve(root,footerRollback),'utf8'));
+  assert.equal(readFileSync(resolve(dir,historical),'utf8'),historicalBefore);
+  writeFileSync(resolve(dir,footerMigration),accepted);
+  assert.equal(JSON.parse(runFooter(dir,['--check'])).check,true);
  }finally{rmSync(dir,{recursive:true,force:true});}
 });

@@ -1,5 +1,6 @@
 'use client'
 
+import { PRODUCT_IMAGE_LIMIT } from '@letbuyy/commerce-core'
 import {
     type VariantOption,
     type VariantRow,
@@ -36,6 +37,8 @@ import { ApparelFactsEditor } from '@/components/products/ApparelFactsEditor'
 import { composeProductMetadata, readProductFactsDraft, resolveProductGiftImages } from '@/lib/product-facts-draft'
 
 import { useReadRequest } from '@/lib/api/use-read-request'
+import { MediaRecoveryNotice, useMediaUploadTarget } from '@/components/media/MediaRecoveryProvider'
+import { MediaLibrary } from '@/components/theme-editor/controls/MediaLibrary'
 import { getStorefrontRootDomain } from '@/lib/public-urls'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -106,6 +109,8 @@ function CheckboxControl({
 export default function AddProductPage() {
     const { store, productId } = useParams<{ store: string; productId?: string }>()
     const { actorId } = useMerchantSecurityContext(store)
+    const mediaUpload = useMediaUploadTarget(store, `${store}:${productId ?? 'new'}`)
+    const [libraryOpen, setLibraryOpen] = useState(false)
     const router = useRouter()
     const { notify } = useToast()
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -306,14 +311,19 @@ export default function AddProductPage() {
     }, [recoverySignature, pendingStorageKey, scopeKey])
 
     const updateProductImages = useCallback((update: (previous: string[]) => string[]) => {
+        if (!requestLifecycle.current.mounted || activeScope.current !== scopeKey) return false
         const before = latestProductDraft.current
         const next = update(before.images)
+        // Retained oversized drafts can still be reduced or reordered. Never
+        // truncate their media or begin growing beyond the canonical API bound.
+        if (next.length > PRODUCT_IMAGE_LIMIT && next.length > before.images.length) return false
         const resolved = resolveProductGiftImages(before.nicheFacts, productMetadataRef.current, before.giftMediaImageOrder, next)
         setImages(next)
         setNicheFacts(resolved.value)
         setGiftMediaImageOrder(resolved.imageOrder)
         latestProductDraft.current = { ...before, images: next, nicheFacts: resolved.value, giftMediaImageOrder: resolved.imageOrder }
-    }, [])
+        return true
+    }, [scopeKey])
 
     const updateProductFacts = (next: string) => {
         const order = next === '' || resolvedGiftDraft.issue ? '' : JSON.stringify(images)
@@ -522,53 +532,42 @@ export default function AddProductPage() {
     }
 
     const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files
-        if (!files || files.length === 0) return
-
-        setUploading(true)
-        const newImages: string[] = []
-        const failures: string[] = []
-
-        for (const file of Array.from(files)) {
-            const formData = new FormData()
-            formData.append('file', file)
-
-            try {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/upload`, {
-                    method: 'POST',
-                    body: formData,
-                })
-                const payload = await response.json().catch(() => null)
-
-                if (response.ok && payload?.data?.url) {
-                    newImages.push(payload.data.url)
-                } else {
-                    failures.push(file.name)
-                }
-            } catch {
-                failures.push(file.name)
-            }
-        }
-
-        if (newImages.length > 0) {
-            updateProductImages((prev) => [...prev, ...newImages])
-            notify({
-                title: newImages.length === 1 ? 'Image uploaded' : 'Images uploaded',
-                description: 'Save the product to keep these media changes.',
-                variant: 'success',
-            })
-        }
-
-        if (failures.length > 0) {
-            notify({
-                title: 'Some images could not upload',
-                description: failures.slice(0, 3).join(', '),
-                variant: 'warning',
-            })
-        }
-
-        setUploading(false)
+        const files = Array.from(event.target.files ?? [])
         event.target.value = ''
+        if (!files.length || mediaUpload.blocked) return
+        const generation = requestLifecycle.current.generation
+        const current = () => requestLifecycle.current.mounted && requestLifecycle.current.generation === generation && activeScope.current === scopeKey
+        if (!current()) return
+        const remaining = Math.max(0, PRODUCT_IMAGE_LIMIT - latestProductDraft.current.images.length)
+        if (files.length > remaining) {
+            notify({ title: remaining ? 'Choose fewer images' : 'Image limit reached', description: `This product can accept ${remaining} more image${remaining === 1 ? '' : 's'}. Products support up to ${PRODUCT_IMAGE_LIMIT} images.`, variant: 'warning' })
+            return
+        }
+        setUploading(true)
+        try {
+            for (const file of files) {
+                const asset = await mediaUpload.upload(file)
+                if (!current()) return
+                if (!updateProductImages(previous => [...previous, asset.url])) {
+                    notify({ title: 'Image saved to Media library', description: `This product already has ${PRODUCT_IMAGE_LIMIT} images. Remove an image before attaching another.`, variant: 'warning' })
+                    return
+                }
+            }
+            if (current()) notify({ title: 'Images added', description: 'Save the product to keep these media changes.', variant: 'success' })
+        } catch (error) {
+            if (current()) notify({ title: 'Media needs confirmation', description: error instanceof Error ? error.message : 'Confirm the saved request before another upload.', variant: 'warning' })
+        } finally { if (current()) setUploading(false) }
+    }
+
+    const selectLibraryImage = (url: string) => {
+        if (!requestLifecycle.current.mounted || activeScope.current !== scopeKey) return
+        if (latestProductDraft.current.images.includes(url)) {
+            notify({ title: 'Image already attached', description: 'Choose another image from the library.', variant: 'warning' })
+            return
+        }
+        if (!updateProductImages(previous => [...previous, url])) {
+            notify({ title: 'Image limit reached', description: `Products support up to ${PRODUCT_IMAGE_LIMIT} images. Remove an image before adding another.`, variant: 'warning' })
+        }
     }
 
     const removeImage = (index: number) => {
@@ -965,13 +964,17 @@ export default function AddProductPage() {
 
                     <Card>
                         <div className="space-y-[var(--lb-space-4)] p-[var(--lb-space-4)]"><ApparelFactsEditor value={apparelFacts} onChange={setApparelFacts} /><NicheFactsEditor key={scopeKey} value={currentSnapshot.nicheFacts} metadata={productMetadataRef.current} onChange={updateProductFacts} resources={{ images, variantOptions }} disabled={loadingProduct || editBlocked || contextChanged} giftMediaIssue={resolvedGiftDraft.issue} onConfirmGiftMedia={() => setGiftMediaImageOrder(JSON.stringify(images))} /></div>
-                        <Section title="Media" description="Upload images that help shoppers inspect the product.">
+                        <Section title="Media" description={images.length > PRODUCT_IMAGE_LIMIT ? `This product has ${images.length} retained images. Remove at least ${images.length - PRODUCT_IMAGE_LIMIT} before saving.` : `${images.length} of ${PRODUCT_IMAGE_LIMIT} images. The first image is the primary image.`}>
+                            <MediaRecoveryNotice store={store} />
+                            <Button variant="secondary" disabled={uploading || mediaUpload.blocked || images.length >= PRODUCT_IMAGE_LIMIT} onClick={() => setLibraryOpen(true)}>Browse image library</Button>
+                            {libraryOpen && <MediaLibrary storeName={store} mediaType="image" onClose={() => setLibraryOpen(false)} onSelect={selectLibraryImage} />}
                             <Input unstyled
                                 ref={fileInputRef}
                                 type="file"
                                 accept="image/*"
                                 multiple
                                 className="hidden"
+                                disabled={uploading || mediaUpload.blocked || images.length >= PRODUCT_IMAGE_LIMIT}
                                 onChange={handleImageUpload}
                             />
 
@@ -1013,7 +1016,7 @@ export default function AddProductPage() {
                                             variant="primary"
                                             onClick={() => fileInputRef.current?.click()}
                                             loading={uploading}
-                                            disabled={uploading}
+                                            disabled={uploading || mediaUpload.blocked}
                                         >
                                             <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                             {uploading ? 'Uploading' : 'Upload media'}
@@ -1028,7 +1031,7 @@ export default function AddProductPage() {
                                     variant="secondary"
                                     onClick={() => fileInputRef.current?.click()}
                                     loading={uploading}
-                                    disabled={uploading}
+                                    disabled={uploading || mediaUpload.blocked || images.length >= PRODUCT_IMAGE_LIMIT}
                                 >
                                     <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                     {uploading ? 'Uploading' : 'Upload more media'}
@@ -1096,6 +1099,7 @@ export default function AddProductPage() {
                                 <>
                                     <Input
                                         label="Quantity"
+                                        helperText="Available for sale. Existing reservations remain held. Saved variants retire only after all stock and open work are cleared; order, price and inventory history is kept."
                                         type="number"
                                         min="0"
                                         value={quantity}
@@ -1296,7 +1300,7 @@ export default function AddProductPage() {
 
                         {/* Variant matrix — auto-generated from option combos */}
                         {variantMatrix.length > 0 && (
-                            <Section title="Variant combinations" description="Edit price, SKU, and stock for each combination.">
+                            <Section title="Variant combinations" description="Edit price, SKU, and quantity available for sale for each combination. Existing reservations remain held. Saved variants retire only after all stock and open work are cleared; order, price and inventory history is kept.">
                                 <div className="overflow-x-auto">
                                     <Table className="w-full text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]">
                                         <thead>
@@ -1373,7 +1377,8 @@ export default function AddProductPage() {
                                                         <Button
                                                             unstyled
                                                             type="button"
-                                                            aria-label={`Remove variant ${row.title}`}
+                                                            aria-label={`${row.id ? 'Retire' : 'Remove'} variant ${row.title}`}
+                                                            title={row.id ? 'Retire on save; stock and open work must be cleared. History is preserved.' : 'Remove this unsaved variant'}
                                                             onClick={() => setVariantMatrix((prev) => prev.filter((_, i) => i !== rowIndex))}
                                                             className="text-[var(--lb-color-text-subdued)] hover:text-[var(--lb-color-critical)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                                         >

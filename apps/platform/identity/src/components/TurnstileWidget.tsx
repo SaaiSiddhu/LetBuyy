@@ -15,5 +15,7 @@ function canUseClientDevAuthBypass(): boolean {
 export default forwardRef<TurnstileHandle, Props>(function TurnstileWidget(props, ref) {
     return <SharedTurnstileWidget {...props} ref={ref}
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+        localSdkUrl={process.env.NEXT_PUBLIC_ENV === 'development'
+            ? process.env.NEXT_PUBLIC_LOCAL_CHALLENGE_SDK_URL : undefined}
         developmentBypass={canUseClientDevAuthBypass()} />;
 });

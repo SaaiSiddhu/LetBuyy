@@ -1,0 +1,151 @@
+{
+  "status": "CURRENT_SOURCE_LOCAL_DATABASE_AND_STRUCTURAL_GATES_PASS",
+  "source_sha256": "f501e0749318a4dcc49f089a128efb8f7d523d0873b54ce8f3506f1dcc251c0f",
+  "sourceHeldAndVerifiedAfterBothGates": true,
+  "database": {
+    "runId": "57e2061fdcdf",
+    "tests": 96,
+    "passed": 96,
+    "failed": 0,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "suites": [
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/collection-list-read.postgres.test.ts",
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/collection-membership.postgres.test.ts",
+        "passed": 19,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/collection-population-filters.postgres.test.ts",
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/collection-text-normalization.postgres.test.ts",
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/final-tenant-table-access.postgres.test.ts",
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/merchant-auth-admission.postgres.test.ts",
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-auth.postgres.test.ts",
+        "passed": 14,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/merchant-smart-collections.postgres.test.ts",
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/pooled-tenant-context.postgres.test.ts",
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/saved-trial-entitlements.postgres.test.ts",
+        "passed": 14,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/smart-collection-preview.postgres.test.ts",
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/storefront-collection-discovery.postgres.test.ts",
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "path": "services/api-gateway/src/__tests__/owned-db/unified-collection-authority.postgres.test.ts",
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "governance": {
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "ok": true,
+    "exitCode": 0,
+    "problems": [],
+    "clone": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v7",
+    "preliminaryChecks": [
+      {
+        "check": "install",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v7.install.log"
+      },
+      {
+        "check": "shared-build",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v7.shared-build.log"
+      },
+      {
+        "check": "sdk-typecheck",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v7.sdk-typecheck.log"
+      },
+      {
+        "check": "contracts-provider",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v7.contracts-provider.log"
+      },
+      {
+        "check": "web-recovery",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v7.web-recovery.log"
+      },
+      {
+        "check": "governance-regression",
+        "exit": 0,
+        "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v7.governance-regression.log"
+      }
+    ],
+    "advisoryCount": 211,
+    "advisoriesByValidator": {
+      "branch-dispositions-validator.mjs": 211
+    },
+    "advisoryLimit": "Branch dispositions/history are not measurable for missing local develop/staging/main and other clone refs; no branch integration/release claim."
+  },
+  "scope": "96 overlapping database tests and114 structural validators do not certify all122 features, real providers, devices or release. Do not sum them into feature acceptance."
+}

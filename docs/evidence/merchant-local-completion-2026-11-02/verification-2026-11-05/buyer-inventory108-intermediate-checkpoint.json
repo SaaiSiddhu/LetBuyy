@@ -1,0 +1,12 @@
+{
+  "source107": "7c53dd86914c22c858659c420bbff8cf5efbd09441123b5f04c9accf9e864769",
+  "source108": "a58950a138af458340680ce7f2736897ef01cce3d7b93834364702ad14168f71",
+  "core_inputs": 8534,
+  "status": "UNACCEPTED; preserve all failures",
+  "source107_unit_initial": "6pass13fail; wrong tsx project aliases; corrected run19pass",
+  "source107_types": "Commerce and Gateway exit0, explicit terminal receipts types2",
+  "source107_owned": "initial commands not observed launched; owned2 refused before DB because new suite absent from reviewed inventory",
+  "source108_unit": "33pass0fail",
+  "source108_owned": "21pass4fail. New positive buyer projections5pass, catalog10pass; 440 rollback test ACL array cast fails,438 predecessor catalog profile fails after unwind and subsequent tests inherit missing440 state. No guard weakened.",
+  "next": "Schema-only in-DB roundtrip metadata comparison, retain original strict438 guard; correct test cast then fresh source cohort."
+}

@@ -1,0 +1,23 @@
+{
+  "source_manifest": "merchant-media-atomic-source-v53",
+  "source_sha256": "8d91014727d143e0fce8e1ee5e3dc578c1d4c89f5cafc0eaaca0e50c14e6286a",
+  "changes": "Repeat all accepted74normal Android/browser assertions on53canonical atomic Media backend. Only evidence/run/source admission paths change; no flow, selector, fault, storage/receipt, permissions, conservation or cleanup assertion weakens.75/76were prepared but never launched because prior source gates had not passed.",
+  "inputs": [
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-switcher-staff-v77-local-android.postgres.test.ts",
+      "sha256": "9464a436a7226ea8249d10e3287f8f73f0bf007b5de44c05a0a0fd5892b8ff6a"
+    },
+    {
+      "path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/android-switcher-staff-v77.py",
+      "sha256": "e353a88dedff99ed1a0393667a29f77b6fcf1c2bf068f46c598d8158d3646b05"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/run-switcher-v77.py",
+      "sha256": "4b0a1369366fdeaa919c3348998976faccc1c99dbb277dcf003dc897132415bc"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/android-device-receipt-switcher-v77.json",
+      "sha256": "56f9f055ec0af99b12531cff097f408c34744618d76a8f79d0398a9866b0b1aa"
+    }
+  ]
+}

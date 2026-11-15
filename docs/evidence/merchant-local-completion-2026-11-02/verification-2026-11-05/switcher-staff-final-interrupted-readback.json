@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-06T02:49:45.536095+00:00",
+  "status": "INTERRUPTED_NO_FINAL_RESULT",
+  "supervisor_pid": 50512,
+  "full_test_supervisor_pid": 50576,
+  "full_test_child_pid": 50581,
+  "process_readback": "Exact supervisor and Flutter children absent after developer turn interruption. No governance/build steps began.",
+  "analysis": "0issues collected terminal",
+  "full_flutter": "Log ended at +874 without test summary or terminal receipt. Not accepted.",
+  "source_sha256": "c96fe01633febc47aa5d4c9d0f59fc9d805c6a69fff9e99faeb882be5bd547db"
+}

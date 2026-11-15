@@ -1,0 +1,12 @@
+{
+  "source_sha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+  "files": {
+    "apps/merchant/mobile/lib/screens/settings/help_screen.dart": "d196994fc126cfb2384c3d390372ac245f18e07ec43c4c093ee2b3648064865b",
+    "apps/merchant/mobile/lib/theme/store_theme.dart": "95d22640c995ad819e5fc1f6b0df62bbb45a5d85e0b6f7390ad123ae1bed6f75",
+    "apps/merchant/mobile/lib/widgets/shared/capability_gate.dart": "69c469dcdd284aad4c042d86e7c58782be2feea641d8df9d04bdc46e50d4c645",
+    "apps/merchant/mobile/test/capability_presentation_test.dart": "1ff13a88ccbd05a8d80c9a5b0f11120a0839544927c6760fa9f8897508dbc120",
+    "apps/merchant/mobile/test/filled_button_readability_test.dart": "7c49b8031899728016f54c92aa3cafe27fcf81c0c6a9535cd293b3a9e376a628",
+    "apps/merchant/mobile/test/help_presentation_test.dart": "d873bde19f972505f3af1bf46929bbce1bad379f9524d9b1fb16ce36c7d15e6b"
+  },
+  "role": "Exact6changed presentation/test inputs from confirmation2;38focusedPASS;visual/full/broad gates separately recorded."
+}

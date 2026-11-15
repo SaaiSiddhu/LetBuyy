@@ -1,0 +1,15 @@
+{
+  "from_source": "dd0512dbc5d9f017eec2d8eaef23c3885380abfccdffe414db9df5dfc650a6cf",
+  "to_source": "cdd6849c07447a0af351c9edf6e11801fa9ac03cf79f38a8e453a698a919c8f6",
+  "delta": [
+    "services/api-gateway/src/__tests__/owned-db/merchant-staff-list.postgres.test.ts"
+  ],
+  "reason": "New52owned-site DB fixture lacked required site_type; fix fixture only. All implementation, non-DB tests, web and Dart inputs exactly equal. v8 database terminal49PASS/1fixtureFAIL remains unaccepted.",
+  "reused": [
+    "prior v8 chained scopes: Gateway2087, root389, Dart22, types/shared tests",
+    "v8 app analysis",
+    "v8 full Flutter",
+    "v8 web typing/tests"
+  ],
+  "fresh": "All four owned Staff suites;remaining governance/build/browser gates"
+}

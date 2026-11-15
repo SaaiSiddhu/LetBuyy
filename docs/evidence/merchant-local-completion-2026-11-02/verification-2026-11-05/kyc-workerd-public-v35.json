@@ -1,0 +1,62 @@
+{
+  "site_id": "95720bf3-28c6-4102-88a0-87fdb5a108ef",
+  "overall_status": "in_progress",
+  "provider_mode": "sandbox",
+  "private_upload_available": true,
+  "required_documents": [
+    {
+      "document_type": "business_pan",
+      "title": "Business PAN",
+      "required": true,
+      "status": "submitted"
+    },
+    {
+      "document_type": "bank_proof",
+      "title": "Bank proof",
+      "required": true,
+      "status": null
+    },
+    {
+      "document_type": "address_proof",
+      "title": "Business address proof",
+      "required": true,
+      "status": null
+    },
+    {
+      "document_type": "gst_certificate",
+      "title": "GST certificate",
+      "required": false,
+      "status": null
+    },
+    {
+      "document_type": "identity_proof",
+      "title": "Identity proof",
+      "required": false,
+      "status": null
+    }
+  ],
+  "documents": [
+    {
+      "id": "44d77870-0073-4ff0-950e-e305d9278307",
+      "created_at": "2026-11-06T15:02:38.1793+00:00",
+      "updated_at": "2026-11-06T15:02:38.1793+00:00",
+      "deleted_at": null,
+      "site_id": "95720bf3-28c6-4102-88a0-87fdb5a108ef",
+      "document_type": "business_pan",
+      "status": "submitted",
+      "provider": "letbuyy_sandbox_kyc",
+      "provider_mode": "sandbox",
+      "provider_reference": null,
+      "has_private_upload": true,
+      "evidence_scan_status": "pending",
+      "provider_unavailable": false,
+      "requires_resubmission": false,
+      "document_number_last4": "1234",
+      "rejection_reason": null,
+      "submitted_at": "2026-11-06T15:02:38.179+00:00",
+      "verified_at": null,
+      "rejected_at": null
+    }
+  ],
+  "next_action": "Upload the remaining required documents privately. Sandbox uploads are not provider reviewed and cannot enable live payouts."
+}

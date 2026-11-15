@@ -1,4 +1,5 @@
-import { planProductCreate, planProductMutation, type CreateProductCommand } from '@letbuyy/commerce-core';
+import { planProductCreate, planProductMutation, type CreateProductCommand, type ProductCreatePlan } from '@letbuyy/commerce-core';
+import type { PooledSqlClient } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import type { Env } from '../index';
 import { AppError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
 import { withTenantTx, TenantTransactionUnavailableError } from '../lib/tenant-transaction';
@@ -26,6 +27,12 @@ function mutationError(error: unknown): never {
     }
     const code = (error as { code?: string })?.code;
     const message = error instanceof Error ? error.message : '';
+    if (message.includes('PRODUCT_LIMIT_REACHED')) {
+        throw new AppError('Your store has reached its current product limit.', 403, 'PRODUCT_LIMIT_REACHED');
+    }
+    if (message.includes('ENTITLEMENT_AUTHORITY_UNAVAILABLE')) {
+        throw new AppError('Product limits are temporarily unavailable. Keep your draft and retry.', 503, 'ENTITLEMENT_AUTHORITY_UNAVAILABLE');
+    }
     if (message.includes('PRODUCT_EDIT_FORBIDDEN') || code === '42501') throw new ForbiddenError('Your access to this store changed.');
     if (message.includes('PRODUCT_EDIT_NOT_FOUND')) throw new NotFoundError('Product not found');
     if (message.includes('PRODUCT_EDIT_VERSION_CONFLICT') || code === '40P01' || code === '40001') {
@@ -39,6 +46,12 @@ function mutationError(error: unknown): never {
     }
     if (message.includes('PRODUCT_PERSONALIZATION_INVALID')) {
         throw new ValidationError('Supply valid personalization facts with a positive revision, or explicitly remove them.');
+    }
+    if (message.includes('PRODUCT_VARIANT_RETIREMENT_BLOCKED')) {
+        throw new AppError('A variant cannot be retired until its stock, reservations and open orders, purchasing, transfers, fulfillment and returns are cleared. Your draft is kept.', 409, 'PRODUCT_VARIANT_IN_USE');
+    }
+    if (message.includes('PRODUCT_VARIANT_RETIRED')) {
+        throw new AppError('This variant has been retired. Reload the product and select an available variant.', 409, 'PRODUCT_VARIANT_RETIRED');
     }
     if (message.includes('PRODUCT_EDIT_VARIANT_REMOVAL')) {
         throw new AppError('A removed variant still has stock or history. Keep that variant and adjust its availability instead.', 409, 'PRODUCT_VARIANT_IN_USE');
@@ -88,6 +101,27 @@ export function executeProductMutation(
 }
 
 /** The existing create boundary and edit writer share one real tenant transaction. */
+export async function createProductInTenantTransaction(
+    sql: PooledSqlClient, plan: ProductCreatePlan, storeId: string, actorId: string, creationKey: string,
+) {
+    if (plan.productInsert.store_id !== storeId) throw new ValidationError('The product store changed.');
+    // One lock and the current persisted entitlement authority precede the
+    // parent INSERT, including concurrent normal creates and CSV rows.
+    await sql.unsafe('SELECT public.assert_product_creation_limit_v1($1::uuid,$2::uuid)', [storeId, actorId]);
+    const inserted = await sql.unsafe(INSERT_PRODUCT_SQL, [JSON.stringify(plan.productInsert), actorId]);
+    const productId = inserted[0]?.id;
+    const version = inserted[0]?.version;
+    if (typeof productId !== 'string' || typeof version !== 'number') throw new NotFoundError('Product not found');
+    const mutation = { fields: {}, product_options: plan.productOptions, variants: plan.productVariants, stock: plan.initialStock };
+    const rows = await sql.unsafe(APPLY_PRODUCT_EDIT_SQL,
+        [storeId, productId, actorId, version, creationKey, JSON.stringify(mutation)]);
+    const product = rows[0]?.product;
+    if (!product || typeof product !== 'object' || Array.isArray(product)) throw new NotFoundError('Product not found');
+    await sql.unsafe('SELECT public.record_product_creation_usage_v1($1::uuid,$2::uuid,$3::uuid,$4::uuid)',
+        [storeId, actorId, productId, creationKey]);
+    return product as Record<string, unknown>;
+}
+
 export async function executeProductCreate(env: Env | undefined, input: CreateProductCommand, actorId: string) {
     let plan;
     try { plan = planProductCreate(input); }
@@ -97,18 +131,7 @@ export async function executeProductCreate(env: Env | undefined, input: CreatePr
         if (!env) throw new TenantTransactionUnavailableError();
         return await withTenantTx(env, { siteId: input.store_id, requestId }, async sql => {
             await sql.unsafe('SELECT set_config($1,$2,true)', ['app.actor_id', actorId]);
-            // The existing guarded edit entry checks live actor membership before
-            // any transaction can commit, including this parent INSERT.
-            const inserted = await sql.unsafe(INSERT_PRODUCT_SQL, [JSON.stringify(plan.productInsert), actorId]);
-            const productId = inserted[0]?.id;
-            const version = inserted[0]?.version;
-            if (typeof productId !== 'string' || typeof version !== 'number') throw new NotFoundError('Product not found');
-            const mutation = { fields: {}, product_options: plan.productOptions, variants: plan.productVariants, stock: plan.initialStock };
-            const rows = await sql.unsafe(APPLY_PRODUCT_EDIT_SQL,
-                [input.store_id, productId, actorId, version, requestId, JSON.stringify(mutation)]);
-            const product = rows[0]?.product;
-            if (!product || typeof product !== 'object' || Array.isArray(product)) throw new NotFoundError('Product not found');
-            return product as Record<string, unknown>;
+            return createProductInTenantTransaction(sql, plan, input.store_id, actorId, requestId);
         });
     } catch (error) { return mutationError(error); }
 }

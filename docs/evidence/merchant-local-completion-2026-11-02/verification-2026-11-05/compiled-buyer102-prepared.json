@@ -1,0 +1,8 @@
+{
+  "fixture": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-creation-core-buyer-v102.postgres.test.ts",
+  "sha256": "fd0b29cfd1021c5148dca1fb1c0979533fc8a57f5b5846f0eced7015334ad2de",
+  "basis": "Existing full current canonical signup/Core-Liquid/storefront/cart/COD-order/buyer-profile/address/privacy/access regression; only relative imports are rebased for explicit evidence selection",
+  "source": "merchant-creation-retirement-source-v102",
+  "run_after": "Android134 and iOS133 cleanup to preserve per-run Next marker custody",
+  "scope": "Local synthetic provider fixture, normal browser auth, real compiled Workerd and actual production-mode Next; no live inbox/provider/hosted proof"
+}

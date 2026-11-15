@@ -1,0 +1,75 @@
+{
+  "status": "CANCELLED_OVERALL_TIMEOUT; NO_CURRENT_FULL_COMPILED_ACCEPTANCE",
+  "sourceManifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-bulk-ui-v13.source.json",
+  "sourceSha256": "761ceddc1dde3e586d71d96750589b5a2b386f8ab6e7da767dd8c059dd5e8e27",
+  "run": {
+    "runId": "6857c4ed88d3",
+    "tests": 1,
+    "assertionsPassed": 0,
+    "assertionsFailed": 0,
+    "cancelled": 1,
+    "skipped": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "artifact": {
+    "run_id": "6857c4ed88d3",
+    "source_sha256": "48c1c7dc5260f44fd01e4a1f3e4a147d2ff2a9b6103190ba8e5d14da677028da",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v29/qualified-artifact/merchant-local-debug.apk",
+    "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "original_bytes_retained": true,
+    "sha256": "331592a57fa6b9e17c56accfec3f7900fa8727fd15dab3f2fde1a7de8ba4eed2",
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:55218/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "launcherCleanup": {
+    "at": "2026-11-04T03:32:19.262688+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 1,
+    "controller_exit": 1,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "boundedObservations": [
+    "Normal native Accounts login/fresh exchange/automatic return, location lost-reply/restart/original retry and bidirectional metadata/profile phase completed",
+    "PO partial receipt/restart recovery, actual held reservation read and independent web/database held-state assertions completed",
+    "Actual ship response200 and native committed reservation image were observed; final stock/receipt assertions were not reached",
+    "New compiled feedback pairing visually inspected; contrast14.6287 from exact tokens and observed composition"
+  ],
+  "cause": {
+    "powerLogSelectedFacts": [
+      "2026-11-04 08:40:24 +0530: entering clamshell sleep",
+      "2026-11-04 08:44:44 +0530: dark-wake thermal emergency sleep",
+      "2026-11-04 08:58:58 +0530: full wake from deep idle"
+    ],
+    "observedCallsRetiredAtUtc": "2026-11-04T03:32:12.234656+00:00",
+    "companionAttentionWrittenAtUtc": "2026-11-04T03:32:19.211849+00:00",
+    "interpretation": "The runner timed out and force-stopped the APK before companion diagnostics saw Chrome. This is not evidence of a product Back-navigation or session defect.",
+    "budget": "Inner test1800seconds, owned runner2100seconds; unchanged for retry."
+  },
+  "next": "User confirms Mac awake/lid open. Current full v30 uses same app/source and normal UI operations, bounded25-second ADB calls with input-free timing, and an idle-sleep assertion tied only to the owned runner. No power settings changed."
+}

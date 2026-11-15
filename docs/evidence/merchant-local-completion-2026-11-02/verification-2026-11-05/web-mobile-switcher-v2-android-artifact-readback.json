@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-06T05:46:19.475934+00:00",
+  "status": "INDEPENDENT_DEBUG_APK_READBACK_PASS",
+  "source_sha256": "6b04cb93b05b5cc2a745b8720d44a02e866283be64efc7c831019a3a24491eda",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-web-mobile-switcher-v2-android-5ia45yxq/merchant-local-debug.apk",
+    "sha256": "b0b5cc8b602de79dc46bbb3a072c7ddc03825ab8d40a6f04d0fa1f2a0ffc7c5d",
+    "bytes": 151923226
+  },
+  "actual_sha256": "b0b5cc8b602de79dc46bbb3a072c7ddc03825ab8d40a6f04d0fa1f2a0ffc7c5d",
+  "compiled_arm64_engine": true,
+  "debug_kernel_present": true,
+  "normal_main": true,
+  "installed": false,
+  "runtime_verified": false,
+  "scope": "Normal debug compile/archive only. Native41 proves its own preceding warehouse artifact only; current StoreSwitcher/Staff source has no native acceptance.",
+  "material_icons_bytes": 1645184,
+  "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+}

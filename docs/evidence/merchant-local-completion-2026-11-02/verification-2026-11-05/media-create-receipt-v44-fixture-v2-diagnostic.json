@@ -1,0 +1,8 @@
+{
+  "run": "e0cf18a609ba",
+  "pass": 0,
+  "fail": 4,
+  "cause": "Fixture tenant tag 21 characters exceeded existing 20-character contract; no application assertions reached. v3 uses 14-character unique tag, preserves every assertion.",
+  "cleanup": "empty",
+  "v3_sha256": "97b37ddf1b22bdcaba3ca49c4136410bafd220a234a9ce809889428870dad61c"
+}

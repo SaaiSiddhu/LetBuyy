@@ -1,0 +1,12 @@
+{
+  "command": [
+    "pnpm",
+    "--filter",
+    "@letbuyy/customer-web",
+    "exec",
+    "tsc",
+    "--noEmit"
+  ],
+  "exit_code": 0,
+  "ended_at": "2026-11-08T10:09:48.326869+00:00"
+}

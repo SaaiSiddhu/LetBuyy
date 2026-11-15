@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "method": "Exact dominant purple fill bounding box in a narrow horizontal region around the observed AX upload button; broad vertical region detects an offset up to64points. Native screenshot was captured after1.2seconds of settling; no image edit and no coordinate input.",
+  "screenshot": "/private/tmp/letbuyy-ios-ui-20261108-9ae2f99d13/private-kyc-settled-observed/0448578C-1916-4CD3-BF6D-60A27C85B07F.png",
+  "screenshot_sha256": "619f026bac39dc36613a8f1d6facb6c122b74bc91a3e17b5881880bf37dedd2f",
+  "hierarchy": "/private/tmp/letbuyy-ios-ui-20261108-9ae2f99d13/private-kyc-settled-observed/4130C26F-F8AE-4959-8C94-88E2D6CCF976.txt",
+  "hierarchy_sha256": "c32f0116d1dfc20469802ab14993555a1ee7cad85d610198fce697b394f5fd7a",
+  "pixels": [
+    1206,
+    2622
+  ],
+  "point_scale": 3.0,
+  "fill_rgb": [
+    196,
+    181,
+    253
+  ],
+  "fill_pixels": 54765,
+  "painted_box_points": [
+    216.33333333333334,
+    780.0,
+    386.0,
+    820.0
+  ],
+  "AX_frame_points": [
+    216.32173665364584,
+    776.0,
+    169.67826334635416,
+    48.0
+  ],
+  "painted_center_points": [
+    301.1666666666667,
+    800.0
+  ],
+  "AX_center_points": [
+    301.16086832682294,
+    800.0
+  ],
+  "center_delta_points": [
+    0.00579833984375,
+    0.0
+  ],
+  "tolerance_points": 1,
+  "visual_inset_within_accessibility_target_points": [
+    0.0115966796875,
+    4.0,
+    0.0,
+    4.0
+  ],
+  "criterion": "Center alignment within1point and symmetric visible fill enclosed by AX touch target; allow up to4.5point inset. Do not require painted fill height40 to equal its padded touch target48. The earlier equal-size-assumption failure is retained.",
+  "scope": "This recovered full-page KYC Upload action on the exact task-owned simulator; not generic modal, all accessibility or full122 acceptance."
+}

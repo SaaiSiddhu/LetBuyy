@@ -12,13 +12,18 @@ import { chromium, type Browser } from '@playwright/test';
 import worker from '../../index';
 import { encryptPaymentSecret } from '../../lib/store-payment-config';
 import { PAYMENT_KEYRING_PREFIX } from '../../lib/payment-encryption-keyring';
-import { INTERNAL_SECRET, gatewayEnv, newIdentityKeys } from './gateway-harness';
+import { INTERNAL_SECRET, gatewayEnv, newIdentityKeys, signedIdentityHeaders } from './gateway-harness';
 import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import type { PaymentCreateIntentInput, PaymentIntentResult } from '@letbuyy/payments';
 
 const owned = requireOwnedDatabase();
+// The default retains the original own-account regression. Explicit sandbox
+// qualification repeats this same buyer journey with a managed credential.
+const managedCheckout = process.env.LETBUYY_CHECKOUT_BROWSER_MANAGED === '1';
 const site = newSyntheticTenant('browser-checkout');
+const merchantOwnerId = crypto.randomUUID();
+const merchantOwnerEmail = `syn-browser-merchant-${merchantOwnerId}@example.invalid`;
 const signingSecret = 'synthetic-browser-checkout-signing-secret';
 const razorpayKeySecret = 'synthetic-browser-razorpay-secret';
 const paymentEncryptionKey = crypto.randomUUID();
@@ -84,6 +89,7 @@ let server: ReturnType<typeof createServer>;
 let app: OwnedClientProcess | undefined;
 let browser: Browser | undefined;
 let appPort = 0;
+let gatewayPort = 0;
 let background: Promise<unknown>[] = [];
 const notificationJobs: Array<Record<string, unknown>> = [];
 
@@ -111,6 +117,9 @@ async function waitForApp(origin: string): Promise<void> {
 
 before(async () => {
     seedSyntheticTenant(owned.psql, site, { gst: true, taxRates: true });
+    owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name)
+        VALUES('${merchantOwnerId}','${merchantOwnerEmail}',true,'Synthetic browser merchant');
+        UPDATE sites SET custom_user_id='${merchantOwnerId}' WHERE id='${site.siteId}';`);
     owned.psql(`
       INSERT INTO products (id,store_id,name,price,sku,is_active,created_at,updated_at)
       VALUES ('${productId}','${site.siteId}','Synthetic browser checkout product',199.00,'SYN-BROWSER-${productId}',true,now(),now());
@@ -131,12 +140,15 @@ before(async () => {
 
     for (const [id,keyId,secret] of [[originalCredentialId,originalKeyId,razorpayKeySecret],
         [replacementCredentialId,replacementKeyId,'synthetic-unused-replacement-secret']]) {
-        const encrypted = await encryptPaymentSecret(secret, paymentEncryptionKey, {siteId:site.siteId,keyId,environment:'sandbox',credentialId:id});
-        owned.psql(`INSERT INTO payment_credentials(id,site_id,provider,mode,status,provider_key_id,last_verified_at,encrypted_credentials)
+        const managed = managedCheckout && id === originalCredentialId;
+        const encrypted = await encryptPaymentSecret(secret, paymentEncryptionKey, {siteId:site.siteId,keyId,environment:'sandbox',credentialId:id,
+            accountMode:managed?'managedSandbox':'ownAccount'});
+        owned.psql(`INSERT INTO payment_credentials(id,site_id,provider,mode,status,provider_key_id,last_verified_at,encrypted_credentials,kms_key_ref,metadata)
             VALUES('${id}','${site.siteId}','razorpay','sandbox','active','${keyId}',now(),
-            '${JSON.stringify({key_secret_ciphertext:encrypted})}'::jsonb);`);
+            '${JSON.stringify({key_secret_ciphertext:encrypted})}'::jsonb,'payment-config:v3:synthetic',
+            '${JSON.stringify(managed?{account_model:'managed_sandbox'}:{})}'::jsonb);`);
     }
-    const paymentSettings = {mode:'ownAccount',gateways:['razorpay'],razorpay:{credential_id:originalCredentialId,key_id:originalKeyId,test_mode:true,verified:true}};
+    const paymentSettings = {mode:managedCheckout?'managedSandbox':'ownAccount',gateways:['razorpay'],razorpay:{credential_id:originalCredentialId,key_id:originalKeyId,test_mode:true,verified:true}};
     owned.psql(`UPDATE payment_credentials SET selected_for_checkout=true WHERE id='${originalCredentialId}';
         UPDATE sites SET online_payment_enabled=true,payment_settings='${JSON.stringify(paymentSettings)}'::jsonb WHERE id='${site.siteId}';`);
     const keys = await newIdentityKeys();
@@ -146,6 +158,8 @@ before(async () => {
         NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost',
         CUSTOMER_SESSION_SECRET: 'synthetic-browser-customer-session-secret-at-least-32-bytes',
         LETBUYY_RAZORPAY_MODE: 'sandbox',
+        LETBUYY_PAYMENT_MODE: 'sandbox',
+        LETBUYY_MANAGED_PAYMENTS_MODE: 'sandbox',
         RAZORPAY_KEY_ID: ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'),
         RAZORPAY_KEY_SECRET: crypto.randomUUID(),
         PAYMENT_CONFIG_ENCRYPTION_KEY: paymentEncryptionKey,
@@ -155,7 +169,8 @@ before(async () => {
         },
         HOSTED_RAZORPAY_TEST_ADAPTER: hostedRazorpayTestAdapter,
     });
-    rotateEncryptionKey=()=>{env.PAYMENT_CONFIG_ENCRYPTION_KEY=PAYMENT_KEYRING_PREFIX+JSON.stringify({active:replacementEncryptionKey,previous:[paymentEncryptionKey]});};
+    rotateEncryptionKey=()=>{env.PAYMENT_CONFIG_ENCRYPTION_KEY=PAYMENT_KEYRING_PREFIX+JSON.stringify({active:replacementEncryptionKey,previous:[paymentEncryptionKey]});
+        env.LETBUYY_MANAGED_PAYMENTS_MODE=undefined;};
     server = createServer(async (req, res) => {
         try {
             const body = await readBody(req);
@@ -182,7 +197,7 @@ before(async () => {
     });
     server.listen(0, '127.0.0.1');
     await once(server, 'listening');
-    const gatewayPort = (server.address() as { port: number }).port;
+    gatewayPort = (server.address() as { port: number }).port;
     const portProbe = createServer();
     portProbe.listen(0, '127.0.0.1');
     await once(portProbe, 'listening');
@@ -217,6 +232,8 @@ after(async () => {
 
 test('buyer selects actual saved storefront rate and completes normal hosted COD checkout', async () => {
     assert.ok(browser);
+    const [invoicePrefix, nextInvoice] = owned.psql(`SELECT invoice_prefix, invoice_number_next
+        FROM sites WHERE id='${site.siteId}';`).split('|');
     const context = await browser.newContext();
     context.setDefaultNavigationTimeout(coldNavigationTimeout);
     const storefrontOrigin = `http://${site.subdomain}.localhost:${appPort}`;
@@ -292,11 +309,38 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     await page.getByRole('heading', { name: 'Order Confirmed!' }).waitFor({ timeout: 30_000 });
 
     const rows = JSON.parse(owned.psql(`
-      SELECT COALESCE(json_agg(json_build_object('order_id',o.id,'rate_id',osl.metadata->>'shipping_rate_id','amount',osl.amount::numeric,'payment_method',o.payment_method)), '[]'::json)
+      SELECT COALESCE(json_agg(json_build_object('order_id',o.id,'order_number',o.order_number,
+        'gst_invoice_number',o.gst_invoice_number,'rate_id',osl.metadata->>'shipping_rate_id',
+        'amount',osl.amount::numeric,'payment_method',o.payment_method)), '[]'::json)
       FROM orders o JOIN order_shipping_lines osl ON osl.order_id=o.id
       WHERE o.site_id='${site.siteId}' AND o.customer_email='browser-buyer@example.invalid';
-    `)) as Array<{ order_id: string; rate_id: string; amount: number; payment_method: string }>;
+    `)) as Array<{ order_id: string; order_number: string; gst_invoice_number: string | null; rate_id: string; amount: number; payment_method: string }>;
     assert.equal(rows.length, 1, 'the browser journey creates exactly one order');
+    assert.match(rows[0].order_number, /^ORD-[0-9]{8}-[0-9]+$/,
+        'General settings order format matches the generated hosted order');
+    await page.getByText(rows[0].order_number, { exact: true }).waitFor();
+    const invoiceNumber = owned.psql(`SELECT invoice_number FROM gst_invoices
+        WHERE site_id='${site.siteId}' AND order_id='${rows[0].order_id}';`);
+    assert.equal(invoiceNumber, `${invoicePrefix}-${String(Number(nextInvoice)).padStart(6, '0')}`,
+        'Business settings next invoice example matches the first issued hosted order invoice');
+    assert.equal(rows[0].gst_invoice_number, invoiceNumber,
+        'the canonical order stores the same issued invoice number');
+    const merchantHeaders = await signedIdentityHeaders(merchantOwnerId, merchantOwnerEmail, site.siteId);
+    const merchantOrderResponse = await fetch(`http://127.0.0.1:${gatewayPort}/v1/orders/${rows[0].order_id}`, {
+        headers: merchantHeaders,
+    });
+    const merchantOrderText = await merchantOrderResponse.text();
+    assert.equal(merchantOrderResponse.status, 200, merchantOrderText);
+    const merchantOrder = JSON.parse(merchantOrderText) as { data: { order_number: string; gst_invoice_number: string } };
+    assert.equal(merchantOrder.data.order_number, rows[0].order_number);
+    assert.equal(merchantOrder.data.gst_invoice_number, invoiceNumber);
+    const invoiceResponse = await fetch(`http://127.0.0.1:${gatewayPort}/v1/tax/invoice/${rows[0].order_id}`, {
+        headers: await signedIdentityHeaders(merchantOwnerId, merchantOwnerEmail, site.siteId),
+    });
+    const invoiceText = await invoiceResponse.text();
+    assert.equal(invoiceResponse.status, 200, invoiceText);
+    const merchantInvoice = JSON.parse(invoiceText) as { data: { invoice_number: string } };
+    assert.equal(merchantInvoice.data.invoice_number, invoiceNumber);
     assert.equal(rows[0].rate_id, codRateId, 'persisted order is bound to the reviewed COD rate');
     assert.equal(Number(rows[0].amount), 20);
     assert.equal(rows[0].payment_method, 'cod');
@@ -307,6 +351,22 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     assert.equal(receipt.quote.added_tax_minor,0,'included GST is not charged a second time');
     assert.equal(Math.round(Number(receipt.total)*100),19910,'199 - 19.90 coupon + 20 delivery = 199.10');
     assert.equal(Math.round(Number(receipt.total)*100),receipt.quote.total_minor);
+    const invoiceFacts = JSON.parse(owned.psql(`SELECT json_build_object(
+        'order_supplier',o.tax_snapshot->'supplier','invoice_supplier',gi.supplier,
+        'order_tax_minor',round(o.tax*100)::bigint,'invoice_tax_minor',gi.tax_amount_minor,
+        'order_total_minor',round(o.total*100)::bigint,'invoice_total_minor',gi.total_amount_minor)
+        FROM orders o JOIN gst_invoices gi ON gi.order_id=o.id AND gi.site_id=o.site_id
+        WHERE o.id='${rows[0].order_id}' AND o.site_id='${site.siteId}';`)) as {
+        order_supplier: Record<string, unknown>; invoice_supplier: Record<string, unknown>;
+        order_tax_minor: number; invoice_tax_minor: number;
+        order_total_minor: number; invoice_total_minor: number;
+    };
+    assert.deepEqual(invoiceFacts.invoice_supplier, invoiceFacts.order_supplier,
+        'the hosted order invoice uses the supplier captured at order creation');
+    assert.equal(invoiceFacts.invoice_tax_minor, invoiceFacts.order_tax_minor,
+        'the issued invoice GST equals the hosted order GST to the paisa');
+    assert.equal(invoiceFacts.invoice_total_minor, invoiceFacts.order_total_minor,
+        'the issued invoice total equals the hosted buyer order total to the paisa');
 
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${site.siteId}' AND aggregate_id='${rows[0].order_id}' AND event_type='order.paid';`), '0', 'an unpaid COD order is not announced as paid');
     assert.equal(notificationJobs.length, 0, 'an unpaid COD order does not queue a paid-order email');

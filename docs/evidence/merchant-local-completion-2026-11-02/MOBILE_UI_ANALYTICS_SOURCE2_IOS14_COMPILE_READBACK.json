@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-05T04:02:18.070765+00:00",
+  "status": "INDEPENDENT_IOS14_COMPILE_ARTIFACT_READBACK_PASS",
+  "source_sha256": "fb331a523e999cd59c849d5f33d6a10c4e2a82983615726f9b364a6845cb1d70",
+  "artifact": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-mobile-ui-v14-artifact/Runner.app",
+  "manifest_sha256": "34c1badbaa95dd0bfd9e4d8db069f16276c0005a64bbf50d80ea9803f9d92013",
+  "files_equal": 377,
+  "owned_simulator_remains_shutdown": true,
+  "build_exit": 0,
+  "signing": "Adhoc simulator only, TeamIdentifier not set",
+  "scope": "Compile/artifact integrity only. No simulator boot/launch, iOS runtime/auth/backend/provider/physical/performance/release acceptance."
+}

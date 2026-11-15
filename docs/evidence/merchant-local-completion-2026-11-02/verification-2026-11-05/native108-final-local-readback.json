@@ -1,0 +1,91 @@
+{
+  "at": "2026-11-07T07:22:12.162496+00:00",
+  "status": "BOUNDED_CURRENT_IOS_PRODUCT_CATEGORY_PHOTO_MEDIA_RECOVERY_WEB_SYNC_PASS",
+  "whole_features_accepted": 0,
+  "source": "merchant-camera-video-model-source-v84",
+  "source_sha256": "5f78a66e349980b7538b8c5a894967984d34baf80072677cfc2f30283dbdea1c",
+  "source_inputs": 8502,
+  "run_id": "f03b0f1cf8fb",
+  "private_run_root": "/private/tmp/letbuyy-ios-ui-20261107-twhbs9jr",
+  "runtime_source_snapshot_sha256": "3e5f112f419e213b18677485c8a37be3dc994f16b745a2dac8ce0b6d04d439c3",
+  "compiled_workers": {
+    "run_id": "f03b0f1cf8fb",
+    "runtime": "workerd",
+    "gateway_sha256": "268451af3840c7b6a5b3fae821d10396b0854b75d4fb732bef52303a8fdeea4f",
+    "bff_sha256": "a69d2c007207f8e72813af19f7aa7e93f26409b1bf0e4450e6aeef4ffd0d3b42",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "installed_artifact": {
+    "at": "2026-11-07T07:18:11.595629+00:00",
+    "source": "merchant-camera-video-model-source-v84",
+    "normal_debug_build": true,
+    "all_installed_files_equal": true,
+    "files": 401,
+    "manifest_sha256": "3cd4b61f9499564bb3a8e1296308bf0ab4f319f8c0644556e3da06f36f363c15",
+    "artifact": "/private/tmp/letbuyy-ios-ui-20261107-twhbs9jr/native-ios-v108/qualified-artifact/Runner.app",
+    "installed": "/Users/saai_mithra/Library/Developer/CoreSimulator/Devices/B907B390-5B08-490F-BC6A-8900667B2D94/data/Containers/Bundle/Application/4EE469BC-39D8-4C16-8CA2-A59E5C5260A3/Runner.app"
+  },
+  "normal_auth_and_return": true,
+  "real_os_photo_upload_and_product_save": true,
+  "native_web_category_both_directions": true,
+  "product_type_separate_and_unchanged": true,
+  "web_to_native_metadata_fields": 5,
+  "native_to_web_caption": true,
+  "browser_upload_edit_delete_lost_response_recovery": [
+    {
+      "phase": "upload",
+      "original_key": "c195991d-1d8b-43c6-afe3-b22461a31ea4",
+      "media_key": "8cddf755-ff67-411e-a584-de752e6cfb32",
+      "receipt_recovered": true,
+      "byte_upload_count": 1,
+      "media_rows": 1,
+      "explicit_selection": true
+    },
+    {
+      "phase": "metadata",
+      "original_key": "703afbcd-6e7a-40dc-b2a1-5353f5f5debb",
+      "readback": true,
+      "updated_at_unchanged_on_replay": true
+    },
+    {
+      "phase": "metadata_native_sync",
+      "web_to_native_fields": 5,
+      "native_to_web_caption": true,
+      "normal_native_edit": true
+    },
+    {
+      "phase": "delete",
+      "original_key": "1d1bb491-a04f-42ba-9fbd-dabaab81759d",
+      "absent_row_recovered": true,
+      "storage_reference_retained": true
+    },
+    {
+      "phase": "shared_picker",
+      "deleted_media_absent": true,
+      "remaining_media_positive_control": 1,
+      "referenced_product_images_decoded": true
+    }
+  ],
+  "browser_product_images_decoded": true,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "private_readback_sha256": "5b9cbca0db5ef66b0e3b315228da00d0f00f2eb20c4517d12bd200c39d81b522",
+  "failed_controls_retained": {
+    "103": "Category scroll reachability",
+    "104": "Keyboard toolbar selected instead of form",
+    "106": "Final driver queried before rendered editor",
+    "107": "Fixture changed Product type while asserting Category"
+  },
+  "boundaries": "No physical camera capture, native video/model runtime (next105), buyer Liquid/provider/hosted/full122 or signed release acceptance."
+}

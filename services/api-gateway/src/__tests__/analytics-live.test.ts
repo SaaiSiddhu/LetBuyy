@@ -54,7 +54,8 @@ test('mobile analytics screen renders live data with an honest empty state', () 
     assert.match(mobileScreenSource, /Live View/);
     assert.match(mobileScreenSource, /Active now/);
     assert.match(mobileScreenSource, /No live traffic yet/);
-    assert.match(mobileScreenSource, /Live storefront activity appears after traffic data is collected/);
+    assert.match(mobileScreenSource, /snapshot != null && !snapshot\.available[\s\S]*No live traffic yet\. Activity appears after traffic data is collected/);
+    assert.match(mobileScreenSource, /!snapshot\.metricsAvailable[\s\S]*Live metrics incomplete\. Missing values are unavailable/);
     assert.doesNotMatch(mobileScreenSource, /coming soon/i);
     assert.doesNotMatch(mobileScreenSource, /SKIP_NEEDS_HUMAN/);
 });

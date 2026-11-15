@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-08T05:36:10.138399+00:00",
+  "supervisor_pid": 52561,
+  "source": "merchant-options-accessibility-source-v95",
+  "source_sha256": "6a9dffa117db5c1be62f26f57d8f031910f3e599fc966a1eb0cfc87392519a18",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 52632,
+  "exit_code": 0,
+  "finished_at": "2026-11-08T05:37:26.078395+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "6a9dffa117db5c1be62f26f57d8f031910f3e599fc966a1eb0cfc87392519a18"
+}

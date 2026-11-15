@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-11-08T03:52:29.192737+00:00",
+  "supervisor_pid": 28908,
+  "source": "merchant-variant-kyc-source-v93",
+  "source_sha256": "fbde9fe512840dcdc0d84ace8143a461aafbdfdac65fd14b626f2187234c10d7",
+  "command": [
+    "python3",
+    "-c",
+    "import os; assert os.environ.get(\"LETBUYY_API_CLIENT_E2E\") != \"1\" and os.environ.get(\"LETBUYY_LOCAL_STACK\") != \"1\"; os.chdir(\"/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/packages/dart/api_client\"); os.execv(\"/Users/saai_mithra/Library/Developer/flutter/bin/dart\", [\"dart\",\"test\",\"test\",\"--reporter\",\"expanded\"])"
+  ],
+  "status": "RUNNING",
+  "child_pid": 28914
+}

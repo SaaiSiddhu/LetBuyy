@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-06T08:10:28.569087+00:00",
+  "owner_pid": 29282,
+  "remaining": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "all_empty": true,
+  "scope": "Independent exact fixture/owner label readback after Docker recovered; no global deletion/reset."
+}

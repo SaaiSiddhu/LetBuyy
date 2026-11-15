@@ -54,13 +54,15 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
 
  const identityPort=await freePort(),merchantPort=await freePort(),commercePort=await freePort(),commerceOrigin=`http://localhost:${commercePort}`,identityOrigin=`http://localhost:${identityPort}`,merchantOrigin=`http://localhost:${merchantPort}`;
  const keys=await newIdentityKeys(),gateway=new Gateway(gatewayEnv(owned,keys,{LETBUYY_SUBSCRIPTION_TAX_PROFILE:JSON.stringify(profile),ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',
-  RAZORPAY_KEY_ID:'synthetic-browser-public-provider-key',RAZORPAY_KEY_SECRET:providerSecret}));
+  LETBUYY_PAYMENT_MODE:'sandbox',LETBUYY_RAZORPAY_MODE:'sandbox',LETBUYY_MANAGED_PAYMENTS_MODE:'sandbox',PAYMENT_CONFIG_ENCRYPTION_KEY:crypto.randomUUID(),
+  RAZORPAY_KEY_ID:['rzp','test',crypto.randomUUID().replaceAll('-','')].join('_'),RAZORPAY_KEY_SECRET:providerSecret}));
  const orders=new Map<string,{id:string;amount:number;currency:string;receipt:string;notes:Record<string,string>}>(),payments=new Map<string,unknown>();
  let createCount=0,loseCreate=true;const originalFetch=globalThis.fetch;
  globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
   const url=new URL(typeof input==='string'?input:input instanceof URL?input.toString():input.url);
   if(url.origin!=='https://api.razorpay.com')return originalFetch(input,init);
   const json=(v:unknown)=>new Response(JSON.stringify(v),{status:200,headers:{'Content-Type':'application/json'}});
+  if(url.pathname==='/v1/payments'&&url.searchParams.get('count')==='1')return json({items:[]});
   if(url.pathname==='/v1/orders'&&init?.method==='POST'){
    const raw=JSON.parse(String(init.body)),row={...raw,id:'order_syn_browser_'+crypto.randomUUID()};orders.set(row.id,row);createCount++;
    if(loseCreate){loseCreate=false;throw new Error('Synthetic lost create response');}return json(row);
@@ -94,11 +96,20 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   await context.route('https://checkout.razorpay.com/v1/checkout.js',route=>route.fulfill({contentType:'application/javascript',body:`window.Razorpay=class{
    constructor(options){window.__syntheticCheckout=options;}open(){window.__syntheticCheckoutOpen=true;}on(){}};`}));
   await signIn(page,identityOrigin,ownerEmail,password,merchantOrigin);
-  const paymentSetup=page.locator(`.activation-card a[href="/${tenant.subdomain}/settings/payments"]`);
+  const paymentSetup=page.locator(`a[href="/${tenant.subdomain}/settings/payments"]`).first();
   await expect(paymentSetup).toBeVisible();await paymentSetup.click();await page.waitForURL(u=>u.pathname===`/${tenant.subdomain}/settings/payments`);
+  const [managedSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/payment-config')&&r.request().method()==='POST'),
+    page.getByRole('button',{name:'Use LetBuyy test payments',exact:true}).click()]);
+  assert.equal(managedSaved.status(),200,await managedSaved.text());
+  await expect(page.getByRole('button',{name:'LetBuyy test payments connected',exact:true})).toBeDisabled();
+  const [onlineEnabled]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/payment-config')&&r.request().method()==='PATCH'),
+    page.getByRole('switch',{name:'Online payments',exact:true}).click()]);
+  assert.equal(onlineEnabled.status(),200,await onlineEnabled.text());
+  assert.equal(owned.psql(`SELECT payment_settings->>'mode' FROM sites WHERE id='${tenant.siteId}';`),'managedSandbox');
+  await page.screenshot({path:`${ownedTmpDir()}/letbuyy-managed-settings-${owned.runId}.png`,fullPage:true});
   await page.goto(`${merchantOrigin}/${tenant.subdomain}/dashboard`);
-  await expect(page.getByRole('link',{name:'Select a plan',exact:true})).toHaveAttribute('href',`/${tenant.subdomain}/access_account/checkout/select-plan`);
-  await page.getByRole('link',{name:'Select a plan',exact:true}).click();
+  await expect(page.getByRole('link',{name:'View plans',exact:true})).toHaveAttribute('href',`/${tenant.subdomain}/access_account/checkout/select-plan`);
+  await page.getByRole('link',{name:'View plans',exact:true}).click();
   await page.waitForURL(u=>u.pathname.endsWith('/access_account/checkout/select-plan'));
   await expect(page.getByText('All plans include a 7-day free trial. Cancel anytime.',{exact:true})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'Start free trial',exact:true})).toHaveCount(0);
@@ -132,12 +143,14 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   const growthCard=page.locator('article').filter({has:page.getByRole('heading',{name:'Growth',exact:true})});
   await growthCard.getByRole('button',{name:'Choose plan',exact:true}).click();
   await page.waitForURL(u=>u.pathname===`/${tenant.subdomain}/access_account/checkout/checkout`&&u.searchParams.get('plan')==='growth');
-  await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹699');const subscribe=page.getByRole('button',{name:/Subscribe|Continue saved checkout/});
+  await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹699');const subscribe=page.getByRole('button',{name:/Subscribe|Continue saved checkout|Continue to payment|^Resume payment$/});
   const [lost]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);assert.equal(lost.status(),503);
-  await expect(page.locator('.checkout-error[role="alert"]')).toContainText('reconciliation');assert.equal(createCount,1);
+  await expect(page.locator('.checkout-notice[role="alert"]')).toContainText('reconciliation');assert.equal(createCount,1);
   await page.reload();
+  await expect(page.getByRole('button',{name:'Resume payment',exact:true})).toBeEnabled();
   const [recovered]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);assert.equal(recovered.status(),200);
   await page.waitForFunction(()=>Boolean((globalThis as unknown as {__syntheticCheckoutOpen?:boolean}).__syntheticCheckoutOpen));
+  await expect(page.getByText('Test payment only. No real money will be charged.',{exact:true})).toBeVisible();
   await page.evaluate(()=>{(globalThis as unknown as {__syntheticCheckout:{modal:{ondismiss:()=>void}}}).__syntheticCheckout.modal.ondismiss();});
   await expect(subscribe).toBeEnabled();assert.equal(createCount,1);
   const order=[...orders.values()][0];assert.ok(order);
@@ -149,7 +162,7 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);
   const failedVerification=page.waitForResponse(r=>r.url().endsWith('/api/subscribe/verify')&&r.request().method()==='POST');
   await page.evaluate(p=>{void (globalThis as unknown as {__syntheticCheckout:{handler:(p:unknown)=>Promise<void>}}).__syntheticCheckout.handler(p);},proof);
-  assert.equal((await failedVerification).status(),503);await expect(page.locator('.checkout-error[role="alert"]')).toContainText('unavailable');
+  assert.equal((await failedVerification).status(),503);await expect(page.locator('.checkout-notice[role="alert"]')).toContainText('unavailable');
   assert.equal(owned.psql(`SELECT count(*) FROM subscriptions WHERE razorpay_payment_id='${proof.razorpay_payment_id}';`),'0');
   owned.psql('DROP TRIGGER syn_checkout_audit_fault ON audit_logs;DROP FUNCTION syn_checkout_audit_fault();');
   await page.reload();await subscribe.click();
@@ -172,7 +185,7 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   assert.equal(owned.psql(`SELECT status FROM subscriptions WHERE razorpay_payment_id='${proof.razorpay_payment_id}';`),'cancelled');
   assert.equal(owned.psql(`SELECT count(*) FROM billing_history WHERE site_id='${tenant.siteId}';`),'1');
   await page.screenshot({path:`${ownedTmpDir()}/letbuyy-subscription-browser-${owned.runId}.png`});
-  await page.goto(`${merchantOrigin}/${tenant.subdomain}/access_account/checkout/select-plan`);await expect(page.getByRole('button',{name:'Current plan',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Choose plan',exact:true}).first()).toBeEnabled();await expect(page.locator('.select-plan-title')).not.toContainText(/trial/i);
+  await page.goto(`${merchantOrigin}/${tenant.subdomain}/access_account/checkout/select-plan`);await expect(page.getByRole('button',{name:'Current plan',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Choose plan',exact:true}).first()).toBeEnabled();const selectionTitle=page.getByRole('heading',{level:1});await expect(selectionTitle).toHaveCount(1);await expect(selectionTitle).toHaveText('Everything you need to run your business');
   console.info('OWNED_SUBSCRIPTION_BROWSER '+JSON.stringify({providerFixtureOnly:true,unregisteredProfileFromRealForm:true,businessIdentityFromRealForm:true,seededLegalName:false,normalTrialPlanNavigation:true,actualPlanCardChosen:true,canonicalSeoFreshRender:true,cancelReadbackRetainsReceipt:true,profileScreenshot,seoScreenshot,providerCreates:createCount,normalCreateStatuses:createCalls.map(c=>c.status),normalVerifyStatuses:verifyCalls.map(c=>c.status),paidSubscriptions:1,paidInvoices:1}));
  }catch(error){console.info('OWNED_SUBSCRIPTION_BROWSER_FAILURE '+JSON.stringify({path:page?new URL(page.url()).pathname:null,text:await page?.locator('body').innerText().catch(()=>''),calls:calls.slice(-20).map(({path,status})=>({path,status})),errors:errors.slice(-5)}));throw error;
  }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await stopOwnedClientRuntime(commerce);await gateway.settle();globalThis.fetch=originalFetch;

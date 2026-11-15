@@ -1,0 +1,50 @@
+[
+  {
+    "runId": "4907d292050b",
+    "passed": 0,
+    "failed": 1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "failure": "Test SQL transport bound an already encoded JSON string as JSONB, so the canonical membership function correctly refused a JSON string instead of an array.",
+    "correction": "Explicit text\u2192jsonb cast in the test transport, consistent with existing canonical adapter pattern. No runtime/schema/guard change.",
+    "scope": "No populated cutover acceptance."
+  },
+  {
+    "runId": "9a0e283fb618",
+    "passed": 0,
+    "failed": 1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "failure": "The complete public-table digest query exceeded the OS per-argument limit through psql -c. No cutover attempted.",
+    "correction": "Use existing owned scriptLarge stdin transport, fixed64MiB ceiling; disable only JIT on that administrative test connection. Every table/field and assertion remains included.",
+    "scope": "No populated cutover acceptance."
+  },
+  {
+    "runId": "3f8255ef2f27",
+    "passed": 0,
+    "failed": 1,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "failure": "Fixture incorrectly assumed the local public catalog had at least500tables, borrowing a count from a different schema profile.",
+    "correction": "Require exact equality of pg_class and information_schema table enumerations and presence of every current canonical tenant registry table, except the specifically retired empty435 receipt table. No table or field excluded from conservation.",
+    "scope": "No populated cutover acceptance; source/runtime unchanged."
+  }
+]

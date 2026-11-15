@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-08T10:56:20.800048+00:00",
+  "source": "merchant-buyer-inventory-source-v111",
+  "source_sha256": "f572b869ac94a24fc7a2f5f9a4c14907fd614995be3f9df7057097fcc6648460",
+  "status": "FOCUSED111J_RUNNING_CORE_FROZEN",
+  "session_id": 87138,
+  "fixture": "merchant-inventory-core-buyer-v111j-focused.postgres.test.ts",
+  "admission": "compiled-buyer111j-admission.json",
+  "receipt": "compiled-buyer111j.json",
+  "full_prepared_fixture": "merchant-inventory-core-buyer-v111e5.postgres.test.ts",
+  "latest_passed": [
+    "111Commerce types0",
+    "111focusedunits36PASS",
+    "111existingCommerce full2210PASS",
+    "111schema440commerce134PASS with2preparedslots",
+    "109owned25PASS on unchanged consumers",
+    "109publicsecurity42PASS on unchanged Gateway inputs",
+    "110theme2222PASS on unchanged theme inputs",
+    "111authored2.1render20PASS",
+    "111governance114PASS1NA"
+  ],
+  "next": "Wait111j terminal/cleanup. PDP0/unknown SSR,Offer and stale-enabled cart refusal passed before prior driver failures; no whole compound accepted yet. If PASS, wire2newCommerce tests, capture112, qualify updated app script/governance/types and complete full prepared compiled buyer on112. Keep original failures. Do not snapshot source while owned Next markers active.",
+  "host9002": "Never contact/probe/bind/stop. No new native lease; retained Android106/iOS106 evidence and all device data preserved.",
+  "whole_features_accepted": 0
+}

@@ -18,7 +18,9 @@ test('merchant domains settings renders custom-domain and access controls', () =
 
   assert.match(page, /Your domains|Ownership/);
   assert.match(page, /Connect existing domain|DNS/);
-  assert.match(page, /Buy a new domain|Buy a domain/);
+  assert.match(page, /Find a new domain/);
+  assert.match(page, /Registration through LetBuyy will be available after secure payment verification is ready/);
+  assert.doesNotMatch(page, />Buy (?:a |this )?domain</);
 });
 
 test('merchant domain settings calls gateway endpoints directly with merchant credentials', () => {

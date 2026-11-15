@@ -1,0 +1,13 @@
+{
+  "source": "merchant-product-media-ios-source-v59",
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "simulator": "B907B390-5B08-490F-BC6A-8900667B2D94",
+  "manifest_sha256": "408279177381e5d50106f3085bc7883eaae7e4b16d19c33fffd77f6bbab4a7b8",
+  "files": 401,
+  "installed_exact_match": true,
+  "normal_accounts_ui_exit": 0,
+  "normal_credential_entry": true,
+  "automatic_native_return": true,
+  "no_session_injection": true,
+  "scope": "Normal simulator artifact/installed bytes and bounded Accounts UI acceptance; product/media/web/buyer/full122 remain separate."
+}

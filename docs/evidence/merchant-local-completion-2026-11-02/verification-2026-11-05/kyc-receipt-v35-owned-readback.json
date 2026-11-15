@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-06T15:04:37.417095+00:00",
+  "source": "merchant-kyc-receipt-source-v35",
+  "source_sha256": "084de4c3adc928cd94b7df9bf6ca1f8a31ae6c9c44bd635370e9ada52fde28a9",
+  "runId": "5de1c5bad0e1",
+  "tests": 20,
+  "assertionsPassed": 20,
+  "assertionsFailed": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "projection": {
+    "path": "kyc-workerd-public-v35.json",
+    "sha256": "676b617db5f7f7b8c564891e7f19ec0ae1b1ba36cda559d0fd3075ea50ab1f99",
+    "provenance": "Actual compiled Workerd Gateway/owned Postgres, separate synthetic private R2, canonical TS schema passed; no private bytes/provider payload included."
+  },
+  "boundary": "No India/AWS/provider readiness or native upload claim from this test."
+}

@@ -9,11 +9,12 @@ import { planProductMutation } from '@letbuyy/commerce-core';
 import { withTenantTx } from '../../lib/tenant-transaction';
 import { APPLY_PRODUCT_EDIT_SQL } from '../../execution/product-mutation.adapter';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from './owned-db-support';
+import { requireOwnedDatabase, requireOwnedHistoricalSqlDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
-const { psql } = owned;
+let sourceDatabase: ReturnType<typeof requireOwnedHistoricalSqlDatabase> = owned;
+const psql = (statement: string) => sourceDatabase.psql(statement);
 const site = newSyntheticTenant('product-atomic');
 const other = newSyntheticTenant('product-other');
 const owner = crypto.randomUUID(), staff = crypto.randomUUID(), reader = crypto.randomUUID(), stranger = crypto.randomUUID();
@@ -21,27 +22,24 @@ const email = (id: string) => `syn-product-${id}@example.invalid`;
 const signature = 'public.apply_product_edit_v1(uuid,uuid,uuid,integer,uuid,jsonb)';
 let gateway: Gateway, proxy: OwnedPooledSqlProxy;
 
-before(async () => {
-    // Latest356 correctly depends on the346 authority helper. Verify that the
-    // current stack refuses premature retirement, then retire only its empty
-    // owned fixture allocation to exercise the predecessor's exact guard.
-    const file=(dir:string,name:string)=>readFileSync(new URL('../../../../../database/supabase/'+dir+'/'+name,import.meta.url),'utf8');
-    assert.equal(psql('SELECT count(*) FROM inventory_adjustment_receipts;'),'0');
-    assert.match(owned.psqlScriptExpectError(file('rollback','346_product_atomic_edits.rollback.sql')),/rollback346 refuses/);
-    // Retire the unused GST successors first; their guards correctly protect the writer.
-    owned.script(file('rollback','412_invoice_checkout_fact_parity.rollback.sql'));
-    owned.script(file('rollback','411_authoritative_checkout_gst.rollback.sql'));
-    owned.script(file('rollback','388_cart_order_fact_snapshots.rollback.sql'));
-    owned.script(file('rollback','385_product_variant_facts.rollback.sql'));
-    owned.script(file('rollback','356_inventory_adjustment_receipts.rollback.sql'));
-
-    for (const tenant of [site, other]) seedSyntheticTenant(psql, tenant);
-    psql(`INSERT INTO users_custom(id,email,email_verified) VALUES ${[owner,staff,reader,stranger].map(id => `('${id}','${email(id)}',true)`).join(',')};
+function seedProductAtomicWorld(write: (statement: string) => string) {
+    for (const tenant of [site, other]) seedSyntheticTenant(write, tenant);
+    write(`INSERT INTO users_custom(id,email,email_verified) VALUES ${[owner,staff,reader,stranger].map(id => `('${id}','${email(id)}',true)`).join(',')};
         UPDATE sites SET custom_user_id='${owner}' WHERE id='${site.siteId}';
         UPDATE sites SET custom_user_id='${stranger}' WHERE id='${other.siteId}';
         INSERT INTO employees(user_id,email,store_id,role,status,is_active,permissions) VALUES
         ('${staff}','${email(staff)}','${site.siteId}','editor','active',true,'{"granted":["products:write"]}'),
         ('${reader}','${email(reader)}','${site.siteId}','viewer','active',true,'{"granted":["products:read"]}');`);
+}
+
+before(async () => {
+    assert.equal(owned.psql('SELECT count(*) FROM inventory_adjustment_receipts;'),'0');
+    const rollback=readFileSync(new URL('../../../../../database/supabase/rollback/346_product_atomic_edits.rollback.sql',import.meta.url),'utf8');
+    assert.match(sourceDatabase.psqlScriptExpectError(rollback),/rollback346 refuses/,'Current436 must refuse premature346 retirement');
+    // Historical physical catalog controls use a genuinely replayed SQL-only
+    //346 database. Current Gateway/REST remains on436 for every product edit.
+    sourceDatabase = requireOwnedHistoricalSqlDatabase(346);
+    seedProductAtomicWorld(psql);
     proxy = await startOwnedPooledSqlProxy(owned);
     gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), proxy.env()));
 });
@@ -59,7 +57,7 @@ function variant(id: string) {
     const variantId = crypto.randomUUID();
     psql(`INSERT INTO product_variants(id,product_id,title,sku,price,inventory_qty,option1)
         VALUES('${variantId}','${id}','M','SYN-${variantId}',100,0,'M');
-        SELECT set_inventory_level_available('${id}','${variantId}','${site.locationId}',5,'${owner}');`);
+        WITH _fixture_inventory_scope436 AS MATERIALIZED (SELECT set_config('app.site_id','${site.siteId}',true)) SELECT set_inventory_level_available('${id}','${variantId}','${site.locationId}',5,'${owner}') FROM _fixture_inventory_scope436;`);
     return variantId;
 }
 const version = (id: string) => Number(psql(`SELECT version FROM products WHERE id='${id}';`));
@@ -159,7 +157,7 @@ function retentionProfileSql() {
 // the conservation checks exceed the suite deadline. JSON escaping preserves
 // whitespace inside every field; psql.trim() affects only the outer framing.
 function retentionFullProfile() {
-    return JSON.parse(owned.scriptLarge(`SELECT (${retentionProfileSql()})::text;`));
+    return JSON.parse(sourceDatabase.scriptLarge(`SELECT (${retentionProfileSql()})::text;`));
 }
 function retentionSnapshot() {
     return {data:JSON.parse(psql(retentionDataSql())),profile:retentionFullProfile()};
@@ -191,7 +189,7 @@ test('clean-empty paired rollback/reapply preserves product data and historical 
     const data=quote(JSON.stringify(before.data))+'::jsonb',history=quote(JSON.stringify(historical))+'::jsonb';
     const withoutReceipts={...before.data};delete withoutReceipts.product_edit_receipts;
     const empty=quote(JSON.stringify(withoutReceipts))+'::jsonb';
-    const output=owned.script(`BEGIN;
+    const output=sourceDatabase.script(`BEGIN;
         ${retentionKnownBody('rollback')}
         ${retentionDo(retentionAssert(`to_regprocedure('${signature}') IS NULL AND to_regclass('public.product_edit_receipts') IS NULL`,'N9_346_EMPTY_REMOVAL')+
             retentionAssert(`(${retentionDataSql(false)})=${empty}`,'N9_346_EMPTY_DATA_CHANGED')+
@@ -219,7 +217,7 @@ function safe346DefinitionChange(signature: string, change:(source:string)=>stri
 }
 function safe346RefuseDrift(label: string, driftSql: string, expected: RegExp=/rollback346 refuses unknown (?:function family|typed function ABI|function default or OUT profile|receipt or child relation kind|receipt (?:attribute|default|constraint|index expression) profile before deparse|trigger condition profile before deparse|function\/receipt\/trigger\/role\/profile or dependency state)/) {
     const before=retentionSnapshot();
-    const error=owned.psqlScriptExpectError(`BEGIN; ${driftSql} ${retentionKnownBody('rollback')}`);
+    const error=sourceDatabase.psqlScriptExpectError(`BEGIN; ${driftSql} ${retentionKnownBody('rollback')}`);
     assert.match(error,expected,label+' must reach intended guard refusal, not a DDL setup failure');
     assert.deepEqual(retentionSnapshot(),before,label+': complete outside state/profile must be restored');
     safe346Audit.push('drift:'+label);
@@ -234,7 +232,7 @@ async function safe346Wait(label: string, condition:(row:any)=>boolean) {
     assert.fail('owned session did not reach observed barrier: '+label);
 }
 function safe346Session(label: string, sql: string) {
-    const completion=owned.psqlAsync(`BEGIN; SET LOCAL application_name=${quote(label)}; ${sql}`).then(out=>({ok:true,out}),error=>({ok:false,out:String(error)}));
+    const completion=sourceDatabase.psqlAsync(`BEGIN; SET LOCAL application_name=${quote(label)}; ${sql}`).then(out=>({ok:true,out}),error=>({ok:false,out:String(error)}));
     return {label,completion};
 }
 async function safe346Cancel(session: ReturnType<typeof safe346Session>) {
@@ -321,7 +319,7 @@ test('safe rollback rejects actual function, receipt, trigger, ACL and dependenc
 test('safe rollback refuses repeatable-read and serializable transactions before retirement',()=>{
     const before=retentionSnapshot();
     for(const isolation of ['REPEATABLE READ','SERIALIZABLE']) {
-        const error=owned.psqlScriptExpectError(`BEGIN ISOLATION LEVEL ${isolation}; ${retentionKnownBody('rollback')}`);
+        const error=sourceDatabase.psqlScriptExpectError(`BEGIN ISOLATION LEVEL ${isolation}; ${retentionKnownBody('rollback')}`);
         assert.match(error,/rollback346 refuses concurrent\/prepared writes or non-read-committed state/);
         assert.deepEqual(retentionSnapshot(),before);safe346Audit.push('isolation:'+isolation);
     }
@@ -332,7 +330,7 @@ test('safe rollback refuses an actual other live write transaction without waiti
     const writer=safe346Session(label,`UPDATE public.products SET name=name WHERE id='${id}'; SELECT pg_catalog.pg_sleep(120); ROLLBACK;`);
     try {
         await safe346Wait(label,row=>row.backend_xid!==null&&row.wait_event==='PgSleep');
-        const error=owned.psqlScriptExpectError(`BEGIN; ${retentionKnownBody('rollback')}`);
+        const error=sourceDatabase.psqlScriptExpectError(`BEGIN; ${retentionKnownBody('rollback')}`);
         assert.match(error,/rollback346 refuses concurrent\/prepared writes or non-read-committed state/);
     } finally {const stopped=await safe346Cancel(writer);assert.equal(stopped.ok,false);}
     assert.deepEqual(retentionSnapshot(),before);safe346Audit.push('actual-live-writer-refusal/fullstate');
@@ -364,30 +362,28 @@ test('safe rollback refuses a real owned prepared write transaction and restores
     // This is mandatory and fails closed. No configuration change is made here;
     // actual AFTER needs an explicitly approved owned cluster with prepared slots.
     assert.equal(Number(psql("SELECT current_setting('max_prepared_transactions')")),2,'real prepared-xact proof requires root-approved owned PostgreSQL prepared slots; no skip or simulated pg_prepared_xacts');
-    const id=product(),before=retentionSnapshot(),gid='n9-product346:'+owned.runId+':'+owned.database+':'+crypto.randomUUID();
+    const id=product(),before=retentionSnapshot(),gid='n9-product346:'+owned.runId+':'+sourceDatabase.database+':'+crypto.randomUUID();
     try {
-        owned.script(`BEGIN; UPDATE public.products SET name=name WHERE id='${id}'; PREPARE TRANSACTION ${quote(gid)};`);
+        sourceDatabase.script(`BEGIN; UPDATE public.products SET name=name WHERE id='${id}'; PREPARE TRANSACTION ${quote(gid)};`);
         assert.equal(psql(`SELECT count(*) FROM pg_catalog.pg_prepared_xacts WHERE gid=${quote(gid)} AND database=current_database() AND owner=current_user`),'1');
-        safe346Audit.push('prepared:SHOW2/ownedGID='+gid+'/database='+owned.database+'/owner='+psql('SELECT current_user'));
-        const error=owned.psqlScriptExpectError(`BEGIN; ${retentionKnownBody('rollback')}`);
+        safe346Audit.push('prepared:SHOW2/ownedGID='+gid+'/database='+sourceDatabase.database+'/owner='+psql('SELECT current_user'));
+        const error=sourceDatabase.psqlScriptExpectError(`BEGIN; ${retentionKnownBody('rollback')}`);
         assert.match(error,/rollback346 refuses concurrent\/prepared writes or non-read-committed state/);
     } finally {
-        if(psql(`SELECT count(*) FROM pg_catalog.pg_prepared_xacts WHERE gid=${quote(gid)} AND database=current_database() AND owner=current_user`)==='1')owned.script(`ROLLBACK PREPARED ${quote(gid)};`);
+        if(psql(`SELECT count(*) FROM pg_catalog.pg_prepared_xacts WHERE gid=${quote(gid)} AND database=current_database() AND owner=current_user`)==='1')sourceDatabase.script(`ROLLBACK PREPARED ${quote(gid)};`);
     }
-    assert.equal(psql(`SELECT count(*) FROM pg_catalog.pg_prepared_xacts WHERE database=current_database() AND gid LIKE ${quote('n9-product346:'+owned.runId+':'+owned.database+':%')}`),'0','no prepared transaction owned by this exact run/database may remain');
-    safe346Audit.push('prepared:zero-owned-GIDs/'+owned.runId+'/'+owned.database);
+    assert.equal(psql(`SELECT count(*) FROM pg_catalog.pg_prepared_xacts WHERE database=current_database() AND gid LIKE ${quote('n9-product346:'+owned.runId+':'+sourceDatabase.database+':%')}`),'0','no prepared transaction owned by this exact run/database may remain');
+    safe346Audit.push('prepared:zero-owned-GIDs/'+owned.runId+'/'+sourceDatabase.database);
     assert.deepEqual(retentionSnapshot(),before);safe346Audit.push('actual-prepared-writer-refusal/fullstate');
 });
 
 test('canonical commerce intent executes through the actual pooled SQL parameter transport', async () => {
     // The earlier cases qualified the predecessor retirement; all behavior below
     // runs with the currently assembled inventory, variant-fact and cart writers.
-    const restore=(name:string)=>owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/'+name,import.meta.url),'utf8'));
-    restore('356_inventory_adjustment_receipts.sql');
-    restore('385_product_variant_facts.sql');
-    restore('388_cart_order_fact_snapshots.sql');
-    restore('411_authoritative_checkout_gst.sql');
-    restore('412_invoice_checkout_fact_parity.sql');
+    sourceDatabase = owned;
+    seedProductAtomicWorld(psql);
+    assert.equal(psql("SELECT count(*) FROM migration_privilege_journal WHERE migration='436' AND privilege='INVENTORY436 CURRENT FUNCTION'"),'17','Current Gateway retains436 including the locked checkout product-revision baseline');
+    assert.equal(psql("SELECT count(*)FROM migration_privilege_journal WHERE migration='437'AND privilege='INVENTORY437 CURRENT FUNCTION'"),'2','Current product behavior retains original437 batch/mandatory-event authority');
 
     const metadata={note:'Synthetic "quotes", apostrophe\' and ₹',nested:[true,null,7]};
     const id=product(),plan=planProductMutation({name:'Synthetic pooled plan',metadata,version:version(id),idempotency_key:crypto.randomUUID()});
@@ -597,11 +593,18 @@ test('stable variant UUID survives SKU/title/option edits and retains its real l
         const denied=await patch(id,{name:'Synthetic should roll back',variants});
         assert.ok([400,409].includes(denied.status),denied.text);assert.deepEqual(snapshot(id),before);
     }
-    const reserved=await patch(id,{variants:[{id:variantId,title:'L renamed',stock:1}]});
-    assert.equal(reserved.status,409,reserved.text);assert.deepEqual(snapshot(id),before);
+    // Public absolute inventory is free stock. Saving1free while2remain held
+    // means3physical units; it must not consume or cancel the original hold.
+    const expected=version(id),key=crypto.randomUUID(),mutation={variants:[{id:variantId,title:'L renamed',stock:1}]};
+    const saved=await patch(id,mutation,expected,key);assert.equal(saved.status,200,saved.text);
+    assert.equal(psql(`SELECT available||'|'||reserved||'|'||free_quantity||'|'||on_hand_quantity FROM inventory_levels WHERE id='${level}'`),'3|2|1|3');
+    assert.equal(psql(`SELECT inventory_qty FROM product_variants WHERE id='${variantId}'`),'1');
+    assert.equal(psql(`SELECT status||'|'||quantity FROM inventory_reservations WHERE id='${reservation.reservation_id}'`),'active|2');
+    const after=snapshot(id),replay=await patch(id,mutation,expected,key);assert.equal(replay.status,200,replay.text);assert.deepEqual(replay.json?.data,saved.json?.data);assert.deepEqual(snapshot(id),after);
+    const underflow=await adjust(id,variantId,-2);assert.equal(underflow.status,400,underflow.text);assert.deepEqual(snapshot(id),after,'A physical reduction cannot take the2units already reserved for a customer');
 });
 
-test('tracking-disabled variants without stock references still retain their canonical price history on omission', async () => {
+test('tracking-disabled zero-stock variants retain their canonical price history on retirement', async () => {
     const id=product(), variantId=crypto.randomUUID();
     psql(`UPDATE products SET track_inventory=false,is_physical=false WHERE id='${id}';
         INSERT INTO product_variants(id,product_id,title,price,inventory_qty,option1)
@@ -621,13 +624,17 @@ test('tracking-disabled variants without stock references still retain their can
         'cod',NULL,NULL,NULL,'standard','syn-non-stock-${id}',NULL,'syn-non-stock-${id}');`);
     assert.match(checkoutError,/CART_FACT_REFERENCE_REQUIRED/);
     assert.equal(psql(`SELECT count(*) FROM order_items WHERE variant_id='${variantId}';`),'0');
-    const before=snapshot(id);
-    const denied=await patch(id,{name:'Synthetic must roll back',variants:[]});
-    assert.equal(denied.status,409,denied.text);assert.deepEqual(snapshot(id),before);
     const kept=await patch(id,{name:'Synthetic non-stock edit',variants:[{id:variantId,title:'M retained'}]});
     assert.equal(kept.status,200,kept.text);
     assert.equal(kept.json?.data.variants[0].id,variantId);
+    const priceHistory=psql(`SELECT jsonb_agg(to_jsonb(t)ORDER BY id)FROM product_price_observations t WHERE variant_id='${variantId}'`);
+    const retired=await patch(id,{name:'Synthetic retired non-stock product',variants:[]});
+    assert.equal(retired.status,200,retired.text);assert.deepEqual(retired.json?.data.variants,[]);
+    assert.equal(psql(`SELECT count(*)FROM product_variants WHERE id='${variantId}'AND deleted_at IS NOT NULL`),'1');
+    assert.equal(psql(`SELECT jsonb_agg(to_jsonb(t)ORDER BY id)FROM product_price_observations t WHERE variant_id='${variantId}'`),priceHistory);
     assert.equal(psql(`SELECT count(*) FROM inventory_levels WHERE variant_id='${variantId}';`),'0');
+    assert.equal(psql(`SELECT count(*) FROM order_items WHERE variant_id='${variantId}';`),'0');
+
 });
 
 test('intervening and concurrent canonical stock adjustments cannot be reset by a stale full form', async () => {
@@ -731,4 +738,43 @@ test('direct guarded app_tenant status pairs preserve three states and reject ma
         const before=snapshot(id);assert.match(owned.psqlExpectError(roleCall(id,version(id),crypto.randomUUID(),{fields})),/PRODUCT_EDIT_INVALID/);
         assert.deepEqual(snapshot(id),before,JSON.stringify(fields));
     }
+});
+
+
+test('product-wide option rename, extension and reorder preserve canonical identity, stock and reservation history', async()=>{
+    const id=product(),vid=variant(id);
+    psql(`BEGIN;SELECT set_config('app.site_id','${site.siteId}',true);
+      SELECT reserve_inventory('${site.siteId}','${id}','${vid}','${site.locationId}',2,1200,'syn-option-reservation-${id}','${owner}');COMMIT;`);
+    const level=psql(`SELECT jsonb_build_object('id',id,'available',available,'reserved',reserved)::text FROM inventory_levels WHERE variant_id='${vid}';`);
+    const reservations=psql(`SELECT jsonb_agg(to_jsonb(t))::text FROM inventory_reservations t WHERE variant_id='${vid}';`);
+    const rows=[
+      {axes:[{name:'Fit',position:0,values:['M']}],values:{Fit:'M'},title:'M'},
+      {axes:[{name:'Fit',position:0,values:['M']},{name:'Colour',position:1,values:['Blue']}],values:{Fit:'M',Colour:'Blue'},title:'M / Blue'},
+      {axes:[{name:'Colour',position:0,values:['Navy']},{name:'Fit',position:1,values:['M']}],values:{Colour:'Navy',Fit:'M'},title:'Navy / M'},
+      {axes:[{name:'Fit',position:0,values:['M']}],values:{Fit:'M'},title:'M'},
+    ];
+    for(const row of rows) {
+      const result=await patch(id,{product_options:row.axes,variants:[{id:vid,title:row.title,sku:`SYN-${vid}`,price:100,stock:3,options:row.values}]});
+      assert.equal(result.status,200,result.text);
+      assert.equal(result.json?.data.variants[0].id,vid);
+      assert.deepEqual(result.json?.data.variants[0].options,row.values);
+      assert.equal(psql(`SELECT jsonb_build_object('id',id,'available',available,'reserved',reserved)::text FROM inventory_levels WHERE variant_id='${vid}';`),level);
+      assert.equal(psql(`SELECT jsonb_agg(to_jsonb(t))::text FROM inventory_reservations t WHERE variant_id='${vid}';`),reservations);
+      assert.equal(psql(`SELECT count(*) FROM product_variants WHERE product_id='${id}';`),'1');
+    }
+});
+
+test('mobile option-value addition creates only a new zero-stock variant and retries exactly once', async()=>{
+    const id=product(),vid=variant(id),expected=version(id),key=crypto.randomUUID();
+    const level=psql(`SELECT jsonb_build_object('id',id,'available',available,'reserved',reserved)::text FROM inventory_levels WHERE variant_id='${vid}';`);
+    const changes={product_options:[{name:'Size',position:0,values:['M','L']}],variants:[
+      {id:vid,title:'M',sku:`SYN-${vid}`,price:100,stock:5,options:{Size:'M'}},
+      {title:'L',price:100,stock:0,options:{Size:'L'}},
+    ]};
+    const result=await patch(id,changes,expected,key);assert.equal(result.status,200,result.text);
+    const rows=result.json?.data.variants;assert.equal(rows.length,2);assert.equal(rows[0].id,vid);
+    assert.notEqual(rows[1].id,vid);assert.equal(rows[1].stock,0);
+    assert.equal(psql(`SELECT jsonb_build_object('id',id,'available',available,'reserved',reserved)::text FROM inventory_levels WHERE variant_id='${vid}';`),level);
+    const committed=snapshot(id),replay=await patch(id,changes,expected,key);
+    assert.deepEqual(replay.json,result.json);assert.deepEqual(snapshot(id),committed);
 });

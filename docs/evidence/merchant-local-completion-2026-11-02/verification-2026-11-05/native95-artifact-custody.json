@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T04:25:27.248173+00:00",
+  "source": "merchant-media-recovery-source-v70",
+  "source_sha256": "227c67d04d52c7d0cad74e5709db40e4dd93ca7917d7317a1d29a7fe680ac508",
+  "run_id": "123f4ecc5372",
+  "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+  "retained_artifact": "/private/tmp/letbuyy-ios-ui-20261107-ol4jw8ha/native-ios-v95/qualified-artifact/Runner.app",
+  "installed_equals_retained": true,
+  "files": 401,
+  "artifact_manifest_sha256": "df1d1602702d5a84ffebccdcce4d7883b085b035a53f58044fb532759b00350d",
+  "control_hashes": {
+    "run_fixture.py": "52d29d8313ebaa2dbd84643f3bd8c290e5322d9d6c0f198e731be266c144f26e",
+    "run_ui.py": "d00107de8987f2cde366ace582efad4d0bba07211d865883ab93f595038bcedb",
+    "run_ui_guard.py": "b13386bf5e9d6a4aa79accf061bc9e7ad7a2738517b71b298bc469bdccf837df",
+    "MerchantUITests-product-accepted.swift": "bc9cfff97daffc8a162b024a1245c8fba096f0099fe06624b2ffd533b6500a93",
+    "MerchantUITests-media-readback.swift": "05167560f4cecd6cb8eaeb6deb668a51fb38e41099fed6db82001030b782b7e8",
+    "MerchantUITests-web-readback-v1.swift": "f2bfa0347f8e77d8fa65b60714b36c0bca174d546e90126082386780ffae4d06",
+    "fixture": "bfe9a1f77890181620fc7eadef31605e34fea762d5b4178402d64c90bfc3f2d8"
+  },
+  "product_ui_admission_matches_retained": true,
+  "limits": "Artifact and control custody only. Normal simulator build; no physical device or signed-release certificate."
+}

@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-11-06T03:31:47.947443+00:00",
+  "supervisor_pid": 82089,
+  "source": "switcher-semantics-negative-source-v1",
+  "source_sha256": "625c9bea32a473cbdfacf5755d39946bd2fed3ac9d19d26aac65caaf63930572",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/store_switcher_presentation_test.dart",
+    "--plain-name",
+    "one semantic action owns the complete store name and native input"
+  ],
+  "status": "RUNNING",
+  "child_pid": 82128
+}

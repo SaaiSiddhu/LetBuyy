@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-11-06T06:56:57.345483+00:00",
+  "supervisor_pid": 95587,
+  "source": "kyc-selection-negative-v1",
+  "source_sha256": "707592c4206e9ab3bc743dfcb105c36a2ae121cfd21fe9e21b55e2e759ab2795",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "test/kyc_selection_frame_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 95589,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T06:58:23.279435+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "707592c4206e9ab3bc743dfcb105c36a2ae121cfd21fe9e21b55e2e759ab2795"
+}

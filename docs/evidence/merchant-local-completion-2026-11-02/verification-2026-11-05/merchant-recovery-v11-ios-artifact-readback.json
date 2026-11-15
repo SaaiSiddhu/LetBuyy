@@ -1,0 +1,16 @@
+{
+  "at": "2026-11-06T08:54:33.553446+00:00",
+  "status": "INDEPENDENT_IOS_DEBUG_ARTIFACT_READBACK_PASS",
+  "source_sha256": "85c6e28b0e4fa33b40a35cf8f09c4a3c354226802236c8fec04989fd0835abe4",
+  "artifact": {
+    "path": "/private/tmp/letbuyy-merchant-recovery-v11-ios-7m7xzeil/Runner.app",
+    "files": 377,
+    "manifest_sha256": "7c6ec3f04918384fb9cc77cc56d2a4207dd6bee50dc0ae4a3a1f2c53fd165d6a"
+  },
+  "all_retained_files_equal": 377,
+  "bundle_id": "com.letbuyy.store",
+  "executable_architecture": "/private/tmp/letbuyy-merchant-recovery-v11-ios-7m7xzeil/Runner.app/Runner: Mach-O 64-bit executable arm64",
+  "owned_simulator_remains_shutdown": true,
+  "scope": "Debug compile/archive only; no iOS launch, auth, backend, sync or release acceptance.",
+  "material_icons_sha256": "d9865b671a09d683d13a863089d8825e0f61a37696ce5d7d448bc8023aa62453"
+}

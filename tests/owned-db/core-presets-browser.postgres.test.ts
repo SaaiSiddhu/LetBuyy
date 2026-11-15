@@ -7,7 +7,10 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { before, after, test } from 'node:test';
-import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { createServer, request as forwardHttpRequest, type Server } from 'node:http';
 import { createServer as createHttpsServer, type Server as HttpsServer } from 'node:https';
 import { exportJWK } from 'jose';
@@ -282,7 +285,11 @@ async function publish(page: Page, themeSlug=slug) {
 test('all ten persisted Core presets apply, save, reload, publish and render on the normal buyer origin',{timeout:600000},async t=>{
  const f=await fixture('core-week1');t.after(()=>f.context.close());await signIn(f.page,f.email);await openEditor(f);
  const expected=['Forge','Sense','Aura','Craft','Refresh','Ride','Dawn','Bloom','Nova','Summit'];
- const screenshots=new URL('../../docs/evidence/web-launch-week1-2026-10-21/screenshots/',import.meta.url);mkdirSync(screenshots,{recursive:true});
+ //A new qualification run must retain its own evidence rather than overwrite
+ //tracked screenshots from an earlier release and dirty the source candidate.
+ const artifactRoot=mkdtempSync(join(tmpdir(),`letbuyy-core-presets-${owned.runId}-`));
+ const screenshots=pathToFileURL(join(artifactRoot,'screenshots')+'/');mkdirSync(screenshots,{mode:0o700});
+ console.info('OWNED_CORE_PRESET_ARTIFACTS '+JSON.stringify({run_id:owned.runId,root:artifactRoot}));
  const buyer=await f.context.newPage();const receipts=[];
  for(const name of expected){
   await f.page.getByRole('button',{name:'Theme styles',exact:true}).click();
@@ -346,6 +353,6 @@ test('all ten persisted Core presets apply, save, reload, publish and render on 
  assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${f.tenant.siteId}';`),'0','Core smoke stops before payment/order acceptance');
  console.log('WEEK1_CORE_BUYER_HANDOFF_PASS',JSON.stringify({catalog:true,product:true,normalBuyNow:true,canonicalCartCount:1,localHostedCheckout200:true,ordersCreated:0,providerPayment:false}));
  console.log('WEEK1_CORE_IMPORT_BROWSER_PASS',JSON.stringify({normalFileInput:true,scopedPrivateCopy:true,installed:true,buyerRendered:true,firstPartyNotOverwritten:true}));
- writeFileSync(new URL('../../docs/evidence/web-launch-week1-2026-10-21/core-preset-browser-results.json',import.meta.url),JSON.stringify({scope:'Production-built local Merchant/Identity/Commerce with owned PostgreSQL and normal password login. No hosted/provider proof.',presets:receipts},null,2)+'\n');
+ writeFileSync(join(artifactRoot,'core-preset-browser-results.json'),JSON.stringify({run_id:owned.runId,scope:'Production-built local Merchant/Identity/Commerce with owned PostgreSQL and normal password login. No hosted/provider proof.',presets:receipts},null,2)+'\n',{mode:0o600,flag:'wx'});
  console.log('WEEK1_CORE_PRESETS_PASS',JSON.stringify(receipts));
 });

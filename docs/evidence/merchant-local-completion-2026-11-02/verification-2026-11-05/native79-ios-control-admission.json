@@ -1,0 +1,12 @@
+{
+  "source_name": "merchant-product-media-source-v56",
+  "source_sha256": "70cb44be58fb9a998ef1e35ca2b33bd0ae8c8ed45ddd1742d4723806f0119933",
+  "inputs": {
+    "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-product-media-v79-local-ios.postgres.test.ts": "527551ae151ca75de4dab8de5fa67a0fbb980e57e359fa2bd9de080bfeb82a6d",
+    "/private/tmp/letbuyy-ios-ui-20261107-q88ebdqk/device-receipt.json": "6db043bb21624abc6e3c82270c443ce858597575f000def20f7872332d161705",
+    "/private/tmp/letbuyy-ios-ui-20261107-q88ebdqk/create_project.rb": "2614a67693897d69f56bc09ac2276a71ded7de1becd3fdc846620deb27124bf3",
+    "/private/tmp/letbuyy-ios-ui-20261107-q88ebdqk/MerchantUITests.swift": "c73fc8365d2ef5f7d204115e1c658a8be6ccdb43d73d1018daaa703d442210f1",
+    "/private/tmp/letbuyy-ios-ui-20261107-q88ebdqk/run_fixture.py": "80f210475c209f53956da531752d69a3530d62063986d65e5fb9523777363d49"
+  },
+  "scope": "Prepared controls only; no iOS acceptance yet"
+}

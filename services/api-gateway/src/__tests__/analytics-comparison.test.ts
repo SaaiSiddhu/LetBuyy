@@ -12,6 +12,7 @@ const tsClient = repositorySource('packages/typescript/api-client/src/index.ts')
 const dartClient = repositorySource('packages/dart/api_client/lib/src/api_client.dart');
 const mobileService = repositorySource('apps/merchant/mobile/lib/services/analytics_service.dart');
 const mobileScreen = repositorySource('apps/merchant/mobile/lib/screens/analytics/analytics_screen.dart');
+const recordedChart = repositorySource('apps/merchant/mobile/lib/widgets/shared/recorded_history_chart.dart');
 
 test('analytics dashboard and revenue expose previous-period comparison data', () => {
     assert.match(routeSource, /comparison:\s*\{/);
@@ -35,7 +36,8 @@ test('mobile analytics renders honest period comparison without fake data', () =
     assert.match(mobileService, /StoreAnalyticsComparison\.fromGateway/);
     assert.match(mobileService, /_api\.analytics\.revenue/);
     assert.match(mobileScreen, /Period comparison/);
-    assert.match(mobileScreen, /No comparison yet/);
-    assert.match(mobileScreen, /dashArray:\s*const \[6,\s*4\]/);
+    assert.match(mobileScreen, /row\.metric\.available[\s\S]*No complete comparison returned\./);
+    assert.match(mobileScreen, /RecordedHistoryChart\([\s\S]*previous: analytics\.comparison\.previousDailyStats\.isEmpty/);
+    assert.match(recordedChart, /dashArray:[^\n]*\[6,\s*4\]/);
     assert.doesNotMatch(mobileScreen, /coming soon/i);
 });

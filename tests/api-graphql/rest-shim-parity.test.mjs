@@ -87,7 +87,7 @@ test('WS12 G6 Admin and Storefront GraphQL use the shared REST shim request/enve
 test('WS12 G6 migrated REST endpoints remain the external source of truth for parity reads', () => {
   assertIncludesAll(productsRouteSource, [
     "router.get('/', validate('query', ListProductsQuery)",
-    "return c.json(cursorPaginated(responseRows, {",
+    "const response = cursorPaginated(responseRows, {",
     "router.get('/:id'",
   ], 'products REST parity routes');
 

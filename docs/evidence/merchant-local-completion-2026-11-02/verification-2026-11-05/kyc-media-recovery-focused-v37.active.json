@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-06T15:27:19.540189+00:00",
+  "supervisor_pid": 45824,
+  "source": "merchant-kyc-receipt-source-v37",
+  "source_sha256": "caff2bb52700f84e905a40aef1c93aecd94fb1e7f31d9c1aab29dda4798d535a",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/media_interrupted_upload_recovery_test.dart",
+    "test/media_workflow_context_test.dart",
+    "test/media_library_recovery_test.dart",
+    "test/kyc_public_validation_test.dart",
+    "test/kyc_interrupted_upload_recovery_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 45829
+}

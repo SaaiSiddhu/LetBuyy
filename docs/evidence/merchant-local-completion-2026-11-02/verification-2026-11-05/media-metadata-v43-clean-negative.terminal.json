@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-06T16:42:57.053828+00:00",
+  "status": "REPRODUCED",
+  "results": [
+    {
+      "action": "Cancel",
+      "exit_code": 1,
+      "production_file_matches_exact39": true,
+      "disposed_controller_error": true,
+      "dependents_assertion": true,
+      "semantics_handle_leak": false,
+      "log": "media-metadata-source39-cancel-async-clean-fixture-before.log"
+    },
+    {
+      "action": "Save",
+      "exit_code": 1,
+      "production_file_matches_exact39": true,
+      "disposed_controller_error": true,
+      "dependents_assertion": true,
+      "semantics_handle_leak": false,
+      "log": "media-metadata-source39-save-async-clean-fixture-before.log"
+    }
+  ],
+  "fixed_source_restored": true,
+  "fixed_source_sha256": "7b3d68cff186f04b58661b987e52954d2b63ae452e0d7befcfbda20a108d355e",
+  "purpose": "Same corrected regression isolated per action against the exact source39 production file; source42 implementation restored in finally. No hosted/provider/data change."
+}

@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-11-07T06:30:38.424126+00:00",
+  "supervisor_pid": 69352,
+  "source": "merchant-camera-video-model-source-v79",
+  "source_sha256": "e5cd4f338399cb21535dad581af4ad3355a38def06ddeb9f2c5cbda4f65672e6",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/media_model_upload_menu_test.dart",
+    "test/media_video_controls_test.dart",
+    "test/media_public_upload_admission_test.dart",
+    "test/merchant_media_picker_test.dart",
+    "test/media_library_recovery_test.dart",
+    "test/media_interrupted_upload_recovery_test.dart",
+    "test/product_media_attachment_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "RUNNING",
+  "child_pid": 69354
+}

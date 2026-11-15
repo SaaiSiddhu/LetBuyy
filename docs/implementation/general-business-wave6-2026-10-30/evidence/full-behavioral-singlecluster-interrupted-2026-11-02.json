@@ -1,0 +1,33 @@
+{
+  "scope": "Complete behavioral and contract attempt with one owned database cluster on the migration-428 working tree",
+  "date": "2026-11-02",
+  "status": "red and interrupted after pure-lane failure; not a complete gate result",
+  "invocation": "LETBUYY_EXECUTABLE_PG_JOBS=1 node scripts/governance/test-behavioral.mjs --with-contracts --report /private/tmp/letbuyy-wave6-428-singlecluster-full.json",
+  "pure": {
+    "passed": 3148,
+    "failed": 1,
+    "explicit_human_provider_skips": 15,
+    "failing_test": "tests/governance/gateway-db-lifecycle.test.mjs: a red suite, a skipping suite and an empty suite are all red; a suite starts from a pristine clone; and the run leaves nothing behind",
+    "cause_observed": "The test compared every labeled fixture on the machine before and after its nested runner; an unrelated owned fixture appeared during that interval. The nested runner's own run-id cleanup assertion passed."
+  },
+  "contracts": { "passed": 364, "failed": 0 },
+  "owned_database_lane": {
+    "runner_pid": 45613,
+    "signal": "SIGINT",
+    "reason": "The full gate was already red on the pure assertion and continued database work could not repair that result",
+    "reported_code": 130,
+    "owner_labeled_containers_after_cleanup": 0,
+    "owner_labeled_networks_after_cleanup": 0,
+    "owner_labeled_volumes_after_cleanup": 0,
+    "limitation": "The parent JSON excludes interrupted owned assertions; it is not a full database result"
+  },
+  "repair": {
+    "file": "tests/governance/gateway-db-lifecycle.test.mjs",
+    "change": "Cleanup checks now query only the exact run-id labels created by their nested runner; the separate neighbor/reaper tests continue to test cross-run isolation",
+    "focused_result": "Three affected lifecycle cases passed 3/3 on a real Docker daemon after the repair"
+  },
+  "artifact_sha256": {
+    "gate_log": "b4ee3b2fe29e22e8aec2183fbba631717814523bc76329434fa1d7e222247d7f",
+    "gate_json": "234535201d11c51be52b8eb80acc79c1cd904d11c93a2e611cf6a1f21debb2ce"
+  }
+}

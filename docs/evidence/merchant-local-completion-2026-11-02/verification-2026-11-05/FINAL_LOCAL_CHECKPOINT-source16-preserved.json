@@ -1,0 +1,239 @@
+{
+  "at": "2026-11-06T12:13:06.473341+00:00",
+  "status": "CURRENT_LOCAL_SOURCE_DEBUG_AND_BOUNDED_NATIVE65_ACCEPTED;FULL122_AND_RELEASE_OPEN",
+  "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+  "source_inputs": 8472,
+  "source_manifest": "merchant-recovery-source-v16.source.json",
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "branch": "codex/merchant-mobile-parity",
+  "report": "../MERCHANT_RECOVERY_LOCAL_V3.md",
+  "independent_current_gates": "recovery-v16-pipeline.terminal.json",
+  "full_flutter": 1630,
+  "gateway": {
+    "tests": 2087,
+    "pass": 2087,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "root_contracts": {
+    "tests": 389,
+    "pass": 389,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "app_analysis_issues": 0,
+  "web": {
+    "tests": 1732,
+    "pass": 1732,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "web_scope_reused_by_input_equality": true,
+  "owned_staff_db": {
+    "pass": 50,
+    "fail": 0,
+    "skip": 0,
+    "cleanup_empty": true,
+    "source": "merchant-recovery-source-v9"
+  },
+  "sealed_invitation_browser": {
+    "pass": 1,
+    "fail": 0,
+    "cleanup_empty": true,
+    "source": "merchant-recovery-source-v9",
+    "scope": "Actual normal owner invitation/wrong-account/verified consent/downgrade/removal,local-provider only;no inbox/provider delivery certification"
+  },
+  "scope_reuse_proofs": [
+    "merchant-recovery-v10-reused-scopes.json",
+    "merchant-recovery-v11-reused-scopes.json"
+  ],
+  "governance": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "governance_advisories": 211,
+  "android_debug_compile": {
+    "passed": true,
+    "run": "65570e9272a9",
+    "apk_sha256": "c715d877ec4998c14dce5d52a2f34341e87ecce2ef733d367437b71f10c1e31a",
+    "installed_bytes_readback": true,
+    "artifact_manifest": "../native65-accepted-local-staff-product/MANIFEST.json"
+  },
+  "ios_debug_compile": {
+    "passed": true,
+    "compile_only": true,
+    "files": 260,
+    "readback": "merchant-recovery-v16-ios-artifact-readback.json",
+    "fonts": "merchant-recovery-v16-ios-complete-font-readback.json"
+  },
+  "resource_state": "Native65 runner/UI/independent/readback/custody terminal;ownedDocker/Next/forward/reverseclean;exacttaskQEMU31415stoppedgracefully,userdata retained;isolatedADB15038notreset;ownediOSremainsshutdown.",
+  "active_session": null,
+  "source_frozen": false,
+  "next": "Begin strict canonical KYC public DTO validation and/or Media command recovery audit with owned payload/replay/permission positives and negative controls. Preserve source16 proof and prior policies. Full119applicable acceptance remains open.",
+  "open_reliability_finding": "Historical61native90secwait rootcause remains unproven; foreground timeout amplification3\u21921 fixed and actualnative65processrestartpasses.",
+  "earlier_attempts": "59/60/61/63notaccepted;62diagnosticpassonly;retain original terminals/preimages/trace/restoration.",
+  "unreviewed_source_rows": 35,
+  "unique_surface_denominator": null,
+  "full_feature_set_accepted": false,
+  "ios_runtime_accepted": false,
+  "signed_release": false,
+  "hosted_mutations": false,
+  "programme_boundaries": "120/121excluded;122paused;51frozen;schema414\u2013437unchanged",
+  "checkpoint_preimages": "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/checkpoint-preimages-before-recovery-v16",
+  "native65": {
+    "at": "2026-11-06T11:59:35.203811+00:00",
+    "status": "BOUNDED_LOCAL_53_MEMBERSHIP_NATIVE_WEB_STAFF_PASS",
+    "run_id": "65570e9272a9",
+    "source_sha256": "dc5e2e0af9f5da7b4e2ec11a68b3c343cb5953daa83de34009a4c5e6fb228c8c",
+    "source_inputs": 8472,
+    "native_dependency_sha256": "c6aea48a0405cbb448450b29794b90fb45439d5c1b00df1289ea1cf07bd7e506",
+    "native_dependency_entries": 4861,
+    "apk_sha256": "c715d877ec4998c14dce5d52a2f34341e87ecce2ef733d367437b71f10c1e31a",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/qualified-artifact/merchant-local-debug.apk",
+    "installed_bytes_independently_equal": true,
+    "compiled_workers": {
+      "run_id": "65570e9272a9",
+      "runtime": "workerd",
+      "gateway_sha256": "b7b1b1d414180a7ddc088c389dcee247846745f48e1f1b5907359e439d761af6",
+      "bff_sha256": "82fb0e83d70f9997d8455305a48dcc4adfcc3c604be39f55a31099c58ae4c1a7",
+      "entrypoints": [
+        "services/api-gateway/src/index.ts",
+        "services/mobile-bff/src/index.ts"
+      ],
+      "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+      "hosted": false
+    },
+    "runner_pass": 1,
+    "runner_fail": 0,
+    "runner_skip": 0,
+    "source_and_controller_inputs_unchanged": true,
+    "synthetic_login_inputs_retired": true,
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    },
+    "next_markers_remaining": [],
+    "forward_baseline_restored": true,
+    "reverse_baseline_restored": true,
+    "web_viewport": {
+      "run_id": "65570e9272a9",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "bounds": {
+        "x": 988,
+        "y": 48.03953170776367,
+        "width": 276,
+        "height": 648.0000190734863
+      },
+      "geometry": {
+        "clientHeight": 646,
+        "scrollHeight": 2998
+      },
+      "normal_choice_visible": true,
+      "alternate_appearance_choice_visible": true,
+      "focus_reachable": true,
+      "appearance_restored": true,
+      "evidence": [
+        "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-beta-choice-normal-visible.png",
+        "/private/tmp/letbuyy-merchant-local-20261106-dzfklhx4/native-warehouse-v65/web-beta-choice-alternate-visible.png"
+      ]
+    },
+    "database_state": {
+      "staff": {
+        "role": "viewer",
+        "active": false,
+        "status": "removed"
+      },
+      "alpha_name": "Synthetic Alpha web",
+      "beta_product": {
+        "id": "878e6aa3-9004-45c1-94bc-3bb8efc5a837",
+        "name": "Synthetic Beta mobile product",
+        "price": 100,
+        "stock": 3,
+        "images": [
+          "http://127.0.0.1:54352/__owned__/product.png"
+        ],
+        "version": 3,
+        "category": null,
+        "metadata": {
+          "retained": "Synthetic unmanaged metadata",
+          "specifications": {
+            "Null": null,
+            "Empty": "",
+            "Boolean": true,
+            "Numeric": 42
+          }
+        },
+        "description": null
+      },
+      "staff_audits": {
+        "INSERT": 1,
+        "UPDATE": 2,
+        "employee.created": 1,
+        "employee.removed": 1,
+        "employee.updated": 1
+      },
+      "product_audits": 1,
+      "product_outbox": 1,
+      "product_receipts": 1,
+      "alpha_roster_count": 53,
+      "alpha_roster_byte_equal": true,
+      "alpha_roster_before_sha256": "a4bbe61a10266979ef0d11dd08c9863c223f7b7ace77ce2c0936cb674530e6ae",
+      "alpha_roster_after_sha256": "a4bbe61a10266979ef0d11dd08c9863c223f7b7ace77ce2c0936cb674530e6ae",
+      "inventory_before": [
+        {
+          "id": "7e7ad39a-d708-4c84-adcd-c172e4d0f9b3",
+          "on_hand": 3,
+          "reserved": 0,
+          "available": 3,
+          "committed": 0
+        }
+      ],
+      "inventory_after": [
+        {
+          "id": "7e7ad39a-d708-4c84-adcd-c172e4d0f9b3",
+          "on_hand": 3,
+          "reserved": 0,
+          "available": 3,
+          "committed": 0
+        }
+      ]
+    },
+    "normal_web_header_staff_selection": true,
+    "native_membership_page_reads": 8,
+    "screenshots": {
+      "native-initial-beta-tail-choice.png": "c63307189eaea5e0cdf99966692f549c3aa37751241b30052c1959c769e582a1",
+      "native-alpha-selected.png": "b8df4cf9cc73bd7144a6c3be9c03842bae31827efe2f0eb9a6192cbed4f390f1",
+      "native-beta-selected.png": "b80b4db88bfb2f569239b323359246b6ce0079d5c297487833155f77884876d8",
+      "native-alpha-saved.png": "30e2cbc155c5205608625328352bca26bff844e07364000c4742ab1de8c2c37f",
+      "native-owner-roster53.png": "78f8c5362cad8b52be35fd39c5070af9163101d723bbb0c27232cd43a71a6960",
+      "native-web-alpha-read.png": "af95915bbacb56c08bccde6e0697e56c1803a66d1f80a2dc95e8ec2fed479bd6",
+      "native-beta-restart-selection.png": "1a7edb060027cab53eb68a73d5f41baca7603acb4d11f7e6d34469d36ddfdbc0",
+      "native-staff-product-saved.png": "f70db744b05f77f27576fb8229365fa0ec39731950aee67ecc9dbfd769b9f7a8",
+      "native-downgrade-denial.png": "c0caa74f71609fb3ef49697e2f4196c1044afc8019ff2d79f59fa6f70f4585cc",
+      "web-beta-choice-normal-visible.png": "5ee8bc9fa25c250e6f4065ea8a084b8d787b941b305769037c9acfd0d253651e",
+      "web-beta-choice-alternate-visible.png": "0156180294ea5634dccc7fd2bfe622f4437713f176bad8a5ea816cb41e2fd38e",
+      "native-revoked-beta-absent.png": "0f6c066f30e68bbbf6238a7ddb57a3dbfd81dfe7660eed0498d7bee6115a5384",
+      "web-alpha-read-native-and-save.png": "1b24d993bca12eb38974296c5684adbe651b225836a0d3e6ad5110a7db35ca9c",
+      "web-staff-product-mobile-read.png": "39ada3d87ab38f80a1b3902668e49ee6770e274d518452fa0fc7bd391e7e9200"
+    },
+    "limits": "Synthetic local Android/web/compiled-Worker/Postgres journey only. No native invitation delivery/consent, all roles or combinations, iOS runtime, real challenge/provider, hosted, physical performance, signed release or full122 acceptance."
+  },
+  "owned_kyc": "recovery-v13-owned-kyc-readback.json",
+  "generated_cleanup_incident": {
+    "raw_governance": "recovery-v13-independent-local-gates.json",
+    "source_preserved": true,
+    "runtime_dependency_links_restored_offline": true,
+    "retained_prior_binaries_preserved": true,
+    "unrestored_binding": "Ignored Merchant .vercel association removed; no guess/rebind/hosted operation. iOS Pods regenerated by current successful compile."
+  }
+}

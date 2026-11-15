@@ -44,7 +44,7 @@ function document() {
     const settings = helpers.normalizeSettingsSchema(runtime.settingsSchema);
     const state = helpers.normalizeEditorState(base, slug, 'index', runtime.sectionSchemas, settings);
     const config = helpers.buildDraftConfig(base, slug, state, 'index');
-    return { config, issues: () => domain.collectThemeTemplateValidationIssues({ templateConfig: config, runtime, themeSlug: slug }) };
+    return { config, issues: () => domain.collectThemeTemplateValidationIssues({ templateConfig: config, runtime, trustedPreviousConfig: base, themeSlug: slug }) };
 }
 
 test('the actual default editor document passes canonical validation before its first CAS save', () => {
@@ -77,8 +77,8 @@ function actualLiquidDocument() {
 
 test('the actual installed Liquid document remains valid when normalized by the editor', () => {
     const doc = actualLiquidDocument()
-    assert.deepEqual(domain.collectThemeTemplateValidationIssues({templateConfig:doc.base,runtime:doc.runtime,themeSlug:doc.slug}),[], 'the installed document is valid before the client loads it')
-    assert.deepEqual(domain.collectThemeTemplateValidationIssues({templateConfig:doc.config,runtime:doc.runtime,themeSlug:doc.slug}),[])
+    assert.deepEqual(domain.collectThemeTemplateValidationIssues({templateConfig:doc.base,runtime:doc.runtime,trustedPreviousConfig:doc.base,themeSlug:doc.slug}),[], 'the installed document is valid before the client loads it')
+    assert.deepEqual(domain.collectThemeTemplateValidationIssues({templateConfig:doc.config,runtime:doc.runtime,trustedPreviousConfig:doc.base,themeSlug:doc.slug}),[])
 })
 
 test('every header/footer section remains selectable and editable through the actual compiler round trip', () => {
@@ -99,7 +99,7 @@ test('every header/footer section remains selectable and editable through the ac
     const config = helpers.buildDraftConfig(doc.base, doc.slug, hidden, 'index');
     assert.equal(config.sections.header.id, 'announcement-default', 'the legacy DTO remains a single section projection');
     assert.equal(config.sections.footer.id, 'footer-default');
-    assert.deepEqual(domain.collectThemeTemplateValidationIssues({ templateConfig: config, runtime: doc.runtime, themeSlug: doc.slug }), []);
+    assert.deepEqual(domain.collectThemeTemplateValidationIssues({ templateConfig: config, runtime: doc.runtime, trustedPreviousConfig: doc.base, themeSlug: doc.slug }), []);
     const compiled = domain.compilePortableToLiquidBundle(config, { baseBundle: doc.base.liquidBundle }).bundle;
     assert.deepEqual(compiled.templates.header.order, ['announcement-default', 'header-default']);
     assert.equal(compiled.templates.header.sections['header-default'].settings.showSearch, false);

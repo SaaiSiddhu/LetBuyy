@@ -29,6 +29,7 @@ concurrency:
 env:
   NODE_VERSION: "22"
   PNPM_VERSION: "10.6.2"
+  FLUTTER_VERSION: "3.44.8"
   # Keep one browser/catalog suite at a time on the small hosted Linux runner.
   # Each suite still exercises its real internal races and prepared transactions.
   LETBUYY_EXECUTABLE_PG_JOBS: "1"
@@ -41,12 +42,16 @@ env:
 jobs:
   typecheck:
     name: Typecheck
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
+      - name: Track protected project cleanup
+        id: pc_cleanup
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
       - uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
@@ -62,12 +67,48 @@ jobs:
       - name: Run typecheck
         run: pnpm turbo typecheck
 
+      - name: Snapshot protected build evidence
+        id: pc_cleanup_snapshot
+        if: ${{ always() && steps.pc_cleanup.outputs.enabled == 'true' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: snapshot
+        env:
+          PROJECT_CLEANUP_JOB_STATUS: ${{ job.status }}
+          PROJECT_CLEANUP_RELEASE: ${{ github.ref_type == 'tag' }}
+      - name: Preserve protected build evidence
+        id: pc_cleanup_archive
+        if: ${{ always() && steps.pc_cleanup_snapshot.outputs.ready == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pc_cleanup.outputs.artifact_name }}
+          path: ${{ steps.pc_cleanup.outputs.payload }}
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm build evidence preservation
+        if: ${{ always() && steps.pc_cleanup_archive.outputs.artifact-id != '' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: archive
+        env:
+          PROJECT_CLEANUP_ARTIFACT_ID: ${{ steps.pc_cleanup_archive.outputs.artifact-id }}
+          PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
   secret-hygiene:
     name: Secret hygiene
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Track protected project cleanup
+        id: pc_cleanup
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -75,14 +116,48 @@ jobs:
       - name: Fail on committed credential placeholders
         run: node scripts/validators/committed-secret-placeholder-validator.mjs
 
+      - name: Snapshot protected build evidence
+        id: pc_cleanup_snapshot
+        if: ${{ always() && steps.pc_cleanup.outputs.enabled == 'true' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: snapshot
+        env:
+          PROJECT_CLEANUP_JOB_STATUS: ${{ job.status }}
+          PROJECT_CLEANUP_RELEASE: ${{ github.ref_type == 'tag' }}
+      - name: Preserve protected build evidence
+        id: pc_cleanup_archive
+        if: ${{ always() && steps.pc_cleanup_snapshot.outputs.ready == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pc_cleanup.outputs.artifact_name }}
+          path: ${{ steps.pc_cleanup.outputs.payload }}
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm build evidence preservation
+        if: ${{ always() && steps.pc_cleanup_archive.outputs.artifact-id != '' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: archive
+        env:
+          PROJECT_CLEANUP_ARTIFACT_ID: ${{ steps.pc_cleanup_archive.outputs.artifact-id }}
+          PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
+      - name: Track protected project cleanup
+        id: pc_cleanup
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
       - uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
@@ -104,14 +179,48 @@ jobs:
       - name: Lint CSS
         run: pnpm run lint:css
 
+      - name: Snapshot protected build evidence
+        id: pc_cleanup_snapshot
+        if: ${{ always() && steps.pc_cleanup.outputs.enabled == 'true' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: snapshot
+        env:
+          PROJECT_CLEANUP_JOB_STATUS: ${{ job.status }}
+          PROJECT_CLEANUP_RELEASE: ${{ github.ref_type == 'tag' }}
+      - name: Preserve protected build evidence
+        id: pc_cleanup_archive
+        if: ${{ always() && steps.pc_cleanup_snapshot.outputs.ready == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pc_cleanup.outputs.artifact_name }}
+          path: ${{ steps.pc_cleanup.outputs.payload }}
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm build evidence preservation
+        if: ${{ always() && steps.pc_cleanup_archive.outputs.artifact-id != '' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: archive
+        env:
+          PROJECT_CLEANUP_ARTIFACT_ID: ${{ steps.pc_cleanup_archive.outputs.artifact-id }}
+          PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
   unit-tests:
     name: Unit tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
+      - name: Track protected project cleanup
+        id: pc_cleanup
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
       - uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
@@ -121,8 +230,16 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
+      - name: Use version-bound installed Flutter on the free runner
+        if: runner.environment == 'self-hosted' && vars.LETBUYY_CI_FLUTTER_ROOT != ''
+        env:
+          LETBUYY_CI_FLUTTER_ROOT: ${{ vars.LETBUYY_CI_FLUTTER_ROOT }}
+        run: python3 scripts/github/activate-flutter.py --version "$FLUTTER_VERSION"
+
       - uses: subosito/flutter-action@v2
+        if: runner.environment != 'self-hosted' || vars.LETBUYY_CI_FLUTTER_ROOT == ''
         with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
 
@@ -173,14 +290,48 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      - name: Snapshot protected build evidence
+        id: pc_cleanup_snapshot
+        if: ${{ always() && steps.pc_cleanup.outputs.enabled == 'true' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: snapshot
+        env:
+          PROJECT_CLEANUP_JOB_STATUS: ${{ job.status }}
+          PROJECT_CLEANUP_RELEASE: ${{ github.ref_type == 'tag' }}
+      - name: Preserve protected build evidence
+        id: pc_cleanup_archive
+        if: ${{ always() && steps.pc_cleanup_snapshot.outputs.ready == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pc_cleanup.outputs.artifact_name }}
+          path: ${{ steps.pc_cleanup.outputs.payload }}
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm build evidence preservation
+        if: ${{ always() && steps.pc_cleanup_archive.outputs.artifact-id != '' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: archive
+        env:
+          PROJECT_CLEANUP_ARTIFACT_ID: ${{ steps.pc_cleanup_archive.outputs.artifact-id }}
+          PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
   merge-safety-gate:
     name: Merge safety gate
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
+      - name: Track protected project cleanup
+        id: pc_cleanup
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
       - uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
@@ -190,8 +341,16 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
+      - name: Use version-bound installed Flutter on the free runner
+        if: runner.environment == 'self-hosted' && vars.LETBUYY_CI_FLUTTER_ROOT != ''
+        env:
+          LETBUYY_CI_FLUTTER_ROOT: ${{ vars.LETBUYY_CI_FLUTTER_ROOT }}
+        run: python3 scripts/github/activate-flutter.py --version "$FLUTTER_VERSION"
+
       - uses: subosito/flutter-action@v2
+        if: runner.environment != 'self-hosted' || vars.LETBUYY_CI_FLUTTER_ROOT == ''
         with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
 
@@ -252,14 +411,48 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      - name: Snapshot protected build evidence
+        id: pc_cleanup_snapshot
+        if: ${{ always() && steps.pc_cleanup.outputs.enabled == 'true' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: snapshot
+        env:
+          PROJECT_CLEANUP_JOB_STATUS: ${{ job.status }}
+          PROJECT_CLEANUP_RELEASE: ${{ github.ref_type == 'tag' }}
+      - name: Preserve protected build evidence
+        id: pc_cleanup_archive
+        if: ${{ always() && steps.pc_cleanup_snapshot.outputs.ready == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pc_cleanup.outputs.artifact_name }}
+          path: ${{ steps.pc_cleanup.outputs.payload }}
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm build evidence preservation
+        if: ${{ always() && steps.pc_cleanup_archive.outputs.artifact-id != '' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: archive
+        env:
+          PROJECT_CLEANUP_ARTIFACT_ID: ${{ steps.pc_cleanup_archive.outputs.artifact-id }}
+          PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
   governance:
     name: Governance
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
+      - name: Track protected project cleanup
+        id: pc_cleanup
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
       - uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
@@ -275,14 +468,58 @@ jobs:
       - name: Validate governance
         run: pnpm run validate:governance
 
+      - name: Snapshot protected build evidence
+        id: pc_cleanup_snapshot
+        if: ${{ always() && steps.pc_cleanup.outputs.enabled == 'true' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: snapshot
+        env:
+          PROJECT_CLEANUP_JOB_STATUS: ${{ job.status }}
+          PROJECT_CLEANUP_RELEASE: ${{ github.ref_type == 'tag' }}
+      - name: Preserve protected build evidence
+        id: pc_cleanup_archive
+        if: ${{ always() && steps.pc_cleanup_snapshot.outputs.ready == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pc_cleanup.outputs.artifact_name }}
+          path: ${{ steps.pc_cleanup.outputs.payload }}
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm build evidence preservation
+        if: ${{ always() && steps.pc_cleanup_archive.outputs.artifact-id != '' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: archive
+        env:
+          PROJECT_CLEANUP_ARTIFACT_ID: ${{ steps.pc_cleanup_archive.outputs.artifact-id }}
+          PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
   mobile-merchant:
     name: Mobile merchant Flutter
-    runs-on: macos-latest
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_MACOS_RUNNER || '"macos-latest"') }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Track protected project cleanup
+        id: pc_cleanup
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+      - name: Use version-bound installed Flutter on the free runner
+        if: runner.environment == 'self-hosted' && vars.LETBUYY_CI_FLUTTER_ROOT != ''
+        env:
+          LETBUYY_CI_FLUTTER_ROOT: ${{ vars.LETBUYY_CI_FLUTTER_ROOT }}
+        run: python3 scripts/github/activate-flutter.py --version "$FLUTTER_VERSION"
 
       - uses: subosito/flutter-action@v2
+        if: runner.environment != 'self-hosted' || vars.LETBUYY_CI_FLUTTER_ROOT == ''
         with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
 
@@ -306,14 +543,48 @@ jobs:
         working-directory: apps/merchant/mobile
         run: flutter build ios --debug --no-codesign --dart-define-from-file=dart-defines/staging.json
 
+      - name: Snapshot protected build evidence
+        id: pc_cleanup_snapshot
+        if: ${{ always() && steps.pc_cleanup.outputs.enabled == 'true' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: snapshot
+        env:
+          PROJECT_CLEANUP_JOB_STATUS: ${{ job.status }}
+          PROJECT_CLEANUP_RELEASE: ${{ github.ref_type == 'tag' }}
+      - name: Preserve protected build evidence
+        id: pc_cleanup_archive
+        if: ${{ always() && steps.pc_cleanup_snapshot.outputs.ready == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pc_cleanup.outputs.artifact_name }}
+          path: ${{ steps.pc_cleanup.outputs.payload }}
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm build evidence preservation
+        if: ${{ always() && steps.pc_cleanup_archive.outputs.artifact-id != '' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: archive
+        env:
+          PROJECT_CLEANUP_ARTIFACT_ID: ${{ steps.pc_cleanup_archive.outputs.artifact-id }}
+          PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
+      - name: Track protected project cleanup
+        id: pc_cleanup
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
       - uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
@@ -339,3 +610,33 @@ jobs:
           NEXT_PUBLIC_PLATFORM_DOMAIN: letbuyy.com
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: placeholder
           NODE_ENV: production
+      - name: Snapshot protected build evidence
+        id: pc_cleanup_snapshot
+        if: ${{ always() && steps.pc_cleanup.outputs.enabled == 'true' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: snapshot
+        env:
+          PROJECT_CLEANUP_JOB_STATUS: ${{ job.status }}
+          PROJECT_CLEANUP_RELEASE: ${{ github.ref_type == 'tag' }}
+      - name: Preserve protected build evidence
+        id: pc_cleanup_archive
+        if: ${{ always() && steps.pc_cleanup_snapshot.outputs.ready == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pc_cleanup.outputs.artifact_name }}
+          path: ${{ steps.pc_cleanup.outputs.payload }}
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm build evidence preservation
+        if: ${{ always() && steps.pc_cleanup_archive.outputs.artifact-id != '' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: archive
+        env:
+          PROJECT_CLEANUP_ARTIFACT_ID: ${{ steps.pc_cleanup_archive.outputs.artifact-id }}
+          PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}

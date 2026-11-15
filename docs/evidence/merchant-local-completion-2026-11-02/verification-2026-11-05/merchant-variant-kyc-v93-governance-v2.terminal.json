@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-08T03:53:55.998588+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-variant-kyc-v93-governance-2vipf2eu",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "fbde9fe512840dcdc0d84ace8143a461aafbdfdac65fd14b626f2187234c10d7",
+  "core_inputs_byte_equal": 8516,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "original_index_entries_unchanged": true,
+  "index_sha256_before": "4f631b7c99e1f1e569f0ccc244d432b7e1e4b20391687f45b6304ee4b17d2ba3",
+  "index_sha256_after": "4f631b7c99e1f1e569f0ccc244d432b7e1e4b20391687f45b6304ee4b17d2ba3",
+  "report": "merchant-variant-kyc-v93-governance-v2-report.json"
+}

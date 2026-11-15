@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-05T02:48:55.624948+00:00",
+  "status": "BOUNDED_LOCAL_CUSTOMER_ANDROID_WEB_SYNC_PASS",
+  "run_id": "f30ec8948e98",
+  "runner_exit": 0,
+  "controller_exit": 0,
+  "tests": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "cancelled": 0
+  },
+  "suite_seconds": 291.6,
+  "wall_seconds": 293,
+  "source_sha256": "5f0644af1bb505f15adbf1dfdf896bc4e27f415ce182fc65137be39c2ab980ff",
+  "native_input_entries": 4806,
+  "all_native_inputs_match_broad": true,
+  "external_controller_inputs_match": 4,
+  "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/qualified-artifact/merchant-local-debug.apk",
+  "apk_sha256": "f386303ecff8de02d5191b0653c734b50feb88ab5c1d4fd62c3dcfe12b921c13",
+  "installed_apk_matches": true,
+  "native_profile_patch": 1,
+  "native_note_post": 1,
+  "web_note_post": 1,
+  "all_customer_command_statuses_confirmed": true,
+  "recorded_database_notes_each_once": true,
+  "native_to_web_phone_and_note": true,
+  "web_note_reopened_and_native_fresh_readback": true,
+  "native_saved_task_android_back": "Controller manifest holds actual hardware Back after acknowledged profile; current route/parent fresh readback succeeds.",
+  "canonical_order_items_stock_unchanged": true,
+  "order_return_shipping_money_commands_by_mobile": 0,
+  "owned_resources_empty": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "reverse_restored": [],
+  "forward_preserved": [
+    [
+      "emulator-5580",
+      "tcp:52367",
+      "localabstract:chrome_devtools_remote"
+    ]
+  ],
+  "awake_retired": true,
+  "scope": "Normal synthetic local Android PKCE, actual Hono BFF/Gateway+owned PostgreSQL/PostgREST and production-mode local Merchant/Accounts; existing collection recovery/web-native order; Customer phone+note save/readback and web note save/reopen/fresh native read. Not compiled Workerd, all9tasks, staff-native, hosted, real providers, iOS runtime, physical performance, full119programme or release certification.",
+  "image_review": "Separate independent pixel review required; this report does not inspect screenshots.",
+  "independent_image_review": {
+    "reviewed": 10,
+    "files": [
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/native-customer-edit-phone-draft.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-native-customer-edit-phone-draft.png",
+        "sha256": "061e8795c613e8b0d32bfa5d17a819ad6dc89ccd683b8e06bb84ea4ee293d9b7",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/native-customer-edit-confirmed.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-native-customer-edit-confirmed.png",
+        "sha256": "8e15caec3582e449664792cd8f74dc4c1770f513bf14a0e4ccf5e1d0d9b25a1d",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied. Floating First name label is clear of status feedback; no overlap."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/native-customer-note-confirmed.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-native-customer-note-confirmed.png",
+        "sha256": "1370e1c01047977771d444c86ba4279ba121727afda3a0ba096fcc0ddc6a4084",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/native-customer-note-reopened.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-native-customer-note-reopened.png",
+        "sha256": "331796fc594ce500f5f537a1da46b25079f2da4a126c333446ed45bbe3f4d69a",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/native-customer-web-note-readback.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-native-customer-web-note-readback.png",
+        "sha256": "70bc7485d4e4eec83d58a67a7f81c06abf052be63a5f10b75c3ed33ec043675b",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/web-customer-native-readback.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-web-customer-native-readback.png",
+        "sha256": "9525a17b9cbd55c931fda4af203ca568feeb534919a1d51a5d26af21eb5f2438",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/web-customer-note-reopened.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-web-customer-note-reopened.png",
+        "sha256": "0ae6f3aebbfe55463453c07d1a6bd65806777297637cc1774d64c0379e5e6589",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied. This viewport shows profile/phone; reopened note evidence is DOM/GET plus recorded database and fresh native pixels, not this screenshot."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/native-customer-edit-input-0-keyboard.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-native-customer-edit-input-0-keyboard.png",
+        "sha256": "aa9d8cbb097f8cbeda527324bfbab31816ec1cc030dd118768006f431799b4cc",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/native-customer-note-input-0-keyboard.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-native-customer-note-input-0-keyboard.png",
+        "sha256": "45dc0c9d74d212c5c4dbbf345fef2b812aa36bfd861217fa263c43f7a1b1f180",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied."
+      },
+      {
+        "source": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v29/web-customer-note-before-activation.png",
+        "evidence": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-native29-web-customer-note-before-activation.png",
+        "sha256": "2ed677727c453708e20ab7ce6cc77b39aa1b4deb13ce000c2ea753ee2cb07fd5",
+        "review": "Independently viewed source4current-run screenshot; exact bytes copied. Actual native note, entered web draft and Save control visible after observed IME dismissal."
+      }
+    ],
+    "scope": "Current synthetic owner dark Android/customer + mobile Chrome web composition only; no light-native/iOS/TalkBack/physical-performance or all9task runtime claim."
+  }
+}

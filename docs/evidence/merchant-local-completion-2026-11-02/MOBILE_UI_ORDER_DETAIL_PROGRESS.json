@@ -1,0 +1,56 @@
+{
+  "at": "2026-11-04T20:27:44.313240+00:00",
+  "status": "FIXED_SOURCE_BROAD_LOCAL_QUALIFICATION_IN_PROGRESS",
+  "last_qualified_source": "mobile-ui-orders-v13/41c0d88908a63fc74d260b26144059acc3925e89509364db05ddf0e985e451e7",
+  "scope": "Frontendonly;no backend/API/SQL/auth/financial/persistencepolicychanges. OriginalOrderServicecommands/CacheServiceunchanged;detailreadpresentationexceptionclassified.",
+  "implemented": [
+    "DetailnowalwaysperformsaliveGET;initialrouteDTOisnotcurrentpermission/readproof. Capturedstore/record/context/generationadmissionandlive-vs-savedprovenance.",
+    "Current401/403/404,wrongrecord/store,disposed/stale/superseded/new-sessiondetailreadscannotbecomeconfirmedprivatepresentation. Originalsame-ownerofflinecache/keys/format/retentionremain.",
+    "OneUIoperationownsrefundjournalpreparation,form,approvalandcommand. Scope-retiredformsremoved;latecallbacks/nativePDFsharefenced. Nochangejournal/proof/key/payloadordering.",
+    "Refundquantities,lineeditsandfulfillmentarecanonicalfullpageswithdirtyBack,pinnedactions,currentviewguardsandcontrollersdisposedafterroutecompleted. Cancellation/completionreferenceformsarecanonicalshortsheetswithWidget-ownedcontrollers.",
+    "Newrefundpending=nullissupportedwithoutparsingnullasJSONarray. Existingpendingintentmalformationstillfails;serverrefundquantity/moneyauthorityunchanged.",
+    "Activefullpagequantityvalidationusescanonicalfeedback;unchangedoriginalquantitybounds/IDmappingandtypedrequests. Readonlysavedrefundintentpreventschangedretryfields.",
+    "HardcodedSandboxbadgeremoved;modeexplicitlynotchecked,nocredentials/providerpolicychange.",
+    "Detailtaskheader,fullselectablerecordID,scrollableactions,naturalmetadata/lineamountrows,rawoptionalamountlabels. Storedzeroisdisplayeddirectly;missingisunavailable. Original_orderTotalhelperandnumericargumentsremainunchanged. _moneyisapresentation-onlycanonicalPriceFormatteradapter.",
+    "Fallbacktimelinelabelledcurrentordersummary;originalreceivedeventmappingandfallbackcalculationunchanged."
+  ],
+  "evidence": {
+    "service_negative_v1": "1PASS/6FAIL populateddenial,retirement,disposal,identity;originalsame-ownerofflinepositivepasses.",
+    "service_v2": "37PASScombinedfocusedafterreadrepair.",
+    "ui_negative_v5": "0PASS/5FAIL actualinitialreadshortcutandforeign-storeadmission. v4wasfixtureJsonMapimportcompilefailure,notappfailure.",
+    "ui_v6": "31PASSfocusedafterreadUIrepair.",
+    "actions_negative_v8": "5PASS/2FAIL doublerefundpreparation/stalefulfillmentform. v7fixturemissingtypeimport.",
+    "actions_v10": "32PASS/1FAIL:unnecessaryunderlyingprogressspunwhilewaitingforhumanforminput.",
+    "actions_v11": "33PASSafterseparatingoperationlockfromwaitingforinput.",
+    "parsed_v12": "351checksatthepre-container-swapstageONLY;currentforms/displayneednewpreservationqualification.",
+    "refund_v15": "Fixtureobservedrealnew-refundoptionalstatemappingerrorExpectedJSONarrayresponse.",
+    "refund_v16": "Afteroptionalmapfix,invalidquantityfeedbackwasactuallymissingonactiveform.",
+    "refund_v17_v19": "34PASSfocusedafterfullpageandfeedbackrepair;thenall3complexeditorspassed.",
+    "broader_v21": "276PASS/0FAIL selectedSDK/UI/services/protectedfinancialconsumerregression.",
+    "read_edges_v22": "22PASS/0FAIL includeslist+detail,expectedstore,supersededread,A-B-newA-sessionandforeignsavedrecord.",
+    "display_negative_v23": "0PASS/4FAIL confirmedzero/missingtotalandidentitypresentationexpectations.",
+    "identity_negative_v24": "0PASS/2FAIL actualRenderParagraph.didExceedMaxLines=true at320dp/scale2,both themes.",
+    "display_v25": "42PASS/0FAIL selectedUI/read/financialconsumercohort.",
+    "analysis_v20": "0issuesbeforelatestdisplaycomposition;currentanalysispending.",
+    "detail_parsed_v28": "380 parsed preservation checks passed before Returns migration.",
+    "detail_hidden_submit_v29": "Fixture selector failed before reaching application callback; retained as a verifier diagnostic.",
+    "detail_hidden_submit_v30": "Line-editor positive control passed because it already used current-route completion.",
+    "detail_hidden_fulfill_v31": "0 pass / 1 fail: actual _TrackingRequest popped bool discard route before the route-current repair.",
+    "detail_forms_v32": "35 pass / 1 fail: current error snackbar covered reopened refund editor action.",
+    "detail_forms_v33": "36 pass / 0 fail after clearing reading-page feedback before editor entry. Includes exact line/tracking request fields and same original refund intent/key retry.",
+    "returns_regression_v9": "105 pass / 0 fail after existing shared guard adopted current-route completion; includes real enlarged record/amount composition."
+  },
+  "not_done": [
+    "Current fixed-source full Flutter/UI-kit/analysis/governance/protected-readback and parsed preservation qualification.",
+    "Compiled Android/iOS runtime and web\u2194mobile readback for Detail/Returns.",
+    "Remaining app migrations and unique-surface reconciliation; full feature programme remains open."
+  ],
+  "backend_dependency": "ORDERS_DRAFT_BACKEND_DEPENDENCY.md;actualdraft500tenantpredicateissueunfixedbythisfrontendassignment.",
+  "current_report": "MOBILE_UI_ORDER_RETURNS_PROGRESS.json",
+  "current_fixed_source": {
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "sha256": "0e667636b769fdc1708bf720df2ffa74f3c9102ce5639ca3b410a751a0f99e0a",
+    "entries": 7469,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-order-returns-v1.source.json"
+  }
+}

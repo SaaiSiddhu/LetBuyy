@@ -1,0 +1,46 @@
+{
+  "status": "RED_LOCAL_GATE_NOT_PRODUCTION_EVIDENCE",
+  "scope": "Complete local behavioral and contract gate on the migration-428 working tree; no hosted, provider, or physical-device acceptance",
+  "sourceHead": "4e6df6546de288288a1b2a6c0b52c9ba8dd6657e",
+  "sourceState": "The uncommitted 2.1.0 catalog and buyer demo dispatch fix were present. The lifecycle test repair was applied after the pure group had run; the console MFA fixture repair was applied only after this complete run. This is not a single committed release snapshot.",
+  "command": "node scripts/governance/test-behavioral.mjs --with-contracts --report /private/tmp/letbuyy-wave6-428-final-jobs2.json",
+  "ownedRunnerId": "fbe4474033c7",
+  "result": {
+    "exitCode": 1,
+    "testsReported": 5741,
+    "assertionsPassed": 5711,
+    "assertionsFailed": 15,
+    "explicitHumanOrProviderSkips": 15,
+    "pure": { "suites": 209, "passed": 3148, "failed": 1, "skipped": 15 },
+    "postgres": { "suites": 63, "passed": 320, "failed": 0 },
+    "gatewayDatabase": { "suites": 220, "assertionsPassed": 1879, "assertionsFailed": 14, "failedSuites": 8 },
+    "contracts": { "passed": 364, "failed": 0 },
+    "ownedCleanup": { "runnerFailures": 0, "remainingContainers": 0, "remainingNetworks": 0, "remainingVolumes": 0, "dockerLabelChecked": "com.letbuyy.executable-fixture=1" }
+  },
+  "failedSuites": [
+    { "name": "gateway-db-lifecycle", "observed": "The lifecycle case reaped a stale fixture left by the intentionally interrupted prior run, then failed an exact before/after machine-resource-set assertion. The runner did clean that orphan. The isolated lifecycle case later passed 1/1 after its own-cleanup test used --no-reap; the separate reaper case remains responsible for stale cleanup." },
+    { "name": "merchant-staff-invitation-browser.postgres", "observed": "Identity login showed retry verification and no Turnstile response field within 30 seconds; no staff mutation was reached." },
+    { "name": "merchant-staff-browser.postgres", "observed": "Identity login showed retry verification and no Turnstile response field within 30 seconds; no staff mutation was reached." },
+    { "name": "platform-approval-workflow.postgres", "observed": "The synthetic MFA fixture minted a short-lived token before a 270-second counter wait; reauthentication returned verified=false, then two dependent assertions saw invalid sessions. The post-run fixture repair minted tokens after the wait; a fresh owned rerun passed 21/21." },
+    { "name": "storefront-customer-profile.postgres", "observed": "The browser observed the real stale-buyer profile write return 409, then Playwright lost a later response body during cross-tab address verification; the child runtime exited 1. Product behavior beyond that point remains unproven by this run." },
+    { "name": "theme-draft-browser.postgres", "observed": "Identity login remained at Checking security without a Turnstile response field within the five-second test wait; no draft mutation was reached." },
+    { "name": "merchant-entitlement-authority-browser.postgres", "observed": "Normal Identity login returned 403 after the challenge field appeared; product creation was not reached. The exact server-side 403 cause was not established." },
+    { "name": "merchant-free-subscription-browser.postgres", "observed": "Identity login did not produce a Turnstile response field within the test wait; the subscription journey was not reached." },
+    { "name": "merchant-inventory-adjustment-browser.postgres", "observed": "The shared before hook failed normal Identity sign-in at the challenge. Five dependent test assertions failed before stock mutation." }
+  ],
+  "qualifiedWithinThisRun": [
+    "All six KYC India intake/review/private-upload owned suites passed",
+    "Store profile compare-and-swap passed",
+    "Niche theme 2.1.0 promotion and editor suites passed",
+    "Merchant MFA, payout statement, payment setup, GST invoice, and hosted checkout suites passed"
+  ],
+  "focusedFollowup": {
+    "correctedLifecycleCase": { "passed": 1, "failed": 0 },
+    "correctedPlatformApprovalRun": { "ownedRunnerId": "08396ab7a0df", "passed": 21, "failed": 0 },
+    "sevenBrowserSuiteRun": { "ownedRunnerId": "393763de2803", "suites": 7, "passed": 34, "failed": 0, "jobs": 1 },
+    "browserLaneRun": { "ownedRunnerId": "46f01d7b4c8a", "suites": 2, "passed": 2, "failed": 0, "jobs": 2, "wallSeconds": 154.2, "sumSuiteSeconds": 152.2 },
+    "ownedCleanup": { "remainingContainers": 0, "remainingNetworks": 0, "remainingVolumes": 0, "dockerLabelChecked": "com.letbuyy.executable-fixture=1" },
+    "qualification": "These fresh focused results do not change this complete run's red status."
+  },
+  "nextAction": "Complete the new broad gate on the corrected source before any wave exit. Provider, hosted, India-only storage/scanning, and human production gates remain open."
+}

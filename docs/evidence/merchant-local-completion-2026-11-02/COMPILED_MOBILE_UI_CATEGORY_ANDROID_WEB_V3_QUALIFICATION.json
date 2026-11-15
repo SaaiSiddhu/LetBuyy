@@ -1,0 +1,158 @@
+{
+  "status": "PASS_BOUNDED_CATEGORY_ANDROID_WEB",
+  "at": "2026-11-04T10:08:45.466020+00:00",
+  "fullAppAccepted": false,
+  "source": {
+    "sha256": "4710f224d95a01d131eb9163016930b4bc171a6ebb15f76aee90cc04e0fa80ff",
+    "entries": 7447,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-editors-v3.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-editors-v3-qualified-source",
+    "heldAndTerminalVerified": true
+  },
+  "run": {
+    "runId": "d08d94ab152d",
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "wallSeconds": 224.7,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "artifact": {
+    "run_id": "d08d94ab152d",
+    "source_sha256": "a23f760430af31590706255d151eac30d4b675d29688a1c75736151eda82c710",
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v3/qualified-artifact/merchant-local-debug.apk",
+    "source_build_path": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile/build/app/outputs/flutter-apk/app-debug.apk",
+    "original_bytes_retained": true,
+    "sha256": "6ee3cd407ebddf7b3a7019e6e09c5f85452672435e8ebc744d5c1e1293ef6aa4",
+    "defines": {
+      "ENVIRONMENT": "local",
+      "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+      "API_BASE_URL": "http://127.0.0.1:54350/v1",
+      "IDENTITY_BASE_URL": "http://localhost:9002",
+      "ADMIN_BASE_URL": "http://localhost:54353",
+      "STOREFRONT_BASE_URL": "http://localhost:54354",
+      "LOCAL_CHALLENGE_SDK_URL": "http://127.0.0.1:51501/fixtures/turnstile/api.js",
+      "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+      "MOBILE_PUSH_DEVICE_TOKEN": "",
+      "SENTRY_DSN": "SKIP_NEEDS_HUMAN_LOCAL_SENTRY_DSN"
+    },
+    "build_method": "flutter-config-only-then-offline-gradle-debug",
+    "installed_readback": true,
+    "scope": "Local debug artifact only; no hosted/provider/release certification."
+  },
+  "launcherCleanup": {
+    "at": "2026-11-04T10:07:11.395135+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-category-v3-native-category-full-page-keyboard.png",
+      "sha256": "0923313995ef75eb95c3bacf69ff75c13acff63fc132735f0f7d01348e7b103d",
+      "visuallyInspected": true
+    },
+    {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/ui-category-v3-native-category-web-description-readback.png",
+      "sha256": "c0c2945af43145a32b5d2b6a8392816d861f18c7b7a9f2290baec0e282e8f2c2",
+      "visuallyInspected": true
+    }
+  ],
+  "proof": {
+    "webBidirectional": true,
+    "persisted": {
+      "category": {
+        "id": "9f8791a0-820f-43b6-a4cc-f54b6ecc121c",
+        "name": "Synthetic native renamed cotton",
+        "path": "synthetic-native-cotton",
+        "slug": "synthetic-native-cotton",
+        "level": 0,
+        "version": 3,
+        "store_id": "ac3f0607-f577-4a8f-9cbf-5ccbd17324d1",
+        "image_url": null,
+        "parent_id": null,
+        "created_at": "2026-11-04T10:03:52.624511+00:00",
+        "created_by": null,
+        "deleted_at": null,
+        "deleted_by": null,
+        "is_visible": true,
+        "updated_at": "2026-11-04T10:06:55.19742+00:00",
+        "updated_by": "bb8c5470-7723-4218-87bf-765d124180eb",
+        "description": "Synthetic web category readback",
+        "display_order": 0,
+        "children_count": 0,
+        "products_count": 2
+      },
+      "receipts": 2,
+      "audits": 2,
+      "outbox": 2,
+      "products": [
+        {
+          "id": "2ecfc7c1-ac66-442a-80a9-3b11760cbf2f",
+          "category": "Synthetic native renamed cotton"
+        },
+        {
+          "id": "8d8084cc-32a5-4507-afe0-5bac17bcfa6a",
+          "category": "Synthetic native renamed cotton"
+        }
+      ],
+      "product_receipts": 2
+    },
+    "receiptVersions": [
+      {
+        "expected_version": 1,
+        "result_version": 2,
+        "payload": {
+          "name": "Synthetic native renamed cotton",
+          "slug": "synthetic-native-cotton",
+          "image_url": null,
+          "parent_id": null,
+          "is_visible": true,
+          "description": null,
+          "display_order": 0
+        }
+      },
+      {
+        "expected_version": 2,
+        "result_version": 3,
+        "payload": {
+          "name": "Synthetic native renamed cotton",
+          "slug": "synthetic-native-cotton",
+          "image_url": null,
+          "parent_id": null,
+          "is_visible": true,
+          "description": "Synthetic web category readback",
+          "display_order": 0
+        }
+      }
+    ],
+    "ui": [
+      "Normal synthetic Accounts browser sign-in and automatic native return",
+      "Full-page category name with real software keyboard and reachable footer",
+      "Header/system Back each protected draft; Keep editing preserved exact name",
+      "Committed reply lost and recovered using original key/body",
+      "Normal Merchant web read native rename and saved description; fresh native editor showed exact description"
+    ],
+    "server": "Existing actual Hono Gateway/BFF in owned local harness + owned real PostgreSQL/PostgREST; not compiled Workerd in this category flow"
+  },
+  "limits": [
+    "One bounded category metadata journey, not entire category area or122features",
+    "No customer-segment native effects, buyer renderer, iOS UI, hosted/provider or production release acceptance",
+    "Full Flutter966pass/1existing protected namespace failure;36focusedpass; app/ui_kit analyses0issues;28ASTpreservationchecks unchanged"
+  ]
+}

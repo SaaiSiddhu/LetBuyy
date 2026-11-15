@@ -22,7 +22,7 @@ export async function GET(
 }
 
 // POST /api/stores/:store/kyc → POST /kyc/documents
-// Body: { document_type, document_number_last4?, file_url?, file_name? }
+// Body: { document_type, document_number_last4? }. Documents use private upload.
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ store: string }> }
@@ -33,20 +33,21 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
+        if (body.file_url !== undefined || body.file_name !== undefined) {
+            return NextResponse.json({ error: { code: 'KYC_LINK_NOT_ACCEPTED', message: 'Upload documents privately; document links are not accepted.' } }, { status: 400 })
+        }
 
+        const key = typeof body.idempotency_key === 'string' && body.idempotency_key
+            ? body.idempotency_key : crypto.randomUUID()
         const response = await merchantApiFetch('/kyc/documents', {
             method: 'POST',
             requireSession: true,
+            headers: { 'X-Idempotency-Key': key },
             body: JSON.stringify({
                 store_id: resolved.storeId,
                 document_type: body.document_type,
                 document_number_last4: body.document_number_last4 || undefined,
-                file_url: body.file_url || undefined,
-                file_name: body.file_name || undefined,
-                idempotency_key:
-                    typeof body.idempotency_key === 'string' && body.idempotency_key
-                        ? body.idempotency_key
-                        : crypto.randomUUID(),
+                idempotency_key: key,
             }),
         })
         const payload = await response.json().catch(() => null)

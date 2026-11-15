@@ -1,0 +1,13 @@
+{
+  "source_manifest": "merchant-buyer-inventory-source-v113.source.json",
+  "source_sha256": "ad36cabb72ba7d40cb240194e1f1a749f7e97dba355d0cff6c9554c7a3b54f32",
+  "fixture": "merchant-inventory-core-buyer-v113b.postgres.test.ts",
+  "fixture_sha256": "578baed03f61732fa01ce9f4fa3ebab80ecb79c6cc785a0387a336b7870ea1ea",
+  "baseline": "merchant-creation-core-buyer-v103b.postgres.test.ts",
+  "focused_stock_pass": "compiled-buyer111j.json run50f6c4cc5fbe",
+  "scope": "Normal synthetic signup/store/product/image/collection/Core install/editor/preview/publication; real local TLS/native Worker/SQL; current positive0base7SKU,0/unknown SSR/hydration/metadata/cart; no self-recommendations;10Core presets,checkout/order/repeat/buyer/account/access recovery. Providers are explicit local fixtures.",
+  "fixture_repairs": "Explicit Quantity0, canonical Launch unlimited=null, exact synthetic upload subscription withdrawal+early preflight, missing-level SQL uses actual schema and preflight, PDP-specific actions, all matching collection cards, observable streamed-content readiness. All failed111 controls/receipts retained.",
+  "profile_evidence": "Standalone0600redactedURL JSON +SHA/samples rather than truncated log line. Local lab, no field/physical performance claim.",
+  "boundaries": "No hosted/provider/production changes. Never contact/probe/bind/stop host9002. Freeze core through terminal/cleanup; snapshot only outside owned Next marker lifetime.",
+  "prelaunch_correction": "Use valid Playwright toHaveCount signature; original113 preparation not launched. Source unchanged."
+}

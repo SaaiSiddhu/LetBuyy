@@ -1,0 +1,46 @@
+{
+  "build_script_sha256": "b3e4c73c807d92a32ea821a34bcd969a51bb572559e9f0573797d4c9e25f7359",
+  "status": "TERMINAL",
+  "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "source_inputs": 8442,
+  "supervisor_pid": 33944,
+  "owned_root": "/private/tmp/letbuyy-inventory-search-ios-4ympkljr",
+  "platform": "ios",
+  "started_at": "2026-11-05T19:28:26.995354+00:00",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "ACCOUNTS_ENVIRONMENT": "development",
+    "BFF_BASE_URL": "http://127.0.0.1:54350/v1",
+    "API_BASE_URL": "http://127.0.0.1:54350/v1",
+    "IDENTITY_BASE_URL": "http://127.0.0.1:54351",
+    "ADMIN_BASE_URL": "http://127.0.0.1:54353",
+    "STOREFRONT_BASE_URL": "http://127.0.0.1:54354"
+  },
+  "steps": [
+    {
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "build",
+        "ios",
+        "--device-id=B907B390-5B08-490F-BC6A-8900667B2D94",
+        "--simulator",
+        "--debug",
+        "--no-codesign",
+        "--no-pub",
+        "--dart-define-from-file=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/inventory-search-ios-compile-v1-defines.json"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile",
+      "exit_code": 0
+    }
+  ],
+  "scope": "Normal main.dart debug compile/artifact only. No install, launch, sign-in, provider, web-mobile sync, device, hosted or release acceptance.",
+  "active_child_pid": 33948,
+  "artifact": {
+    "path": "/private/tmp/letbuyy-inventory-search-ios-4ympkljr/Runner.app",
+    "files": 377,
+    "manifest_sha256": "fff1f742b74af88ae3bb364db65648c1c34320e044c330bf698fd17f0d8ba890"
+  },
+  "exit_code": 0,
+  "finished_at": "2026-11-05T19:29:02.165742+00:00",
+  "source_unchanged": true
+}

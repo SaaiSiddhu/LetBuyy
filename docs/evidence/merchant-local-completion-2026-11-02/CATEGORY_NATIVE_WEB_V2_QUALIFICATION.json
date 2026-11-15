@@ -1,0 +1,55 @@
+{
+  "run_id": "3a8df62eea05",
+  "fixture_run_id": "3a8df62eea05",
+  "source_sha256": "c35130ec8a5396a1eff6ff2e4d251bedc043c87c036429b73d2d9b0f7dca1a76",
+  "apk_sha256": "239698bf9f90f69d4a1e97064935be98ad9b350b1f5f60b049c8e52ee41e946e",
+  "tests": 1,
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_archive": {
+    "source_sha256": "c35130ec8a5396a1eff6ff2e4d251bedc043c87c036429b73d2d9b0f7dca1a76",
+    "apk_sha256": "239698bf9f90f69d4a1e97064935be98ad9b350b1f5f60b049c8e52ee41e946e",
+    "files": 4588,
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-category-v2/qualified-source",
+    "scope": "Exact observed local category source including database forward/rollback/config inputs. No rows or auth material exported."
+  },
+  "observations": [
+    "Normal local native password sign-in with owned challenge fixture",
+    "Dashboard settings opens actual existing Store Details destination; readonly observation only",
+    "Native category rename committed reply loss, app restart, persisted original-key retry",
+    "Normal web sign-in reads native rename and saves description",
+    "Native return reads exact web name and description",
+    "Two category receipts, audits and outbox events; two canonical product edit receipts; revisions 1 to 2 to 3",
+    "Category form spacing and disabled mutation action visually inspected"
+  ],
+  "counts": {
+    "category_receipts": 2,
+    "category_audits": 2,
+    "category_outbox": 2,
+    "product_edit_receipts": 2
+  },
+  "evidence": [
+    "category-runtime-v2/native-dashboard-settings.png",
+    "category-runtime-v2/native-category-lost-reply.png",
+    "category-runtime-v2/native-category-restart-pending.png",
+    "category-runtime-v2/native-category-recovered.png",
+    "category-runtime-v2/web-category-saved.png",
+    "category-runtime-v2/native-read-web-category-description.png"
+  ],
+  "limits": [
+    "Category buyer renderer/visibility, wider lifecycle and staff journeys remain open",
+    "Store Details save/readback and lifecycle remain separate",
+    "Original417 source is locally observed but its new numbering collision awaits human source reconciliation decision",
+    "No hosted/provider/iOS/release or 122-feature acceptance"
+  ]
+}

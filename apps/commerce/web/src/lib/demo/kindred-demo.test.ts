@@ -46,9 +46,9 @@ test('optimized preview photography matches the frozen approved provenance', () 
   }
 });
 
-test('preview adapter requires explicit v2 identity and clones its resource bindings', () => {
+test('preview adapter requires an admitted version identity and clones its resource bindings', () => {
   const core = createLetbuyyCoreLiquidThemeBundleFixture();
-  assert.throws(() => withKindredDemoContent({ liquidBundle: core }), /exact v2 package/);
+  assert.throws(() => withKindredDemoContent({ liquidBundle: core }), /admitted versioned package/);
   const base = createKindredTheme(core);
   const before = structuredClone(base);
   const output = withKindredDemoContent({ liquidBundle: base, sentinel: 'retained' });

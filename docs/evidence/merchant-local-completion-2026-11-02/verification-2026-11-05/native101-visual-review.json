@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-07T05:46:07.166533+00:00",
+  "run_id": "efd4bf313c98",
+  "reviewed": [
+    {
+      "file": "native101-reviewed-images/native-category21.png",
+      "sha256": "59822463370ebd9b9d39a7bb3daef5d8fe47f8d2a58787986f77b5c760b4424b"
+    },
+    {
+      "file": "native101-reviewed-images/native-restored-metadata-recovery.png",
+      "sha256": "22a543dd9f56f17c476ce4bbfc81199a08424f69684cdd666625c611657262e5"
+    },
+    {
+      "file": "native101-reviewed-images/native-web-category-readback.png",
+      "sha256": "f797fb694333e55d51ccbb0541d91de0f591cd9ce67152f6433bc51ae426b84d"
+    }
+  ],
+  "observations": [
+    "Actual native category readback screenshot visibly shows Synthetic web category with editable field and canonical choice affordance; product name matches web edit.",
+    "Restored Media recovery banner and Confirm media change action visible after force-stop/restart; both positive-control media cards remain visible.",
+    "native-category21 filename is only a capture locator: its keyboard covers the category text, so the pixels alone do not prove page2selection; use the driver assertions and SQL/web readback for that claim."
+  ],
+  "limits": "Bounded emulator screenshots only. No physical/screen-reader/full-accessibility or whole feature visual certification."
+}

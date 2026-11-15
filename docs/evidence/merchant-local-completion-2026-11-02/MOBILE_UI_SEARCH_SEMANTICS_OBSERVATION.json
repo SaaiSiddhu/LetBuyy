@@ -1,0 +1,48 @@
+{
+  "at": "2026-11-04T11:25:03.635635+00:00",
+  "classification": "NATIVE_DUMP_HINT_SERIALIZATION_LIMIT",
+  "applicationFieldChanged": false,
+  "flutter": {
+    "version": "3.44.8",
+    "frameworkRevision": "058e0af2c2b57e369d905a03ac9748b0ebf543c6",
+    "engineRevision": "0cd610717bde95fd88343c64f81c11ba4e5c0010"
+  },
+  "sourceEvidence": [
+    {
+      "url": "https://raw.githubusercontent.com/flutter/flutter/058e0af2c2b57e369d905a03ac9748b0ebf543c6/engine/src/flutter/shell/platform/android/io/flutter/view/AccessibilityBridge.java",
+      "lines": [
+        1037,
+        1040,
+        2999,
+        3011
+      ],
+      "finding": "Text-field value maps to text; label plus hint maps to Android hintText on supported API levels."
+    },
+    {
+      "url": "https://android.googlesource.com/platform/frameworks/testing/+/refs/heads/main/uiautomator/library/core-src/com/android/uiautomator/core/AccessibilityNodeInfoDumper.java",
+      "lines": [
+        105,
+        143
+      ],
+      "finding": "Stock XML records text/content-description but not hintText."
+    }
+  ],
+  "inference": "The missing native-dump label is expected for this focused empty Flutter text field; it does not establish missing TalkBack label.",
+  "checks": {
+    "v11": {
+      "passed": 6,
+      "failed": 1,
+      "persistentLabelAssertionPassed": true,
+      "failure": "New test looked for the clear-action tooltip as a semantic label; corrected only the test property lookup."
+    },
+    "v12": {
+      "passed": 7,
+      "failed": 0,
+      "scope": "Actual focused canonical field label with hint/maxLength, plus clear-action tooltip and existing nav/progress controls"
+    }
+  },
+  "limits": [
+    "Spoken TalkBack/VoiceOver not exercised; not full native accessibility certification.",
+    "Actual pixel/keyboard and whole current native journey remain separate gates."
+  ]
+}

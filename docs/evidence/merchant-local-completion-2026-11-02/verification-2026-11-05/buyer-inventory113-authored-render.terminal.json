@@ -1,0 +1,13 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/buyer-inventory111-authored-theme-render-probe6.test.ts"
+  ],
+  "source": "merchant-buyer-inventory-source-v113",
+  "exit_code": 0,
+  "reason": "Rerun the actual20source-level authored render cases because the existing product-drop module gained a related-product helper; no hosted/native acceptance inferred.",
+  "at": "2026-11-08T11:07:08.153434+00:00"
+}

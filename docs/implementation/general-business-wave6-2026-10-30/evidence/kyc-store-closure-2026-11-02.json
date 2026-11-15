@@ -1,0 +1,66 @@
+{
+  "scope": "Local Wave 6 merchant store closure and private KYC object deletion; synthetic files and provider only",
+  "date": "2026-11-02",
+  "owned_database_run": {
+    "id": "2b3a3f74426d",
+    "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/kyc-india-cleanup.postgres.test.ts --kind gateway-db --jobs 1 --timeout 600",
+    "suites": 1,
+    "passed": 1,
+    "failed": 0,
+    "assertions": "Pre-use migration 430 DOWN/UP; signed merchant cross-tenant closure denial; owned closure; suspended and unpublished site readback; current private key, digest, URL and filename removal; three exact-key closure receipts and deletion; stale approval denial; post-closure KYC API denial; rollback refusal after closure",
+    "fixture_cleanup": "exact-run-id container, network, and volume queries returned no resources"
+  },
+  "older_kyc_replay_run": {
+    "id": "f284fe0608dd",
+    "suites": 2,
+    "passed": 6,
+    "failed": 0
+  },
+  "signed_in_browser_run": {
+    "id": "54dd1b63cae8",
+    "command": "node scripts/governance/run-executable-suites.mjs --suite tests/owned-db/published-storefront-recovery-browser.postgres.test.ts --kind gateway-db --jobs 1 --timeout 1200",
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "closure_journey": "Normal Identity sign-in, General close dialog and retained-record warning, DELETE through Merchant proxy and Gateway, canonical site closure and exact private KYC deletion receipt readback",
+    "fixture_cleanup": "exact-run-id container, network, and volume queries returned no resources"
+  },
+  "operator_route_run": {
+    "id": "f9631d7c9e02",
+    "command": "node scripts/governance/run-executable-suites.mjs --gateway-db --suite services/api-gateway/src/__tests__/owned-db/kyc-store-operator-closure.postgres.test.ts --jobs 1 --prepared-transactions 2 --json",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "denials_and_readback": "Signed merchant identity denied; platform Console session alone denied on legacy admin route; allowlisted operator signed internal identity accepted; closed site, private KYC pointer removal, queued deletion receipt and audit read back",
+    "fixture_cleanup": "runner reported no remaining containers, networks or volumes"
+  },
+  "checks": {
+    "gateway_typecheck": "passed",
+    "merchant_web_typecheck": "passed",
+    "api_client_typecheck": "passed",
+    "gateway_db_lane_governance": "passed 15/15 after admitting operator closure suite",
+    "migration_safety": "passed",
+    "sequential_migration": "passed after staging migration 430",
+    "rollback_integrity": "passed"
+  },
+  "source_sha256": {
+    "database/supabase/migrations/430_kyc_store_closure_cleanup.sql": "3a9190fc763d8225f252a12fe86aea95b41c5f1cf743fb7fa5c680a1c2dd42a2",
+    "database/supabase/rollback/430_kyc_store_closure_cleanup.rollback.sql": "e33e3ae78c0bcd3c847711718793b7a5eee63f7ad8234489358117ae4a745b40",
+    "services/api-gateway/src/routes/stores.ts": "f9332b2e67b2652cfd8a734ba93fffaf749fefa18352f5b5eb211eb0d377f950",
+    "services/api-gateway/src/routes/admin.ts": "115362472790c62007488a515b21c12624f9aeb0f2da751dd95797de597d5d21",
+    "services/api-gateway/src/__tests__/owned-db/kyc-india-cleanup.postgres.test.ts": "492dd8b8840d1f129b9d521539ea178c8e7dd06d8855dc6bd4a87a8a8b08a617",
+    "services/api-gateway/src/__tests__/owned-db/kyc-store-operator-closure.postgres.test.ts": "805dbfda5fee315d8ed990c6d259b5e0c9463025c443b3e917f0c25b897e7936",
+    "tests/governance/gateway-db-lane.test.mjs": "feabb4a3e45b564b0b52bc313cbbc410ef7b068649e5aaf2dc00a85dfd47e2d1",
+    "apps/merchant/web/src/app/[store]/settings/general/page.tsx": "3b5b9ef1e9ffe582b89037d94f3d5c09736fd6de5ec3601512f44ace4490b5f8",
+    "apps/merchant/web/src/app/api/stores/[store]/settings/route.ts": "e48ce917d1579d03aaab066933d26e6a1edcb2e3bc17cc50845b5ba77a4e7350",
+    "packages/typescript/api-client/src/index.ts": "073f132238031004049c0a600aeefa613597cb27330735aad0b0d5d20bd1f5e9",
+    "tests/owned-db/published-storefront-recovery-browser.postgres.test.ts": "70c06c436371b3e76e765b40cb3bf23af36c111b32ac9e08d0c2fa6d111c4e55"
+  },
+  "limits": [
+    "Legacy admin/operator closure route was exercised with signed internal identity, not through the current signed-in platform Console or its MFA session; a canonical Console operator command remains open",
+    "KYC deletion still runs only under ENVIRONMENT=test; no real Mumbai bucket or scanner was contacted",
+    "The prior 5738-pass complete local gate predates migration 430 and does not certify this delta",
+    "Final provider-decision deletion, legal holds, 24-hour deadlines and redacted audit expiry remain open",
+    "Signed-in browser acceptance is local Chromium with synthetic KYC evidence; no hosted or physical-device capture"
+  ]
+}

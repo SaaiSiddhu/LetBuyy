@@ -1,0 +1,42 @@
+{
+  "supervisor_pid": 72687,
+  "source_sha256": "1029fe659065f6110351560cecd8ece3f7656665f2b499ec6e9019a9b216eb65",
+  "started_at": "2026-11-05T20:05:26.112286+00:00",
+  "steps": [
+    {
+      "step": "ui-kit-analysis",
+      "exit_code": 0
+    },
+    {
+      "step": "app-analysis",
+      "exit_code": 0
+    },
+    {
+      "step": "full-flutter",
+      "exit_code": 1
+    },
+    {
+      "step": "governance",
+      "exit_code": 0
+    },
+    {
+      "step": "android-compile",
+      "exit_code": 0
+    },
+    {
+      "step": "ios-compile",
+      "exit_code": 0
+    }
+  ],
+  "status": "TERMINAL_ORDERED_LOCAL_GATES_PASSED_WITH_KNOWN_FULL_SUITE_FAILURE",
+  "ui_kit_analysis": "Fresh UI-kit analysis included because canonical confirmation owner changed.",
+  "active_step": null,
+  "full_flutter": {
+    "pass": 1485,
+    "fail": 1,
+    "skip": 0,
+    "known_protected_staff_failure_only": true
+  },
+  "finished_at": "2026-11-05T20:08:12.359864+00:00",
+  "source_unchanged": true
+}

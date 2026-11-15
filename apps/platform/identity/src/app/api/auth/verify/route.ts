@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateToken } from '@/lib/auth/tokens'
-import { createSession } from '@/lib/auth/session'
-import { setSessionCookie, addAccount, setPasswordSetIntentCookie } from '@/lib/auth/cookies'
+import { setPasswordSetIntentCookie } from '@/lib/auth/cookies'
 import { identityApiRequest } from '@/lib/api/client'
-import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
-import { getAdminDashboardUrl } from '@/lib/config/urls'
 import { createPasswordSetIntent } from '@/lib/auth/password-set-intent'
 
 /**
@@ -69,12 +66,20 @@ export async function GET(request: NextRequest) {
                     avatar_url: string | null
                     email_verified: boolean
                     has_password: boolean
+                    mfa_required?: boolean
                 } | null
             } | null
             const user = userPayload?.data || null
 
-            if (!user) {
+            if (!user || !result.user_id || user.id !== result.user_id) {
                 return NextResponse.redirect(new URL('/lookup?error=user_not_found', request.url))
+            }
+
+            // Email possession does not satisfy an enrolled Merchant factor.
+            // Missing admission data also fails closed (e.g. an older Gateway).
+            // The canonical password flow already owns MFA prompting/validation.
+            if (user.mfa_required !== false) {
+                return NextResponse.redirect(new URL('/login?reason=mfa_required', request.url))
             }
 
             // Ensure email is verified
@@ -93,42 +98,14 @@ export async function GET(request: NextRequest) {
                 return NextResponse.redirect(new URL('/set-password', request.url))
             }
 
-            // Create session
-            const fingerprint = generateDeviceFingerprint(request.headers, ip)
-            const userAgent = request.headers.get('user-agent') || ''
-            const { deviceId } = await getOrCreateDevice(user.id, fingerprint, userAgent)
-            const sessionToken = await createSession(user.id, deviceId)
-
-            // Set cookies
-            await setSessionCookie(sessionToken)
-            await addAccount({
-                email: user.email,
-                name: user.full_name,
-                avatar: user.avatar_url,
-                lastLogin: new Date().toISOString(),
-            })
-
-            // Check if user has a store → redirect appropriately
-            const storesResponse = await identityApiRequest('/stores?limit=1', {
-                method: 'GET',
-                requireSession: true,
-                sessionToken,
-            })
-            const storesPayload = await storesResponse.json().catch(() => null) as {
-                data?: Array<{ subdomain: string }>
-            } | null
-            const store = storesResponse.ok ? storesPayload?.data?.[0] : null
-
-            const redirectTo = store?.subdomain
-                ? getAdminDashboardUrl(store.subdomain)
-                : '/onboarding'
-
-            return NextResponse.redirect(new URL(redirectTo, request.url))
+            // An email link is not proof of an enrolled authenticator. Existing
+            // accounts finish the same password + required MFA journey as login.
+            return NextResponse.redirect(new URL(`/login?choose_account=1&email=${encodeURIComponent(user.email)}`, request.url))
         }
 
         return NextResponse.redirect(new URL('/lookup', request.url))
     } catch (error) {
-        console.error('Verify error:', error)
+        console.error(JSON.stringify({ level: 'error', service: 'accounts', reason: 'email_verification_unavailable' }))
         return NextResponse.redirect(new URL('/lookup?error=verification_failed', request.url))
     }
 }

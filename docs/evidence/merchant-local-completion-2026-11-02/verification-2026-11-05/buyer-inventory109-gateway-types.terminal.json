@@ -1,0 +1,14 @@
+{
+  "command": [
+    "pnpm",
+    "--filter",
+    "@letbuyy/api-gateway",
+    "exec",
+    "tsc",
+    "--noEmit"
+  ],
+  "tsconfig": null,
+  "source": "merchant-buyer-inventory-source-v109",
+  "exit_code": 0,
+  "ended_at": "2026-11-08T10:17:36.121649+00:00"
+}

@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-11-05T17:55:46.756749+00:00",
+  "supervisor_pid": 31326,
+  "source": "security-source-v1",
+  "source_sha256": "8ffd6e530d90589bd68607a9a910c50414f3389cca26213ceded0c483884aae6",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 31350,
+  "terminal_receipt": "uikit-security-analysis-v1.terminal.json"
+}

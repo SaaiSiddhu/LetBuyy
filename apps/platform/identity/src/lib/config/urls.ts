@@ -38,6 +38,26 @@ export function getAccountsUrl(path = '') {
     return appendPath(baseUrl, path)
 }
 
+/** HTTP cookies are allowed only for the explicitly configured local Accounts origin. */
+export function isConfiguredLocalAccountsOrigin(origin: string): boolean {
+    if (process.env.NEXT_PUBLIC_ENV !== 'development') return false
+    try {
+        const configured = new URL(getAccountsUrl()), requested = new URL(origin)
+        return configured.protocol === 'http:'
+            && ['localhost', '127.0.0.1', '[::1]'].includes(configured.hostname)
+            && Number(configured.port) >= 1024 && Number(configured.port) <= 65535
+            && !configured.username && !configured.password && !configured.search && !configured.hash
+            && ['', '/'].includes(configured.pathname)
+            // NextURL normalizes loopback IP hosts to localhost. Match that
+            // routing normalization only within the configured local port.
+            && requested.protocol === 'http:'
+            && ['localhost', '127.0.0.1', '[::1]'].includes(requested.hostname)
+            && requested.port === configured.port
+            && !requested.username && !requested.password && !requested.search && !requested.hash
+            && ['', '/'].includes(requested.pathname)
+    } catch { return false }
+}
+
 /** The configured platform root domain (`letbuyy.com` unless overridden). */
 export function getPlatformRootDomain(): string {
     return (

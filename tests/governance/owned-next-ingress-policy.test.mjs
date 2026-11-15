@@ -6,6 +6,10 @@ test('owned TLS ingress preserves exact host/protocol while refusing public, con
     for (const host of ['checkout.localhost:4222','shop.localhost:4222','shop.stores.example.test:4222','shop.stores.example.test','shop.stores.example.test:443'])
         assert.equal(isOwnedNextIngress({host,'x-forwarded-host':host,'x-forwarded-proto':'https'}, config),true);
     assert.equal(isOwnedNextIngress({host:'localhost:4111'},config),true);
+    const localConfig = { ...config, rootDomain: 'localhost' };
+    assert.equal(isOwnedNextIngress({host:'shop.merchant.test:4222','x-forwarded-host':'shop.merchant.test:4222','x-forwarded-proto':'https'},localConfig),true);
+    assert.equal(isOwnedNextIngress({host:'shop.merchant.test:4223','x-forwarded-proto':'https'},localConfig),false);
+    assert.equal(isOwnedNextIngress({host:'shop.merchant.test:4222','x-forwarded-proto':'https'},config),false);
     for (const headers of [
         {host:'foreign.example.com:4222','x-forwarded-proto':'https'},
         {host:'checkout.localhost:4222','x-forwarded-host':'foreign.example.com','x-forwarded-proto':'https'},

@@ -1,16 +1,16 @@
-import { Hono, type Context } from 'hono';
+import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, success } from '../lib/supabase';
-import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { validate } from '../middleware/validation';
-import { ListMediaQuery } from '../schemas/media.schema';
-import { planSignedR2UploadIntent, type MediaAssetType } from '@letbuyy/infrastructure/storage-adapter';
+import { ListMediaQuery, RegisterMediaSchema, UpdateMediaSchema } from '../schemas/media.schema';
+import type { MediaRegistrationInput, MediaMetadataUpdate } from '@letbuyy/shared-types';
+import { commitMediaCommand } from '../execution/media-command.adapter';
+import { planSignedR2UploadIntent } from '@letbuyy/infrastructure/storage-adapter';
 import { z } from 'zod';
-import { resolveMerchantResourceStoreIds } from '../lib/tenant-context';
+import { resolveOwnedStoreScope } from '../lib/tenant-context';
 
 const router = new Hono<{ Bindings: Env }>();
-type MediaContext = Context<{ Bindings: Env }>;
 
 type ListMediaQueryInput = z.infer<typeof ListMediaQuery>;
 
@@ -36,11 +36,6 @@ const MEDIA_LIST_COLUMNS = [
     'updated_at',
 ].join(',');
 
-interface MediaOwnerRow {
-    store_id?: string | null;
-    url?: string | null;
-}
-
 const SignedMediaUploadSchema = z.object({
     site_id: z.string().uuid(),
     filename: z.string().trim().min(1).max(180),
@@ -52,15 +47,6 @@ const SignedMediaUploadSchema = z.object({
 });
 type SignedMediaUploadInput = z.infer<typeof SignedMediaUploadSchema>;
 
-function requestId(c: MediaContext): string | null {
-    return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null;
-}
-
-function assetTypeForMediaType(mediaType: string): MediaAssetType {
-    if (mediaType === 'image' || mediaType === 'video' || mediaType === 'font' || mediaType === 'icon') return mediaType;
-    return 'file';
-}
-
 function objectKeyFromMediaUrl(url: string | null | undefined): string | null {
     if (!url) return null;
     try {
@@ -68,91 +54,6 @@ function objectKeyFromMediaUrl(url: string | null | undefined): string | null {
     } catch {
         return url.replace(/^\/+/, '') || null;
     }
-}
-
-function isOptionalMediaAssetWriteError(error: { message?: string } | null | undefined): boolean {
-    const message = error?.message || '';
-    return message.includes('schema cache')
-        || message.includes('site_id')
-        || message.includes('object_key')
-        || message.includes('processing_status');
-}
-
-async function emitMediaProcessedEvent(
-    c: MediaContext,
-    input: {
-        siteId: string;
-        mediaId: string;
-        assetId?: string | null;
-        objectKey?: string | null;
-        contentType?: string | null;
-        sizeBytes?: number | null;
-    },
-): Promise<void> {
-    await new EventExecutionAdapter(getSupabaseAdmin(c)).emitDomainEvent({
-        storeId: input.siteId,
-        aggregateType: 'media',
-        aggregateId: input.mediaId,
-        eventType: 'media.processed',
-        payload: {
-            site_id: input.siteId,
-            media_id: input.mediaId,
-            asset_id: input.assetId || undefined,
-            object_key: input.objectKey || undefined,
-            content_type: input.contentType || undefined,
-            size_bytes: input.sizeBytes || undefined,
-        },
-        idempotencyKey: `media.processed:${input.siteId}:${input.mediaId}`,
-        requestId: requestId(c),
-    });
-}
-
-async function recordProcessedMediaAsset(
-    db: ReturnType<typeof getSupabaseAdmin>,
-    input: {
-        siteId: string;
-        filename: string;
-        originalName: string;
-        publicUrl: string;
-        objectKey: string;
-        mediaType: string;
-        mimeType: string;
-        sizeBytes: number;
-        checksumSha256?: string | null;
-        channel?: string | null;
-    },
-) {
-    const { data, error } = await db
-        .from('media_assets')
-        .insert({
-            store_id: input.siteId,
-            site_id: input.siteId,
-            asset_type: assetTypeForMediaType(input.mediaType),
-            storage_provider: 'r2',
-            storage_path: input.objectKey,
-            object_key: input.objectKey,
-            public_url: input.publicUrl,
-            filename: input.originalName || input.filename,
-            content_type: input.mimeType,
-            size_bytes: input.sizeBytes,
-            processing_status: 'processed',
-            processed_at: new Date().toISOString(),
-            checksum_sha256: input.checksumSha256 || null,
-            source_channel: input.channel || 'web',
-            metadata: {
-                source: 'media-route',
-                filename: input.filename,
-            },
-        })
-        .select('id, object_key, processing_status')
-        .single();
-
-    if (error) {
-        if (isOptionalMediaAssetWriteError(error)) return null;
-        throw new Error(`Media asset mirror failed: ${error.message}`);
-    }
-
-    return data as { id: string; object_key: string; processing_status: string };
 }
 
 // GET /media — List media files for a store
@@ -288,155 +189,40 @@ router.post('/signed-upload', async (c) => {
     }), 201);
 });
 
-// POST /media — Create media record (metadata registration after upload via R2)
-router.post('/', async (c) => {
-    const auth = c.get('auth');
-    const body = await c.req.json();
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!body.store_id || !body.filename || !body.url || !body.mime_type) {
-        return c.json({ error: { code: 'VALIDATION', message: 'store_id, filename, url, and mime_type are required' } }, 400);
-    }
-
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    // Determine media type from mime
+// Public metadata effects and the existing HTTP receipt commit together under
+// the canonical tenant transaction, including metadata edits and logical delete.
+router.post('/', validate('json', RegisterMediaSchema), async (c) => {
+    const body = c.get('validatedBody') as MediaRegistrationInput;
+    const scope = await resolveOwnedStoreScope(c, body.store_id);
     let mediaType = 'other';
     if (body.mime_type.startsWith('image/')) mediaType = 'image';
     else if (body.mime_type.startsWith('video/')) mediaType = 'video';
     else if (body.mime_type.startsWith('audio/')) mediaType = 'audio';
     else if (body.mime_type.includes('pdf') || body.mime_type.includes('document') || body.mime_type.includes('text')) mediaType = 'document';
-
-    const { data, error } = await db
-        .from('media')
-        .insert({
-            store_id: body.store_id,
-            uploaded_by: customUser.id,
-            filename: body.filename,
-            original_name: body.original_name || body.filename,
-            url: body.url,
-            thumbnail_url: body.thumbnail_url || null,
-            mime_type: body.mime_type,
-            size_bytes: body.size_bytes || 0,
-            width: body.width || null,
-            height: body.height || null,
-            alt_text: body.alt_text || null,
-            caption: body.caption || null,
-            folder: body.folder || '/',
-            media_type: mediaType,
-            tags: body.tags || [],
-        })
-        .select()
-        .single();
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    const mediaRow = data as { id: string; url?: string | null };
-    const objectKey = body.storage_key || body.object_key || body.storage_path || objectKeyFromMediaUrl(mediaRow.url || body.url) || `${body.store_id}/${body.filename}`;
-    const asset = await recordProcessedMediaAsset(db, {
-        siteId: body.store_id,
-        filename: body.filename,
-        originalName: body.original_name || body.filename,
-        publicUrl: body.url,
-        objectKey,
-        mediaType,
-        mimeType: body.mime_type,
-        sizeBytes: body.size_bytes || 0,
-        checksumSha256: body.checksum_sha256 || null,
-        channel: body.channel || 'web',
-    });
-    await emitMediaProcessedEvent(c, {
-        siteId: body.store_id,
-        mediaId: mediaRow.id,
-        assetId: asset?.id,
-        objectKey,
-        contentType: body.mime_type,
-        sizeBytes: body.size_bytes || 0,
-    });
-
-    return c.json(success({ ...mediaRow, storage_key: objectKey, asset }), 201);
+    const objectKey = body.storage_key || body.object_key || body.storage_path || objectKeyFromMediaUrl(body.url);
+    if (!objectKey || objectKey.length > 512) return c.json({error: {code: 'VALIDATION', message: 'Review the media storage key'}}, 400);
+    const reply = await commitMediaCommand(c.env, scope, c.get('mediaCommandClaim'), {operation: 'create', input: body, objectKey, mediaType});
+    c.set('atomicIdempotencyCommitted', true);
+    return c.json(reply.body, reply.statusCode);
 });
 
-// PATCH /media/:id — Update media metadata
-router.patch('/:id', async (c) => {
-    const auth = c.get('auth');
-    const mediaId = c.req.param('id');
-    const body = await c.req.json();
-    const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    const { data: existing } = await db
-        .from('media')
-        .select('store_id')
-        .eq('id', mediaId).in('store_id', storeIds)
-        .single();
-
-    const ownedMedia = existing as MediaOwnerRow | null;
-    if (!customUser || !ownedMedia?.store_id || !(await verifySiteOwnership(db, ownedMedia.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    const allowed = ['alt_text', 'caption', 'folder', 'tags', 'filename'];
-    const updates: Record<string, unknown> = {};
-    for (const key of allowed) {
-        if (body[key] !== undefined) updates[key] = body[key];
-    }
-
-    if (Object.keys(updates).length === 0) {
-        return c.json({ error: { code: 'VALIDATION', message: 'No valid fields to update' } }, 400);
-    }
-
-    const { data, error } = await db
-        .from('media')
-        .update(updates)
-        .eq('id', mediaId).in('store_id', storeIds)
-        .select()
-        .single();
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(success(data));
+const MediaIdSchema = z.object({id: z.string().uuid()});
+router.patch('/:id', validate('param', MediaIdSchema), validate('json', UpdateMediaSchema), async (c) => {
+    const claim = c.get('mediaCommandClaim');
+    if (!claim) return c.json({error: {code: 'MEDIA_COMMAND_UNCONFIRMED', message: 'The original media receipt is unavailable'}}, 503);
+    const scope = await resolveOwnedStoreScope(c, claim.siteId);
+    const reply = await commitMediaCommand(c.env, scope, claim, {operation: 'update', id: c.req.param('id'), input: c.get('validatedBody') as MediaMetadataUpdate});
+    c.set('atomicIdempotencyCommitted', true);
+    return c.json(reply.body, reply.statusCode);
 });
 
-// DELETE /media/:id — Delete a media record
-router.delete('/:id', async (c) => {
-    const auth = c.get('auth');
-    const mediaId = c.req.param('id');
-    const db = getSupabaseAdmin(c);
-    const storeIds = await resolveMerchantResourceStoreIds(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    const { data: existing } = await db
-        .from('media')
-        .select('store_id, url')
-        .eq('id', mediaId).in('store_id', storeIds)
-        .single();
-
-    const ownedMedia = existing as MediaOwnerRow | null;
-    if (!customUser || !ownedMedia?.store_id || !(await verifySiteOwnership(db, ownedMedia.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    // Delete from database
-    const { error } = await db.from('media').delete().eq('id', mediaId).in('store_id', storeIds);
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    // Note: R2 object cleanup should be handled separately (e.g., via webhook or scheduled task)
-    return c.json({ data: { deleted: true } });
+router.delete('/:id', validate('param', MediaIdSchema), async (c) => {
+    const claim = c.get('mediaCommandClaim');
+    if (!claim) return c.json({error: {code: 'MEDIA_COMMAND_UNCONFIRMED', message: 'The original media receipt is unavailable'}}, 503);
+    const scope = await resolveOwnedStoreScope(c, claim.siteId);
+    const reply = await commitMediaCommand(c.env, scope, claim, {operation: 'delete', id: c.req.param('id')});
+    c.set('atomicIdempotencyCommitted', true);
+    return c.json(reply.body, reply.statusCode);
 });
 
 export default router;

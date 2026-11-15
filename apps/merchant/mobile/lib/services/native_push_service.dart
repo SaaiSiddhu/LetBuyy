@@ -8,7 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 import 'push_service.dart';
 
-const _actorKey = 'merchant_push_actor';
+String get _actorKey =>
+    '${AppConfig.persistenceNamespace()}merchant_push_actor';
 const _androidSettings = AndroidInitializationSettings(
   '@drawable/ic_merchant_notification',
 );

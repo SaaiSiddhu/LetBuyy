@@ -8,3 +8,4 @@ export 'src/merchant_app/store_auth_request_model.dart';
 export 'src/merchant_app/store_model.dart';
 export 'src/merchant_app/store_theme_model.dart';
 export 'src/merchant_app/theme_editor_models.dart';
+export 'src/merchant_app/liquid_theme_document.dart';

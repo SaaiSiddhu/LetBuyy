@@ -1,0 +1,9 @@
+{
+  "source111": "f572b869ac94a24fc7a2f5f9a4c14907fd614995be3f9df7057097fcc6648460",
+  "source112": "ff48b1a3cce11cb556a86cf5cc84b84611972b77a51cc2a0bba7651fefd71ac6",
+  "changed": [
+    "apps/commerce/web/package.json"
+  ],
+  "semantic_difference": "scripts.test adds exactly2new regression files; all production/runtime/source/DTO/SQL/Dart/theme inputs are byte-identical111",
+  "scope": "Bounded111gates may carry only for identical consumed inputs; new script receives fresh full test/governance/type qualification"
+}

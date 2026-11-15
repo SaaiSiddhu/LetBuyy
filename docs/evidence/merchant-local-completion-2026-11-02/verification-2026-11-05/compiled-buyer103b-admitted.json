@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-08T08:36:02.062663+00:00",
+  "fixture": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-creation-core-buyer-v103b.postgres.test.ts",
+  "sha256": "583872161ce9f6efb97fab9382ede74470ab989f0e92a861a487999b55000d7d",
+  "image_sha256": "b7b03ea57c95d0c2bf84b0642d53f7d4a6b57e5f5c024de3453ca3bd2934fee6",
+  "source": "merchant-creation-retirement-source-v103",
+  "prior_failure": "compiled-buyer103.json: copied relative image path ENOENT; normal signup/verification/store passed; no product committed; cleanup empty",
+  "only_change": "Resolve retained synthetic image from the actual repository fixture location; original suite assertions unchanged"
+}

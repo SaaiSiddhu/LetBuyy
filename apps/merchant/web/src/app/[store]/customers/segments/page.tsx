@@ -21,39 +21,19 @@ import {
     Switch,
     useToast,
 } from '@letbuyy/ui'
+import { formatIndiaDate, formatInrCurrency } from '@letbuyy/ui/formatting'
+import type { Customer, CustomerSegment, CustomerSegmentPreview, CustomerSegmentRules } from '@letbuyy/shared-types'
+import { buildEmptyRules, buildFormState, formStateToRules, type SegmentFormState } from '@/lib/customers/segment-form'
 import { MerchantEmptyState as EmptyState } from '@/components/empty-states/MerchantEmptyState'
-import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 // ---------------------------------------------------------------------------
 // Local types (mirrors gateway CustomerSegment / CustomerSegmentRules shapes)
 // ---------------------------------------------------------------------------
 
-interface SegmentRules {
-    status?: 'active' | 'blocked' | null
-    accepts_marketing?: boolean | null
-    tags_any?: string[]
-    min_order_count?: number | null
-    min_total_spent?: number | null
-    last_order_after?: string | null
-    last_order_before?: string | null
-}
-
-interface Segment {
-    id: string
-    store_id: string
-    name: string
-    description: string | null
-    rules: SegmentRules
-    customer_count: number
-    created_at: string
-    updated_at: string
-}
-
-interface SegmentPreview {
-    store_id: string
-    rules: SegmentRules
-    customer_count: number
-    sample_customers: Array<{ id: string; email: string; display_name: string }>
+type SegmentRules = CustomerSegmentRules
+type Segment = Pick<CustomerSegment, 'id' | 'store_id' | 'name' | 'description' | 'rules' | 'customer_count' | 'created_at' | 'updated_at'>
+type SegmentPreview = Pick<CustomerSegmentPreview, 'store_id' | 'rules' | 'customer_count'> & {
+    sample_customers: Array<Pick<Customer, 'id' | 'email' | 'display_name'>>
 }
 
 // ---------------------------------------------------------------------------
@@ -139,7 +119,7 @@ function RuleChips({ rules }: { rules: SegmentRules }) {
     if (rules.accepts_marketing === false) chips.push('No marketing')
     if ((rules.tags_any ?? []).length > 0) chips.push(`Tags: ${rules.tags_any!.join(', ')}`)
     if (rules.min_order_count) chips.push(`≥ ${rules.min_order_count} orders`)
-    if (rules.min_total_spent) chips.push(`Spent ≥ ₹${(rules.min_total_spent / 100).toLocaleString('en-IN')}`)
+    if (rules.min_total_spent) chips.push(`Spent ≥ ${formatInrCurrency(rules.min_total_spent)}`)
     if (rules.last_order_after) chips.push(`Ordered after ${formatIndiaDate(rules.last_order_after, { emptyValue: '' })}`)
     if (rules.last_order_before) chips.push(`Ordered before ${formatIndiaDate(rules.last_order_before, { emptyValue: '' })}`)
 
@@ -162,7 +142,8 @@ function RuleChips({ rules }: { rules: SegmentRules }) {
 const STATUS_OPTIONS = [
     { label: 'Any', value: '' },
     { label: 'Active', value: 'active' },
-    { label: 'Blocked', value: 'blocked' },
+    { label: 'Disabled', value: 'disabled' },
+    { label: 'Invited', value: 'invited' },
 ]
 
 const MARKETING_OPTIONS = [
@@ -171,62 +152,6 @@ const MARKETING_OPTIONS = [
     { label: 'Does not accept marketing', value: 'no' },
 ]
 
-function buildEmptyRules(): SegmentRules {
-    return { tags_any: [] }
-}
-
-interface SegmentFormState {
-    name: string
-    description: string
-    rules: SegmentRules
-    // transient form fields (before they go into rules)
-    tagsInput: string
-    minOrders: string
-    minSpentRupees: string
-    lastOrderAfter: string
-    lastOrderBefore: string
-}
-
-function buildFormState(segment?: Segment): SegmentFormState {
-    const rules = segment?.rules ?? buildEmptyRules()
-    return {
-        name: segment?.name ?? '',
-        description: segment?.description ?? '',
-        rules,
-        tagsInput: (rules.tags_any ?? []).join(', '),
-        minOrders: rules.min_order_count != null ? String(rules.min_order_count) : '',
-        minSpentRupees: rules.min_total_spent != null ? String(rules.min_total_spent / 100) : '',
-        lastOrderAfter: rules.last_order_after
-            ? rules.last_order_after.slice(0, 10)  // yyyy-mm-dd for <input type="date">
-            : '',
-        lastOrderBefore: rules.last_order_before
-            ? rules.last_order_before.slice(0, 10)
-            : '',
-    }
-}
-
-function formStateToRules(form: SegmentFormState): SegmentRules {
-    const tags = form.tagsInput
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean)
-    const minOrders = form.minOrders.trim() ? parseInt(form.minOrders, 10) : undefined
-    const minSpent = form.minSpentRupees.trim() ? Math.round(parseFloat(form.minSpentRupees) * 100) : undefined
-    const afterDate = form.lastOrderAfter ? `${form.lastOrderAfter}T00:00:00.000Z` : undefined
-    const beforeDate = form.lastOrderBefore ? `${form.lastOrderBefore}T23:59:59.999Z` : undefined
-
-    return {
-        ...(form.rules.status ? { status: form.rules.status } : {}),
-        ...(form.rules.accepts_marketing !== undefined && form.rules.accepts_marketing !== null
-            ? { accepts_marketing: form.rules.accepts_marketing }
-            : {}),
-        tags_any: tags,
-        ...(minOrders != null && !isNaN(minOrders) ? { min_order_count: minOrders } : {}),
-        ...(minSpent != null && !isNaN(minSpent) ? { min_total_spent: minSpent } : {}),
-        ...(afterDate ? { last_order_after: afterDate } : {}),
-        ...(beforeDate ? { last_order_before: beforeDate } : {}),
-    }
-}
 
 interface SegmentFormProps {
     form: SegmentFormState
@@ -235,6 +160,7 @@ interface SegmentFormProps {
     previewLoading: boolean
     onPreview: () => void
 }
+
 
 function SegmentForm({ form, onChange, preview, previewLoading, onPreview }: SegmentFormProps) {
     const set = useCallback(<K extends keyof SegmentFormState>(key: K, value: SegmentFormState[K]) => {

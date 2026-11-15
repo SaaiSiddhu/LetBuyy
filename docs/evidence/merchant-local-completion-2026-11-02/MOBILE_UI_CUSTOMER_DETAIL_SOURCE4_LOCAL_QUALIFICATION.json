@@ -1,0 +1,83 @@
+{
+  "at": "2026-11-05T02:43:54.288412+00:00",
+  "status": "Source4archived/local qualified with existing protected Staff failure; bounded Android29Customer phone/note+web sync PASS, iOS12compile-only PASS. Entire Customer/119programme/release acceptance remains open.",
+  "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "source_sha256": "5f0644af1bb505f15adbf1dfdf896bc4e27f415ce182fc65137be39c2ab980ff",
+  "snapshot_input_entries": 7486,
+  "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-detail-v4-qualified-source",
+  "snapshot_note": "Four diagnostic golden-failure PNGs remain captured for custody, not source authority or release artifacts.",
+  "flutter": {
+    "pass": 1279,
+    "fail": 1,
+    "skip": 0,
+    "failure": "Unchanged protected Staff positive-hosted-invitation namespace assertion.",
+    "log": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-customer-detail-source4-full-flutter.log"
+  },
+  "analysis": {
+    "merchant_app": "0issues",
+    "shared_ui_kit": "0issues"
+  },
+  "preservation": {
+    "parsed_checks": 535,
+    "all_passed": true,
+    "protected_baseline_files": 5195,
+    "classified_client_read_exceptions": 4,
+    "prior_three_exceptions_byte_identical": true,
+    "all_other_protected_files_unchanged": true,
+    "all_protected_bytes_identical_to_source2": true,
+    "all_protected_bytes_identical_to_source3": true
+  },
+  "governance": {
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "exit_code": 0,
+    "actual_post_gate_clone_core_byte_equality": 7486,
+    "readback": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/customer-detail-v4-governance38-readback.json"
+  },
+  "implemented": [
+    "Primary/4optional independent current-model read presentation; live/stored/prior failure and denied/unknown remain distinct.",
+    "All9tasks connected to canonical shared sheets/full-page editors/brief confirmations with stable controllers, native validation/drafts, current owner/store/API/profile/route checks, one pending operation, uncertain outcome retention and reads-only acknowledged recovery.",
+    "Address creation exact existing store/customer_phone/schema binding, unsupported phone PATCH readonly, canonical email resource binding, optional null/preference preservation.",
+    "Profile names use raw name fields without inferred email or mixed display fallback parts; missing marketing is not false.",
+    "WhatsApp original4choices retained with factual required-variable readiness; no fictional tracking/store/order/checkout values or invented initial order-ready message. Email/provider and redaction acknowledgement do not imply delivery/full erasure.",
+    "Actual native status/first floating-label overlap reproduced0PASS/2FAIL then fixed with canonical field separation; both themes now pass. Customer feedback uses task language; all source2operation/controller/command semantics preserved.",
+    "Clean full-page iOS edge swipe restored; dirty/uncertain/busy still guarded. Existing volatile parent submitted marker triggers same-owner reads on clean resultless platform pop, never a new command. Actual Flutter iOS gesture/return tests and all50Customer task cases pass."
+  ],
+  "failed_evidence_retained": [
+    "Source1full1271PASS/2FAIL: old cross-store test expected inferred Private instead of actual provided first_name Private A; protected Staff failure. Source2preserves raw name fields, updates only editor selectors/labels and strengthens private-field absence checks.",
+    "Source1parsed proof rejected new shared UI callback hooks; retargeted the proof to preserve exact default geometry/dirty/busy/result behavior while admitting explicit caller hooks. No repository validator changed.",
+    "Parsed loadRecentOrders whole-body equality was intentionally inapplicable to removing its fake empty-success fallback; exact SDK inputs and original input calculations are preserved instead.",
+    "v19task test compilation failure and v23unused synthetic inset diagnosis retained.",
+    "Native27failed its second Chrome CDP connection at604.6s, despite in-app phone/note confirmations.2actual Customer commands were observed. Independent cleanup/source/installed APK proof retained; no web sync accepted.",
+    "Native28FAIL312.4s at web-note response wait; normal web phone/native-note visibility observed, no Gateway web-note POST. Independent source/APK/scoped cleanup retained. No bidirectional acceptance.",
+    "iOS clean gesture negative v33:0PASS/2FAIL before repair. v32used an unsupported dragFrom duration argument and v35had platform-debug cleanup invariant failures after functional assertions; corrected to timedDragFrom and TargetPlatformVariant without changing assertions."
+  ],
+  "android": {
+    "status": "BOUNDED_PASS",
+    "run_id": "f30ec8948e98",
+    "suite_seconds": 291.6,
+    "native_input_entries": 4806,
+    "apk_sha256": "f386303ecff8de02d5191b0653c734b50feb88ab5c1d4fd62c3dcfe12b921c13",
+    "scope": "Owner phone+note, actual Android Back/keyboard, normal web read/native facts + web note201/reopen/native fresh read; canonical order/items/stock unchanged; all9tasks/staff/hosted/providers not accepted.",
+    "evidence": "COMPILED_MOBILE_UI_CUSTOMER_DETAIL_ANDROID_WEB_V29_QUALIFICATION.json"
+  },
+  "ios": {
+    "status": "COMPILE_ONLY_PASS",
+    "manifest_sha256": "a59c5a528f62b4eec284f1c477578481bf48bd2e8511e3d0e0add3829b8a1312",
+    "files_equal": 377,
+    "owned_simulator_shutdown": true,
+    "evidence": "MOBILE_UI_CUSTOMER_DETAIL_IOS_V12_COMPILE_QUALIFICATION.json"
+  },
+  "pending": [
+    "Remaining7Customer task native/persisted/runtime branches, more field edits/owner-staff/denial/recovery/export populations and real provider gates.",
+    "Actual iOS runtime, spoken screen-reader and physical performance acceptance.",
+    "Full119programme/remaining UI candidates/final unique surface denominator.",
+    "Global shared action-footprint review remains pending; current Customer action rows hide the submit button during pending phases. Preserve original operation semantics when addressing geometry."
+  ],
+  "no_change": "No backend/API/BFF server/schema/RLS/auth/financial/provider/storage/persistence policy/infrastructure/deployment change."
+}

@@ -1,0 +1,165 @@
+{
+  "status": "IMPLEMENTED_BOUNDED_CATEGORY_NATIVE_PASS_SEGMENT_RUNTIME_PENDING",
+  "at": "2026-11-04T10:08:45.466020+00:00",
+  "source": {
+    "sha256": "4710f224d95a01d131eb9163016930b4bc171a6ebb15f76aee90cc04e0fa80ff",
+    "entries": 7447,
+    "manifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-editors-v3.source.json",
+    "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-editors-v3-qualified-source",
+    "heldAndTerminalVerified": true
+  },
+  "checks": {
+    "focused_v1": {
+      "passed": 33,
+      "failed": 3,
+      "reasons": [
+        "Two new tests clicked before the edited frame was pumped; no app change",
+        "Disabled Back finder returned RawTooltip instead of IconButton; fixture corrected"
+      ]
+    },
+    "focused_v2": {
+      "passed": 35,
+      "failed": 1,
+      "reason": "Actor fixture never bound its initial actor, so first bind was not an actor transition; corrected initial binding and added context-change positive control"
+    },
+    "focused_v3": {
+      "passed": 36,
+      "failed": 0
+    },
+    "full_v3": {
+      "passed": 966,
+      "failed": 1,
+      "skipped": 0,
+      "remaining": "DEP-STAFF-01 persistence namespace dependency; test retained"
+    },
+    "analysis": {
+      "app_issues": 0,
+      "ui_kit_issues": 0
+    },
+    "preservation": {
+      "basis": "Parsed AST body equality to retained qualified source; formatting excluded. Presentation/route wrappers intentionally differ.",
+      "checks": [
+        {
+          "owner": "warehouse._submit",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._arrival",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._locationChoice",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._supplierChoice",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._productChoice",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse.dispose",
+          "unchanged": true
+        },
+        {
+          "owner": "warehouse._lineCard",
+          "unchanged": true
+        },
+        {
+          "owner": "StaffMemberContract",
+          "unchanged": true
+        },
+        {
+          "owner": "StaffInviteInput",
+          "unchanged": true
+        },
+        {
+          "owner": "StaffInvitationResult",
+          "unchanged": true
+        },
+        {
+          "owner": "staffInvitationProof",
+          "unchanged": true
+        },
+        {
+          "owner": "_stringValue",
+          "unchanged": true
+        },
+        {
+          "owner": "_boolValue",
+          "unchanged": true
+        },
+        {
+          "owner": "staff._pendingKey",
+          "unchanged": true
+        },
+        {
+          "owner": "staff._invitationKey",
+          "unchanged": true
+        },
+        {
+          "owner": "staff.restorePendingInvitation",
+          "unchanged": true
+        },
+        {
+          "owner": "locations_screen.dart metadata input/validation/return",
+          "unchanged": true
+        },
+        {
+          "owner": "suppliers_screen.dart metadata input/validation/return",
+          "unchanged": true
+        },
+        {
+          "owner": "category._submit input/validation/return",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._day",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._date",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._rules",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._tagValues",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._save",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._previewRules",
+          "unchanged": true
+        },
+        {
+          "owner": "segment._edited",
+          "unchanged": true
+        },
+        {
+          "owner": "segment.initState",
+          "unchanged": true
+        },
+        {
+          "owner": "segment.dispose",
+          "unchanged": true
+        }
+      ]
+    },
+    "androidCategory": "COMPILED_MOBILE_UI_CATEGORY_ANDROID_WEB_V3_QUALIFICATION.json",
+    "ios": "MOBILE_UI_IOS_COMPILE_V1.json"
+  },
+  "remaining": [
+    "Customer-segment actual native/web effects and native keyboard pending",
+    "Widget-local segment uncertain intent lacks process-death persistence; protected existing dependency",
+    "Category broader alternate-state/platform/readback acceptance remains pending",
+    "Whole app denominator and all remaining cohorts, iOS UI, performance and eligible cleanup remain pending"
+  ]
+}

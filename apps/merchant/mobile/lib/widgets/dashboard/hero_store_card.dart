@@ -10,6 +10,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+
+import '../../app/store_context.dart';
+import '../shared/merchant_store_view.dart';
+import '../shared/merchant_product_usage.dart';
+import '../shared/accessible_tap_region.dart';
 
 import '../../services/subscription_catalog.dart';
 import '../../theme/app_theme_colors.dart';
@@ -43,222 +49,236 @@ class HeroStoreCard extends StatefulWidget {
   State<HeroStoreCard> createState() => _HeroStoreCardState();
 }
 
-class _HeroStoreCardState extends State<HeroStoreCard>
-    with TickerProviderStateMixin {
+class _HeroStoreCardState extends State<HeroStoreCard> {
   final FocusNode _storeUrlFocusNode = FocusNode(debugLabel: 'Copy store URL');
-  late AnimationController _pulseController;
-  late AnimationController _shimmerController;
+  late final MerchantStoreView? _view;
+  bool _qrOpening = false;
   late AppThemeColors colors;
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
-
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat();
+    final stores = context.read<StoreContext?>();
+    _view = stores != null && stores.selectedStoreId == widget.store.id
+        ? (key: stores.requestContextKey, storeId: widget.store.id)
+        : null;
   }
 
   @override
   void dispose() {
-    _pulseController.dispose();
-    _shimmerController.dispose();
     _storeUrlFocusNode.dispose();
     super.dispose();
   }
 
   String get _publicUrl => widget.storefrontUrl ?? widget.store.publicUrl;
 
-  void _copyStoreUrl() {
-    Clipboard.setData(ClipboardData(text: _publicUrl));
-    HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          children: [
-            Icon(Icons.check_circle, color: Colors.white, size: 16),
-            SizedBox(width: 8),
-            Text('URL copied!', style: TextStyle(fontSize: 13)),
-          ],
-        ),
-        backgroundColor: colors.success,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
+  bool get _current => mounted && merchantStoreViewCurrent(context, _view);
 
-  Future<void> _shareStore() async {
-    HapticFeedback.mediumImpact();
+  Future<void> _copyStoreUrl() async {
+    if (!_current) return;
+    final url = _publicUrl;
     try {
-      await Share.share(
-      '🏪 Check out ${widget.store.name} on LetBuyy!\n\n$_publicUrl',
-      subject: '${widget.store.name} - LetBuyy Store',
+      await Clipboard.setData(ClipboardData(text: url));
+      if (!_current) return;
+      HapticFeedback.lightImpact();
+      mobile_tokens.showLetbuyyOperationFeedback(
+        context,
+        message: 'URL copied!',
       );
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open share options. Try again.')));
+      if (_current)
+        mobile_tokens.showLetbuyyOperationFeedback(
+          context,
+          message: 'The store link could not be copied. Try again.',
+          isError: true,
+        );
     }
   }
 
-  void _showQRCode() {
+  Future<void> _visitStore() async {
+    if (!_current) return;
+    try {
+      final opened = await launchUrl(Uri.parse(_publicUrl));
+      if (!opened && _current)
+        mobile_tokens.showLetbuyyOperationFeedback(
+          context,
+          message: 'Could not open the store link. Try again.',
+          isError: true,
+        );
+    } catch (_) {
+      if (_current)
+        mobile_tokens.showLetbuyyOperationFeedback(
+          context,
+          message: 'Could not open the store link. Try again.',
+          isError: true,
+        );
+    }
+  }
+
+  Future<void> _shareStore() async {
+    if (!_current) return;
     HapticFeedback.mediumImpact();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => _QRCodeBottomSheet(
-        storeName: widget.store.name,
-        storeUrl: _publicUrl,
-        subdomain: widget.store.subdomain,
-        logoUrl: widget.store.logoUrl,
-      ),
-    );
+    try {
+      await Share.share(
+        '🏪 Check out ${widget.store.name} on LetBuyy!\n\n$_publicUrl',
+        subject: '${widget.store.name} - LetBuyy Store',
+      );
+    } catch (_) {
+      if (_current)
+        mobile_tokens.showLetbuyyOperationFeedback(
+          context,
+          message: 'Could not open share options. Try again.',
+          isError: true,
+        );
+    }
+  }
+
+  Future<void> _showQRCode() async {
+    if (!_current || _qrOpening) return;
+    setState(() => _qrOpening = true);
+    HapticFeedback.mediumImpact();
+    try {
+      await mobile_tokens.showLetbuyyFormSheet<void>(
+        context: context,
+        builder: (_) => _QRCodeBottomSheet(
+          view: _view!,
+          storeName: widget.store.name,
+          storeUrl: _publicUrl,
+          subdomain: widget.store.subdomain,
+          logoUrl: widget.store.logoUrl,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _qrOpening = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final stores = context.watch<StoreContext?>();
     colors = AppThemeColors.of(context);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: colors.heroGradient,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
-                  alpha: 0.35,
-                ),
-                blurRadius: 24,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              // Animated shimmer overlay
-              _buildShimmerOverlay(),
-
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Row 1: Logo + Info + Status
-                    Row(
-                      children: [
-                        _buildStoreLogo(),
-                        const SizedBox(width: 12),
-                        Expanded(child: _buildStoreInfo()),
-                        _buildStatusBadge(),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Row 2: Action Buttons + Quick Actions
-                    Row(
-                      children: [
-                        // Main action buttons
-                        Expanded(
-                          flex: 2,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: _CompactActionButton(
-                                  icon: Icons.open_in_new_rounded,
-                                  label: 'Visit',
-                                  hint: 'Open the public storefront',
-                                  onTap: () => launchUrl(Uri.parse(_publicUrl)),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: _CompactActionButton(
-                                  icon: widget.store.isPublished
-                                      ? Icons.cloud_off_outlined
-                                      : Icons.rocket_launch_rounded,
-                                  label: widget.store.isPublished
-                                      ? 'Unpublish'
-                                      : 'Go Live',
-                                  hint: widget.store.isPublished
-                                      ? 'Change the storefront publication status'
-                                      : 'Publish the storefront',
-                                  onTap: widget.onPublishToggle,
-                                  isLoading: widget.isPublishing,
-                                  isPrimary: !widget.store.isPublished,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        // Quick action icons
-                        _buildQuickActionIcon(
-                          Icons.share_rounded,
-                          'Share store',
-                          _shareStore,
-                        ),
-                        const SizedBox(width: 6),
-                        _buildQuickActionIcon(
-                          Icons.qr_code_2_rounded,
-                          'Store QR code',
-                          _showQRCode,
-                        ),
-                        const SizedBox(width: 6),
-                        _buildQuickActionIcon(
-                          Icons.settings_outlined,
-                          'Store settings',
-                          widget.onSettingsTap,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // Subscription Row
-                    _buildSubscriptionRow(),
-                  ],
-                ),
-              ),
-            ],
-          ),
+    final theme = Theme.of(context);
+    if (stores != null && !_current) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(mobile_tokens.LetbuyySpacingTokens.space20),
+          child: Text('Store access changed. Reload the selected store.'),
         ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerOverlay() {
-    return AnimatedBuilder(
-      animation: _shimmerController,
-      builder: (context, child) {
-        return Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: LinearGradient(
-                begin: Alignment(-1.5 + _shimmerController.value * 3, -0.5),
-                end: Alignment(-0.5 + _shimmerController.value * 3, 0.5),
-                colors: [
-                  Colors.transparent,
-                  Colors.white.withValues(alpha: 0.08),
-                  Colors.transparent,
-                ],
+      );
+    }
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(
+          mobile_tokens.LetbuyySpacingTokens.space20,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildStoreLogo(),
+                const SizedBox(
+                  width: mobile_tokens.LetbuyySpacingTokens.space16,
+                ),
+                Expanded(child: _buildStoreInfo()),
+              ],
+            ),
+            const SizedBox(height: mobile_tokens.LetbuyySpacingTokens.space12),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Chip(
+                avatar: Icon(
+                  widget.store.isPublished
+                      ? Icons.check_circle_outline
+                      : Icons.edit_outlined,
+                ),
+                label: Text(widget.store.isPublished ? 'Published' : 'Draft'),
               ),
             ),
-          ),
-        );
-      },
+            const SizedBox(height: mobile_tokens.LetbuyySpacingTokens.space16),
+            Wrap(
+              spacing: mobile_tokens.LetbuyySpacingTokens.space8,
+              runSpacing: mobile_tokens.LetbuyySpacingTokens.space8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.square(
+                      mobile_tokens.LetbuyySpacingTokens.space48,
+                    ),
+                  ),
+                  onPressed: _current ? _visitStore : null,
+                  icon: const Icon(Icons.open_in_new),
+                  label: const Text('Visit'),
+                ),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.square(
+                      mobile_tokens.LetbuyySpacingTokens.space48,
+                    ),
+                  ),
+                  onPressed: !_current || widget.isPublishing
+                      ? null
+                      : widget.onPublishToggle,
+                  icon: widget.isPublishing
+                      ? mobile_tokens.LoadingIndicator(
+                          size: mobile_tokens.LetbuyySpacingTokens.space20,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        )
+                      : Icon(
+                          widget.store.isPublished
+                              ? Icons.cloud_off_outlined
+                              : Icons.rocket_launch_outlined,
+                        ),
+                  label: Text(
+                    widget.isPublishing
+                        ? 'Publishing…'
+                        : widget.store.isPublished
+                        ? 'Unpublish'
+                        : 'Go Live',
+                  ),
+                ),
+                IconButton(
+                  style: IconButton.styleFrom(
+                    minimumSize: const Size.square(
+                      mobile_tokens.LetbuyySpacingTokens.space48,
+                    ),
+                  ),
+                  tooltip: 'Share store',
+                  onPressed: _current ? _shareStore : null,
+                  icon: const Icon(Icons.share_outlined),
+                ),
+                IconButton(
+                  style: IconButton.styleFrom(
+                    minimumSize: const Size.square(
+                      mobile_tokens.LetbuyySpacingTokens.space48,
+                    ),
+                  ),
+                  tooltip: 'Store QR code',
+                  onPressed: _current && !_qrOpening ? _showQRCode : null,
+                  icon: const Icon(Icons.qr_code_2),
+                ),
+                IconButton(
+                  style: IconButton.styleFrom(
+                    minimumSize: const Size.square(
+                      mobile_tokens.LetbuyySpacingTokens.space48,
+                    ),
+                  ),
+                  tooltip: 'Store settings',
+                  onPressed: _current ? widget.onSettingsTap : null,
+                  icon: const Icon(Icons.settings_outlined),
+                ),
+              ],
+            ),
+            const Divider(height: mobile_tokens.LetbuyySpacingTokens.space32),
+            Text('Plan', style: theme.textTheme.titleSmall),
+            const SizedBox(height: mobile_tokens.LetbuyySpacingTokens.space8),
+            _buildSubscriptionRow(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -314,142 +334,55 @@ class _HeroStoreCardState extends State<HeroStoreCard>
   }
 
   Widget _buildStoreInfo() {
+    final theme = Theme.of(context);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          widget.store.name,
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            letterSpacing: -0.3,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: 4),
-        Semantics(
-          container: true,
-          excludeSemantics: true,
-          button: true,
-          enabled: true,
+        Text(widget.store.name, style: theme.textTheme.titleLarge),
+        const SizedBox(height: mobile_tokens.LetbuyySpacingTokens.space8),
+        AccessibleTapRegion(
+          excludeChildSemantics: true,
+          focusNode: _storeUrlFocusNode,
           label: 'Copy store URL',
           hint: '$_publicUrl to clipboard',
-          onTap: _copyStoreUrl,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48),
-            child: Center(
-              child: Focus(
-                key: const ValueKey('hero-store-url-focus'),
-                focusNode: _storeUrlFocusNode,
-                onKeyEvent: (_, event) {
-                  if (event is KeyDownEvent &&
-                      (event.logicalKey == LogicalKeyboardKey.enter ||
-                          event.logicalKey == LogicalKeyboardKey.space)) {
-                    _copyStoreUrl();
-                    return KeyEventResult.handled;
-                  }
-                  return KeyEventResult.ignored;
-                },
-                child: InkWell(
-                  canRequestFocus: false,
-                  borderRadius: BorderRadius.circular(8),
-                  onTap: _copyStoreUrl,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.link_rounded,
-                        size: 11,
-                        color: Colors.white.withValues(alpha: 0.7),
+          onTap: _current ? _copyStoreUrl : null,
+          child: Focus(
+            key: const ValueKey('hero-store-url-focus'),
+            focusNode: _storeUrlFocusNode,
+            onKeyEvent: (_, event) {
+              if (_current &&
+                  event is KeyDownEvent &&
+                  (event.logicalKey == LogicalKeyboardKey.enter ||
+                      event.logicalKey == LogicalKeyboardKey.space)) {
+                _copyStoreUrl();
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: InkWell(
+              canRequestFocus: false,
+              onTap: _current ? _copyStoreUrl : null,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Row(
+                  children: [
+                    const Icon(Icons.link),
+                    const SizedBox(
+                      width: mobile_tokens.LetbuyySpacingTokens.space8,
+                    ),
+                    Expanded(
+                      child: Text(
+                        _publicUrl.replaceFirst(RegExp(r'^https?://'), ''),
+                        style: theme.textTheme.bodyMedium,
                       ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          '${widget.store.subdomain}.letbuyy.com',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withValues(alpha: 0.8),
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.copy_rounded,
-                        size: 10,
-                        color: Colors.white.withValues(alpha: 0.5),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildStatusBadge() {
-    return AnimatedBuilder(
-      animation: _pulseController,
-      builder: (context, child) {
-        final isLive = widget.store.isPublished;
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: isLive
-                ? colors.success.withValues(
-                    alpha: 0.15 + 0.1 * _pulseController.value,
-                  )
-                : colors.warning.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isLive
-                  ? colors.success.withValues(alpha: 0.4)
-                  : colors.warning.withValues(alpha: 0.4),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: isLive ? colors.success : colors.warning,
-                  shape: BoxShape.circle,
-                  boxShadow: isLive
-                      ? [
-                          BoxShadow(
-                            color: colors.success.withValues(
-                              alpha: 0.5 * _pulseController.value,
-                            ),
-                            blurRadius: 6,
-                            spreadRadius: 1,
-                          ),
-                        ]
-                      : null,
-                ),
-              ),
-              const SizedBox(width: 5),
-              Text(
-                isLive ? 'Live' : 'Draft',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: isLive ? colors.success : colors.warning,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -578,126 +511,26 @@ class _HeroStoreCardState extends State<HeroStoreCard>
   /// Subscription info row with plan, usage, and upgrade
   Widget _buildSubscriptionRow() {
     final billing = widget.billing;
-    final isUnlimited =
-        billing?.productLimitKnown == true && billing?.productLimit == null;
-    final usagePercent = (billing?.productUsageFraction ?? 0) * 100;
     final planName = billing == null
         ? 'Billing unavailable'
         : '${billing.planName}${billing.id != null && !billing.active ? ' (${billing.status})' : ''}';
-    final planEmoji = billing?.active == true ? '⭐' : '🎁';
-    const planColor = Colors.white;
-
-    Color progressColor;
-    if (isUnlimited) {
-      progressColor = const Color(0xFF10B981);
-    } else if (usagePercent >= 90) {
-      progressColor = const Color(0xFFEF4444);
-    } else if (usagePercent >= 75) {
-      progressColor = const Color(0xFFF59E0B);
-    } else {
-      progressColor = const Color(0xFF10B981);
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.20),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-      ),
-      child: Row(
-        children: [
-          // Plan Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: planColor.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: planColor.withValues(alpha: 0.4)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(planEmoji, style: TextStyle(fontSize: 12)),
-                const SizedBox(width: 4),
-                Text(
-                  planName,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: planColor,
-                  ),
-                ),
-              ],
-            ),
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(planName, style: theme.textTheme.bodyLarge),
+        const SizedBox(height: mobile_tokens.LetbuyySpacingTokens.space16),
+        MerchantProductUsage(billing: billing),
+        const SizedBox(height: mobile_tokens.LetbuyySpacingTokens.space12),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton.icon(
+            onPressed: _current ? widget.onPlanTap : null,
+            icon: const Icon(Icons.diamond_outlined),
+            label: const Text('Plans'),
           ),
-
-          const SizedBox(width: 10),
-
-          // Product Usage
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        'Products Used',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 9,
-                          color: Colors.white.withValues(alpha: 0.6),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        billing?.compactProductUsageLabel ?? 'Unavailable',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.end,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: LinearProgressIndicator(
-                    value: isUnlimited ? 0.05 : usagePercent / 100,
-                    backgroundColor: Colors.white.withValues(alpha: 0.1),
-                    valueColor: AlwaysStoppedAnimation<Color>(progressColor),
-                    minHeight: 3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 10),
-
-          // Open the canonical catalog for every tier.
-          TextButton.icon(
-            onPressed: widget.onPlanTap,
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.white,
-              minimumSize: const Size(48, 48),
-            ),
-            icon: const Icon(Icons.arrow_upward_rounded, size: 12),
-            label: const Text('Plans', style: TextStyle(fontSize: 11)),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -799,14 +632,18 @@ class _CompactActionButtonState extends State<_CompactActionButton> {
                             : Colors.white,
                       ),
                     const SizedBox(width: 5),
-                    Text(
-                      widget.label,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: widget.isPrimary
-                            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-                            : Colors.white,
+                    Flexible(
+                      child: Text(
+                        widget.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: widget.isPrimary
+                              ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                              : Colors.white,
+                        ),
                       ),
                     ),
                   ],
@@ -822,12 +659,14 @@ class _CompactActionButtonState extends State<_CompactActionButton> {
 
 /// QR Code Bottom Sheet with LetBuyy Branding
 class _QRCodeBottomSheet extends StatefulWidget {
+  final MerchantStoreView view;
   final String storeName;
   final String storeUrl;
   final String subdomain;
   final String? logoUrl;
 
   const _QRCodeBottomSheet({
+    required this.view,
     required this.storeName,
     required this.storeUrl,
     required this.subdomain,
@@ -839,256 +678,203 @@ class _QRCodeBottomSheet extends StatefulWidget {
 }
 
 class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
-  final GlobalKey _qrKey = GlobalKey();
+  final _qrKey = GlobalKey();
   bool _isSharing = false;
+  String? _error;
+  bool get _current =>
+      mounted && merchantStoreViewCurrent(context, widget.view);
 
   Future<void> _shareQRAsImage() async {
-    setState(() => _isSharing = true);
+    if (!_current || _isSharing) return;
+    final storeName = widget.storeName,
+        storeUrl = widget.storeUrl,
+        subdomain = widget.subdomain;
+    bool currentIntent() =>
+        _current &&
+        widget.storeName == storeName &&
+        widget.storeUrl == storeUrl &&
+        widget.subdomain == subdomain;
+    setState(() {
+      _isSharing = true;
+      _error = null;
+    });
     HapticFeedback.mediumImpact();
-
     try {
       await WidgetsBinding.instance.endOfFrame;
-      if (!mounted) return;
-      // Capture the QR card as image
+      if (!currentIntent()) return;
       final boundary =
           _qrKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-      if (boundary == null) return;
-
+      if (boundary == null) throw StateError('QR image unavailable');
       final image = await boundary.toImage(pixelRatio: 3.0);
-      final byteData = await image.toByteData(format: ImageByteFormat.png);
-      if (byteData == null) return;
-
+      ByteData? byteData;
+      try {
+        if (!currentIntent()) return;
+        byteData = await image.toByteData(format: ImageByteFormat.png);
+      } finally {
+        image.dispose();
+      }
+      if (!currentIntent()) return;
+      if (byteData == null) throw StateError('QR image unavailable');
       final bytes = byteData.buffer.asUint8List();
-
-      // Save to temp file and share
       final tempDir = await getTemporaryDirectory();
-      final file = File('${tempDir.path}/${widget.subdomain}_qr.png');
+      if (!currentIntent()) return;
+      final file = File('${tempDir.path}/${subdomain}_qr.png');
       await file.writeAsBytes(bytes);
-
+      if (!currentIntent()) return;
       await Share.shareXFiles(
         [XFile(file.path)],
-        text: '🏪 Scan to visit ${widget.storeName}!\n${widget.storeUrl}',
-        subject: '${widget.storeName} - QR Code',
+        text: '🏪 Scan to visit $storeName!\n$storeUrl',
+        subject: '$storeName - QR Code',
       );
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not share the QR image. Try again.')));
+    } catch (_) {
+      if (_current)
+        setState(
+          () => _error =
+              'The share result could not be confirmed. '
+              'Check the destination before sharing again.',
+        );
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }
   }
 
+  Future<void> _copyLink() async {
+    if (!_current || _isSharing) return;
+    try {
+      await Clipboard.setData(ClipboardData(text: widget.storeUrl));
+      if (!_current) return;
+      HapticFeedback.lightImpact();
+      mobile_tokens.showLetbuyyOperationFeedback(
+        context,
+        message: 'URL copied!',
+      );
+      Navigator.pop(context);
+    } catch (_) {
+      if (_current)
+        setState(
+          () => _error = 'The store link could not be copied. Try again.',
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [colors.card, colors.bgEnd],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    context.watch<StoreContext>();
+    if (!_current)
+      return const mobile_tokens.LetbuyyFormSheet(
+        title: 'Store access changed',
+        child: Text(
+          'Close this QR code and reopen it from the selected store.',
         ),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
+      );
+    final theme = Theme.of(context);
+    return mobile_tokens.LetbuyyFormSheet(
+      title: 'Store QR code',
+      canDismiss: !_isSharing,
+      actions: [
+        OutlinedButton.icon(
+          onPressed: _isSharing ? null : _copyLink,
+          icon: const Icon(Icons.copy),
+          label: const Text('Copy Link'),
+        ),
+        FilledButton.icon(
+          onPressed: _isSharing ? null : _shareQRAsImage,
+          icon: const Icon(Icons.share_outlined),
+          label: Text(_isSharing ? 'Sharing…' : 'Share QR'),
+        ),
+      ],
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Handle
-          Padding(
-            padding: const EdgeInsets.only(top: 16, bottom: 20),
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-
-          // Branded QR Card (capturable) - Edge to Edge
           RepaintBoundary(
             key: _qrKey,
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                    Color(0xFF7C3AED),
-                    Color(0xFF6D28D9),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              padding: const EdgeInsets.all(
+                mobile_tokens.LetbuyySpacingTokens.space20,
               ),
+              color: mobile_tokens.LetbuyyPrimitiveTokens.purple700,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // QR Code Container
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
+                  LayoutBuilder(
+                    builder: (_, bounds) => Container(
+                      padding: const EdgeInsets.all(
+                        mobile_tokens.LetbuyySpacingTokens.space16,
+                      ),
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: QrImageView(
-                      data: widget.storeUrl,
-                      version: QrVersions.auto,
-                      size: 180,
-                      errorCorrectionLevel: QrErrorCorrectLevel
-                          .H, // High error correction for logo overlay
-                      eyeStyle: const QrEyeStyle(
-                        eyeShape: QrEyeShape.square,
-                        color: Color(0xFF1E1B4B),
-                      ),
-                      dataModuleStyle: const QrDataModuleStyle(
-                        dataModuleShape: QrDataModuleShape.square,
-                        color: Color(0xFF1E1B4B),
-                      ),
-                      embeddedImage: const AssetImage(
-                        'assets/icons/app_icon.png',
-                      ),
-                      embeddedImageStyle: const QrEmbeddedImageStyle(
-                        size: Size(40, 40),
+                      child: QrImageView(
+                        data: widget.storeUrl,
+                        version: QrVersions.auto,
+                        size:
+                            (bounds.maxWidth -
+                                    mobile_tokens.LetbuyySpacingTokens.space32)
+                                .clamp(1.0, 180.0),
+                        errorCorrectionLevel: QrErrorCorrectLevel.H,
+                        eyeStyle: const QrEyeStyle(
+                          eyeShape: QrEyeShape.square,
+                          color: Color(0xFF1E1B4B),
+                        ),
+                        dataModuleStyle: const QrDataModuleStyle(
+                          dataModuleShape: QrDataModuleShape.square,
+                          color: Color(0xFF1E1B4B),
+                        ),
+                        embeddedImage: const AssetImage(
+                          'assets/icons/app_icon.png',
+                        ),
+                        embeddedImageStyle: const QrEmbeddedImageStyle(
+                          size: Size(40, 40),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 18),
-
-                  // Store Name
+                  const SizedBox(
+                    height: mobile_tokens.LetbuyySpacingTokens.space16,
+                  ),
                   Text(
                     widget.storeName,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                     ),
+                  ),
+                  const SizedBox(
+                    height: mobile_tokens.LetbuyySpacingTokens.space8,
+                  ),
+                  Text(
+                    widget.storeUrl.replaceFirst(RegExp(r'^https?://'), ''),
                     textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-
-                  // URL Chip
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.link_rounded,
-                          size: 12,
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '${widget.subdomain}.letbuyy.com',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withValues(alpha: 0.95),
-                          ),
-                        ),
-                      ],
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 14),
-
-                  // Scan instruction
+                  const SizedBox(
+                    height: mobile_tokens.LetbuyySpacingTokens.space16,
+                  ),
                   Text(
                     'Scan to visit store',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withValues(alpha: 0.7),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 24),
-
-          // Action buttons
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: widget.storeUrl));
-                      HapticFeedback.lightImpact();
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Row(
-                            children: [
-                              Icon(
-                                Icons.check_circle,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                              SizedBox(width: 8),
-                              Text('URL copied!'),
-                            ],
-                          ),
-                          backgroundColor: colors.success,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.copy_rounded, size: 16),
-                    label: Text('Copy Link'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: colors.textPrimary,
-                      side: BorderSide(color: colors.divider),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
+          if (_error != null)
+            Padding(
+              padding: const EdgeInsets.only(
+                top: mobile_tokens.LetbuyySpacingTokens.space16,
+              ),
+              child: Semantics(
+                liveRegion: true,
+                child: Text(
+                  _error!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.error,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: _isSharing ? null : _shareQRAsImage,
-                    icon: _isSharing
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.share_rounded, size: 16),
-                    label: Text(_isSharing ? 'Sharing...' : 'Share QR'),
-                    style: FilledButton.styleFrom(
-                      backgroundColor:
-                          mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
         ],
       ),
     );

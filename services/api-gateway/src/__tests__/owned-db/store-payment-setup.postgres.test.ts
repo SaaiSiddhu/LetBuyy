@@ -12,6 +12,8 @@ let gateway: Gateway;
 after(async () => { await gateway?.settle(); });
 
 test('payment setup is explicit, revisioned, tenant-bound and never manufactures live readiness', async t => {
+    owned.script(readFileSync('database/supabase/rollback/420_merchant_razorpay_webhook_secret.rollback.sql','utf8'));
+    owned.script(readFileSync('database/supabase/migrations/420_merchant_razorpay_webhook_secret.sql','utf8'));
     const tenant = newSyntheticTenant('pay-setup');
     const other = newSyntheticTenant('pay-other');
     seedSyntheticTenant(owned.psql, tenant); seedSyntheticTenant(owned.psql, other);
@@ -20,7 +22,8 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         ('${actor}','${email}',true,'Synthetic payment owner'),
         ('${successor}','pay-${successor}@example.invalid',true,'Synthetic successor');
         UPDATE sites SET custom_user_id='${actor}',online_payment_enabled=false,cod_enabled=true WHERE id='${tenant.siteId}';`);
-    gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), { PAYMENT_CONFIG_ENCRYPTION_KEY: randomUUID() }));
+    gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), { PAYMENT_CONFIG_ENCRYPTION_KEY: randomUUID(),
+        MERCHANT_RAZORPAY_WEBHOOK_ORIGIN: 'https://webhooks.staging.letbuyy.com' }));
     const path = `/v1/stores/${tenant.siteId}/payment-config`;
     const request = async (method: string, body?: Record<string, unknown>, key = randomUUID(), selected = tenant.siteId) =>
         gateway.request(path, { method, headers: { ...await signedIdentityHeaders(actor, email, selected), 'X-Idempotency-Key': key },
@@ -37,11 +40,16 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         return originalFetch(input, init);
     });
     const credentials = { key_id: ['rzp', 'test', randomUUID().replaceAll('-', '')].join('_'),
-        key_secret: randomUUID().replaceAll('-', ''), test_mode: true };
+        key_secret: randomUUID().replaceAll('-', ''), webhook_secret: randomUUID().replaceAll('-', ''), test_mode: true };
     const row = () => owned.psql(`SELECT md5(to_jsonb(s)::text) FROM sites s WHERE id='${tenant.siteId}';`);
+    await t.test('atomic receipt rejects a public projection containing the webhook secret', () => {
+        const publicResponse=JSON.stringify({success:true,data:{store_id:tenant.siteId,webhook_secret:credentials.webhook_secret}}).replaceAll("'","''");
+        assert.match(owned.psqlExpectError(`SELECT commit_store_payment_configuration_v1('${tenant.siteId}','${actor}',NULL,NULL,NULL,'save','{}'::jsonb,true,'${publicResponse}'::jsonb);`),/PAYMENT_CONFIG_INVALID/);
+    });
     await t.test('positive read: known owner sees unavailable configuration without fabricated environment or approval', async () => {
         const response = await request('GET'); assert.equal(response.status, 200, response.text);
         assert.equal(response.json?.data.provider_mode, null);
+        assert.equal(response.json?.data.webhook_callback_url, null);
         assert.equal(response.json?.data.setup.can_enable_online, false);
         assert.equal(response.json?.data.setup.bank_verification, 'not_confirmed');
         assert.equal(response.json?.data.cod_enabled, true);
@@ -60,11 +68,21 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         assert.equal(response.json?.data.online_payment_enabled, false); assert.equal(response.json?.data.cod_enabled, true);
         assert.equal(response.json?.data.setup.can_enable_online, true); assert.equal(response.json?.data.setup.status, 'disabled');
         assert.equal(response.json?.data.setup.business_verification, 'not_confirmed');
-        assert.ok(!response.text.includes(credentials.key_secret)); assert.ok(!response.text.includes('key_secret_ciphertext'));
+        assert.equal(response.json?.data.payment_settings.razorpay.webhook_secret_configured, true);
+        const credentialId = owned.psql(`SELECT payment_settings->'razorpay'->>'credential_id' FROM sites WHERE id='${tenant.siteId}';`);
+        const expectedWebhookUrl = `https://webhooks.staging.letbuyy.com/razorpay/merchant/${tenant.siteId}/${credentialId}`;
+        assert.equal(response.json?.data.webhook_callback_url, expectedWebhookUrl);
+        const readback = await request('GET'); assert.equal(readback.status, 200, readback.text);
+        assert.equal(readback.json?.data.webhook_callback_url, expectedWebhookUrl);
+        assert.ok(!response.text.includes(credentials.key_secret)); assert.ok(!response.text.includes(credentials.webhook_secret));
+        assert.ok(!response.text.includes('key_secret_ciphertext'));
         const stored = owned.psql(`SELECT c.encrypted_credentials->>'key_secret_ciphertext' FROM payment_credentials c JOIN sites s ON s.id=c.site_id AND s.payment_settings->'razorpay'->>'credential_id'=c.id::text WHERE s.id='${tenant.siteId}';`);
+        const webhookStored = owned.psql(`SELECT c.encrypted_credentials->>'webhook_secret_ciphertext' FROM payment_credentials c JOIN sites s ON s.id=c.site_id AND s.payment_settings->'razorpay'->>'credential_id'=c.id::text WHERE s.id='${tenant.siteId}';`);
         assert.equal(owned.psql(`SELECT (payment_settings->'razorpay') ? 'key_secret_ciphertext' FROM sites WHERE id='${tenant.siteId}';`),'f','the site stores only the canonical credential pointer');
+        assert.equal(owned.psql(`SELECT (payment_settings->'razorpay') ? 'webhook_secret_ciphertext' FROM sites WHERE id='${tenant.siteId}';`),'f');
         assert.match(stored,/^v3:/);
         assert.ok(stored); assert.ok(!stored.includes(credentials.key_secret));
+        assert.match(webhookStored,/^v3:/); assert.ok(!webhookStored.includes(credentials.webhook_secret));
     });
     await t.test('rejected credentials and mode mismatch leave existing settings untouched', async () => {
         const before = row(); providerStatus = 401;
@@ -106,8 +124,45 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         const stale = await request('PATCH', { cod_enabled: false, expected_revision: revision });
         assert.equal(stale.status, 409, stale.text); assert.equal(row(), after);
     });
+    await t.test('a saved test key accepts a separate webhook secret through a new immutable version', async () => {
+        const beforeId = owned.psql(`SELECT payment_settings->'razorpay'->>'credential_id' FROM sites WHERE id='${tenant.siteId}';`);
+        const beforeCipher = owned.psql(`SELECT encrypted_credentials->>'key_secret_ciphertext' FROM payment_credentials WHERE id='${beforeId}';`);
+        const beforeCount = Number(owned.psql(`SELECT count(*) FROM payment_credentials WHERE site_id='${tenant.siteId}';`));
+        const current = await request('GET'); assert.equal(current.status, 200, current.text);
+        const command = { attach_to_existing: true, webhook_secret: randomUUID().replaceAll('-', ''),
+            expected_revision: current.json?.data.revision };
+        const key = randomUUID(), calls = verificationCalls;
+        const attached = await request('POST', command, key); assert.equal(attached.status, 200, attached.text);
+        const afterId = owned.psql(`SELECT payment_settings->'razorpay'->>'credential_id' FROM sites WHERE id='${tenant.siteId}';`);
+        assert.notEqual(afterId, beforeId);
+        assert.equal(attached.json?.data.online_payment_enabled, false, 'new callback version requires explicit checkout re-enable');
+        assert.equal(attached.json?.data.cod_enabled, true);
+        assert.equal(attached.json?.data.payment_settings.razorpay.webhook_secret_configured, true);
+        assert.equal(attached.json?.data.webhook_callback_url,
+            `https://webhooks.staging.letbuyy.com/razorpay/merchant/${tenant.siteId}/${afterId}`);
+        assert.equal(attached.json?.data.setup.can_enable_online, true);
+        assert.equal(verificationCalls, calls + 1);
+        assert.equal(Number(owned.psql(`SELECT count(*) FROM payment_credentials WHERE site_id='${tenant.siteId}';`)), beforeCount + 1);
+        assert.equal(owned.psql(`SELECT encrypted_credentials->>'key_secret_ciphertext' FROM payment_credentials WHERE id='${beforeId}';`), beforeCipher,
+            'pinned older sessions retain their original immutable credential');
+        assert.match(owned.psql(`SELECT encrypted_credentials->>'key_secret_ciphertext' FROM payment_credentials WHERE id='${afterId}';`),
+            new RegExp(`^v3:[^:]+:${afterId}:`));
+        assert.ok(!attached.text.includes(command.webhook_secret));
+        assert.ok(!attached.text.includes(credentials.key_secret));
+        const replay = await request('POST', command, key); assert.equal(replay.status, 200, replay.text);
+        assert.deepEqual(replay.json, attached.json); assert.equal(verificationCalls, calls + 1);
+        assert.equal(Number(owned.psql(`SELECT count(*) FROM payment_credentials WHERE site_id='${tenant.siteId}';`)), beforeCount + 1);
+        const stale = await request('POST', { ...command, webhook_secret: randomUUID().replaceAll('-', '') });
+        assert.equal(stale.status, 409, stale.text);
+        const snapshot = row(); providerStatus = 503;
+        const outage = await request('POST', { ...command, webhook_secret: randomUUID().replaceAll('-', ''),
+            expected_revision: attached.json?.data.revision });
+        assert.equal(outage.status, 503, outage.text); assert.equal(row(), snapshot);
+        providerStatus = 200;
+    });
     await t.test('CAS refuses a connection replacement raced by a method change', async () => {
         let interposed = false;
+        const beforeOnline = owned.psql(`SELECT online_payment_enabled FROM sites WHERE id='${tenant.siteId}';`);
         const tap = tapRest(owned.restEnv().SUPABASE_URL as string, async (call, forward) => {
             if (!interposed && call.resource === 'rpc/commit_store_payment_configuration_v1' && call.method === 'POST') {
                 interposed = true;
@@ -117,7 +172,8 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         });
         try {
             const result = await request('POST', credentials); assert.equal(result.status, 409, result.text); assert.equal(interposed, true);
-            assert.equal(owned.psql(`SELECT online_payment_enabled FROM sites WHERE id='${tenant.siteId}';`), 't', 'failed save cannot disable the active connection');
+            assert.equal(owned.psql(`SELECT online_payment_enabled FROM sites WHERE id='${tenant.siteId}';`), beforeOnline,
+                'failed save cannot change the current online method');
             assert.equal(owned.psql(`SELECT cod_enabled FROM sites WHERE id='${tenant.siteId}';`), 'f');
         } finally { tap.restore(); }
     });
@@ -149,6 +205,8 @@ test('payment setup is explicit, revisioned, tenant-bound and never manufactures
         assert.ok([403, 404].includes(denied.status), denied.text); assert.ok(!denied.text.includes(credentials.key_id));
     });
     await t.test('405 rollback waits for active commands and preserves all completed receipts and credential history', async () => {
+        const webhookDown=readFileSync('database/supabase/rollback/420_merchant_razorpay_webhook_secret.rollback.sql','utf8');
+        assert.match(owned.psqlScriptExpectError(webhookDown),/Cannot roll back merchant webhook secret configuration after use/);
         const key=randomUUID();
         owned.psql(`INSERT INTO idempotency_keys(site_id,key,scope,request_hash,status,locked_until,expires_at)
           VALUES('${tenant.siteId}','${key}','http:POST:/stores/${tenant.siteId}/payment-config','synthetic-rollback-control','processing',now()+interval '1 minute',now()+interval '1 day');`);

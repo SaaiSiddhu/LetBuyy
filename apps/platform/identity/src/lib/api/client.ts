@@ -166,7 +166,10 @@ export async function identityApiRequest<T = unknown>(
     const requestOptions: LetbuyyRequestOptions = {
         method: init.method as HttpMethod | undefined,
         body: parseRequestBody(init.body),
-        signal: init.signal || undefined,
+        // The SDK's automatic key must not replace a durable task key supplied
+        // by Accounts (store creation, MFA commands and retried completions).
+        idempotencyKey: headers.get('X-Idempotency-Key') || headers.get('Idempotency-Key') || undefined,
+        signal: init.signal || AbortSignal.timeout(15000),
         responseType: init.responseType,
     }
 

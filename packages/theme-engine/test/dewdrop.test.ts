@@ -66,11 +66,11 @@ test('fresh factory defaults validate against their actual manifest before norma
         // The canonical Liquid registry envelope, using only engine public contracts.
         const config = { themeId: candidate.package.slug, schema_version: candidate.schema_version, engineVersion: candidate.renderer.renderer_version, rendererEngine: 'liquid', liquidBundle: candidate, sections: {}, templates: candidate.templates, themeSettings: candidate.config.settings_data.current };
         for (const templateConfig of [config, JSON.parse(JSON.stringify(config))]) {
-            assert.deepEqual(collectThemeTemplateValidationIssues({ templateConfig, runtime, themeSlug: candidate.package.slug }), []);
+            assert.deepEqual(collectThemeTemplateValidationIssues({ templateConfig, runtime, trustedPreviousConfig: { templates: candidate.templates }, themeSlug: candidate.package.slug }), []);
         }
         const invalid = structuredClone(config);
         invalid.templates['list-collections'].sections['list-collections-grid'].settings.subtitle = 'Unsupported inherited copy';
-        assert.ok(collectThemeTemplateValidationIssues({ templateConfig: invalid, runtime, themeSlug: candidate.package.slug }).includes('templates.list-collections.sections.list-collections-grid.settings.subtitle is not defined by the category-grid schema'), 'the real validator still rejects undeclared settings');
+        assert.ok(collectThemeTemplateValidationIssues({ templateConfig: invalid, runtime, trustedPreviousConfig: { templates: candidate.templates }, themeSlug: candidate.package.slug }).includes('templates.list-collections.sections.list-collections-grid.settings.subtitle is not defined by the category-grid schema'), 'the real validator still rejects undeclared settings');
     }
     const output = html(await render('list-collections', { bundle: restored }));
     assert.match(output, /All collections/); assert.match(output, /Each product is yours to choose/); assert.match(output, /dd-routine/);

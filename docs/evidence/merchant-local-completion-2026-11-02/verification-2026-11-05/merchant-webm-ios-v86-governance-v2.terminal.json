@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-07T10:08:04.458072+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-webm-ios-v86-governance-bmi2dtq8",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "72eea74898f1efecbb91bd868e286deeeefc42324ff59b6733f288262185cc8e",
+  "core_inputs_byte_equal": 8505,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "original_index_entries_unchanged": true,
+  "index_sha256_before": "6b2e1ed2424e517f7c943e6e3a27f0846cc9607455ef7a95fe3b7941724bea46",
+  "index_sha256_after": "6b2e1ed2424e517f7c943e6e3a27f0846cc9607455ef7a95fe3b7941724bea46",
+  "report": "merchant-webm-ios-v86-governance-v2-report.json"
+}

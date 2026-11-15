@@ -1,7 +1,8 @@
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
-import { isBoundStorefrontRequestTarget, isBoundDomainReconcileTarget, isNotificationRequestTarget } from '@letbuyy/auth-core';
+import { isBoundStorefrontRequestTarget, isBoundDomainReconcileTarget, isNotificationRequestTarget, isProductImportRequestTarget } from '@letbuyy/auth-core';
+import { authenticateProductImportRequest } from '../lib/product-import-internal-request';
 import { authenticateNotificationRequest } from '../lib/notification-internal-request';
 import { authenticateDomainReconcileRequest } from '../lib/domain-reconcile-internal-request';
 import { authenticateBoundStorefrontRequest } from '../lib/storefront-internal-request';
@@ -83,6 +84,16 @@ function hasInternalCredential(c: GatewayContext): boolean {
 }
 
 export const internalPerimeter = createMiddleware<{ Bindings: Env }>(async (c, next) => {
+    // Dormant until this distinct fixed-purpose secret binding is admitted.
+    // This grants no generic internal route or app/Identity credential.
+    if(isProductImportRequestTarget(c.req.method,c.req.url)) {
+        const result=await authenticateProductImportRequest(c);
+        if(result!=='accepted')return c.json({success:false,error:{
+            code:result==='unavailable'?'PRODUCT_IMPORT_UNAVAILABLE':'UNAUTHORIZED',
+            message:result==='unavailable'?'Import recovery is unavailable.':'Invalid import recovery request',
+        }},result==='unavailable'?503:401);
+        await next();return;
+    }
     // Owner-approved fixed notification transport; no general RPC/IP exemption.
     if (isNotificationRequestTarget(c.req.method, c.req.url)) {
         const result = await authenticateNotificationRequest(c);

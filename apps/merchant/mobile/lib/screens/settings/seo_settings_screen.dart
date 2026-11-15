@@ -4,6 +4,9 @@ import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../services/store_service.dart';
+import '../../services/api_client.dart';
+import '../../widgets/shared/merchant_store_view.dart';
+import '../../widgets/shared/confirm_dialog.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 
@@ -22,7 +25,12 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
   bool _isLoading = true;
   bool _isSaving = false;
   bool _hasChanges = false;
-  String? _error;
+  String? _error, _notice;
+  bool _saveUnconfirmed = false, _allowPop = false;
+  MerchantStoreView? _view;
+  bool get _current => mounted && merchantStoreViewCurrent(context, _view);
+  Widget _guard(Widget child) =>
+      _view == null ? child : guardMerchantStoreView(_view, child);
 
   late AppThemeColors colors;
 
@@ -32,55 +40,119 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
     _loadStore();
   }
 
+  void _populate(StoreModel store) {
+    _titleController.text = store.seoTitle ?? store.name;
+    _descriptionController.text = store.seoDescription ?? '';
+  }
+
   Future<void> _loadStore() async {
+    if (!mounted || (_view != null && !_current)) return;
     setState(() {
       _isLoading = true;
       _error = null;
+      _notice = null;
     });
-
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
-      if (mounted) {
-        setState(() {
-          _store = store;
-          _titleController.text = store?.seoTitle ?? store?.name ?? '';
-          _descriptionController.text = store?.seoDescription ?? '';
-          _hasChanges = false;
-          _isLoading = false;
-        });
+      final stores = context.read<StoreContext>();
+      final selected = await stores.ensureSelectedStore();
+      if (!mounted || (_view != null && !_current)) return;
+      if (selected == null) {
+        setState(() => _error = 'Choose a store from the dashboard first.');
+        return;
       }
-    } catch (error) {
-      if (mounted) {
-        setState(() {
-          _error = error.toString();
-          _isLoading = false;
-        });
-      }
+      _view ??= (key: stores.requestContextKey, storeId: selected.id);
+      if (!_current) return;
+      final store = await stores.reloadSelectedStore(selected.id);
+      if (!_current) return;
+      setState(() {
+        _store = store;
+        _populate(store);
+        _hasChanges = false;
+        _saveUnconfirmed = false;
+      });
+    } catch (_) {
+      if (!mounted || (_view != null && !_current)) return;
+      setState(() {
+        if (_store == null)
+          _error = 'Current SEO settings are unavailable. Try refreshing.';
+        else
+          _notice =
+              'Could not reload current SEO settings. Your edits are still here.';
+      });
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _confirmReload() async {
+    if (!_current || _isSaving) return;
+    if (_hasChanges) {
+      final discard = await ConfirmDialog.show(
+        context,
+        title: 'Reload SEO settings?',
+        message:
+            'Unsaved edits will be discarded after the current settings load.',
+        confirmLabel: 'Reload',
+        cancelLabel: 'Keep editing',
+      );
+      if (!discard || !_current) return;
+    }
+    await _loadStore();
   }
 
   Future<void> _save() async {
     final store = _store;
-    if (store == null || _isSaving) return;
-
+    if (store == null || !_current || _isSaving || _saveUnconfirmed) return;
+    final service = context.read<StoreService>(),
+        stores = context.read<StoreContext>();
+    // The canonical schema admits empty strings to clear these fields, not null.
+    final fields = <String, dynamic>{
+      'version': store.version,
+      'seo_title': _titleController.text.trim(),
+      'seo_description': _descriptionController.text.trim(),
+    };
+    FocusScope.of(context).unfocus();
     setState(() => _isSaving = true);
     try {
-      final updated = await context.read<StoreService>().updateStore(store.id, {
-        'seo_title': _nullableTrim(_titleController.text),
-        'seo_description': _nullableTrim(_descriptionController.text),
+      await service.updateStore(store.id, fields);
+      if (!_current) return;
+      final fresh = await stores.reloadSelectedStore(store.id);
+      if (!_current) return;
+      setState(() {
+        _store = fresh;
+        _populate(fresh);
+        _hasChanges = false;
+        _saveUnconfirmed = false;
       });
-      if (mounted) {
-        setState(() {
-          _store = updated;
-          _hasChanges = false;
-        });
-        _showSnack('SEO settings saved.');
-      }
+      _showSnack('SEO settings saved.');
     } catch (error) {
-      _showSnack('Could not save SEO settings: $error');
+      if (!_current) return;
+      if (error is ApiException &&
+          const {401, 403, 404}.contains(error.statusCode)) {
+        await stores.clearSelection();
+        return;
+      }
+      setState(() => _saveUnconfirmed = true);
+      _showSnack(
+        'The SEO save could not be confirmed. Reload current settings before another change.',
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  Future<void> _confirmBack() async {
+    if (!_current || _isSaving) return;
+    final discard = await ConfirmDialog.show(
+      context,
+      title: 'Discard SEO edits?',
+      message: 'The changes in this form have not been confirmed as saved.',
+      confirmLabel: 'Discard edits',
+      cancelLabel: 'Keep editing',
+    );
+    if (!discard || !_current) return;
+    setState(() => _allowPop = true);
+    if (mounted) Navigator.of(context).pop();
   }
 
   @override
@@ -93,16 +165,24 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
-    return Scaffold(
-      backgroundColor: colors.bgStart,
-      body: Container(
-        decoration: colors.backgroundGradient,
-        child: SafeArea(
-          child: Column(
-            children: [
-              _header(),
-              Expanded(child: _isLoading ? _loading() : _body()),
-            ],
+    return _guard(
+      PopScope(
+        canPop: _allowPop || (!_hasChanges && !_isSaving),
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _confirmBack();
+        },
+        child: Scaffold(
+          backgroundColor: colors.bgStart,
+          body: Container(
+            decoration: colors.backgroundGradient,
+            child: SafeArea(
+              child: Column(
+                children: [
+                  _header(),
+                  Expanded(child: _isLoading ? _loading() : _body()),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -141,7 +221,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
           IconButton(
             tooltip: 'Refresh SEO settings',
             icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
-            onPressed: _loadStore,
+            onPressed: _isSaving ? null : _confirmReload,
           ),
         ],
       ),
@@ -160,6 +240,14 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
       children: [
+        if (_saveUnconfirmed || _notice != null) ...[
+          Text(
+            _saveUnconfirmed
+                ? 'The SEO save is unconfirmed. Reload current settings before another change.'
+                : _notice!,
+          ),
+          const SizedBox(height: 14),
+        ],
         _previewCard(),
         const SizedBox(height: 14),
         _field(
@@ -178,7 +266,9 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
         ),
         const SizedBox(height: 18),
         FilledButton.icon(
-          onPressed: !_hasChanges || _isSaving ? null : _save,
+          onPressed: !_hasChanges || _isSaving || _saveUnconfirmed
+              ? null
+              : _save,
           icon: _isSaving
               ? const SizedBox(
                   width: 18,
@@ -206,9 +296,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
     final description = _descriptionController.text.trim().isEmpty
         ? (_store?.tagline ?? 'Store description')
         : _descriptionController.text.trim();
-    final url = _store?.customDomain?.isNotEmpty == true
-        ? _store!.customDomain!
-        : '${_store?.subdomain ?? 'store'}.letbuyy.com';
+    final url = _store?.publicUrl.replaceFirst(RegExp(r'^https?://'), '') ?? '';
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -274,6 +362,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
     int maxLines = 1,
   }) {
     return TextField(
+      enabled: !_isSaving && !_saveUnconfirmed,
       controller: controller,
       maxLength: maxLength,
       maxLines: maxLines,
@@ -337,17 +426,12 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
   }
 
   void _showSnack(String message) {
-    if (!mounted) return;
+    if (!_current) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: colors.snackbarBackground,
       ),
     );
-  }
-
-  String? _nullableTrim(String value) {
-    final trimmed = value.trim();
-    return trimmed.isEmpty ? null : trimmed;
   }
 }

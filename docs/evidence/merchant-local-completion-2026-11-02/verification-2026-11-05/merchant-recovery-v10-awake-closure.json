@@ -1,0 +1,5 @@
+{
+  "pid": 63093,
+  "exit": -15,
+  "scope": "Only prevent idle sleep while the exact qualifier is alive; no persistent power setting."
+}

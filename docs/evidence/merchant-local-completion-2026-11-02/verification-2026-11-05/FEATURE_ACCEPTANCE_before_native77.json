@@ -1,0 +1,3484 @@
+{
+  "kind": "evidence-not-authority",
+  "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "branch": "codex/merchant-mobile-parity",
+  "requestSha256": "bfa21a7fef6472309a7b30551fa5ac9bfb9ba9e8c5e85dbfde32826b7ced842e",
+  "scope": "local implementation and acceptance only; no hosted access or private-data exports",
+  "privateRunDirectory": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8",
+  "features": [
+    {
+      "id": 1,
+      "area": "Accounts and access",
+      "feature": "Merchant sign-in/store selection",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**PARTIAL** \u2014 [766-test native font/session source, installed staging APK and bounded current-API actor switching](STAGING_415_ACCEPTANCE.md); ordinary native DNS, current normal password/CAPTCHA and full sign-in/navigation acceptance remain open",
+      "confirmedTrace": {
+        "identity": "apps/platform/identity/src/app/api/auth",
+        "gateway": "services/api-gateway/src/routes/auth.ts",
+        "membership": null,
+        "mobile": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+        "sharedTransport": "packages/dart/api_client/lib/src/api_client.dart",
+        "traceLimit": "area entry points verified; remaining per-control map is still required"
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "bounded owned PostgreSQL/PostgREST proof; see ACCOUNTS_QUALIFICATION.json",
+        "webUI": "normal signup/session-to-Merchant dashboard bounded pass; password login also exercised by staff/MFA suites",
+        "nativeUI": "BOUNDED LOCAL ANDROID PASS ee1f0bbce004: normal synthetic password in OS Accounts browser, automatic return, fresh PKCE inspect/exchange, authoritative session and one eligible-store dashboard. Multi-store/staff/MFA/signup/magic-link native journeys are separate.",
+        "buyerEffect": "not-run",
+        "artifact": "Current local debug APK7ebd67a2bd1ded7b93ee80db6602091b866d5895cd9db5e1087d7774d1e262ec; exact f501e0749318a4dcc49f089a128efb8f7d523d0873b54ce8f3506f1dcc251c0f source/archive.",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted.",
+        "compiledInventorySetterCohort": "BOUNDED LOCAL PASS6e52c7eb23c5at source077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576. Actual compiled Gateway/BFF; normal owner native/web sign-in, warehouse recovery/completion, native delta+2with lost reply/restart/original replay under1hold, web absolute4and native current4free/1held/5physical. One adjustment and one edit receipt, hold/original warehouse receipts unchanged. Scope per report; full feature/native staff/variants/UI/accessibility/provider/release remain open.",
+        "native41BoundedSubset": "native41-accepted-local-warehouse/MANIFEST.json;exact preceding source/APK;not whole feature acceptance"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md",
+        "CATEGORY_NATIVE_WEB_V2_QUALIFICATION.json",
+        "NATIVE_CORE_V5_QUALIFICATION.json",
+        "UNIFIED_COLLECTION_ANDROID_WEB_V12_QUALIFICATION.json",
+        "UNIFIED_COLLECTION_ANDROID_WEB_V14_QUALIFICATION.json",
+        "COLLECTION_MISSING_TARGET_RECOVERY.json",
+        "COMPILED_INVENTORY_SETTERS_ANDROID_WEB_V26_QUALIFICATION.json",
+        "native41-accepted-local-warehouse/MANIFEST.json"
+      ]
+    },
+    {
+      "id": 2,
+      "area": "Accounts and access",
+      "feature": "account signup/email verification",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "identity": "apps/platform/identity/src/app/api/auth",
+        "gateway": "services/api-gateway/src/routes/auth.ts",
+        "membership": null,
+        "mobile": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+        "sharedTransport": "packages/dart/api_client/lib/src/api_client.dart",
+        "traceLimit": "area entry points verified; remaining per-control map is still required"
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "bounded owned PostgreSQL/PostgREST proof; see ACCOUNTS_QUALIFICATION.json",
+        "webUI": "normal signup with captured mail failure/retry, wrong OTP and successful OTP; passed",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 3,
+      "area": "Accounts and access",
+      "feature": "magic-link delivery",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "accounts-recovery-v4 / owned PostgreSQL; synthetic mail and challenge only",
+        "webUI": "passed normal local captured email journey: magic link, single use, MFA account refusal",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md"
+      ]
+    },
+    {
+      "id": 4,
+      "area": "Accounts and access",
+      "feature": "verified password creation",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "identity": "apps/platform/identity/src/app/api/auth",
+        "gateway": "services/api-gateway/src/routes/auth.ts",
+        "membership": null,
+        "mobile": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+        "sharedTransport": "packages/dart/api_client/lib/src/api_client.dart",
+        "traceLimit": "area entry points verified; remaining per-control map is still required"
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "bounded owned PostgreSQL/PostgREST proof; see ACCOUNTS_QUALIFICATION.json",
+        "webUI": "verified password intent, caller identity refusal and replay refusal; passed",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md"
+      ]
+    },
+    {
+      "id": 5,
+      "area": "Accounts and access",
+      "feature": "forgot-password and reset",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "accounts-recovery-v4 / owned PostgreSQL; synthetic mail and challenge only",
+        "webUI": "passed normal local captured email journey: reset delivery failure/retry, normal reset form, expiry/replay refusal and old/new password login",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md"
+      ]
+    },
+    {
+      "id": 6,
+      "area": "Accounts and access",
+      "feature": "MFA/protected actions",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "identity": "apps/platform/identity/src/app/api/auth",
+        "gateway": "services/api-gateway/src/routes/auth.ts",
+        "membership": null,
+        "mobile": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+        "sharedTransport": "packages/dart/api_client/lib/src/api_client.dart",
+        "traceLimit": "area entry points verified; remaining per-control map is still required"
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "bounded owned PostgreSQL/PostgREST proof; see ACCOUNTS_QUALIFICATION.json",
+        "webUI": "normal password login, MFA enrollment/activation/stepup lost-reply recovery and stale-account denial; bounded pass",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md"
+      ]
+    },
+    {
+      "id": 7,
+      "area": "Accounts and access",
+      "feature": "owner/staff membership",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**PARTIAL \u2014 CURRENT STAGING AUTH/PERMISSIONS VERIFIED (bounded)** \u2014 [fresh canonical staff positive authentication, owner-only read/write403 through Gateway/BFF and revocation401](STAGING_415_ACCEPTANCE.md); full invitations/membership/role lifecycle and native staff UI remain open",
+      "confirmedTrace": {
+        "identity": "apps/platform/identity/src/app/api/auth",
+        "gateway": "services/api-gateway/src/routes/auth.ts",
+        "membership": "services/api-gateway/src/routes/employee.ts",
+        "mobile": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+        "sharedTransport": "packages/dart/api_client/lib/src/api_client.dart",
+        "traceLimit": "area entry points verified; remaining per-control map is still required"
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "bounded owned PostgreSQL/PostgREST proof; see ACCOUNTS_QUALIFICATION.json",
+        "webUI": "current owner/staff permissions, downgrade and revocation on existing staff session; passed",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md"
+      ]
+    },
+    {
+      "id": 8,
+      "area": "Accounts and access",
+      "feature": "staff invitations and roles",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "identity": "apps/platform/identity/src/app/api/auth",
+        "gateway": "services/api-gateway/src/routes/auth.ts",
+        "membership": "services/api-gateway/src/routes/employee.ts",
+        "mobile": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+        "sharedTransport": "packages/dart/api_client/lib/src/api_client.dart",
+        "traceLimit": "area entry points verified; remaining per-control map is still required"
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "bounded owned PostgreSQL/PostgREST proof; see ACCOUNTS_QUALIFICATION.json",
+        "webUI": "invitation creation, wrong-account recovery, explicit acceptance, downgrade and removal; passed",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "collectionStaffBounded": "Actual mounted Gateway/SQL only: active product-granted staff read/edit both collection kinds; viewer cannot write/replay writes, removed staff cannot read list/detail; enforce overrides diagnostic dryrun. Normal staff UI remains open."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md",
+        "UNIFIED_COLLECTION_ANDROID_WEB_V14_QUALIFICATION.json",
+        "COLLECTION_MISSING_TARGET_RECOVERY.json"
+      ]
+    },
+    {
+      "id": 9,
+      "area": "Accounts and access",
+      "feature": "separate buyer/Merchant/operator authority",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 10,
+      "area": "Accounts and access",
+      "feature": "Turnstile verification",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web: Accounts entry; verify exact route`",
+        "mobile": "`apps/merchant/mobile/lib/screens/auth; app/routes.dart`",
+        "backend": "`apps/platform/identity + Gateway auth; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "identity": "apps/platform/identity/src/app/api/auth",
+        "gateway": "services/api-gateway/src/routes/auth.ts",
+        "membership": null,
+        "mobile": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+        "sharedTransport": "packages/dart/api_client/lib/src/api_client.dart",
+        "traceLimit": "area entry points verified; remaining per-control map is still required"
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "bounded owned PostgreSQL/PostgREST proof; see ACCOUNTS_QUALIFICATION.json",
+        "webUI": "real form/server integration with owned loopback provider; fail-closed fixture checks passed; actual anti-bot not claimed",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md"
+      ]
+    },
+    {
+      "id": 11,
+      "area": "Store and site management",
+      "feature": "commerce-store creation",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/dashboard, settings`",
+        "mobile": "`apps/merchant/mobile/lib/screens/wizard, dashboard, settings`",
+        "backend": "`Gateway stores/onboarding; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "identity": "apps/platform/identity/src/app/api/auth",
+        "gateway": "services/api-gateway/src/routes/auth.ts",
+        "membership": null,
+        "mobile": "apps/merchant/mobile/lib/services/store_auth_service.dart",
+        "sharedTransport": "packages/dart/api_client/lib/src/api_client.dart",
+        "traceLimit": "area entry points verified; remaining per-control map is still required"
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "bounded owned PostgreSQL/PostgREST proof; see ACCOUNTS_QUALIFICATION.json",
+        "webUI": "normal onboarding provisions one draft site, persisted 14-day trial and governed starting theme; passed",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "freshTrialDecision": "APPROVED and LOCAL DATABASE/WEB VERIFIED for persisted Launch during the unchanged saved active trial;14owned controls plus normal unseeded first-product browser journey.",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "ACCOUNTS_QUALIFICATION.json",
+        "ACCOUNTS_LOCAL_ACCEPTANCE.md",
+        "NATIVE_CORE_V2_FAILURE.json",
+        "TRIAL_ENTITLEMENT_DECISION.md",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 12,
+      "area": "Store and site management",
+      "feature": "dashboard/overview",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/dashboard, settings`",
+        "mobile": "`apps/merchant/mobile/lib/screens/wizard, dashboard, settings`",
+        "backend": "`Gateway stores/onboarding; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "Bounded normal dashboard rendering and actual Store Details shortcut observed in native-category-v2. Metrics/population and broader owner/staff acceptance remain open.",
+        "buyerEffect": "not-run",
+        "artifact": "Exact source c35130ec8a5396a1eff6ff2e4d251bedc043c87c036429b73d2d9b0f7dca1a76; later settings edits are separate."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "CATEGORY_NATIVE_WEB_V2_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 13,
+      "area": "Store and site management",
+      "feature": "store switching",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/dashboard, settings`",
+        "mobile": "`apps/merchant/mobile/lib/screens/wizard, dashboard, settings`",
+        "backend": "`Gateway stores/onboarding; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 14,
+      "area": "Store and site management",
+      "feature": "business name/contact/address",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/dashboard, settings`",
+        "mobile": "`apps/merchant/mobile/lib/screens/wizard, dashboard, settings`",
+        "backend": "`Gateway stores/onboarding; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "web": [
+          "apps/merchant/web/src/app/[store]/settings/general/page.tsx",
+          "apps/merchant/web/src/app/[store]/settings/business/page.tsx",
+          "apps/merchant/web/src/app/[store]/settings/billing/profile/page.tsx"
+        ],
+        "webProxy": [
+          "apps/merchant/web/src/app/api/stores/[store]/settings/route.ts",
+          "apps/merchant/web/src/app/api/stores/[store]/billing/route.ts"
+        ],
+        "mobile": [
+          "apps/merchant/mobile/lib/screens/settings/store_details_screen.dart",
+          "apps/merchant/mobile/lib/services/store_service.dart",
+          "apps/merchant/mobile/lib/app/store_context.dart"
+        ],
+        "canonicalContract": [
+          "packages/tenant-core/src/index.ts: UpdateStoreSchema",
+          "packages/shared-types/src/index.ts: StoreSchema",
+          "packages/dart/models/lib/src/merchant_app/store_model.dart"
+        ],
+        "authority": "services/api-gateway/src/routes/stores.ts PATCH /v1/stores/:id, existing sites.version CAS; owner/site checks plus existing database role context",
+        "tests": [
+          "services/api-gateway/src/__tests__/owned-db/store-profile-cas.postgres.test.ts",
+          "apps/merchant/web/tests/read-lifecycle.test.tsx",
+          "apps/merchant/mobile/test/store_details_scope_test.dart",
+          "tests/owned-device/merchant-catalog-local-android.postgres.test.ts settings flow"
+        ],
+        "traceLimit": "Bounded profile/contact/metadata edits, not all business/KYC/public settings."
+      },
+      "currentLocalAcceptance": {
+        "implementation": "IMPLEMENTED for revision-bound profile/SEO contact-preserving edits; durable business receipts and remaining settings open",
+        "contract": "LOCAL CONTRACT VERIFIED: observed revisions/current-view boundaries/explicit clears; subsequent native acknowledgement follow-up21focused passes",
+        "database": "LOCAL DATABASE VERIFIED: bounded CAS/races/refusal and exact six-effect settings roundtrip; not all settings",
+        "webUI": "LOCAL WEB VERIFIED: four normal profile writers, stale-tab retained draft/explicit reload and wrong actor/origin refusals",
+        "nativeUI": "LOCAL NATIVE VERIFIED: normal Android Store Details/SEO, scrolled lost-reply/current-read recovery and exact web/native metadata/clear readback. Later service acknowledgement source has unit proof; current artifact positive control is pending.",
+        "buyerEffect": "not-run",
+        "artifact": "native-settings-v4/76f585b6be48 source c959c19ac3dcd5736570eae37278d6a04c20c6f1d93fb365110a3ef346df831a, exact4591-source archive/installed APK hash"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "CATEGORY_NATIVE_WEB_V2_QUALIFICATION.json",
+        "STORE_SETTINGS_LOCAL_ACCEPTANCE.md",
+        "STORE_SETTINGS_NATIVE_WEB_QUALIFICATION.json",
+        "STORE_SETTINGS_NATIVE_V3_FAILURE.json",
+        "STORE_SETTINGS_NATIVE_WEB_V4_QUALIFICATION.json",
+        "WAREHOUSE_NATIVE_WEB_V1_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 15,
+      "area": "Store and site management",
+      "feature": "private/public visibility",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/dashboard, settings`",
+        "mobile": "`apps/merchant/mobile/lib/screens/wizard, dashboard, settings`",
+        "backend": "`Gateway stores/onboarding; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 16,
+      "area": "Store and site management",
+      "feature": "portfolio management",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/dashboard, settings`",
+        "mobile": "`apps/merchant/mobile/lib/screens/wizard, dashboard, settings`",
+        "backend": "`Gateway stores/onboarding; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "nativeGap": "Projects and testimonials have supported web pages and canonical resume/section routes but no corresponding native module."
+      },
+      "currentLocalAcceptance": {
+        "implementation": "confirmed missing native controls; source audit in progress",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 17,
+      "area": "Store and site management",
+      "feature": "r\u00e9sum\u00e9 management",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/dashboard, settings`",
+        "mobile": "`apps/merchant/mobile/lib/screens/wizard, dashboard, settings`",
+        "backend": "`Gateway stores/onboarding; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "nativeGap": "Skills, education, experience and certification pages have canonical web/API owners, with no matching native routes/services."
+      },
+      "currentLocalAcceptance": {
+        "implementation": "confirmed missing native controls; source audit in progress",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 18,
+      "area": "Store and site management",
+      "feature": "landing-page management",
+      "scopeClass": "D",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/dashboard, settings`",
+        "mobile": "`apps/merchant/mobile/lib/screens/wizard, dashboard, settings`",
+        "backend": "`Gateway stores/onboarding; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 19,
+      "area": "Store and site management",
+      "feature": "blog-site management",
+      "scopeClass": "D",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/dashboard, settings`",
+        "mobile": "`apps/merchant/mobile/lib/screens/wizard, dashboard, settings`",
+        "backend": "`Gateway stores/onboarding; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 20,
+      "area": "Catalog",
+      "feature": "product create/edit",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products, categories, export`",
+        "mobile": "`apps/merchant/mobile/lib/screens/products, collections`",
+        "backend": "`Gateway products/categories/export; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "freshTrialDecision": "APPROVED and LOCAL DATABASE/WEB VERIFIED for persisted Launch during the unchanged saved active trial;14owned controls plus normal unseeded first-product browser journey.",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted.",
+        "compiledInventorySetterCohort": "BOUNDED LOCAL PASS6e52c7eb23c5at source077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576. Actual compiled Gateway/BFF; normal owner native/web sign-in, warehouse recovery/completion, native delta+2with lost reply/restart/original replay under1hold, web absolute4and native current4free/1held/5physical. One adjustment and one edit receipt, hold/original warehouse receipts unchanged. Scope per report; full feature/native staff/variants/UI/accessibility/provider/release remain open."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "NATIVE_CORE_V2_FAILURE.json",
+        "TRIAL_ENTITLEMENT_DECISION.md",
+        "NATIVE_CORE_V5_QUALIFICATION.json",
+        "COMPILED_INVENTORY_SETTERS_ANDROID_WEB_V26_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 21,
+      "area": "Catalog",
+      "feature": "product media",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products, categories, export`",
+        "mobile": "`apps/merchant/mobile/lib/screens/products, collections`",
+        "backend": "`Gateway products/categories/export; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 22,
+      "area": "Catalog",
+      "feature": "variants/options",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products, categories, export`",
+        "mobile": "`apps/merchant/mobile/lib/screens/products, collections`",
+        "backend": "`Gateway products/categories/export; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 23,
+      "area": "Catalog",
+      "feature": "availability/publication",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products, categories, export`",
+        "mobile": "`apps/merchant/mobile/lib/screens/products, collections`",
+        "backend": "`Gateway products/categories/export; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "queueBoundary": "Reproduced old-account invocation adopting a replacement account while waiting in the security command queue; fixed by capturing and rechecking actor/store/context before and after waiting. Controlled negative and positive retained."
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 24,
+      "area": "Catalog",
+      "feature": "categories",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products, categories, export`",
+        "mobile": "`apps/merchant/mobile/lib/screens/products, collections`",
+        "backend": "`Gateway products/categories/export; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "web": "apps/merchant/web/src/app/[store]/categories/page.tsx; canonical SDK and actor/origin/store/version-checked BFF",
+        "mobile": "apps/merchant/mobile/lib/screens/products/categories_screen.dart; Products menu -> AppRoutes.categories -> ProductService -> shared ProductsApi",
+        "backend": "existing /v1/categories owner completed by source/local417 product_categories + private command receipts; renames reuse apply_product_edit_v1; sites RLS/GUC; migration paired/guarded"
+      },
+      "currentLocalAcceptance": {
+        "implementation": "implemented locally; feature acceptance still open",
+        "contract": "shared TS/Dart fixture2 TS +3 Dart checks passed; native SDK1 passed",
+        "database": "Current category9 plus exhaustive product90 and CSV18 passed in b52167ed09fb; exact-label backfill1 retained; empty cleanup.",
+        "webUI": "3 normal Identity/Merchant browser journeys passed inf84e280eebe7;5 web journal/lifecycle unit checks passed; typecheck clean",
+        "nativeUI": "native-category-v2 passes navigation, rename, lost reply, restart, same-key retry and web description readback. Spacing and disabled actions inspected. Wider lifecycle remains open.",
+        "buyerEffect": "not yet accepted; category metadata visibility/navigation is not certified by command tests",
+        "artifact": "native-category-v2/3a8df62eea05 exact4588-source archive and installed debug APK hash retained; later settings edits are separate."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "CATEGORY_NATIVE_WEB_V2_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 25,
+      "area": "Catalog",
+      "feature": "manual collections",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products, categories, export`",
+        "mobile": "`apps/merchant/mobile/lib/screens/products, collections`",
+        "backend": "`Gateway products/categories/export; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "web": "Normal manual metadata panel and smart collection workspace -> origin/actor/store-bound BFF -> SDK -> mounted Gateway -> atomic SQL command.",
+        "mobile": "Normal Collections route -> Manual/Smart tabs -> canonical rule editor/ProductService.collectionMetadata -> shared Dart ProductsApi -> mounted Gateway.",
+        "contracts": "Canonical shared-types collection metadata/receipt/smart page/rule/preview and Dart mirrors; stable original intent and current actor/store.",
+        "backend": "Mounted manual/smart metadata facades -> shared schemas/adapter -> apply_collection_metadata_command_v1 in435 over sole collections owner; existing guarded manual membership and one public SQL rule evaluator.",
+        "remaining": "Actual current compiled Workerd/Liquid buyer collection render running separately. All operators on real UI, normal staff UI, wider web/mobile/device/provider/release acceptance remain open.",
+        "nativeReachability": "Owned Android41e4acd1e6c5 signed in normally but could not reach Collections from Products. Preserved menu screenshot and failed harness; a real widget negative reproduced the missing label. Products now links to the canonical Collections route, and the 13-case navigation/recovery suite passes. Fresh APK/sync runv2 pending.",
+        "nativeGate": "v1 navigation failure repaired; v2 generated-source classification failure retained; v3 corrected independent gate passed, source held fixed and normal UI paths observed. Receipt chain3->6->9 reflects junction and parent revision fences, with exactly two logical saves.",
+        "authority": "Owner-approved collections metadata435 with existing manual membership; smart_collections is retained sealed source."
+      },
+      "currentLocalAcceptance": {
+        "implementation": "Connected source/local metadata, publication, rules, version conflicts, durable original-key recovery, audit/outbox and public discovery; retained legacy source sealed.",
+        "contract": "Current shared TS4/Dart4 conformance; typed transport and client recovery cohorts pass. No summed feature count.",
+        "database": "LOCAL DATABASE VERIFIED for bounded original owner membership replay after collection metadata deletion, never-committed typed rejection, existing staff metadata controls and retained495-table synthetic cutover.34current membership/security/list tests and13retention/unification checks pass on their separately pinned runs.",
+        "webUI": "BOUNDED LOCAL WEB PASS bbbede5e529c: normal Accounts sign-in, existing6category/metadata journeys plus original committed selection after deletion/reload and explicit never-committed missing dismissal. Exact original body/key, unchanged receipt,1or0effects checked against actual Gateway/PG.25focused mounted controls, fullweb592/818/295/13/types and disposable governance114pass.",
+        "nativeUI": "LOCAL NATIVE VERIFIED for bounded v14 normal owner manual/Smart create/edit/conflict/deletion/original-key recovery/restart and both web directions. Scope/remaining conditions are explicit in qualification.",
+        "buyerEffect": "BOUNDED LOCAL BUYER HTML+API PASS e6863a399102: normal Manual26collection/index/details and Smart publication/rule1to0matches/unpublish under current compiled Workerd+3production-mode local Next; buyer document404/noindex/canonical UUID,1280/390layout. No full-feature/hosted/provider/native-current-edge inference.",
+        "artifact": "Broad58fbf51649c8f808f3e8919c20ef022265808c51258dcd04bcf7aa9263a7fdc6/7410 archived; debugAPK2dc1999d8dce52c6536d6c6738fa87e28d18966963dcaaee8175295594e62ea1 installed/hash verified; runner/UI0.",
+        "compiledBrowserContinuation": "SMART_COLLECTION_BUYER_LIQUID_V2_QUALIFICATION.json; source2b44490a3cffbe8a95bf81dbc1ff6fdb93c0982fd57faedbb06caa491f636645/7411archived and terminal verified;1compoundPASS,0fail/skip, empty cleanup.",
+        "retiredMembershipRecovery": "LOCALLY ACCEPTED for bounded owner native/webv15and normal webv2. Native restart discovery and web reload discovery; valid original receipts confirm once, never-committed canonical404requires explicit original recheck before local dismissal. Hosted, normal staff UI and full feature acceptance remain separate."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "NATIVE_CORE_V5_QUALIFICATION.json",
+        "SMART_COLLECTION_SOURCE_STATUS.json",
+        "UNIFIED_COLLECTION_BROWSER_V4_QUALIFICATION.json",
+        "NATIVE_CATALOG_V4_FAILURE.json",
+        "UNIFIED_COLLECTION_ANDROID_WEB_V12_QUALIFICATION.json",
+        "UNIFIED_COLLECTION_RETAINED_DATA_V4_QUALIFICATION.json",
+        "UNIFIED_COLLECTION_ANDROID_WEB_V14_QUALIFICATION.json",
+        "COLLECTION_MISSING_TARGET_RECOVERY.json",
+        "MEMBERSHIP_RETIREMENT_RECOVERY.json",
+        "MEMBERSHIP_RETIREMENT_ANDROID_WEB_V15_QUALIFICATION.json",
+        "WEB_MEMBERSHIP_RECOVERY_QUALIFICATION.json",
+        "SMART_COLLECTION_BUYER_LIQUID_V2_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 26,
+      "area": "Catalog",
+      "feature": "smart collections",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products, categories, export`",
+        "mobile": "`apps/merchant/mobile/lib/screens/products, collections`",
+        "backend": "`Gateway products/categories/export; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "authority": "Owner-approved collections metadata435 with existing manual membership; smart_collections is retained sealed source.",
+        "contracts": "Canonical shared-types collection metadata/receipt/smart page/rule/preview and Dart mirrors; stable original intent and current actor/store.",
+        "web": "Normal manual metadata panel and smart collection workspace -> origin/actor/store-bound BFF -> SDK -> mounted Gateway -> atomic SQL command.",
+        "mobile": "Normal Collections route -> Manual/Smart tabs -> canonical rule editor/ProductService.collectionMetadata -> shared Dart ProductsApi -> mounted Gateway.",
+        "remaining": "Broader native CRUD/all operators/conflict/delete/staff journeys, rendered buyer collection page, current retained-data/security/governance gates and full-feature acceptance remain open.",
+        "backend": "Mounted manual/smart metadata facades -> shared schemas/adapter -> apply_collection_metadata_command_v1 in435 over sole collections owner; existing guarded manual membership and one public SQL rule evaluator."
+      },
+      "currentLocalAcceptance": {
+        "implementation": "Connected source/local metadata, publication, rules, version conflicts, durable original-key recovery, audit/outbox and public discovery; retained legacy source sealed.",
+        "contract": "Current shared TS4/Dart4 conformance; typed transport and client recovery cohorts pass. No summed feature count.",
+        "database": "LOCAL DATABASE VERIFIED for current canonical collection commands, staff downgrade/removal at API/SQL, atomic receipts/audit/outbox, retained495-table synthetic cutover and separate owner/raw-role controls. Receipt-after-soft-delete membership investigation remains open.",
+        "webUI": "BOUNDED LOCAL WEB PASS: normal current Accounts sign-in, manual order read/save and Smart native-rule read/edit/preview synchronized with the same actual APK; prior browser stale-tab recovery remains its separately pinned evidence.",
+        "nativeUI": "LOCAL NATIVE VERIFIED for bounded v14 normal owner manual/Smart create/edit/conflict/deletion/original-key recovery/restart and both web directions. Scope/remaining conditions are explicit in qualification.",
+        "buyerEffect": "BOUNDED LOCAL BUYER HTML+API PASS e6863a399102: normal Manual26collection/index/details and Smart publication/rule1to0matches/unpublish under current compiled Workerd+3production-mode local Next; buyer document404/noindex/canonical UUID,1280/390layout. No full-feature/hosted/provider/native-current-edge inference.",
+        "artifact": "Current broad c32833a275d63a97c39d21d3f889065f0e1f4ae4b3a85676cc1c61b8d6ee2229/7409 archived; debugAPK8870cb7429a14d3286f08a83056e60c1d9c217d268c74f532fa49ae10c5bc9b0 installed/hash verified; runner/UI0.",
+        "compiledBrowserContinuation": "SMART_COLLECTION_BUYER_LIQUID_V2_QUALIFICATION.json; source2b44490a3cffbe8a95bf81dbc1ff6fdb93c0982fd57faedbb06caa491f636645/7411archived and terminal verified;1compoundPASS,0fail/skip, empty cleanup."
+      },
+      "governanceDisposition": "OWNER APPROVED3November2026: collections is sole manual/smart authority; lossless local convergence and gated retirement required.",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "SMART_COLLECTION_AUTHORITY_DECISION.md",
+        "SMART_COLLECTION_SOURCE_STATUS.json",
+        "UNIFIED_COLLECTION_BROWSER_V4_QUALIFICATION.json",
+        "NATIVE_CATALOG_V4_FAILURE.json",
+        "UNIFIED_COLLECTION_ANDROID_WEB_V12_QUALIFICATION.json",
+        "UNIFIED_COLLECTION_RETAINED_DATA_V4_QUALIFICATION.json",
+        "UNIFIED_COLLECTION_ANDROID_WEB_V14_QUALIFICATION.json",
+        "COLLECTION_MISSING_TARGET_RECOVERY.json",
+        "SMART_COLLECTION_BUYER_LIQUID_V2_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 27,
+      "area": "Catalog",
+      "feature": "search/browse outcomes",
+      "scopeClass": "A + E",
+      "candidateReferences": {
+        "web": "`[store]/products/page.tsx`, product BFF; existing bounded web page needs full server queries",
+        "mobile": "Products tab \u2192 `ProductsScreen` \u2192 `ProductService`, shared `ProductContract`",
+        "backend": "`ProductsApi.list` \u2192 `/v1/products`, `ListProductsQuery`, store-scoped products; real permission middleware"
+      },
+      "priorEvidence": "**LOCAL + DATABASE VERIFIED (bounded)** \u2014 [query, cursor/cache trace, tests and remaining gates](CATALOG_PARITY.md); web/browser/device/full parity open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 28,
+      "area": "Catalog",
+      "feature": "import/export",
+      "scopeClass": "A + E",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products, categories, export`",
+        "mobile": "`apps/merchant/mobile/lib/screens/products, collections`",
+        "backend": "`Gateway products/categories/export; trace per item`"
+      },
+      "priorEvidence": "**PARTIAL** \u2014 [source/local durable CSV job, atomic row/usage receipts, stop/retry, shared web/native recovery and108 owned DB checks](CSV_IMPORT_RECOVERY.md); candidate9bffa passes local artifact/governance admission and the existing-backup retained-data rehearsal; fresh approved416 hosted acceptance remains pending. [Staging export privacy proof](STAGING_PRIVATE_EXPORTS.md) retained. Separate existing-product selection, production authenticated CSV and full UI/filter/share acceptance remain open",
+      "confirmedTrace": {
+        "browserRequalification": "Old browser test expected retired inline export upload and failed. Updated to visible Open CSV imports link, current contract2 registration, actual queue-worker bound recovery and database readback. Not yet passed.",
+        "csvReadiness": "Browser negative v4 observed the picker enabled before capability readiness and an ignored file selection; CSV file/text inputs now disabled until supported and idle. Normal positive v5 passed registration, signed worker recovery, UI progress and database contents."
+      },
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "11/11 current product browser checks passed run13df1240fbee; includes current CSV UI and real worker transport. Other import/export/device and provider gates separate.",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 29,
+      "area": "Inventory and purchasing",
+      "feature": "quantities",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products/inventory*`",
+        "mobile": "`apps/merchant/mobile/lib/screens/inventory`",
+        "backend": "`Gateway inventory; trace per item`"
+      },
+      "priorEvidence": "**PARTIAL** \u2014 [inventory trace, scope/recovery tests and remaining gates](INVENTORY_PARITY.md); complete native/web/database acceptance remains open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "warehouseStockInteraction": "BOUNDED DATABASE AND WEB/NATIVE DOCUMENT JOURNEY v10; this does not accept the complete inventory-quantity/reservation UI or combined checkout reservation semantics.",
+        "warehouseArtifact": "v10debug APK61264acb56cf0f9b025a9c083d0951cb9d86709ec6a78066c4f9ddfc885ee8aa; archived source5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6. Node BFF/Gatewaymodules + real ownedPG; no compiled Workerd phone claim.",
+        "knownCombinedStockDefect": "Original defect6947c206da30 retained. Bounded canonical-kernel/cart repair passed6 real checks, including16free after4held in20 and refusal when customer18already held. Current436 source remains a candidate pending complete regression/environment/artifact/device qualification; no whole-feature acceptance.",
+        "shipmentCommit436": "BOUNDED NORMAL OWNER WEB\u2194ANDROID VERIFIED v21: creation/restart/exact-receipt recovery, held/committed lifetime views, partial/final receiving, independent physical+transit conservation and immutable original receipt. Same reservation; final2+2stock,0reserved/incoming,cache2and11receipts. No full-feature/staff/variants/compiled-Worker-phone/iOS/provider/hosted acceptance.",
+        "compiledInventorySetterCohort": "BOUNDED LOCAL PASS6e52c7eb23c5at source077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576. Actual compiled Gateway/BFF; normal owner native/web sign-in, warehouse recovery/completion, native delta+2with lost reply/restart/original replay under1hold, web absolute4and native current4free/1held/5physical. One adjustment and one edit receipt, hold/original warehouse receipts unchanged. Scope per report; full feature/native staff/variants/UI/accessibility/provider/release remain open.",
+        "native41BoundedSubset": "native41-accepted-local-warehouse/MANIFEST.json;exact preceding source/APK;not whole feature acceptance"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "WAREHOUSE_STOCK_ANDROID_WEB_V10_QUALIFICATION.json",
+        "TRANSFER_RESERVATION_COMBINED_NEGATIVE.json",
+        "TRANSFER_RESERVATION_TIMING_DECISION.md",
+        "INVENTORY_436_LOCAL_PROGRESS.json",
+        "WAREHOUSE_SHIPMENT_ANDROID_WEB_V21_QUALIFICATION.json",
+        "COMPILED_INVENTORY_SETTERS_ANDROID_WEB_V26_QUALIFICATION.json",
+        "native41-accepted-local-warehouse/MANIFEST.json"
+      ]
+    },
+    {
+      "id": 30,
+      "area": "Inventory and purchasing",
+      "feature": "reservations",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products/inventory*`",
+        "mobile": "`apps/merchant/mobile/lib/screens/inventory`",
+        "backend": "`Gateway inventory; trace per item`"
+      },
+      "priorEvidence": "**LOCAL + DATABASE READS VERIFIED (bounded)** \u2014 [seven-state native/web readers, scope and SDK evidence](INVENTORY_RECORDS_PARITY.md); deployed reads and native lifecycle effects remain open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "warehouseStockInteraction": "BOUNDED DATABASE AND WEB/NATIVE DOCUMENT JOURNEY v10; this does not accept the complete inventory-quantity/reservation UI or combined checkout reservation semantics.",
+        "warehouseArtifact": "v10debug APK61264acb56cf0f9b025a9c083d0951cb9d86709ec6a78066c4f9ddfc885ee8aa; archived source5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6. Node BFF/Gatewaymodules + real ownedPG; no compiled Workerd phone claim.",
+        "knownCombinedStockDefect": "Original defect6947c206da30 retained. Bounded canonical-kernel/cart repair passed6 real checks, including16free after4held in20 and refusal when customer18already held. Current436 source remains a candidate pending complete regression/environment/artifact/device qualification; no whole-feature acceptance.",
+        "shipmentCommit436": "BOUNDED NORMAL OWNER WEB\u2194ANDROID VERIFIED v21: creation/restart/exact-receipt recovery, held/committed lifetime views, partial/final receiving, independent physical+transit conservation and immutable original receipt. Same reservation; final2+2stock,0reserved/incoming,cache2and11receipts. No full-feature/staff/variants/compiled-Worker-phone/iOS/provider/hosted acceptance.",
+        "compiledInventorySetterCohort": "BOUNDED LOCAL PASS6e52c7eb23c5at source077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576. Actual compiled Gateway/BFF; normal owner native/web sign-in, warehouse recovery/completion, native delta+2with lost reply/restart/original replay under1hold, web absolute4and native current4free/1held/5physical. One adjustment and one edit receipt, hold/original warehouse receipts unchanged. Scope per report; full feature/native staff/variants/UI/accessibility/provider/release remain open.",
+        "native41BoundedSubset": "native41-accepted-local-warehouse/MANIFEST.json;exact preceding source/APK;not whole feature acceptance"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "WAREHOUSE_STOCK_ANDROID_WEB_V10_QUALIFICATION.json",
+        "TRANSFER_RESERVATION_COMBINED_NEGATIVE.json",
+        "TRANSFER_RESERVATION_TIMING_DECISION.md",
+        "INVENTORY_436_LOCAL_PROGRESS.json",
+        "WAREHOUSE_SHIPMENT_ANDROID_WEB_V21_QUALIFICATION.json",
+        "COMPILED_INVENTORY_SETTERS_ANDROID_WEB_V26_QUALIFICATION.json",
+        "native41-accepted-local-warehouse/MANIFEST.json"
+      ]
+    },
+    {
+      "id": 31,
+      "area": "Inventory and purchasing",
+      "feature": "history",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products/inventory*`",
+        "mobile": "`apps/merchant/mobile/lib/screens/inventory`",
+        "backend": "`Gateway inventory; trace per item`"
+      },
+      "priorEvidence": "**LOCAL + DATABASE VERIFIED (bounded)** \u2014 [native history, store/role repair, typed rows and evidence](HISTORY_PARITY.md); deployed/staff/native-data acceptance remains open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "shipmentCommit436": "CANDIDATE: existing reserve\u2192commit at shipment, bound durable lifetime, conserved partial/final receiving, canonical free-stock projections and current low-stock population. Current fenced DB cohort bc2c2d8a050e:19 new stock checks PASS; original warehouse/adjustment fixture retargets are qualifying. Current436 compiled/native/web-mobile shipment acceptance remains OPEN. See INVENTORY_436_LOCAL_PROGRESS.json."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "INVENTORY_436_LOCAL_PROGRESS.json"
+      ]
+    },
+    {
+      "id": 32,
+      "area": "Inventory and purchasing",
+      "feature": "locations",
+      "scopeClass": "A + E",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products/locations/page.tsx`; matching Next proxy",
+        "mobile": "`apps/merchant/mobile/lib/screens/inventory`",
+        "backend": "Shared TS/Dart wire contracts; SDK/BFF; Gateway `/v1/inventory`; atomic `apply_warehouse_command_v1` + receipt in migration414"
+      },
+      "priorEvidence": "**PARTIAL \u2014 CURRENT STAGING NATIVE + NEXT + DATABASE VERIFIED (bounded)** \u2014 [real native forms, Next\u2194native readback, original-key/conflict controls, actor retirement and active-staff denial](STAGING_415_ACCEPTANCE.md); controlled host-resolved test transport only, ordinary DNS/normal protected login, visual browser and release acceptance remain open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "LOCAL CONTRACT VERIFIED for protocol2 normalized metadata creates, exact original actor/site/key/intent and strict records; lifecycle update/delete remain open",
+        "database": "LOCAL DATABASE VERIFIED for bounded warehouse414 stock/metadata commands, actor/tenant denial, concurrent duplicate, durable replay/stop and guarded rollback in51-check run96b83104f159. Native/web feature acceptance remains open.",
+        "webUI": "LOCAL WEB VERIFIED bounded v10: normal Accounts/Merchant sign-in, native-created location/supplier read and web-created metadata reflected natively.",
+        "nativeUI": "LOCAL NATIVE VERIFIED bounded v10/28036721b070: normal Accounts PKCE and Products\u2192Inventory; metadata create/read, web-created metadata readback. Location committed reply loss, process restart and exact original retry. Metadata update/delete, staff and full lifecycle remain open.",
+        "buyerEffect": "not-run",
+        "artifact": "native-warehouse-v1/08c37b03d217, exact e7681d067b1530d9d851550fc4f6cd22ee6547f334dfac4e61ab2aac10783234 source/APK archive; local debug only",
+        "warehouseArtifact": "v10debug APK61264acb56cf0f9b025a9c083d0951cb9d86709ec6a78066c4f9ddfc885ee8aa; archived source5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6. Node BFF/Gatewaymodules + real ownedPG; no compiled Workerd phone claim.",
+        "currentWarehouseLabels": "LOCAL DATABASE/WEB/NATIVE VERIFIED v11/3acddf6ca92e: scoped readable names and variant identity contracts; original command receipts unchanged. Same bounded stock/recovery story as v10, now exact current source23b83f0f\u2026/7414and APK1561ad8e\u2026. No complete feature/provider/hosted/iOS claim.",
+        "shipmentCommit436": "BOUNDED NORMAL OWNER WEB\u2194ANDROID VERIFIED v21: creation/restart/exact-receipt recovery, held/committed lifetime views, partial/final receiving, independent physical+transit conservation and immutable original receipt. Same reservation; final2+2stock,0reserved/incoming,cache2and11receipts. No full-feature/staff/variants/compiled-Worker-phone/iOS/provider/hosted acceptance.",
+        "compiledInventorySetterCohort": "BOUNDED LOCAL PASS6e52c7eb23c5at source077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576. Actual compiled Gateway/BFF; normal owner native/web sign-in, warehouse recovery/completion, native delta+2with lost reply/restart/original replay under1hold, web absolute4and native current4free/1held/5physical. One adjustment and one edit receipt, hold/original warehouse receipts unchanged. Scope per report; full feature/native staff/variants/UI/accessibility/provider/release remain open.",
+        "native41BoundedSubset": "native41-accepted-local-warehouse/MANIFEST.json;exact preceding source/APK;not whole feature acceptance"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "WAREHOUSE_LOCAL_QUALIFICATION.json",
+        "WAREHOUSE_NATIVE_WEB_V1_QUALIFICATION.json",
+        "WAREHOUSE_STOCK_ANDROID_WEB_V10_QUALIFICATION.json",
+        "WAREHOUSE_SCOPED_READ_LABEL_QUALIFICATION.json",
+        "WAREHOUSE_SHIPMENT_ANDROID_WEB_V21_QUALIFICATION.json",
+        "COMPILED_INVENTORY_SETTERS_ANDROID_WEB_V26_QUALIFICATION.json",
+        "native41-accepted-local-warehouse/MANIFEST.json"
+      ]
+    },
+    {
+      "id": 33,
+      "area": "Inventory and purchasing",
+      "feature": "transfers",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products/inventory*`",
+        "mobile": "`apps/merchant/mobile/lib/screens/inventory`",
+        "backend": "`Gateway inventory; trace per item`"
+      },
+      "priorEvidence": "**PARTIAL \u2014 STAGING BACKEND VERIFIED** \u2014 [hosted original-key creation/replay, receiving/shipment and stock conservation](STAGING_WAREHOUSE_ACCEPTANCE.md); local UI/filter evidence remains in WAREHOUSE_LIST_FILTERS.md; normal browser/emulator UI and release acceptance remain open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "IMPLEMENTED bounded existing atomic warehouse commands and strict recovery; current scoped-label enrichment is qualifying separately.",
+        "contract": "LOCAL CONTRACT VERIFIED for bounded existing warehouse414 transfer SDK/authority/recovery/stock conservation; full consumer parity remains open",
+        "database": "LOCAL DATABASE VERIFIED bounded v10: PO4units@125.50\u2192native receive3/exact replay\u2192web final1; transfer2\u2192ship2\u2192native receive1\u2192web final1. Final2+2available/reserved0/incoming0,11receipts, original partial receipt unchanged.",
+        "webUI": "LOCAL WEB VERIFIED bounded v10: normal signed-in read of native partial PO/transfer and actual receipt dialogs complete remaining1unit each.",
+        "nativeUI": "LOCAL NATIVE VERIFIED bounded v10: normal creation/partial receiving/transfer shipment, lost-reply/restart/exact recovery, refresh reads web final states. Variants/staff/all permutations remain open.",
+        "buyerEffect": "not-run",
+        "artifact": "No transfer device artifact accepted in this local cohort. Warehouse metadata artifact08c37b03d217 covers locations32/suppliers34 only.",
+        "warehouseArtifact": "v10debug APK61264acb56cf0f9b025a9c083d0951cb9d86709ec6a78066c4f9ddfc885ee8aa; archived source5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6. Node BFF/Gatewaymodules + real ownedPG; no compiled Workerd phone claim.",
+        "currentWarehouseLabels": "LOCAL DATABASE/WEB/NATIVE VERIFIED v11/3acddf6ca92e: scoped readable names and variant identity contracts; original command receipts unchanged. Same bounded stock/recovery story as v10, now exact current source23b83f0f\u2026/7414and APK1561ad8e\u2026. No complete feature/provider/hosted/iOS claim.",
+        "knownCombinedStockDefect": "Original defect6947c206da30 retained. Bounded canonical-kernel/cart repair passed6 real checks, including16free after4held in20 and refusal when customer18already held. Current436 source remains a candidate pending complete regression/environment/artifact/device qualification; no whole-feature acceptance.",
+        "shipmentCommit436": "BOUNDED NORMAL OWNER WEB\u2194ANDROID VERIFIED v21: creation/restart/exact-receipt recovery, held/committed lifetime views, partial/final receiving, independent physical+transit conservation and immutable original receipt. Same reservation; final2+2stock,0reserved/incoming,cache2and11receipts. No full-feature/staff/variants/compiled-Worker-phone/iOS/provider/hosted acceptance.",
+        "compiledInventorySetterCohort": "BOUNDED LOCAL PASS6e52c7eb23c5at source077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576. Actual compiled Gateway/BFF; normal owner native/web sign-in, warehouse recovery/completion, native delta+2with lost reply/restart/original replay under1hold, web absolute4and native current4free/1held/5physical. One adjustment and one edit receipt, hold/original warehouse receipts unchanged. Scope per report; full feature/native staff/variants/UI/accessibility/provider/release remain open.",
+        "native41BoundedSubset": "native41-accepted-local-warehouse/MANIFEST.json;exact preceding source/APK;not whole feature acceptance"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "WAREHOUSE_LOCAL_QUALIFICATION.json",
+        "WAREHOUSE_STOCK_ANDROID_WEB_V10_QUALIFICATION.json",
+        "WAREHOUSE_SCOPED_READ_LABEL_QUALIFICATION.json",
+        "TRANSFER_RESERVATION_COMBINED_NEGATIVE.json",
+        "TRANSFER_RESERVATION_TIMING_DECISION.md",
+        "INVENTORY_436_LOCAL_PROGRESS.json",
+        "WAREHOUSE_SHIPMENT_ANDROID_WEB_V21_QUALIFICATION.json",
+        "COMPILED_INVENTORY_SETTERS_ANDROID_WEB_V26_QUALIFICATION.json",
+        "native41-accepted-local-warehouse/MANIFEST.json"
+      ]
+    },
+    {
+      "id": 34,
+      "area": "Inventory and purchasing",
+      "feature": "suppliers",
+      "scopeClass": "A + E",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products/suppliers/page.tsx`; matching Next proxy",
+        "mobile": "`apps/merchant/mobile/lib/screens/inventory`",
+        "backend": "Shared TS/Dart wire contracts; SDK/BFF; Gateway `/v1/inventory`; atomic `apply_warehouse_command_v1` + receipt in migration414"
+      },
+      "priorEvidence": "**PARTIAL \u2014 CURRENT STAGING NATIVE + NEXT + DATABASE VERIFIED (bounded)** \u2014 [real native forms, Next\u2194native readback, original-key/conflict controls, actor retirement and active-staff denial](STAGING_415_ACCEPTANCE.md); controlled host-resolved test transport only, ordinary DNS/normal protected login, visual browser and release acceptance remain open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "LOCAL CONTRACT VERIFIED for protocol2 normalized metadata creates, exact original actor/site/key/intent and strict records; lifecycle update/delete remain open",
+        "database": "LOCAL DATABASE VERIFIED for bounded warehouse414 stock/metadata commands, actor/tenant denial, concurrent duplicate, durable replay/stop and guarded rollback in51-check run96b83104f159. Native/web feature acceptance remains open.",
+        "webUI": "LOCAL WEB VERIFIED bounded v10: normal Accounts/Merchant sign-in, native-created location/supplier read and web-created metadata reflected natively.",
+        "nativeUI": "LOCAL NATIVE VERIFIED bounded v10/28036721b070: normal Accounts PKCE and Products\u2192Inventory; metadata create/read, web-created metadata readback. Location committed reply loss, process restart and exact original retry. Metadata update/delete, staff and full lifecycle remain open.",
+        "buyerEffect": "not-run",
+        "artifact": "native-warehouse-v1/08c37b03d217, exact e7681d067b1530d9d851550fc4f6cd22ee6547f334dfac4e61ab2aac10783234 source/APK archive; local debug only",
+        "warehouseArtifact": "v10debug APK61264acb56cf0f9b025a9c083d0951cb9d86709ec6a78066c4f9ddfc885ee8aa; archived source5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6. Node BFF/Gatewaymodules + real ownedPG; no compiled Workerd phone claim.",
+        "currentWarehouseLabels": "LOCAL DATABASE/WEB/NATIVE VERIFIED v11/3acddf6ca92e: scoped readable names and variant identity contracts; original command receipts unchanged. Same bounded stock/recovery story as v10, now exact current source23b83f0f\u2026/7414and APK1561ad8e\u2026. No complete feature/provider/hosted/iOS claim.",
+        "shipmentCommit436": "BOUNDED NORMAL OWNER WEB\u2194ANDROID VERIFIED v21: creation/restart/exact-receipt recovery, held/committed lifetime views, partial/final receiving, independent physical+transit conservation and immutable original receipt. Same reservation; final2+2stock,0reserved/incoming,cache2and11receipts. No full-feature/staff/variants/compiled-Worker-phone/iOS/provider/hosted acceptance.",
+        "compiledInventorySetterCohort": "BOUNDED LOCAL PASS6e52c7eb23c5at source077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576. Actual compiled Gateway/BFF; normal owner native/web sign-in, warehouse recovery/completion, native delta+2with lost reply/restart/original replay under1hold, web absolute4and native current4free/1held/5physical. One adjustment and one edit receipt, hold/original warehouse receipts unchanged. Scope per report; full feature/native staff/variants/UI/accessibility/provider/release remain open.",
+        "native41BoundedSubset": "native41-accepted-local-warehouse/MANIFEST.json;exact preceding source/APK;not whole feature acceptance"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "WAREHOUSE_LOCAL_QUALIFICATION.json",
+        "WAREHOUSE_NATIVE_WEB_V1_QUALIFICATION.json",
+        "WAREHOUSE_STOCK_ANDROID_WEB_V10_QUALIFICATION.json",
+        "WAREHOUSE_SCOPED_READ_LABEL_QUALIFICATION.json",
+        "WAREHOUSE_SHIPMENT_ANDROID_WEB_V21_QUALIFICATION.json",
+        "COMPILED_INVENTORY_SETTERS_ANDROID_WEB_V26_QUALIFICATION.json",
+        "native41-accepted-local-warehouse/MANIFEST.json"
+      ]
+    },
+    {
+      "id": 35,
+      "area": "Inventory and purchasing",
+      "feature": "purchase orders",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products/inventory*`",
+        "mobile": "`apps/merchant/mobile/lib/screens/inventory`",
+        "backend": "`Gateway inventory; trace per item`"
+      },
+      "priorEvidence": "**PARTIAL \u2014 STAGING BACKEND VERIFIED** \u2014 [hosted original-key creation/replay, receiving/shipment and stock conservation](STAGING_WAREHOUSE_ACCEPTANCE.md); local UI/filter evidence remains in WAREHOUSE_LIST_FILTERS.md; normal browser/emulator UI and release acceptance remain open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "IMPLEMENTED bounded existing atomic warehouse commands and strict recovery; current scoped-label enrichment is qualifying separately.",
+        "contract": "not-run",
+        "database": "LOCAL DATABASE VERIFIED bounded v10: PO4units@125.50\u2192native receive3/exact replay\u2192web final1; transfer2\u2192ship2\u2192native receive1\u2192web final1. Final2+2available/reserved0/incoming0,11receipts, original partial receipt unchanged.",
+        "webUI": "LOCAL WEB VERIFIED bounded v10: normal signed-in read of native partial PO/transfer and actual receipt dialogs complete remaining1unit each.",
+        "nativeUI": "LOCAL NATIVE VERIFIED bounded v10: normal creation/partial receiving/transfer shipment, lost-reply/restart/exact recovery, refresh reads web final states. Variants/staff/all permutations remain open.",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "warehouseArtifact": "v10debug APK61264acb56cf0f9b025a9c083d0951cb9d86709ec6a78066c4f9ddfc885ee8aa; archived source5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6. Node BFF/Gatewaymodules + real ownedPG; no compiled Workerd phone claim.",
+        "currentWarehouseLabels": "LOCAL DATABASE/WEB/NATIVE VERIFIED v11/3acddf6ca92e: scoped readable names and variant identity contracts; original command receipts unchanged. Same bounded stock/recovery story as v10, now exact current source23b83f0f\u2026/7414and APK1561ad8e\u2026. No complete feature/provider/hosted/iOS claim.",
+        "shipmentCommit436": "BOUNDED NORMAL OWNER WEB\u2194ANDROID VERIFIED v21: creation/restart/exact-receipt recovery, held/committed lifetime views, partial/final receiving, independent physical+transit conservation and immutable original receipt. Same reservation; final2+2stock,0reserved/incoming,cache2and11receipts. No full-feature/staff/variants/compiled-Worker-phone/iOS/provider/hosted acceptance.",
+        "compiledInventorySetterCohort": "BOUNDED LOCAL PASS6e52c7eb23c5at source077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576. Actual compiled Gateway/BFF; normal owner native/web sign-in, warehouse recovery/completion, native delta+2with lost reply/restart/original replay under1hold, web absolute4and native current4free/1held/5physical. One adjustment and one edit receipt, hold/original warehouse receipts unchanged. Scope per report; full feature/native staff/variants/UI/accessibility/provider/release remain open.",
+        "native41BoundedSubset": "native41-accepted-local-warehouse/MANIFEST.json;exact preceding source/APK;not whole feature acceptance"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "WAREHOUSE_LOCAL_QUALIFICATION.json",
+        "WAREHOUSE_STOCK_ANDROID_WEB_V10_QUALIFICATION.json",
+        "WAREHOUSE_SCOPED_READ_LABEL_QUALIFICATION.json",
+        "INVENTORY_436_LOCAL_PROGRESS.json",
+        "WAREHOUSE_SHIPMENT_ANDROID_WEB_V21_QUALIFICATION.json",
+        "COMPILED_INVENTORY_SETTERS_ANDROID_WEB_V26_QUALIFICATION.json",
+        "native41-accepted-local-warehouse/MANIFEST.json"
+      ]
+    },
+    {
+      "id": 36,
+      "area": "Inventory and purchasing",
+      "feature": "receiving/receipts",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products/inventory*`",
+        "mobile": "`apps/merchant/mobile/lib/screens/inventory`",
+        "backend": "`Gateway inventory; trace per item`"
+      },
+      "priorEvidence": "**PARTIAL \u2014 STAGING RECEIVING COMMANDS VERIFIED** \u2014 [hosted partial/receive-all, replay and exact stock/receipt readback](STAGING_WAREHOUSE_ACCEPTANCE.md); earlier receipt readers remain qualified in INVENTORY_RECORDS_PARITY.md; actual web/native receipt-screen and release acceptance remain open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "IMPLEMENTED bounded existing atomic warehouse commands and strict recovery; current scoped-label enrichment is qualifying separately.",
+        "contract": "not-run",
+        "database": "LOCAL DATABASE VERIFIED bounded v10: PO4units@125.50\u2192native receive3/exact replay\u2192web final1; transfer2\u2192ship2\u2192native receive1\u2192web final1. Final2+2available/reserved0/incoming0,11receipts, original partial receipt unchanged.",
+        "webUI": "LOCAL WEB VERIFIED bounded v10: normal signed-in read of native partial PO/transfer and actual receipt dialogs complete remaining1unit each.",
+        "nativeUI": "LOCAL NATIVE VERIFIED bounded v10: normal creation/partial receiving/transfer shipment, lost-reply/restart/exact recovery, refresh reads web final states. Variants/staff/all permutations remain open.",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "warehouseArtifact": "v10debug APK61264acb56cf0f9b025a9c083d0951cb9d86709ec6a78066c4f9ddfc885ee8aa; archived source5efe4d38620d811426f223a2d316201c30f8ffeab2670c5846f66d74f6d577d6. Node BFF/Gatewaymodules + real ownedPG; no compiled Workerd phone claim.",
+        "currentWarehouseLabels": "LOCAL DATABASE/WEB/NATIVE VERIFIED v11/3acddf6ca92e: scoped readable names and variant identity contracts; original command receipts unchanged. Same bounded stock/recovery story as v10, now exact current source23b83f0f\u2026/7414and APK1561ad8e\u2026. No complete feature/provider/hosted/iOS claim.",
+        "shipmentCommit436": "BOUNDED NORMAL OWNER WEB\u2194ANDROID VERIFIED v21: creation/restart/exact-receipt recovery, held/committed lifetime views, partial/final receiving, independent physical+transit conservation and immutable original receipt. Same reservation; final2+2stock,0reserved/incoming,cache2and11receipts. No full-feature/staff/variants/compiled-Worker-phone/iOS/provider/hosted acceptance.",
+        "compiledInventorySetterCohort": "BOUNDED LOCAL PASS6e52c7eb23c5at source077a6cd4faa5b7401c3e0701ccbf8b5f0808a1f9429b1575e7178fa9cca38576. Actual compiled Gateway/BFF; normal owner native/web sign-in, warehouse recovery/completion, native delta+2with lost reply/restart/original replay under1hold, web absolute4and native current4free/1held/5physical. One adjustment and one edit receipt, hold/original warehouse receipts unchanged. Scope per report; full feature/native staff/variants/UI/accessibility/provider/release remain open.",
+        "native41BoundedSubset": "native41-accepted-local-warehouse/MANIFEST.json;exact preceding source/APK;not whole feature acceptance"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "WAREHOUSE_LOCAL_QUALIFICATION.json",
+        "WAREHOUSE_STOCK_ANDROID_WEB_V10_QUALIFICATION.json",
+        "WAREHOUSE_SCOPED_READ_LABEL_QUALIFICATION.json",
+        "INVENTORY_436_LOCAL_PROGRESS.json",
+        "WAREHOUSE_SHIPMENT_ANDROID_WEB_V21_QUALIFICATION.json",
+        "COMPILED_INVENTORY_SETTERS_ANDROID_WEB_V26_QUALIFICATION.json",
+        "native41-accepted-local-warehouse/MANIFEST.json"
+      ]
+    },
+    {
+      "id": 37,
+      "area": "Inventory and purchasing",
+      "feature": "operations dashboard",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/products/operations-dashboard`",
+        "mobile": "`apps/merchant/mobile/lib/screens/inventory/operations_screen.dart`",
+        "backend": "`Gateway commerce-analytics; shared TS/Dart metrics`"
+      },
+      "priorEvidence": "**LOCAL + DATABASE READS VERIFIED (bounded)** \u2014 [four native/web panels, exact-count repairs and before/after evidence](OPERATIONS_PARITY.md); compatible hosted metrics and full runtime/release acceptance remain open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "shipmentCommit436": "CANDIDATE: existing reserve\u2192commit at shipment, bound durable lifetime, conserved partial/final receiving, canonical free-stock projections and current low-stock population. Current fenced DB cohort bc2c2d8a050e:19 new stock checks PASS; original warehouse/adjustment fixture retargets are qualifying. Current436 compiled/native/web-mobile shipment acceptance remains OPEN. See INVENTORY_436_LOCAL_PROGRESS.json."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "INVENTORY_436_LOCAL_PROGRESS.json"
+      ]
+    },
+    {
+      "id": 38,
+      "area": "Themes",
+      "feature": "ten included Liquid themes",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 39,
+      "area": "Themes",
+      "feature": "Circuit default",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 40,
+      "area": "Themes",
+      "feature": "the other nine authored themes",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 41,
+      "area": "Themes",
+      "feature": "ten built-ins available on every plan",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 42,
+      "area": "Themes",
+      "feature": "uploaded/duplicated theme limits",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 43,
+      "area": "Themes",
+      "feature": "installation",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 44,
+      "area": "Themes",
+      "feature": "draft customization",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "LOCAL DATABASE VERIFIED for bounded Core Liquid draft/publication/rollback and exact retry effects in4-check run9fddab6d3827; not all themes/packages.",
+        "webUI": "LOCAL WEB VERIFIED: normal compiled owner editor, draft/preview/publication, original document retained across authorized staff sign-in, stale-owner save/publish403, preserved newer draft and exact rollback retry.",
+        "nativeUI": "not-run",
+        "buyerEffect": "LOCAL WEB VERIFIED: one published Liquid heading changes on live release; newer unpublished draft remains private.",
+        "artifact": "liquid-browser-v1 broad source identity36d4099104881206df1eb5423b2018f893ee2691d419123f323b147e89fd03ed, held and verified unchanged at terminal; three local compiled apps.",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "LIQUID_BROWSER_V1_QUALIFICATION.json",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 45,
+      "area": "Themes",
+      "feature": "editor/private preview",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "LOCAL DATABASE VERIFIED for bounded Core Liquid draft/publication/rollback and exact retry effects in4-check run9fddab6d3827; not all themes/packages.",
+        "webUI": "LOCAL WEB VERIFIED: normal compiled owner editor, draft/preview/publication, original document retained across authorized staff sign-in, stale-owner save/publish403, preserved newer draft and exact rollback retry.",
+        "nativeUI": "not-run",
+        "buyerEffect": "LOCAL WEB VERIFIED: one published Liquid heading changes on live release; newer unpublished draft remains private.",
+        "artifact": "liquid-browser-v1 broad source identity36d4099104881206df1eb5423b2018f893ee2691d419123f323b147e89fd03ed, held and verified unchanged at terminal; three local compiled apps.",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "LIQUID_BROWSER_V1_QUALIFICATION.json",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 46,
+      "area": "Themes",
+      "feature": "versioned package and saved customization",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "LOCAL DATABASE VERIFIED for bounded Core Liquid draft/publication/rollback and exact retry effects in4-check run9fddab6d3827; not all themes/packages.",
+        "webUI": "LOCAL WEB VERIFIED: normal compiled owner editor, draft/preview/publication, original document retained across authorized staff sign-in, stale-owner save/publish403, preserved newer draft and exact rollback retry.",
+        "nativeUI": "not-run",
+        "buyerEffect": "LOCAL WEB VERIFIED: one published Liquid heading changes on live release; newer unpublished draft remains private.",
+        "artifact": "liquid-browser-v1 broad source identity36d4099104881206df1eb5423b2018f893ee2691d419123f323b147e89fd03ed, held and verified unchanged at terminal; three local compiled apps.",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "LIQUID_BROWSER_V1_QUALIFICATION.json",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 47,
+      "area": "Themes",
+      "feature": "explicit publication",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "LOCAL DATABASE VERIFIED for bounded Core Liquid draft/publication/rollback and exact retry effects in4-check run9fddab6d3827; not all themes/packages.",
+        "webUI": "LOCAL WEB VERIFIED: normal compiled owner editor, draft/preview/publication, original document retained across authorized staff sign-in, stale-owner save/publish403, preserved newer draft and exact rollback retry.",
+        "nativeUI": "not-run",
+        "buyerEffect": "LOCAL WEB VERIFIED: one published Liquid heading changes on live release; newer unpublished draft remains private.",
+        "artifact": "liquid-browser-v1 broad source identity36d4099104881206df1eb5423b2018f893ee2691d419123f323b147e89fd03ed, held and verified unchanged at terminal; three local compiled apps.",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "LIQUID_BROWSER_V1_QUALIFICATION.json",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 48,
+      "area": "Themes",
+      "feature": "authored thumbnails",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 49,
+      "area": "Themes",
+      "feature": "translations",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 50,
+      "area": "Themes",
+      "feature": "theme-aware checkout presentation using shared logic",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customize, editor, preview`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 51,
+      "area": "Themes",
+      "feature": "frozen/deferred third-party theme marketplace",
+      "scopeClass": "D",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/online-store/themes`",
+        "mobile": "`No Merchant mobile feature; verify exclusion/gate`",
+        "backend": "`Gateway themes + theme-engine; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "third-party marketplace remains deferred; no activation authorized",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 52,
+      "area": "Domains",
+      "feature": "*.letbuyy.store routing",
+      "scopeClass": "C+E",
+      "candidateReferences": {
+        "web": "`settings/domains/page.tsx; getStorefrontRootDomain`",
+        "mobile": "`StoreModel.generateStoreUrl/publicUrl/previewUrl; DomainSettingsSnapshot`",
+        "backend": "`tenant-core host helpers; Commerce host resolution`"
+      },
+      "priorEvidence": "**LOCAL VERIFIED projection** \u2014 shared root corrected; hosted wildcard proof remains separate. See DOMAIN_PARITY.md.",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 53,
+      "area": "Domains",
+      "feature": "new-store wildcard behavior",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/domains`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/domain_settings_screen.dart`",
+        "backend": "`Gateway domains + signed maintenance; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 54,
+      "area": "Domains",
+      "feature": "unknown-store refusal",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/domains`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/domain_settings_screen.dart`",
+        "backend": "`Gateway domains + signed maintenance; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 55,
+      "area": "Domains",
+      "feature": "storefront.letbuyy.com discovery",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/domains`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/domain_settings_screen.dart`",
+        "backend": "`Gateway domains + signed maintenance; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 56,
+      "area": "Domains",
+      "feature": "eligible-store directory/counts",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/domains`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/domain_settings_screen.dart`",
+        "backend": "`Gateway domains + signed maintenance; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 57,
+      "area": "Domains",
+      "feature": "custom storefront domains",
+      "scopeClass": "B+E",
+      "candidateReferences": {
+        "web": "`DomainCenterPage + domainsClient.list/connect/setPrimary/remove/history/setRedirect`",
+        "mobile": "`DomainSettingsScreen + ConnectedDomainsSection \u2192 DomainService \u2192 CustomDomainsApi`",
+        "backend": "`Gateway /custom/domains CRUD; requireOwnedSite; site_domains; set_primary_site_domain`"
+      },
+      "priorEvidence": "**LOCAL VERIFIED** alias/primary/history/redirect/removal readback; native/hosted sync and provider gates open. See DOMAIN_PARITY.md.",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 58,
+      "area": "Domains",
+      "feature": "ownership/DNS/TLS readiness",
+      "scopeClass": "B+E",
+      "candidateReferences": {
+        "web": "`ConnectDomainWizard/DomainDetailView \u2192 domainsClient.verify/health`",
+        "mobile": "`ConnectedDomainsSection DNS setup/verify + primary DomainHealthSnapshot`",
+        "backend": "`POST /custom/domains/verify; GET /custom/domains/:domain/status; ownership TXT, DNS, provider/project/TLS`"
+      },
+      "priorEvidence": "**LOCAL + OWNED DB VERIFIED** bounded controls; actual DNS/TLS and signed-in device acceptance open.",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 59,
+      "area": "Domains",
+      "feature": "domain maintenance",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`DomainDetailView status/history`",
+        "mobile": "`ConnectedDomainsSection status/verification/history; no duplicate scheduler`",
+        "backend": "`Existing signed domain reconciliation; exact-host leases and bounded drain`"
+      },
+      "priorEvidence": "**OWNED DB VERIFIED** branded host transitions/drain; hosted nonzero maintenance/provider operation remains open.",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 60,
+      "area": "Domains",
+      "feature": "branded platform checkout host",
+      "scopeClass": "B/C+E",
+      "candidateReferences": {
+        "web": "`CheckoutDomainCard \u2192 domainsClient.checkout/prepareCheckout`",
+        "mobile": "`Secure checkout card \u2192 DomainService.checkoutSetup \u2192 shared CheckoutDomainSetup`",
+        "backend": "`GET/POST /custom/checkout-domain; CheckoutDomainSetupSchema; site_domains purpose=checkout`"
+      },
+      "priorEvidence": "**LOCAL + OWNED DB VERIFIED** readiness/provisioning/current origin; normal buyer cart and device/hosted gates open.",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 61,
+      "area": "Domains",
+      "feature": "branded custom-domain checkout",
+      "scopeClass": "B/C+E",
+      "candidateReferences": {
+        "web": "`CheckoutDomainCard + ConnectDomainWizard checkout DNS`",
+        "mobile": "`Secure checkout card + connected-domain DNS dialog`",
+        "backend": "`store-checkout-domain exact parent/site/provider/TLS proof; no client host derivation`"
+      },
+      "priorEvidence": "**LOCAL + OWNED DB VERIFIED** exact DNS/context/cross-site controls; hosted signed cart and actual provider acceptance open.",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 62,
+      "area": "Domains",
+      "feature": "central fallback",
+      "scopeClass": "B/C+E",
+      "candidateReferences": {
+        "web": "`CheckoutDomainCard current secure address`",
+        "mobile": "`Secure checkout card currently used address/fallback`",
+        "backend": "`checkoutOriginForStore + centralCheckoutOrigin; existing finite drain`"
+      },
+      "priorEvidence": "**LOCAL + OWNED DB VERIFIED** readiness/fallback/drain; real web/native/buyer journey open.",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 63,
+      "area": "Domains",
+      "feature": "verified-domain Turnstile registration",
+      "scopeClass": "B/C+E",
+      "candidateReferences": {
+        "web": "`DomainDetailView \u2192 CustomerVerificationNotice`",
+        "mobile": "`DomainHealthSnapshot typed customer-verification projection; primary health view`",
+        "backend": "`customDomainCustomerVerification \u2192 existing hostname-management coordinator; DomainCustomerVerificationSchema`"
+      },
+      "priorEvidence": "**LOCAL VERIFIED** no readiness inferred from TLS; real host registration and customer challenge acceptance open.",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 64,
+      "area": "Buyer storefront and accounts",
+      "feature": "Liquid storefront pages",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "LOCAL WEB VERIFIED for bounded Core Liquid public catalog/product navigation -> actual cart/handoff -> local HTTPS checkout document; one cart, zero orders; not complete buyer/checkout acceptance.",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "LIQUID_BROWSER_V1_QUALIFICATION.json",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 65,
+      "area": "Buyer storefront and accounts",
+      "feature": "search",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 66,
+      "area": "Buyer storefront and accounts",
+      "feature": "contact/policy/privacy/shipping/returns pages",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 67,
+      "area": "Buyer storefront and accounts",
+      "feature": "buyer signup/sign-in",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 68,
+      "area": "Buyer storefront and accounts",
+      "feature": "explicit verified LetBuyy-to-buyer connection",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 69,
+      "area": "Buyer storefront and accounts",
+      "feature": "buyer order list/detail",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 70,
+      "area": "Buyer storefront and accounts",
+      "feature": "addresses",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 71,
+      "area": "Buyer storefront and accounts",
+      "feature": "wishlist",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 72,
+      "area": "Buyer storefront and accounts",
+      "feature": "loyalty",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 73,
+      "area": "Buyer storefront and accounts",
+      "feature": "support",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 74,
+      "area": "Buyer storefront and accounts",
+      "feature": "privacy controls. These are primarily buyer-owned surfaces: give merchants accurate configuration, previews, and operational readback, not a duplicate buyer app",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/commerce/web/src/app/store/[subdomain]`",
+        "mobile": "`merchant preview/config only; no buyer duplicate`",
+        "backend": "`Gateway storefront + Commerce + Identity; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 75,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "cart quantities/options/readback",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted.",
+        "knownCombinedStockDefect": "Original defect6947c206da30 retained. Bounded canonical-kernel/cart repair passed6 real checks, including16free after4held in20 and refusal when customer18already held. Current436 source remains a candidate pending complete regression/environment/artifact/device qualification; no whole-feature acceptance.",
+        "shipmentCommit436": "CANDIDATE: existing reserve\u2192commit at shipment, bound durable lifetime, conserved partial/final receiving, canonical free-stock projections and current low-stock population. Current fenced DB cohort bc2c2d8a050e:19 new stock checks PASS; original warehouse/adjustment fixture retargets are qualifying. Current436 compiled/native/web-mobile shipment acceptance remains OPEN. See INVENTORY_436_LOCAL_PROGRESS.json."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "NATIVE_CORE_V5_QUALIFICATION.json",
+        "TRANSFER_RESERVATION_COMBINED_NEGATIVE.json",
+        "TRANSFER_RESERVATION_TIMING_DECISION.md",
+        "INVENTORY_436_LOCAL_PROGRESS.json"
+      ]
+    },
+    {
+      "id": 76,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "store/cart-bound handoff",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "LOCAL WEB VERIFIED for bounded Core Liquid public catalog/product navigation -> actual cart/handoff -> local HTTPS checkout document; one cart, zero orders; not complete buyer/checkout acceptance.",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "LIQUID_BROWSER_V1_QUALIFICATION.json",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 77,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "checkout-to-cart origin preservation",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 78,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "server-owned prices/totals",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 79,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "coupon management",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 80,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "coupon persistence through recalculation",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 81,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "Merchant receipt facts",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 82,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "buyer receipt facts",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 83,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "Merchant order list/detail",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 84,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "lifecycle/timeline",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 85,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "cancellation/returns/refunds",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 86,
+      "area": "Cart, checkout, discounts, orders",
+      "feature": "checkout fields, account policy, notes, tipping and order-prefix propagation",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/coupons, orders, settings/checkout`",
+        "mobile": "`apps/merchant/mobile/lib/screens/discounts, orders; buyer flow indirect`",
+        "backend": "`Gateway coupons/orders/checkout; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 87,
+      "area": "Shipping/tax",
+      "feature": "zones/rates",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/shipping, taxes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/shipping_screen.dart, taxes_screen.dart`",
+        "backend": "`Gateway shipping-tax, shipping, tax; trace per item`"
+      },
+      "priorEvidence": "**IN PROGRESS** \u2014 scoped complete reads, retired dialogs/denials and reachable native settings locally qualified; profiles/COD/weight UI, durable mutations, hosted writes/conflicts and buyer effects remain open; see SHIPPING_TAX_PARITY.md",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "shipping-tax-local-v1/0380f3b9163d: profiles1, settings8, authoritative checkout12, GST invoice1/computation1 pass; zero skips, empty owned cleanup. Full native/web/provider acceptance remains separate.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "SHIPPING_TAX_LOCAL_QUALIFICATION.json",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 88,
+      "area": "Shipping/tax",
+      "feature": "serviceability and rate requests",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/shipping, taxes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/shipping_screen.dart, taxes_screen.dart`",
+        "backend": "`Gateway shipping-tax, shipping, tax; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "shipping-tax-local-v1/0380f3b9163d: profiles1, settings8, authoritative checkout12, GST invoice1/computation1 pass; zero skips, empty owned cleanup. Full native/web/provider acceptance remains separate.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "SHIPPING_TAX_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 89,
+      "area": "Shipping/tax",
+      "feature": "tracking/labels",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/shipping, taxes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/shipping_screen.dart, taxes_screen.dart`",
+        "backend": "`Gateway shipping-tax, shipping, tax; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 90,
+      "area": "Shipping/tax",
+      "feature": "tax-rate settings",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/shipping, taxes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/shipping_screen.dart, taxes_screen.dart`",
+        "backend": "`Gateway shipping-tax, shipping, tax; trace per item`"
+      },
+      "priorEvidence": "**IN PROGRESS** \u2014 scoped complete reads, retired dialogs/denials and reachable native settings locally qualified; profiles/COD/weight UI, durable mutations, hosted writes/conflicts and buyer effects remain open; see SHIPPING_TAX_PARITY.md",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "shipping-tax-local-v1/0380f3b9163d: profiles1, settings8, authoritative checkout12, GST invoice1/computation1 pass; zero skips, empty owned cleanup. Full native/web/provider acceptance remains separate.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "SHIPPING_TAX_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 91,
+      "area": "Shipping/tax",
+      "feature": "tax calculation/invoices",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/shipping, taxes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/shipping_screen.dart, taxes_screen.dart`",
+        "backend": "`Gateway shipping-tax, shipping, tax; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "shipping-tax-local-v1/0380f3b9163d: profiles1, settings8, authoritative checkout12, GST invoice1/computation1 pass; zero skips, empty owned cleanup. Full native/web/provider acceptance remains separate.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "SHIPPING_TAX_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 92,
+      "area": "Shipping/tax",
+      "feature": "checkout shipping/tax choices and saved totals",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/shipping, taxes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/shipping_screen.dart, taxes_screen.dart`",
+        "backend": "`Gateway shipping-tax, shipping, tax; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "shipping-tax-local-v1/0380f3b9163d: profiles1, settings8, authoritative checkout12, GST invoice1/computation1 pass; zero skips, empty owned cleanup. Full native/web/provider acceptance remains separate.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "SHIPPING_TAX_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 93,
+      "area": "Shipping/tax",
+      "feature": "India GST, duties and Shopify-comparison findings. Do not make legal or tax correctness claims without the relevant verified rule and examples",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/shipping, taxes`",
+        "mobile": "`apps/merchant/mobile/lib/screens/settings/shipping_screen.dart, taxes_screen.dart`",
+        "backend": "`Gateway shipping-tax, shipping, tax; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "shipping-tax-local-v1/0380f3b9163d: profiles1, settings8, authoritative checkout12, GST invoice1/computation1 pass; zero skips, empty owned cleanup. Full native/web/provider acceptance remains separate.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "SHIPPING_TAX_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 94,
+      "area": "Money",
+      "feature": "merchant-owned Razorpay sandbox connection/masked readback",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 95,
+      "area": "Money",
+      "feature": "explicit online activation and independent COD",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 96,
+      "area": "Money",
+      "feature": "one store/environment per connection",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 97,
+      "area": "Money",
+      "feature": "immutable credential and original-attempt binding",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 98,
+      "area": "Money",
+      "feature": "idempotent settings commands",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 99,
+      "area": "Money",
+      "feature": "one double-entry ledger and zero rake",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 100,
+      "area": "Money",
+      "feature": "Test/Live payout views",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 101,
+      "area": "Money",
+      "feature": "honest unobserved bank-settlement state",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 102,
+      "area": "Money",
+      "feature": "provider-proof capture/original-account refund",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 103,
+      "area": "Money",
+      "feature": "webhook/reconciliation/dispute/post-settlement work",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "money-local-v1/12f64a2421e4:88 owned checks across9 suites pass with empty cleanup. Synthetic connection/provider proofs only; see MONEY_LOCAL_QUALIFICATION.json for exact relevant suite scope.",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "MONEY_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 104,
+      "area": "Money",
+      "feature": "provider-approved managed/live collection/KYC/bank readiness. The last items remain gated unless real provider evidence closes them",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/settings/payments, payouts`",
+        "mobile": "`apps/merchant/mobile/lib/screens/money, subscription, kyc`",
+        "backend": "`Gateway payments/payouts/refunds + ledger; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 105,
+      "area": "Customers, communication, growth",
+      "feature": "customer list/detail",
+      "scopeClass": "A + E",
+      "candidateReferences": {
+        "web": "`[store]/customers/page.tsx`, `[email]/page.tsx`; `/api/stores/[store]/customers`",
+        "mobile": "`CustomersScreen`, `CustomerDetailScreen`, `CustomerService`; `/customers`, `/customers/detail`",
+        "backend": "`CustomersApi`, `CustomerSchema`, `ListCustomersQuery`; mounted `/v1/customers`; site/customer/order data"
+      },
+      "priorEvidence": "**LOCALLY VERIFIED + DATABASE VERIFIED (bounded scope)** \u2014 [exact trace, tests and open gates](CUSTOMER_PARITY.md); full CRM/browser/native acceptance remains open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 106,
+      "area": "Customers, communication, growth",
+      "feature": "segments",
+      "scopeClass": "A + E",
+      "candidateReferences": {
+        "web": "`[store]/customers/segments/page.tsx`; segments/preview/id BFFs",
+        "mobile": "Customers \u2192 Segment/Edit selected segment; `CustomerSegmentSheet`, `CustomerService`, canonical Dart segments API",
+        "backend": "`CustomerSegmentRulesSchema`, commerce-core Zod; mounted `/v1/customers/segments`; `customer_segments` and site summaries"
+      },
+      "priorEvidence": "**LOCALLY VERIFIED + DATABASE VERIFIED (bounded scope)** \u2014 [exact trace, rules, retry/readback, RLS and open gates](CUSTOMER_PARITY.md); staff/concurrency/browser/native acceptance open",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 107,
+      "area": "Customers, communication, growth",
+      "feature": "reviews",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 108,
+      "area": "Customers, communication, growth",
+      "feature": "shared transactional templates",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 109,
+      "area": "Customers, communication, growth",
+      "feature": "password/recovery mail",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 110,
+      "area": "Customers, communication, growth",
+      "feature": "recorded order-email jobs/provider receipts",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 111,
+      "area": "Customers, communication, growth",
+      "feature": "all future lifecycle email variants and failure recovery",
+      "scopeClass": "C",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 112,
+      "area": "Customers, communication, growth",
+      "feature": "notification preferences/in-app/WhatsApp",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 113,
+      "area": "Customers, communication, growth",
+      "feature": "coupons/campaigns",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 114,
+      "area": "Customers, communication, growth",
+      "feature": "blog/pages/comments/reels/gallery/leads",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 115,
+      "area": "Customers, communication, growth",
+      "feature": "AI Studio/analytics",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 116,
+      "area": "Customers, communication, growth",
+      "feature": "gift cards/loyalty",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web/src/app/[store]/customers, marketing, content, analytics`",
+        "mobile": "`apps/merchant/mobile/lib/screens/customers, marketing, content, analytics`",
+        "backend": "`Gateway customers/notifications/marketing/analytics; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 117,
+      "area": "Supporting platform",
+      "feature": "subscriptions/billing",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web settings; internal/marketing separate`",
+        "mobile": "`apps/merchant/mobile settings; operator/marketing excluded`",
+        "backend": "`Gateway billing/settings or separate owner; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "freshTrialDecision": "APPROVED and IMPLEMENTED: saved active14-day trial resolves current persisted Launch entitlements until saved end; paid/override precedence and expired/frozen refusal verified. Broader billing acceptance remains open."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "NATIVE_CORE_V2_FAILURE.json",
+        "TRIAL_ENTITLEMENT_DECISION.md",
+        "SAVED_TRIAL_LOCAL_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 118,
+      "area": "Supporting platform",
+      "feature": "security/localization/policies/SEO/custom data/apps/users settings",
+      "scopeClass": "B",
+      "candidateReferences": {
+        "web": "`apps/merchant/web settings; internal/marketing separate`",
+        "mobile": "`apps/merchant/mobile settings; operator/marketing excluded`",
+        "backend": "`Gateway billing/settings or separate owner; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {
+        "seoContinuation": {
+          "web": "apps/merchant/web/src/app/[store]/online-store/preferences/page.tsx",
+          "mobile": "apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart",
+          "authority": "same canonical store writer/version protocol; sites.meta_title/meta_description",
+          "traceLimit": "Published HTML title/description now passed in ba16c5e3e25e; canonical URLs, complete indexing and remaining settings are separate."
+        }
+      },
+      "currentLocalAcceptance": {
+        "implementation": "IMPLEMENTED for revision-bound profile/SEO contact-preserving edits; durable business receipts and remaining settings open",
+        "contract": "LOCAL CONTRACT VERIFIED: observed revisions/current-view boundaries/explicit clears; subsequent native acknowledgement follow-up21focused passes",
+        "database": "LOCAL DATABASE VERIFIED: bounded CAS/races/refusal and exact six-effect settings roundtrip; not all settings",
+        "webUI": "LOCAL WEB VERIFIED: four normal profile writers, stale-tab retained draft/explicit reload and wrong actor/origin refusals",
+        "nativeUI": "LOCAL NATIVE VERIFIED: normal Android Store Details/SEO, scrolled lost-reply/current-read recovery and exact web/native metadata/clear readback. Later service acknowledgement source has unit proof; current artifact positive control is pending.",
+        "buyerEffect": "LOCAL WEB VERIFIED for actual published HTML SEO title and160-character description after real Preferences save and General readback; other settings/public SEO requirements remain open.",
+        "artifact": "native-settings-v4/76f585b6be48 source c959c19ac3dcd5736570eae37278d6a04c20c6f1d93fb365110a3ef346df831a, exact4591-source archive/installed APK hash",
+        "compiledBrowserContinuation": "BOUNDED LOCAL WEB/WORKER PASS ba16c5e3e25e; see per-story proof. This does not upgrade the whole feature or native app to accepted."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "STORE_SETTINGS_LOCAL_ACCEPTANCE.md",
+        "STORE_SETTINGS_NATIVE_WEB_QUALIFICATION.json",
+        "STORE_SETTINGS_NATIVE_V3_FAILURE.json",
+        "STORE_SETTINGS_NATIVE_WEB_V4_QUALIFICATION.json",
+        "WAREHOUSE_NATIVE_WEB_V1_QUALIFICATION.json",
+        "STORE_PROFILE_BROWSER_V2_QUALIFICATION.json",
+        "NATIVE_CORE_V5_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 119,
+      "area": "Supporting platform",
+      "feature": "Merchant Flutter product/inventory/order/customer/theme/money/settings/security journeys",
+      "scopeClass": "A",
+      "candidateReferences": {
+        "web": "`apps/merchant/web settings; internal/marketing separate`",
+        "mobile": "`apps/merchant/mobile settings; operator/marketing excluded`",
+        "backend": "`Gateway billing/settings or separate owner; trace per item`"
+      },
+      "priorEvidence": "**UNVERIFIED** \u2014 trace exact contract, state, actor, tests and device",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built",
+        "retiredMembershipRecovery": "LOCALLY ACCEPTED for bounded owner actual native/Web v15: original committed receipt after metadata deletion; normal recovery discovery after restart; never-committed selection typed rejection, restart/cancel retention and exact-original explicit dismissal. Web-side orphaned request entry remains open."
+      },
+      "governanceDisposition": "consult-current-authority",
+      "externalAcceptance": "outside-local-only-assignment",
+      "evidence": [
+        "UNIFIED_COLLECTION_ANDROID_WEB_V14_QUALIFICATION.json",
+        "COLLECTION_MISSING_TARGET_RECOVERY.json",
+        "MEMBERSHIP_RETIREMENT_RECOVERY.json",
+        "MEMBERSHIP_RETIREMENT_ANDROID_WEB_V15_QUALIFICATION.json"
+      ]
+    },
+    {
+      "id": 120,
+      "area": "Supporting platform",
+      "feature": "thin internal operator console",
+      "scopeClass": "D",
+      "candidateReferences": {
+        "web": "`apps/internal/console`; Constitution ARCH-R1/R10",
+        "mobile": "No Merchant operator console; only Merchant-visible command/status dependencies",
+        "backend": "Existing Gateway operators remain a separate authority"
+      },
+      "priorEvidence": "**EXCLUDED FROM NATIVE MERCHANT SCOPE BY GOVERNANCE** \u2014 no operator privileges or console duplication; indirect Merchant statuses still require their owning feature acceptance",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "excluded from implementation scope; boundary checks only",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 121,
+      "area": "Supporting platform",
+      "feature": "public Marketing site",
+      "scopeClass": "D",
+      "candidateReferences": {
+        "web": "`apps/marketing/web`; canonical separate public runtime",
+        "mobile": "No native copy of the public Marketing website",
+        "backend": "Marketing runtime; Merchant plan/config dependencies use canonical APIs"
+      },
+      "priorEvidence": "**EXCLUDED FROM NATIVE MERCHANT SCOPE BY GOVERNANCE** \u2014 public site is separate; native billing/onboarding tasks remain in scope in their own rows",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "excluded from implementation scope; boundary checks only",
+      "externalAcceptance": "outside-local-only-assignment"
+    },
+    {
+      "id": 122,
+      "area": "Supporting platform",
+      "feature": "paused public App Marketplace, Theme Marketplace and Developer Portal",
+      "scopeClass": "D",
+      "candidateReferences": {
+        "web": "Frozen/reserved public capability boundaries; Constitution NEVER-R3",
+        "mobile": "App routes are centrally gated by `V1CapabilityPolicy`; included theme library remains rows 38\u201356",
+        "backend": "Existing canonical owners only; no reserved runtime activation"
+      },
+      "priorEvidence": "**EXCLUDED/GATED BY GOVERNANCE** \u2014 no third-party marketplace/portal activation; existing included themes and governed Merchant theme management remain in scope",
+      "confirmedTrace": {},
+      "currentLocalAcceptance": {
+        "implementation": "not-assessed-this-cohort",
+        "contract": "not-run",
+        "database": "not-run",
+        "webUI": "not-run",
+        "nativeUI": "not-run",
+        "buyerEffect": "not-run",
+        "artifact": "not-built"
+      },
+      "governanceDisposition": "paused public marketplaces/developer portal; preserve gates",
+      "externalAcceptance": "outside-local-only-assignment"
+    }
+  ],
+  "checkpointNote": "Latest authorized scope is comprehensive frontend UI migration/local verification. Native41 independently accepted a bounded original warehouse/setter owner journey on its own APK;utilities4 has local source/build/render evidence. No whole feature is promoted, no current hosted/provider/physical/iOS runtime acceptance is inferred, and protected Staff namespace failure/native38unknown remain open.",
+  "nativeRegressionCheckpoint": {
+    "run": "flutter-full-v6",
+    "passed": 833,
+    "failures": 0,
+    "skips": 0,
+    "analysis": "flutter-analysis-v5 clean",
+    "scope": "current synthetic unit/widget regression before fresh APKv2; no substitute for runtime acceptance"
+  },
+  "latestBoundedRuntimeRun": {
+    "runId": "ba16c5e3e25e",
+    "kind": "compiled local web + native Worker/R2, not Flutter device",
+    "source_sha256": "b818440a5579b5bbf7b9b7bde20940bd4fd7649d1b8f8d48eca7ceb6332e396a",
+    "qualification": "NATIVE_CORE_V5_QUALIFICATION.json"
+  },
+  "latestBoundedNativeCollectionRun": {
+    "runId": "e425724c445d",
+    "qualification": "MEMBERSHIP_RETIREMENT_ANDROID_WEB_V15_QUALIFICATION.json",
+    "allFeaturesAccepted": false
+  },
+  "latestBoundedWebMembershipRecovery": {
+    "runId": "bbbede5e529c",
+    "pass": 8,
+    "fail": 0,
+    "skip": 0,
+    "source": "7c09f83e4f922184a6193f869cc1d0bf279db024add1acc9cc311bf2ae8bf414",
+    "featureAcceptanceNotInferred": true,
+    "evidence": "WEB_MEMBERSHIP_RECOVERY_QUALIFICATION.json"
+  },
+  "latestBoundedCompiledBuyerCollectionRun": {
+    "runId": "e6863a399102",
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "source": "2b44490a3cffbe8a95bf81dbc1ff6fdb93c0982fd57faedbb06caa491f636645",
+    "featureAcceptanceNotInferred": true,
+    "evidence": "SMART_COLLECTION_BUYER_LIQUID_V2_QUALIFICATION.json"
+  },
+  "latestBoundedNativeWarehouseRun": {
+    "report": "WAREHOUSE_SCOPED_READ_LABEL_QUALIFICATION.json",
+    "runId": "3acddf6ca92e",
+    "sourceSha256": "23b83f0f827178f495923b9cb9e07ddb48ff423179cdbdb34441461fb99cdad6",
+    "apkSha256": "1561ad8e7049012deb841054aabd934e498eb57c000fd2637fb1f86cc04bdfc6",
+    "scope": "Current scoped product/variant/location read contracts plus normal web/Android warehouse metadata, PO/transfer receiving, response-loss/restart/exact retry and two-direction final readback.",
+    "wholeFeaturesAccepted": false
+  },
+  "latestBoundedNativeWarehouseShipmentRun": {
+    "runId": "286b2a4bc2e1",
+    "report": "WAREHOUSE_SHIPMENT_ANDROID_WEB_V21_QUALIFICATION.json",
+    "source": "bc7af995e6e630e289479134b02f4f7b44d5ce8d62d29fe7653da1dc5a2e289d",
+    "apk": "759c3fa45d8ab398afc29e927c50cf63784c411a59a56dacc03e4074ed677ebf",
+    "fullFeatureSetAccepted": false,
+    "scope": "Normal Android PO4units/cost125.50, partialreceive3with lost-reply/restart/exact retry; transfer2reserve/ship/receive1; normal web reads and completes1unit each; native refresh reads final received states. Canonical available4across2locations/no reserved/incoming,11command receipts including4metadata. Shipment-bound reservation viewed held and committed on both surfaces; physical stock plus transit conserved, default cache1then2read back. Broader allocation permutations remain separately unaccepted. No staff/variants/allfinancial/provider/hosted/iOS/release acceptance."
+  },
+  "historicalCheckpointNoteBeforeFrontendNov6": "Bounded prior successes are retained, but combined transfer/customer reservation defects now prevent inventory/cart acceptance. No original feature is promoted to whole-feature acceptance by overlapping test counts.",
+  "latestBoundedNativeWarehouse41Run": {
+    "runId": "abac88df509d",
+    "report": "native41-accepted-local-warehouse/MANIFEST.json",
+    "sourceSha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+    "apkSha256": "8dcb8ed60ac7582479ba67d8be95b6434b006831e03fbaa0199a700b18b2d3aa",
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "fullFeatureSetAccepted": false,
+    "scope": "Normal synthetic owner Accounts/Android+compiled Gateway/BFF+web+owned Postgres;metadata create/reply-loss/restart/original retry/bidirectional reads,PO/transfer quantities/cost/conservation/11immutable receipts,native delta+2/original recovery/web absolute4/native4free1held5physical. Customer hold is a synthetic prerequisite;no buyer-auth checkout or whole-role/module acceptance."
+  },
+  "latestFrontendLocalQualification": {
+    "report": "verification-2026-11-05/FINAL_LOCAL_CHECKPOINT.json",
+    "sourceSha256": "78af178afaafa150298483820690ca5ed87b9c627fe208ea5d6148c3e7e1d636",
+    "passed": 1513,
+    "failed": 1,
+    "skipped": 0,
+    "knownFailure": "unchanged protected Staff namespace case",
+    "wholeFeatureStatusesUnchanged": true,
+    "scope": "source/widget/render/normaldebugcompile only;full119programme stays open"
+  }
+}

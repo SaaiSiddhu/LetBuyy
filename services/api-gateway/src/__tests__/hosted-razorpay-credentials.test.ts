@@ -3,7 +3,7 @@ import test from 'node:test';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { hostedRazorpayTestCredentials } from '../lib/hosted-razorpay-credentials';
-import { encryptPaymentSecret } from '../lib/store-payment-config';
+import { encryptPaymentSecret, readStoreRazorpayTestCredentials, managedSandboxConfigured } from '../lib/store-payment-config';
 
 test('production only uses the verified cart store keys and never falls back to shared keys', async () => {
     const id = crypto.randomUUID();
@@ -27,4 +27,22 @@ test('production only uses the verified cart store keys and never falls back to 
     assert.equal((await (await app.request('/', {}, env)).json() as { ready: boolean }).ready, false);
     snapshot = { id, online_payment_enabled: true, payment_settings: { ...settings, razorpay: { ...settings.razorpay, verified: false } } };
     assert.equal((await (await app.request('/', {}, env)).json() as { ready: boolean }).ready, false);
+});
+
+test('managed test snapshots bind account model, site and credential version; live and production are denied', async () => {
+    const id = crypto.randomUUID(), credentialId = crypto.randomUUID(), encryptionKey = crypto.randomUUID();
+    const keyId = ['rzp', 'test', crypto.randomUUID().replaceAll('-', '')].join('_'), secret = crypto.randomUUID();
+    const settings = { mode: 'managedSandbox' as const, razorpay: { credential_id: credentialId, key_id: keyId,
+        key_secret_ciphertext: await encryptPaymentSecret(secret, encryptionKey, { siteId: id, keyId, environment: 'sandbox', credentialId, accountMode: 'managedSandbox' }),
+        verified: true, test_mode: true } };
+    assert.ok(await readStoreRazorpayTestCredentials(settings, encryptionKey, id));
+    assert.equal(await readStoreRazorpayTestCredentials({ ...settings, mode: 'ownAccount' }, encryptionKey, id), null);
+    assert.equal(await readStoreRazorpayTestCredentials(settings, encryptionKey, crypto.randomUUID()), null);
+    const env = { ENVIRONMENT: 'test', LETBUYY_MANAGED_PAYMENTS_MODE: 'sandbox', LETBUYY_PAYMENT_MODE: 'sandbox',
+        RAZORPAY_KEY_ID: keyId, RAZORPAY_KEY_SECRET: secret };
+    assert.equal(managedSandboxConfigured(env), true);
+    for (const change of [{ ENVIRONMENT: 'production' }, { LETBUYY_PAYMENT_MODE: 'live' },
+        { LETBUYY_MANAGED_PAYMENTS_MODE: undefined }, { RAZORPAY_KEY_ID: keyId.replace('_test_', '_live_') }]) {
+        assert.equal(managedSandboxConfigured({ ...env, ...change }), false);
+    }
 });

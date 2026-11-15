@@ -1,0 +1,27 @@
+{
+  "run_id": "395c869fcade",
+  "status": "FAILED FULL STORY; FRESH TRIAL ENTITLEMENT DECISION REQUIRED",
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "cancelled": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_identity": "native-core-v2.source.json,7251 inputs unchanged at terminal",
+  "reached": [
+    "Normal signup/OTP/password/new store with14-day saved trial",
+    "Current named Merchant dashboard",
+    "Native Workerd/R2 media upload201 and exact PNG/assets read200",
+    "Normal first product creation503 ENTITLEMENT_AUTHORITY_UNAVAILABLE; kept draft"
+  ],
+  "not_reached": [
+    "Product/variants persistence and remaining Core/buyer/order/SEO/visibility assertions"
+  ],
+  "policy": "No quota fallback/grant/test seeding applied to hide the refusal; TRIAL_ENTITLEMENT_DECISION.md is pending."
+}

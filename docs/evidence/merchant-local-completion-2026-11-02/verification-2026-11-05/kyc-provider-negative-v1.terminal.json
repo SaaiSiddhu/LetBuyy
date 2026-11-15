@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-06T07:05:52.089826+00:00",
+  "supervisor_pid": 97511,
+  "source": "kyc-provider-negative-v1",
+  "source_sha256": "a3be536b868bb7faa8554ba1abd83d21d47eeaef4d186de72c6911207cadea29",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/kyc_provider_lifetime_test.dart",
+    "--reporter",
+    "expanded"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 97513,
+  "exit_code": 1,
+  "finished_at": "2026-11-06T07:05:57.748180+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "a3be536b868bb7faa8554ba1abd83d21d47eeaef4d186de72c6911207cadea29"
+}

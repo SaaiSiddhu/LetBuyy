@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-07T04:05:28.701489+00:00",
+  "status": "TERMINAL",
+  "exit_code": 0,
+  "capsule": "/private/tmp/letbuyy-merchant-media-recovery-v70-governance-fgy3xz4c",
+  "purpose": "Disposable validation copy only, no implementation/worktree/merge/push/release",
+  "source_sha256": "227c67d04d52c7d0cad74e5709db40e4dd93ca7917d7317a1d29a7fe680ac508",
+  "core_inputs_byte_equal": 8496,
+  "original_source_unchanged": true,
+  "original_index_unchanged": true,
+  "report": "merchant-media-recovery-v70-governance-v1-report.json"
+}

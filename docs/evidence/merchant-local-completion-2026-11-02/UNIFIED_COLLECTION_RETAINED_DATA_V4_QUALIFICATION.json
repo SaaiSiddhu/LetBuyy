@@ -1,0 +1,76 @@
+{
+  "status": "BOUNDED_SYNTHETIC_LOCAL_RETAINED_DATA_PASS",
+  "runId": "26f25f54b67e",
+  "command": "node scripts/governance/run-executable-suites.mjs --jobs 1 --no-reap --kind gateway-db --suite services/api-gateway/src/__tests__/owned-db/unified-collection-retained-data.postgres.test.ts --log-dir <owned>/collection-retained-v4-logs --json-out <owned>/collection-retained-v4.json",
+  "result": {
+    "tests": 1,
+    "assertionsPassed": 1,
+    "assertionsFailed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "wallSeconds": 45,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "suiteExit": 0,
+  "catalog": {
+    "publicTables": 495,
+    "registeredTenantTables": 326,
+    "independentCatalogsEqual": true
+  },
+  "assertedConservation": {
+    "tables": 495,
+    "populatedControls": [
+      "sites",
+      "users",
+      "users_custom",
+      "sessions",
+      "products",
+      "inventory_locations",
+      "inventory_levels",
+      "orders",
+      "order_items",
+      "payments",
+      "billing_history",
+      "ledger_transactions",
+      "ledger_entries",
+      "collections",
+      "collection_products",
+      "smart_collections",
+      "collection_membership_receipts",
+      "audit_activity_events",
+      "outbox_events"
+    ],
+    "syntheticCanonicalBookBalanced": true,
+    "providerEvidence": false,
+    "copiedSmartRows": 3,
+    "declaredNewAuditRows": 3,
+    "originalMembershipReceiptUnchanged": true,
+    "roleProfilesUnchanged": true,
+    "retainedRowVariance": 0
+  },
+  "digestCount": 495,
+  "fullPrivateDigestLog": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/collection-retained-v4-logs/unified-collection-retained-data.postgres.log",
+  "sourceComparison": {
+    "qualifiedV12Inputs": "f501e0749318a4dcc49f089a128efb8f7d523d0873b54ce8f3506f1dcc251c0f",
+    "originalInputs": 7406,
+    "allOriginalInputsUnchanged": true,
+    "onlyAddedPath": "services/api-gateway/src/__tests__/owned-db/unified-collection-retained-data.postgres.test.ts",
+    "addedTestSha256": "06eefeb673bf4201d9310e48ef22e34735716db78cd16dddecf94d31d53840c4",
+    "notSameWholeTreeHash": true,
+    "checkedAt": "2026-11-03T12:13:44.236860+00:00"
+  },
+  "limits": [
+    "Every actual public table was compared, with only the test-declared435 migration rows/fields separately reconciled. Not every business table was populated.",
+    "Synthetic commerce/auth/canonical-book positive controls only; no provider evidence, private production backup, hosted rehearsal or hosted activation.",
+    "Pre435 logical shape obtained through actual empty paired DOWN from current owned template; not pristine historical physical slots.",
+    "Current original7406 implementation inputs match the v12 artifact; this new validation test was absent from that artifact source manifest.",
+    "Original terminal PTY session identifier is unavailable after compaction; authoritative runner report, suite code0, terminal summary and empty cleanup were recovered directly."
+  ]
+}

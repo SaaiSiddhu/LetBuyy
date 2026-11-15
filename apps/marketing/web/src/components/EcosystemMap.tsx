@@ -14,10 +14,10 @@ import {
 // ── Static data ─────────────────────────────────────────────────────────────
 
 const METRICS = [
-    { value: '12+',  label: 'Platform Surfaces' },
-    { value: '1',    label: 'Unified Identity'  },
-    { value: '100%', label: 'Commerce Engine'   },
-    { value: 'AI',   label: 'Native Foundation' },
+    { value: 'One',     label: 'Merchant workspace' },
+    { value: 'Own PSP', label: 'Online payments' },
+    { value: 'India',   label: 'Launch focus' },
+    { value: '0%',      label: 'Platform commission' },
 ]
 
 const FLAGSHIP_CHIPS = [

@@ -136,7 +136,8 @@ router.patch('/stores/:id/status', async (c) => {
     return c.json(success(data));
 });
 
-// DELETE /admin/stores/:id — Hard delete a store
+// DELETE /admin/stores/:id — close a store while preserving accounting and
+// queuing current private KYC evidence for deletion.
 router.delete('/stores/:id', async (c) => {
 
     const storeId = c.req.param('id');
@@ -144,34 +145,39 @@ router.delete('/stores/:id', async (c) => {
     const auth = c.get('auth');
     const deletedAt = new Date().toISOString();
 
+    const { data, error } = await db.from('sites')
+        .update({ status: 'suspended', published: false, deleted_at: deletedAt })
+        .eq('id', storeId).is('deleted_at', null)
+        .select('id').maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'STORE_CLOSE_UNAVAILABLE', message: 'Store closure is unavailable. Please retry later.' } }, 503);
+    }
+    if (!data) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found or already closed' } }, 404);
+    }
+
     await dispatchStoreAppComplianceWebhook(c, {
         eventType: 'shop/redact',
         storeId,
         idempotencyKey: c.req.header('X-Idempotency-Key') || `store-delete:${storeId}`,
         triggerSource: 'system',
         actorId: auth.user.id,
-        reason: 'store_deleted',
+        reason: 'store_closed',
         requestedAt: deletedAt,
         failClosed: false,
     });
-
-    // Cascade delete: products, orders, etc. are handled by FK constraints
-    const { error } = await db.from('sites').delete().eq('id', storeId);
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
 
     // Audit log
     await db.from('audit_logs').insert({
         actor_id: auth.user.id,
         actor_type: 'super_admin',
-        action: 'store_deleted',
+        action: 'store_closed',
         resource_type: 'store',
         resource_id: storeId,
     });
 
-    return c.json({ data: { deleted: true } });
+    return c.json({ data: { deleted: true, closed: true } });
 });
 
 // ============================================================

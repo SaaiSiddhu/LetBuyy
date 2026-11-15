@@ -1,0 +1,158 @@
+{
+  "at": "2026-11-08T06:06:36.404007+00:00",
+  "status": "SOURCE95_BOUNDED_IOS_VARIANTS_OPTIONS_PRIVATE_KYC_ORDINARY_ACCESSIBILITY_ACTION_AND_WEB_SYNC_PASS",
+  "source_manifest": "merchant-options-accessibility-source-v95.source.json",
+  "core_sha256": "6a9dffa117db5c1be62f26f57d8f031910f3e599fc966a1eb0cfc87392519a18",
+  "core_inputs": 8519,
+  "runtime_inputs_equal_core": 4894,
+  "retained_diagnostic_images_equal_manifest_custody": 8,
+  "root": "/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398",
+  "chain": {
+    "backend_exit": 0,
+    "ui_exit": 0,
+    "at": "2026-11-08T06:04:22.088938+00:00"
+  },
+  "run_id": "cc1180695772",
+  "installed_artifact": {
+    "run_id": "cc1180695772",
+    "all_files_equal": true,
+    "files": 401,
+    "manifest_sha256": "d8cbd75ab8d363775d9789713075d70889d3e055a1b91aca97adb8f98c514cc6",
+    "recording_camera_microphone_descriptions_packaged": true,
+    "retained": "/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398/native-ios-v130/qualified-artifact/Runner.app",
+    "installed": "/Users/saai_mithra/Library/Developer/CoreSimulator/Devices/B907B390-5B08-490F-BC6A-8900667B2D94/data/Containers/Bundle/Application/9C287AD6-9D38-49B1-8A84-DDD5D26E7146/Runner.app"
+  },
+  "phases": {
+    "Auth-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "cc1180695772",
+      "phase": "Auth",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398/Auth.swift",
+      "control_sha256": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810"
+    },
+    "Kyc-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "cc1180695772",
+      "phase": "Kyc",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398/Kyc.swift",
+      "control_sha256": "064a5489a87cfecbf37649ae53c839a6510aa61ccdc4881804c480b0e103e348"
+    },
+    "KycOpen-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "cc1180695772",
+      "phase": "KycOpen",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398/KycOpen.swift",
+      "control_sha256": "966af8a4462d51f832e34fb74f4dbdf53d1b6ac9a657b1589a8f7e7870abad26"
+    },
+    "PhotoObserve-terminal.json": {
+      "exit": 0,
+      "control_sha256": "9f05d1f18b61c902d02e049e40ef64ea18a7f50f875ff3d7d4aeb4eddd527f3d"
+    },
+    "Variants-attempt2-terminal.json": {
+      "exit": 0,
+      "accepted": true,
+      "run_id": "cc1180695772",
+      "phase": "Variants",
+      "attempt": 2,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398/Variants-observed-scroll-draft-continuation.swift",
+      "control_sha256": "1eb95cf5f655c464f9042459158b79a8798a030f55a3d1601d6f05f905f6eba9"
+    },
+    "Variants-terminal.json": {
+      "exit": 65,
+      "accepted": false,
+      "run_id": "cc1180695772",
+      "phase": "Variants",
+      "attempt": 1,
+      "control_file": "/private/tmp/letbuyy-ios-ui-20261108-41bbfcc398/Variants.swift",
+      "control_sha256": "a140acf59b96ea6bb53d5e340cba4ea37cdf3469535f5fdf6584f44f359d226d"
+    }
+  },
+  "retained_driver_failures": [
+    "Original Variants driver swiped away from Add option above viewport; preserved unsaved draft, resumed via actual list swipeDown and unique compiled XCTest control. No acknowledged mutation repeated."
+  ],
+  "photo_input": "Actual picker showed old duplicate timestamps; create-only same-byte input with unique current timestamp was explicitly admitted and observed before single-element selection. Original Photos remain.",
+  "ordinary_resumed_upload_accessibility_action": true,
+  "resumed_upload_accessibility_frame": "(216.32173665364584, 776.0, 169.67826334635416, 48.0)",
+  "pixel_capture_limit": "Pre-tap screenshot was captured during sheet dismissal, about one second before the actual accessible tap. Do not use it as a synchronized pixel/AX measurement. Functional ordinary AX tap and durable replay/readback passed.",
+  "readback": {
+    "run_id": "cc1180695772",
+    "variants": [
+      {
+        "id": "6bfe132f-d2dc-43b7-bb37-f6d25ba1a0bb",
+        "sku": "M-BLUE",
+        "price": 140,
+        "stock": 0,
+        "title": "Emerald / M / Single",
+        "option1": "Emerald",
+        "option2": "M"
+      },
+      {
+        "id": "5da8d8c0-9fd2-4190-ab1f-11d626b39fdc",
+        "sku": "L-BLUE",
+        "price": 110,
+        "stock": 0,
+        "title": "Blue / L / Single",
+        "option1": "Blue",
+        "option2": "L"
+      }
+    ],
+    "documents": [
+      {
+        "id": "9732083b-86cb-43fb-a0f6-f51a4d6666e2",
+        "scan": "pending",
+        "status": "submitted",
+        "private": true,
+        "reference": "1234",
+        "document_type": "bank_proof"
+      }
+    ],
+    "private_object_sha256": "43878bb6bcddca23359993d492e6699026c7db7bf1f4f92c7d967f160fcdbe01",
+    "private_objects": 1,
+    "public_objects": 0,
+    "private_upload_requests": 2,
+    "original_key_equal": true,
+    "ui": {
+      "run_id": "cc1180695772",
+      "accepted": true
+    },
+    "whole_features_accepted": 0,
+    "scope": "Actual native variant edit/invalid no-write/zero stock/stable IDs,web variant price readback;private fixture lost reply,restart,original type/reference/key/bytes replay,one private object/document and web status. No provider or full122 acceptance."
+  },
+  "option_roundtrip": {
+    "native-options-saved.json": {
+      "accepted": true,
+      "preserved_prior_draft_and_acknowledged_edits": true,
+      "run_id": "cc1180695772"
+    },
+    "web-options-updated.json": {
+      "run_id": "cc1180695772",
+      "accepted": true
+    },
+    "native-option-web-readback.json": {
+      "accepted": true,
+      "ordinary_scroll_to_exact_controls": true,
+      "run_id": "cc1180695772"
+    }
+  },
+  "owned_cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "device_custody": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "existing_files_and_photos_preserved": true
+  },
+  "whole_features_accepted": 0,
+  "limits": "Synthetic local only. Full feature22, other modal accessibility, buyer/provider/hosted/physical and full122 remain open."
+}

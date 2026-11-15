@@ -1,0 +1,38 @@
+{
+  "build_script_sha256": "f7ef6a83c0dcc14b935292da1e1eeb87e3c097300fffe6caf483baa54a2e74a4",
+  "status": "RUNNING",
+  "source_sha256": "e7377adba2eef6dcac508a93f8dc79bad2f6d40e7a0502d5ae6b9bb094a08cd5",
+  "source_inputs": 8450,
+  "supervisor_pid": 63774,
+  "owned_root": "/private/tmp/letbuyy-switcher-staff-v4-android-aw97rwau",
+  "platform": "android",
+  "started_at": "2026-11-06T02:52:30.629365+00:00",
+  "defines": {
+    "ENVIRONMENT": "local",
+    "ACCOUNTS_ENVIRONMENT": "development",
+    "BFF_BASE_URL": "http://10.0.2.2:54350/v1",
+    "API_BASE_URL": "http://10.0.2.2:54350/v1",
+    "IDENTITY_BASE_URL": "http://10.0.2.2:54351",
+    "ADMIN_BASE_URL": "http://10.0.2.2:54353",
+    "STOREFRONT_BASE_URL": "http://10.0.2.2:54354"
+  },
+  "steps": [
+    {
+      "command": [
+        "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+        "build",
+        "apk",
+        "--debug",
+        "--no-pub",
+        "--config-only",
+        "--target-platform",
+        "android-arm64",
+        "--dart-define-from-file=/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/switcher-staff-v4-android-compile-v1-defines.json"
+      ],
+      "cwd": "/Users/saai_mithra/.codex/worktrees/merchant-mobile-parity/LetBuyy/apps/merchant/mobile",
+      "exit_code": 0
+    }
+  ],
+  "scope": "Normal main.dart debug compile/artifact only. No install, launch, sign-in, provider, web-mobile sync, device, hosted or release acceptance.",
+  "active_child_pid": 63817
+}

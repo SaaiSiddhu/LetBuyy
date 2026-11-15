@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-06T06:23:02.892116+00:00",
+  "source": "99dee3d9dc5075e97deaff99f2799dea89dac496c88c163a944b39bfe9dda4f0",
+  "prior_source": "3bdf36a7aeeda56b390310bb931a9584b784666459ce072fcb7d7113ed97c48d",
+  "changed": [
+    "apps/merchant/web/src/app/globals.css"
+  ],
+  "mobile_and_all_other_inputs_byte_unchanged": true,
+  "reused_mobile_gates": "product-optional-v1-qualification.terminal.json",
+  "flutter_pass": 1580,
+  "flutter_fail": 0,
+  "flutter_skip": 0,
+  "focused_pass": 105,
+  "scope": "One existing web dropdown adds bounded viewport height and scrolling;normal mobile artifacts and gates reusable because every other input is byte identical. Native56must still prove current actual web scroll/selection and full role journey."
+}

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {PAYMENT_KEYRING_PREFIX,paymentEncryptionKeyring} from '../lib/payment-encryption-keyring';
-import {encryptPaymentSecret,readStoreRazorpayTestCredentials,projectStorePaymentConfig,type PaymentSettings} from '../lib/store-payment-config';
+import {encryptPaymentSecret,encryptPaymentWebhookSecret,readStoreRazorpayTestCredentials,readStoreRazorpayWebhookSecret,projectStorePaymentConfig,type PaymentSettings} from '../lib/store-payment-config';
 
 const ring=(active:string,previous:string[],legacy_version?:string)=>PAYMENT_KEYRING_PREFIX+JSON.stringify({active,previous,...(legacy_version?{legacy_version}:{})});
 const fixture=()=>({siteId:crypto.randomUUID(),credentialId:crypto.randomUUID(),keyId:['rzp','test',crypto.randomUUID().replaceAll('-','')].join('_'),environment:'sandbox' as const});
@@ -35,6 +35,28 @@ test('retaining old keys never weakens the authenticated tenant, provider key, c
   const good=settings(context,cipher);
   assert.equal(await readStoreRazorpayTestCredentials({...good,razorpay:{...good.razorpay,...patch}},configuration,context.siteId),null);
  }
+});
+
+test('merchant webhook secret is independently encrypted, version bound, and absent from the public projection',async()=>{
+ const context=fixture(),wrappingKey=crypto.randomUUID(),apiSecret=crypto.randomUUID(),webhookSecret=crypto.randomUUID();
+ const apiCipher=await encryptPaymentSecret(apiSecret,wrappingKey,context);
+ const webhookCipher=await encryptPaymentWebhookSecret(webhookSecret,wrappingKey,context);
+ const configured=settings(context,apiCipher);
+ configured.razorpay={...configured.razorpay,webhook_secret_ciphertext:webhookCipher};
+ assert.equal(await readStoreRazorpayWebhookSecret(configured,wrappingKey,context.siteId),webhookSecret);
+ assert.equal(await readStoreRazorpayWebhookSecret({...configured,razorpay:{...configured.razorpay,webhook_secret_ciphertext:apiCipher}},wrappingKey,context.siteId),null);
+ assert.equal((await readStoreRazorpayTestCredentials({...configured,razorpay:{...configured.razorpay,key_secret_ciphertext:webhookCipher}},wrappingKey,context.siteId)),null);
+ assert.equal(await readStoreRazorpayWebhookSecret(configured,wrappingKey,crypto.randomUUID()),null);
+ assert.equal(await readStoreRazorpayWebhookSecret({...configured,razorpay:{...configured.razorpay,credential_id:crypto.randomUUID()}},wrappingKey,context.siteId),null);
+ const projected=await projectStorePaymentConfig({id:context.siteId,payment_settings:configured},wrappingKey);
+ assert.equal(projected.payment_settings.razorpay?.webhook_secret_configured,true);
+ assert.equal(projected.webhook_callback_url,null,'local work must not advertise a reachable callback');
+ const staging=await projectStorePaymentConfig({id:context.siteId,payment_settings:configured},wrappingKey,false,'https://webhooks.staging.letbuyy.com');
+ assert.equal(staging.webhook_callback_url,`https://webhooks.staging.letbuyy.com/razorpay/merchant/${context.siteId}/${context.credentialId}`);
+ const wrongKey=await projectStorePaymentConfig({id:context.siteId,payment_settings:configured},crypto.randomUUID(),false,'https://webhooks.staging.letbuyy.com');
+ assert.equal(wrongKey.webhook_callback_url,null,'unusable credentials cannot advertise callback readiness');
+ assert.equal((await projectStorePaymentConfig({id:context.siteId,payment_settings:configured},wrappingKey,false,'https://untrusted.example')).webhook_callback_url,null);
+ for(const secret of [apiSecret,webhookSecret,apiCipher,webhookCipher])assert.equal(JSON.stringify(projected).includes(secret),false);
 });
 
 test('unbound legacy ciphertext has one explicit historical reader in a keyring, with no key trial or default fallback',async()=>{

@@ -1,0 +1,48 @@
+{
+  "at": "2026-11-06T19:15:35.903216+00:00",
+  "status": "ACTUAL_NATIVE_IMAGE_RENDER_REMOVAL_AND_SHARED_TOAST_PIXEL_READBACK_PASS",
+  "run_id": "26e80c9a199c",
+  "source_sha256": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+  "fixture_public_sha256": "5bdf25a6aaf02df243934f1ce42d40803c06efc171109c5d7fbc46741a20fd7a",
+  "native_uploaded_image_rgba": [
+    146,
+    151,
+    162,
+    255
+  ],
+  "native_rendered_image_region": {
+    "pixels": 137336,
+    "bounds": [
+      55,
+      660,
+      521,
+      954
+    ]
+  },
+  "native_deleted_image_color": {
+    "pixels": 0,
+    "bounds": null
+  },
+  "old_success_toast_rgba": [
+    34,
+    197,
+    94,
+    255
+  ],
+  "current_success_toast_rgba": [
+    30,
+    41,
+    59,
+    255
+  ],
+  "current_foreground_rgba": [
+    255,
+    255,
+    255,
+    255
+  ],
+  "actual_text_stroke_white_pixels_in_label_box": 1283,
+  "old_pair_ratio": 2.2786,
+  "current_pair_ratio": 14.6287,
+  "scope": "Read-only decoding of original physical PNGs. PNG CRC/shape/filter bounds verified. Expected uploaded-image bytes tied to actual server storage SHA and rendered native pixels; normal web deletion/native refresh removes the image. Actual success toast background and white label strokes measured. This does not certify the whole app, spoken screen-reader output, other uploads or provider KYC."
+}

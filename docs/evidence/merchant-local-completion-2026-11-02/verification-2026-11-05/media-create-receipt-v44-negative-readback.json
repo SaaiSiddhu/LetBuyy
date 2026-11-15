@@ -1,0 +1,21 @@
+{
+  "runId": "8f2e9c7d978e",
+  "tests": 4,
+  "assertionsPassed": 1,
+  "assertionsFailed": 3,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "failures": [
+    "not ok 2 - lost original Media creation receipt must not duplicate a library row on the same-key expired-lease retry",
+    "not ok 3 - registry-write failure must not strand a committed library row outside its receipt transaction",
+    "not ok 4 - Media metadata rejects wrong primitive types before changing its durable row"
+  ],
+  "status": "THREE_APPLICATION_FAILURES_REPRODUCED_AFTER_POPULATED_POSITIVE_CONTROL",
+  "source": "source44"
+}

@@ -1,0 +1,21 @@
+{
+  "runId": "6cc1898076ad",
+  "passed": 0,
+  "failed": 1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_sha256": "63f4dd4ad1b8d52a77c48444ae3a97d4337adde5402ef7508483d50a9d87699a",
+  "sourceHeldAndTerminalVerified": true,
+  "artifactBuiltAndInstalledHashVerified": true,
+  "artifact_sha256": "73069aa9d865885b6d13a5967d1088f9984e6289f42111a95b88fe60335b4ee7",
+  "observedFailure": "Package-bound return opened MainActivity automatically. Actual Gateway then observed browser-driven cancel200 before exchange400; no native session.",
+  "negativeRegression": "Two close-before/after-callback tests reproduced cancellation1 instead of0 before repair.",
+  "correction": "Single existing Dart coordinator coalesces browser-close notices for300ms, drops close while exchanging, cancels timer on valid callback/dispose/explicit Cancel. Explicit Cancel remains immediate and generation-fenced.",
+  "scope": "No collection Android acceptance; exact failure artifact retained, no manual callback/token delivery."
+}

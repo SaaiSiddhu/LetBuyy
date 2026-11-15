@@ -1,0 +1,8 @@
+{
+  "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "files": {
+    "apps/merchant/mobile/lib/screens/inventory/inventory_screen.dart": "e2cd988edd28693fae9e5b6bf288f40bd3673245519d2ea3beb94ee81ddb4e85",
+    "apps/merchant/mobile/test/inventory_read_presentation_test.dart": "9ddda011866aa1bec2d733f766d8c57ec1dbdca51a9a8e8b238687c8e564b0eb"
+  },
+  "role": "Exact2changed inputs from document1; whole manifest separate. Full stock/native41 acceptance pending."
+}

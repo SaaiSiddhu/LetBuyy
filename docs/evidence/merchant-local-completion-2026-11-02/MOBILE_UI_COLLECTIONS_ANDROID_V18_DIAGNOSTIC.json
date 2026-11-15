@@ -1,0 +1,45 @@
+{
+  "at": "2026-11-04T17:48:35.301402+00:00",
+  "status": "FAILED_DIAGNOSTIC_REAL_SEMANTICS_GEOMETRY_FINDING",
+  "run_id": "09f42f92a5b2",
+  "source": "mobile-ui-collections-v11/4bca3d04017756e2af1f0fb1e34377f2a6adcc649584a61d9283671e3f86a2b6",
+  "tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "cancelled": 0,
+  "suite_seconds": 278.2,
+  "wall_seconds": 279.9,
+  "source_held": true,
+  "observed": [
+    "Normal Accounts return and same-ID membership recovery plus normal web/native ordered readback completed before failure.",
+    "Collection name and slug actual keyboards and full pinned Save/Close visibility independently inspected in input0/1keyboard PNGs."
+  ],
+  "failure": "Rule1 value native EditText bounds [42,904,1038,1959] encompass the condition card, including its field/operator buttons. The visually painted input is lower and smaller. Focus assertion stopped before typing.",
+  "primary_source": "Installed Flutter card.dart253\u2013267 defaults semanticContainer=true and merges non-explicit child nodes. Test must reproduce before correction.",
+  "images_inspected": [
+    "native-collection-input-0-before.png",
+    "native-collection-input-0-keyboard.png",
+    "native-collection-input-1-keyboard.png",
+    "native-collection-input-2-before.png",
+    "native-collection-stopped-context.png"
+  ],
+  "cleanup": {
+    "rest": true,
+    "database": true
+  },
+  "reverse_maps": {
+    "at": "2026-11-04T17:47:21.868216+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 1,
+    "controller_exit": 1,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "acceptance": "No compound collection/Smart acceptance. No spoken TalkBack, physical, hosted/provider/iOS or wholeprogramme claim."
+}

@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-08T04:49:38.576761+00:00",
+  "status": "SOURCE93_BOUNDED_VARIANT_AND_PRIVATE_KYC_FUNCTIONAL_ANDROID_IOS_WEB_SYNC_PASS;IOS_ACCESSIBILITY_ALIGNMENT_AND_FULL122_OPEN",
+  "source": {
+    "manifest": "merchant-variant-kyc-source-v93.source.json",
+    "sha256": "fbde9fe512840dcdc0d84ace8143a461aafbdfdac65fd14b626f2187234c10d7",
+    "inputs": 8516,
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "branch": "codex/merchant-mobile-parity",
+    "frozen": false
+  },
+  "qualification": {
+    "flutter": {
+      "pass": 1756,
+      "fail": 0,
+      "skip": 0
+    },
+    "shared_dart_api": {
+      "pass": 141,
+      "fail": 0,
+      "existing_opt_in_skip": 6
+    },
+    "app_analysis_issues": 0,
+    "shared_sdk_analysis_issues": 0,
+    "owned_database": {
+      "product_pass": 90,
+      "private_kyc_pass": 5,
+      "first_product_environment_failure_retained": true,
+      "corrected_prepared_transactions": 2,
+      "cleanup_empty": true
+    },
+    "actual_governance": {
+      "pass": 114,
+      "fail": 0,
+      "not_applicable": 1,
+      "source_and_staged_entries_preserved": true
+    },
+    "counts_note": "Separate scopes; do not sum overlapping regression, focused or repeated owned runs."
+  },
+  "android_report": "native127-final-local-readback.json",
+  "ios_report": "native128-final-local-readback.json",
+  "custody": "source93-final-custody.json",
+  "source_frozen": false,
+  "all_owned_runs_terminal": true,
+  "whole_features_accepted": 0,
+  "next": [
+    "Diagnose and fix the observed iOS resumed-sheet accessibility/pixel-position mismatch; require reliable compiled XCTest control identity and direct accessible actions before accessibility acceptance.",
+    "Complete canonical product-owned option names/values and sparse matrix editing while preserving IDs/facts/held stock, then native creation/deletion/reply-loss/current-role/store-switch/conflict and actual buyer Liquid outcomes.",
+    "Expand private KYC recovery to current-role/revocation/store-switch/native PDF and provider-specific boundaries; unknown IndiaS3object acknowledgement must remain held unless safely reconciled.",
+    "Continue per-feature Accounts, stores/sites, catalog, inventory, themes, domains, buyer outcomes, orders/checkout, shipping/tax, money, growth and settings journeys on both platforms and web.",
+    "Preserve51frozen,120/121outsideMerchant,122paused; no hosted/provider/physical/signed-release acceptance inferred."
+  ],
+  "limits": [
+    "Local synthetic owner only; owned isolated compiled Gateway/BFF/Accounts/Merchant web/Postgres/R2.",
+    "iOS128functionality passes across retained phases, with8failed controls and observed AX geometry/compiled-control discrepancies explicitly retained; no iOS accessibility acceptance.",
+    "Variant existing2-axis value/price/zero/stableID/invalid-no-write/web roundtrip only; not whole feature22.",
+    "Private KYC one original intent/key/file,201lost/restart/200replay and pending-status readback only; no scan/provider/KYC/live bank readiness.",
+    "Raw index metadata changed; staged path/mode/blob entries and8,516core source inputs unchanged. No index restoration or source staging."
+  ]
+}

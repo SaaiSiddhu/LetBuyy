@@ -20,6 +20,7 @@ import path from "node:path";
 import test from "node:test";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 import {
   STATUS,
@@ -347,18 +348,23 @@ test("Next session runtime cleanup planning is narrow and preserves tracked or l
   assert.equal(fs.existsSync(path.join(root, "apps", "web", ".next-source")),true);
 });
 
-test("cleanup only targets generated directory names inside the repository root", () => {
+test("cleanup preserves usable workspace dependencies while removing owned generated directories", () => {
   const root = makeTempDir("cleanup-scope");
-  fs.mkdirSync(path.join(root, "apps", "web", "node_modules", "pkg"), { recursive: true });
+  fs.mkdirSync(path.join(root, "apps", "web", "node_modules", "pkg", "dist"), { recursive: true });
+  fs.mkdirSync(path.join(root, "apps", "web", ".next"), { recursive: true });
+  fs.writeFileSync(path.join(root, "apps", "web", "package.json"), '{}');
+  fs.writeFileSync(path.join(root, "apps", "web", "node_modules", "pkg", "package.json"), '{"main":"dist/index.js"}');
+  fs.writeFileSync(path.join(root, "apps", "web", "node_modules", "pkg", "dist", "index.js"), 'module.exports = { retained: true };');
   fs.mkdirSync(path.join(root, "apps", "web", "src"), { recursive: true });
   fs.writeFileSync(path.join(root, "apps", "web", "src", "index.ts"), "export {};\n");
 
   const plan = planGeneratedArtifactCleanup({ repoRoot: root, isTracked: () => false });
 
-  assert.deepEqual(plan.targets.map((target) => target.relPath), ["apps/web/node_modules"]);
+  assert.deepEqual(plan.targets.map((target) => target.relPath), ["apps/web/.next"]);
 
   executeGeneratedArtifactCleanup(plan, { repoRoot: root });
-  assert.equal(fs.existsSync(path.join(root, "apps", "web", "node_modules")), false);
+  assert.equal(fs.existsSync(path.join(root, "apps", "web", ".next")), false);
+  assert.equal(createRequire(path.join(root, "apps", "web", "package.json"))("pkg").retained, true);
   assert.equal(fs.existsSync(path.join(root, "apps", "web", "src", "index.ts")), true, "user source must survive");
 });
 
@@ -386,7 +392,7 @@ test("cleanup never follows or deletes symlinks", () => {
   fs.writeFileSync(path.join(outside, "precious", "user-file.txt"), "do not delete\n");
 
   fs.mkdirSync(path.join(root, "services", "api"), { recursive: true });
-  fs.symlinkSync(path.join(outside, "precious"), path.join(root, "services", "api", "node_modules"), "dir");
+  fs.symlinkSync(path.join(outside, "precious"), path.join(root, "services", "api", "dist"), "dir");
 
   const plan = planGeneratedArtifactCleanup({ repoRoot: root, isTracked: () => false });
 

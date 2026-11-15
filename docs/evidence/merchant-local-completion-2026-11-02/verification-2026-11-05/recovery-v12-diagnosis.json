@@ -1,0 +1,44 @@
+{
+  "at": "2026-11-06T11:15:38.456084+00:00",
+  "source_manifest": "merchant-recovery-source-v12.source.json",
+  "source_sha256": "712ef4312e547fae4d0abf5d50ed1600320987ef93d3b7df42fac8859863de9a",
+  "scope": "Synthetic local service/UI diagnosis; not hosted/provider/native acceptance",
+  "reproductions": [
+    {
+      "area": "KYC",
+      "expected_object_posts_after_restart": 1,
+      "actual_before": 2,
+      "cases": [
+        "lost completion response",
+        "lost object response"
+      ],
+      "result": "Both behavioral assertions failed before repair; current focused tests pass."
+    },
+    {
+      "area": "Media",
+      "cases": [
+        "old account population remains visible",
+        "new account dispatches follow-on media creation",
+        "older query replaces current result"
+      ],
+      "result": "All three behavioral assertions failed before repair; current focused tests pass."
+    },
+    {
+      "area": "Startup",
+      "expected_attempts_per_failed_membership_read": 1,
+      "actual_before": 3,
+      "result": "Actual SDK default retry amplification reproduced; scoped maxRetries0 now passes explicit retry/53-row recovery. Historical native61 root cause remains unestablished."
+    }
+  ],
+  "harness_findings": [
+    "Existing generic media DELETE fixture returned an asset instead of the actual server deleted:true receipt. Used the existing methodJson boundary for that one DELETE; original CRUD assertions remain.",
+    "New UI preparation needed runAsync for filesystem/SDK preparation; stopped only task Flutter PID84324 before correction. That interrupted focused run is not accepted regardless of launcher exit0.",
+    "New KYC scroll test required a layout frame after ensureVisible; final test requires a positive hit-test target before one tap. No suppressed hit-test warning."
+  ],
+  "protected_boundaries": [
+    "No backend/schema/provider/security policy edits",
+    "No document bytes/file paths/STSticket fields/credentials persisted",
+    "No hosted/provider operation or runtime activation",
+    "No new source owner or auth system"
+  ]
+}

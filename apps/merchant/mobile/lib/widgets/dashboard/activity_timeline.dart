@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
-import 'dart:ui';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme_colors.dart';
 
 /// Activity Timeline for Dashboard
-/// Vertical timeline with animated entries
+/// A saved publication state and explicitly scoped aggregate counts
 class ActivityTimeline extends StatelessWidget {
   final List<ActivityItem> activities;
   final bool showEmpty;
@@ -18,171 +16,110 @@ class ActivityTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
     if (activities.isEmpty && showEmpty) {
-      return _buildEmptyState(colors);
+      return _buildEmptyState(context);
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: colors.glassMediumBlur,
-          sigmaY: colors.glassMediumBlur,
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: colors.bentoCard,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Recent Activity',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                  Icon(
-                    Icons.history_rounded,
-                    size: 16,
-                    color: colors.textTertiary,
-                  ),
-                ],
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Semantics(
+              header: true,
+              child: Text(
+                'Store overview',
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 16),
-              ...List.generate(activities.length, (index) {
-                return _ActivityTimelineItem(
-                  activity: activities[index],
-                  isLast: index == activities.length - 1,
-                  index: index,
-                );
-              }),
-            ],
-          ),
+            ),
+            const SizedBox(height: 16),
+            for (var index = 0; index < activities.length; index++)
+              _ActivityTimelineItem(
+                activity: activities[index],
+                isLast: index == activities.length - 1,
+              ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildEmptyState(AppThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: colors.bentoCard,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colors.warning.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(
-              Icons.rocket_launch_rounded,
-              color: colors.warning,
-              size: 24,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Ready to publish?',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Publish your store to start selling',
-            style: TextStyle(fontSize: 12, color: colors.textSecondary),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildEmptyState(BuildContext context) => const Card(
+    margin: EdgeInsets.zero,
+    child: mobile_tokens.EmptyState(
+      icon: Icons.rocket_launch_rounded,
+      title: 'Ready to publish?',
+      message: 'Publish your store to start selling',
+    ),
+  );
 }
 
 /// Individual Activity Timeline Item
 class _ActivityTimelineItem extends StatelessWidget {
   final ActivityItem activity;
   final bool isLast;
-  final int index;
 
-  const _ActivityTimelineItem({
-    required this.activity,
-    required this.isLast,
-    required this.index,
-  });
+  const _ActivityTimelineItem({required this.activity, required this.isLast});
 
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
     return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Timeline indicator
+        Column(
           children: [
-            // Timeline indicator
-            Column(
-              children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: activity.color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(activity.icon, color: activity.color, size: 16),
-                ),
-                if (!isLast)
-                  Container(
-                    width: 2,
-                    height: 32,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                      color: colors.borderSubtle,
-                      borderRadius: BorderRadius.circular(1),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 12),
-            // Content
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      activity.title,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      activity.subtitle,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                activity.icon,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+                size: 16,
               ),
             ),
+            if (!isLast)
+              Container(
+                width: 2,
+                height: 32,
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  color: colors.borderSubtle,
+                  borderRadius: BorderRadius.circular(1),
+                ),
+              ),
           ],
-        )
-        .animate(delay: Duration(milliseconds: 100 * index))
-        .fadeIn(duration: 300.ms)
-        .slideX(begin: 0.1, end: 0);
+        ),
+        const SizedBox(width: 12),
+        // Content
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  activity.title,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  activity.subtitle,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -217,22 +154,26 @@ class ActivityItems {
     title: 'Store published',
     subtitle: publishedAt != null
         ? 'Published ${_formatRelativeTime(publishedAt)}'
-        : 'Store is online',
+        : 'Publication is enabled',
     color: _success,
     timestamp: publishedAt,
   );
 
-  static ActivityItem ordersReceived(int count) => ActivityItem(
-    icon: Icons.shopping_bag_rounded,
-    title: '$count orders received',
-    subtitle: 'Total orders all time',
-    color: _accentBlue,
-  );
+  static ActivityItem ordersReceived(int count, {String scope = 'All time'}) =>
+      ActivityItem(
+        icon: Icons.shopping_bag_rounded,
+        title: '$count orders received',
+        subtitle: 'Reporting period: $scope',
+        color: _accentBlue,
+      );
 
-  static ActivityItem visitorMilestone(int count) => ActivityItem(
+  static ActivityItem visitorMilestone(
+    int count, {
+    String scope = 'All time',
+  }) => ActivityItem(
     icon: Icons.visibility_rounded,
     title: '$count store visitors',
-    subtitle: 'Total visitors all time',
+    subtitle: 'Reporting period: $scope',
     color: _accent,
   );
 

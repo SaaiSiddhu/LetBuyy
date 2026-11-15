@@ -237,15 +237,15 @@ export default function DomainCenterPage() {
 
             </Section>
 
-            {/* Buy a domain */}
+            {/* Domain search; live registration awaits server-verified payment. */}
             <Card >
                 <Button unstyled type="button" className="domains-buy-toggle" onClick={() => setShowBuy((v) => !v)} aria-expanded={showBuy}>
-                    <span className="domains-buy-label">Buy a new domain</span>
+                    <span className="domains-buy-label">Find a new domain</span>
                     <ChevronRight className={`letbuyy-icon domains-buy-chevron${showBuy ? ' is-open' : ''}`} aria-hidden="true" />
                 </Button>
                 {showBuy && (
                     <div className="settings-form-body">
-                        <div className="settings-general-hint">Search for a new domain, pay securely, and LetBuyy registers and auto-connects it.</div>
+                        <div className="settings-general-hint">Check name availability and indicative pricing. You can connect a domain you already own.</div>
                         <div className="domains-buy-search">
                             <Input label="Find a domain" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="yourbrand.in" />
                             <Button variant="secondary" onClick={() => void doSearch()} loading={searching}><Search className="letbuyy-icon" aria-hidden="true" /> Search</Button>
@@ -255,7 +255,7 @@ export default function DomainCenterPage() {
                                 <div className="domains-quote-meta">
                                     <span className="domains-quote-domain">{quote.domain}</span>
                                     <span className="domains-quote-price">
-                                        {quote.available ? `${formatInrCurrency((quote.amountMinor || 0) / 100, { minimumFractionDigits: 0 })} / year` : 'Unavailable'}
+                                        {quote.available ? `${formatInrCurrency((quote.amountMinor || 0) / 100, { minimumFractionDigits: 0 })} / year estimate` : 'Unavailable'}
                                     </span>
                                 </div>
                                 <Badge label={quote.available ? 'Available' : 'Taken'} variant={quote.available ? 'success' : 'critical'} />
@@ -263,7 +263,7 @@ export default function DomainCenterPage() {
                         )}
                         <div className="domains-note">
                             <Sparkles className="letbuyy-icon" aria-hidden="true" />
-                            <span>Buying registers the domain and connects DNS automatically — no records to copy.</span>
+                            <span>Registration through LetBuyy will be available after secure payment verification is ready.</span>
                         </div>
                     </div>
                 )}

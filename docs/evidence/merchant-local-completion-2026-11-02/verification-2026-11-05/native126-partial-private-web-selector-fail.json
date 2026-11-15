@@ -1,0 +1,33 @@
+{
+  "at": "2026-11-08T04:03:40.551408+00:00",
+  "source": "merchant-variant-kyc-source-v93",
+  "status": "NATIVE_VARIANTS_AND_PRIVATE_COMMITTED_LOST_REPLY_REPLAY_PASS;FINAL_WEB_SELECTOR_FAIL",
+  "private_root": "/private/tmp/letbuyy-merchant-local-20261108-7fe0b3b80a",
+  "run_id": "0bfe37863bca",
+  "private_effect_after_lost_reply": {
+    "run_id": "0bfe37863bca",
+    "accepted": true,
+    "documents": 1,
+    "private_objects": 1,
+    "public_objects": 0
+  },
+  "private_recovery": {
+    "run_id": "0bfe37863bca",
+    "accepted": true,
+    "old_pid": 28885,
+    "new_pid": 30469,
+    "original_type": "bank_proof",
+    "original_reference": "1234",
+    "retained_file_explicitly_used": true
+  },
+  "failure": "Web card uses Settlement bank account,not mobile Bank proof;normal KYC GET200returned on web but the final DOM assertion used the wrong label. No full web sync acceptance.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "whole_features_accepted": 0
+}

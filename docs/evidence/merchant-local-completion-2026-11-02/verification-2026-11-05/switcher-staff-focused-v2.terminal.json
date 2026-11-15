@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-11-06T02:39:59.423438+00:00",
+  "supervisor_pid": 48754,
+  "source": "switcher-staff-source-v2",
+  "source_sha256": "ccb06a563c0d5853f66f64b84e3e5ee7ffebb039074c2bad42e2066c16b6f086",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "30s",
+    "test/store_switcher_presentation_test.dart",
+    "test/staff_scope_boundary_test.dart",
+    "test/staff_environment_isolation_test.dart",
+    "test/staff_retry_contract_test.dart",
+    "test/staff_invitation_contract_test.dart",
+    "test/staff_ui_test.dart",
+    "test/store_session_boundary_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 48756,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T02:40:05.724673+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "ccb06a563c0d5853f66f64b84e3e5ee7ffebb039074c2bad42e2066c16b6f086"
+}

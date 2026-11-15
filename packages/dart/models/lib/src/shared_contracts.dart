@@ -212,6 +212,8 @@ class ProductVariantContract extends SharedTypeContract {
 }
 
 class ProductContract extends SharedTypeContract {
+  /// Mirrors the canonical commerce Create/UpdateProductSchema image bound.
+  static const maxImages = 20;
   static const ownFields = <String>[
     'store_id',
     'version',
@@ -227,6 +229,7 @@ class ProductContract extends SharedTypeContract {
     'barcode',
     'stock',
     'track_inventory',
+    'catalog_available_quantity',
     'inventory_policy',
     'images',
     'category',
@@ -279,6 +282,20 @@ class ProductContract extends SharedTypeContract {
   String? get countryOfOrigin => optionalString('country_of_origin');
   String? get importerDetails => optionalString('importer_details');
   int get stock => intValue('stock');
+
+  /// Read-only live-SKU availability; never substitute the base edit quantity.
+  int? get catalogAvailableQuantity {
+    final value = this['catalog_available_quantity'];
+    if (value is! num ||
+        !value.isFinite ||
+        value < 0 ||
+        value > 9007199254740991 ||
+        value != value.truncateToDouble()) {
+      return null;
+    }
+    return value.toInt();
+  }
+
   bool get isActive => boolValue('is_active');
   bool get isFeatured => boolValue('is_featured');
   List<String> get images => stringList('images');

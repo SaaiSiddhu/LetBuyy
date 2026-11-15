@@ -1,0 +1,46 @@
+{
+  "at": "2026-11-07T18:27:00.617190+00:00",
+  "source_sha256": "d76ed098ae86a3a02653e84ceac36218b763163b8b5961ecd8c51a379e22203d",
+  "inputs": 8511,
+  "scope": "Local native-file selection before upload intent;OS loss recovery,explicit scoped review,private app-file copy,original SDK request key and completion cleanup. No backend/schema/auth/money policy change.",
+  "changes": [
+    "apps/merchant/mobile/lib/app/app.dart",
+    "apps/merchant/mobile/lib/main.dart",
+    "apps/merchant/mobile/lib/screens/content/media_library_screen.dart",
+    "apps/merchant/mobile/lib/screens/kyc/kyc_screen.dart",
+    "apps/merchant/mobile/lib/screens/settings/store_details_screen.dart",
+    "apps/merchant/mobile/lib/services/kyc_service.dart",
+    "apps/merchant/mobile/lib/services/media_service.dart",
+    "apps/merchant/mobile/lib/services/native_media_selection.dart",
+    "apps/merchant/mobile/lib/services/security_command_store.dart",
+    "apps/merchant/mobile/lib/services/storage_service.dart",
+    "apps/merchant/mobile/lib/services/store_service.dart",
+    "apps/merchant/mobile/lib/widgets/editor/header_editor_sheet.dart",
+    "apps/merchant/mobile/lib/widgets/editor/section_settings_sheet.dart",
+    "apps/merchant/mobile/lib/widgets/shared/image_picker_widget.dart",
+    "apps/merchant/mobile/lib/widgets/shared/merchant_media_picker.dart",
+    "apps/merchant/mobile/lib/widgets/shared/native_media_recovery_notice.dart",
+    "apps/merchant/mobile/test/kyc_containment_test.dart",
+    "apps/merchant/mobile/test/kyc_picker_failure_test.dart",
+    "apps/merchant/mobile/test/media_library_recovery_test.dart",
+    "apps/merchant/mobile/test/media_model_upload_menu_test.dart",
+    "apps/merchant/mobile/test/merchant_media_picker_test.dart",
+    "apps/merchant/mobile/test/native_media_recovery_ui_test.dart",
+    "apps/merchant/mobile/test/native_media_selection_test.dart",
+    "apps/merchant/mobile/test/support/native_selection_passthrough.dart"
+  ],
+  "gates": {
+    "flutter": "1746PASS/0FAIL/0SKIP",
+    "analysis": "0issues",
+    "webm_js": "5PASS",
+    "actual_isolated_governance": "114PASS/1NA"
+  },
+  "runtime": "Android118 running;iOS119prepared;no native source89pass yet.",
+  "historical_failed_candidate": "source88 preserved at54ea0701...;1733PASS/10Files-provider-integration failures,not accepted. Source89 connects real NativeMediaSelection provider and strengthens retained/no-write assertions.",
+  "limits": [
+    "Native image_picker lost results supported on Android;unknown/unowned results never uploaded.",
+    "iOS has no Android lost-data API: interrupted selections without returned bytes require explicit discard/reselect. Actual iOS camera needs physical hardware.",
+    "App-owned retained files are removed after confirmed completion/discard;OS Photos/cache originals are preserved. No device-backup/physical capture/provider/release certification.",
+    "Full122-feature acceptance remains open."
+  ]
+}

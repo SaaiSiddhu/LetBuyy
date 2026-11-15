@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
+import ts from 'typescript';
 import { classifyAppApiRoute, listAppApiRoutes } from '../../scripts/validators/app-api-route-inventory.mjs';
 
 // LB-6 structural ownership checks only. Real authority, atomicity, failures
@@ -49,7 +50,18 @@ test('(a) gateway has PUT collection products route writing collection_products'
         'Canonical replacement must invoke one atomic database command');
     assert.match(adapter, /scope\.siteId, collectionId, scope\.customUser\.id, input\.expected_version, input\.idempotency_key/,
         'Command must carry verified tenant/actor, loaded revision and captured save key');
-    const route = content.slice(content.indexOf("router.put('/collections/:id/products'"), content.indexOf('// DELETE /products/collections/:id'));
+    // Bound the check to this route's syntax node. A deleted comment delimiter
+    // must not accidentally include unrelated product delete routes.
+    const source = ts.createSourceFile(gatewayProducts, content, ts.ScriptTarget.Latest, true);
+    const routes = source.statements.filter(statement => {
+        if (!ts.isExpressionStatement(statement) || !ts.isCallExpression(statement.expression)) return false;
+        const call = statement.expression, target = call.expression;
+        return ts.isPropertyAccessExpression(target) && target.expression.getText(source) === 'router'
+            && target.name.text === 'put' && ts.isStringLiteral(call.arguments[0])
+            && call.arguments[0].text === '/collections/:id/products';
+    });
+    assert.equal(routes.length, 1, 'one canonical membership PUT route');
+    const route = routes[0].getText(source);
     assert.doesNotMatch(route, /\.(?:delete|upsert)\(/,
         'Transport must not retain the old nontransactional REST replacement writer');
 });

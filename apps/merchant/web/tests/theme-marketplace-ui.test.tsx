@@ -32,7 +32,7 @@ async function mount(url: string, transport: (url: string, init?: RequestInit) =
     const { PathParamsContext, SearchParamsContext, PathnameContext } = await import('next/dist/shared/lib/hooks-client-context.shared-runtime.js');
     const root = createRoot(dom.window.document.getElementById('root')!);
     const pushes: string[] = [];
-    const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push(value: string) { pushes.push(value); }, replace(value: string) { pushes.push(value); }, prefetch() {} };
+    const router = { bfcacheId: 'synthetic-router-cache',  back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push(value: string) { pushes.push(value); }, replace(value: string) { pushes.push(value); }, prefetch() {} };
     async function render(next = url) {
         const parsed = new URL(next, 'http://localhost');
         const store = parsed.pathname.split('/')[1];
@@ -158,6 +158,7 @@ for (const visibility of [
 
 for (const artwork of [
  {version:'2.0.0',original:'/theme-previews/forge.svg',expected:'/theme-previews/catalog-v2/circuit.webp'},
+ {version:'2.1.0',original:'/theme-previews/forge.svg',expected:'/theme-previews/catalog-v2-1/circuit.webp'},
  {version:'1.0.0',original:'/theme-previews/forge.svg',expected:'/theme-previews/forge.svg'},
  {version:undefined,original:'/theme-previews/forge.svg',expected:'/theme-previews/forge.svg'},
  {version:'2.0.0',original:'https://custom.example.invalid/captured-design.webp',expected:'https://custom.example.invalid/captured-design.webp'},

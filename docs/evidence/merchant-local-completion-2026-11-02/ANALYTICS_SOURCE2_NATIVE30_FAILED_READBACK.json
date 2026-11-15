@@ -1,0 +1,37 @@
+{
+  "at": "2026-11-05T04:14:06.853731+00:00",
+  "status": "FAILED_COMPOUND_RUN_CLOSED_UNSUPPORTED_POSITIVE_RANKING_FIXTURE",
+  "run_id": "8daee00dd92b",
+  "tests": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "cancelled": 0
+  },
+  "suite_seconds": 484.7,
+  "wall_seconds": 486.2,
+  "source_sha256": "fb331a523e999cd59c849d5f33d6a10c4e2a82983615726f9b364a6845cb1d70",
+  "native_inputs_equal": 4809,
+  "external_inputs_equal": 4,
+  "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v31/qualified-artifact/merchant-local-debug.apk",
+  "apk_sha256": "5df8169f219ff7faf3edc814df7cc63ff1029158c7d9b685589edc35e41b7673",
+  "installed_apk_equal": true,
+  "reason": "Controller incorrectly required omitted-revenue product rows; actual successful report has no ranked products in this fixture. Honest empty/unavailable UI is present. Paid-order fractional axis labels also repeat rounded integers in actual pixels and require a frontend geometry repair.",
+  "partial_observation": "Normal sign-in, collection recovery and Customer phone/note/web fresh readback observed; normal web3periods200with1createdorder/3products/zero paidrevenue. Native7dsummary, exact revenue/paid-order daily list and pending_cod1status pixels observed; remaining native periods and compound acceptance not reached.",
+  "owned_resources_empty": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "reverse_restored": [],
+  "forward_preserved": [
+    [
+      "emulator-5580",
+      "tcp:52367",
+      "localabstract:chrome_devtools_remote"
+    ]
+  ],
+  "awake_retired": true,
+  "pixel_review": "Native31summary,7dfirstrevenue and paid-order screenshots independently viewed; they show correct visible values/dates and real repeated integer-axis tick labels. Failure context separately inspected via nativeAX; later pixel review remains separate.",
+  "next": "Reproduce/fix integer-axis geometry in source3after closure; next fresh native32must observe the actual honest empty top-products state. Positive-product/revenue runtime acceptance remains open; no backend fix authorized."
+}

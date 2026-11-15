@@ -23,8 +23,24 @@ class PaymentTransport extends ApiClient {
     return {'id': 'synthetic-store', 'name': 'Synthetic store', 'subdomain': 'synthetic-store', ...captured!};
   }
 }
+class PaymentReadTransport extends ApiClient {
+  PaymentReadTransport() : super(baseUrl: 'https://gateway.test/v1');
+  @override
+  Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {
+    expect(path, '/stores/synthetic-store/payment-config');
+    throw const ApiException(message: 'Synthetic unavailable', statusCode: 503,
+      code: 'PAYMENT_CONFIG_UNAVAILABLE');
+  }
+}
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('payment configuration read failure remains an error, never an empty setup', () async {
+    final api = PaymentReadTransport(); addTearDown(api.close);
+    final service = SubscriptionService(api: api);
+    await expectLater(service.getPaymentConfigModel('synthetic-store'),
+      throwsA(isA<ApiException>().having(
+        (error) => error.code, 'code', 'PAYMENT_CONFIG_UNAVAILABLE')));
+  });
   test('payment methods use canonical top-level fields and confirmed readback', () async {
     final api = PaymentTransport(); addTearDown(api.close);
     final service = StoreService(api: api);

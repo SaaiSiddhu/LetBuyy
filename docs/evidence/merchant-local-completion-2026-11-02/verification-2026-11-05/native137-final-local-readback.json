@@ -1,0 +1,71 @@
+{
+  "at": "2026-11-08T08:33:41.475712+00:00",
+  "global_core_source": "23ed7b54ec793bf87949a3b90dd175918ca6b709f152ceb3cc14a108eb145147",
+  "root": "/private/tmp/letbuyy-ios-ui-20261108-a2502e54e4",
+  "result": {
+    "run_id": "26b14bbf700c",
+    "product_id": "62edeab0-8745-4e52-982f-c2ddd153759b",
+    "variant_id": "47717d7a-4fdf-430b-bdfd-7655a5d9bee2",
+    "created_products": 1,
+    "create_requests": 2,
+    "original_key_equal": true,
+    "original_body_equal": true,
+    "images": 0,
+    "inherited_variant_price": 125,
+    "web_variant_price": 135,
+    "retired_uuid_retained": true,
+    "price_history_retained": true,
+    "ui": {
+      "run_id": "26b14bbf700c",
+      "accepted": true
+    },
+    "whole_features_accepted": 0,
+    "scope": "Actual normal iOS auth; image/description-free creation; options before price; lost201->503 reply, original replay; web135 native readback; zero-stock native retirement and web live-read removal; no provider or whole122 acceptance."
+  },
+  "chain": {
+    "backend_exit": 0,
+    "ui_exit": 0,
+    "at": "2026-11-08T08:33:18.802782+00:00"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "device_custody": {
+    "udid": "B907B390-5B08-490F-BC6A-8900667B2D94",
+    "baseline_restored": "Shutdown",
+    "existing_files_and_photos_preserved": true
+  },
+  "auth_failed_build_retained": {
+    "exit": 73,
+    "accepted": false,
+    "run_id": "26b14bbf700c",
+    "phase": "Auth",
+    "attempt": 1,
+    "control_file": "/private/tmp/letbuyy-ios-ui-20261108-a2502e54e4/Auth.swift",
+    "control_sha256": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810"
+  },
+  "auth_identical_retry": {
+    "exit": 0,
+    "accepted": true,
+    "run_id": "26b14bbf700c",
+    "phase": "Auth",
+    "attempt": 2,
+    "control_file": "/private/tmp/letbuyy-ios-ui-20261108-a2502e54e4/Auth-after-disk-recovery.swift",
+    "control_sha256": "3648cb23f97d5d34bec03aaff65152bce183e71465d85a5791ef5fe6cc869810"
+  },
+  "create": {
+    "exit": 0,
+    "accepted": true,
+    "run_id": "26b14bbf700c",
+    "phase": "Create",
+    "attempt": 1,
+    "control_file": "/private/tmp/letbuyy-ios-ui-20261108-a2502e54e4/Create.swift",
+    "control_sha256": "dc14c5fb9f3ed14b657df64ab9ee40ccc99afd6ea63e8a87e117232f814b74cd"
+  },
+  "scope": "Current103 actual normal iOS Code-axis creation/recovery/web sync/retirement/history; whole122accepted0"
+}

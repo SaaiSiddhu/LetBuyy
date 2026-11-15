@@ -1,0 +1,41 @@
+{
+  "runId": "6491d9945fb6",
+  "tests": 12,
+  "assertionsPassed": 12,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source": "merchant-media-recovery-source-v26",
+  "source_sha256": "92970727546a48272852ba7ceeac99f5abca9932b26cbfb9e91ac9400c9dc367",
+  "suites": [
+    {
+      "name": "merchant-media-recovery.postgres",
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    },
+    {
+      "name": "merchant-media-workerd.postgres",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      }
+    }
+  ],
+  "boundary": "Actual mounted Gateway + isolated Postgres/PostgREST; compiled Workerd suite uses ephemeral local R2. No browser, device, provider or hosted acceptance."
+}

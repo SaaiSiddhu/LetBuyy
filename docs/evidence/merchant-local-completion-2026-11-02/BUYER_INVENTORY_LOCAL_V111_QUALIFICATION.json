@@ -1,0 +1,33 @@
+{
+  "at": "2026-11-08T10:46:37.573567+00:00",
+  "source_sha256": "f572b869ac94a24fc7a2f5f9a4c14907fd614995be3f9df7057097fcc6648460",
+  "core_inputs": 8536,
+  "status": "LOCAL_IMPLEMENTATION_GATES_PASSED;COMPILED_BUYER_RUNNING;WHOLE122_OPEN",
+  "scope": "Read-only canonical availability projection + same buyer mapper/Liquid purchase controls/Offer metadata. No hosted activation.",
+  "gates": {
+    "owned109": "25pass0fail a8373596a3cf; migration/consumer files unchanged111;438/439/440 roundtrip guarded and retained rows equal",
+    "commerce111": "types0 +36focused unitsPASS",
+    "public_security109": "42PASS; Gateway inputs unchanged111",
+    "theme110": "2222PASS incl frozen fingerprints/sandbox;111 differs only new test cleanup type assertion",
+    "owned_lane110": "PASS; same inventory test111",
+    "governance111": "PASS; exact8536inputs equal, original source/index unchanged",
+    "compiled_buyer111": "Focused111f RUNNING. Full111a\u2013d retained failures:base default10 fixture mismatch;temporary upload entitlement obscured trial;psql INSERT tag parsed asUUID;numeric-only test rejected canonical Launch products=null. No application change after source111; isolated long-replay assertions are not whole compound acceptance.",
+    "commerce_full111": "2210PASS0fail0skip across5TAP invocations; focused new units separate until canonical test-script wiring",
+    "commerce_regression111": "134PASS0fail0skip, runffc433894c46, exact2owned prepared slots, cleanupempty",
+    "authored_render111": "20PASS (ten2.1.0PDP controls,ten2.1.0collection product navigation/neutral unavailable) actual Liquid +adapter; no installed theme/device/hosted full acceptance"
+  },
+  "failures_retained": [
+    "107 alias admission",
+    "108 DB cast and exact parser-offset metadata mismatch",
+    "440 probe1 ENOBUFS; probe2 difference identified inside DB",
+    "109 theme62fail caused by new template edits; repaired by exact template restoration + existing runtime adapter",
+    "110 test-only DOM cleanup type error;111 corrected"
+  ],
+  "limits": [
+    "All122 whole features remain open",
+    "Native138/139 remain bounded106 proof; application/Dart inputs unchanged",
+    "Generic iOS accessibility/alignment and full current-role/store-switch/revocation matrices open",
+    "Provider/hosted/physical/signed release unaccepted"
+  ],
+  "next": "Complete focused111f stock SSR/hydration and trial restore. Register the two new regression files in the existing Commerce test script after all source111 browser processes terminate; qualify resulting source112 and full compiled buyer replay."
+}

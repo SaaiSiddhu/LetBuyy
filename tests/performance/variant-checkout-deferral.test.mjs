@@ -45,7 +45,9 @@ test('runtime flags expose variant diff and checkout post-commit rollback switch
   assert.equal((wrangler.match(/PRODUCT_VARIANT_DIFF = "on"/g) || []).length, 3);
   assert.equal((wrangler.match(/CHECKOUT_POSTCOMMIT_DEFERRAL = "on"/g) || []).length, 3);
   assert.match(products, /isProductVariantDiffEnabled\(env\)/);
-  assert.match(exportRoute, /isProductVariantDiffEnabled\(c\.env\)/);
+  const importer = read('services/api-gateway/src/execution/product-import.adapter.ts');
+  assert.match(importer, /createProductInTenantTransaction/);
+  assert.match(exportRoute, /ProductImportExecutionAdapter/);
 });
 
 test('storefront checkout defers post-commit usage and GST work', () => {

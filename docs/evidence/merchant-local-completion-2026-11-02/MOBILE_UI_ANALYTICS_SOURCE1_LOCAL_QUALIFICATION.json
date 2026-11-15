@@ -1,0 +1,35 @@
+{
+  "at": "2026-11-05T03:42:57.831091+00:00",
+  "status": "SOURCE1_ARCHIVED_LOCAL_CHECKPOINT_SUPERSEDED_BY_POPULATION_COPY_REPAIR",
+  "source_sha256": "41cd1f4d3ababf053db72bf023b0252830d7fe70ed67cd8d78911cdc3e5c1cb3",
+  "core_inputs": 7489,
+  "archive": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/mobile-ui-analytics-v1-qualified-source",
+  "focused": {
+    "pass": 35,
+    "fail": 0
+  },
+  "full_flutter": {
+    "pass": 1308,
+    "fail": 1,
+    "skip": 0,
+    "existing_failure": "staff_scope_boundary_test: positive hosted invitation remains in its existing namespace; local restore cannot adopt it"
+  },
+  "app_and_ui_kit_analysis_issues": 0,
+  "parsed_preservation_checks": 548,
+  "governance": {
+    "capsule": 39,
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1,
+    "all_7489_core_bytes_equal": true
+  },
+  "protected_baseline_files": 5195,
+  "classified_frontend_client_exceptions": 5,
+  "prior_four_byte_identical": true,
+  "ios": "13compile-only PASS377files; owned simulator Shutdown; independently rehashed. No launch/runtime proof.",
+  "android": "Not run on source1. Native30will target next fixed source2.",
+  "next_finding": "Actual canonical daily RPC is now migration394; paid-only daily orders differ from all-created rolling overview. Negative10reproduces misleading chart label. Source2also exposes already fetched all-time status map without recomputing buckets.",
+  "not_claimed": "No full-app,119-feature, hosted, provider, physical-performance, iOS runtime or release certification."
+}

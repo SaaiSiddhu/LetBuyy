@@ -1,0 +1,5 @@
+{
+  "root": "/private/tmp/letbuyy-media-commands-source70-s61od8nq",
+  "suite": "tests/owned-db/merchant-media-commands-workerd.postgres.test.ts",
+  "scope": "Fresh isolated local PG/PostgREST/compiled workerd/R2 only. No provider or hosted activation."
+}

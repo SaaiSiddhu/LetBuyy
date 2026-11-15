@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-11-07T04:39:39.159575+00:00",
+  "supervisor_pid": 25102,
+  "source": "merchant-product-category-baseline-v71",
+  "source_sha256": "5948f40a4e224484883ffd38d3f589ab6e861e0986218bd8af5a807bea7d79c4",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "test/product_category_parity_test.dart"
+  ],
+  "status": "RUNNING",
+  "child_pid": 25107
+}

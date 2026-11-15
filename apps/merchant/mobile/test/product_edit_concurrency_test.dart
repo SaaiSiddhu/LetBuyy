@@ -1,3 +1,5 @@
+import 'support/editor_steps_fixture.dart';
+import 'dart:async';
 // Mounted actual form + ProductService + shared ProductsApi. Synthetic transport
 // outcomes are separate from the real Gateway/app_tenant effects in the owned suite.
 import 'dart:convert';
@@ -58,9 +60,19 @@ class ProductTransport extends ApiClient {
   JsonMap? receipt;
   String? receiptKey;
   bool readFails = false;
+  Completer<JsonMap>? heldSave, heldRead;
+  int readStatus = 200, detailReads = 0;
   @override
   Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {
     if (options?.method != HttpMethod.patch) {
+      detailReads++;
+      if (readStatus != 200)
+        throw ApiException(
+          message: 'Synthetic access denial',
+          statusCode: readStatus,
+          code: 'FORBIDDEN',
+        );
+      if (heldRead != null) return heldRead!.future;
       if (readFails)
         throw const ApiException(
           message: 'Synthetic read outage',
@@ -70,6 +82,12 @@ class ProductTransport extends ApiClient {
       return jsonDecode(jsonEncode(current)) as JsonMap;
     }
     calls.add(options!);
+    if (mode == 'denied')
+      throw const ApiException(
+        message: 'Synthetic current permission denied',
+        statusCode: 403,
+        code: 'FORBIDDEN',
+      );
     final body = options.body as Map<String, dynamic>;
     if (calls.length == 1 && mode == 'conflict') {
       current = {...initial(), 'name': 'Server winner', 'version': 23};
@@ -99,14 +117,29 @@ class ProductTransport extends ApiClient {
         code: 'UNAVAILABLE',
       );
     }
-    return receipt!;
+    return heldSave != null ? heldSave!.future : receipt!;
   }
 }
 
 class SelectedStore extends StoreContext {
   SelectedStore(ProductTransport api)
     : super(storeService: StoreService(api: api));
-  String selection = site;
+  String _selection = site;
+  int _generation = 0;
+  String get selection => _selection;
+  set selection(String value) {
+    _selection = value;
+    _generation++;
+    notifyListeners();
+  }
+
+  @override
+  Object get requestContextKey => (_selection, _generation);
+  @override
+  String get selectedStoreId => _selection;
+  @override
+  StoreModel get selectedStore =>
+      StoreModel.fromJson({'id': _selection, 'name': 'Synthetic store'});
   @override
   Future<StoreModel?> ensureSelectedStore({bool force = false}) async =>
       StoreModel.fromJson({'id': selection, 'name': 'Synthetic store'});
@@ -114,8 +147,9 @@ class SelectedStore extends StoreContext {
 
 Future<({ProductService service, SelectedStore stores})> mount(
   WidgetTester tester,
-  ProductTransport api,
-) async {
+  ProductTransport api, {
+  bool settle = true,
+}) async {
   final service = ProductService(api: api), stores = SelectedStore(api);
   await tester.pumpWidget(
     MultiProvider(
@@ -142,7 +176,13 @@ Future<({ProductService service, SelectedStore stores})> mount(
     ),
   );
   await tester.tap(find.text('Open product'));
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump();
+  }
   return (service: service, stores: stores);
 }
 
@@ -161,11 +201,9 @@ void main() {
       final api = ProductTransport('lost');
       await mount(tester, api);
       await tester.enterText(nameField(), 'First valid save');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Pricing'));
-      await tester.tap(find.text('Pricing'));
-      await tester.pumpAndSettle();
+      await selectEditorSection(tester, 'Pricing');
       final price = find.widgetWithText(TextFormField, 'Sale Price *');
       await tester.enterText(price, '');
       await tester.tap(find.text('Retry pending save'));
@@ -187,33 +225,33 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       final api = ProductTransport('lost');
       await mount(tester, api);
-      await tester.ensureVisible(find.text('Variants'));
-      await tester.tap(find.text('Variants'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Add variant'));
+      await selectEditorSection(tester, 'Variants');
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Add variant'));
       await tester.pumpAndSettle();
       await tester.enterText(find.widgetWithText(TextFormField, 'Value'), 'L');
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Option 2 value'),
+        'Blue',
+      );
       await tester.enterText(
         find.widgetWithText(TextFormField, 'Price'),
         '100',
       );
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Add variant').last);
+      await tester.tap(find.widgetWithText(FilledButton, 'Add variant').last);
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect((api.calls.single.body as Map)['variants'], hasLength(2));
       expect(
         ((api.calls.single.body as Map)['variants'] as List).last['id'],
         isNull,
       );
-      await tester.ensureVisible(find.text('Basic Info'));
-      await tester.tap(find.text('Basic Info'));
-      await tester.pumpAndSettle();
+      await selectEditorSection(tester, 'Basic Info');
       await tester.enterText(nameField(), 'Newer scalar draft');
       await tester.tap(find.text('Retry pending save'));
       await tester.pumpAndSettle();
       expect(nameText(tester), 'Newer scalar draft');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect(api.calls, hasLength(3));
       final rows = (api.calls.last.body as Map)['variants'] as List;
@@ -229,13 +267,13 @@ void main() {
       final api = ProductTransport('conflict');
       await mount(tester, api);
       await tester.enterText(nameField(), 'My unsaved draft');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect(nameText(tester), 'My unsaved draft');
       expect(find.textContaining('Server winner'), findsOneWidget);
       expect(
         tester
-            .widget<TextButton>(find.widgetWithText(TextButton, 'Update'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, 'Update'))
             .onPressed,
         isNull,
       );
@@ -244,7 +282,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(nameText(tester), 'Server winner');
       await tester.enterText(nameField(), 'Reviewed after reload');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect((api.calls.last.body as Map)['version'], 23);
       expect(
@@ -260,7 +298,7 @@ void main() {
       final api = ProductTransport('lost');
       await mount(tester, api);
       await tester.enterText(nameField(), 'First save');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect(find.text('Retry pending save'), findsOneWidget);
       await tester.enterText(nameField(), 'Newer unsaved draft');
@@ -271,7 +309,7 @@ void main() {
       expect(api.calls[1].body, api.calls[0].body);
       expect(nameText(tester), 'Newer unsaved draft');
       expect(find.textContaining('Your newer draft is kept'), findsOneWidget);
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       expect((api.calls.last.body as Map)['version'], 13);
       expect((api.calls.last.body as Map)['name'], 'Newer unsaved draft');
@@ -288,7 +326,7 @@ void main() {
       final api = ProductTransport('success');
       await mount(tester, api);
       await tester.enterText(nameField(), 'Renamed product');
-      await tester.tap(find.widgetWithText(TextButton, 'Update'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
       await tester.pumpAndSettle();
       final body = api.calls.single.body as Map;
       expect(body['version'], 7);
@@ -306,12 +344,10 @@ void main() {
     final api = ProductTransport('success');
     final harness = await mount(tester, api);
     harness.stores.selection = '44444444-4444-4444-8444-444444444444';
-    await tester.enterText(nameField(), 'Kept in original store');
-    await tester.tap(find.widgetWithText(TextButton, 'Update'));
     await tester.pumpAndSettle();
     expect(api.calls, isEmpty);
-    expect(nameText(tester), 'Kept in original store');
-    expect(find.textContaining('Select this product’s store'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNothing);
+    expect(find.text('Store access changed'), findsOneWidget);
   });
 
   testWidgets(
@@ -319,17 +355,102 @@ void main() {
     (tester) async {
       final api = ProductTransport('success')..readFails = true;
       await mount(tester, api);
-      expect(
-        find.textContaining('latest product could not be checked'),
-        findsOneWidget,
-      );
+      expect(find.text('Retry product'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(find.widgetWithText(FilledButton, 'Update'), findsNothing);
+      expect(api.calls, isEmpty);
+      api.readFails = false;
+      await tester.tap(find.text('Retry product'));
+      await tester.pumpAndSettle();
+      expect(nameText(tester), 'Original product');
       expect(
         tester
-            .widget<TextButton>(find.widgetWithText(TextButton, 'Update'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, 'Update'))
             .onPressed,
-        isNull,
+        isNotNull,
       );
+    },
+  );
+  testWidgets('A-B-A cannot revive an old pushed product form', (tester) async {
+    final api = ProductTransport('success');
+    final h = await mount(tester, api);
+    h.stores.selection = 'other';
+    h.stores.selection = site;
+    await tester.pumpAndSettle();
+    expect(find.text('Store access changed'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNothing);
+    expect(api.calls, isEmpty);
+  });
+  testWidgets(
+    'save completion after a store change cannot reveal old fields or announce success',
+    (tester) async {
+      final api = ProductTransport('success');
+      final h = await mount(tester, api);
+      api.heldSave = Completer<JsonMap>();
+      await tester.enterText(nameField(), 'Old private draft');
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
+      await tester.pump();
+      expect(api.calls, hasLength(1));
+      h.stores.selection = 'other';
+      await tester.pump();
+      api.heldSave!.complete(api.receipt!);
+      await tester.pumpAndSettle();
+      expect(find.text('Store access changed'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(find.text('Product updated!'), findsNothing);
+    },
+  );
+  testWidgets(
+    'initial read denial cannot reveal the supplied private product snapshot',
+    (tester) async {
+      final api = ProductTransport('success')..readStatus = 403;
+      await mount(tester, api);
+      expect(find.text('Store access changed'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(find.text('Original product'), findsNothing);
       expect(api.calls, isEmpty);
+    },
+  );
+  testWidgets(
+    'private product fields appear only after the fresh read succeeds',
+    (tester) async {
+      final api = ProductTransport('success')..heldRead = Completer<JsonMap>();
+      await mount(tester, api, settle: false);
+      expect(api.detailReads, 1);
+      expect(find.text('Load product'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      api.heldRead!.complete(initial());
+      await tester.pumpAndSettle();
+      expect(nameText(tester), 'Original product');
+    },
+  );
+  testWidgets(
+    'retired initial read cannot disclose the old product in the next store',
+    (tester) async {
+      final api = ProductTransport('success')..heldRead = Completer<JsonMap>();
+      final h = await mount(tester, api, settle: false);
+      expect(api.detailReads, 1);
+      h.stores.selection = 'other';
+      await tester.pump();
+      api.heldRead!.complete(initial());
+      await tester.pumpAndSettle();
+      expect(find.text('Store access changed'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(api.calls, isEmpty);
+    },
+  );
+  testWidgets(
+    'a current write denial retires the private editor instead of retaining old authority',
+    (tester) async {
+      final api = ProductTransport('denied');
+      await mount(tester, api);
+      expect(nameText(tester), 'Original product');
+      await tester.tap(find.widgetWithText(FilledButton, 'Update'));
+      await tester.pumpAndSettle();
+      expect(api.calls, hasLength(1));
+      expect(find.text('Store access changed'), findsOneWidget);
+      expect(find.byType(TextFormField), findsNothing);
+      expect(find.text('Product updated!'), findsNothing);
     },
   );
 }

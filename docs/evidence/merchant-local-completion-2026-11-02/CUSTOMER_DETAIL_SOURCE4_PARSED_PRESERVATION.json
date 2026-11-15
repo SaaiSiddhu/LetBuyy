@@ -1,0 +1,2145 @@
+{
+  "basis": "Parsed AST body equality to retained qualified source; formatting excluded. Presentation/route wrappers intentionally differ.",
+  "checks": [
+    {
+      "owner": "warehouse._submit",
+      "unchanged": true
+    },
+    {
+      "owner": "warehouse._arrival",
+      "unchanged": true
+    },
+    {
+      "owner": "warehouse._locationChoice",
+      "unchanged": true
+    },
+    {
+      "owner": "warehouse._supplierChoice",
+      "unchanged": true
+    },
+    {
+      "owner": "warehouse._productChoice",
+      "unchanged": true
+    },
+    {
+      "owner": "warehouse.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "warehouse._lineCard",
+      "unchanged": true
+    },
+    {
+      "owner": "StaffMemberContract",
+      "unchanged": true
+    },
+    {
+      "owner": "StaffInviteInput",
+      "unchanged": true
+    },
+    {
+      "owner": "StaffInvitationResult",
+      "unchanged": true
+    },
+    {
+      "owner": "staffInvitationProof",
+      "unchanged": true
+    },
+    {
+      "owner": "_stringValue",
+      "unchanged": true
+    },
+    {
+      "owner": "_boolValue",
+      "unchanged": true
+    },
+    {
+      "owner": "staff._pendingKey",
+      "unchanged": true
+    },
+    {
+      "owner": "staff._invitationKey",
+      "unchanged": true
+    },
+    {
+      "owner": "staff.restorePendingInvitation",
+      "unchanged": true
+    },
+    {
+      "owner": "locations_screen.dart metadata input/validation/return",
+      "unchanged": true
+    },
+    {
+      "owner": "suppliers_screen.dart metadata input/validation/return",
+      "unchanged": true
+    },
+    {
+      "owner": "category._submit input/validation/return",
+      "unchanged": true
+    },
+    {
+      "owner": "segment._day",
+      "unchanged": true
+    },
+    {
+      "owner": "segment._date",
+      "unchanged": true
+    },
+    {
+      "owner": "segment._rules",
+      "unchanged": true
+    },
+    {
+      "owner": "segment._tagValues",
+      "unchanged": true
+    },
+    {
+      "owner": "segment._save",
+      "unchanged": true
+    },
+    {
+      "owner": "segment._previewRules",
+      "unchanged": true
+    },
+    {
+      "owner": "segment._edited",
+      "unchanged": true
+    },
+    {
+      "owner": "segment.initState",
+      "unchanged": true
+    },
+    {
+      "owner": "segment.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "settings._loadStore",
+      "unchanged": true
+    },
+    {
+      "owner": "settings._updatePaymentMethod",
+      "unchanged": true
+    },
+    {
+      "owner": "settings._logout",
+      "unchanged": true
+    },
+    {
+      "owner": "search._open",
+      "unchanged": true
+    },
+    {
+      "owner": "search.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "search._search unchanged except read-completion view flag",
+      "unchanged": true
+    },
+    {
+      "owner": "search._changed unchanged except read-completion view flag",
+      "unchanged": true
+    },
+    {
+      "owner": "staff editor._save validation/arguments/uncertain recovery",
+      "unchanged": true
+    },
+    {
+      "owner": "Home dashboard original calculation.analytics",
+      "unchanged": true
+    },
+    {
+      "owner": "Home dashboard original calculation.summaryAvailable",
+      "unchanged": true
+    },
+    {
+      "owner": "Home dashboard original calculation.visitorsAvailable",
+      "unchanged": true
+    },
+    {
+      "owner": "Home dashboard original calculation.totalOrders",
+      "unchanged": true
+    },
+    {
+      "owner": "Home dashboard original calculation.totalProducts",
+      "unchanged": true
+    },
+    {
+      "owner": "Home dashboard original calculation.totalVisitors",
+      "unchanged": true
+    },
+    {
+      "owner": "Home dashboard original calculation.revenue",
+      "unchanged": true
+    },
+    {
+      "owner": "Home dashboard original calculation.averageOrderValue",
+      "unchanged": true
+    },
+    {
+      "owner": "Home dashboard original calculation.convRate",
+      "unchanged": true
+    },
+    {
+      "owner": "Home payout original input.next",
+      "unchanged": true
+    },
+    {
+      "owner": "Home payout original input.nextPayout",
+      "unchanged": true
+    },
+    {
+      "owner": "Home payout original input.amountMinor",
+      "unchanged": true
+    },
+    {
+      "owner": "Home payout original input.summaryAvailable",
+      "unchanged": true
+    },
+    {
+      "owner": "Home period API value mapping",
+      "unchanged": true
+    },
+    {
+      "owner": "Home unchanged existing dispatch.publishDashboardSnapshot",
+      "unchanged": true
+    },
+    {
+      "owner": "Home unchanged existing dispatch.syncOpenOrderBadgeFromStatusCounts",
+      "unchanged": true
+    },
+    {
+      "owner": "Home payout minor-to-major arithmetic",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._productStock",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._productPrice",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._productComparePrice",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._productIsActive",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._activeCount",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._inactiveCount",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._outOfStockCount",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._filteredProducts",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._hideSelectedProducts",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._runStatusAction",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._reviewStatusConflicts",
+      "unchanged": true
+    },
+    {
+      "owner": "Products._buildStatusRecovery",
+      "unchanged": true
+    },
+    {
+      "owner": "Products unchanged dispatch _loadData",
+      "unchanged": true
+    },
+    {
+      "owner": "Products unchanged dispatch _seedSampleProduct",
+      "unchanged": true
+    },
+    {
+      "owner": "Products unchanged dispatch _exportProducts",
+      "unchanged": true
+    },
+    {
+      "owner": "Products original bounded export poll/recovery loop",
+      "unchanged": true
+    },
+    {
+      "owner": "Export original validation/download/filename/CSV bytes/MIME/native share",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._submitProduct",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._saveExistingProduct",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._editDraftSignature",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._editFields",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._productOptionPayloads",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._variantPayloads",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._tagValues",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._metadataPayload",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._nullableTrim",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._save",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._pickAndUploadProductImage",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._scanBaseBarcode",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._scanVariantBarcode",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._nextStep",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original protocol._previousStep",
+      "unchanged": true
+    },
+    {
+      "owner": "Original variant identity/other options/zero stock/nullability/conversion",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original discount calculation.salePrice",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original discount calculation.originalPrice",
+      "unchanged": true
+    },
+    {
+      "owner": "Product editor original discount calculation.discount",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV original file parsing/recovery._pick",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV original file parsing/recovery._recoverRegistration",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV original command/read arguments._refresh",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV original command/read arguments._readJob",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV original command/read arguments._submit",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV original command/read arguments._recoverRegistration",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV original command/read arguments._command",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV original command/read arguments._stopRegistration",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV original row query with same captured page/filter",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV page captured at UI read entry",
+      "unchanged": true
+    },
+    {
+      "owner": "CSV filter captured at UI read entry",
+      "unchanged": true
+    },
+    {
+      "owner": "Field preserved validation/focus._validateInternal",
+      "unchanged": true
+    },
+    {
+      "owner": "Field preserved validation/focus._handleFocusChange",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.controller",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.initialValue",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.focusNode",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.autofocus",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.enabled",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.readOnly",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.obscureText",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.keyboardType",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.textInputAction",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.textCapitalization",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.maxLines",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.minLines",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.maxLength",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.inputFormatters",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.enableSuggestions",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.autofillHints",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.autovalidateMode",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.autocorrect",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.validator",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.onChanged",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.onFieldSubmitted",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.onTap",
+      "unchanged": true
+    },
+    {
+      "owner": "Field unchanged native argument.onEditingComplete",
+      "unchanged": true
+    },
+    {
+      "owner": "Collection editor original validation/draft return._fields",
+      "unchanged": true
+    },
+    {
+      "owner": "Collection editor original validation/draft return._encoded",
+      "unchanged": true
+    },
+    {
+      "owner": "Collection editor original validation/draft return._save",
+      "unchanged": true
+    },
+    {
+      "owner": "Collection editor original initialization/disposal except UI dirty listener.initState",
+      "unchanged": true
+    },
+    {
+      "owner": "Collection editor original initialization/disposal except UI dirty listener.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections preserved read/command arguments._edit",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections preserved read/command arguments._editor",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections preserved read/command arguments._delete",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections preserved read/command arguments._review",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections preserved read/command arguments._discardMissing",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections preserved read/command arguments._retrySavedSelection",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections preserved read/command arguments._discardMissingSelection",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections preserved read/command arguments._loadPreview",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections read uses same captured page/query",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections query captured before async read.kind",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections query captured before async read.page",
+      "unchanged": true
+    },
+    {
+      "owner": "Collections query captured before async read.query",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original selection/command/recovery._save",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original selection/command/recovery._editRejected",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original selection/command/recovery._reloadReviewed",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original selection/command/recovery._readLatest",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original selection/command/recovery._move",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original selection/command/recovery._name",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original selection/command/recovery._run",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original selection/command/recovery._add",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership unchanged snapshot and pending read arguments",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original recovery dispatch.retryCollectionMembership",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original recovery dispatch.rebaseCollectionMembership",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original recovery dispatch.discardRejectedCollectionMembership",
+      "unchanged": true
+    },
+    {
+      "owner": "Membership original drag reorder index adjustment",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart.createState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart.initState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._publicUrl",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._copyStoreUrl",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._visitStore",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._shareStore",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._showQRCode",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart.build",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._buildStoreLogo",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._buildStoreInfo",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._buildQuickStatsRow",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._buildStatItem",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._buildStatDivider",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._formatNumber",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._buildQuickActionIcon",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._buildSubscriptionRow",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._shareQRAsImage",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/dashboard/hero_store_card.dart._copyLink",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart.createState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._colors",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._guard",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart.initState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._loadStore",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._reload",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._save",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._confirmBack",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart.build",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._buildLogoSection",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._buildSectionTitle",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._buildField",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._pickLogo",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._populateControllers",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._buildStoreUpdatePayload",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._nullableText",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validateContactEmail",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validateContactWebsite",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._normalizedPhone",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validateStoreName",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validateOptionalLength",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validateGstin",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validateGstStateCode",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validateInvoicePrefix",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validatePostalCode",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validateCountry",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._validatePhone",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/store_details_screen.dart._stringValue",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart.createState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._guard",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart.initState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._populate",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._loadStore",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._confirmReload",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._save",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._confirmBack",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart.build",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._header",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._body",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._previewCard",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._field",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._loading",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._centerState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/settings/seo_settings_screen.dart._showSnack",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart.build",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart.createState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart._service",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart.initState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart._load",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart._work",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart._refresh",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart._editor",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart._edit",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart._delete",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/screens/products/categories_screen.dart._submit",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/shared/warehouse_create_form.dart.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/shared/warehouse_create_form.dart.createState",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/shared/warehouse_create_form.dart._locationChoice",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/shared/warehouse_create_form.dart._supplierChoice",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/shared/warehouse_create_form.dart._productChoice",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/shared/warehouse_create_form.dart._arrival",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/shared/warehouse_create_form.dart._submit",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/shared/warehouse_create_form.dart.build",
+      "unchanged": true
+    },
+    {
+      "owner": "Mounted-only lifecycle repair retains method.apps/merchant/mobile/lib/widgets/shared/warehouse_create_form.dart._lineCard",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.requestContext",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method._checkSecurity",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.pendingRefundCompletion",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.pendingRefundRequest",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.fetchDraftOrders",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.exportOrders",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.fetchExportJob",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.createDraftOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.convertDraftOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.updateOrderStatus",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.cancelOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.fulfillOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.updateLineItems",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.fetchPackingSlip",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.fetchShippingLabelRates",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.buyShippingLabel",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.refundOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.completeRefund",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method._refundOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method._applyRefundOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.openOrderCount",
+      "unchanged": true
+    },
+    {
+      "owner": "OrderService original business/security/persistence method.syncOpenOrderBadge",
+      "unchanged": true
+    },
+    {
+      "owner": "CacheService entire actor namespace/keys/format/retention/read-write owner",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original cursor normalization",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original canonical cache key",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original durable cache expression.readJsonList",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original durable cache expression.writeJson",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders same HTTP list query plus captured UI lifetime only",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original wire row decoder",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders status count arithmetic unchanged except scoped presentation input",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders cached detail keys/decoder unchanged except observed-denial/memory presentation guard",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._filteredOrders",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._pendingCount",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._confirmedCount",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._shippedCount",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._deliveredCount",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._totalRevenue",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._countStatus",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._getStatusOptions",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._getStatusIcon",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._orderStatus",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._hasRiskSignal",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._riskLabel",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._orderNumber",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._orderCustomerName",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._orderCustomerPhone",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._orderTotal",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._orderItemCount",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._orderCreatedAt",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._formatOrderDate",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._compareDatesDesc",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._compareDatesAsc",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._statusLabel",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders unchanged local predicates/calculation/mapping._productLabel",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original bulk command arguments",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original status command.fulfillOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original status command.cancelOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original status command.updateOrderStatus",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original draft command.createDraftOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original draft command.convertDraftOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original PDF bytes/filename/native share expression.base64Decode",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original PDF bytes/filename/native share expression.getTemporaryDirectory",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original PDF bytes/filename/native share expression.File",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original PDF bytes/filename/native share expression.writeAsBytes",
+      "unchanged": true
+    },
+    {
+      "owner": "Orders original PDF bytes/filename/native share expression.shareXFiles",
+      "unchanged": true
+    },
+    {
+      "owner": "Packing slip original response mapping.title",
+      "unchanged": true
+    },
+    {
+      "owner": "Packing slip original response mapping.text",
+      "unchanged": true
+    },
+    {
+      "owner": "Packing slip original response mapping.pdfBase64",
+      "unchanged": true
+    },
+    {
+      "owner": "Packing slip original response mapping.filename",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail unchanged durable cache key/payload.writeJson",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail unchanged durable cache key/payload.readJsonMap",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail original wire GET plus captured UI lifetime only",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail original canonical OrderContract decoding",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail original cached JSON read key",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._orderTotal",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._timelineEntries",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._orderNumber",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._customerName",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._status",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._statusLabel",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._statusColor",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._hasRiskSignal",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._riskLevel",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._riskColor",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._riskDetails",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._formatDate",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._formatRawDate",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved numerical/record/status/timeline mapping._nonEmpty",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved typed form result._RefundRequest",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved typed form result._CompleteRefundRequest",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved typed form result._TrackingRequest",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved typed form result._LineItemsRequest",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved typed form result._TimelineEntry",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved original read/command/security ordering and arguments._issueRefund",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved original read/command/security ordering and arguments._completeRefund",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved original read/command/security ordering and arguments._fulfillOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved original read/command/security ordering and arguments._editLineItems",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved original read/command/security ordering and arguments._cancelOrder",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved native PDF bytes/path/MIME/share expression.base64Decode",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved native PDF bytes/path/MIME/share expression.getTemporaryDirectory",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved native PDF bytes/path/MIME/share expression.File",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved native PDF bytes/path/MIME/share expression.writeAsBytes",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail preserved native PDF bytes/path/MIME/share expression.shareXFiles",
+      "unchanged": true
+    },
+    {
+      "owner": "Refund original retained pending/default controller input.quantities",
+      "unchanged": true
+    },
+    {
+      "owner": "Refund original retained pending/default controller input.controllers",
+      "unchanged": true
+    },
+    {
+      "owner": "Refund original retained pending/default controller input.reason",
+      "unchanged": true
+    },
+    {
+      "owner": "Refund no-pending means no saved lines; malformed saved intent still strict",
+      "unchanged": true
+    },
+    {
+      "owner": "Refund original quantity parse/bounds/positive-line-ID mapping; feedback owner only",
+      "unchanged": true
+    },
+    {
+      "owner": "Original typed result including exact nullability/units/IDs/parser._RefundRequest",
+      "unchanged": true
+    },
+    {
+      "owner": "Original typed result including exact nullability/units/IDs/parser._LineItemsRequest",
+      "unchanged": true
+    },
+    {
+      "owner": "Original typed result including exact nullability/units/IDs/parser._TrackingRequest",
+      "unchanged": true
+    },
+    {
+      "owner": "Line items original initializer/integer/fallback mapper.controllers",
+      "unchanged": true
+    },
+    {
+      "owner": "Line items original initializer/integer/fallback mapper.lines",
+      "unchanged": true
+    },
+    {
+      "owner": "Fulfillment original field/default input.carrierController",
+      "unchanged": true
+    },
+    {
+      "owner": "Fulfillment original field/default input.trackingController",
+      "unchanged": true
+    },
+    {
+      "owner": "Fulfillment original field/default input.weightController",
+      "unchanged": true
+    },
+    {
+      "owner": "Fulfillment original field/default input.lengthController",
+      "unchanged": true
+    },
+    {
+      "owner": "Fulfillment original field/default input.widthController",
+      "unchanged": true
+    },
+    {
+      "owner": "Fulfillment original field/default input.heightController",
+      "unchanged": true
+    },
+    {
+      "owner": "Fulfillment original field/default input.createShippingLabel",
+      "unchanged": true
+    },
+    {
+      "owner": "Fulfillment original field/default input.logisticsProvider",
+      "unchanged": true
+    },
+    {
+      "owner": "Refund completion original exact ID/reference/readonly-notes return",
+      "unchanged": true
+    },
+    {
+      "owner": "Completion original nullable saved/refund record ID initial value",
+      "unchanged": true
+    },
+    {
+      "owner": "Completion original nullable provider reference initial value",
+      "unchanged": true
+    },
+    {
+      "owner": "Completion notes remain empty original native controller",
+      "unchanged": true
+    },
+    {
+      "owner": "Cancellation original empty reason controller",
+      "unchanged": true
+    },
+    {
+      "owner": "Cancellation original trimmed reason mapping",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail total row original numerical arguments; new raw-value display labels only",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail original status eligibility.canFulfill",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail original status eligibility.canRefund",
+      "unchanged": true
+    },
+    {
+      "owner": "Detail original status eligibility.canCancel",
+      "unchanged": true
+    },
+    {
+      "owner": "Presentation formatter preserves original absolute input",
+      "unchanged": true
+    },
+    {
+      "owner": "Presentation formatter preserves original negative sign condition",
+      "unchanged": true
+    },
+    {
+      "owner": "Sheet current PopScope adds only caller dismissal attempt",
+      "unchanged": true
+    },
+    {
+      "owner": "Shared sheet original full keyboard/inset/default dismissal recipe",
+      "unchanged": true
+    },
+    {
+      "owner": "Shared editor original build/inset default; optional custom-close owner only",
+      "unchanged": true
+    },
+    {
+      "owner": "Shared editor original default dirty/busy/guard close",
+      "unchanged": true
+    },
+    {
+      "owner": "Shared confirmation original public parameters/defaults",
+      "unchanged": true
+    },
+    {
+      "owner": "Confirmation original false dismissal result",
+      "unchanged": true
+    },
+    {
+      "owner": "Confirmation original true acceptance result",
+      "unchanged": true
+    },
+    {
+      "owner": "Shared choice exact applied/draft/availability recipe; current-route completion only",
+      "unchanged": true
+    },
+    {
+      "owner": "MerchantReturn entire model: original null/default/currency/amount/status getters",
+      "unchanged": true
+    },
+    {
+      "owner": "ReturnService original entire command/security/journal/upsert._check",
+      "unchanged": true
+    },
+    {
+      "owner": "ReturnService original entire command/security/journal/upsert.pendingRefundCompletion",
+      "unchanged": true
+    },
+    {
+      "owner": "ReturnService original entire command/security/journal/upsert.createReturn",
+      "unchanged": true
+    },
+    {
+      "owner": "ReturnService original entire command/security/journal/upsert.updateStatus",
+      "unchanged": true
+    },
+    {
+      "owner": "ReturnService original entire command/security/journal/upsert.completeRefund",
+      "unchanged": true
+    },
+    {
+      "owner": "ReturnService original entire command/security/journal/upsert._upsert",
+      "unchanged": true
+    },
+    {
+      "owner": "Return list original HTTP query/options: store/status/page/limit/context",
+      "unchanged": true
+    },
+    {
+      "owner": "Return list original row model mapping/collection input",
+      "unchanged": true
+    },
+    {
+      "owner": "Return list retains exact same row model mapping/collection input",
+      "unchanged": true
+    },
+    {
+      "owner": "Return form original complete typed result class",
+      "unchanged": true
+    },
+    {
+      "owner": "Return form original exact ID/reason/enum/restock result fields",
+      "unchanged": true
+    },
+    {
+      "owner": "Return create original full field arguments; optional existing key now owned by UI attempt",
+      "unchanged": true
+    },
+    {
+      "owner": "Return create reuses its retained in-memory original attempt key",
+      "unchanged": true
+    },
+    {
+      "owner": "Return form original restock default; retained original request may populate it",
+      "unchanged": true
+    },
+    {
+      "owner": "Return form original method default; retained original request may populate it",
+      "unchanged": true
+    },
+    {
+      "owner": "Return form original three supported method values/order",
+      "unchanged": true
+    },
+    {
+      "owner": "Return status original command ID/status arguments",
+      "unchanged": true
+    },
+    {
+      "owner": "Return completion original security/proof/saved intent input/order.capture",
+      "unchanged": true
+    },
+    {
+      "owner": "Return completion original security/proof/saved intent input/order.pendingRefundCompletion",
+      "unchanged": true
+    },
+    {
+      "owner": "Return completion original security/proof/saved intent input/order.check",
+      "unchanged": true
+    },
+    {
+      "owner": "Return completion original security/proof/saved intent input/order.approve",
+      "unchanged": true
+    },
+    {
+      "owner": "Return completion original security/proof/saved intent input/order.completeRefund",
+      "unchanged": true
+    },
+    {
+      "owner": "Return completion original security/proof/saved intent input/order.isCurrent",
+      "unchanged": true
+    },
+    {
+      "owner": "Return reference original nullable initializer through canonical sheet owner",
+      "unchanged": true
+    },
+    {
+      "owner": "Return reference original native trimmed result",
+      "unchanged": true
+    },
+    {
+      "owner": "Return original per-record status eligibility expressions",
+      "unchanged": true
+    },
+    {
+      "owner": "Return original status label mapping",
+      "unchanged": true
+    },
+    {
+      "owner": "Shared transient feedback entire existing behavior; persistent inline recipe is additive",
+      "unchanged": true
+    },
+    {
+      "owner": "Shared store view current owner/actor admission unchanged",
+      "unchanged": true
+    },
+    {
+      "owner": "Shared store view entire retirement presentation; current-route Close only",
+      "unchanged": true
+    },
+    {
+      "owner": "Provider mode original complete enum, parser and label values",
+      "unchanged": true
+    },
+    {
+      "owner": "Provider badge original public constructor fields/nullability",
+      "unchanged": true
+    },
+    {
+      "owner": "Provider badge original complete spoken mode label",
+      "unchanged": true
+    },
+    {
+      "owner": "Provider badge retains existing enum label as its visible value",
+      "unchanged": true
+    },
+    {
+      "owner": "Provider badge retains original compact caller input",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._filteredCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._activeCount",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._totalSpent",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._customerName",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._initials",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._status",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._money",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._shortDate",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._titleCase",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._nonEmpty",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete calculation/query-filter/page-reset helper._resetPages",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original exact form parser/validation.splitName",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original exact form parser/validation.parseTags",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original exact form parser/validation.canSave",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner._checkReadContext",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner._canUseOfflineCache",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner._customer",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.exportCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.fetchExportJob",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.createCustomer",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.updateCustomer",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.addNote",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.updateTags",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.emailCustomer",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.mergeCustomer",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.deleteCustomer",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.createSegment",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.updateSegment",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.previewSegment",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.createAddress",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.updateAddress",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.deleteAddress",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.customersNextCursor",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.customersHasMore",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original complete command/helper/persistence owner.customersOffline",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original cache lookup body after new ephemeral admission",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original SDK request arguments.fetchCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original cache namespace/serialization/storage expressions.fetchCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original store-denied cache policy expressions.fetchCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original read method parameters/defaults.fetchCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original SDK request arguments.fetchCustomerByEmail",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original cache namespace/serialization/storage expressions.fetchCustomerByEmail",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original store-denied cache policy expressions.fetchCustomerByEmail",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original read method parameters/defaults.fetchCustomerByEmail",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original SDK request arguments.fetchSegments",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original cache namespace/serialization/storage expressions.fetchSegments",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original store-denied cache policy expressions.fetchSegments",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original read method parameters/defaults.fetchSegments",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original SDK request arguments.fetchSegmentCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original cache namespace/serialization/storage expressions.fetchSegmentCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original store-denied cache policy expressions.fetchSegmentCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original read method parameters/defaults.fetchSegmentCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original frontend page/search/segment SDK inputs.fetchCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original frontend page/search/segment SDK inputs.fetchSegmentCustomers",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original optional segment SDK inputs",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer original export start arguments",
+      "unchanged": true
+    },
+    {
+      "owner": "Analytics StatsRow original whole composition and value/format inputs",
+      "unchanged": true
+    },
+    {
+      "owner": "StatTile original public input/default.key",
+      "unchanged": true
+    },
+    {
+      "owner": "StatTile original public input/default.icon",
+      "unchanged": true
+    },
+    {
+      "owner": "StatTile original public input/default.label",
+      "unchanged": true
+    },
+    {
+      "owner": "StatTile original public input/default.value",
+      "unchanged": true
+    },
+    {
+      "owner": "StatTile original public input/default.color",
+      "unchanged": true
+    },
+    {
+      "owner": "StatTile original public input/default.onTap",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original named request inputs under same captured store",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original marketing default",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original whole command/parser/native-controller owner._save",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original whole command/parser/native-controller owner._edited",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original whole command/parser/native-controller owner._changed",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original whole command/parser/native-controller owner.initState",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer create original whole command/parser/native-controller owner.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "Canonical theme roles unchanged outside reviewed chip pair.light",
+      "unchanged": true
+    },
+    {
+      "owner": "Canonical theme roles unchanged outside reviewed chip pair.dark",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer optional original SDK arguments.fetchNotes",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer optional original parameters/defaults.fetchNotes",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer optional original SDK arguments.fetchAddresses",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer optional original parameters/defaults.fetchAddresses",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer addresses admitted-row original mapping",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._ordersFromCustomer",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._customerName",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._splitName",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._customerTags",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._initials",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._addressText",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._money",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._shortDate",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._titleCase",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail complete original calculation/parser/read helper._nonEmpty",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail original recent-order SDK inputs",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail original recent-order input.payloadOrders",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail original recent-order input.storeId",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer Detail original recent-order input.email",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._owner",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._active",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._editable",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._changed",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._needsLeaveCheck",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._text",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._edited",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._actual",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._initField",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior.initState",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._observeOwner",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior.dispose",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._tags",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._input",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._checkProfile",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._checkAddress",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._hasReadback",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._matches",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._finish",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._close",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task source2complete operation/controller/input/dismissal behavior._guardConfirmation",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task original whole operation behavior except UI error text._submit",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task exact command/readback SDK inputs._submit",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task original whole operation behavior except UI error text._verify",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task exact command/readback SDK inputs._verify",
+      "unchanged": true
+    },
+    {
+      "owner": "Customer task only optional new operation UI notification",
+      "unchanged": true
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "at": "2026-11-07T05:46:54.334762+00:00",
+  "source": "merchant-catalog-media-source-v73",
+  "source_sha256": "fea6117e135deda4002896d072904f1655ab872fe949caa7c33455fb0e6c3820",
+  "scope": "Fresh normal debug iOS simulator compile only; not installed or run. No simulator app/data/Photos change. Current installed iOS runtime remains source70/native95.",
+  "entries": 401,
+  "manifest_sha256": "495f63f3202c84f3ad53dbcaeaf36d8cf10bf966e2d65aa4f286ee5b15b72c70"
+}

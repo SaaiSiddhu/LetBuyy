@@ -1,0 +1,56 @@
+{
+  "kind": "REPAIRED_BOUNDED_LOCAL_WIDGET_AND_COMPILED_RENDER",
+  "observedAt": "2026-11-04T01:30:18.743639+00:00",
+  "sourceSnapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-setter-guard-v9.source.json",
+  "evidence": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v25/native-po-partial-original-pending.png",
+  "finding": "Actual dark Merchant error toast overrides the canonical snackbar background with colors.error while retaining the shared white14px foreground.",
+  "sourceTrace": [
+    "apps/merchant/mobile/lib/screens/inventory/purchase_orders_screen.dart:543",
+    "apps/merchant/mobile/lib/theme/app_theme_colors.dart:88",
+    "packages/dart/ui_kit/lib/src/tokens/letbuyy_tokens.dart:59",
+    "apps/merchant/mobile/lib/theme/store_theme.dart:541"
+  ],
+  "exactPair": {
+    "foreground": "#FFFFFF",
+    "background": "#EF4444",
+    "fontSize": 14,
+    "contrastRatio": 3.7631,
+    "normalTextRequired": 4.5
+  },
+  "measurement": "WCAG relative-luminance math on the exact source tokens; the observed screenshot confirms the composed toast. Pixel sampling was not performed because the current Python lacks Pillow.",
+  "repairDirection": "After frozen phone25finishes, inspect the existing shared Snackbar owner and status callers; preserve canonical inverse-surface/foreground pairing and expose status through existing semantic roles. Check neighboring success feedback. No UI/source edits during the active run.",
+  "functionalVerdict": "This visual issue does not turn pending status into success or erase original intent. Full UI/accessibility acceptance remains open.",
+  "fullFeatureAccepted": false,
+  "repair": {
+    "at": "2026-11-04T03:05:58.192555+00:00",
+    "source": "761ceddc1dde3e586d71d96750589b5a2b386f8ab6e7da767dd8c059dd5e8e27",
+    "owner": "packages/dart/ui_kit/lib/src/widgets/operation_feedback.dart",
+    "callers": [
+      "inventory",
+      "locations",
+      "suppliers",
+      "transfers",
+      "purchase_orders"
+    ],
+    "widgetEvidence": "Eight composed cases pass across both brightness values, both status values and text scales1/2; included in933 passing Flutter tests",
+    "observedCompiledScreenshot": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/inventory-v29-location-recovery-feedback.png",
+    "sha256": "8ec300f8c129a08753edeed01f9d568bc28509c26a5499824864f90c431379df",
+    "visuallyInspected": true,
+    "actualPair": {
+      "foreground": "#FFFFFF",
+      "background": "#1E293B",
+      "contrastRatio": 14.6287,
+      "fontSize": 14,
+      "sourceTokensAndObservedComposition": true,
+      "pixelSampleClaimed": false
+    },
+    "observation": "Actual compiled dark native location reply-loss state keeps original recovery controls and shows the readable paired-surface snackbar with Material attention icon; acknowledgement is still pending, not relabelled success.",
+    "currentNativeJourneyAccepted": true,
+    "currentNativeReport": "COMPILED_INVENTORY_RECOVERY_ANDROID_WEB_V30_QUALIFICATION.json",
+    "currentScreenshot": {
+      "path": "docs/evidence/merchant-local-completion-2026-11-02/screenshots/inventory-v30-native-location-original-pending.png",
+      "sha256": "1185713c677ed505deb14caf1b3af4a43d604314760421ce9593be4686772157",
+      "visuallyInspected": true
+    }
+  }
+}

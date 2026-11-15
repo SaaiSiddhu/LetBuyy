@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-07T19:29:19.770063+00:00",
+  "status": "BOUNDED_CURRENT_ANDROID_PROCESS_DEATH_CAMERA_RECOVERY_AND_IOS_INTERRUPTED_FILES_RECOVERY_MOV_WEBM_WEB_SYNC_PASS;FULL122_OPEN",
+  "source": {
+    "manifest": "merchant-native-selection-source-v91.source.json",
+    "sha256": "5b655a37c2bcc1b2f6e79cea831340addb0329c8b4b60b4a1f4aff33bafdec6c",
+    "core_inputs": 8513
+  },
+  "gates": {
+    "flutter": {
+      "pass": 1750,
+      "fail": 0,
+      "skip": 0,
+      "terminal": "native-selection-v91-flutter-all.terminal.json"
+    },
+    "analysis": {
+      "exit_code": 0,
+      "terminal": "native-selection-v91-analysis.terminal.json"
+    },
+    "webm_actual_embedded_javascript": {
+      "pass": 5,
+      "fail": 0,
+      "terminal": "native-selection-v91-webm-dom.terminal.json"
+    },
+    "actual_governance": {
+      "pass": 114,
+      "fail": 0,
+      "not_applicable": 1,
+      "terminal": "merchant-native-selection-v91-governance-v2.terminal.json"
+    }
+  },
+  "devices": {
+    "android120": {
+      "status": "PASS_BOUNDED_LOCAL;7UIphases_first_attempt",
+      "report": "native120-final-local-readback.json",
+      "run_id": "a2ebf353bb12"
+    },
+    "ios123": {
+      "status": "PASS_BOUNDED_LOCAL;6UIphases_first_attempt",
+      "report": "native123-final-local-readback.json",
+      "run_id": "5251418aa52f"
+    }
+  },
+  "retained_failures": [
+    "Source88 ten old Files-test provider-integration failures",
+    "Source89 Android118 root banner absent from platform accessibility despite rendered pixels; data/control/websync continuation only",
+    "Source90 two route-policy test wrapper assumptions and sort_child_properties_last lint",
+    "iOS121missing harness device receipt,before app launch",
+    "iOS122normal auth passed;missing generated MOV input caused download bridge failure"
+  ],
+  "whole_features_accepted": 0,
+  "boundaries": [
+    "Local fixtures/emulator/simulator only",
+    "Private KYC native-provider and physical iOS camera/microphone acceptance open",
+    "Full122,hosted,provider and release acceptance open"
+  ],
+  "final_custody": "source91-final-custody.json"
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASSED_PRIOR_SOURCE_ONLY",
+  "gateReport": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v5.gate.json",
+  "sourceManifestSha256": "e503f9520a8b957946c3d663b7498f1580f5a6ed77a1bb601408bcbfc329f4e2",
+  "sourceManifest": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v5.source.json",
+  "result": {},
+  "regressionsPassed": 107,
+  "activeCheckoutCleanupPerformed": false,
+  "limits": [
+    "Precedes incoming source reconciliation, Smart implementation and saved-trial434; requires fresh final gate."
+  ]
+}

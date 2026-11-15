@@ -1,0 +1,333 @@
+{
+  "status": "BOUNDED_LOCAL_OWNER_WEB_ANDROID_SHIPMENT_TIMING_RECOVERY_AND_READBACK_VERIFIED",
+  "at": "2026-11-03T20:10:04.838847+00:00",
+  "runId": "286b2a4bc2e1",
+  "runnerExit": 0,
+  "uiExit": 0,
+  "compoundTests": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0
+  },
+  "globalSource": {
+    "sha256": "bc7af995e6e630e289479134b02f4f7b44d5ce8d62d29fe7653da1dc5a2e289d",
+    "entries": 7431,
+    "snapshot": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/inventory-shipment-v5.source.json",
+    "terminalUnchanged": true
+  },
+  "deviceFixtureSubsetSource": "78009309f4af02117806fce5f028126e9cfa70750efc8267b25dc205c08cfd2b",
+  "artifact": {
+    "apk": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/qualified-artifact/merchant-local-debug.apk",
+    "sha256": "759c3fa45d8ab398afc29e927c50cf63784c411a59a56dacc03e4074ed677ebf",
+    "installed_readback": true,
+    "original_bytes_retained": true,
+    "build_method": "flutter-config-only-then-offline-gradle-debug"
+  },
+  "environment": {
+    "device": "task-owned Android emulator-5580",
+    "adbPort": 15038,
+    "appEntry": "normal main.dart debug arm64 APK",
+    "merchantAndAccounts": "local production-mode Next runtimes; normal synthetic Accounts login/PKCE and automatic native callback",
+    "gatewayAndBff": "actual Node modules through the existing fixture; no compiled Workerd phone claim",
+    "database": "real isolated owned PostgreSQL/PostgREST",
+    "challenge": "task-local one-use fixture only; no real Cloudflare/provider acceptance"
+  },
+  "verifiedScope": "Normal Android PO4units/cost125.50, partialreceive3with lost-reply/restart/exact retry; transfer2reserve/ship/receive1; normal web reads and completes1unit each; native refresh reads final received states. Canonical available4across2locations/no reserved/incoming,11command receipts including4metadata. Shipment-bound reservation viewed held and committed on both surfaces; physical stock plus transit conserved, default cache1then2read back. Broader allocation permutations remain separately unaccepted. No staff/variants/allfinancial/provider/hosted/iOS/release acceptance.",
+  "stock": {
+    "held": {
+      "physical": 3,
+      "reserved": 2,
+      "free": 1,
+      "incoming": 1,
+      "physicalByLocation": [
+        3
+      ],
+      "transit": 0,
+      "reservationStatus": [
+        "active"
+      ],
+      "catalogCache": 1,
+      "commandReceipts": [
+        {
+          "target": "72dd5e9e-64e8-44cd-943a-b0a23bb15b32",
+          "operation": "location.create",
+          "key_digest": "e512d6e10f7204f71e981b2aef37cd0d8ed8012b990c4f0db7e70a3e54aed405",
+          "row_digest": "bab31be85740072c48ab1b64feb5142db6ae4f12c9209cea66ae6085a265e571"
+        },
+        {
+          "target": "d119cb46-350f-4bf6-b400-62f3709f2d39",
+          "operation": "location.create",
+          "key_digest": "39814c9f07c90e5052939e466fd8b7015ef9726991079a6f92618f46ca05908f",
+          "row_digest": "460ae265f87c8758bee77982aa3087b90ab0cb1e2ab841304ec5601a17b483c5"
+        },
+        {
+          "target": "cabbb9f7-b40e-40e8-904b-42456d2ada91",
+          "operation": "purchase_order.create",
+          "key_digest": "1741ac8bcfca04a47d6f707f13b06bb18b07d3dc1e660e4ecf015086eef10e98",
+          "row_digest": "ecfa68c043a35719ffcd07ddb522f7d50aa6a7ada039c709fd05db674d7f7900"
+        },
+        {
+          "target": "cabbb9f7-b40e-40e8-904b-42456d2ada91",
+          "operation": "purchase_order.receive",
+          "key_digest": "f1ab54d31988678097e3b1a719bd11a01c736c5b509918cbc84853b656253327",
+          "row_digest": "974d798b54a711bde80c0a8cda2a1898b94641805168c1952c557cc74f3df62e"
+        },
+        {
+          "target": "a7c47e68-0cc9-4f17-a17a-a692e96b135c",
+          "operation": "supplier.create",
+          "key_digest": "dcca1629f7a002a79b791688e35e683c191b45e7b8c976103ceb199f43ea3b50",
+          "row_digest": "ae54d63abbed44cc22d96297f3caf55dde50a3413c16dde8853901b4cdc5f775"
+        },
+        {
+          "target": "d2f2475b-91cd-426b-b36f-28ced0b996f1",
+          "operation": "supplier.create",
+          "key_digest": "ca6a53585ffaba1e180371c6c18286bcddbf86b2d20b0dd947767392c66103f2",
+          "row_digest": "aeff668fd8efd0c71b79b0292c784a50bf867c19b2ea2e46d5f2fb9fbe3d7247"
+        },
+        {
+          "target": "650ca7db-6334-4fa7-9ce5-139378b92e11",
+          "operation": "transfer.create",
+          "key_digest": "306d4b5c16e59e400005b7c230b24a25d3ea044f08c2d7ac45e4d32b546e330c",
+          "row_digest": "d05820940a9361daaa9572ac0f14f90484e165afe266988ca7c1bb83eedf24ff"
+        }
+      ]
+    },
+    "native": {
+      "physical": 2,
+      "reserved": 0,
+      "free": 2,
+      "incoming": 1,
+      "physicalByLocation": [
+        1,
+        1
+      ],
+      "transit": 1,
+      "reservationStatus": [
+        "committed"
+      ],
+      "catalogCache": 1,
+      "commandReceipts": [
+        {
+          "target": "72dd5e9e-64e8-44cd-943a-b0a23bb15b32",
+          "operation": "location.create",
+          "key_digest": "e512d6e10f7204f71e981b2aef37cd0d8ed8012b990c4f0db7e70a3e54aed405",
+          "row_digest": "bab31be85740072c48ab1b64feb5142db6ae4f12c9209cea66ae6085a265e571"
+        },
+        {
+          "target": "d119cb46-350f-4bf6-b400-62f3709f2d39",
+          "operation": "location.create",
+          "key_digest": "39814c9f07c90e5052939e466fd8b7015ef9726991079a6f92618f46ca05908f",
+          "row_digest": "460ae265f87c8758bee77982aa3087b90ab0cb1e2ab841304ec5601a17b483c5"
+        },
+        {
+          "target": "cabbb9f7-b40e-40e8-904b-42456d2ada91",
+          "operation": "purchase_order.create",
+          "key_digest": "1741ac8bcfca04a47d6f707f13b06bb18b07d3dc1e660e4ecf015086eef10e98",
+          "row_digest": "ecfa68c043a35719ffcd07ddb522f7d50aa6a7ada039c709fd05db674d7f7900"
+        },
+        {
+          "target": "cabbb9f7-b40e-40e8-904b-42456d2ada91",
+          "operation": "purchase_order.receive",
+          "key_digest": "f1ab54d31988678097e3b1a719bd11a01c736c5b509918cbc84853b656253327",
+          "row_digest": "974d798b54a711bde80c0a8cda2a1898b94641805168c1952c557cc74f3df62e"
+        },
+        {
+          "target": "a7c47e68-0cc9-4f17-a17a-a692e96b135c",
+          "operation": "supplier.create",
+          "key_digest": "dcca1629f7a002a79b791688e35e683c191b45e7b8c976103ceb199f43ea3b50",
+          "row_digest": "ae54d63abbed44cc22d96297f3caf55dde50a3413c16dde8853901b4cdc5f775"
+        },
+        {
+          "target": "d2f2475b-91cd-426b-b36f-28ced0b996f1",
+          "operation": "supplier.create",
+          "key_digest": "ca6a53585ffaba1e180371c6c18286bcddbf86b2d20b0dd947767392c66103f2",
+          "row_digest": "aeff668fd8efd0c71b79b0292c784a50bf867c19b2ea2e46d5f2fb9fbe3d7247"
+        },
+        {
+          "target": "650ca7db-6334-4fa7-9ce5-139378b92e11",
+          "operation": "transfer.create",
+          "key_digest": "306d4b5c16e59e400005b7c230b24a25d3ea044f08c2d7ac45e4d32b546e330c",
+          "row_digest": "d05820940a9361daaa9572ac0f14f90484e165afe266988ca7c1bb83eedf24ff"
+        },
+        {
+          "target": "650ca7db-6334-4fa7-9ce5-139378b92e11",
+          "operation": "transfer.receive",
+          "key_digest": "6b0c52ac2976235ca9c6a330dbd81e4b5d9c5e0bda4bc27d9dc066ce209f9d95",
+          "row_digest": "82b5b3324dc5a22c71011b5c8ad19d03311385f9481846a3ab6e4a90db7520c7"
+        },
+        {
+          "target": "650ca7db-6334-4fa7-9ce5-139378b92e11",
+          "operation": "transfer.ship",
+          "key_digest": "c6030422c4e2bbb2be805a01cbadd5a781dadd67e00bddd85d6e79f1e75df67b",
+          "row_digest": "8c30c4e05af1119c071497ec2aeb65e04838ae820644c4c0dd3f1ba69045ac31"
+        }
+      ]
+    },
+    "final": {
+      "physical": 4,
+      "reserved": 0,
+      "free": 4,
+      "incoming": 0,
+      "physicalByLocation": [
+        2,
+        2
+      ],
+      "transit": 0,
+      "reservationStatus": [
+        "committed"
+      ],
+      "catalogCache": 2,
+      "commandReceipts": [
+        {
+          "target": "72dd5e9e-64e8-44cd-943a-b0a23bb15b32",
+          "operation": "location.create",
+          "key_digest": "e512d6e10f7204f71e981b2aef37cd0d8ed8012b990c4f0db7e70a3e54aed405",
+          "row_digest": "bab31be85740072c48ab1b64feb5142db6ae4f12c9209cea66ae6085a265e571"
+        },
+        {
+          "target": "d119cb46-350f-4bf6-b400-62f3709f2d39",
+          "operation": "location.create",
+          "key_digest": "39814c9f07c90e5052939e466fd8b7015ef9726991079a6f92618f46ca05908f",
+          "row_digest": "460ae265f87c8758bee77982aa3087b90ab0cb1e2ab841304ec5601a17b483c5"
+        },
+        {
+          "target": "cabbb9f7-b40e-40e8-904b-42456d2ada91",
+          "operation": "purchase_order.create",
+          "key_digest": "1741ac8bcfca04a47d6f707f13b06bb18b07d3dc1e660e4ecf015086eef10e98",
+          "row_digest": "ecfa68c043a35719ffcd07ddb522f7d50aa6a7ada039c709fd05db674d7f7900"
+        },
+        {
+          "target": "cabbb9f7-b40e-40e8-904b-42456d2ada91",
+          "operation": "purchase_order.receive",
+          "key_digest": "6c1b5c0d44b74cfe50c44a9eac25a6c9d870fb7d2ff432d3c9bc310c99491586",
+          "row_digest": "1f49235e20481f9e5e730f267b2cb611fec56b8346438f306105203d45268846"
+        },
+        {
+          "target": "cabbb9f7-b40e-40e8-904b-42456d2ada91",
+          "operation": "purchase_order.receive",
+          "key_digest": "f1ab54d31988678097e3b1a719bd11a01c736c5b509918cbc84853b656253327",
+          "row_digest": "974d798b54a711bde80c0a8cda2a1898b94641805168c1952c557cc74f3df62e"
+        },
+        {
+          "target": "a7c47e68-0cc9-4f17-a17a-a692e96b135c",
+          "operation": "supplier.create",
+          "key_digest": "dcca1629f7a002a79b791688e35e683c191b45e7b8c976103ceb199f43ea3b50",
+          "row_digest": "ae54d63abbed44cc22d96297f3caf55dde50a3413c16dde8853901b4cdc5f775"
+        },
+        {
+          "target": "d2f2475b-91cd-426b-b36f-28ced0b996f1",
+          "operation": "supplier.create",
+          "key_digest": "ca6a53585ffaba1e180371c6c18286bcddbf86b2d20b0dd947767392c66103f2",
+          "row_digest": "aeff668fd8efd0c71b79b0292c784a50bf867c19b2ea2e46d5f2fb9fbe3d7247"
+        },
+        {
+          "target": "650ca7db-6334-4fa7-9ce5-139378b92e11",
+          "operation": "transfer.create",
+          "key_digest": "306d4b5c16e59e400005b7c230b24a25d3ea044f08c2d7ac45e4d32b546e330c",
+          "row_digest": "d05820940a9361daaa9572ac0f14f90484e165afe266988ca7c1bb83eedf24ff"
+        },
+        {
+          "target": "650ca7db-6334-4fa7-9ce5-139378b92e11",
+          "operation": "transfer.receive",
+          "key_digest": "6b0c52ac2976235ca9c6a330dbd81e4b5d9c5e0bda4bc27d9dc066ce209f9d95",
+          "row_digest": "82b5b3324dc5a22c71011b5c8ad19d03311385f9481846a3ab6e4a90db7520c7"
+        },
+        {
+          "target": "650ca7db-6334-4fa7-9ce5-139378b92e11",
+          "operation": "transfer.receive",
+          "key_digest": "ca0efb3ffc0e540a98b0ca0f1bd9d3aef6adeb7ba0913aba0b3e42738c9702d9",
+          "row_digest": "767cc985c8b582cc57d7215a96f0a4182b770c19c54cf84d263f9a390bfeb201"
+        },
+        {
+          "target": "650ca7db-6334-4fa7-9ce5-139378b92e11",
+          "operation": "transfer.ship",
+          "key_digest": "c6030422c4e2bbb2be805a01cbadd5a781dadd67e00bddd85d6e79f1e75df67b",
+          "row_digest": "8c30c4e05af1119c071497ec2aeb65e04838ae820644c4c0dd3f1ba69045ac31"
+        }
+      ]
+    }
+  },
+  "sameReservationThroughShipmentAndReceiving": true,
+  "originalPartialReceiptUnchanged": "Independently asserted by compound fixture before final pass; exact original retry key/body and effect-once were required.",
+  "visualInspection": [
+    "updated native recovery banner",
+    "native partial PO state",
+    "native committed reservation",
+    "native final transfer state"
+  ],
+  "evidence": [
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/native-location-original-pending.png",
+      "sha256": "723871415598a0325fcca2e721564dd665abca2bfa7fd68d62add115da58634a"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/native-location-restart-retained.png",
+      "sha256": "ae9864810fd70a8224c90bd18f49b2c4454f7d7deb952a64100b17faab37810d"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/native-transfer-held-reservation.png",
+      "sha256": "f39c850031fa936895ed2f8b0c256795e627748814becdf590f43cd2368ea010"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/native-transfer-committed-reservation.png",
+      "sha256": "72c8de464f3b0b7360e74cd86d0cd6577621d7a0680f81355e276e7cbe04df3f"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/native-transfer-partial-confirmed.png",
+      "sha256": "c9e75bcf1dc95f44d8f317aeb09e9bd58f67e63ee5c82f0f86a1bc155bb9bcc3"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/native-web-completed-transfer-read.png",
+      "sha256": "312f20a46852ae355142a7cb6dc0427f9aba7207adb12a9627b72f8c6e7a73cc"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/native-web-completed-po-read.png",
+      "sha256": "42401fbd47cc39be1a8d6df3496c3f7f702044989672846b6520871ded09ca9b"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/web-native-transfer-held-read.png",
+      "sha256": "4225374b0d5413d6f4beffc20c04af67a1d97b2e69b32693f244c11c8f47ab9d"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/web-native-transfer-committed-read.png",
+      "sha256": "b8fe6ac5feb1cd97a888f98ff36099174740514078bd0449ab737a064443008f"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/web-native-transfer-completed.png",
+      "sha256": "dbdc6e86d4df69c3f54b96b2adc64a14f9ad9344e83dfb3709cdfc57746f4230"
+    },
+    {
+      "path": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/web-native-purchase-order-completed.png",
+      "sha256": "65a7755dfaa9edf8d1d98716bf317d3bb8d1ad0e337189f3b7ee38beed332be1"
+    }
+  ],
+  "backendProof": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/stock-backend-verified.json",
+  "observedCalls": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21/observed-calls.json",
+  "runnerResult": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-warehouse-v21.json",
+  "ownedCleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "mappingCleanup": {
+    "at": "2026-11-03T20:07:29.669409+00:00",
+    "serial": "emulator-5580",
+    "adb_port": 15038,
+    "runner_exit": 0,
+    "controller_exit": 0,
+    "baseline": [],
+    "before": [],
+    "removed": [],
+    "refused": [],
+    "after": [],
+    "scope": "Only current-run exact reverse tuples on task emulator. Host9002 never accessed."
+  },
+  "limits": [
+    "One owner and synthetic store; no complete inventory feature or original119/122acceptance.",
+    "Staff/native variants/allocation permutations, compiled Worker phone, iOS UI, provider sandbox/hosted/release remain separate.",
+    "Source/local migration436only; no hosted activation."
+  ]
+}

@@ -21,7 +21,14 @@ test('merchant control plane bounds session read retries and identifies query-co
   assert.match(retry, /Date\.now\(\) - startedAt \+ delay > 1_000/);
   assert.match(session, /retryMerchantRead\(\(\) => createMerchantApiClient\(\)\.auth\.session\(\)\)/);
   assert.match(session, /retryMerchantRead\(\(\) => createMerchantApiClient\(\)\.stores\.getByHandle\(storeName\)\)/);
-  assert.match(session, /retryMerchantRead\(\(\) => createMerchantApiClient\(\)\.stores\.list\(\{ limit: 50 \}\)\)/);
+  // Retry the whole verified discovery, including subsequent pages. A first
+  // page alone must never masquerade as the complete store switcher.
+  assert.match(session, /const stores = await retryMerchantRead\(async \(\) =>/);
+  assert.match(session, /for \(let page = 1; ; page\+\+\)/);
+  assert.match(session, /client\.stores\.list\(\{ page, limit: 50 \}, \{ storeId: '' \}\)/);
+  assert.match(session, /observedTotal !== undefined && total !== observedTotal/);
+  assert.match(session, /ids\.has\(store\.id\)/);
+  assert.match(session, /if \(!payload\.has_more\) return rows/);
 });
 
 test('merchant store layout degrades optional store switcher list on query-cost limits', () => {

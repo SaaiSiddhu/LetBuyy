@@ -22,9 +22,9 @@ function deferred<T>() { let resolve!: (value: T) => void; const promise = new P
 
 async function mount(transport: Transport) {
     const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'https://merchant.example.test/alpha/products/' + id })
-    const names = ['window', 'document', 'navigator', 'self', 'fetch']
+    const names = ['window', 'document', 'navigator', 'self', 'Element', 'fetch']
     const previous = Object.fromEntries(names.map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]))
-    for (const name of names.slice(0, 4)) Object.defineProperty(globalThis, name, { configurable: true, writable: true,
+    for (const name of names.slice(0, 5)) Object.defineProperty(globalThis, name, { configurable: true, writable: true,
         value: name === 'window' || name === 'self' ? dom.window : dom.window[name] })
     globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => String(input).includes('marketplace-listings')
         ? Promise.resolve(json(null)) : transport(String(input), init)) as typeof fetch
@@ -37,7 +37,7 @@ async function mount(transport: Transport) {
     const container = dom.window.document.getElementById('root')!
     const root = createRoot(container)
     let editorKey = 0
-    const router = { back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
+    const router = { bfcacheId: 'synthetic-router-cache',  back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {} }
     const render = async (store = 'alpha', productId = id, actor = actorId) => { await act(async () => {
         root.render(<AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{ store, productId }}>
             <ToastProvider duration={0}><MerchantSecurityContext.Provider value={{ actorId: actor, store }}><InventoryPage key={editorKey} /></MerchantSecurityContext.Provider></ToastProvider>

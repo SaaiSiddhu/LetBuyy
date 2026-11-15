@@ -1,0 +1,18 @@
+{
+  "runId": "cd823a04a779",
+  "passed": 0,
+  "failed": 1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_sha256": "820a9e73ba02a3fc53170c1d796b2655f2be3f971bd4e611b4cc1db914c39da0",
+  "sourceHeldAndTerminalVerified": true,
+  "failure": "Test listener ownership check assumed client group equals supervisor group. The canonical supervisor intentionally starts its child in a detached group. Refused before APK build or sign-in.",
+  "correction": "Prove bounded actual process ancestry to exact live owned supervisor before readiness fetch; preserve all foreign listeners.",
+  "scope": "No Android artifact or auth journey acceptance."
+}

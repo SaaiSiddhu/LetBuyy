@@ -1,0 +1,27 @@
+{
+  "started_at": "2026-11-06T04:12:04.011549+00:00",
+  "supervisor_pid": 31348,
+  "source": "settings-optional-source-v3",
+  "source_sha256": "a026775b1f50e451cd4f80685028ec6f77ea0e1120e184d0063ded40ee01ebf1",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "30s",
+    "test/settings_optional_reads_test.dart",
+    "test/store_switcher_presentation_test.dart",
+    "test/store_session_boundary_test.dart",
+    "test/staff_scope_boundary_test.dart",
+    "test/staff_environment_isolation_test.dart",
+    "test/staff_retry_contract_test.dart",
+    "test/staff_invitation_contract_test.dart",
+    "test/staff_ui_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 31385,
+  "exit_code": 0,
+  "finished_at": "2026-11-06T04:12:09.312925+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "a026775b1f50e451cd4f80685028ec6f77ea0e1120e184d0063ded40ee01ebf1"
+}

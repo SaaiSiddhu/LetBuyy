@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import test, { afterEach, before } from 'node:test';
-import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
+import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import { requireOwnedDatabase } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 import {merchantApprovalHeaders,TOTP_SECRET}from '../../services/api-gateway/src/__tests__/owned-db/merchant-stepup-fixture';
@@ -276,8 +276,31 @@ test('payout statement money effects and settlement payout instruction/item/outb
       );
       RESET ROLE;`);
     const concurrentKeys = [`payout-race-a-${randomUUID()}`, `payout-race-b-${randomUUID()}`];
-    const concurrent = await Promise.all(concurrentKeys.map((key) => createPayout(undefined, key)));
+    //Both requests must finish their real source read before either can write.
+    //Promise.all alone can otherwise run the second read after the first commit,
+    //which correctly returns NO_PAYOUTABLE_ORDERS rather than a write conflict.
+    let arrivals = 0, release: () => void = () => {}, timedOut = false;
+    const gate = new Promise<void>(resolve => { release = resolve; });
+    const timer = setTimeout(() => { timedOut = true; release(); }, 30000);
+    const tap = tapRest(owned.restUrl, async (call, forward) => {
+        const response = await forward();
+        if (call.method === 'GET' && call.resource === 'payout_statements'
+            && call.search.get('select') === 'metadata' && call.search.get('site_id') === `eq.${tenant.siteId}`) {
+            assert.equal(response.status, 200); arrivals++;
+            if (arrivals === 2) release();
+            await gate; assert.equal(timedOut, false, 'both real payout source reads must overlap');
+        }
+        return response;
+    });
+    let concurrent: Awaited<ReturnType<typeof createPayout>>[];
+    try {
+        concurrent = await Promise.all(concurrentKeys.map((key) => createPayout(undefined, key)));
+        assert.equal(arrivals, 2, 'the conflict control requires two independently read source snapshots');
+    } finally { clearTimeout(timer); release(); tap.restore(); }
     assert.deepEqual(concurrent.map((response) => response.status).sort(), [201, 409]);
+    const afterCommit = await createPayout(undefined, `payout-after-race-${randomUUID()}`);
+    assert.equal(afterCommit.status, 422);
+    assert.equal(afterCommit.json?.error?.code, 'NO_PAYOUTABLE_ORDERS', 'a later request sees the order already assigned');
     assert.equal(owned.psql(`SELECT count(*) FROM public.payout_statements WHERE site_id = ${q(tenant.siteId)}::uuid;`), '2');
     assert.equal(owned.psql(`SELECT count(*) FROM public.wallet_ledger_entries
       WHERE site_id = ${q(tenant.siteId)}::uuid AND entry_type = 'payout_credit';`), '2');

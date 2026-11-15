@@ -1,0 +1,97 @@
+{
+  "at": "2026-11-06T19:25:44.577628+00:00",
+  "status": "BOUNDED_LOCAL_KYC_MEDIA_RECEIPT_RECOVERY_AND_NATIVE_WEB_SYNC_PASS;FULL122_OPEN",
+  "source": {
+    "manifest": "merchant-media-feedback-source-v54.source.json",
+    "sha256": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+    "inputs": 8484,
+    "head": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+    "branch": "codex/merchant-mobile-parity",
+    "frozen": false
+  },
+  "current_gates": {
+    "current54pipeline": "media-feedback-v54-pipeline.terminal.json",
+    "full_flutter": {
+      "pass": 1656,
+      "fail": 0,
+      "skip": 0
+    },
+    "focused_media_feedback": {
+      "pass": 34,
+      "fail": 0
+    },
+    "analysis_issues": 0,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "unchanged_backend53pipeline": "media-atomic-v53-pipeline.terminal.json",
+    "gateway_unit_pass": 2087,
+    "root_contracts_pass": 408,
+    "shared_test_pass": 23,
+    "reviewed_database_lane_pass": 16,
+    "owned_media12": "media-atomic-v53-owned-readback.json",
+    "owned45": "media-atomic-v50-owned-readback.json",
+    "private_kyc5": "kyc-private-v53-owned-readback.json",
+    "tenant_redteam2": "media-atomic-v50-tenant-readback.json",
+    "scope_equality": "media-feedback-v54-runtime-input-reuse.json",
+    "compiled_gateway_and_bff_byte_equal_native77_78": true,
+    "counts_overlap_not_additive": true
+  },
+  "native_current": {
+    "status": "PASS_BOUNDED_LOCAL",
+    "cohort": 78,
+    "run": "26e80c9a199c",
+    "source_sha256": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+    "apk_sha256": "69e61f0f9d620450d71e1862fa984600f70ed7978693df8bb75c53e2c1560d1d",
+    "installed_bytes_independently_equal": true,
+    "session": null,
+    "independent_readback": "native78-independent-readback.json",
+    "visual_readback": "native78-visual-pixel-readback.json",
+    "custody": "native78-cold-custody-readback.json"
+  },
+  "last_accepted_native": {
+    "status": "PASS_BOUNDED_LOCAL",
+    "cohort": 78,
+    "run": "26e80c9a199c",
+    "source_sha256": "70794e68bd47bf97c4331ab71f5a3f968231b63153cb23f0f6889ebdda31e445",
+    "apk_sha256": "69e61f0f9d620450d71e1862fa984600f70ed7978693df8bb75c53e2c1560d1d",
+    "installed_bytes_independently_equal": true,
+    "session": null,
+    "independent_readback": "native78-independent-readback.json",
+    "visual_readback": "native78-visual-pixel-readback.json",
+    "custody": "native78-cold-custody-readback.json"
+  },
+  "critical_fixes": "Strict canonical KYC public TS/Dart parse; unfinished public upload original receipt/allocation recovery; same-file reselection and current-owner/scope fencing; atomic RLS/GUC Media create/registry/outbox/receipt and update/delete receipts; strict Media inbound schemas; metadata dialog controller lifetime; scoped web deletion;54onlyMedia_showMessage uses existing paired shared feedback.",
+  "resource_rules": "Exact task QEMU79160/AVDLetBuyy_Merchant_Parity_20261106_c6cefc/root/private/tmp/letbuyy-merchant-emulator-de849422c5; isolatedADB15038/emulator-5580. Reverify ownership before control. No global cleanup. Mac host9002 belongs another task; never probe/bind/stop. Native-generatedNextmarkers require exact owned validation before exclusion; full54snapshot equality after teardown.",
+  "programme": {
+    "applicable_open": 119,
+    "excluded": [
+      120,
+      121
+    ],
+    "paused": [
+      122
+    ],
+    "frozen": [
+      51
+    ],
+    "nonadditive_surface_inventory": 211,
+    "source_unreviewed_rows": 35,
+    "app_library_files": 193,
+    "unique_surface_denominator": null,
+    "full_feature_set_accepted": false
+  },
+  "next": [
+    "All119applicable per-feature source/role/store/buyer/route/readback journeys; no whole-feature acceptance from test totals",
+    "Broader product attachment, camera/video/3D native workflows, original-key web recovery, media metadata conflict/recovery UX and source reachability candidates need independent completion/verification",
+    "India/provider private KYC interrupted-object review and actual native private-KYC interruption are separate from test-R2 normal intake and ownedSQLcrash tests",
+    "Historical90second startup cause remains unestablished; one-attempt Retry tests and passing process restart are narrower proof",
+    "Current iOS runtime, provider/inbox/sandbox outcomes, signed releases and hosted acceptance remain separate"
+  ],
+  "limits": "Local synthetic only; no push/merge/hosted/provider/production activation, real messages, memory writes, agents or new worktree. No India/AWS/provider KYC approval, physical/current iOS runtime, signed release or whole122certification.",
+  "report": "media-feedback-v54-local-readback.json",
+  "active_session": null,
+  "resource_state": "QEMU79160, isolatedADB15038/emulator-5580; userdata retained, app force-stopped; no global cleanup or Mac9002access"
+}

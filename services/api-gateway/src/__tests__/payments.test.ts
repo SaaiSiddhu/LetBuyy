@@ -359,8 +359,11 @@ test('storefront runtime no longer owns payment route handlers', () => {
     assert.match(browserClient, /apiClientInputToLetbuyyApiPath/);
     assert.match(browserClient, /resolveLetbuyyApiBaseUrl/);
     assert.match(browserClient, /`\/api\/storefront\/\$\{encodeURIComponent\(subdomain\)\}\$\{apiPath\}`/);
-    assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/razorpay\/order'/);
-    assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/razorpay\/verify'/);
+    assert.doesNotMatch(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/razorpay\/(?:order|verify)'/);
+    assert.match(checkoutClient, /const startHostedOnlinePayment = async/);
+    assert.match(checkoutClient, /send\('payment-intent',\s*\{\s*provider: 'razorpay'/);
+    assert.match(checkoutClient, /const confirmHostedOnlinePayment = async/);
+    assert.match(checkoutClient, /\/api\/checkout\/\$\{encodeURIComponent\(checkoutOrigin\.cartId\)\}\/confirm/);
 });
 
 test('gateway no longer owns an authenticated Stripe checkout route (Phase M1, DOC 03 row 11)', () => {

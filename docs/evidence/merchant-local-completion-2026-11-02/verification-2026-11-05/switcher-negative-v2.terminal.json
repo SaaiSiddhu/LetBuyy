@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-06T02:35:35.201165+00:00",
+  "supervisor_pid": 48161,
+  "source": "switcher-negative-v2",
+  "source_sha256": "2527cb9e36949ce5436129db8585ccfb6c20c73544cf66e9e7c1cde8b1f0d3c3",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "test",
+    "--no-pub",
+    "--timeout",
+    "30s",
+    "test/store_switcher_presentation_test.dart"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 48181,
+  "exit_code": 1,
+  "finished_at": "2026-11-06T02:35:40.058508+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "2527cb9e36949ce5436129db8585ccfb6c20c73544cf66e9e7c1cde8b1f0d3c3"
+}

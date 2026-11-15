@@ -1,0 +1,123 @@
+{
+  "at": "2026-11-08T11:13:12.444538+00:00",
+  "status": "BOUNDED_LOCAL_SOURCE_IMPLEMENTATION_AND_COMPILED_ACCEPTANCE_PASS;WHOLE122_OPEN",
+  "branch": "codex/merchant-mobile-parity",
+  "source_manifest": "verification-2026-11-05/merchant-buyer-inventory-source-v113.source.json",
+  "source_sha256": "ad36cabb72ba7d40cb240194e1f1a749f7e97dba355d0cff6c9554c7a3b54f32",
+  "core_inputs": 8536,
+  "changes": [
+    "Public detail and canonical discovery now include the same canonical free quantity as Merchant; base edit quantity stays separate.",
+    "One existing buyer mapper extracted without duplicate authority; canonical zero and unknown retained through Liquid, purchase guards and Offer metadata.",
+    "Existing render adapter binds unknown stock to installed frozen theme controls before JavaScript; no versioned theme bytes changed.",
+    "Current product excluded from its own PDP recommendation collection; confirmed other records/order/availability preserved.",
+    "Migration440 page-only projection/retired-SKU witness repair with guarded paired DOWN, OID/ACL/full predecessor profile retention and dependency ordering.",
+    "New app and owned database regressions registered in existing test inventories/scripts."
+  ],
+  "gates": {
+    "Commerce": {
+      "types_exit": 0,
+      "registered_tests": 2217,
+      "passed": 2217,
+      "failed": 0,
+      "skipped": 0,
+      "receipt": "verification-2026-11-05/buyer-inventory113-commerce-full.terminal.json"
+    },
+    "Gateway": {
+      "types_exit": 0,
+      "public_security": 42,
+      "basis": "109 byte-identical consumed Gateway/schema/package inputs",
+      "receipt": "verification-2026-11-05/buyer-inventory109-public-security.terminal.json"
+    },
+    "owned_inventory_and_rollback": {
+      "tests": 25,
+      "pass": 25,
+      "run": "d85118ec179f",
+      "receipt": "verification-2026-11-05/buyer-inventory113-owned.json",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "owned_commerce_mutations": {
+      "tests": 134,
+      "pass": 134,
+      "prepared_slots": 2,
+      "run": "ffc433894c46",
+      "receipt": "verification-2026-11-05/buyer-inventory111-commerce-regression.json",
+      "basis": "byte-identical Gateway/schema/commerce-core/shared/infrastructure inputs",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "governance": {
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "receipt": "verification-2026-11-05/merchant-buyer-inventory-v113-governance.terminal.json",
+      "source_and_original_index_preserved": true
+    },
+    "theme_package": {
+      "pass": 2222,
+      "receipt": "verification-2026-11-05/buyer-inventory110-theme.terminal.json",
+      "basis": "363 byte-identical theme package inputs; all frozen fingerprints retained"
+    },
+    "authored_render": {
+      "pass": 20,
+      "receipt": "verification-2026-11-05/buyer-inventory113-authored-render.terminal.json",
+      "scope": "ten2.1.0PDP unknown controls +ten collection links/neutral availability, actual source-level Liquid; separate from Core presets"
+    },
+    "compiled_buyer": {
+      "run": "2e189895cd31",
+      "compound_pass": true,
+      "receipt": "verification-2026-11-05/compiled-buyer113b.json",
+      "readback": "verification-2026-11-05/compiled-buyer113b-readback.json",
+      "customer_orders": 3,
+      "first_cod_total_minor": 26900,
+      "profile_samples": 36,
+      "complete_redacted_profile": "verification-2026-11-05/buyer-inventory113-accepted-artifacts/public-read-profile.json",
+      "profile_sha256": "485732a0b9a3ee974f86ef909bb15a4786ffa686d1003a849597f9e94f9be379",
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "prior_mobile": {
+      "Flutter": 1789,
+      "analysis_issues": 0,
+      "native_Android": "138 PASS 2bccaec188c9",
+      "native_iOS": "139 functional PASS 921ee95f027a",
+      "basis": "884 byte-identical mobile/Dart inputs105/106\u2192113; prior exact source/runtime evidence, no fresh113native claim",
+      "generic_iOS_accessibility": "UNACCEPTED"
+    }
+  },
+  "source_readback": "verification-2026-11-05/merchant-buyer-inventory-source-v113.readback.json",
+  "failures_preserved": "All107\u2013112 failures/controls are retained: runner registration, TSX aliases, full raw catalog parser offset, type-only test cleanup, frozen-theme source regressions restored, explicit quota/array/command-tag and strict/streamed selector fixture repairs. No negative guard weakened and no failure receipt overwritten.",
+  "limits": [
+    "Zero whole features accepted; all122-item acceptance remains open with existing scope exclusions/frozen seams.",
+    "No hosted migrations439/440 or application activation; no push/merge/release.",
+    "Only local synthetic provider/email/challenge/COD fixtures; no provider approval, real inbox/carrier/bank settlement or production certification.",
+    "Generic iOS accessibility/geometry and broader current-role/store-switch/revocation/concurrency matrices remain open.",
+    "Untracked/backorder, all product/media/variant/collection/settings and every other feature-specific supported journey require their own full acceptance.",
+    "36samples are bounded local lab, not physical-device or field performance."
+  ],
+  "whole_features_accepted": 0,
+  "host9002": "Never contacted/probed/bound/stopped; only admitted owned endpoints used.",
+  "Docker": "Recovered normally; scoped force-kill approval was not exercised. Volumes/backups/source/device data preserved."
+}

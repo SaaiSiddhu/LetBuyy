@@ -1,0 +1,36 @@
+{
+  "status": "FAILED_WHOLE_STORY_WITH_BOUNDED_OBSERVATIONS_ONLY",
+  "runId": "075031dee220",
+  "tests": 1,
+  "pass": 0,
+  "fail": 1,
+  "skip": 0,
+  "runnerExit": 1,
+  "initialUiExit": 1,
+  "resumer": "Stopped exact task-owned process after fixture cleanup while waiting for final paired web signal. No final resumer acceptance.",
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "source_sha256": "906127d473cbfdb68de7d53cde29a9f823774b2fdbcb79b6e178aa18a33f1db8",
+  "stops": [
+    "Initial ordinary CTRL+A did not replace native multiline field; original diagnostic and screenshot retained. Actual Select all menu inspected, ordinary UI resumer proceeded on unchanged APK/source.",
+    "Runner stopped on strict locator matching mobile-card and desktop-row copies of new record. No application failure at that assertion. Corrected to normal visible table row."
+  ],
+  "observedButNotWholeAccepted": [
+    "Normal synthetic Accounts browser login and fresh PKCE exchange",
+    "Membership committed reply loss/exact retry and web/native ordered readback",
+    "Smart publication/lost reply/restart/exact retry/preview and web/native rule sync",
+    "Manual metadata create/web read, web newer edit/native conflict and explicit review",
+    "Web delete/native typed rejection, cancel and restart retention, explicit original recheck/discard, subsequent native create"
+  ],
+  "notCompleted": [
+    "Final native Smart deletion and independent full lifecycle state assertions"
+  ],
+  "privateRun": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/native-catalog-v13",
+  "noSourceOrArtifactSubstitution": true
+}

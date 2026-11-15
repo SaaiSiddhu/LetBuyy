@@ -1,0 +1,14 @@
+{
+  "at": "2026-11-05T02:59:16.382804+00:00",
+  "status": "INDEPENDENT_IOS12_COMPILE_ARTIFACT_READBACK_PASS",
+  "source_sha256": "5f0644af1bb505f15adbf1dfdf896bc4e27f415ce182fc65137be39c2ab980ff",
+  "artifact": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-mobile-ui-v12-artifact/Runner.app",
+  "manifest_sha256": "a59c5a528f62b4eec284f1c477578481bf48bd2e8511e3d0e0add3829b8a1312",
+  "files_equal": 377,
+  "owned_simulator_remains_shutdown": true,
+  "build_exit": 0,
+  "signing": "Adhoc simulator only, TeamIdentifier not set",
+  "scope": "Compile/artifact integrity only. No simulator boot/launch, iOS runtime/auth/backend/provider/physical/performance/release acceptance.",
+  "metadata": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/ios-mobile-ui-v12-artifact.json",
+  "note": "Compile-only current source4; owned simulator remains shutdown. Existing non-fatal image_cropper Swift Package Manager warning retained; dependency source/locks unchanged."
+}

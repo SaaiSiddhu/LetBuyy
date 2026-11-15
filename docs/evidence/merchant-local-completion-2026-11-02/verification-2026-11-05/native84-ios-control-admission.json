@@ -1,0 +1,10 @@
+{
+  "private_root": "/private/tmp/letbuyy-ios-ui-20261107-d948366b43",
+  "source_sha256": "999e0d6b6ca0b1064b4b0b4f3dcacaaabd050a44105d5c1a9ecb2be51de44184",
+  "source_inputs": 8486,
+  "fixture": "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-product-media-v84-local-ios.postgres.test.ts",
+  "fixture_sha256": "c05e3e28dd0062c69767f39b099586075180e875afdb99c2e20a4715aea69dbf",
+  "ui_swift_sha256": "daf5a6556081b261b65073662113b64123f1efe8979aba51e425692e9c3961b7",
+  "launcher_sha256": "a7111e0ba3e14cb1a4edce71a837b66a1073b260df2948ae0243b32db7de5caa",
+  "scope": "Correct canonical SQL relationship; stronger one media row + one asset + one object equality. Exact same synthetic-only simulator/normal login+OS picker, no session injection or hosted work."
+}

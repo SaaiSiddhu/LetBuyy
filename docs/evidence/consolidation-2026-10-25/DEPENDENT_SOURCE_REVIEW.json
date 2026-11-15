@@ -1,11 +1,19 @@
 {
   "status": "REVIEWED_FOR_LOCAL_REQUALIFICATION",
-  "scope": "Owner-authorized consolidation retargets helper/source compatibility checks without changing old admission, artifacts or expected frozen package hashes. This review permits a fresh owned qualification; successful execution is recorded separately, never inferred from this receipt.",
+  "scope": "The historical 389 owned suite proves immutable admitted bytes and pins the historical verifier; a separate governance test executes the recovered original factory in isolation (10/10 defaults and 9/9 V2 outputs). The active factory is qualified by the separate 428 successor suite. Old admission, artifacts and SQL remain unchanged. This exact source review permits a fresh owned qualification; success is recorded separately.",
   "prior_native_receipt_sha256": "1238543d37f951a0402f05ee94e7dca85284e3dc6bfb149073da387de95673cc",
   "sources": {
     "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts": {
       "prior_qualified_sha256": "7a4477a1255529c7cc9eaaef41f2bf36700022976fbeb4172c9ca6125eddd64e",
-      "current_sha256": "2f779fae0957292b3c4a829a06cfcfb89b5dabb9a31a341dc567e2b0aba13919"
+      "current_sha256": "bf20beb9a3b6ff25df18aa6797083a264f948550b5901460fa6558d8916be395",
+      "previous_local_review_sha256": "aacb4649f7b9065fc5287af45f59053393a095b01140134fb94d8929a4f51761",
+      "local_review_2026_11_04": {
+        "kind": "SOURCE_REVIEW_ONLY_FRESH_OWNED_QUALIFICATION_REQUIRED",
+        "change": "One synthetic variant-stock prerequisite now sets its actual owned tenant GUC within the same statement. Original kernel/arguments, historical promotion/admission bytes and every assertion are unchanged.",
+        "diff": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/niche-promotion-setup-context-review-v1.diff",
+        "original_admission_preserved": true,
+        "new_qualification_claimed": false
+      }
     },
     "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts": {
       "prior_qualified_sha256": "cab467f13d4a381aecffb23ad7b63789e8608a501429a3ea7aee9c55ee2fd72a",

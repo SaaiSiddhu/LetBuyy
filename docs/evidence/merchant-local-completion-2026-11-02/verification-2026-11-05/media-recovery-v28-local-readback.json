@@ -1,0 +1,102 @@
+{
+  "at": "2026-11-06T13:13:10.037880+00:00",
+  "status": "PASS_BOUNDED_LOCAL_MEDIA_RECOVERY;FULL122_OPEN",
+  "source": {
+    "manifest": "merchant-media-recovery-source-v28.source.json",
+    "sha256": "85d02ae353b98bb27f6746697499258425174b6c47f854f063386134c3b1e60a",
+    "entries": 8476
+  },
+  "qualified": {
+    "flutter": {
+      "pass": 1640,
+      "fail": 0,
+      "skip": 0
+    },
+    "owned_gateway_and_compiled_workerd": {
+      "pass": 12,
+      "fail": 0,
+      "skip": 0,
+      "run": "6491d9945fb6",
+      "source26_runtime_and_suite_inputs_equal": true,
+      "delta_to_source28": [
+        "tests/governance/gateway-db-lane.test.mjs"
+      ],
+      "cleanup_remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "gateway_unit": {
+      "pass": 2087,
+      "fail": 0
+    },
+    "shared_types_tests": {
+      "pass": 23,
+      "fail": 0
+    },
+    "gateway_and_shared_types_typecheck": 0,
+    "dart_client": {
+      "pass": 135,
+      "existing_opt_in_skips": 6,
+      "skip_scope": "Five buyer local-stack tests and one hosted staging test are opt-in; no flag was enabled and no skip was added."
+    },
+    "app_and_dart_analysis_issues": 0,
+    "gateway_db_lane": {
+      "pass": 16,
+      "fail": 0
+    },
+    "media_visual": {
+      "pass": 4,
+      "width_dp": 320,
+      "text_scale": 2.4,
+      "actual_fonts": true,
+      "manually_inspected": [
+        "light-stored.png",
+        "dark-unknown.png"
+      ],
+      "boundary": "Widget renders, not native picker/provider/device acceptance; images capture scrolled recovery actions. Existing grid truncation is not certified."
+    },
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "not_applicable": 1,
+      "working_source_and_index_unchanged": true
+    },
+    "android_debug_compile": {
+      "at": "2026-11-06T13:16:19.557770+00:00",
+      "source_sha256": "85d02ae353b98bb27f6746697499258425174b6c47f854f063386134c3b1e60a",
+      "status": "ANDROID_DEBUG_COMPILE_PASS;NO_INSTALL_OR_DEVICE_ACCEPTANCE",
+      "apk_sha256": "3e05f5381c7805b4c6dfc390bf9c73b8340c3d9fdab19a6877dba963ca9a99dc",
+      "bytes": 222949558,
+      "artifact": "artifacts/local-operational-proof/merchant-mobile/source28-media-debug/merchant-local-debug.apk",
+      "zip_crc": "PASS",
+      "new_recovery_kernel_markers": {
+        "MEDIA_UPLOAD_NEEDS_REVIEW": true,
+        "/upload/recover": true,
+        "Check saved upload": true,
+        "Confirm library entry": true,
+        "media-upload-": true,
+        "media-create-": true
+      },
+      "scope": "Repository local dart-defines. No emulator launch, new session or hosted/provider action. Native65 remains source16 proof only."
+    }
+  },
+  "repaired": [
+    "Actual file SHA256 and immutable metadata bind multipart receipts independently of boundary/content-length.",
+    "Fresh current ownership and selected/signed store checks before upload/media mutation replay.",
+    "Optional client checksum rejects a changed selected file before object effects.",
+    "Encrypted actor/store original upload/create keys and stage retention; no bytes, file paths, inline data URLs or credentials persisted.",
+    "Read-only completed upload receipt recovery checks current owner and bound stored object; no resend/new claim.",
+    "Explicit library creation resume after acknowledgement loss and service restart without original file; unknown server acceptance held.",
+    "Visible scrollable recovery controls block new upload while the original acceptance is unresolved.",
+    "Reviewed new media and inherited Staff-list fixture inventory registered; no ownership assertion removed."
+  ],
+  "open": [
+    "No current source28 native Media Library CRUD/file selection/process-death or web/mobile media UI readback. Latest native65 and iOS compile apply source16.",
+    "R2 effect before failed server receipt completion remains a held/manual-review interval; no exactly-once guarantee is claimed there.",
+    "Strict canonical KYC overview/document/list validation and real native encrypted KYC process-death proof remain open.",
+    "Historical61 startup90second wait root cause remains unproven; the separate retry-budget regression passes.",
+    "All119applicable feature entries remain open;120/121excluded;122paused;51frozen."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "status": "PREDECESSOR_ABSENCE_AND_CURRENT_RECOVERY_MARKER_PRESENCE_PASS",
+  "rows": [
+    {
+      "run": 64,
+      "apk_sha256": "fdf3cfcf138d6aea80c7f7f96ffcf3f62125a558d8c2a677a91c23edfec3609c",
+      "new_recovery_markers": {
+        "KYC_UPLOAD_NEEDS_REVIEW": false,
+        "KYC_UPLOAD_CONFIRMATION_INVALID": false,
+        "Upload recovery": false
+      }
+    },
+    {
+      "run": 65,
+      "apk_sha256": "c715d877ec4998c14dce5d52a2f34341e87ecce2ef733d367437b71f10c1e31a",
+      "new_recovery_markers": {
+        "KYC_UPLOAD_NEEDS_REVIEW": true,
+        "KYC_UPLOAD_CONFIRMATION_INVALID": true,
+        "Upload recovery": true
+      }
+    }
+  ]
+}

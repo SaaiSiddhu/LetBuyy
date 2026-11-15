@@ -1,0 +1,40 @@
+{
+  "at": "2026-11-05T19:48:19.605431+00:00",
+  "status": "BOUNDED_LOCAL_NATIVE_WEB_WAREHOUSE_AND_SETTERS_PASS",
+  "run_id": "abac88df509d",
+  "source_sha256": "2d70c5e307ef5fd263f30d85d5c905069e5d6f80d3d78ece70425c3459b69d60",
+  "source_inputs": 8442,
+  "native_dependency_sha256": "17c2f53685f885a2ba9488eb4cab420525ac20cbc38148eb4121e7022d8b39ed",
+  "native_dependency_entries": 4834,
+  "apk_sha256": "8dcb8ed60ac7582479ba67d8be95b6434b006831e03fbaa0199a700b18b2d3aa",
+  "apk": "/private/tmp/letbuyy-merchant-local-20261106-25feac2c/native-warehouse-v41/qualified-artifact/merchant-local-debug.apk",
+  "installed_bytes_independently_equal": true,
+  "compiled_workers": {
+    "run_id": "abac88df509d",
+    "runtime": "workerd",
+    "gateway_sha256": "555853cc5d735552c834697e7c4624af1cfb432af330d09bcdb36ca820b5dd34",
+    "bff_sha256": "4db6627fabda2fc4ff8140faadbd7cd5e2c315b3c7b427553a8b8630456ca8a5",
+    "entrypoints": [
+      "services/api-gateway/src/index.ts",
+      "services/mobile-bff/src/index.ts"
+    ],
+    "transport": "Owned Node HTTP and service-binding observer; no business response stubs",
+    "hosted": false
+  },
+  "runner_pass": 1,
+  "runner_fail": 0,
+  "runner_skip": 0,
+  "controller_exit": 0,
+  "source_and_controller_inputs_unchanged": true,
+  "synthetic_login_inputs_retired": true,
+  "remaining": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "next_markers_remaining": [],
+  "forward_baseline_restored": true,
+  "reverse_baseline_restored": true,
+  "staff_ui_status": "OBSERVED_OWNER_EMPTY_ROSTER_REQUIRED_INPUT_KEYBOARD_CANCEL_FRESH_READ",
+  "limits": "Normal local owner Android/browser/compiled-Worker/Postgres journey only. Synthetic customer hold prerequisite; no buyer-authenticated checkout, real staff effects, variants/allocation permutations, metadata edit/delete, iOS runtime, real provider, hosted, physical performance, signed release or full feature acceptance. Native38 remains unknown."
+}

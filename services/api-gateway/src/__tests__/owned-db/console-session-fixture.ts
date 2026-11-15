@@ -33,6 +33,8 @@ export async function consoleFixture(owned: OwnedDatabase) {
             VALUES('${id}','${email}','Synthetic independent approver',true);`);
         else owned.psql(`INSERT INTO employees(user_id,email,role,store_id,status,is_active)
             VALUES('${id}','${email}','${kind === 'lead' ? 'manager' : 'viewer'}',NULL,'active',true);`);
+        // Counter reuse may require a clock wait; mint short-lived sessions afterwards.
+        const counter = elevated ? await nextFixtureConsoleMfaCounter(owned,id) : null;
         const initial = await createLetbuyyPlatformSessionToken({ email, userId: id, mfaVerified: false }, secret);
         const token = await createLetbuyyPlatformSessionToken({ email, userId: id, mfaVerified: true }, secret);
         assert.ok(initial && token);
@@ -42,29 +44,31 @@ export async function consoleFixture(owned: OwnedDatabase) {
             ...(elevated ? [{ ...headers, 'X-Platform-Console-Previous-Session': initial }] : []),
         ]) {
             const mfa='X-Platform-Console-Previous-Session' in session;
-            const registered = await gateway.request('/v1/internal/console/sessions/'+(mfa?'mfa':'register'), { method: 'POST', headers: session, body: mfa?JSON.stringify({counter:await nextFixtureConsoleMfaCounter(owned,id),factor_fingerprint:fixtureConsoleFactorFingerprint(id)}):'{}' });
+            const registered = await gateway.request('/v1/internal/console/sessions/'+(mfa?'mfa':'register'), { method: 'POST', headers: session, body: mfa?JSON.stringify({counter,factor_fingerprint:fixtureConsoleFactorFingerprint(id)}):'{}' });
             assert.equal(registered.status, 200, registered.text);
             if(mfa)assert.equal(registered.json?.data.verified,true,registered.text);
         }
         return { id, email, headers, token: elevated ? token : initial };
     }
-    async function reauthenticate(current: { id: string; email: string; token: string; headers: Record<string, string> }) {
+    async function reauthenticate(current: { id: string; email: string; token: string; headers: Record<string, string> }, reservedCounter?: number) {
+        const counter = reservedCounter ?? await nextFixtureConsoleMfaCounter(owned,current.id);
         const token = await createLetbuyyPlatformSessionToken({ email: current.email, userId: current.id, mfaVerified: true }, secret);
         assert.ok(token);
         const headers = { ...current.headers, 'X-Platform-Console-Session': token };
         const result = await gateway.request('/v1/internal/console/sessions/mfa', { method: 'POST',
-            headers: { ...headers, 'X-Platform-Console-Previous-Session': current.token }, body: JSON.stringify({counter:await nextFixtureConsoleMfaCounter(owned,current.id),factor_fingerprint:fixtureConsoleFactorFingerprint(current.id)}) });
+            headers: { ...headers, 'X-Platform-Console-Previous-Session': current.token }, body: JSON.stringify({counter,factor_fingerprint:fixtureConsoleFactorFingerprint(current.id)}) });
         assert.equal(result.status, 200, result.text);
         assert.equal(result.json?.data.verified,true,result.text);
         return { ...current, token, headers };
     }
     async function signIn(current: { id: string; email: string; token: string; headers: Record<string, string> }) {
+        const counter = await nextFixtureConsoleMfaCounter(owned,current.id);
         const initial = await createLetbuyyPlatformSessionToken({ email: current.email, userId: current.id, mfaVerified: false }, secret);
         assert.ok(initial);
         const headers = { ...current.headers, 'X-Platform-Console-Session': initial };
         const result = await gateway.request('/v1/internal/console/sessions/register', { method: 'POST', headers, body: '{}' });
         assert.equal(result.status, 200, result.text);
-        return reauthenticate({ ...current, token: initial, headers });
+        return reauthenticate({ ...current, token: initial, headers }, counter);
     }
     // Explicit clock fixture: a previously authenticated session, with matching
     // signed claims/digest/DB timestamps. Not a normal sign-in/provider proof.

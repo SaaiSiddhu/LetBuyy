@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-11-07T09:41:21.669076+00:00",
+  "supervisor_pid": 72801,
+  "source": "merchant-camera-recording-source-v85",
+  "source_sha256": "0cb3bfe0736fb53a642e3e9b14bf033bd8d713d429b8e72a7fa31eb8dee6e279",
+  "command": [
+    "/Users/saai_mithra/Library/Developer/flutter/bin/flutter",
+    "analyze",
+    "--no-pub"
+  ],
+  "status": "TERMINAL",
+  "child_pid": 72811,
+  "exit_code": 0,
+  "finished_at": "2026-11-07T09:41:28.750590+00:00",
+  "source_unchanged": true,
+  "source_readback_sha256": "0cb3bfe0736fb53a642e3e9b14bf033bd8d713d429b8e72a7fa31eb8dee6e279"
+}

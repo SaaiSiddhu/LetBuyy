@@ -1,0 +1,13 @@
+{
+  "source": "merchant-product-media-ios-source-v57",
+  "source_sha256": "9022d5635f60b108196bc9863fbd92aaf318fb9d80804e57081a8c97493629f4",
+  "inputs": {
+    "docs/evidence/merchant-local-completion-2026-11-02/verification-2026-11-05/merchant-product-media-v80-local-ios.postgres.test.ts": "76b7be8e6ac9e04c44f169e89dc3a64a5cf4a73fede9f6ef78027ec5b20f6217",
+    "/private/tmp/letbuyy-ios-ui-20261107-896203a360/MerchantUITests.swift": "a415a5d26d1f7aab1f4dc1ad169d456351abf785591d2cea0a93c0fb1794788e",
+    "/private/tmp/letbuyy-ios-ui-20261107-896203a360/create_project.rb": "cc86d29d749cb0bdf52da681077a3ea430368529fc26e5104d3b6c41163d7fda",
+    "/private/tmp/letbuyy-ios-ui-20261107-896203a360/run_fixture.py": "7d0fca7d6966029dd21d580d77d86cd3c7c427e9b31032863f46a7259b74314c",
+    "/private/tmp/letbuyy-ios-ui-20261107-896203a360/device-receipt.json": "d4cdfc8da080e60e762a76a392ac9e0e0cdb174e167a8c009fc91e07badf1f50",
+    "/private/tmp/letbuyy-ios-ui-20261107-896203a360/letbuyy-ios-product.png": "5bdf25a6aaf02df243934f1ce42d40803c06efc171109c5d7fbc46741a20fd7a"
+  },
+  "scope": "Prepared normal simulator signing and real Accounts/OS picker control; no acceptance yet"
+}

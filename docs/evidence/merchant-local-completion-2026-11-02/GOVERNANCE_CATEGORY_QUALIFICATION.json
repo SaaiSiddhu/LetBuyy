@@ -1,0 +1,23 @@
+{
+  "clone": "/private/tmp/letbuyy-merchant-local-20261102-br1jhgh8/governance-category-capsule-v2",
+  "baseline": "ab32485092cae0ac19145abf7b5a101fa3ea338e",
+  "sourceManifestEntries": 26473,
+  "counts": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "problems": [],
+  "cleanupScope": "generated-artifact cleanup executed only in the owned disposable clone; active checkout dependencies preserved",
+  "preGateChecks": [
+    "frozen offline dependency install",
+    "shared types build",
+    "API SDK typecheck",
+    "6 category-contract/provider controls",
+    "5 web journal/lifecycle checks",
+    "107 session/security/secret-scan/dependency/orchestration regression checks"
+  ],
+  "scope": "Local governance/source qualification only; no feature-wide, hosted or production acceptance"
+}
