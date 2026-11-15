@@ -2,8 +2,8 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-15T12:31:17.965086+00:00",
-  "purpose": "Native Merchant sign-in release only; canonical issuer, Gateway persistence and web/BFF cookie compatibility. No unrelated Gateway feature changes or migrations419\u2013444.",
+  "preparedUtc": "2026-11-15T14:07:39.168041+00:00",
+  "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
       "path": ".github/workflows/architecture-governance.yml",
@@ -54,6 +54,11 @@
       "path": ".project-cleanup/ci/test_ci_lifecycle.py",
       "sha256": "4e7edce48bb4872bae4fb1f32a83cd647dee2b917c5182905666d1cef7b76712",
       "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "ed29a8dcdbabf88147214c38e90ea3d28857c975134673fee486a48e72338cb7",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "apps/commerce/web/package.json",
@@ -476,24 +481,14 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
-      "path": "database/supabase/migrations/415_atomic_warehouse_commands.sql",
-      "sha256": "a85250a9792e63dfe0bd32c368088781159a7b09985840af651d5bd408e149cd",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
-    },
-    {
-      "path": "database/supabase/migrations/416_durable_product_imports.sql",
-      "sha256": "20d4b5e223e5fca53625724af92bb852e800315dd4b22b1be3edf262d98554d5",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
-    },
-    {
-      "path": "database/supabase/migrations/417_managed_sandbox_payment_connections.sql",
-      "sha256": "7032515b61bd20aff4a4f7007a07c1dfd70d61eadf77a276422d11f65a06da50",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+      "path": "config/supabase/native-auth-source-freeze.json",
+      "sha256": "0d7b2fe82789253022b19ab7931f7438e1996c4a47feaf2413720c26d65d81c4",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "database/supabase/migrations/418_merchant_accounts_mobile_handoff.sql",
-      "sha256": "439ccfe3d844a0382a2d7662d6995706e59d1c5eebf6c7d8b45ca914de87ce82",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+      "sha256": "0626be3f53dbbf562a3abc37c6dcabe65a167028b8850539dd1d2f47a8030846",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "database/supabase/rollback/414_gift_card_issue_replay_integrity.rollback.sql",
@@ -501,24 +496,9 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
-      "path": "database/supabase/rollback/415_atomic_warehouse_commands.rollback.sql",
-      "sha256": "24ac7e6a80d64a6cc94f3f12d81cc8762210c56b5166d3cbe08bdbd179c25b84",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
-    },
-    {
-      "path": "database/supabase/rollback/416_durable_product_imports.rollback.sql",
-      "sha256": "a8cdcff194a13e4c5b3395554d55d67db8df195214cb33bce68c4e1a8f947753",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
-    },
-    {
-      "path": "database/supabase/rollback/417_managed_sandbox_payment_connections.rollback.sql",
-      "sha256": "081e00ec10d4a220a832e30a58bc0af1819353c1dcfcc05f61ec23780d70ce3f",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
-    },
-    {
       "path": "database/supabase/rollback/418_merchant_accounts_mobile_handoff.rollback.sql",
-      "sha256": "fd64d5d984a78d6f42372868714ee7112d5c34a06f57f83546ff17da4bed3eaa",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+      "sha256": "cc0b48bd30cb8c3612d7e26513474dbfbd6d87571b18ccaa800ce325b26ce3d2",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "docs/active/BRANCH_DISPOSITIONS.md",
@@ -529,6 +509,46 @@
       "path": "docs/governance/app-api-route-ownership.md",
       "sha256": "c2afb62f8db2657929109ef98f1c2dd07da8edc67151572c605e3e74607a0add",
       "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-source-freeze-decision.md",
+      "sha256": "7e0b2a9b8d6a9d2effec56261840d41f8925bdc37d68d56f3c4d27d329afea94",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/README.md",
+      "sha256": "95811ee41a509f8a21e3a57ea63766bb2b8191784cdbb5ae78912954d22ddfc8",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/migrations/415_atomic_warehouse_commands.sql",
+      "sha256": "a85250a9792e63dfe0bd32c368088781159a7b09985840af651d5bd408e149cd",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/migrations/416_durable_product_imports.sql",
+      "sha256": "20d4b5e223e5fca53625724af92bb852e800315dd4b22b1be3edf262d98554d5",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/migrations/417_managed_sandbox_payment_connections.sql",
+      "sha256": "7032515b61bd20aff4a4f7007a07c1dfd70d61eadf77a276422d11f65a06da50",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/rollback/415_atomic_warehouse_commands.rollback.sql",
+      "sha256": "24ac7e6a80d64a6cc94f3f12d81cc8762210c56b5166d3cbe08bdbd179c25b84",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/rollback/416_durable_product_imports.rollback.sql",
+      "sha256": "a8cdcff194a13e4c5b3395554d55d67db8df195214cb33bce68c4e1a8f947753",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/rollback/417_managed_sandbox_payment_connections.rollback.sql",
+      "sha256": "081e00ec10d4a220a832e30a58bc0af1819353c1dcfcc05f61ec23780d70ce3f",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "package.json",
@@ -627,8 +647,13 @@
     },
     {
       "path": "scripts/governance/native-auth-migration-profile.mjs",
-      "sha256": "d16ce29251abd8cf546731cc3e31b141c21e9fde533b72b497f33fa0d51bd8e7",
-      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+      "sha256": "227c6ef86ae3427e6e9e82c6cccac82a72b155e5ab7273b2ed7f7b50f01e9f20",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "scripts/governance/native-auth-source-freeze.mjs",
+      "sha256": "6b3a7ed1744df253d0838b7e1d77c50330114de49377b98d404dce8e1f10eebc",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "scripts/governance/owned-database-provision.mjs",
@@ -681,6 +706,11 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "scripts/validators/sequential-migration-validator.mjs",
+      "sha256": "110441b584219d4d4c3ecd7078dcbed3cf1f67044773d9f7ef62795fb0c84457",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
       "path": "scripts/validators/session-security-validator.mjs",
       "sha256": "f49d2bedd3096a8b511a6176ede68186c51da5c045b23bc0b0103147cf64f479",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -707,8 +737,8 @@
     },
     {
       "path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-auth.postgres.test.ts",
-      "sha256": "0037cb3e41a9be19962b0ad03350bcf9015572ca45dc417f93baaf19ccc10ef7",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+      "sha256": "37091f35be2082dec5c39594bef0c5f2ae6ff5c30240d55d4a2a61df49f9a803",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "services/api-gateway/src/__tests__/store-access-password.test.ts",
@@ -742,8 +772,8 @@
     },
     {
       "path": "services/api-gateway/src/tenant/tenant-tables.registry.ts",
-      "sha256": "7b36754b1b609c93e914471eb0b8f74a56e9c154fd3b61b5a8f4c31af8f00bef",
-      "source": "Reviewed local narrow-source derivation; see scope notes"
+      "sha256": "3a9b602c5839cf4a8728389169dc7f5822b121d63a4d3d78d2ef1953aaa58870",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "services/lcis-api/package.json",
@@ -806,9 +836,14 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "tests/contracts/security-headers.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "f48fd2c0da8989726bbf1886d73e4690c6f1c7e8ab898d38b4c9ea8b6138fa73"
+    },
+    {
       "path": "tests/executable/service-role-fresh-db-grants-postgres.test.mjs",
-      "sha256": "6b91b5961b9df0e7b14d9de91be7bbf71720ada9f4cbd1d6cffd794fe81b0c77",
-      "source": "Local tested CI harness correction; production code and SQL unchanged"
+      "sha256": "a3b983ee899b6ce841e42ba5e9ecb2482bdd0088b5f3d53f3d26a12d9b84bc1c",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "tests/federation/app-install-idempotency.test.mjs",
@@ -867,7 +902,7 @@
     },
     {
       "path": "tests/governance/gateway-db-lifecycle.test.mjs",
-      "sha256": "eb721acf0151fd93d3df50b4a47d8fe6d87461bcd46eb94ebb920373987b7aff",
+      "sha256": "70444ca081884a6f8088a57af9d5109cc5f73c005ee5acac9a1e86d6d2687d66",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
@@ -876,9 +911,19 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "tests/governance/managed-migration-artifact.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "3e2a34dfbd80ae07aa5b481b10d97755b4f51c863fdc09ae451e50f1beb7d3ae"
+    },
+    {
       "path": "tests/governance/native-auth-migration-profile.test.mjs",
-      "sha256": "ed887be7e1748e5aacba823432656ff6869cfa7c89797754fed09e282f8595ad",
-      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+      "sha256": "9618f3fbb5f22a41bd2bb295e603730e2e62810467486566e627359cb0a4d2d8",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "tests/governance/native-auth-source-freeze.test.mjs",
+      "sha256": "549ea6c0cb89e58e1606fdad6b2425f9b560a7e0e044687753aea86bc8a65f51",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "tests/governance/node-cli-shim.test.mjs",
@@ -921,6 +966,31 @@
       "source": "Local tested CI harness correction; production code and SQL unchanged"
     },
     {
+      "path": "tests/identity-foundation/production-parity.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "163ea9f0bf905a8aeede733a243dfa58045432a76574b06423ac1a1c4fb7b579"
+    },
+    {
+      "path": "tests/launch/lb-s2-route-template-closure.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "99f7d103effdaa1e73593beee547e94b7ea0e33877549057236a46922ca9ae90"
+    },
+    {
+      "path": "tests/launch/lb10-dispatch.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "78ca11c8fe259cfeef25eb70693ad5fbb4d6f79329d955e3c6a3003721fb6ba8"
+    },
+    {
+      "path": "tests/launch/lb12-registration.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "683218b29c1c950bb8a1b2d6356c1d564406d7c4b21f8b775fbc6f9cdc0588a3"
+    },
+    {
+      "path": "tests/launch/lb7-shipping-gst.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "06a65ec8600fbe457e92be02afb4a0589802ce4bae3c74709a70c8a6379b8d88"
+    },
+    {
       "path": "tests/owned-db/core-presets-browser.postgres.test.ts",
       "sha256": "012c9c21df9ead385e07d079bd4993fa703a8f9322bd822687d6f700c0c2ec7d",
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
@@ -932,8 +1002,8 @@
     },
     {
       "path": "tests/owned-db/managed-hosted-history-upgrade.postgres.test.ts",
-      "sha256": "1db97d6efa58b71fe26d5d4c6a3ababff373d45308f0887cc2799875ecbca75e",
-      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+      "sha256": "a13cce6d72feeb717d6b02f2f0aa664e2e44ec6043e82882a597d271ad6d3a1c",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
       "path": "tests/owned-db/merchant-accounts-browser.postgres.test.ts",
@@ -972,26 +1042,92 @@
     }
   ],
   "scopeNotes": [
-    "Auth-core index excludes unrelated product-import transport exports",
-    "Shared dependency versions/security overrides/patches retained; unrelated package scripts stay at baseline",
-    "BFF retains baseline operation allowlist; only canonical staging-cookie selection is added",
-    "Accounts eight session-owned routes explicitly classified; route ratchet239",
-    "Tenant registry generated from candidate migrations through418",
-    "Canonical development Android callback54351 implements the existing owner decision; all production/staging redirects unchanged",
-    "Native callback Dart projection and finite OS-scheme validator are canonical derived references",
-    "Owner branch claim is separate from implementation; exact CI and hosted acceptance remain required",
-    "Compressed CI bundle preservation keeps signed bytes/modes/symbols, acknowledgement and failed-run pins; global engine unchanged",
-    "Environment lifecycle contract job uses the existing free runner, full history and a frozen dependency install; hosted staging-proof dispatch stays unchanged",
-    "Secret scanner remains strict; only6 matching existing canonical fixture/public sample hash records are carried, with all original historical exceptions preserved",
-    "Current Next router fixtures include required bfcacheId; schema discovery decodes file URLs without changing any tenancy predicate",
-    "Auth consumer harnesses load actual new exports; fake CLI shebangs support spaced interpreter paths; private415/416 tables retain exact raw-denial and guarded-API tests",
-    "Owner approved native418-only hosted sequence; local explicit profiles reproduce production413+418 and staging415 historical aliases+418 without changing default complete-schema CI",
-    "File URL decoding repairs filesystem paths containing spaces; native Worker behavior remains real and HTTP URL path handling is unchanged",
-    "Historical404 retirement is isolated at404; full-schema credential, checkout and money/refund reconciliation coverage remains mandatory",
-    "Payout concurrency now holds both real RPC calls at a barrier before commit; the exact201/409 assertion and effect-once readbacks remain unchanged",
-    "Canonical gift-card test reference is414; all migration filenames, SQL and historical journal entries are preserved"
+    "Owner-approved native418-only hosted sequence is separate from the exact source414-to418 freeze; neither decision waives CI or permits replay/renumbering of historical SQL",
+    "Canonical primary retains the complete original sequence; six415-417 forward/DOWN files remain byte-for-byte preserved as non-executable evidence in this narrow branch",
+    "The sequence validator allows only the pinned owner-approved manifest and rejects unknown gaps, altered/missing pairs, links, undeclared evidence, active runtime imports and contradictory active entries",
+    "Every original native418 business statement and function body is unchanged from24e; only guarded invoice/gift-card ACL no-op attestations are added, with a paired DOWN refusal",
+    "No broader warehouse/import/payment caller enters the release; source reachability exemptions remain empty",
+    "Canonical active-source tenant registry is regenerated with319 tenant tables; explicit owned staging fixtures separately reconstruct the exact already-recorded warehouse/gift aliases",
+    "Existing Accounts sole-issuer/native PKCE/session/MFA implementation, environment-bound callbacks and web/BFF cookie compatibility are retained",
+    "Existing callback54351, strict secret scanner, frozen dependencies, fake-tool isolation, file URL decoding and compressed CI bundle protections remain intact",
+    "Source withdrawal followed byte verification and isolated mirror build/unit/database/governance qualification; original canonical primary and hosted history are untouched",
+    "Earlier actual-backup and80-per-profile results apply to old439ccfe3 SQL only; new0626be3f SQL passed88 checks per exact schema; actual-backup restore rehearsal remains pending",
+    "This source freeze is approved source/local only; its changed SQL/governance is not authorized for publication or hosted execution by this decision"
   ],
   "verification": {
+    "scope": "new source freeze; mirror-qualified, not hosted or physical acceptance",
+    "sqlForwardSha256": "0626be3f53dbbf562a3abc37c6dcabe65a167028b8850539dd1d2f47a8030846",
+    "sqlDownSha256": "cc0b48bd30cb8c3612d7e26513474dbfbd6d87571b18ccaa800ce325b26ce3d2",
+    "sourceContracts": 144,
+    "gatewayUnits": 1850,
+    "gatewayTypes": true,
+    "ownedNativeAuthAndAcl": 22,
+    "managedHistoryProfiles": 16,
+    "modernBackendGrantChecks": 6,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "exactCurrentSourceCriticalProfiles": {
+      "production": {
+        "passed": 88,
+        "suites": 10,
+        "skipped": 0,
+        "run": "326126431dcc"
+      },
+      "staging": {
+        "passed": 88,
+        "suites": 10,
+        "skipped": 0,
+        "run": "f86c21ec586b"
+      }
+    },
+    "actualNewSqlBackupRestore": "PENDING",
+    "freshExactSourceCi": "NOT PUBLISHED; only prior24e publication is authorized",
+    "stagingAcceptance": "PENDING",
+    "iphoneAcceptance": "PENDING",
+    "tenantRT1Through9": {
+      "passed": 2,
+      "run": "7d04b47a343f"
+    },
+    "transactionalEmailOwnedDatabase": {
+      "passed": 8,
+      "run": "2c3409415b2f"
+    },
+    "broadPureInitial": {
+      "passed": 3159,
+      "failed": 15,
+      "skipped": 15,
+      "status": "FAIL; diagnostics preserved; focused repairs and lifecycle rerun do not constitute a green aggregate"
+    },
+    "contractsInitial": {
+      "passed": 361,
+      "failed": 1,
+      "status": "FAIL; Accounts no-referrer canonical policy assertion repaired, rerun pending"
+    },
+    "canonicalAuthAndReferenceChecks": 90,
+    "contracts": {
+      "passed": 362,
+      "failed": 0,
+      "skipped": 0
+    },
+    "dockerLifecycle": {
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "run": "20261115T135934Z-native418-lifecycle-diagnostics-requalification-8f7ead2383f14a2c92b7a989eba817c0",
+      "registryFinalization": "Successful command retained; dead active lease recovered conservatively as failed, no deletion"
+    },
+    "broadPureRemaining": "11 original assertions unresolved after four focused fixes; no full aggregate rerun or green claim"
+  },
+  "pushed": false,
+  "deployed": false,
+  "productionActivated": false,
+  "iphoneVerified": false,
+  "historicalVerificationBeforeSourceFreeze": {
     "authCore": 53,
     "accounts": 73,
     "passwordSessionBoundaries": 47,
@@ -1052,8 +1188,9 @@
       "run": "8e451b63616a"
     }
   },
-  "pushed": false,
-  "deployed": false,
-  "productionActivated": false,
-  "iphoneVerified": false
+  "sourceFreezeApproval": {
+    "decisionId": "OWNER_NATIVE418_SOURCE_FREEZE_20261115",
+    "ownerAnswer": "Approve source-only freeze and qualification (Recommended)",
+    "scope": "source/local only; no hosted action or CI waiver"
+  }
 }

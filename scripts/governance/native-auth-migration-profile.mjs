@@ -3,6 +3,7 @@
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
+import {readNativeAuthHistoricalSource} from './native-auth-source-freeze.mjs';
 
 export const NATIVE_AUTH_MIGRATION_PROFILES=Object.freeze([
     'native-auth-production-413-418',
@@ -17,7 +18,7 @@ const hash=value=>createHash('sha256').update(value).digest('hex');
 export function nativeAuthMigrationEntries(repoRoot,names,profile) {
     parseNativeAuthMigrationProfile(profile);
     if(profile===undefined)throw new Error('An explicit native auth migration profile is required');
-    const read=name=>readFileSync(join(repoRoot,'database/supabase/migrations',name),'utf8');
+    const read=name=>readNativeAuthHistoricalSource(repoRoot,'migrations',name);
     const selected=names.filter(name=>parseInt(name,10)<=413).map(name=>({name,source:read(name)}));
     if(!selected.some(entry=>entry.name==='413_shipping_profile_commands.sql'))throw new Error('Native auth baseline413 is missing');
     const native=names.filter(name=>parseInt(name,10)===418);

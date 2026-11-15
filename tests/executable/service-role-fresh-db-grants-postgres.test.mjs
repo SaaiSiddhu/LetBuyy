@@ -16,6 +16,7 @@
 // before 254, so no case sees another's grants.
 
 import assert from 'node:assert/strict';
+import {loadNativeAuthSourceFreeze} from '../../scripts/governance/native-auth-source-freeze.mjs';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -285,16 +286,20 @@ test('the whole modern-default chain preserves backend reads and the exact opaqu
       inventory_adjustment_receipts:['app_tenant','public.apply_inventory_adjustment_v1(uuid,uuid,text,jsonb)'],
       merchant_totp_commands_v1:['service_role','public.execute_merchant_totp_command_v1(uuid,text,text,jsonb)'],
       product_edit_receipts:['app_tenant','public.read_product_for_edit_v1(uuid,uuid,uuid)'],
-      //415/416 deliberately expose commands/readback, never raw receipt/import state.
-      product_import_jobs:['app_tenant','public.read_product_import_v1(uuid,uuid,uuid)'],
-      product_import_rows:['app_tenant','public.read_product_import_rows_v1(uuid,uuid,uuid,integer,integer,text)'],
-      warehouse_command_receipts:['app_tenant','public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text)'],
+      // Broader415/416 expose only guarded commands. The exact owner-approved
+      // native freeze instead proves these unexecuted tables stay absent below.
+      ...(loadNativeAuthSourceFreeze(process.cwd())?{}:{
+        product_import_jobs:['app_tenant','public.read_product_import_v1(uuid,uuid,uuid)'],
+        product_import_rows:['app_tenant','public.read_product_import_rows_v1(uuid,uuid,uuid,integer,integer,text)'],
+        warehouse_command_receipts:['app_tenant','public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text)'],
+      }),
       reel_upload_intents:['service_role','public.reel_upload_v1(text,uuid,uuid,text,uuid,jsonb,jsonb,jsonb)'],
       ...Object.fromEntries(['commerce_reel_events','commerce_reel_revisions','commerce_reels','reel_asset_provenance','reel_processing_receipts','reel_review_inspections']
         .map(table=>[table,['service_role','public.read_reel_reviews_v1(uuid,uuid,uuid,jsonb,integer)']])),
     };
     assert.deepEqual(unreadable(CASE_DB),Object.keys(opaque).sort(),
       'both unexplained backend outages and accidental raw access to opaque command state fail');
+    if(loadNativeAuthSourceFreeze(process.cwd()))for(const table of ['product_import_jobs','product_import_rows','warehouse_command_receipts'])assert.equal(psql(`SELECT to_regclass('public.${table}') IS NULL;`,CASE_DB),'t','held source must not create '+table);
     for(const [table,[role,signature]] of Object.entries(opaque)){
       assert.equal(psql(`SELECT has_function_privilege('${role}','${signature}','EXECUTE');`,CASE_DB),'t',table+': guarded protocol remains callable');
       const denied=psqlResult(`BEGIN;SET LOCAL ROLE service_role;SELECT * FROM public.${table};ROLLBACK;`,CASE_DB);

@@ -3,6 +3,39 @@
 BEGIN;
 SELECT pg_advisory_xact_lock(hashtextextended('letbuyy:migration:416:merchant-mobile',0));
 
+-- Owner-approved source freeze: attest existing closed ACLs, with no permission
+-- delta. Pattern is canonical431, limited to the two existing money definers.
+DO $native418_acl$
+DECLARE
+  v_target record;
+  v_fn record;
+BEGIN
+  FOR v_target IN SELECT signature, result_type FROM (VALUES
+    ('public.issue_gst_invoice(uuid,uuid,text)', 'jsonb'),
+    ('public.issue_gift_card(uuid,text,numeric,text,timestamp with time zone,jsonb,uuid,text,text)', 'jsonb')
+  ) AS targets(signature, result_type) LOOP
+    SELECT p.* INTO v_fn FROM pg_catalog.pg_proc p
+     WHERE p.oid = pg_catalog.to_regprocedure(v_target.signature);
+    IF NOT FOUND OR NOT v_fn.prosecdef OR v_fn.prokind <> 'f'
+       OR v_fn.proretset
+       OR v_fn.prorettype IS DISTINCT FROM pg_catalog.to_regtype(v_target.result_type) THEN
+      RAISE EXCEPTION '418 native auth ACL refuses unexpected definer function ABI: %', v_target.signature;
+    END IF;
+    IF pg_catalog.has_function_privilege('anon', v_fn.oid, 'EXECUTE')
+       OR pg_catalog.has_function_privilege('authenticated', v_fn.oid, 'EXECUTE')
+       OR EXISTS (
+         SELECT 1 FROM pg_catalog.aclexplode(
+           COALESCE(v_fn.proacl, pg_catalog.acldefault('f', v_fn.proowner))) a
+          WHERE a.grantee = 0 AND a.privilege_type = 'EXECUTE'
+       ) THEN
+      RAISE EXCEPTION '418 native auth ACL refuses open Data API definer ACL: %', v_target.signature;
+    END IF;
+  END LOOP;
+END;
+$native418_acl$;
+REVOKE ALL ON FUNCTION public.issue_gst_invoice(uuid,uuid,text) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.issue_gift_card(uuid,text,numeric,text,timestamp with time zone,jsonb,uuid,text,text) FROM PUBLIC, anon, authenticated;
+
 ALTER TABLE public.merchant_2fa_factors ADD COLUMN login_last_counter bigint;
 CREATE FUNCTION public.consume_merchant_login_factor(p_user_id uuid,p_factor_id uuid,p_secret_hash text,p_counter bigint,p_recovery_hash text)
 RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public AS $$

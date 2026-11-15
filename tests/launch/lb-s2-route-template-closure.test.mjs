@@ -97,7 +97,7 @@ test('W1: the Liquid render-FAILURE -> React fallback safety net is untouched (n
   const src = read(COMPOSITION);
   assert.match(
     src,
-    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) return null;/,
+    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) \{[\s\S]{0,500}?return null;\s*\}/,
     'a Liquid render failure must still fall back to React by returning null from renderLiquidPlan',
   );
   assert.match(
@@ -131,14 +131,14 @@ test('W1: authenticated editor context selects its validated route; ordinary pre
   assert.match(accountLayout, /templateKey: 'customers\/account',/);
 });
 
-// ─── W2: the six new routes exist, resolve the right template, and fail closed on a miss ─────
+// Liquid presentation routes resolve the right template and fail closed on a miss.
+// Buyer registration has its own canonical Identity redirect contract below.
 
 const NEW_ROUTES = [
   { file: `${STORE_ROOT}/search/page.tsx`, templateKey: /'search'/ },
   { file: `${STORE_ROOT}/collections/page.tsx`, templateKey: /'list-collections'/ },
   { file: `${STORE_ROOT}/contact/page.tsx`, templateKey: /'contact'/ },
   { file: `${STORE_ROOT}/password/page.tsx`, templateKey: /type: 'password'/ },
-  { file: `${STORE_ROOT}/customers/register/page.tsx`, templateKey: /'customers\/register'/ },
 ];
 
 for (const { file, templateKey } of NEW_ROUTES) {
@@ -161,7 +161,18 @@ test('W2: collections/page.tsx (the list index) is distinct from collections/[sl
   assert.ok(exists(`${STORE_ROOT}/collections/[slug]/page.tsx`), 'the existing single-collection route must be untouched');
 });
 
-test('W2: customers/register/page.tsx never mints a session or touches the customer session secret — it only renders the form', () => {
+test('W2: buyer registration redirects to canonical Identity with the store-bound account return path',()=>{
+  const src=read(`${STORE_ROOT}/customers/register/page.tsx`);
+  assert.doesNotMatch(src,/['"]use client['"]/);
+  assert.match(src,/export default async function CustomerRegisterPage/);
+  assert.match(src,/StoreService\.getStoreBySubdomain\(subdomain\)/);
+  assert.match(src,/if \(!store\) return notFound\(\);/);
+  assert.match(src,/redirect\(`\/api\/buyer-auth\/start\?\$\{new URLSearchParams/);
+  assert.match(src,/screen:'register',return_to:`\/store\/\$\{subdomain\}\/account`/);
+  assert.doesNotMatch(src,/StorefrontCompositionEngine|createSession|password_hash/,'theme rendering cannot own buyer credential creation');
+});
+
+test('W2: customers/register/page.tsx redirects without minting a session or touching the customer session secret', () => {
   const src = read(`${STORE_ROOT}/customers/register/page.tsx`);
   assert.doesNotMatch(src, /CUSTOMER_SESSION_SECRET/);
   assert.doesNotMatch(src, /createSession/);

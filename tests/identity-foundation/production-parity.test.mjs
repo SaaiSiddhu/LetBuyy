@@ -42,10 +42,12 @@ test('legacy cookie names and attributes remain the current golden surface', () 
   assert.match(authCore, /LETBUYY_MERCHANT_SESSION_COOKIE = 'lb_session'/);
   assert.match(authCore, /LETBUYY_CUSTOMER_SESSION_COOKIE = 'lb_customer_session'/);
   assert.match(authCore, /LETBUYY_PLATFORM_SESSION_COOKIE = 'lb_console_session'/);
-  assert.match(identityCookies, /csrf: 'letbuyy_csrf'/);
-  assert.match(identityCookies, /accounts: 'lb_accounts'/);
-  assert.match(identityCookies, /device: 'lb_device'/);
-  assert.match(identityCookies, /passwordSetIntent: PASSWORD_SET_INTENT_COOKIE/);
+  assert.match(identityCookies, /import \{ resolveLetbuyyPlatformCookieNames \} from '@letbuyy\/auth-core'/);
+  assert.match(identityCookies, /COOKIE_NAMES = resolveLetbuyyPlatformCookieNames\(process\.env\.NEXT_PUBLIC_ENV\)/);
+  assert.match(authCore, /environment\?\.trim\(\)\.toLowerCase\(\) === 'staging' \? '_staging' : ''/);
+  for (const [key, name] of Object.entries({ csrf: 'letbuyy_csrf', accounts: 'lb_accounts', device: 'lb_device', passwordSetIntent: 'lb_password_set_intent' })) {
+    assert.ok(authCore.includes(`${key}: \`${name}\${suffix}\``), `${key} preserves its production name and isolates staging`);
+  }
   assert.match(identityCookies, /sameSite: 'lax'/);
   assert.match(identityCookies, /sameSite: 'strict'/);
   assert.match(identityCookies, /httpOnly: false, \/\/ Must be readable client-side for CSRF headers/);

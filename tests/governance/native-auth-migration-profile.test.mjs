@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {listMigrations} from '../../scripts/governance/owned-database-provision.mjs';
 import {nativeAuthMigrationEntries,parseNativeAuthMigrationProfile} from '../../scripts/governance/native-auth-migration-profile.mjs';
+import {loadNativeAuthSourceFreeze,readNativeAuthHistoricalSource} from '../../scripts/governance/native-auth-source-freeze.mjs';
 const root=fileURLToPath(new URL('../..',import.meta.url));
 const names=listMigrations(root);
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -16,7 +17,12 @@ test('production native418 qualification leaves unrelated migrations absent and 
     assert.deepEqual(entries.map(e=>e.name),names.filter(name=>parseInt(name,10)<=413||parseInt(name,10)===418));
     assert.equal(entries.filter(e=>parseInt(e.name,10)>413).length,1);
     assert.deepEqual(listMigrations(root),before);
-    for(const version of [414,415,416,417])assert.ok(before.some(name=>parseInt(name,10)===version),'complete source lane retains '+version);
+    assert.ok(before.includes('414_gift_card_issue_replay_integrity.sql'));
+    const freeze=loadNativeAuthSourceFreeze(root);
+    for(const version of [415,416,417]) {
+        assert.equal(before.some(name=>parseInt(name,10)===version),!freeze,'active source matches the exact approved preservation contract');
+        if(freeze)assert.equal(freeze.files.filter(entry=>entry.version===version).length,2,'both original SQL directions remain preserved');
+    }
 });
 test('staging qualification reproduces both hash-pinned historical identities without changing canonical files',()=>{
     const registry=JSON.parse(readFileSync(new URL('../../config/supabase/history-aliases.json',import.meta.url),'utf8'));
@@ -26,7 +32,7 @@ test('staging qualification reproduces both hash-pinned historical identities wi
         const entry=entries.find(e=>e.name===alias.recorded_name);
         assert.equal(hash(entry.source),alias.recorded_source_sha256);
         assert.equal(entry.canonicalName,alias.canonical_name);
-        assert.equal(hash(readFileSync(new URL('../../database/supabase/migrations/'+alias.canonical_name,import.meta.url))),alias.canonical_source_sha256);
+        assert.equal(hash(readNativeAuthHistoricalSource(root,'migrations',alias.canonical_name)),alias.canonical_source_sha256);
     }
 });
 test('unknown profiles and missing native migration fail closed',()=>{

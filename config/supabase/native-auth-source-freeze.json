@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "decisionId": "OWNER_NATIVE418_SOURCE_FREEZE_20261115",
+  "ownerApproval": "Approve source-only freeze and qualification (Recommended)",
+  "scope": "Source/local native418 release freeze; no hosted execution or CI waiver",
+  "canonicalSourceRevision": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
+  "sourceCandidateRevision": "24e81607092d94b494a1a57170afb86bf28140ac",
+  "gap": {
+    "after": 414,
+    "before": 418,
+    "heldVersions": [
+      415,
+      416,
+      417
+    ]
+  },
+  "nativeMigration": "database/supabase/migrations/418_merchant_accounts_mobile_handoff.sql",
+  "files": [
+    {
+      "version": 415,
+      "kind": "migrations",
+      "name": "415_atomic_warehouse_commands.sql",
+      "originalPath": "database/supabase/migrations/415_atomic_warehouse_commands.sql",
+      "preservedPath": "docs/implementation/native-signin-source-preservation/migrations/415_atomic_warehouse_commands.sql",
+      "sha256": "a85250a9792e63dfe0bd32c368088781159a7b09985840af651d5bd408e149cd"
+    },
+    {
+      "version": 415,
+      "kind": "rollback",
+      "name": "415_atomic_warehouse_commands.rollback.sql",
+      "originalPath": "database/supabase/rollback/415_atomic_warehouse_commands.rollback.sql",
+      "preservedPath": "docs/implementation/native-signin-source-preservation/rollback/415_atomic_warehouse_commands.rollback.sql",
+      "sha256": "24ac7e6a80d64a6cc94f3f12d81cc8762210c56b5166d3cbe08bdbd179c25b84"
+    },
+    {
+      "version": 416,
+      "kind": "migrations",
+      "name": "416_durable_product_imports.sql",
+      "originalPath": "database/supabase/migrations/416_durable_product_imports.sql",
+      "preservedPath": "docs/implementation/native-signin-source-preservation/migrations/416_durable_product_imports.sql",
+      "sha256": "20d4b5e223e5fca53625724af92bb852e800315dd4b22b1be3edf262d98554d5"
+    },
+    {
+      "version": 416,
+      "kind": "rollback",
+      "name": "416_durable_product_imports.rollback.sql",
+      "originalPath": "database/supabase/rollback/416_durable_product_imports.rollback.sql",
+      "preservedPath": "docs/implementation/native-signin-source-preservation/rollback/416_durable_product_imports.rollback.sql",
+      "sha256": "a8cdcff194a13e4c5b3395554d55d67db8df195214cb33bce68c4e1a8f947753"
+    },
+    {
+      "version": 417,
+      "kind": "migrations",
+      "name": "417_managed_sandbox_payment_connections.sql",
+      "originalPath": "database/supabase/migrations/417_managed_sandbox_payment_connections.sql",
+      "preservedPath": "docs/implementation/native-signin-source-preservation/migrations/417_managed_sandbox_payment_connections.sql",
+      "sha256": "7032515b61bd20aff4a4f7007a07c1dfd70d61eadf77a276422d11f65a06da50"
+    },
+    {
+      "version": 417,
+      "kind": "rollback",
+      "name": "417_managed_sandbox_payment_connections.rollback.sql",
+      "originalPath": "database/supabase/rollback/417_managed_sandbox_payment_connections.rollback.sql",
+      "preservedPath": "docs/implementation/native-signin-source-preservation/rollback/417_managed_sandbox_payment_connections.rollback.sql",
+      "sha256": "081e00ec10d4a220a832e30a58bc0af1819353c1dcfcc05f61ec23780d70ce3f"
+    }
+  ]
+}

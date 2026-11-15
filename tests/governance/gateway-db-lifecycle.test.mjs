@@ -383,8 +383,21 @@ test('two runs at once are isolated from each other, and an immediate repeat is 
     const out = mkdtempSync(join(tmpdir(), 'letbuyy-gateway-concurrent-'));
     let neighbour;
     const launch = (label) => new Promise((resolveRun) => {
-        const child = spawn(process.execPath, [runner, '--suite', suite, '--jobs', '1', '--json-out', join(out, `${label}.json`), '--timeout', '240'], { cwd: repoRoot, stdio: 'ignore' });
-        child.on('close', (code) => resolveRun({ code, report: JSON.parse(readFileSync(join(out, `${label}.json`), 'utf8')) }));
+        const child = spawn(process.execPath, [runner, '--suite', suite, '--jobs', '1', '--json-out', join(out, `${label}.json`), '--timeout', '240'], { cwd: repoRoot, stdio: ['ignore', 'pipe', 'pipe'] });
+        let diagnostic = '';
+        const capture = (chunk) => { diagnostic = (diagnostic + chunk.toString()).slice(-16000); };
+        child.stdout.on('data', capture);
+        child.stderr.on('data', capture);
+        child.on('error', (error) => { diagnostic += `\n${error.message}`; });
+        // Resolve every child before assertions or cleanup. A provisioning failure
+        // may produce no report; preserve its cause instead of throwing from an
+        // asynchronous event handler and abandoning the other live runner.
+        child.on('close', (code, signal) => {
+            let report;
+            try { report = JSON.parse(readFileSync(join(out, `${label}.json`), 'utf8')); }
+            catch (error) { diagnostic += `\n${label} report unavailable: ${error.message}`; }
+            resolveRun({ code, signal, report, diagnostic });
+        });
     });
     try {
         // A machine-wide before/after inventory races legitimate neighbours
@@ -398,6 +411,7 @@ test('two runs at once are isolated from each other, and an immediate repeat is 
         assert.equal(neighbourResources.volumes.length, 1);
         const [first, second] = await Promise.all([launch('first'), launch('second')]);
         for (const finished of [first, second]) {
+            assert.ok(finished.report, `runner exited ${finished.code} (${finished.signal}): ${finished.diagnostic}`);
             assert.equal(finished.code, 0, JSON.stringify(finished.report.results.map((entry) => entry.failures)));
             assert.equal(finished.report.failedSuites, 0);
             assert.equal(finished.report.tests, 2);
@@ -419,6 +433,7 @@ test('two runs at once are isolated from each other, and an immediate repeat is 
         assert.deepEqual(everything(resourcesOfOwner(neighbour.child.pid)), [], 'the neighbour may finish and clean up before the repeat');
 
         const repeat = await launch('repeat');
+        assert.ok(repeat.report, `repeat exited ${repeat.code} (${repeat.signal}): ${repeat.diagnostic}`);
         assert.equal(repeat.code, 0);
         assert.equal(repeat.report.tests, 2);
         assert.equal(repeat.report.skipped, 0);

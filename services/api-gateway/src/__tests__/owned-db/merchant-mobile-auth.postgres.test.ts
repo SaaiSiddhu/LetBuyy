@@ -36,6 +36,38 @@ async function fixture() {
     return { userId, email, password, gateway, call, tokenFor, sourceToken, requestId, request, proof, complete, exchange };
 }
 
+test('native418 attests existing money ACLs without changing bodies or privileges and refuses open or unexpected profiles',async t=>{
+    const forward=readFileSync('database/supabase/migrations/418_merchant_accounts_mobile_handoff.sql','utf8');
+    const down=readFileSync('database/supabase/rollback/418_merchant_accounts_mobile_handoff.rollback.sql','utf8');
+    const targets=['public.issue_gst_invoice(uuid,uuid,text)','public.issue_gift_card(uuid,text,numeric,text,timestamp with time zone,jsonb,uuid,text,text)'];
+    const snapshot=()=>owned.psql(`SELECT jsonb_agg(jsonb_build_array(p.oid,p.proowner,p.proacl,pg_get_functiondef(p.oid)) ORDER BY p.oid)::text FROM pg_proc p WHERE p.oid IN(${targets.map(signature=>`'${signature}'::regprocedure`).join(',')});`);
+    const original=snapshot(),sessions=owned.psql('SELECT count(*) FROM sessions;');
+    owned.script(down);
+    assert.equal(snapshot(),original,'native DOWN preserves the exact original function bodies/ACLs/owners');
+    try {
+        for(const signature of targets)for(const role of ['anon','authenticated','PUBLIC'])await t.test(signature+' refuses an opened '+role+' privilege before native DDL',()=>{
+            owned.psql(`GRANT EXECUTE ON FUNCTION ${signature} TO ${role};`);
+            try {
+                const opened=snapshot();
+                assert.match(owned.psqlScriptExpectError(forward),/418 native auth ACL refuses open Data API definer ACL/);
+                assert.equal(snapshot(),opened,'refusal does not silently rewrite the unexpected permissions');
+                assert.equal(owned.psql("SELECT to_regclass('public.merchant_mobile_requests') IS NULL;"),'t');
+                assert.equal(owned.psql("SELECT count(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='merchant_2fa_factors' AND column_name='login_last_counter';"),'0');
+            } finally {owned.psql(`REVOKE ALL ON FUNCTION ${signature} FROM ${role};`);}
+            assert.equal(snapshot(),original);
+        });
+        await t.test('changed SECURITY DEFINER ABI refuses before native DDL',()=>{
+            owned.psql(`ALTER FUNCTION ${targets[0]} SECURITY INVOKER;`);
+            try {assert.match(owned.psqlScriptExpectError(forward),/418 native auth ACL refuses unexpected definer function ABI/);}
+            finally {owned.psql(`ALTER FUNCTION ${targets[0]} SECURITY DEFINER;`);}
+        });
+    } finally {
+        if(owned.psql("SELECT to_regclass('public.merchant_mobile_requests') IS NULL;")==='t')owned.script(forward);
+    }
+    assert.equal(snapshot(),original,'forward/reapply is an exact ACL/body/owner no-op for the existing money functions');
+    assert.equal(owned.psql('SELECT count(*) FROM sessions;'),sessions);
+});
+
 test('first-party handoff reaches canonical session registration; concurrent redemptions register exactly one session', async () => {
     const f = await fixture(); await f.complete();
     const replies = await Promise.all([f.exchange(), f.exchange()]);

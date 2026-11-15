@@ -5,6 +5,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {compileManagedMigration,compileManagedMigrationBatch,compileManagedJournalBatch} from '../../scripts/supabase/managed-migration-artifact.mjs';
 import {verifiedManagedCatalogFences} from '../../scripts/governance/managed-catalog-fence.mjs';
 import {sqlStatements} from '../../scripts/governance/definer-role-closure.mjs';
+import {loadNativeAuthSourceFreeze,readNativeAuthHistoricalSource} from '../../scripts/governance/native-auth-source-freeze.mjs';
 
 const name='353_approved_platform_job_recovery.sql';
 const source=readFileSync('database/supabase/migrations/'+name,'utf8');
@@ -29,16 +30,19 @@ test('managed artifact preserves business SQL and identifies its different safet
 
 test('every existing reviewed admission block compiles without editing its source',()=>{
     let forward=0,rollback=0;
-    for(const folder of ['migrations','rollback'])for(const file of readdirSync('database/supabase/'+folder)) {
+    const freeze=loadNativeAuthSourceFreeze(process.cwd());
+    for(const folder of ['migrations','rollback'])for(const file of [...readdirSync('database/supabase/'+folder),...(freeze?.files.filter(entry=>entry.kind===folder).map(entry=>entry.name)??[])]) {
         if(!file.endsWith('.sql'))continue;
-        const text=readFileSync('database/supabase/'+folder+'/'+file,'utf8');
+        // Preserved SQL remains part of the adapter regression corpus; this
+        // source-only compilation never executes it in an active schema.
+        const text=readNativeAuthHistoricalSource(process.cwd(),folder,file);
         if(!text.includes('DO $managed_catalog_fence$'))continue;
         const artifact=compileManagedMigration(text,file);
         assert.ok(artifact.receipt.adaptedFences>0,file);
         assert.doesNotMatch(artifact.sql,/PERFORM letbuyy_maintenance\.lock_catalogs_v1\(\)/);
         if(folder==='migrations')forward++;else rollback++;
     }
-    assert.equal(forward,22);assert.equal(rollback,31);
+    assert.equal(forward,22);assert.equal(rollback,33,'the full reviewed corpus includes paired415/416 DOWNs even while their source is held');
 });
 
 for(const [before,after] of [

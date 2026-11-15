@@ -5,6 +5,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {requireOwnedDatabase,createOwnedManagedSupabaseFixture} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 import {compileManagedMigration,compileManagedMigrationBatch,compileManagedJournalBatch,MANAGED_HISTORY_DIGEST_SQL} from '../../scripts/supabase/managed-migration-artifact.mjs';
+import {loadNativeAuthSourceFreeze,readNativeAuthHistoricalSource} from '../../scripts/governance/native-auth-source-freeze.mjs';
 
 // These are synthetic databases with the actual hosted identity/order profiles.
 // No endpoint, provider token, recovery archive or production row is accepted.
@@ -13,7 +14,7 @@ const root='database/supabase/migrations';
 const names=readdirSync(root).filter(name=>/^\d{3}_.*\.sql$/.test(name)).sort();
 const sourceHead=Math.max(...names.map(name=>Number(name.slice(0,3))));
 assert.ok(sourceHead>=418,'this fixture must include the native418 source');
-const read=(name:string)=>readFileSync(root+'/'+name,'utf8');
+const read=(name:string)=>readNativeAuthHistoricalSource(process.cwd(),'migrations',name);
 const entries=(from:number,through:number)=>names.filter(name=>Number(name.slice(0,3))>=from&&Number(name.slice(0,3))<=through).map(name=>({name,source:read(name)}));
 const quote=(s:string)=>"'"+s.replaceAll("'","''")+"'";
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex');
@@ -82,7 +83,7 @@ for(const environment of ['production-413','staging-415-aliases'] as const) {
             const key='syn-history-'+randomUUID();
             const invoke=`BEGIN; SET LOCAL ROLE app_tenant; SET LOCAL app.site_id='${site.siteId}'; SET LOCAL app.actor_id='${owner}';
              SELECT public.apply_warehouse_command_v1('${site.siteId}','${owner}','${key}','location.create',NULL,${quote(JSON.stringify(command))}::jsonb,'synthetic-history-upgrade'); COMMIT;`;
-            const warehousePresent=scope==='complete-source'||environment==='staging-415-aliases';
+            const warehousePresent=(scope==='complete-source'&&names.includes('415_atomic_warehouse_commands.sql'))||environment==='staging-415-aliases';
             const acknowledgment=warehousePresent?psql(invoke):undefined;
             if(warehousePresent)assert.ok(JSON.parse(acknowledgment!).command_receipt,'positive control: actual atomic warehouse acknowledgement');
 
@@ -101,14 +102,14 @@ for(const environment of ['production-413','staging-415-aliases'] as const) {
                 assert.equal(historicalDigest(),historyBefore);assert.deepEqual(snapshot(),originalRows);
             });
             if(environment==='staging-415-aliases')await t.test('a canonical warehouse DOWN refuses the different recorded execution identity',()=>{
-                const forward=entries(415,415),name='415_atomic_warehouse_commands.rollback.sql';
-                const artifact=compileManagedJournalBatch([{name,source:readFileSync('database/supabase/rollback/'+name,'utf8')}],randomUUID(),{expectedHistorySha256:digest(),direction:'down',forwardEntries:forward});
+                const forward=[{name:'415_atomic_warehouse_commands.sql',source:read('415_atomic_warehouse_commands.sql')}],name='415_atomic_warehouse_commands.rollback.sql';
+                const artifact=compileManagedJournalBatch([{name,source:readNativeAuthHistoricalSource(process.cwd(),'rollback',name)}],randomUUID(),{expectedHistorySha256:digest(),direction:'down',forwardEntries:forward});
                 assert.match(fixture.psqlExpectError(artifact.sql),/LETBUYY_MANAGED_HISTORY_ROLLBACK_MISMATCH/);
                 assert.equal(historicalDigest(),historyBefore);assert.deepEqual(snapshot(),originalRows);
             });
             await t.test('each pending entry journals its own DDL atomically with a truthful receipt',()=>{
                 const pending=scope==='native418-only'?entries(418,418):entries(416,sourceHead);
-                assert.deepEqual(pending.map(entry=>Number(entry.name.slice(0,3))),scope==='native418-only'?[418]:Array.from({length:sourceHead-415},(_,i)=>416+i),'every selected source migration is present exactly once');
+                assert.deepEqual(pending.map(entry=>Number(entry.name.slice(0,3))),scope==='native418-only'||loadNativeAuthSourceFreeze(process.cwd())?[418]:Array.from({length:sourceHead-415},(_,i)=>416+i),'every selected active source migration is present exactly once; only the exact owner-approved source freeze can hold earlier versions');
                 apply(pending);
                 assert.equal(psql('SELECT count(*) FROM supabase_migrations.schema_migrations;'),String(versions.length+pending.length));
                 if(scope==='native418-only'){
