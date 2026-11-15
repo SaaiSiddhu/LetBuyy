@@ -15,7 +15,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -263,15 +263,40 @@ test('a cluster name that is already taken is an infrastructure error; what this
 
 async function startSleeper(marker, extraArgs = []) {
     const dir = suiteDir({ 'a-sleeps.test.ts': SLEEPING });
+    const diagnostics = join(mkdtempSync(join(tmpdir(), 'letbuyy-gateway-startup-')), 'runner.log');
     const child = spawn(process.execPath, [runner, '--suite-dir', dir, '--kind', 'gateway-db', '--jobs', '1', '--timeout', '150', ...extraArgs], {
         cwd: repoRoot,
-        stdio: 'ignore',
+        stdio: ['ignore', 'pipe', 'pipe'],
         env: { ...process.env, LETBUYY_TEST_MARKER: marker },
     });
+    for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => appendFileSync(diagnostics, chunk));
     const closed = new Promise((resolve) => child.on('close', (code, signal) => resolve({ code, signal })));
-    await until(() => existsSync(marker), 240_000, 'the suite to hold its owned database');
+    try {
+        await until(() => {
+            if (existsSync(marker)) return true;
+            assert.equal(child.exitCode, null, `owned runner exited before readiness; diagnostics: ${diagnostics}`);
+            assert.equal(child.signalCode, null, `owned runner stopped before readiness; diagnostics: ${diagnostics}`);
+            return false;
+        }, 240_000, `the suite to hold its owned database; diagnostics: ${diagnostics}`);
+    } catch (error) {
+        // A failed startup has no returned owner handle. Close it here so the
+        // caller's finally block cannot accidentally leave a live fixture behind.
+        if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
+        await closed;
+        rmSync(dir, { recursive: true, force: true });
+        throw error;
+    }
     return { dir, child, closed, suitePid: Number(readFileSync(marker, 'utf8')) };
 }
+
+test('failed sleeper startup reports its runner diagnostics and ends before the readiness deadline', { skip: needsDocker }, async () => {
+    const markers = mkdtempSync(join(tmpdir(), 'letbuyy-gateway-marker-'));
+    try {
+        await assert.rejects(startSleeper(join(markers, 'never.pid'), ['--container', 'not-an-owned-container']),
+            /owned runner exited before readiness; diagnostics:/);
+        assert.equal(existsSync(join(markers, 'never.pid')), false);
+    } finally { rmSync(markers, { recursive: true, force: true }); }
+});
 
 test('SIGTERM mid-suite: exit 143, the suite\'s whole process group is gone, and every resource of the run is removed', { skip: needsDocker }, async () => {
     const markerDir = mkdtempSync(join(tmpdir(), 'letbuyy-gateway-marker-'));
