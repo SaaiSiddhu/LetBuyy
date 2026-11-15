@@ -1,8 +1,8 @@
 {
   "base": "e4105581e3346041d71694d3db093eb713773e07",
-  "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
+  "claimCommit": "acff33ba247c3912e4bec1372bad05099413b604",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-15T07:02:47.574044+00:00",
+  "preparedUtc": "2026-11-15T07:12:15.870451+00:00",
   "purpose": "Native Merchant sign-in release only; canonical issuer, Gateway persistence and web/BFF cookie compatibility. No unrelated Gateway feature changes or migrations419\u2013444.",
   "files": [
     {
@@ -14,6 +14,11 @@
       "path": ".github/workflows/ci.yml",
       "sha256": "fde5cc46cda28d768eb0875c1aebeedba1bee719a25fe8311ddd10ba5ab26ef9",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".github/workflows/environment-lifecycle.yml",
+      "sha256": "812a67506573a155533a5c4b112ad04325d55fc3ff62f085daf95231fd1f559d",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
     },
     {
       "path": ".project-cleanup/ci/action.cjs",
@@ -401,6 +406,11 @@
       "source": "Reviewed local narrow-source derivation; see scope notes"
     },
     {
+      "path": "config/governance/secret-scan-exceptions.json",
+      "sha256": "7c95c5f7e38abeaf267dfcb6728d0f1a97426ddaeef807e39bfa05ac255aa03c",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
       "path": "config/security/next-security-headers.ts",
       "sha256": "fbf5022ffb409fb82420409e715e91c7a67e585db7dcfeb083e665c048ab7c63",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -760,7 +770,9 @@
     "Canonical development Android callback54351 implements the existing owner decision; all production/staging redirects unchanged",
     "Native callback Dart projection and finite OS-scheme validator are canonical derived references",
     "Owner branch claim is separate from implementation; exact CI and hosted acceptance remain required",
-    "Lossless compressed CI bundle payloads preserve signed bytes/modes, symbols, upload acknowledgement and failure pins; global cleanup engine unchanged."
+    "Compressed CI bundle preservation keeps signed bytes/modes/symbols, acknowledgement and failed-run pins; global engine unchanged",
+    "Environment lifecycle contract job uses the existing free runner, full history and a frozen dependency install; hosted staging-proof dispatch stays unchanged",
+    "Secret scanner remains strict; only6 matching existing canonical fixture/public sample hash records are carried, with all original historical exceptions preserved"
   ],
   "verification": {
     "authCore": 53,
@@ -772,11 +784,13 @@
     "ownedNativeMfaAdmissionDatabaseTests": 19,
     "ownedAccountsBrowser": 1,
     "governance": 114,
-    "freshCallbackBrowserRecheck": "PASS:54351; owned production-built Accounts browser run5e92cadd024a",
+    "freshCallbackBrowserRecheck": "PASS; owned production-built browser run5e92cadd024a",
     "compressedBundleAdapter": 19,
-    "commonCleanupEngine": "PASS",
     "commonTaskRuntime": 38,
+    "commonCleanupEngine": "PASS",
     "osSchemeNegativeControls": 3,
+    "strictTrackedFixtureRegistry": "PASS;6 existing exact-value synthetic/public records at5locations",
+    "freeLifecycleWorkflowCoverage": 7,
     "exactFinalCommitCi": "PENDING"
   },
   "pushed": false,
