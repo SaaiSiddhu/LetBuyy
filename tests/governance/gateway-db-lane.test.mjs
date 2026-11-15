@@ -90,6 +90,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "gift-card-money-path.test.ts",
         "gst-invoice-issuance.test.ts",
         "gst-tax-computation.test.ts",
+        "historical-rollback-abi-guards.postgres.test.ts",
         "hosted-checkout-buyer-ownership.postgres.test.ts",
         "hosted-checkout-contact-reentry.postgres.test.ts",
         "identity-buyer-browser.postgres.test.ts",

@@ -40,11 +40,16 @@ test('LB-11 restore: it is idempotent (no double credit)', () => {
   assert.match(migration, /IF FOUND THEN/);
 });
 
-test('LB-11 restore: the order cancel/refund transition invokes it (best-effort, idempotent)', () => {
+test('LB-11 restore: cancellation restores tender and refund completion verifies the resulting whole-order state', () => {
   assert.match(orders, /db\.rpc\('restore_gift_card_on_refund'/);
   const handler = orders.slice(orders.indexOf("router.patch('/:id'"));
-  assert.match(handler, /body\.status === 'cancelled' \|\| body\.status === 'refunded'[\s\S]{0,900}restore_gift_card_on_refund/);
+  assert.match(handler, /if \(body\.status === 'cancelled'\)[\s\S]{0,900}restore_gift_card_on_refund/);
   assert.match(handler, /gift_card_refund_restore_failed/);
+  assert.match(orders, /await tryRestoreGiftCardForReversedOrder\(db,\{\.\.\.tenant,orderId\},data\.order\)/);
+  const recovery = read('services/api-gateway/src/lib/gift-card-refund-recovery.ts');
+  assert.match(recovery, /order\.id!==input\.orderId\|\|order\.store_id!==input\.siteId/);
+  assert.match(recovery, /\['cancelled','refunded'\]\.includes\(String\(order\.status\)\)/);
+  assert.match(recovery, /db\.rpc\('restore_gift_card_on_refund'/);
 });
 
 test('LB-11 restore: the canonical refund function is NOT modified by 174', () => {

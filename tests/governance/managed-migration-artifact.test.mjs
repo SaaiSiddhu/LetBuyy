@@ -42,7 +42,7 @@ test('every existing reviewed admission block compiles without editing its sourc
         assert.doesNotMatch(artifact.sql,/PERFORM letbuyy_maintenance\.lock_catalogs_v1\(\)/);
         if(folder==='migrations')forward++;else rollback++;
     }
-    assert.equal(forward,22);assert.equal(rollback,33,'the full reviewed corpus includes paired415/416 DOWNs even while their source is held');
+    assert.equal(forward,22);assert.equal(rollback,38,'the reviewed corpus includes the five repaired historical DOWN fences and held415/416 DOWNs');
 });
 
 for(const [before,after] of [

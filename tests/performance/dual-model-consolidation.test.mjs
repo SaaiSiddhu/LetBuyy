@@ -96,7 +96,9 @@ test('storefront product and order routes avoid JSONB reads when relational flag
     'the two paths differ only by items (legacy) and store_id (relational, for the hydration guard)',
   );
   assert.match(customerOrdersBlock, /hydrateStorefrontOrderItems/);
-  assert.match(customerOrdersBlock, /store_id: _storeId, \.\.\.rest/, 'store_id is selected for the hydration guard only and is not sent to the customer');
+  assert.match(customerOrdersBlock, /store_id: _storeId, tax_snapshot, \.\.\.rest/, 'internal store and raw tax snapshot are stripped before returning the customer payload');
+  assert.match(customerOrdersBlock, /CheckoutTotalsQuoteSchema\.safeParse\(tax_snapshot\)/);
+  assert.match(customerOrdersBlock, /quote\.success \? \{ totals_quote: quote\.data \} : \{\}/);
 });
 
 test('dual-model migrations are additive and keep rollback columns', () => {

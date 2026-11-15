@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-15T14:07:39.168041+00:00",
+  "preparedUtc": "2026-11-15T15:15:03.769200+00:00",
   "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
@@ -114,6 +114,11 @@
       "path": "apps/merchant/web/src/app/api/auth/logout/route.ts",
       "sha256": "cc746f056d2d28f3a8ffa9b361fd30044a608d5e919ae76f56097b80c7daf9b6",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/merchant/web/src/components/merchantNavigation.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "8d091a03d6f7e0c17b33069d344c43ce4951fa45fb618d0ddc1ebd221987c9df"
     },
     {
       "path": "apps/merchant/web/src/components/orders/order-line-items.test.tsx",
@@ -491,8 +496,28 @@
       "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
+      "path": "database/supabase/rollback/401_included_theme_library_allowance.rollback.sql",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "186eaa35e602a6282a5903a5022ac3a78a50f18ff0826b70e8fe1ff5ab43240a"
+    },
+    {
+      "path": "database/supabase/rollback/410_checkout_custom_host_derivation.rollback.sql",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "ce7328a211e5157d9927bdedda62d90c57f1182b249670d2d5c7eabcaf5bb98f"
+    },
+    {
+      "path": "database/supabase/rollback/411_authoritative_checkout_gst.rollback.sql",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "6084bc1a8e59419bdbed179984c40465b2b8f26f5315302b38811ca21f1f22d0"
+    },
+    {
+      "path": "database/supabase/rollback/412_invoice_checkout_fact_parity.rollback.sql",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "3c4d02f0f1ff7d38b2926ea351ba8eaa937550ee2e04476fc77c8746450f441f"
+    },
+    {
       "path": "database/supabase/rollback/414_gift_card_issue_replay_integrity.rollback.sql",
-      "sha256": "bdafe1e5f805c5feb11f4bcfe491f73b3d4a82c99fa2467513388eae56674432",
+      "sha256": "b6ff64bc130019c80148c4faaebd652a9c85724e19a12db7d69b0c3238663050",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
@@ -509,6 +534,11 @@
       "path": "docs/governance/app-api-route-ownership.md",
       "sha256": "c2afb62f8db2657929109ef98f1c2dd07da8edc67151572c605e3e74607a0add",
       "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-ci-repair-qualification.md",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "a39352d2850d0112e814b7039f5ef48038353b36329060e0726fe375e34fb5b7"
     },
     {
       "path": "docs/implementation/merchant-native418-source-freeze-decision.md",
@@ -661,6 +691,11 @@
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
+      "path": "scripts/governance/rollback-signature-guards.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "986faa8cfaecac046e1b538ccef522309db0ecde4c491dda7bda5e100e947f9e"
+    },
+    {
       "path": "scripts/governance/run-executable-suites.mjs",
       "sha256": "7c864b632063ae1d1ba153efca0a18eb75c07ccf6bdbd315231c78fbb6d4bdf4",
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
@@ -731,6 +766,11 @@
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
+      "path": "services/api-gateway/src/__tests__/owned-db/historical-rollback-abi-guards.postgres.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "f1c07759123b8157c20dc7e223afde55ec2fa1ace6134cd02d1b8fd572550514"
+    },
+    {
       "path": "services/api-gateway/src/__tests__/owned-db/merchant-auth-admission.postgres.test.ts",
       "sha256": "c9ffb23e09a4442c765272715f2080417d81656228d6c0dec084dd978d586d9d",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -774,6 +814,11 @@
       "path": "services/api-gateway/src/tenant/tenant-tables.registry.ts",
       "sha256": "3a9b602c5839cf4a8728389169dc7f5822b121d63a4d3d78d2ef1953aaa58870",
       "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "services/api-gateway/wrangler.toml",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "cc23ac84e3063682738897377302cbf1e47196fe6998862e9cfb81d13d2716c6"
     },
     {
       "path": "services/lcis-api/package.json",
@@ -897,7 +942,7 @@
     },
     {
       "path": "tests/governance/gateway-db-lane.test.mjs",
-      "sha256": "3b0a4e1f9f5c8adb8d528ce668ad06e3cbb1d99b98e5d1f604753cc3e354b64a",
+      "sha256": "8ec53036d5c442f244e96141c42c99b71e90fceacb4ec4a97dfc27e161bd2b37",
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
@@ -913,7 +958,7 @@
     {
       "path": "tests/governance/managed-migration-artifact.test.mjs",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
-      "sha256": "3e2a34dfbd80ae07aa5b481b10d97755b4f51c863fdc09ae451e50f1beb7d3ae"
+      "sha256": "55cddc9cb2db6a0c710bf5a57d2b27c8c52254f0f57c67ff0e734e4c41abebff"
     },
     {
       "path": "tests/governance/native-auth-migration-profile.test.mjs",
@@ -934,6 +979,11 @@
       "path": "tests/governance/platform-callback-scheme.test.mjs",
       "sha256": "78b900764a517640c821f8644a29890fe75da9d2f13500676fd36fb02b042f24",
       "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "tests/governance/rollback-signature-precondition.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "31a835e1688ae52ae27a709dc8b33d4a04824f3b2e1ca4218afeb0a9b3e3c3e2"
     },
     {
       "path": "tests/governance/self-hosted-flutter.test.mjs",
@@ -971,6 +1021,11 @@
       "sha256": "163ea9f0bf905a8aeede733a243dfa58045432a76574b06423ac1a1c4fb7b579"
     },
     {
+      "path": "tests/launch/lb-experience-flow.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "e1de0437271fc1865390ef78479dbc70882caaf692bfcaf7b3593da5c7507551"
+    },
+    {
       "path": "tests/launch/lb-s2-route-template-closure.test.mjs",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "99f7d103effdaa1e73593beee547e94b7ea0e33877549057236a46922ca9ae90"
@@ -981,6 +1036,11 @@
       "sha256": "78ca11c8fe259cfeef25eb70693ad5fbb4d6f79329d955e3c6a3003721fb6ba8"
     },
     {
+      "path": "tests/launch/lb11-refund-restore.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "6166f84cb1313d73065f78e65fd216f92e8c6f534f696db0b321a96d28c74bb4"
+    },
+    {
       "path": "tests/launch/lb12-registration.test.mjs",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "683218b29c1c950bb8a1b2d6356c1d564406d7c4b21f8b775fbc6f9cdc0588a3"
@@ -989,6 +1049,11 @@
       "path": "tests/launch/lb7-shipping-gst.test.mjs",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "06a65ec8600fbe457e92be02afb4a0589802ce4bae3c74709a70c8a6379b8d88"
+    },
+    {
+      "path": "tests/operations/queue-bulk-cost.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "933da3f86a8a8086b26d02c0fd4c141c8e1f866cd1aa56012648cc5040523f78"
     },
     {
       "path": "tests/owned-db/core-presets-browser.postgres.test.ts",
@@ -1039,6 +1104,11 @@
       "path": "tests/owned-db/worker-sql-invocation.postgres.test.ts",
       "sha256": "adf1d9f2af15e51c10949efc00c79b990d708cb7411af386a515fb0888ba7109",
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/performance/dual-model-consolidation.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "b2708c1f36056946cfcfa677a08eceb2e698b5ff15f3644c78656b6775fceb2f"
     }
   ],
   "scopeNotes": [
@@ -1051,8 +1121,10 @@
     "Existing Accounts sole-issuer/native PKCE/session/MFA implementation, environment-bound callbacks and web/BFF cookie compatibility are retained",
     "Existing callback54351, strict secret scanner, frozen dependencies, fake-tool isolation, file URL decoding and compressed CI bundle protections remain intact",
     "Source withdrawal followed byte verification and isolated mirror build/unit/database/governance qualification; original canonical primary and hosted history are untouched",
-    "Earlier actual-backup and80-per-profile results apply to old439ccfe3 SQL only; new0626be3f SQL passed88 checks per exact schema; actual-backup restore rehearsal remains pending",
-    "This source freeze is approved source/local only; its changed SQL/governance is not authorized for publication or hosted execution by this decision"
+    "Earlier actual-backup and80-per-profile results apply to old439ccfe3 SQL only; new0626be3f SQL passed88 checks per exact schema; actual encrypted-backup native418 rehearsal passed both profiles ona9bcbcabc with identical418 bytes",
+    "Later owner continuation authorizes finishing the11 repairs and free CI/release; historical DOWN guard additions preserve previous business SQL and forward history; all release gates remain mandatory",
+    "Recovery-policy admission is separately pending under the original Free prototype decision; source/backups/CI alone are not hosted or physical acceptance",
+    "New local continuation fixes are source-qualified with124 inventory/artifact/rollback checks,362 contracts,Gateway types and final114-validator governance; no CI waiver or hosted acceptance claimed"
   ],
   "verification": {
     "scope": "new source freeze; mirror-qualified, not hosted or physical acceptance",
@@ -1069,7 +1141,8 @@
       "FAIL": 0,
       "BLOCKED": 0,
       "SKIP": 0,
-      "NOT_APPLICABLE": 1
+      "NOT_APPLICABLE": 1,
+      "scope": "final owned mirror; hosted environment refs/branch lag not certified here"
     },
     "exactCurrentSourceCriticalProfiles": {
       "production": {
@@ -1085,8 +1158,15 @@
         "run": "f86c21ec586b"
       }
     },
-    "actualNewSqlBackupRestore": "PENDING",
-    "freshExactSourceCi": "NOT PUBLISHED; only prior24e publication is authorized",
+    "actualNewSqlBackupRestore": {
+      "source": "a9bcbcabc213b4770bdc0bd9933e66fe8107f568",
+      "production": "PASS522tables527268rows341oldHistory",
+      "staging": "PASS523tables286621rows343oldHistory",
+      "native418Only": true,
+      "same418SqlHashes": true,
+      "hostedWrites": false
+    },
+    "freshExactSourceCi": "PENDING publication/free runner; latest owner continuation requests CI and release after gates",
     "stagingAcceptance": "PENDING",
     "iphoneAcceptance": "PENDING",
     "tenantRT1Through9": {
@@ -1121,7 +1201,24 @@
       "run": "20261115T135934Z-native418-lifecycle-diagnostics-requalification-8f7ead2383f14a2c92b7a989eba817c0",
       "registryFinalization": "Successful command retained; dead active lease recovered conservatively as failed, no deletion"
     },
-    "broadPureRemaining": "11 original assertions unresolved after four focused fixes; no full aggregate rerun or green claim"
+    "broadPureRemaining": "The11 original failures pass; two newly added inventory/count requirements pass124-check recheck. Exact-source full CI remains mandatory.",
+    "elevenRepairs": {
+      "focusedSource": 139,
+      "ownedRollbackGuardControls": 12,
+      "ownedGst": 12,
+      "ownedThemeInstall": 9,
+      "inventoryAndFenceCountRecheck": {
+        "passed": 124,
+        "failed": 0,
+        "skipped": 0
+      },
+      "broadAggregate": {
+        "passed": 3177,
+        "failed": 2,
+        "skipped": 15,
+        "status": "original11 pass; new suite-registration and fence-count failures fixed and covered by124-check recheck; not a fresh single green full run"
+      }
+    }
   },
   "pushed": false,
   "deployed": false,
