@@ -1,3 +1,4 @@
+import { NODE_CLI_SHEBANG } from '../helpers/node-cli-shim.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {mkdtempSync,writeFileSync,chmodSync,readFileSync,existsSync} from 'node:fs';
@@ -11,7 +12,7 @@ const fixtureArgs={name:'letbuyy-exec-prepared-recording',database:'synthetic_pr
 function run(value,{plain=false,disableJit=false,disableAutovacuum=false}={}) {
     const dir=mkdtempSync(join(tmpdir(),'n9-346-prepared-recording-')),log=join(dir,'argv.json');
     const fake=join(dir,'docker');
-    writeFileSync(fake,`#!${process.execPath}\nimport {writeFileSync} from 'node:fs';writeFileSync(process.env.N9_ARGV_FILE,JSON.stringify(process.argv.slice(2)));process.stdout.write('synthetic-container-id\\n');\n`);chmodSync(fake,0o755);
+    writeFileSync(fake,`${NODE_CLI_SHEBANG}import {writeFileSync} from 'node:fs';writeFileSync(process.env.N9_ARGV_FILE,JSON.stringify(process.argv.slice(2)));process.stdout.write('synthetic-container-id\\n');\n`);chmodSync(fake,0o755);
     const env={...process.env,PATH:dir+':'+process.env.PATH,N9_ARGV_FILE:log,LETBUYY_EXECUTABLE_PG_IMAGE:'postgres:16-alpine'};
     delete env.LETBUYY_EXECUTABLE_PREPARED_TRANSACTIONS;if(value!==undefined)env.LETBUYY_EXECUTABLE_PREPARED_TRANSACTIONS=value;
     const result=spawnSync(process.execPath,['--input-type=module','-e',`import {startCluster} from ${JSON.stringify(moduleUrl)};startCluster(${JSON.stringify({...fixtureArgs,plain,disableJit,disableAutovacuum})});`],{env,encoding:'utf8',timeout:10000});

@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-15T08:07:41.238008+00:00",
+  "preparedUtc": "2026-11-15T09:26:32.189584+00:00",
   "purpose": "Native Merchant sign-in release only; canonical issuer, Gateway persistence and web/BFF cookie compatibility. No unrelated Gateway feature changes or migrations419\u2013444.",
   "files": [
     {
@@ -741,6 +741,11 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "tests/app-platform/lifecycle.test.mjs",
+      "sha256": "cad1f92486dce5372385b99cb1132f44ce12ca2fca326bd5080fb1f2992d1daa",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
       "path": "tests/auth/csrf-contract.test.mjs",
       "sha256": "f69c4df25c99a3d143a5beb87db249c9e71c09943553c199036c28f175f2a2b2",
       "source": "Reviewed local narrow-source derivation; see scope notes"
@@ -761,9 +766,19 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "tests/auth/rbac-categories.test.mjs",
+      "sha256": "e70a4c9c7e184b795b895133e93fc1653fa261961d416e7ac57c4fe84f34edc5",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
       "path": "tests/auth/session-verifier.test.mjs",
       "sha256": "24f2bec2668f40b61ea0f75f41e9320e5f513f2ccdb166f01af338ac10409719",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/executable/service-role-fresh-db-grants-postgres.test.mjs",
+      "sha256": "6b91b5961b9df0e7b14d9de91be7bbf71720ada9f4cbd1d6cffd794fe81b0c77",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
     },
     {
       "path": "tests/governance/dependency-manifest-dev-sources.test.mjs",
@@ -776,6 +791,21 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "tests/governance/executable-prepared-transactions.test.mjs",
+      "sha256": "6f6ebe6b9fe21f8d1ae680f05bb123070a044704031e4aad668db4c258cc69b3",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/governance/executable-reaper-selection.test.mjs",
+      "sha256": "33aebef5eeab8bc2734312d1fa5b1702aad38bc7a43b01450d5f0ede204eeaef",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/governance/foundation-restore-drill.test.mjs",
+      "sha256": "da32cf82742d6637028b67a8977e97dd9d071788dd2def53ed87511c8b476a5f",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
       "path": "tests/governance/gateway-db-lifecycle.test.mjs",
       "sha256": "eb721acf0151fd93d3df50b4a47d8fe6d87461bcd46eb94ebb920373987b7aff",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -784,6 +814,11 @@
       "path": "tests/governance/governance-source-traversal.test.mjs",
       "sha256": "bb17c1b751d36f13219df465c26eb2c25c86e7ad4adeac31640161eb7d46f7c3",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/node-cli-shim.test.mjs",
+      "sha256": "0420c2228f70398e40f0f823caa0431088a3ac1ea22fb1ae52e947cff9d5e2e8",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
     },
     {
       "path": "tests/governance/platform-callback-scheme.test.mjs",
@@ -811,6 +846,11 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "tests/helpers/node-cli-shim.mjs",
+      "sha256": "ab270871c2f7c1bc068827c003007e88e49ca82101e43cc9054c10941fbc0f1b",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
       "path": "tests/owned-db/managed-hosted-history-upgrade.postgres.test.ts",
       "sha256": "c5afff047a8d44b5a3c58c0393c7b9a6f97b0f3eb27f1244b6a40a5ad4eb64c4",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -833,7 +873,8 @@
     "Compressed CI bundle preservation keeps signed bytes/modes/symbols, acknowledgement and failed-run pins; global engine unchanged",
     "Environment lifecycle contract job uses the existing free runner, full history and a frozen dependency install; hosted staging-proof dispatch stays unchanged",
     "Secret scanner remains strict; only6 matching existing canonical fixture/public sample hash records are carried, with all original historical exceptions preserved",
-    "Current Next router fixtures include required bfcacheId; schema discovery decodes file URLs without changing any tenancy predicate"
+    "Current Next router fixtures include required bfcacheId; schema discovery decodes file URLs without changing any tenancy predicate",
+    "Auth consumer harnesses load actual new exports; fake CLI shebangs support spaced interpreter paths; private415/416 tables retain exact raw-denial and guarded-API tests"
   ],
   "verification": {
     "authCore": 53,
@@ -852,11 +893,14 @@
     "osSchemeNegativeControls": 3,
     "strictTrackedFixtureRegistry": "PASS;6 existing exact-value synthetic/public records at5locations",
     "freeLifecycleWorkflowCoverage": 7,
-    "exactFinalCommitCi": "PENDING",
+    "exactFinalCommitCi": "PENDING; current broad9e run has unaccepted additional failures",
     "webRouterFixtureBehavior": 193,
     "webRouterFixtureTypecheck": "PASS both apps;14 tasks",
     "tenantPathAndScopeRegression": 26,
-    "actualFreshStagingRestore": "PASS653;523tables286621rows; exact selected SQL unchanged by CI-only corrections"
+    "actualFreshStagingRestore": "PASS653;523tables286621rows; exact selected SQL unchanged by CI-only corrections",
+    "authAndFakeToolRegression": 120,
+    "shimSpaceNegativeControl": 1,
+    "modernDefaultPrivateCommandDatabaseTests": 6
   },
   "pushed": false,
   "deployed": false,

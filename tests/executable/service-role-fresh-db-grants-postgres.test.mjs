@@ -285,6 +285,10 @@ test('the whole modern-default chain preserves backend reads and the exact opaqu
       inventory_adjustment_receipts:['app_tenant','public.apply_inventory_adjustment_v1(uuid,uuid,text,jsonb)'],
       merchant_totp_commands_v1:['service_role','public.execute_merchant_totp_command_v1(uuid,text,text,jsonb)'],
       product_edit_receipts:['app_tenant','public.read_product_for_edit_v1(uuid,uuid,uuid)'],
+      //415/416 deliberately expose commands/readback, never raw receipt/import state.
+      product_import_jobs:['app_tenant','public.read_product_import_v1(uuid,uuid,uuid)'],
+      product_import_rows:['app_tenant','public.read_product_import_rows_v1(uuid,uuid,uuid,integer,integer,text)'],
+      warehouse_command_receipts:['app_tenant','public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text)'],
       reel_upload_intents:['service_role','public.reel_upload_v1(text,uuid,uuid,text,uuid,jsonb,jsonb,jsonb)'],
       ...Object.fromEntries(['commerce_reel_events','commerce_reel_revisions','commerce_reels','reel_asset_provenance','reel_processing_receipts','reel_review_inspections']
         .map(table=>[table,['service_role','public.read_reel_reviews_v1(uuid,uuid,uuid,jsonb,integer)']])),
