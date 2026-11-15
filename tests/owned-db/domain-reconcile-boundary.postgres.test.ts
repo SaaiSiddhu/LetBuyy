@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 // Actual mounted Gateway, owned PG/PostgREST, actual native queue sender. Only DNS/Vercel transports are synthetic.
 import assert from 'node:assert/strict';
 import test,{before,after} from 'node:test';
@@ -25,8 +26,8 @@ const run=async(headers?:Record<string,string>,targetPath=path,body='{}',env=gat
 before(async()=>{
  seedSyntheticTenant(owned.psql,tenant);
  owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name) VALUES('${actor}','${email}',true,'Synthetic job owner');UPDATE sites SET custom_user_id='${actor}',custom_domain='${domain}',custom_domain_status='verifying',custom_domain_verification_token=NULL WHERE id='${tenant.siteId}';`);
- const coordinatorEntry=new URL('../../services/api-gateway/src/durable/runtime-coordinator.ts',import.meta.url).pathname;
- const coordinatorBundle=buildSync({stdin:{contents:`export {LetbuyyRuntimeDurableObject} from ${JSON.stringify(coordinatorEntry)};export default {fetch(){return new Response('owned coordinator')}};`,resolveDir:new URL('../../',import.meta.url).pathname,sourcefile:'owned-native-admission.ts'},bundle:true,write:false,platform:'browser',format:'esm',target:'es2022',conditions:['workerd','browser'],external:['node:*'],logLevel:'silent'}).outputFiles[0].text;
+ const coordinatorEntry=fileURLToPath(new URL('../../services/api-gateway/src/durable/runtime-coordinator.ts',import.meta.url));
+ const coordinatorBundle=buildSync({stdin:{contents:`export {LetbuyyRuntimeDurableObject} from ${JSON.stringify(coordinatorEntry)};export default {fetch(){return new Response('owned coordinator')}};`,resolveDir:fileURLToPath(new URL('../../',import.meta.url)),sourcefile:'owned-native-admission.ts'},bundle:true,write:false,platform:'browser',format:'esm',target:'es2022',conditions:['workerd','browser'],external:['node:*'],logLevel:'silent'}).outputFiles[0].text;
  const admissionNetwork=createFetchMock();admissionNetwork.disableNetConnect();coordinator=new Miniflare({modules:true,script:coordinatorBundle,compatibilityDate:'2026-05-25',compatibilityFlags:['nodejs_compat'],cf:false,fetchMock:admissionNetwork,durableObjects:{RUNTIME_COORDINATOR:'LetbuyyRuntimeDurableObject'},durableObjectsPersist:false,bindings:{ENVIRONMENT:'production',DEPLOYMENT_ENV:'production'}});
  const admission=await coordinator.getDurableObjectNamespace('RUNTIME_COORDINATOR');
  gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),{RUNTIME_COORDINATOR:admission,ENVIRONMENT:'production',APP_ENV:'production',NODE_ENV:'production',DEPLOYMENT_ENV:'production',INTERNAL_API_KEYRING:JSON.stringify({[caller]:key}),CACHE:{get:async(k:string)=>cursorCache.get(k)||null,put:async(k:string,v:string)=>{cursorCache.set(k,v);}},CUSTOM_DOMAIN_CNAME_TARGET:target,VERCEL_API_TOKEN:'synthetic-vercel-token',VERCEL_STOREFRONT_PROJECT_ID:'synthetic-commerce',VERCEL_TEAM_ID:'synthetic-team',FEATURE_AI_CREDIT_PURCHASE:'false',AI_CREDIT_PURCHASE_MODE:'sandbox',AI_CREDIT_PURCHASE_PROVIDER:'letbuyy_sandbox'}));
@@ -170,7 +171,7 @@ test('provider outage does not invent drift, and large requested pages stay with
 });
 
 test('actual native queue request crosses its service binding into the real mounted Gateway and owned database',async()=>{
- const root=new URL('../../',import.meta.url).pathname;const entry=new URL('../../services/queue-workers/src/index.ts',import.meta.url).pathname;
+ const root=fileURLToPath(new URL('../../',import.meta.url));const entry=fileURLToPath(new URL('../../services/queue-workers/src/index.ts',import.meta.url));
  const bundled=buildSync({stdin:{contents:`import {triggerCustomDomainReconciler} from ${JSON.stringify(entry)};export default {async fetch(request,env){await triggerCustomDomainReconciler(env,'synthetic-owned-native');return new Response(null,{status:204});}};`,resolveDir:root,sourcefile:'owned-native-domain-job.ts'},bundle:true,write:false,platform:'browser',format:'esm',target:'es2022',conditions:['workerd','browser'],external:['node:*'],logLevel:'silent'}).outputFiles[0].text;
  const fetchMock=createFetchMock();fetchMock.disableNetConnect();const responses:Array<{status:number;checked:unknown}>=[];
  let redirectReply=false,serviceCalls=0;

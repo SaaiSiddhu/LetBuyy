@@ -11,6 +11,8 @@ import {compileManagedMigration,compileManagedMigrationBatch,compileManagedJourn
 const parent=requireOwnedDatabase();
 const root='database/supabase/migrations';
 const names=readdirSync(root).filter(name=>/^\d{3}_.*\.sql$/.test(name)).sort();
+const sourceHead=Math.max(...names.map(name=>Number(name.slice(0,3))));
+assert.ok(sourceHead>=418,'this fixture must include the native418 source');
 const read=(name:string)=>readFileSync(root+'/'+name,'utf8');
 const entries=(from:number,through:number)=>names.filter(name=>Number(name.slice(0,3))>=from&&Number(name.slice(0,3))<=through).map(name=>({name,source:read(name)}));
 const quote=(s:string)=>"'"+s.replaceAll("'","''")+"'";
@@ -20,8 +22,9 @@ const registry=JSON.parse(readFileSync('config/supabase/history-aliases.json','u
     legacy_timestamp_versions:Record<string,string>;
 };
 
+for(const scope of ['complete-source','native418-only'] as const)
 for(const environment of ['production-413','staging-415-aliases'] as const) {
-    test(environment+' upgrades to 444 under managed non-superuser admission without replaying or rewriting historical identities',{timeout:360_000},async t=>{
+    test(environment+' '+scope+' upgrades to '+(scope==='complete-source'?sourceHead:418)+' under managed non-superuser admission without replaying or rewriting historical identities',{timeout:360_000},async t=>{
         const fixture=await createOwnedManagedSupabaseFixture(parent);
         const {psql,admin}=fixture;
         const digest=()=>psql(MANAGED_HISTORY_DIGEST_SQL+';');
@@ -71,7 +74,7 @@ for(const environment of ['production-413','staging-415-aliases'] as const) {
                     apply([{name:alias.recorded_name,source:historical}]);
                 }
                 assert.equal(psql('SELECT count(*) FROM supabase_migrations.schema_migrations;'),'343');
-            } else {
+            } else if(scope==='complete-source') {
                 apply(entries(414,415));
             }
 
@@ -79,10 +82,11 @@ for(const environment of ['production-413','staging-415-aliases'] as const) {
             const key='syn-history-'+randomUUID();
             const invoke=`BEGIN; SET LOCAL ROLE app_tenant; SET LOCAL app.site_id='${site.siteId}'; SET LOCAL app.actor_id='${owner}';
              SELECT public.apply_warehouse_command_v1('${site.siteId}','${owner}','${key}','location.create',NULL,${quote(JSON.stringify(command))}::jsonb,'synthetic-history-upgrade'); COMMIT;`;
-            const acknowledgment=psql(invoke);
-            assert.ok(JSON.parse(acknowledgment).command_receipt,'positive control: actual atomic warehouse acknowledgement');
+            const warehousePresent=scope==='complete-source'||environment==='staging-415-aliases';
+            const acknowledgment=warehousePresent?psql(invoke):undefined;
+            if(warehousePresent)assert.ok(JSON.parse(acknowledgment!).command_receipt,'positive control: actual atomic warehouse acknowledgement');
 
-            const protectedTables=['users_custom','sites','inventory_locations','warehouse_command_receipts'];
+            const protectedTables=['users_custom','sites',...(warehousePresent?['inventory_locations','warehouse_command_receipts']:[])];
             const columns=Object.fromEntries(protectedTables.map(table=>[table,JSON.parse(psql(`SELECT jsonb_agg(column_name ORDER BY ordinal_position) FROM information_schema.columns WHERE table_schema='public' AND table_name='${table}';`)) as string[]]));
             const snapshot=()=>Object.fromEntries(protectedTables.map(table=>[table,psql(`SELECT md5(coalesce(jsonb_agg(to_jsonb(t)-ARRAY(SELECT jsonb_object_keys(to_jsonb(t)) EXCEPT SELECT unnest(ARRAY[${columns[table].map(quote).join(',')}]::text[])) ORDER BY to_jsonb(t)::text),'[]'::jsonb)::text) FROM public.${table} t;`)]));
             const originalRows=snapshot();
@@ -92,7 +96,7 @@ for(const environment of ['production-413','staging-415-aliases'] as const) {
             const provenanceBefore=psql("SELECT md5(jsonb_agg(to_jsonb(j) ORDER BY migration,object_signature,grantee,privilege,action)::text) FROM migration_privilege_journal j WHERE migration IN('414','415');");
 
             await t.test('existing versions refuse replay without changing their SQL or retained rows',()=>{
-                const replay=compileManagedJournalBatch(entries(414,415),randomUUID(),{expectedHistorySha256:digest()});
+                const replay=compileManagedJournalBatch(entries(warehousePresent?414:413,warehousePresent?415:413),randomUUID(),{expectedHistorySha256:digest()});
                 assert.match(fixture.psqlExpectError(replay.sql),/LETBUYY_MANAGED_HISTORY_VERSION_EXISTS/);
                 assert.equal(historicalDigest(),historyBefore);assert.deepEqual(snapshot(),originalRows);
             });
@@ -103,9 +107,15 @@ for(const environment of ['production-413','staging-415-aliases'] as const) {
                 assert.equal(historicalDigest(),historyBefore);assert.deepEqual(snapshot(),originalRows);
             });
             await t.test('each pending entry journals its own DDL atomically with a truthful receipt',()=>{
-                const pending=entries(416,444);assert.equal(pending.length,29);
+                const pending=scope==='native418-only'?entries(418,418):entries(416,sourceHead);
+                assert.deepEqual(pending.map(entry=>Number(entry.name.slice(0,3))),scope==='native418-only'?[418]:Array.from({length:sourceHead-415},(_,i)=>416+i),'every selected source migration is present exactly once');
                 apply(pending);
-                assert.equal(psql('SELECT count(*) FROM supabase_migrations.schema_migrations;'),'372');
+                assert.equal(psql('SELECT count(*) FROM supabase_migrations.schema_migrations;'),String(versions.length+pending.length));
+                if(scope==='native418-only'){
+                    assert.equal(psql("SELECT count(*) FROM supabase_migrations.schema_migrations WHERE version IN('416','417');"),'0','unrelated versions are not fabricated');
+                    if(environment==='production-413')assert.equal(psql("SELECT count(*) FROM supabase_migrations.schema_migrations WHERE version IN('414','415');"),'0');
+                    assert.equal(psql("SELECT to_regclass('public.merchant_mobile_requests') IS NOT NULL;"),'t');
+                }
                 assert.equal(historicalDigest(),historyBefore);
                 assert.deepEqual(snapshot(),originalRows);
                 assert.equal(psql("SELECT md5(jsonb_agg(to_jsonb(j) ORDER BY migration,object_signature,grantee,privilege,action)::text) FROM migration_privilege_journal j WHERE migration IN('414','415');"),provenanceBefore);
@@ -117,7 +127,7 @@ for(const environment of ['production-413','staging-415-aliases'] as const) {
                 }
                 assert.equal(psql("SELECT to_regnamespace('letbuyy_maintenance') IS NULL;"),'t');
             });
-            await t.test('old acknowledgement replays after upgrade with tenant boundaries intact',()=>{
+            if(warehousePresent)await t.test('old acknowledgement replays after upgrade with tenant boundaries intact',()=>{
                 assert.equal(psql(invoke),acknowledgment);
                 assert.deepEqual(snapshot(),originalRows);
                 assert.equal(psql("SELECT has_function_privilege('app_tenant','public.apply_warehouse_command_v1(uuid,uuid,text,text,uuid,jsonb,text)','EXECUTE');"),'t');

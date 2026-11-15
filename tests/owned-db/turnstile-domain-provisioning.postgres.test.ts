@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 // Real Gateway/PostgreSQL/native coordinator; provider HTTP is an isolated fixture.
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -33,7 +34,7 @@ test('real owner verification provisions one serialized widget through the nativ
         }
         return Response.json({ success: true, result: widget }) as never;
     };
-    const entry = new URL('../../services/api-gateway/src/durable/runtime-coordinator.ts', import.meta.url).pathname;
+    const entry = fileURLToPath(new URL('../../services/api-gateway/src/durable/runtime-coordinator.ts', import.meta.url));
     const bundle = buildSync({ stdin: { contents: `export {LetbuyyRuntimeDurableObject} from ${JSON.stringify(entry)};export default {fetch(){return new Response('synthetic native coordinator')}};`, resolveDir: process.cwd(), sourcefile: 'owned-turnstile-coordinator.ts' }, bundle: true, write: false, platform: 'browser', format: 'esm', target: 'es2022', conditions: ['workerd', 'browser'], external: ['node:*'], logLevel: 'silent' }).outputFiles[0].text;
     const native = new Miniflare({ modules: true, script: bundle, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false, outboundService: provider, durableObjects: { RUNTIME_COORDINATOR: { className: 'LetbuyyRuntimeDurableObject', useSQLite: true } }, durableObjectsPersist: false, bindings: { ENVIRONMENT: 'production', TURNSTILE_DOMAIN_MANAGEMENT: JSON.stringify(config) } });
     const admission = await native.getDurableObjectNamespace('RUNTIME_COORDINATOR');

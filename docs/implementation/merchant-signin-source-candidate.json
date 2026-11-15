@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-15T09:26:32.189584+00:00",
+  "preparedUtc": "2026-11-15T12:31:17.965086+00:00",
   "purpose": "Native Merchant sign-in release only; canonical issuer, Gateway persistence and web/BFF cookie compatibility. No unrelated Gateway feature changes or migrations419\u2013444.",
   "files": [
     {
@@ -456,6 +456,11 @@
       "source": "Reviewed local narrow-source derivation; see scope notes"
     },
     {
+      "path": "config/eslint/boundary-baseline.json",
+      "sha256": "3be845512269a27cf48b020c771dcba2e3cb3e2ae534befe16a50f903b0da2b6",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
       "path": "config/governance/secret-scan-exceptions.json",
       "sha256": "7c95c5f7e38abeaf267dfcb6728d0f1a97426ddaeef807e39bfa05ac255aa03c",
       "source": "Reviewed local narrow-source derivation; see scope notes"
@@ -621,14 +626,29 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "scripts/governance/native-auth-migration-profile.mjs",
+      "sha256": "d16ce29251abd8cf546731cc3e31b141c21e9fde533b72b497f33fa0d51bd8e7",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "sha256": "77c8aa8f06abd785b6e2551635a0a3bca873947da2c3496600ee5f8e34e0300b",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "sha256": "7c864b632063ae1d1ba153efca0a18eb75c07ccf6bdbd315231c78fbb6d4bdf4",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
       "path": "scripts/governance/tenant-registry-common.mjs",
       "sha256": "866fb245cc998431923c677b28125b874c8485b1e9333ae037fbfe8a60ad1dec",
       "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
     },
     {
       "path": "scripts/governance/test-suite-catalog.mjs",
-      "sha256": "62e234418beffc09933e10aa1586a3afa893a48bf48449be198c7a9031f71cca",
-      "source": "Reviewed local narrow-source derivation; see scope notes"
+      "sha256": "29025f83b6b4e5039ef6c15181c389d081f971940723487e1dfd90add7a3fed7",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
       "path": "scripts/governance/validator-orchestrator.mjs",
@@ -669,6 +689,16 @@
       "path": "services/api-gateway/package.json",
       "sha256": "a4c1b2514ce7cd650cc3a3cf137de5ee6dbcef727cc0d5366fe1c34c7b1f0650",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/gift-card-money-path.test.ts",
+      "sha256": "b180c79ede65800ad31a2cd8ae10534e86211aae6a6bfbf59983a08d57d614cb",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/README.md",
+      "sha256": "76d7a3418b02bee048880498e5123668e48673c91e4720c4defd552f601d2044",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
       "path": "services/api-gateway/src/__tests__/owned-db/merchant-auth-admission.postgres.test.ts",
@@ -781,6 +811,31 @@
       "source": "Local tested CI harness correction; production code and SQL unchanged"
     },
     {
+      "path": "tests/federation/app-install-idempotency.test.mjs",
+      "sha256": "4c3dde2ac9a949931af7690695439ae72a60034d4a35f21c14d0b03a65651cef",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/federation/app-install-store-ownership.test.mjs",
+      "sha256": "2925331a8bb3aa4702c9437ff0a70f4f38b97a6177cad72e2b6be02109dacbbb",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/federation/app-marketplace-thin-client.test.mjs",
+      "sha256": "8b9da5ff0c25753820db1c696057ad90ade6808c15e986fdef4a82d1c4a9a2e8",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/federation/app-review-verified-install.test.mjs",
+      "sha256": "20789b22e6e511cd8d7b09e09b06fb25ecdbb9c4d05ffe9e438e3a968f6614c0",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/federation/marketplace-service-error-handling.test.mjs",
+      "sha256": "68d1739efa27b39ccdda212a318ab190d3f38aa277d1a83824cd931dc23a99c5",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
       "path": "tests/governance/dependency-manifest-dev-sources.test.mjs",
       "sha256": "61ecf7192c8f0ccbec3c5749c184ad844eac185a1c8c97511222d6ec141ab0fb",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -806,6 +861,11 @@
       "source": "Local tested CI harness correction; production code and SQL unchanged"
     },
     {
+      "path": "tests/governance/gateway-db-lane.test.mjs",
+      "sha256": "3b0a4e1f9f5c8adb8d528ce668ad06e3cbb1d99b98e5d1f604753cc3e354b64a",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
       "path": "tests/governance/gateway-db-lifecycle.test.mjs",
       "sha256": "eb721acf0151fd93d3df50b4a47d8fe6d87461bcd46eb94ebb920373987b7aff",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -814,6 +874,11 @@
       "path": "tests/governance/governance-source-traversal.test.mjs",
       "sha256": "bb17c1b751d36f13219df465c26eb2c25c86e7ad4adeac31640161eb7d46f7c3",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/native-auth-migration-profile.test.mjs",
+      "sha256": "ed887be7e1748e5aacba823432656ff6869cfa7c89797754fed09e282f8595ad",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
       "path": "tests/governance/node-cli-shim.test.mjs",
@@ -846,19 +911,64 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "tests/helpers/native-owned-gateway.ts",
+      "sha256": "a972c221cdaa2b8b022831f643add645fda70baf23e7d398fced719fc54c3b62",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
       "path": "tests/helpers/node-cli-shim.mjs",
       "sha256": "ab270871c2f7c1bc068827c003007e88e49ca82101e43cc9054c10941fbc0f1b",
       "source": "Local tested CI harness correction; production code and SQL unchanged"
     },
     {
+      "path": "tests/owned-db/core-presets-browser.postgres.test.ts",
+      "sha256": "012c9c21df9ead385e07d079bd4993fa703a8f9322bd822687d6f700c0c2ec7d",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/domain-reconcile-boundary.postgres.test.ts",
+      "sha256": "8cde8232b5bd781bc0fdead8ff362c9fcb02eb0998038c1b06aa4cab9c70fba7",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
       "path": "tests/owned-db/managed-hosted-history-upgrade.postgres.test.ts",
-      "sha256": "c5afff047a8d44b5a3c58c0393c7b9a6f97b0f3eb27f1244b6a40a5ad4eb64c4",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+      "sha256": "1db97d6efa58b71fe26d5d4c6a3ababff373d45308f0887cc2799875ecbca75e",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
       "path": "tests/owned-db/merchant-accounts-browser.postgres.test.ts",
       "sha256": "499461654fd0927549681c2104771ba8ee2f920a6d7dd22257b572c0ac292a09",
       "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "tests/owned-db/merchant-export.postgres.test.ts",
+      "sha256": "a93fb14321c7f7e0f78417dec6aa879775592b6b666a07762c63f344fc3f2f45",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/notification-worker-transport.postgres.test.ts",
+      "sha256": "fd3d78d7f82d8a064965d4e8cdacd482ef8cbed6d02e80eaa117799fa3a7b185",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/payout-statement-replay.postgres.test.ts",
+      "sha256": "19dda7673c7e5dda8c3ef5fc228e7669047fab91e3bb7bc3fb2b427379a0a950",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/private-reel-intake.postgres.test.ts",
+      "sha256": "283258d3d310afe0540a0df6f7418e4c7a3f223287e616c98bcce18def6e79f2",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/turnstile-domain-provisioning.postgres.test.ts",
+      "sha256": "ff98760d35a0ebc66b05dce71508220fb9ab6b44565563c8bb3f7517d674a54b",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/worker-sql-invocation.postgres.test.ts",
+      "sha256": "adf1d9f2af15e51c10949efc00c79b990d708cb7411af386a515fb0888ba7109",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     }
   ],
   "scopeNotes": [
@@ -874,7 +984,12 @@
     "Environment lifecycle contract job uses the existing free runner, full history and a frozen dependency install; hosted staging-proof dispatch stays unchanged",
     "Secret scanner remains strict; only6 matching existing canonical fixture/public sample hash records are carried, with all original historical exceptions preserved",
     "Current Next router fixtures include required bfcacheId; schema discovery decodes file URLs without changing any tenancy predicate",
-    "Auth consumer harnesses load actual new exports; fake CLI shebangs support spaced interpreter paths; private415/416 tables retain exact raw-denial and guarded-API tests"
+    "Auth consumer harnesses load actual new exports; fake CLI shebangs support spaced interpreter paths; private415/416 tables retain exact raw-denial and guarded-API tests",
+    "Owner approved native418-only hosted sequence; local explicit profiles reproduce production413+418 and staging415 historical aliases+418 without changing default complete-schema CI",
+    "File URL decoding repairs filesystem paths containing spaces; native Worker behavior remains real and HTTP URL path handling is unchanged",
+    "Historical404 retirement is isolated at404; full-schema credential, checkout and money/refund reconciliation coverage remains mandatory",
+    "Payout concurrency now holds both real RPC calls at a barrier before commit; the exact201/409 assertion and effect-once readbacks remain unchanged",
+    "Canonical gift-card test reference is414; all migration filenames, SQL and historical journal entries are preserved"
   ],
   "verification": {
     "authCore": 53,
@@ -893,14 +1008,49 @@
     "osSchemeNegativeControls": 3,
     "strictTrackedFixtureRegistry": "PASS;6 existing exact-value synthetic/public records at5locations",
     "freeLifecycleWorkflowCoverage": 7,
-    "exactFinalCommitCi": "PENDING; current broad9e run has unaccepted additional failures",
+    "exactFinalCommitCi": "PENDING; source/local repairs qualified; no production activation",
     "webRouterFixtureBehavior": 193,
     "webRouterFixtureTypecheck": "PASS both apps;14 tasks",
     "tenantPathAndScopeRegression": 26,
     "actualFreshStagingRestore": "PASS653;523tables286621rows; exact selected SQL unchanged by CI-only corrections",
     "authAndFakeToolRegression": 120,
     "shimSpaceNegativeControl": 1,
-    "modernDefaultPrivateCommandDatabaseTests": 6
+    "modernDefaultPrivateCommandDatabaseTests": 6,
+    "managedHistoryFullAndNativeProfiles": {
+      "checksPassed": 17,
+      "run": "29757e214b47"
+    },
+    "nativeWorkerSqlAndMobileMfa": {
+      "checksPassed": 5,
+      "run": "838a8ea67577"
+    },
+    "nativeProfileAndRouteSourceContracts": 39,
+    "giftCardCanonicalSourceChecks": 2,
+    "exactSchemaCriticalChecks": {
+      "production": {
+        "passed": 80,
+        "suites": 10,
+        "evidence": "nine initial suites plus ledger recheck173dd3b96c01"
+      },
+      "staging": {
+        "passed": 80,
+        "suites": 10,
+        "evidence": "nine initial suites plus ledger recheckff3e5360f716"
+      },
+      "initialDiagnosticFailuresRetained": true,
+      "skipped": 0
+    },
+    "gatewayUnitSuite": 1850,
+    "tenantRedteam": {
+      "passed": 2,
+      "coverage": "RT1 through RT9",
+      "run": "ba5b686d3d0e"
+    },
+    "fullSchemaWorkerRecovery": {
+      "passed": 51,
+      "suites": 6,
+      "run": "8e451b63616a"
+    }
   },
   "pushed": false,
   "deployed": false,

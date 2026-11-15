@@ -33,6 +33,10 @@ export const GATEWAY_DB_SUITE_DIR = 'services/api-gateway/src/__tests__/owned-db
 // These suites intentionally qualify an exact predecessor and then apply/retire
 // its next migration. Newer current-stack journeys stay on the full chain.
 export const HISTORICAL_GATEWAY_MIGRATION_CEILINGS = Object.freeze({
+    // This suite retires/reapplies404 and inserts its pre404 row shape. Later
+    //417 triggers require404 columns; current checkout credential bindings and
+    //money/refund reconciliation suites still run on the complete schema.
+    'services/api-gateway/src/__tests__/owned-db/payment-credential-history.postgres.test.ts': 404,
     'services/api-gateway/src/__tests__/owned-db/cart-order-fact-retirement388.postgres.test.ts': 388,
     // These retire/reapply the exact captured schema/role profiles. Current-stack
     // mounted-browser counterparts below retain the complete migration chain.

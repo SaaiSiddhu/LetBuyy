@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 // Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
 // and public challenge test fixtures. Never use these values for a real account or live provider.
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
@@ -319,7 +320,7 @@ test('all ten persisted Core presets apply, save, reload, publish and render on 
  }
  await f.page.setViewportSize({width:1280,height:900});await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/online-store/themes`,{waitUntil:'networkidle'});
  owned.psql(`INSERT INTO subscriptions(user_id,store_id,plan,status) VALUES('${f.owner}','${f.tenant.siteId}','enterprise','active');`);
- const sourceBundle=new URL('../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json',import.meta.url).pathname;
+ const sourceBundle=fileURLToPath(new URL('../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json',import.meta.url));
  const [imported]=await Promise.all([f.page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/install'&&r.request().method()==='POST',{timeout:60000}),f.page.locator('input[type="file"][accept*="json"]').setInputFiles(sourceBundle)]);
  const importBody=await imported.json();assert.equal(imported.status(),200,JSON.stringify(importBody.error||importBody));
  const importedSlug=importBody.uploaded.theme.slug as string;assert.ok(importedSlug.startsWith('private-'+f.tenant.siteId+'-'));

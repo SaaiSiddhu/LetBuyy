@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import test, { before, after } from 'node:test';
 import { createRequire, builtinModules } from 'node:module';
@@ -27,7 +28,7 @@ before(async () => {
       INSERT INTO products(store_id,name,price,stock,is_active,status) VALUES('${foreign}','FOREIGN-EXPORT-SECRET',1,1,true,'active');`);
     const gatewayRequire = createRequire(new URL('../../services/api-gateway/package.json', import.meta.url));
     const compiler = createRequire(gatewayRequire.resolve('wrangler'))('esbuild') as { build(options: unknown): Promise<{ outputFiles: { text: string }[] }> };
-    const bundle = await compiler.build({ entryPoints: [new URL('../../services/api-gateway/src/index.ts', import.meta.url).pathname], absWorkingDir: new URL('../..', import.meta.url).pathname,
+    const bundle = await compiler.build({ entryPoints: [fileURLToPath(new URL('../../services/api-gateway/src/index.ts', import.meta.url))], absWorkingDir: fileURLToPath(new URL('../..', import.meta.url)),
         bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022', tsconfig: 'services/api-gateway/tsconfig.json',
         banner: { js: "import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire('file:///letbuyy-export-owned.mjs');" },
         external: ['cloudflare:*', 'node:*'], conditions: ['workerd', 'worker', 'browser'], logLevel: 'silent',

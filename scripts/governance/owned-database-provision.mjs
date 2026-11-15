@@ -20,6 +20,7 @@ import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.mjs';
 import { RUN_ID_PATTERN, dockerAsync } from './executable-pg-fixture.mjs';
+import {nativeAuthMigrationEntries,parseNativeAuthMigrationProfile} from './native-auth-migration-profile.mjs';
 
 export const GATEWAY_TEMPLATE_DATABASE = 'letbuyy_tpl_gateway';
 
@@ -61,7 +62,9 @@ const quoted = (identifier) => `"${String(identifier).replaceAll('"', '""')}"`;
  * Builds the pristine template once per cluster: faithful bootstrap, every migration in numeric order, with the REST
  * layer's roles established first, then the fixture schema. Returns the seconds it took.
  */
-export async function buildGatewayTemplate(cluster, { repoRoot, restPassword, throughMigration, templateDatabase = GATEWAY_TEMPLATE_DATABASE }) {
+export async function buildGatewayTemplate(cluster, { repoRoot, restPassword, throughMigration, migrationProfile, templateDatabase = GATEWAY_TEMPLATE_DATABASE }) {
+    parseNativeAuthMigrationProfile(migrationProfile);
+    if(migrationProfile!==undefined&&throughMigration!==undefined)throw new Error('A native auth profile cannot be combined with a migration ceiling');
     // The password is written into SQL text, so it is checked to be what the runner generates (hex), nothing else.
     if (!/^[0-9a-f]{32,}$/.test(restPassword)) throw new Error('the REST role password must be a hex string');
     const started = Date.now();
@@ -80,16 +83,19 @@ export async function buildGatewayTemplate(cluster, { repoRoot, restPassword, th
         GRANT anon, authenticated, service_role TO authenticator;
 
     `, 'the REST roles');
-    cluster.migrationEvidence = { throughMigration: throughMigration ?? null, applied: [] };
-    for (const name of listMigrations(repoRoot, { throughMigration })) {
-        const source = readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8');
+    cluster.migrationEvidence = { throughMigration: throughMigration ?? null, migrationProfile: migrationProfile ?? null, applied: [] };
+    const names=listMigrations(repoRoot,{throughMigration});
+    const entries=migrationProfile===undefined
+        ?names.map(name=>({name,source:readFileSync(join(repoRoot,'database/supabase/migrations',name),'utf8')}))
+        :nativeAuthMigrationEntries(repoRoot,names,migrationProfile);
+    for (const {name,source,canonicalName,canonicalSha256} of entries) {
         await psqlScript(
             cluster,
             templateDatabase,
             stripUnsupportedPg17Guc(source),
             `migration ${name}`,
         );
-        cluster.migrationEvidence.applied.push({ name, prefix: parseInt(name, 10), sha256: createHash('sha256').update(source).digest('hex') });
+        cluster.migrationEvidence.applied.push({ name, prefix: parseInt(name, 10), sha256: createHash('sha256').update(source).digest('hex'),...(canonicalName?{canonicalName,canonicalSha256}:{}) });
     }
     await psqlScript(cluster, templateDatabase, `
 

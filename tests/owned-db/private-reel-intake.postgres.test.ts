@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import {nativeGatewayWasmPlugin,nativeGatewayModules,NATIVE_GATEWAY_MODULE_ROOT} from '../helpers/native-gateway-wasm';
 // Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
 // and public challenge test fixtures. Never use these values for a real account or live provider.
@@ -41,7 +42,7 @@ class NativeGateway {
   // downloads, subprocess command, synthetic route, or Node crypto polyfill.
   const gatewayRequire = createRequire(new URL('../../services/api-gateway/package.json', import.meta.url));
   const compiler = createRequire(gatewayRequire.resolve('wrangler'))('esbuild') as { build(options: unknown): Promise<{ outputFiles?: { text: string }[] }> };
-  const bundle = await compiler.build({ entryPoints: [new URL('../../services/api-gateway/src/index.ts', import.meta.url).pathname], absWorkingDir: new URL('../..', import.meta.url).pathname,
+  const bundle = await compiler.build({ entryPoints: [fileURLToPath(new URL('../../services/api-gateway/src/index.ts', import.meta.url))], absWorkingDir: fileURLToPath(new URL('../..', import.meta.url)),
    bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022',
    banner: {js: "import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire('file:///letbuyy-owned-gateway.mjs');"}, tsconfig: 'services/api-gateway/tsconfig.json', external: ['cloudflare:*','node:*'], conditions: ['workerd','worker','browser'], logLevel: 'silent',
    // Match Wrangler's Node compatibility resolution while retaining native
