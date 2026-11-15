@@ -413,6 +413,7 @@ export function listWorkspaceDirectories(startDirs = [
 // They remain excluded from source scans and forbidden in the tracked-file validator.
 export function listLocalArtifactDirectories(startDirs = ["apps", "packages", "services"]) {
   const artifactDirectoryNames = new Set([
+    "node_modules",
     ".next",
     ".turbo",
     ".dart_tool",
@@ -452,7 +453,10 @@ export function collectStaleArtifactOffenders() {
     untrackedFiles: untracked.filter((file) =>
       (generatedArtifactPattern.test(file) || localScanArtifactPattern.test(file)) &&
       !artifactDirectories.some((dir) => file.startsWith(`${dir}/`))),
-    artifactDirectories,
+    // Dependencies remain inventoried and excluded from source findings, but
+    // are required inputs, not disposable outputs of the governance lane.
+    artifactDirectories: artifactDirectories.filter((dir) => !dir.split("/").includes("node_modules")),
+    dependencyDirectories: artifactDirectories.filter((dir) => dir.split("/").includes("node_modules")),
     workspaceFiles: workspace.filter(
       (file) =>
         debugArtifactPattern.test(file) ||

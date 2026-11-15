@@ -77,6 +77,9 @@ test('generated descendants are represented by their artifact root; stray genera
     assert.equal(result.status,0,result.stderr);
     const found=JSON.parse(result.stdout);
     assert.deepEqual(found.untrackedFiles,['apps/merchant/web/src/stray.tsbuildinfo','scratch-untracked.txt']);
+    assert.deepEqual(found.dependencyDirectories,['apps/merchant/web/node_modules']);
+    assert.ok(!found.artifactDirectories.includes('apps/merchant/web/node_modules'),
+        'installed inputs must survive governance cleanup and are not stale outputs');
     assert.ok(found.artifactDirectories.includes('apps/merchant/web/.next-session-runtime-123-a1b2'),
         'the root remains a finding; the cleanup planner must still prove it is safe before classifying it');
 });
