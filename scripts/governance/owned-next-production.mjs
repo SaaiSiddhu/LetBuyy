@@ -43,12 +43,12 @@ if (app.kind === 'commerce-next-production' && process.env.CHECKOUT_ORIGIN?.star
     // and an exact loopback-host check. This config never enters a deploy artifact.
     const config = JSON.parse(readFileSync(join(app.root, process.env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR, 'required-server-files.json'), 'utf8')).config;
     const ingressConfig = { ...config, skipProxyUrlNormalize: true, experimental: { ...config.experimental, trustHostHeader: true } };
-    // Pinned Next16's custom-server prepare reloads config for its router and
+    // Pinned Next16.4.2's custom-server prepare reloads config for its router and
     // ignores the public conf option there. Use its own built-config transport,
     // derived here rather than accepting a caller-supplied configuration.
     process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(ingressConfig);
     const framework = createRequire(join(app.root, 'package.json'));
-    if (framework('next/package.json').version !== '16.1.6') throw new Error('owned platform ingress requires review after a Next upgrade');
+    if (framework('next/package.json').version !== '16.4.2') throw new Error('owned platform ingress requires review after a Next upgrade');
     // Use the same router/render handlers as `next start`, without telling the
     // router that its private HTTP socket is the public storefront/TLS origin.
     const handlers = await framework('next/dist/server/lib/start-server').getRequestHandlers({

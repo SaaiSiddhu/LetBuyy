@@ -94,11 +94,12 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   await context.route('https://checkout.razorpay.com/v1/checkout.js',route=>route.fulfill({contentType:'application/javascript',body:`window.Razorpay=class{
    constructor(options){window.__syntheticCheckout=options;}open(){window.__syntheticCheckoutOpen=true;}on(){}};`}));
   await signIn(page,identityOrigin,ownerEmail,password,merchantOrigin);
-  const paymentSetup=page.locator(`.activation-card a[href="/${tenant.subdomain}/settings/payments"]`);
-  await expect(paymentSetup).toBeVisible();await paymentSetup.click();await page.waitForURL(u=>u.pathname===`/${tenant.subdomain}/settings/payments`);
-  await page.goto(`${merchantOrigin}/${tenant.subdomain}/dashboard`);
-  await expect(page.getByRole('link',{name:'Select a plan',exact:true})).toHaveAttribute('href',`/${tenant.subdomain}/access_account/checkout/select-plan`);
-  await page.getByRole('link',{name:'Select a plan',exact:true}).click();
+  const paymentSetup=page.getByRole('article').filter({has:page.getByRole('heading',{name:'Set up payments',exact:true})}).getByRole('link');
+  await expect(paymentSetup).toHaveAttribute('href',`/${tenant.subdomain}/settings/payments`);await expect(paymentSetup).toBeVisible();await paymentSetup.click();await page.waitForURL(u=>u.pathname===`/${tenant.subdomain}/settings/payments`);
+  // A published fixture has no active saved trial. Enter billing through its
+  // canonical Plan settings page instead of expecting the trial-only Home CTA.
+  await page.goto(`${merchantOrigin}/${tenant.subdomain}/settings/plan`);
+  await page.getByRole('button',{name:'Choose plan',exact:true}).click();
   await page.waitForURL(u=>u.pathname.endsWith('/access_account/checkout/select-plan'));
   await expect(page.getByText('All plans include a 7-day free trial. Cancel anytime.',{exact:true})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'Start free trial',exact:true})).toHaveCount(0);

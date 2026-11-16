@@ -15,7 +15,7 @@ import { chromium, expect, type Browser, type BrowserContext, type Page } from '
 import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET, tapRest, type RestTap } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import { requireOwnedDatabase, ownedClientDiagnostic, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
 const owned = requireOwnedDatabase();
@@ -52,7 +52,7 @@ async function freePort() {
 async function ready(url: string, child: OwnedClientProcess) {
     const deadline = Date.now() + 300_000;
     while (Date.now() < deadline) {
-        assert.equal(child.exitCode, null, 'owned Next runtime remains running');
+        assert.equal(child.exitCode, null, ownedClientDiagnostic(child));
         try { if ((await fetch(url, { signal: AbortSignal.timeout(2000) })).status < 500) return; } catch { /* cold compile */ }
         await new Promise(resolve => setTimeout(resolve, 200));
     }

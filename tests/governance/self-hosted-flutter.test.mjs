@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,chmodSync,rmSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,chmodSync,rmSync,realpathSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -8,7 +8,7 @@ import {spawnSync} from 'node:child_process';
 
 const script=fileURLToPath(new URL('../../scripts/github/activate-flutter.py',import.meta.url));
 function fixture(version='3.44.8') {
- const dir=mkdtempSync(join(tmpdir(),'letbuyy-flutter-admission-'));
+ const dir=mkdtempSync(join(realpathSync(tmpdir()),'letbuyy-flutter-admission-'));
  const sdk=join(dir,'SDK with spaces');
  mkdirSync(join(sdk,'bin/cache/dart-sdk/bin'),{recursive:true});
  writeFileSync(join(sdk,'bin/cache/flutter.version.json'),JSON.stringify({frameworkVersion:version}));

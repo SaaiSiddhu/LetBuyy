@@ -625,7 +625,7 @@ try {
       browserTrace.push({ step: `browser-stage:${step}` });
       process.stdout.write(`BROWSER_STEP:${step}\n`);
     };
-    const { chromium } = workspaceRequire('@playwright/test');
+    const { chromium, expect } = workspaceRequire('@playwright/test');
     const browser = await chromium.launch({ headless: true });
     try {
       const context = await browser.newContext();
@@ -688,7 +688,7 @@ try {
         await signInButton.waitFor({ state: 'visible', timeout: 10_000 });
         await page.locator('#buyerEmail').fill(EMAIL);
         await page.locator('#buyerPassword').fill(PASSWORD);
-        assert.equal(await signInButton.isEnabled(), true, 'Identity sign-in becomes enabled after the page hydrates and credentials are entered');
+        await expect(signInButton, 'Identity sign-in becomes enabled after hydration and credential state updates').toBeEnabled({ timeout: 10_000 });
         await signInButton.click();
       }
       try {
@@ -1106,12 +1106,16 @@ try {
           // client generation without depending on a hidden tab surviving the
           // Identity navigation; the mutation itself still traverses the real BFF.
           const staleReviewDraftPage = await linkContext.newPage();
-          await staleReviewDraftPage.route('**/api/buyer-auth/session', route => route.fulfill({
+          // Mount/pageshow can cancel and replace the initial session read. Hold
+          // the labelled cached generation through bootstrap, then remove this
+          // fixture before the real cookie read and cross-buyer write below.
+          const cachedReviewSession = route => route.fulfill({
             status: 200,
             contentType: 'application/json',
             headers: { 'cache-control': 'no-store' },
             body: JSON.stringify(buyerASessionSnapshot),
-          }), { times: 1 });
+          });
+          await staleReviewDraftPage.route('**/api/buyer-auth/session', cachedReviewSession);
           await staleReviewDraftPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/product/${PRICE_HISTORY_PRODUCT_ID}`, { waitUntil: 'domcontentloaded' });
           await staleReviewDraftPage.getByRole('heading', { name: PRICE_HISTORY_PRODUCT_NAME }).waitFor({ state: 'visible', timeout: 15_000 });
           await staleReviewDraftPage.getByRole('button', { name: 'Write a Review' }).click();
@@ -1121,6 +1125,7 @@ try {
           await staleReviewForm.locator('textarea[placeholder="Share your experience with this product..."]').fill('This draft belongs to buyer A.');
           await staleReviewForm.locator('button').nth(4).click();
           runtimeProgress('buyer-a-review-draft-loaded-from-cached-session');
+          await staleReviewDraftPage.unroute('**/api/buyer-auth/session', cachedReviewSession);
           const currentReviewBuyer = await staleReviewDraftPage.evaluate(async () => {
             const response = await fetch('/api/buyer-auth/session', { cache: 'no-store' });
             return { status: response.status, buyer: (await response.json().catch(() => null))?.buyer };

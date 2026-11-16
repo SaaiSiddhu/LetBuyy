@@ -184,7 +184,7 @@ function loadAdmittedProposal() {
   const proposal: Proposal = { manifest, manifestSha256, artifacts };
   assertProposalIntegrity(proposal); // Canonical payload checks, never factory regeneration.
   const compatibility=JSON.parse(read('docs/evidence/consolidation-2026-10-25/PROMOTION_SOURCE_COMPATIBILITY.json')) as {changes:Array<{path:string;accepted_sha256:string;current_sha256:string}>};
-  assert.equal(compatibility.changes.length,5);
+  assert.equal(compatibility.changes.length,6);
   for (const [path, digest] of Object.entries(manifest.sourceHashes)) {
     assert(!path.startsWith('/') && !path.split('/').includes('..'));
     const current=sha256(read(path));

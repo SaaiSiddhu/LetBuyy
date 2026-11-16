@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync, realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -11,7 +11,7 @@ const derive = source => deriveTenantTablesFromMigrations([{ file: '001_columns.
 const scopes = source => derive(source).map(({ table, scopeColumns, tenantColumn, ownerColumns }) => ({ table, scopeColumns, tenantColumn, ownerColumns }));
 
 test('schema discovery preserves spaces, percent signs, fragments and Unicode in checkout paths', async () => {
-    const temporary = mkdtempSync(path.join(tmpdir(), 'tenant-registry-path-'));
+    const temporary = mkdtempSync(path.join(realpathSync(tmpdir()), 'tenant-registry-path-'));
     try {
         const fixture = path.join(temporary, 'Developer Tools #100% தமிழ்');
         const scripts = path.join(fixture, 'scripts/governance');

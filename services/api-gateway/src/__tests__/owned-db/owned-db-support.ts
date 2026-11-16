@@ -290,8 +290,18 @@ type ClientKind = 'commerce-next' | 'identity-next' | 'merchant-next' | 'console
 const CLIENT_KINDS = new Set<ClientKind>(["commerce-next", "identity-next", "merchant-next", "console-next", "commerce-next-production", "identity-next-production", "merchant-next-production", "commerce-session-smoke", "marketplace-flutter", "buyer-orders-dart", "lifecycle-probe", "money-ledger-scheduled-probe", "subscription-restart"]);
 const LAUNCHER = fileURLToPath(new URL('../../../../../scripts/governance/owned-client-launcher.mjs', import.meta.url));
 type NextDirectoryReceipt = Parameters<typeof removeOwnedNextDirectory>[0];
-interface ClientRecord { closed:Promise<void>; clientPid?:number; nextDirectory?:NextDirectoryReceipt; cleanupError?:Error }
+interface ClientRecord { closed:Promise<void>; clientPid?:number; nextDirectory?:NextDirectoryReceipt; cleanupError?:Error; diagnosticTail?:string }
 const clients = new Map<OwnedClientProcess, ClientRecord>();
+/** Bounded structural startup diagnostics; never retain URL proofs or credentials. */
+export function ownedClientDiagnostic(child:OwnedClientProcess):string {
+    const text=clients.get(child)?.diagnosticTail??'';
+    return `owned client exit=${child.exitCode} signal=${child.signalCode}: `+text
+        .replace(/https?:\/\/[^\s"'<>]+/g,'[redacted-url]')
+        .replace(/Bearer\s+\S+/gi,'Bearer [redacted]')
+        .replace(/[A-Za-z0-9_+\/-]{40,}={0,2}/g,'[redacted]')
+        .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g,'[redacted-email]')
+        .slice(-2400);
+}
 
 async function finishClientDirectory(record:ClientRecord):Promise<void> {
     if (!record.nextDirectory) return;
@@ -353,8 +363,9 @@ export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, op
         // still knows exactly which child group it created via the private IPC.
         if (record.clientPid) { try { process.kill(-record.clientPid,'SIGKILL'); } catch { /* group already stopped */ } }
     });
-    child.stdout.on('data',() => {});
-    child.stderr.on('data',() => {});
+    const captureDiagnostic=(data:Buffer)=>{record.diagnosticTail=((record.diagnosticTail??'')+data.toString()).slice(-8000);};
+    child.stdout.on('data',captureDiagnostic);
+    child.stderr.on('data',captureDiagnostic);
     child.stdin.on('error',() => {}); // An early refusal may close stdin before its bounded payload is read.
     child.stdin.end(JSON.stringify(env));
     return child;

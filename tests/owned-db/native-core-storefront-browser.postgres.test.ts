@@ -15,7 +15,7 @@ import {exportJWK} from 'jose';
 import {chromium,expect,type Page} from '@playwright/test';
 import {gatewayEnv,newIdentityKeys,INTERNAL_SECRET,signedIdentityHeaders} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import {expectBuyerHandoff} from '../../services/api-gateway/src/__tests__/owned-db/buyer-handoff-browser';
-import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,startOwnedPooledSqlProxy,createOwnedCheckoutTlsCertificate,type OwnedClientProcess} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import {requireOwnedDatabase,ownedClientDiagnostic,startOwnedClientRuntime,stopOwnedClientRuntime,startOwnedPooledSqlProxy,createOwnedCheckoutTlsCertificate,type OwnedClientProcess} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 const owned=requireOwnedDatabase();
 async function freePort() {
     const s = createServer(); await new Promise<void>(r => s.listen(0,'127.0.0.1',r));
@@ -24,7 +24,7 @@ async function freePort() {
 async function ready(origin:string, child:OwnedClientProcess, label:string) {
     const deadline = Date.now()+600_000;
     while(Date.now()<deadline) {
-        if(child.exitCode!==null || child.signalCode!==null) throw new Error('Owned app stopped before readiness');
+        if(child.exitCode!==null || child.signalCode!==null) throw new Error(ownedClientDiagnostic(child));
         try { if((await fetch(origin,{signal:AbortSignal.timeout(2000)})).status<500)return; } catch { /* owned build/start */ }
         await new Promise(r=>setTimeout(r,200));
     }
@@ -109,12 +109,12 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    return (await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':decodeURIComponent(token)},body:JSON.stringify(body)})).status;
   },{path,body});}
   assert.equal(await authPost('/api/auth/set-password',{password,email,userId:crypto.randomUUID()}),403,'a caller-supplied identity cannot replace verified intent');
-  async function enterOtp(code:string){for(let i=0;i<6;i++)await page!.getByLabel(`Digit ${i+1} of 6`,{exact:true}).fill(code[i]);}
-  // The production form automatically submits on the sixth digit.
+  async function enterOtp(code:string){await page!.getByLabel('Email verification code',{exact:true}).fill(code);await page!.getByRole('button',{name:'Verify',exact:true}).click();}
+  // Use the production single-code input and explicit verification action.
   const wrongReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/verify-otp'&&r.request().method()==='POST');
   await enterOtp(otp==='000000'?'111111':'000000');
   assert.equal((await wrongReply).status(),400);assert.equal(owned.psql(`SELECT email_verified FROM users_custom WHERE email='${email}';`),'f');
-  await expect(page.getByLabel('Digit 1 of 6',{exact:true})).toHaveValue('');
+  await expect(page.getByLabel('Email verification code',{exact:true})).toHaveValue('');
   const validReply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/verify-otp'&&r.request().method()==='POST');
   await enterOtp(otp);assert.equal((await validReply).status(),200);
   await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Confirm password',{exact:true}).fill(password);
@@ -128,7 +128,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const [created]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/create-store'&&r.request().method()==='POST'),page.getByRole('button',{name:'Create My Site',exact:true}).click()]);assert.equal(created.status(),200);
   await page.waitForURL(u=>u.origin===merchantOrigin&&u.pathname===`/${subdomain}/access_account/checkout/select-plan`,{timeout:60_000});await expect(page.getByRole('region',{name:'Available plans'})).toBeVisible();
   const store=JSON.parse(owned.psql(`SELECT jsonb_build_object('count',count(*),'trial_days',max(EXTRACT(EPOCH FROM (trial_ends_at-trial_started_at))/86400),'theme',max(theme_id),'status',max(status))::text FROM sites WHERE custom_user_id=(SELECT id FROM users_custom WHERE email='${email}') AND subdomain='${subdomain}';`));assert.equal(store.count,1);assert.equal(store.trial_days,14,'existing persisted trial policy is preserved');assert.equal(store.status,'draft');
-  await page.goto(`${merchantOrigin}/${subdomain}/dashboard`);await expect(page.getByRole('heading',{name:'Where do you want to start?',exact:true})).toBeVisible();
+  await page.goto(`${merchantOrigin}/${subdomain}/dashboard`);await expect(page.getByRole('heading',{name:/^Finish setting up /,level:1})).toBeVisible();
   const siteId=owned.psql(`SELECT id FROM sites WHERE subdomain='${subdomain}';`),productName='Synthetic Native Variant Product';
   assert.equal(store.theme,'letbuyy-forge','Circuit remains the approved new-store default');
   assert.equal(owned.psql(`SELECT template_config->'liquidBundle'->'package'->>'slug' FROM sites WHERE id='${siteId}';`),'letbuyy-forge');
@@ -175,8 +175,11 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await page.getByRole('button',{name:'Add rate',exact:true}).click();await page.getByLabel('Rate name',{exact:true}).fill('Synthetic native delivery');await page.getByLabel('Price (₹, 0 for free)',{exact:true}).fill('20');
   const [rateSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/shipping/rates')&&r.request().method()==='POST'),page.getByRole('button',{name:'Add rate',exact:true}).last().click()]);assert.equal(rateSaved.status(),201);
   stage='merged-theme-workspace';console.info('OWNED_NATIVE_STAGE merged-theme-workspace');await page.goto(`${merchantOrigin}/${subdomain}/online-store/themes`);
-  await expect(page.getByRole('region',{name:'Discover themes',exact:true})).toBeVisible();
-  await expect(page.locator('article[aria-label$="catalog theme"]')).toHaveCount(10);
+  const discover=page.getByRole('region',{name:'Discover themes',exact:true});
+  await expect(discover).toBeVisible();await expect(discover.getByRole('article')).toHaveCount(5);
+  await discover.getByRole('link',{name:'Explore all themes',exact:true}).first().click();
+  await expect(page.getByRole('region',{name:'Theme marketplace catalog',exact:true}).getByRole('article')).toHaveCount(10);
+  await page.goto(`${merchantOrigin}/${subdomain}/online-store/themes`);
   // This journey qualifies the retained Core compatibility package, not the
   // new-store default. Grant only a labelled synthetic upload entitlement and
   // install the real bundle through the normal file input; no store/theme SQL seed.
