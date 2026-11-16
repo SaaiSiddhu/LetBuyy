@@ -27,6 +27,32 @@ before(async () => {
 async function get(site:string,period='7d',actor=owner) {
     return gateway.request(`/v1/analytics/revenue?store_id=${site}&period=${period}`,{headers:await signedIdentityHeaders(actor,`syn-${actor}@example.invalid`)});
 }
+async function revenueReadDependencyReady(expected:boolean) {
+    // DDL NOTIFY is asynchronous. Probe this STABLE read-only RPC directly;
+    // never retry the application response or treat COMMIT as cache readiness.
+    const key=owned.restEnv().SUPABASE_SERVICE_ROLE_KEY;
+    const deadline=Date.now()+15_000;
+    do {
+        const response=await fetch(owned.restUrl+'/rest/v1/rpc/merchant_daily_revenue_history?p_site_id='+a.siteId+'&p_days=7',{
+            headers:{apikey:key,authorization:'Bearer '+key},
+            signal:AbortSignal.timeout(5_000),
+        });
+        const payload=await response.json() as {code?:string}|{revenue:number|string}[];
+        if(response.status===200) {
+            assert.ok(Array.isArray(payload),'owned revenue RPC must return real rows');
+            assert.equal(payload.length,14);
+            assert.equal(payload.reduce((sum,row)=>sum+Number(row.revenue),0),199);
+            if(expected)return;
+        } else {
+            assert.equal(response.status,404,'unexpected infrastructure/permission failure is not readiness');
+            assert.ok(!Array.isArray(payload));
+            assert.ok(payload.code==='PGRST202'||(!expected&&payload.code==='42883'),'only a known absent RPC/cache entry is expected');
+            if(!expected)return;
+        }
+        await new Promise(resolve=>setTimeout(resolve,100));
+    } while(Date.now()<deadline);
+    assert.fail('owned revenue read dependency did not reach readiness '+expected);
+}
 for (const [period,count] of [['7d',7],['30d',30],['90d',90],['12m',365]] as const) {
     test(`daily revenue ${period} has exact current and previous windows, including verified zero days`,async()=>{
         const response=await get(a.siteId,period);assert.equal(response.status,200,response.text);
@@ -53,12 +79,17 @@ test('revenue refuses foreign tenants, anonymous calls, invalid windows and dire
     assert.equal(owned.psql("SELECT has_function_privilege('authenticated','public.merchant_daily_revenue_history(uuid,integer)','EXECUTE')"),'f');
 });
 test('missing read dependency returns a sanitized retryable failure, never fabricated zero revenue; migration rolls back and reapplies',async()=>{
+    await revenueReadDependencyReady(true);
     owned.psql(readFileSync(new URL('../../../../../database/supabase/rollback/394_merchant_daily_revenue_history.rollback.sql',import.meta.url),'utf8'));
     try {
+        await revenueReadDependencyReady(false);
         const r=await get(a.siteId);assert.equal(r.status,503,r.text);
         assert.equal(r.json?.error.code,'ANALYTICS_UNAVAILABLE');assert.equal(r.json?.data,undefined);
     } finally {
         owned.psql(readFileSync(new URL('../../../../../database/supabase/migrations/394_merchant_daily_revenue_history.sql',import.meta.url),'utf8'));
     }
-    assert.equal((await get(a.siteId)).status,200);
+    await revenueReadDependencyReady(true);
+    const restored=await get(a.siteId);
+    assert.equal(restored.status,200,restored.text);
+    assert.equal(restored.json?.data.chart.reduce((sum:number,point:{revenue:number})=>sum+point.revenue,0),199);
 });

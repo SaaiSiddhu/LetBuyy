@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-16T18:26:03.689858+00:00",
+  "preparedUtc": "2026-11-16T19:48:28.518641+00:00",
   "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
@@ -576,6 +576,11 @@
       "sha256": "4dba18dcc5bfd058bfd87a169ac42c9f08930618e7a67f0668f24bede8e80584"
     },
     {
+      "path": "docs/implementation/merchant-native418-revenue-readiness-qualification.md",
+      "sha256": "8724bee4495c9358380bea546d6d1aff96fc5212ec256603df14072e6a8d8be0",
+      "source": "Qualified test-only real Data API read-dependency recovery; no runtime, SQL or policy change"
+    },
+    {
       "path": "docs/implementation/merchant-native418-source-freeze-decision.md",
       "sha256": "7e0b2a9b8d6a9d2effec56261840d41f8925bdc37d68d56f3c4d27d329afea94",
       "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
@@ -839,6 +844,11 @@
       "path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-auth.postgres.test.ts",
       "sha256": "37091f35be2082dec5c39594bef0c5f2ae6ff5c30240d55d4a2a61df49f9a803",
       "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-revenue-history.postgres.test.ts",
+      "sha256": "84bbfd6fc386da27bafe1a2469ef7c542d3d039c8340a173959d1657db1602cb",
+      "source": "Qualified test-only real Data API read-dependency recovery; no runtime, SQL or policy change"
     },
     {
       "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
@@ -1491,6 +1501,16 @@
         "notApplicable": 1
       },
       "exactSourceCiAcceptance": "pending"
+    },
+    "revenueRecoveryReadiness": {
+      "node": "22.23.5",
+      "repeatedOwnedRuns": 3,
+      "testsPerRun": 7,
+      "passedPerRun": 7,
+      "failed": 0,
+      "skipped": 0,
+      "cleanupFailures": 0,
+      "newSourceCompleteCi": "PENDING"
     }
   },
   "pushed": false,
