@@ -44,6 +44,10 @@ export function startRestProxy({ upstreamPort }) {
         const upstream = httpRequest({
             host: '127.0.0.1',
             port: upstreamPort,
+            // Synchronous fixture SQL can leave an upstream keep-alive socket's
+            // close event unprocessed. Use a fresh connection rather than
+            // replaying a mutation after an uncertain acknowledgement.
+            agent: false,
             method: req.method,
             path: upstreamPath.startsWith('/') ? upstreamPath : `/${upstreamPath}`,
             headers: forwardableHeaders(req.headers),

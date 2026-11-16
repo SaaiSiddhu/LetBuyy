@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-16T04:32:51.835333+00:00",
+  "preparedUtc": "2026-11-16T11:36:33.301542+00:00",
   "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
@@ -556,6 +556,11 @@
       "sha256": "a39352d2850d0112e814b7039f5ef48038353b36329060e0726fe375e34fb5b7"
     },
     {
+      "path": "docs/implementation/merchant-native418-ci-transport-recovery.md",
+      "source": "Owned native418 CI fixture transport repair and regression evidence",
+      "sha256": "1c0aa8225a9c2e62a62a6979df44d3654fcb4d626c77cac977f4df9f49d87d18"
+    },
+    {
       "path": "docs/implementation/merchant-native418-free-recovery-admission.md",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "4dba18dcc5bfd058bfd87a169ac42c9f08930618e7a67f0668f24bede8e80584"
@@ -719,6 +724,11 @@
       "path": "scripts/governance/owned-next-production.mjs",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "60a7504cb22c2d4c7c598ccbe063a551edd85e8437d8b77b0580620ce609a50a"
+    },
+    {
+      "path": "scripts/governance/owned-rest-proxy.mjs",
+      "source": "Owned native418 CI fixture transport repair and regression evidence",
+      "sha256": "e00457c7662a103acf38ac4bd2ec71b450bc92dc24818007b5bdc5347a35b842"
     },
     {
       "path": "scripts/governance/rollback-signature-guards.mjs",
@@ -1024,6 +1034,11 @@
       "path": "tests/governance/node-cli-shim.test.mjs",
       "sha256": "0420c2228f70398e40f0f823caa0431088a3ac1ea22fb1ae52e947cff9d5e2e8",
       "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/governance/owned-rest-proxy.test.mjs",
+      "source": "Owned native418 CI fixture transport repair and regression evidence",
+      "sha256": "4434344b06f14575da881a4c38bac59bcdf206dd01d478b6d2c591d74a9f4bb3"
     },
     {
       "path": "tests/governance/platform-callback-scheme.test.mjs",
@@ -1355,6 +1370,49 @@
         "tests/owned-db/native-core-storefront-browser.postgres.test.ts": "12072898fb3cb174764373266a1c9f13ccf0babcbd7fa7fe866a00ac73abce74"
       },
       "scope": "Actual owned database/browser closure including unchanged privacy, exact-money, effect-once and retained-theme assertions; not hosted/provider/native-device acceptance"
+    },
+    "ciTransportRecovery": {
+      "originalSource": "eb5e88297c46bf04e9f2b66e0960ee3bb85949cc",
+      "originalArchitectureDatabaseSuites": 275,
+      "originalArchitectureFailedSuites": 1,
+      "originalArchitectureAssertions": 2243,
+      "unchangedLoyaltyDiagnostic": {
+        "passed": 18,
+        "failed": 0,
+        "run": "20261116T112748Z-native418-loyalty-failure-transport-reproduction-fec35343a9d442d499b04bdbadc5ff4b"
+      },
+      "httpRegressionBeforeFix": {
+        "passed": 1,
+        "failed": 1,
+        "expectedRedControl": true
+      },
+      "httpRegressionAfterFix": {
+        "passed": 2,
+        "failed": 0
+      },
+      "completeCorrectedSourceCi": "PENDING",
+      "historicalFailureCause": "Not conclusively attributed; proven idle socket reuse hazard removed without mutation retries",
+      "correctedSourceLocalQualification": {
+        "run": "20261116T113344Z-native418-corrected-proxy-real-loyalty-qualificati-6cb5cb53de844e2d98a9435c4192532b",
+        "proxyAndNativeSourceControls": {
+          "passed": 17,
+          "failed": 0,
+          "skipped": 0
+        },
+        "loyaltyRealDatabase": {
+          "passed": 18,
+          "failed": 0,
+          "skipped": 0,
+          "ownedResourcesRemoved": true
+        },
+        "governance": {
+          "passed": 114,
+          "failed": 0,
+          "blocked": 0,
+          "skipped": 0
+        },
+        "officialScopedCloudflareOAuth": "PASS"
+      }
     }
   },
   "pushed": false,
