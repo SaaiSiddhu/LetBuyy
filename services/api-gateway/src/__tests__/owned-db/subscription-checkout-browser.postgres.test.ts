@@ -133,7 +133,7 @@ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_
   const growthCard=page.locator('article').filter({has:page.getByRole('heading',{name:'Growth',exact:true})});
   await growthCard.getByRole('button',{name:'Choose plan',exact:true}).click();
   await page.waitForURL(u=>u.pathname===`/${tenant.subdomain}/access_account/checkout/checkout`&&u.searchParams.get('plan')==='growth');
-  await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹699');const subscribe=page.getByRole('button',{name:/Subscribe|Continue saved checkout/});
+  await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹699');const subscribe=page.getByRole('button',{name:/^Continue (?:to payment|saved checkout)/});
   const [lost]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);assert.equal(lost.status(),503);
   await expect(page.locator('.checkout-error[role="alert"]')).toContainText('reconciliation');assert.equal(createCount,1);
   await page.reload();

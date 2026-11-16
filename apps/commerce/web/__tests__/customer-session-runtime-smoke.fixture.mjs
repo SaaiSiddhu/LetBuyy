@@ -1152,12 +1152,13 @@ try {
           // traverses the real BFF, which must reject the stale buyer-A identity.
           if (STALE_WISHLIST_PRODUCT_ID && buyerAWishlistSnapshot && buyerASessionSnapshot) {
             staleWishlistPage = await linkContext.newPage();
-            await staleWishlistPage.route('**/api/buyer-auth/session', route => route.fulfill({
+            const cachedWishlistSession = route => route.fulfill({
               status: 200,
               contentType: 'application/json',
               headers: { 'cache-control': 'no-store' },
               body: JSON.stringify(buyerASessionSnapshot),
-            }), { times: 1 });
+            });
+            await staleWishlistPage.route('**/api/buyer-auth/session', cachedWishlistSession);
             await staleWishlistPage.route('**/api/buyer/wishlist', route => {
               if (route.request().method() !== 'GET') return route.fallback();
               return route.fulfill({
@@ -1166,10 +1167,17 @@ try {
                 headers: { 'cache-control': 'no-store' },
                 body: JSON.stringify(buyerAWishlistSnapshot),
               });
-            }, { times: 1 });
+            });
             await staleWishlistPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/product/${STALE_WISHLIST_PRODUCT_ID}`, { waitUntil: 'domcontentloaded' });
             await staleWishlistPage.getByRole('heading', { name: 'Synthetic Stale Wishlist Product' }).waitFor({ state: 'visible', timeout: 15_000 });
             await staleWishlistPage.getByRole('button', { name: 'Remove from wishlist' }).waitFor({ state: 'visible', timeout: 10_000 });
+            // Keep cached bootstrap responses through the load/pageshow reads.
+            await staleWishlistPage.waitForLoadState('networkidle');
+            // Bootstrap/pageshow may replace initial reads. Once the cached-A
+            // control is mounted, remove both read fixtures before the real
+            // cookie-authenticated DELETE and its unchanged compare-ID checks.
+            await staleWishlistPage.unroute('**/api/buyer-auth/session', cachedWishlistSession);
+            await staleWishlistPage.unroute('**/api/buyer/wishlist');
             runtimeProgress('stale-wishlist-delete-waiter-registering');
             const staleWishlistDeletePromise = staleWishlistPage.waitForResponse(response => new URL(response.url()).pathname === '/api/buyer/wishlist'
               && response.request().method() === 'DELETE', { timeout: 15_000 });

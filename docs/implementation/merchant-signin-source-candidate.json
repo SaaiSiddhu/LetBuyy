@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-16T04:03:57.099536+00:00",
+  "preparedUtc": "2026-11-16T04:32:51.835333+00:00",
   "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
@@ -63,7 +63,7 @@
     {
       "path": "apps/commerce/web/__tests__/customer-session-runtime-smoke.fixture.mjs",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
-      "sha256": "7a735d083089d0bd11fa3ca924825f3d910a78623d1784b0228153cc2296ea98"
+      "sha256": "1402d51c74fe706e8175d221a3e6186e62e921e4be7d29dd0469355082bfec3a"
     },
     {
       "path": "apps/commerce/web/package.json",
@@ -828,7 +828,7 @@
     {
       "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
-      "sha256": "0165109837e5d2fb3e59f0180ac7d990702115d7d16fbd275febddce0a51d39f"
+      "sha256": "f7ad2a510d138a10c106a398dccc12a30855e53f8ac21e74a978765eba1e6e81"
     },
     {
       "path": "services/api-gateway/src/__tests__/store-access-password.test.ts",
@@ -1143,7 +1143,7 @@
     {
       "path": "tests/owned-db/native-core-storefront-browser.postgres.test.ts",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
-      "sha256": "7b854d277ce54d1ff69a0575e549fc25a5e4c6944a2ee8528ab0929bd2c3215d"
+      "sha256": "12072898fb3cb174764373266a1c9f13ccf0babcbd7fa7fe866a00ac73abce74"
     },
     {
       "path": "tests/owned-db/notification-worker-transport.postgres.test.ts",
@@ -1328,9 +1328,11 @@
       "corePresetsFinalCaptureRouting": {
         "passed": 1,
         "failed": 0,
-        "scope": "Temporary capture-root rerun passed; subsequent fileURLToPath space-decoding correction requires final rerun"
+        "skipped": 0,
+        "run": "56363e6e2f1f",
+        "actualManagedPngsVerified": 37
       },
-      "remainingFourSuites": "Repairs implemented; final recheck pending. No aggregate acceptance."
+      "remainingFourSuites": "PASS19/19,4owned suites,0fail/0skip, runf82af49f922b; final exact-source CI and hosted/device acceptance remain mandatory"
     },
     "governanceMirrorPreFinalCapturePathDecode": {
       "passed": 114,
@@ -1338,6 +1340,21 @@
       "blocked": 0,
       "skipped": 0,
       "scope": "Owned mirror before the final four fileURLToPath capture-output corrections; full exact-source CI remains mandatory"
+    },
+    "finalLocalClosure": {
+      "publishedBaseRevision": "3b844158b3b50cdbac94ca2fd2e99c9e513c0cc1",
+      "runId": "f82af49f922b",
+      "suites": 4,
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "reportSha256": "b05e6b0066627dd5349d87be10397a819faa7c0ba1d406aef93fb853d073d784",
+      "dirtyTestInputs": {
+        "apps/commerce/web/__tests__/customer-session-runtime-smoke.fixture.mjs": "1402d51c74fe706e8175d221a3e6186e62e921e4be7d29dd0469355082bfec3a",
+        "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts": "f7ad2a510d138a10c106a398dccc12a30855e53f8ac21e74a978765eba1e6e81",
+        "tests/owned-db/native-core-storefront-browser.postgres.test.ts": "12072898fb3cb174764373266a1c9f13ccf0babcbd7fa7fe866a00ac73abce74"
+      },
+      "scope": "Actual owned database/browser closure including unchanged privacy, exact-money, effect-once and retained-theme assertions; not hosted/provider/native-device acceptance"
     }
   },
   "pushed": false,

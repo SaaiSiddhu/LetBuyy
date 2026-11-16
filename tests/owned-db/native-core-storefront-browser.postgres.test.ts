@@ -180,6 +180,8 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await discover.getByRole('link',{name:'Explore all themes',exact:true}).first().click();
   await expect(page.getByRole('region',{name:'Theme marketplace catalog',exact:true}).getByRole('article')).toHaveCount(10);
   await page.goto(`${merchantOrigin}/${subdomain}/online-store/themes`);
+  // Wait for the new page's account-bound catalog/store read before importing.
+  await expect(page.getByRole('region',{name:'Discover themes',exact:true}).getByRole('article')).toHaveCount(5);
   // This journey qualifies the retained Core compatibility package, not the
   // new-store default. Grant only a labelled synthetic upload entitlement and
   // install the real bundle through the normal file input; no store/theme SQL seed.
