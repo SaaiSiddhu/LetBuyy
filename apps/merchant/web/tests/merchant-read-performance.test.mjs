@@ -5,6 +5,7 @@ import ts from 'typescript';
 import * as jsx from 'react/jsx-runtime';
 import { NextRequest } from 'next/server.js';
 import { ProductCsvImportSchema } from '@letbuyy/shared-types';
+import { resolveLetbuyyPlatformCookieNames } from '@letbuyy/auth-core';
 
 // Execute the real server components/helpers with controlled dependency delays.
 // These prove request work and failure behavior, not production database latency.
@@ -188,7 +189,7 @@ test('read transport adds a finite deadline, composes caller cancellation, and l
         'next/headers': { cookies: async () => ({ get: () => undefined }) },
         'next/server': { NextResponse: { json: Response.json } },
         '@letbuyy/api-client': { resolveLetbuyyApiBaseUrl: () => 'http://gateway.invalid/v1' },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session' },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames },
     }, {
         fetch: async (url, init) => { calls.push({ url, init }); return Response.json({}); },
         AbortSignal: { timeout: ms => { deadlines.push(ms); return AbortSignal.timeout(ms); }, any: signals => AbortSignal.any(signals) },
@@ -326,49 +327,56 @@ test('invitation acceptance retains its command key and has no implicit read dea
     assert.deepEqual(deadlines, []);
 });
 
-test('best-effort logout bounds a stalled identity request and still clears only the local session cookie', async () => {
-    const deadlines = [], cleared = [], calls = [];
-    const { POST } = load('../src/app/api/auth/logout/route.ts', {
-        'next/server': { NextResponse: { json: Response.json } },
-        'next/headers': { cookies: async () => ({ get: () => ({ value: 'synthetic-session' }), set: (...args) => cleared.push(args) }) },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session' },
-        '@/lib/public-urls': { getAccountsUrl: (path = '') => 'https://identity.example.invalid' + path, getAdminUrl: () => 'https://merchant.example.invalid' },
-    }, {
-        process: { env: { NODE_ENV: 'development' } },
-        AbortSignal: { timeout: ms => {
-            deadlines.push(ms);
-            const controller = new AbortController();
-            setTimeout(() => controller.abort(new DOMException('Identity timed out', 'TimeoutError')), 5);
-            return controller.signal;
-        } },
-        fetch: async (url, init) => {
-            calls.push({ url, init });
-            if (!init.signal) throw new Error('Missing logout deadline');
-            return new Promise((_resolve, reject) => {
-                if (init.signal.aborted) reject(init.signal.reason);
-                else init.signal.addEventListener('abort', () => reject(init.signal.reason), { once: true });
-            });
-        },
+for (const environment of ['production', 'staging']) {
+    test(`best-effort ${environment} logout bounds a stalled identity request and clears only its session cookie`, async () => {
+        const deadlines = [], cleared = [], calls = [], readCookies = [];
+        const cookieName = resolveLetbuyyPlatformCookieNames(environment).session;
+        const { POST } = load('../src/app/api/auth/logout/route.ts', {
+            'next/server': { NextResponse: { json: Response.json } },
+            'next/headers': { cookies: async () => ({ get: name => { readCookies.push(name); return { value: 'synthetic-session' }; }, set: (...args) => cleared.push(args) }) },
+            '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames },
+            '@/lib/public-urls': { getAccountsUrl: (path = '') => 'https://identity.example.invalid' + path, getAdminUrl: () => 'https://merchant.example.invalid' },
+        }, {
+            process: { env: { NODE_ENV: 'development', NEXT_PUBLIC_ENV: environment } },
+            AbortSignal: { timeout: ms => {
+                deadlines.push(ms);
+                const controller = new AbortController();
+                setTimeout(() => controller.abort(new DOMException('Identity timed out', 'TimeoutError')), 5);
+                return controller.signal;
+            } },
+            fetch: async (url, init) => {
+                calls.push({ url, init });
+                if (!init.signal) throw new Error('Missing logout deadline');
+                return new Promise((_resolve, reject) => {
+                    if (init.signal.aborted) reject(init.signal.reason);
+                    else init.signal.addEventListener('abort', () => reject(init.signal.reason), { once: true });
+                });
+            },
+        });
+        const response = await POST();
+        assert.deepEqual(deadlines, [5_000]);
+        assert.equal(calls.length, 1, 'no retry of the remote operation');
+        assert.equal(calls[0].init.method, 'POST');
+        assert.deepEqual(readCookies, [cookieName]);
+        assert.equal(calls[0].init.headers.Cookie, `${cookieName}=synthetic-session`);
+        assert.deepEqual(cleared.map(call => call[0]), [cookieName], 'other environments and account-picker history are retained');
+        assert.equal(cleared[0][1], '');
+        assert.equal(cleared[0][2].maxAge, 0);
+        assert.equal(cleared[0][2].httpOnly, true);
+        assert.equal((await response.json()).redirectTo, 'https://identity.example.invalid/lookup');
     });
-    const response = await POST();
-    assert.deepEqual(deadlines, [5_000]);
-    assert.equal(calls.length, 1, 'no retry of the remote operation');
-    assert.equal(calls[0].init.method, 'POST');
-    assert.deepEqual(cleared.map(call => call[0]), ['lb_session'], 'account-picker history is retained');
-    assert.equal(cleared[0][1], '');
-    assert.equal(cleared[0][2].maxAge, 0);
-    assert.equal(cleared[0][2].httpOnly, true);
-    assert.equal((await response.json()).redirectTo, 'https://identity.example.invalid/lookup');
-});
+}
 
 test('logout never reports success when the local session cookie cannot be cleared', async () => {
+    let cookieWrites = 0;
     const { POST } = load('../src/app/api/auth/logout/route.ts', {
         'next/server': { NextResponse: { json: Response.json } },
-        'next/headers': { cookies: async () => ({ get: () => undefined, set: () => { throw new Error('cookie write failed'); } }) },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session' },
+        'next/headers': { cookies: async () => ({ get: () => undefined, set: () => { cookieWrites++; throw new Error('cookie write failed'); } }) },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames },
         '@/lib/public-urls': { getAccountsUrl: () => 'https://identity.example.invalid', getAdminUrl: () => 'https://merchant.example.invalid' },
     }, { process: { env: { NODE_ENV: 'development' } }, console: { error: () => {} } });
     const response = await POST();
+    assert.equal(cookieWrites, 1, 'the refusal must exercise the cookie write, not an incomplete dependency mock');
     assert.equal(response.status, 503);
     assert.equal((await response.json()).success, false);
 });
@@ -476,7 +484,7 @@ function publicUrls() {
 test('sign-in return uses the configured app origin and preserves the merchant path/query', () => {
     const { proxy } = load('../src/proxy.ts', {
         'next/server': { NextResponse: { redirect: value => Response.redirect(value, 307), next: () => new Response() } },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }) },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames, verifyLetbuyySessionCookieValue: () => ({ accepted: false }) },
         '@/lib/public-urls': publicUrls(),
     });
     const request = new NextRequest('http://127.0.0.1:9141/snazz/products?status=draft', { headers: { host: 'untrusted.example.invalid', 'x-forwarded-host': 'untrusted.example.invalid' } });
@@ -499,7 +507,7 @@ test('private proxy overwrites forged return context with the actual route', () 
     const urls = publicUrls();
     const { proxy } = load('../src/proxy.ts', {
         'next/server': { NextResponse: { next: value => value } },
-        '@letbuyy/auth-core': { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: true }) },
+        '@letbuyy/auth-core': { resolveLetbuyyPlatformCookieNames, verifyLetbuyySessionCookieValue: () => ({ accepted: true }) },
         '@/lib/public-urls': urls,
     });
     const request = new NextRequest('http://127.0.0.1:9141/alpha/products?status=draft', { headers: { [urls.MERCHANT_RETURN_PATH_HEADER]: '//foreign.example.invalid' } });

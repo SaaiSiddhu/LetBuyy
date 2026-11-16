@@ -37,6 +37,9 @@ on:
       - master
       - "codex/**"
 
+env:
+  LETBUYY_EXECUTABLE_NETWORK_POOL: ${{ vars.LETBUYY_CI_NETWORK_POOL || '' }}
+
 jobs:
   # Every gate step below runs with continue-on-error so that a failure in an early
   # step (historically "Validate governance") can no longer hide the results of

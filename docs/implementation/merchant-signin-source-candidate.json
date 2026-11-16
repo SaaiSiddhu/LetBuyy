@@ -2,18 +2,18 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-16T11:36:33.301542+00:00",
+  "preparedUtc": "2026-11-16T18:26:03.689858+00:00",
   "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
       "path": ".github/workflows/architecture-governance.yml",
-      "sha256": "e88a497469a59e8272bf0896ef3acb2d12cf9981b45dd1ce229b319d208fc36f",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+      "sha256": "702879eba9155801551eb1689ea46ffac6fc0e797ec24b3dcffb37d1cf418e14",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
     },
     {
       "path": ".github/workflows/ci.yml",
-      "sha256": "fde5cc46cda28d768eb0875c1aebeedba1bee719a25fe8311ddd10ba5ab26ef9",
-      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+      "sha256": "80f4f412c89d779fd65da8be1496b8b0f58ebbe3eceb7af4a72a56b2713aaadb",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
     },
     {
       "path": ".github/workflows/environment-lifecycle.yml",
@@ -169,6 +169,11 @@
       "path": "apps/merchant/web/tests/billing-entry.test.tsx",
       "sha256": "82ccf03bd825ccf5d689c3ce44702a4efd9ddad000e2992d7a649022a5d8b480",
       "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/tests/merchant-read-performance.test.mjs",
+      "sha256": "8d5b421c3e99b715c7dcc5f81f0eed27b54ed6fefad15c7d1d3468f09c386803",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
     },
     {
       "path": "apps/merchant/web/tests/read-lifecycle.test.tsx",
@@ -556,6 +561,11 @@
       "sha256": "a39352d2850d0112e814b7039f5ef48038353b36329060e0726fe375e34fb5b7"
     },
     {
+      "path": "docs/implementation/merchant-native418-ci-runner-qualification.md",
+      "sha256": "c9cee941683510b323509fdd8cd6396454268fc7e0a9b222305d8ed65b01cbdf",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
       "path": "docs/implementation/merchant-native418-ci-transport-recovery.md",
       "source": "Owned native418 CI fixture transport repair and regression evidence",
       "sha256": "1c0aa8225a9c2e62a62a6979df44d3654fcb4d626c77cac977f4df9f49d87d18"
@@ -701,9 +711,19 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "scripts/governance/README.md",
+      "sha256": "926bfe840c661608a73209b2b3c618d6555c93dbcf1e6ca329b78527e737739c",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
       "path": "scripts/governance/definer-role-closure.mjs",
       "sha256": "0fbfee9a4d5ebb67fd5b0cd4bca26a96d7dab2551f57f1994280afede60e0bfa",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/governance/executable-pg-fixture.mjs",
+      "sha256": "998afdfe2d6c38083804eb17430e2bf1b4e6be8e5680be2b9346457e5a32b62a",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
     },
     {
       "path": "scripts/governance/native-auth-migration-profile.mjs",
@@ -986,6 +1006,11 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "tests/governance/executable-network-pool.test.mjs",
+      "sha256": "76963325a242e4c64f4f1641178ea48eae6caf85d52acb9121b1ef8cabe0ecaa",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
       "path": "tests/governance/executable-prepared-transactions.test.mjs",
       "sha256": "6f6ebe6b9fe21f8d1ae680f05bb123070a044704031e4aad668db4c258cc69b3",
       "source": "Local tested CI harness correction; production code and SQL unchanged"
@@ -1064,6 +1089,11 @@
       "path": "tests/governance/tenant-registry-columns.test.mjs",
       "sha256": "72caefcf8b8742d6b1a9c172887afb162b8670fef71dcebabf2d90a7a6c71ac2",
       "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "tests/governance/turbo-test-environment.test.mjs",
+      "sha256": "6448fbd53c10be7b5b06a71554dc8721c61a1e3b5d65a0e7ca18e9c6c9133f38",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
     },
     {
       "path": "tests/governance/validator-orchestration.test.mjs",
@@ -1194,6 +1224,11 @@
       "path": "tests/performance/dual-model-consolidation.test.mjs",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "b2708c1f36056946cfcfa677a08eceb2e698b5ff15f3644c78656b6775fceb2f"
+    },
+    {
+      "path": "turbo.json",
+      "sha256": "ec21d41a2c9f64ba8e61dd8fc0c4bdd77bb60db7c6d17f090783c902648c57b9",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
     }
   ],
   "scopeNotes": [
@@ -1209,7 +1244,9 @@
     "Earlier actual-backup and80-per-profile results apply to old439ccfe3 SQL only; new0626be3f SQL passed88 checks per exact schema; actual encrypted-backup native418 rehearsal passed both profiles ona9bcbcabc with identical418 bytes",
     "Later owner continuation authorizes finishing the11 repairs and free CI/release; historical DOWN guard additions preserve previous business SQL and forward history; all release gates remain mandatory",
     "Recovery-policy admission is separately pending under the original Free prototype decision; source/backups/CI alone are not hosted or physical acceptance",
-    "New local continuation fixes are source-qualified with124 inventory/artifact/rollback checks,362 contracts,Gateway types and final114-validator governance; no CI waiver or hosted acceptance claimed"
+    "New local continuation fixes are source-qualified with124 inventory/artifact/rollback checks,362 contracts,Gateway types and final114-validator governance; no CI waiver or hosted acceptance claimed",
+    "CI-only continuation uses canonical Merchant cookie resolver in fixtures, proves environment-bound logout and strict Turbo worker-budget propagation, and schedules two bounded owned runner slots without removing any gate; final-source CI remains mandatory",
+    "Opt-in checked private test-network pool avoids exhausted shared Docker default subnets without daemon changes or foreign cleanup; bounded collision handling and exact owned lost-ack readback refuse unknown outcomes; default behavior remains unchanged"
   ],
   "verification": {
     "scope": "new source freeze; mirror-qualified, not hosted or physical acceptance",
@@ -1413,6 +1450,47 @@
         },
         "officialScopedCloudflareOAuth": "PASS"
       }
+    },
+    "merchantCookieFixtureQualification": {
+      "baselineRuntimeSource": "a3916166856f4902bde886498e78312f7ffa4327",
+      "runtimeSqlUnchanged": true,
+      "focusedPassed": 41,
+      "fullMerchantSeparatePhases": [
+        323,
+        818,
+        295
+      ],
+      "failed": 0,
+      "skipped": 0,
+      "exactSourceCiAcceptance": "pending"
+    },
+    "privateTestNetworkControls": {
+      "passed": 8,
+      "strictTurboControlPassed": 1,
+      "failed": 0,
+      "fullPureLane": {
+        "suites": 215,
+        "tests": 3221,
+        "passed": 3206,
+        "failed": 0,
+        "skipped": 15,
+        "processExitCode": 0
+      },
+      "globalInventoryWrapper": "failed; retained, not treated as a test pass",
+      "scopedLiveNeighbourWitness": {
+        "passed": true,
+        "heldDefaultNetworks": 2,
+        "childExitCode": 0,
+        "cleanupFailures": 0
+      },
+      "governance": {
+        "passed": 114,
+        "failed": 0,
+        "blocked": 0,
+        "skipped": 0,
+        "notApplicable": 1
+      },
+      "exactSourceCiAcceptance": "pending"
     }
   },
   "pushed": false,

@@ -30,9 +30,10 @@ env:
   NODE_VERSION: "22"
   PNPM_VERSION: "10.6.2"
   FLUTTER_VERSION: "3.44.8"
-  # Keep one browser/catalog suite at a time on the small hosted Linux runner.
-  # Each suite still exercises its real internal races and prepared transactions.
-  LETBUYY_EXECUTABLE_PG_JOBS: "1"
+  # Default to one independent database suite on small hosted runners. An owned
+  # runner can use its measured budget; suite assertions and internal races stay unchanged.
+  LETBUYY_EXECUTABLE_PG_JOBS: ${{ vars.LETBUYY_CI_PG_JOBS || '1' }}
+  LETBUYY_EXECUTABLE_NETWORK_POOL: ${{ vars.LETBUYY_CI_NETWORK_POOL || '' }}
   # Official Supabase mirror, same v16.2 multi-architecture image. Avoid the
   # anonymous ECR download limit shared by GitHub-hosted runners.
   LETBUYY_EXECUTABLE_REST_IMAGE: ghcr.io/supabase/postgrest:v16.2@sha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e
@@ -211,7 +212,7 @@ jobs:
           PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
   unit-tests:
     name: Unit tests
-    runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_UNIT_RUNNER || vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
       - uses: actions/checkout@v4
         with:

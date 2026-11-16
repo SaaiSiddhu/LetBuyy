@@ -45,6 +45,8 @@
       ],
       "env": [
         "CI",
+        "LETBUYY_EXECUTABLE_PG_JOBS",
+        "LETBUYY_EXECUTABLE_NETWORK_POOL",
         "LETBUYY_EXECUTABLE_PG_IMAGE",
         "LETBUYY_EXECUTABLE_REST_IMAGE"
       ],
