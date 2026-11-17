@@ -11,6 +11,30 @@ import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 const owned=requireOwnedDatabase();
 const paths=['/v1/internal/console/summary','/v1/internal/console/analytics'];
 
+async function overviewDependencyReady(expected:boolean) {
+ // NOTIFY is asynchronous. Use invalid, null arguments that return before
+ // session resolution or audit writes; never retry the application read.
+ const key=owned.restEnv().SUPABASE_SERVICE_ROLE_KEY,deadline=Date.now()+15_000;
+ do {
+  const response=await fetch(owned.restUrl+'/rest/v1/rpc/read_console_overview_v1',{
+   method:'POST',headers:{apikey:key,authorization:'Bearer '+key,'Content-Type':'application/json'},
+   body:JSON.stringify({p_session_id:null,p_cookie_sha256:null,p_permission_hash:null,p_kind:null}),
+   signal:AbortSignal.timeout(5_000),
+  });
+  const payload=await response.json() as {accepted?:boolean;code?:string};
+  if(response.status===200) {
+   assert.equal(payload.accepted,false);assert.equal(payload.code,'CONSOLE_OVERVIEW_QUERY_INVALID');
+   if(expected)return;
+  } else {
+   assert.equal(response.status,404,'permission, connection and other failures are not schema readiness');
+   assert.ok(payload.code==='PGRST202'||(!expected&&payload.code==='42883'),'only the known absent RPC/cache entry may be retried');
+   if(!expected)return;
+  }
+  await new Promise(resolve=>setTimeout(resolve,100));
+ } while(Date.now()<deadline);
+ assert.fail('owned Console overview dependency did not reach readiness '+expected);
+}
+
 test('live MFA super-admin and existing exec:view viewer read only cross-site aggregates with mandatory attribution',async()=>{
  const f=await consoleFixture(owned);for(const kind of ['super','viewer'] as const) {
   const actor=await f.actor(kind);for(const path of paths) {
@@ -78,12 +102,17 @@ test('new read RPC clean rollback and reapply retain accounts/sessions/audits an
  const counts=()=>owned.psql('SELECT (SELECT count(*) FROM users_custom),(SELECT count(*) FROM sessions_v2),(SELECT count(*) FROM audit_logs);');
  const retained=counts();owned.script(readFileSync(new URL('../../../../../database/supabase/rollback/325_session_bound_console_overview.rollback.sql',import.meta.url),'utf8'));
  assert.equal(owned.psql(`SELECT to_regprocedure('${signature}') IS NULL;`),'t');assert.equal(counts(),retained);
+ await overviewDependencyReady(false);
+ const unavailable=await f.gateway.request(paths[0],{headers:actor.headers});
+ assert.equal(unavailable.status,503,unavailable.text);assert.equal(unavailable.json?.data,undefined);assert.equal(counts(),retained);
  owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/325_session_bound_console_overview.sql',import.meta.url),'utf8'));
  assert.equal(counts(),retained);
  for(const role of ['anon','authenticated','app_tenant'])assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT ${signature.split('(')[0]}(NULL,NULL,NULL,'summary');`),/permission denied for function/);
  assert.equal(owned.psql(`SELECT has_function_privilege('service_role','${signature}','EXECUTE');`),'t');
  assert.equal(owned.psql(`SELECT prosecdef FROM pg_proc WHERE oid='${signature}'::regprocedure;`),'f');
- assert.equal((await f.gateway.request(paths[0],{headers:actor.headers})).status,200);
+ await overviewDependencyReady(true);assert.equal(counts(),retained,'readiness probes must not create sessions or audits');
+ const restored=await f.gateway.request(paths[0],{headers:actor.headers});assert.equal(restored.status,200,restored.text);
+ assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE actor_id='${actor.id}' AND action='console.summary.read';`),'2','one initial and one recovered application read');
 });
 
 test('mandatory read audit failure returns503 without a success projection and retry records attribution',async()=>{
