@@ -322,6 +322,35 @@ async function finishClientDirectory(record:ClientRecord):Promise<void> {
     removeOwnedNextDirectory(record.nextDirectory);
 }
 
+/** Choose distinct OS-assigned loopback ports for verified local fixtures. */
+export async function allocateOwnedLoopbackPorts(owned: OwnedDatabase, count: number): Promise<number[]> {
+    if (owned !== requireOwnedDatabase()) throw new Error('local ports require the verified database handle');
+    if (!Number.isInteger(count) || count < 1 || count > 8) throw new Error('invalid local port count');
+    const reservations: ReturnType<typeof createServer>[] = [];
+    const ports: number[] = [];
+    try {
+        for (let index = 0; index < count; index += 1) {
+            const server = createServer();
+            reservations.push(server);
+            await new Promise<void>((resolve, reject) => {
+                server.once('error', reject);
+                server.listen(0, '127.0.0.1', () => { server.removeListener('error', reject); resolve(); });
+            });
+            const address = server.address();
+            if (!address || typeof address === 'string') throw new Error('local port was not assigned');
+            ports.push(address.port);
+        }
+        return ports;
+    } finally {
+        // Keep all reservations until allocation finishes so ports in a batch
+        // cannot repeat. Named client startup still verifies actual readiness.
+        await Promise.all(reservations.map(server => new Promise<void>(resolve => {
+            if (!server.listening) return resolve();
+            server.close(() => resolve());
+        })));
+    }
+}
+
 /** Launch only a named test client after database ownership is proven; no raw command/cwd seam. */
 export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, options:{ port?:number; env:Record<string,string|undefined>; hostMode?:'canonical-storefront-loopback' }):OwnedClientProcess {
     if (!CLIENT_KINDS.has(kind)) throw new Error('unapproved owned client runtime kind');

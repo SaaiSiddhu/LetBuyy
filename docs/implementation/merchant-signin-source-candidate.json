@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-17T09:22:04.677239+00:00",
+  "preparedUtc": "2026-11-17T10:19:33.813422+00:00",
   "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
@@ -882,8 +882,7 @@
     },
     {
       "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
-      "source": "Local qualification repair; canonical contracts retained, no hosted change",
-      "sha256": "fbc7738d3a5bb64ba527ab5b515645a47807fad7f4f3cf9cde98121a2e531a0c"
+      "sha256": "23c00b542db845bbf35254c462d21df49e167d1c40cb5307fb8c4ec0e70bf6e9"
     },
     {
       "path": "services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts",
@@ -1272,6 +1271,22 @@
     {
       "path": "docs/implementation/merchant-native418-checkout-navigation-qualification.md",
       "sha256": "503f5805dbe0672bedbf73fb11b1b218667f729ab31b44bff5299674b525c65f"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payout-statements-browser.postgres.test.ts",
+      "sha256": "603850f485297634e3f641b504ca5c87f20f2e0ce30a3d7f845fd3366e40708e"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payment-setup-browser.postgres.test.ts",
+      "sha256": "ec401d6fbcb8d0fccc350e2f992da8bdc653c71f91bbd4e2459b421ad783aa71"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-client-runtime.postgres.test.ts",
+      "sha256": "4e5def2f3356c9a7462b3314b926c74b953aaef1d2e606f820cf3d0cc8b7a38d"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-port-isolation-qualification.md",
+      "sha256": "39b5115a2c311230401ed4a4435724858e6c47bc049867a139404723cb7e9932"
     }
   ],
   "scopeNotes": [
@@ -1613,6 +1628,21 @@
       "publishedSource": "3bee95811c73f285c27bac19f0249dc2917530ec",
       "ciStatus": "FAILED merge-safety checkout scenario; canceled superseded workflows, no acceptance",
       "failureLogSha256": "f1c43e393251cdb9c4373b70d6da84888d8f53709545ff10671999a710face73"
+    },
+    "browserPortIsolation": {
+      "previousSource": "1a844dccb1f27e7c607ed99ed9396b74b72facad",
+      "previousCi": "FAILED EADDRINUSE before payout journey; canceled, not accepted",
+      "browserRun": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T101322Z-native418-browser-ports-occupied-regression-673e62d943e447ffb8ce39c8433647ed",
+      "browserPassed": 2,
+      "heldLegacyPorts": 6,
+      "unexpectedLegacyConnections": 0,
+      "helperRun": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T101708Z-native418-port-helper-qualification-71c3d304450e4024a273462e24f46b4b",
+      "helperPassed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "gatewayTypes": true,
+      "runtimeChanged": false,
+      "exactSourceCi": "PENDING"
     }
   },
   "pushed": false,
