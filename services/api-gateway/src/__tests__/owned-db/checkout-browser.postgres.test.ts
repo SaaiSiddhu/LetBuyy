@@ -8,7 +8,7 @@ import { createServer, type IncomingMessage } from 'node:http';
 import { once } from 'node:events';
 import { join } from 'node:path';
 import test, { after, before } from 'node:test';
-import { chromium, type Browser } from '@playwright/test';
+import { chromium, expect, type Browser } from '@playwright/test';
 import worker from '../../index';
 import { encryptPaymentSecret } from '../../lib/store-payment-config';
 import { PAYMENT_KEYRING_PREFIX } from '../../lib/payment-encryption-keyring';
@@ -74,6 +74,8 @@ const cartId = crypto.randomUUID();
 const cartToken = `ct_${crypto.randomUUID().replace(/-/g, '')}`;
 // Cold CI compilation can exceed Playwright's 30-second navigation default.
 // Keep navigation bounded and require the actual hosted handoff before using its form.
+// Assert the final origin and path with retries: a replaced intermediate document
+// can abort a navigation event even when the hosted checkout subsequently loads.
 const coldNavigationTimeout = 90_000;
 const appEnv = {
     NODE_ENV: 'development',
@@ -255,7 +257,8 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     assert.equal(await page.evaluate(() => (globalThis as unknown as { localStorage: { getItem(key: string): string | null } }).localStorage.getItem('lb_cart_token')), cartToken);
     assert.ok((await page.locator('body').innerText()).includes('Synthetic browser checkout product'), 'the returned cart retains its actual product');
     await page.goto(`${storefrontOrigin}/checkout`, { waitUntil: 'domcontentloaded' });
-    await page.waitForURL(url => url.hostname === 'checkout.localhost', { timeout: coldNavigationTimeout });
+    await expect(page).toHaveURL(url => url.hostname === 'checkout.localhost'
+        && url.port === String(appPort) && url.pathname === '/checkout', { timeout: coldNavigationTimeout });
     await page.waitForLoadState('networkidle');
     await page.getByPlaceholder('John Doe').fill('Synthetic Browser Buyer');
     await page.getByPlaceholder('9876543210').fill('9000000099');
@@ -355,7 +358,8 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
     });
 
     await page.goto(`http://${site.subdomain}.localhost:${appPort}/checkout`, { waitUntil: 'domcontentloaded' });
-    await page.waitForURL(/checkout\.localhost/);
+    await expect(page).toHaveURL(url => url.hostname === 'checkout.localhost'
+        && url.port === String(appPort) && url.pathname === '/checkout', { timeout: coldNavigationTimeout });
     await page.waitForLoadState('networkidle');
     assert.equal(await page.getByPlaceholder('John Doe').count(), 1, `Hosted checkout form did not render: ${(await page.locator('body').innerText()).slice(0, 1200)}`);
     await page.getByPlaceholder('John Doe').fill('Synthetic Stale Quote Buyer');
@@ -459,7 +463,8 @@ test('buyer completes hosted Razorpay with the original credential after Setting
     }));
     page.on('pageerror', error => pageErrors.push(error.message));
     await page.goto(`http://${site.subdomain}.localhost:${appPort}/checkout`, { waitUntil: 'domcontentloaded' });
-    await page.waitForURL(/checkout\.localhost/);
+    await expect(page).toHaveURL(url => url.hostname === 'checkout.localhost'
+        && url.port === String(appPort) && url.pathname === '/checkout', { timeout: coldNavigationTimeout });
     await page.waitForLoadState('networkidle');
     assert.equal(await page.getByPlaceholder('John Doe').count(), 1, `Hosted checkout form did not render: ${(await page.locator('body').innerText()).slice(0, 1200)}`);
     await page.getByPlaceholder('John Doe').fill('Synthetic Online Buyer');
@@ -580,7 +585,8 @@ test('buyer sees a safe recoverable message when inventory changes before COD co
     });
 
     await page.goto(`http://${site.subdomain}.localhost:${appPort}/checkout`, { waitUntil: 'domcontentloaded' });
-    await page.waitForURL(/checkout\.localhost/);
+    await expect(page).toHaveURL(url => url.hostname === 'checkout.localhost'
+        && url.port === String(appPort) && url.pathname === '/checkout', { timeout: coldNavigationTimeout });
     await page.waitForLoadState('networkidle');
     assert.equal(await page.getByPlaceholder('John Doe').count(), 1, `Hosted checkout form did not render: ${(await page.locator('body').innerText()).slice(0, 1200)}`);
     await page.getByPlaceholder('John Doe').fill('Synthetic Stale Inventory Buyer');

@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-17T06:06:21.858604+00:00",
+  "preparedUtc": "2026-11-17T08:21:53.420858+00:00",
   "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
@@ -1264,6 +1264,14 @@
       "path": "turbo.json",
       "sha256": "ec21d41a2c9f64ba8e61dd8fc0c4bdd77bb60db7c6d17f090783c902648c57b9",
       "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts",
+      "sha256": "096b61ccb817d7f9901c3670600ceae00460105ba3d3e04e755caa0bcbe92c15"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-checkout-navigation-qualification.md",
+      "sha256": "ab3d251b221eaa7537cb0ec34536bf8d55da1a98170f33a572c98850ce21efa7"
     }
   ],
   "scopeNotes": [
@@ -1563,6 +1571,18 @@
         "run": "20261117T054433Z-native418-identity-final-parallel-18644000cc314950880543e415f5a6bb"
       },
       "exactSourceCi": "PENDING new candidate"
+    },
+    "checkoutNavigationRepair": {
+      "publishedPredecessor": "140c53e5491fd149e3fec8e276bc09ade6b8acb7",
+      "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T081426Z-native418-checkout-navigation-and-identity-fbc4b044d12d4689abbe904091c33525",
+      "reportSha256": "f6dc39c91278439320128d7eea156b34406c59d77cfa20de7a9dce6eb27cf40e",
+      "checkoutPassed": 4,
+      "identityPassed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "gatewayTypes": true,
+      "runtimeChanged": false,
+      "exactSourceCi": "PENDING"
     }
   },
   "pushed": false,
