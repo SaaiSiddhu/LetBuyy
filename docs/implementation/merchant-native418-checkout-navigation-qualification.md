@@ -1,40 +1,50 @@
 # Native418 checkout browser navigation qualification
 
-Status: local test-only qualification passed; exact-source CI still required. No production activation.
+The test-only correction is locally qualified. Full exact-source CI, hosted
+staging, production and physical iPhone acceptance remain required.
 
-The required CI workflow `44037427585`, source
-`140c53e5491fd149e3fec8e276bc09ade6b8acb7`, reached the real Commerce,
-Gateway and owned PostgreSQL checkout tests. Three scenarios passed. The
-stale-inventory scenario stopped at the hosted navigation wait with
-`page.waitForURL: net::ERR_ABORTED; maybe frame was detached?`, before its
-inventory-conflict assertions ran. Its retained log SHA256 is
-`73b785bfd9f1ef9bb00c0d161a78527c938481629a49fdf11e7eca1afb3a32c0`.
+## Observed failure and cause
 
-The candidate replaces four navigation-event waits with retrying assertions
-that require the actual `checkout.localhost` host, assigned test port, and
-`/checkout` path. It retains the 90-second bound, rendered-form checks and all
-cart, stock, payment, ledger, outbox and idempotency assertions. No application,
-database, production origin, permissions or checkout policy changes are included.
+The previous 140c53e candidate failed the stale-inventory checkout scenario at
+`page.waitForURL` after an intermediate `ERR_ABORTED` navigation. The first
+correction, 3bee95811, passed local checkout and Identity tests and the Unit CI
+lane, but the same scenario failed in the separate merge-safety lane. That
+candidate is not accepted. The second failure log SHA256 is
+`f1c43e393251cdb9c4373b70d6da84888d8f53709545ff10671999a710face73`.
 
-This addresses the observed wait boundary; it does not establish why Chromium
-aborted the intermediate navigation. A successful isolated run must exercise the
-complete checkout scenarios, and the exact committed source must pass required
-CI before release. A failed run or rerun must remain recorded as such.
+Inspection of the installed Playwright 1.60.0 implementation established that
+`toHaveURL` with a predicate calls the same navigation-event wait. It catches an
+intermediate navigation error and formats it as a timeout, even when it occurs
+much earlier. Its regular-expression overload instead polls the actual URL.
+The previous predicate replacement therefore did not remove the original race.
 
-The assertion API is documented by
-[Playwright PageAssertions](https://playwright.dev/docs/api/class-pageassertions#page-assertions-to-have-url).
+A controlled browser experiment reproduced this distinction three times: the
+predicate assertion rejected the deliberately aborted intermediate navigation,
+while the regular-expression assertion waited for and accepted the correct final
+URL in all three runs. The prior negative controls remain failures as expected.
 
-## Required evidence
+## Final change
 
-- Complete owned checkout browser suite, including stock-conflict recovery.
-- Repeat with an independently running owned browser/Identity journey to check
-  the concurrent execution conditions that exposed the failure.
-- Typecheck and exact-source mandatory CI results.
-- Fresh recovery-artifact binding, hosted staging acceptance, production
-  deployment and physical iPhone login remain separate subsequent gates.
+All four real checkout journeys call one test helper that uses the polling
+regular-expression matcher. It requires the exact HTTP checkout.localhost host,
+assigned test port and /checkout path; the original 90-second bound remains.
+No UI, stock, order, payment, ledger, outbox or idempotency assertion was removed.
+A permanent fifth browser case deliberately aborts an intermediate navigation
+and proves that the same helper accepts the eventual correct destination.
+Only that harness case uses synthetic documents; the four commerce journeys
+still use real Commerce, Gateway and owned PostgreSQL.
 
-## Local result — 17 November 2026
+Bounded diagnostics on the stale-inventory failure record navigation timing,
+close/crash events and host/path only, without query strings or handoff secrets.
+There is no application runtime, SQL, permission, issuer or checkout-policy change.
 
-Managed run: `20261117T081426Z-native418-checkout-navigation-and-identity-fbc4b044d12d4689abbe904091c33525`. Two bounded owned PostgreSQL workers, prepared transactions enabled, encrypted T7 scratch, real Commerce and Identity browser processes. All three suites completed: checkout 4/4, Identity browser 1/1, Identity sessions 8/8; zero failures, cancellations or skips. Gateway typechecking passed. The full report SHA256 is `f6dc39c91278439320128d7eea156b34406c59d77cfa20de7a9dce6eb27cf40e`.
+## Verification
 
-The preceding CI attempt remains failed/canceled and is not accepted. This local result does not establish full CI, hosted signup, provider delivery, production deployment or iPhone acceptance.
+- Managed parallel qualification: `20261117T091908Z-native418-checkout-final-abort-regression-7c9bc172a3134614a517da2c59c68783`. Two independent owned lanes
+  each passed all five cases, with zero failures, skips or cleanup failures.
+- Controlled abort experiment: `20261117T091805Z-native418-navigation-abort-controls-d691e8dac09e43a3aed9e6d084c95739`. Three expected-negative predicate
+  controls and three positive polling controls passed their expected outcomes.
+- Gateway typecheck passed in `20261117T092130Z-native418-final-checkout-regression-typecheck-9663afca86f34073a0dc7efdbc912465`.
+- The preceding failed/canceled CI attempts are preserved and are not accepted.
+
+The API reference is [Playwright PageAssertions](https://playwright.dev/docs/api/class-pageassertions#page-assertions-to-have-url).
