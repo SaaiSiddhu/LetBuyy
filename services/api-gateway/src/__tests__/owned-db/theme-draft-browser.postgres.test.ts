@@ -62,6 +62,10 @@ test('normal editor recovers lost replies, serializes saves and reviews exact co
     let loseSave = false, losePublish = false, holdSave = false;
     let previewCreates = 0;
     let releaseHeld: (() => void) | undefined, reachedHeld: (() => void) | undefined;
+    let releaseChallengeScript: (() => void) | undefined;
+    let challengeDelayTimer: ReturnType<typeof setTimeout> | undefined;
+    const challengeScriptDelay = Number(process.env.LETBUYY_EXECUTABLE_TEST_WIDGET_DELAY_MS || '0');
+    assert.ok([0, 6500].includes(challengeScriptDelay), 'only the named bounded widget-startup fault is supported');
     const writes: Array<{ operation: string; base: number; key: string }> = [];
     const errors: string[] = [];
     const gatewayFailures: unknown[] = [];
@@ -128,6 +132,16 @@ test('normal editor recovers lost replies, serializes saves and reviews exact co
         browser = await chromium.launch({ headless: true });
         const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
         await context.route(merchantOrigin + '/preview**', route => route.abort());
+        let challengeScriptHeld = false;
+        if (challengeScriptDelay) {
+            const gate = new Promise<void>(resolve => { releaseChallengeScript = resolve; });
+            await context.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async route => {
+                challengeScriptHeld = true;
+                await gate;
+                // Retain the actual provider SDK, widget and Siteverify after the delay.
+                await route.continue();
+            });
+        }
         page = await context.newPage(); page.setDefaultTimeout(30_000); page.setDefaultNavigationTimeout(60_000);
         const cdp = await context.newCDPSession(page);
         await cdp.send('Runtime.enable'); await cdp.send('Debugger.enable');
@@ -152,8 +166,17 @@ test('normal editor recovers lost replies, serializes saves and reviews exact co
         page.on('pageerror', error => browserFaults.push({ kind: 'pageerror', message: redact(error.stack || error.message) }));
         page.on('console', message => { if (message.type() === 'error') browserFaults.push({ kind: 'console', message: redact(message.text()) }); });
         page.on('requestfailed', request => browserFaults.push({ kind: 'requestfailed', message: new URL(request.url()).pathname + ':' + redact(request.failure()?.errorText || 'failed') }));
-        await page.goto(identityOrigin + '/login');
-        await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/);
+        await page.goto(identityOrigin + '/login', { waitUntil: 'domcontentloaded' });
+        const securityStartedAt = Date.now();
+        if (challengeScriptDelay) challengeDelayTimer = setTimeout(() => releaseChallengeScript?.(), challengeScriptDelay);
+        // Locator matchers default to5s independently of this page's30s action budget.
+        // Readiness must await the real widget; never substitute a token or bypass verification.
+        await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 30_000 });
+        if (challengeScriptDelay) {
+            assert.ok(challengeScriptHeld, 'the named fault must delay the actual provider SDK request');
+            assert.ok(Date.now() - securityStartedAt >= challengeScriptDelay, 'readiness must outlive the controlled startup delay');
+        }
+        console.info(JSON.stringify({ diagnostic: 'theme_browser_security_ready', elapsedMs: Date.now() - securityStartedAt, controlledScriptDelayMs: challengeScriptDelay }));
         await page.getByLabel('Email', { exact: true }).fill(email);
         await page.getByRole('button', { name: 'Continue with email', exact: true }).click();
         await page.getByLabel('Password', { exact: true }).fill(password);
@@ -275,6 +298,8 @@ test('normal editor recovers lost replies, serializes saves and reviews exact co
             appErrors: errors.filter(line => !line.includes("isn't a valid image")).slice(-12), imageErrors: errors.filter(line => line.includes("isn't a valid image")).length }));
         throw error;
     } finally {
+        if (challengeDelayTimer) clearTimeout(challengeDelayTimer);
+        releaseChallengeScript?.();
         releaseHeld?.(); tap.restore(); await browser?.close();
         await stopOwnedClientRuntime(merchant); await stopOwnedClientRuntime(identity); await gateway.settle();
         if (bridge) { bridge.closeAllConnections(); await new Promise<void>(r => bridge!.close(() => r())); }

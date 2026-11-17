@@ -19,7 +19,7 @@ import { appendFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFil
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { pullsAllowed, requireImagePresent } from '../../scripts/governance/executable-pg-fixture.mjs';
+import { pullsAllowed, requireImagePresent, createNetwork, newRunId } from '../../scripts/governance/executable-pg-fixture.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const runner = join(repoRoot, 'scripts/governance/run-executable-suites.mjs');
@@ -31,6 +31,31 @@ const PG_IMAGE = process.env.LETBUYY_EXECUTABLE_PG_IMAGE || 'postgres:16-alpine'
 const REST_IMAGE = process.env.LETBUYY_EXECUTABLE_REST_IMAGE || 'public.ecr.aws/supabase/postgrest:v16.2';
 
 const docker = (args) => spawnSync('docker', args, { encoding: 'utf8' });
+// Use the checked pool allocator for witnesses too, preserving the intentionally
+// incomplete/absent ownership labels that the reaper must refuse to remove.
+function createReaperNeighbourNetwork(name, labels) {
+    createNetwork({ name, runId: newRunId(), run(args) {
+        if (args[0] !== 'network' || args[1] !== 'create') return docker(args);
+        const forwarded = [];
+        for (let i = 0; i < args.length; i++) {
+            if (args[i] === '--label') { i++; continue; }
+            forwarded.push(args[i]);
+        }
+        forwarded.splice(forwarded.length - 1, 0, ...Object.entries(labels).flatMap(([key, value]) => ['--label', `${key}=${value}`]));
+        return docker(forwarded);
+    } });
+    const observed = docker(['network', 'inspect', name]);
+    assert.equal(observed.status, 0, observed.stderr);
+    const info = JSON.parse(observed.stdout)[0];
+    assert.equal(info.Name, name); assert.equal(info.Driver, 'bridge');
+    assert.match(info.Id, /^[0-9a-f]{64}$/);
+    assert.deepEqual(info.Labels ?? {}, labels, 'address allocation cannot turn a foreign witness into a fully owned resource');
+    if (process.env.LETBUYY_EXECUTABLE_NETWORK_POOL) {
+        const prefix = process.env.LETBUYY_EXECUTABLE_NETWORK_POOL.split('.').slice(0, 2).join('.') + '.';
+        assert.ok(info.IPAM.Config.every(value => value.Subnet.startsWith(prefix) && value.Subnet.endsWith('/28')), 'witnesses use the same checked private pool as the runner');
+    }
+    return { id: info.Id, name, labels, subnets: info.IPAM.Config.map(value => value.Subnet) };
+}
 const hasImage = (image) => docker(['image', 'inspect', '--format', '{{.Id}}', image]).status === 0;
 const realDocker = spawnSync('docker', ['info'], { stdio: 'ignore' }).status === 0;
 // Where the environment has said the runner may pull (CI=true, or LETBUYY_EXECUTABLE_PULL=missing) these tests pull the two images it
@@ -333,6 +358,7 @@ test('SIGKILL leaves the run\'s labeled orphans, the suite ends itself when its 
     const aliveVolume = `letbuyy-exec-lifecycle-alive-vol-${process.pid}-${Date.now().toString(36)}`;
     const plainNetwork = `letbuyy-exec-lifecycle-plain-net-${process.pid}-${Date.now().toString(36)}`;
     const plainVolume = `letbuyy-exec-lifecycle-plain-vol-${process.pid}-${Date.now().toString(36)}`;
+    const neighbourNetworks = [];
     let started;
     try {
         started = await startSleeper(marker);
@@ -348,10 +374,11 @@ test('SIGKILL leaves the run\'s labeled orphans, the suite ends itself when its 
         await until(() => !processAlive(suitePid), 20_000, 'the orphaned suite to end itself: it must not keep writing to infrastructure nobody will remove');
 
         // Neighbours the reaper must leave alone: labeled but owned by a live process (this one), and unlabeled.
-        assert.equal(docker(['network', 'create', '--label', `${FIXTURE_LABEL}=1`, '--label', `${OWNER_LABEL}=${process.pid}`, aliveNetwork]).status, 0);
+        neighbourNetworks.push(createReaperNeighbourNetwork(aliveNetwork, { [FIXTURE_LABEL]: '1', [OWNER_LABEL]: String(process.pid) }));
         assert.equal(docker(['volume', 'create', '--label', `${FIXTURE_LABEL}=1`, '--label', `${OWNER_LABEL}=${process.pid}`, aliveVolume]).status, 0);
-        assert.equal(docker(['network', 'create', plainNetwork]).status, 0);
+        neighbourNetworks.push(createReaperNeighbourNetwork(plainNetwork, {}));
         assert.equal(docker(['volume', 'create', plainVolume]).status, 0);
+        console.info(JSON.stringify({ diagnostic: 'reaper_neighbour_networks', networks: neighbourNetworks }));
 
         const reap = run(['--reap-only', '--reap-min-age', '0']);
         assert.equal(reap.status, 0, reap.stderr);
@@ -372,7 +399,13 @@ test('SIGKILL leaves the run\'s labeled orphans, the suite ends itself when its 
             rmSync(started.dir, { recursive: true, force: true });
             for (const name of everything(resourcesOfOwner(started.child.pid))) docker(['rm', '-f', '-v', name]);
         }
-        for (const name of [aliveNetwork, plainNetwork]) docker(['network', 'rm', name]);
+        for (const { id, name, labels } of neighbourNetworks) {
+            const observed = docker(['network', 'inspect', id]);
+            if (observed.status !== 0) { assert.match(observed.stderr, /no such network|not found/i); continue; }
+            const info = JSON.parse(observed.stdout)[0];
+            assert.equal(info.Id, id); assert.equal(info.Name, name); assert.deepEqual(info.Labels ?? {}, labels);
+            const removed = docker(['network', 'rm', id]); assert.equal(removed.status, 0, removed.stderr);
+        }
         for (const name of [aliveVolume, plainVolume]) docker(['volume', 'rm', name]);
         rmSync(markerDir, { recursive: true, force: true });
     }

@@ -75,7 +75,7 @@ test('merchant shipping and tax forms persist through scoped web proxies and rel
             const url = new URL(response.url()); if (url.origin === merchantOrigin && /\/api\/stores\/.*\/(shipping|taxes)/.test(url.pathname)) receipts.push({ path: url.pathname, method: response.request().method(), status: response.status() });
         });
         stage = 'password-login'; await page.goto(identityOrigin + '/login');
-        await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/);
+        await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 30_000 });
         await page.getByLabel('Email', { exact: true }).fill(email); await page.getByRole('button', { name: 'Continue with email', exact: true }).click();
         await page.getByLabel('Password', { exact: true }).fill(password);
         const [login] = await Promise.all([page.waitForResponse(r => new URL(r.url()).pathname === '/api/auth/login' && r.request().method() === 'POST'), page.getByRole('button', { name: 'Log in', exact: true }).click()]);

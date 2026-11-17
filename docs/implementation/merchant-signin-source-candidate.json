@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-17T10:19:33.813422+00:00",
+  "preparedUtc": "2026-11-17T12:36:03.581224+00:00",
   "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
@@ -556,6 +556,15 @@
       "source": "Reviewed local narrow-source derivation; see scope notes"
     },
     {
+      "path": "docs/implementation/merchant-native418-challenge-readiness-qualification.md",
+      "source": "Bounded browser challenge readiness qualification; no application or SQL change",
+      "sha256": "25a7335567c522624fe1af74cc2297f79b09245e38271b76fd3d48b0358fab11"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-checkout-navigation-qualification.md",
+      "sha256": "503f5805dbe0672bedbf73fb11b1b218667f729ab31b44bff5299674b525c65f"
+    },
+    {
       "path": "docs/implementation/merchant-native418-ci-repair-qualification.md",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "a39352d2850d0112e814b7039f5ef48038353b36329060e0726fe375e34fb5b7"
@@ -584,6 +593,10 @@
       "path": "docs/implementation/merchant-native418-memory-startup-qualification.md",
       "source": "Qualified test-only repair; runtime and migration authority unchanged",
       "sha256": "8bc586229ec66ee981ca840a9d72a112f8a53d04e32771a8e42909e223dc0e5a"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-port-isolation-qualification.md",
+      "sha256": "39b5115a2c311230401ed4a4435724858e6c47bc049867a139404723cb7e9932"
     },
     {
       "path": "docs/implementation/merchant-native418-revenue-readiness-qualification.md",
@@ -841,6 +854,10 @@
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
+      "path": "services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts",
+      "sha256": "83edf814b1aee8fa97e0f0e816d78d4d0e7cbdfc18d16724748635eeeeb0717a"
+    },
+    {
       "path": "services/api-gateway/src/__tests__/owned-db/collection-membership.postgres.test.ts",
       "source": "Qualified test-only repair; runtime and migration authority unchanged",
       "sha256": "366fd3fc999807886f70f2ccc31114bb43b7a19ec096438f326e1b08276f3315"
@@ -871,6 +888,14 @@
       "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
     },
     {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payment-setup-browser.postgres.test.ts",
+      "sha256": "aa8de3b124759187069769018b957767413a7c4c8b3bdb20c90c5fdf5cf93bf0"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payout-statements-browser.postgres.test.ts",
+      "sha256": "603850f485297634e3f641b504ca5c87f20f2e0ce30a3d7f845fd3366e40708e"
+    },
+    {
       "path": "services/api-gateway/src/__tests__/owned-db/merchant-revenue-history.postgres.test.ts",
       "sha256": "84bbfd6fc386da27bafe1a2469ef7c542d3d039c8340a173959d1657db1602cb",
       "source": "Qualified test-only real Data API read-dependency recovery; no runtime, SQL or policy change"
@@ -881,8 +906,17 @@
       "sha256": "266725c07c455cf173fec748561b45beccc90fd7d87adc32202a2c8dfd6fd1f0"
     },
     {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-client-runtime.postgres.test.ts",
+      "sha256": "4e5def2f3356c9a7462b3314b926c74b953aaef1d2e606f820cf3d0cc8b7a38d"
+    },
+    {
       "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
       "sha256": "23c00b542db845bbf35254c462d21df49e167d1c40cb5307fb8c4ec0e70bf6e9"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings-browser.postgres.test.ts",
+      "source": "Bounded browser challenge readiness qualification; no application or SQL change",
+      "sha256": "cd50fd39c9d8d35a11bc28cb3abb108452e60b4c329f2fa990997be6fb05c6f3"
     },
     {
       "path": "services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts",
@@ -893,6 +927,11 @@
       "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "f7ad2a510d138a10c106a398dccc12a30855e53f8ac21e74a978765eba1e6e81"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-draft-browser.postgres.test.ts",
+      "source": "Bounded browser challenge readiness qualification; no application or SQL change",
+      "sha256": "04896d6c7dc01a0d32965e98bb48ff59612e22e7b71964b91d49986d607a9bc0"
     },
     {
       "path": "services/api-gateway/src/__tests__/store-access-password.test.ts",
@@ -1066,7 +1105,7 @@
     },
     {
       "path": "tests/governance/gateway-db-lifecycle.test.mjs",
-      "sha256": "70444ca081884a6f8088a57af9d5109cc5f73c005ee5acac9a1e86d6d2687d66",
+      "sha256": "0c5d7b1dbad0a0f0eec83da40426824d753b8b196ef34b47d0020609093245ac",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
@@ -1263,30 +1302,6 @@
       "path": "turbo.json",
       "sha256": "ec21d41a2c9f64ba8e61dd8fc0c4bdd77bb60db7c6d17f090783c902648c57b9",
       "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
-    },
-    {
-      "path": "services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts",
-      "sha256": "83edf814b1aee8fa97e0f0e816d78d4d0e7cbdfc18d16724748635eeeeb0717a"
-    },
-    {
-      "path": "docs/implementation/merchant-native418-checkout-navigation-qualification.md",
-      "sha256": "503f5805dbe0672bedbf73fb11b1b218667f729ab31b44bff5299674b525c65f"
-    },
-    {
-      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payout-statements-browser.postgres.test.ts",
-      "sha256": "603850f485297634e3f641b504ca5c87f20f2e0ce30a3d7f845fd3366e40708e"
-    },
-    {
-      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payment-setup-browser.postgres.test.ts",
-      "sha256": "ec401d6fbcb8d0fccc350e2f992da8bdc653c71f91bbd4e2459b421ad783aa71"
-    },
-    {
-      "path": "services/api-gateway/src/__tests__/owned-db/owned-client-runtime.postgres.test.ts",
-      "sha256": "4e5def2f3356c9a7462b3314b926c74b953aaef1d2e606f820cf3d0cc8b7a38d"
-    },
-    {
-      "path": "docs/implementation/merchant-native418-port-isolation-qualification.md",
-      "sha256": "39b5115a2c311230401ed4a4435724858e6c47bc049867a139404723cb7e9932"
     }
   ],
   "scopeNotes": [
@@ -1643,6 +1658,48 @@
       "gatewayTypes": true,
       "runtimeChanged": false,
       "exactSourceCi": "PENDING"
+    },
+    "boundedChallengeReadiness": {
+      "scope": "Test fixtures only; whole suite deadlines, real widget and server verification unchanged",
+      "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T121323Z-native418-real-widget-control-and-full-journeys-4fadb25740da44b19c6b7cff37919e97",
+      "negativeControl": {
+        "passed": true,
+        "oldGuardMs": 5000,
+        "actualSdkGateMs": 6500,
+        "failureLogSha256": "fbfee6f98e59744b8f15058d1db5a722cb7e914f061728139861df2fad242f35"
+      },
+      "positiveLanes": [
+        {
+          "lane": "full-normal-browser-journeys",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 3,
+          "report": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T121323Z-native418-real-widget-control-and-full-journeys-4fadb25740da44b19c6b7cff37919e97/full-normal-browser-journeys/report.json"
+        },
+        {
+          "lane": "full-theme-delayed-widget",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 1,
+          "report": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T121323Z-native418-real-widget-control-and-full-journeys-4fadb25740da44b19c6b7cff37919e97/full-theme-delayed-widget/report.json"
+        }
+      ],
+      "gatewayTypecheckPassed": true,
+      "prior786Ci": "Failed before login at implicit5s widget matcher; canceled after evidence retention, never accepted",
+      "freshExactSourceCi": "PENDING; no gate waiver",
+      "applicationRuntimeChanged": false,
+      "sqlChanged": false,
+      "hostedAcceptanceClaimed": false,
+      "followUpSourceAndNeighbourControls": {
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T123435Z-native418-widget-source-and-reaper-controls-29dcc1c12e4346beab1316328c2f98ab",
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "cleanupFailures": [],
+        "scope": "Selected static no-skip guard and real SIGKILL/reaper test; other cases unselected",
+        "broaderInitialPure": "FAIL2; inline comment scanner and raw default-pool neighbour setup; not accepted",
+        "fullExactSourceCi": "PENDING"
+      }
     }
   },
   "pushed": false,

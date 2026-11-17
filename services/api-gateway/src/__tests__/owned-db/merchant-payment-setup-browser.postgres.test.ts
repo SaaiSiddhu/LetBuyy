@@ -81,7 +81,7 @@ test('normal merchant payment setup has truthful readiness, independent methods 
         await ready(identityOrigin + '/login', identity); await ready(merchantOrigin, merchant);
         browser = await chromium.launch({ headless: true }); const context = await browser.newContext(); const page = await context.newPage();
         page.setDefaultTimeout(45000); page.setDefaultNavigationTimeout(90000);
-        await page.goto(identityOrigin + '/login'); await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/);
+        await page.goto(identityOrigin + '/login'); await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 30_000 });
         await page.getByLabel('Email', { exact: true }).fill(email); await page.getByRole('button', { name: 'Continue with email', exact: true }).click();
         await page.getByLabel('Password', { exact: true }).fill(password); await page.getByRole('button', { name: 'Log in', exact: true }).click();
         await page.waitForURL(url => url.origin === merchantOrigin, { timeout: 90000 }); stage('normal_login');
