@@ -2,7 +2,7 @@
   "base": "e4105581e3346041d71694d3db093eb713773e07",
   "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
   "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
-  "preparedUtc": "2026-11-17T00:55:35.577055+00:00",
+  "preparedUtc": "2026-11-17T06:06:21.858604+00:00",
   "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
   "files": [
     {
@@ -581,6 +581,11 @@
       "sha256": "4dba18dcc5bfd058bfd87a169ac42c9f08930618e7a67f0668f24bede8e80584"
     },
     {
+      "path": "docs/implementation/merchant-native418-memory-startup-qualification.md",
+      "source": "Qualified test-only repair; runtime and migration authority unchanged",
+      "sha256": "8bc586229ec66ee981ca840a9d72a112f8a53d04e32771a8e42909e223dc0e5a"
+    },
+    {
       "path": "docs/implementation/merchant-native418-revenue-readiness-qualification.md",
       "sha256": "8724bee4495c9358380bea546d6d1aff96fc5212ec256603df14072e6a8d8be0",
       "source": "Qualified test-only real Data API read-dependency recovery; no runtime, SQL or policy change"
@@ -836,6 +841,11 @@
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
+      "path": "services/api-gateway/src/__tests__/owned-db/collection-membership.postgres.test.ts",
+      "source": "Qualified test-only repair; runtime and migration authority unchanged",
+      "sha256": "366fd3fc999807886f70f2ccc31114bb43b7a19ec096438f326e1b08276f3315"
+    },
+    {
       "path": "services/api-gateway/src/__tests__/owned-db/console-overview-read.postgres.test.ts",
       "sha256": "4cc78a601afc0161cb89329b1146672ecdbee67fd4de77225eda164aa870876b",
       "source": "Reviewed Console overview rollback/reapply test readiness; null-input RPC probes have no session/audit effects; no runtime or SQL change"
@@ -844,6 +854,11 @@
       "path": "services/api-gateway/src/__tests__/owned-db/historical-rollback-abi-guards.postgres.test.ts",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "f1c07759123b8157c20dc7e223afde55ec2fa1ace6134cd02d1b8fd572550514"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/identity-buyer-session.postgres.test.ts",
+      "source": "Qualified test-only repair; runtime and migration authority unchanged",
+      "sha256": "30dbc83345ea767d95a12f942c81e7e49acabb80415787c07e2aa5c9ab61fe7d"
     },
     {
       "path": "services/api-gateway/src/__tests__/owned-db/merchant-auth-admission.postgres.test.ts",
@@ -1533,6 +1548,21 @@
       "managedRun": "20261117T005158Z-native418-console-overview-schema-recovery-49e37b8b6e4940c59f07935e8ef0289a",
       "newSourceCompleteCi": "PENDING",
       "sourceControlsPassed": 31
+    },
+    "memoryAndIdentityStartup": {
+      "collection": {
+        "passed": 19,
+        "failed": 0,
+        "skipped": 0,
+        "run": "20261117T054813Z-native418-collection-prepared-memory-final-cd6913358298431399740fcd149c6ef4"
+      },
+      "identityParallel": {
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0,
+        "run": "20261117T054433Z-native418-identity-final-parallel-18644000cc314950880543e415f5a6bb"
+      },
+      "exactSourceCi": "PENDING new candidate"
     }
   },
   "pushed": false,
