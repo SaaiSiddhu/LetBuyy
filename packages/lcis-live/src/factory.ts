@@ -20,6 +20,8 @@ export interface LivePlatformOptions {
   readonly adapters?: readonly LiveAdapter[];
   readonly engine?: LcisEngine;
   readonly now?: () => string;
+  /** Environment for the default adapters. Runtime callers use process.env. */
+  readonly env?: Record<string, string | undefined>;
 }
 
 function supabaseHost(env: Record<string, string | undefined> = process.env): string {
@@ -30,10 +32,10 @@ function supabaseHost(env: Record<string, string | undefined> = process.env): st
   }
 }
 
-export function defaultAdapters(): LiveAdapter[] {
-  const creds = new CredentialProvider();
+export function defaultAdapters(env: Record<string, string | undefined> = process.env): LiveAdapter[] {
+  const creds = new CredentialProvider(env);
   return [
-    new SupabaseAdapter({ http: new FetchHttpClient([supabaseHost(), 'api.supabase.com']), creds }),
+    new SupabaseAdapter({ http: new FetchHttpClient([supabaseHost(env), 'api.supabase.com']), creds }),
     new GitHubAdapter({ http: new FetchHttpClient(['api.github.com']), creds }),
     new CloudflareAdapter({ http: new FetchHttpClient(['api.cloudflare.com']), creds }),
     new VercelAdapter({ http: new FetchHttpClient(['api.vercel.com']), creds }),
@@ -42,6 +44,6 @@ export function defaultAdapters(): LiveAdapter[] {
 
 export function createLivePlatform(opts: LivePlatformOptions = {}): LivePlatform {
   const engine = opts.engine ?? getEngine();
-  const adapters = opts.adapters ?? defaultAdapters();
+  const adapters = opts.adapters ?? defaultAdapters(opts.env);
   return new LivePlatform(adapters, engine, opts.now);
 }

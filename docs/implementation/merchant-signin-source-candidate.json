@@ -684,6 +684,16 @@
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
     },
     {
+      "path": "packages/lcis-live/src/factory.ts",
+      "sha256": "1b12a3cec0a2f2d08da251ce9bf71318f61218aac053555cec900b6e318956c3",
+      "source": "Inject a fixture environment while preserving process.env as the default for runtime adapters."
+    },
+    {
+      "path": "packages/lcis-live/test/platform.test.ts",
+      "sha256": "0710726539de83e97a663082b37fe2fd424bebe844c6a322196ba28213ec091a",
+      "source": "Bind credential-less tests to an explicit empty environment, even under GitHub Actions."
+    },
+    {
       "path": "packages/lcis-mcp/package.json",
       "sha256": "4fd0202eee82d4ae5b668f5d2496927bcc4b6a23f0b58f937cac2b2528f064fc",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -1264,6 +1274,11 @@
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
     },
     {
+      "path": "tests/owned-db/merchant-inventory-adjustment-browser.postgres.test.ts",
+      "sha256": "f5f0cbf4964573080ed7e4165e904b12f4bed374d135b0386c23ebacab6874ee",
+      "source": "Preserve status and allowlisted category on failed sign-in without dumping response or credentials."
+    },
+    {
       "path": "tests/owned-db/merchant-public-signup-browser.postgres.test.ts",
       "source": "Local qualification repair; canonical contracts retained, no hosted change",
       "sha256": "73ab682cbb294ea741f0387b707550c28a301a8b76969d505b1c13a9da273d0a"
@@ -1824,5 +1839,25 @@
         "state": "complete"
       }
     ]
+  },
+  "ciEnvironmentAndBrowserDiagnosticsRepair": {
+    "baseSource": "f62f4c351f0aa3a46fb355e158b457de7249a414",
+    "preparedUtc": "2026-11-18T12:30:18.332838+00:00",
+    "originalUnitFailureJob": 134573341194,
+    "originalArchitectureFailureJob": 134573339972,
+    "lcisQualifiedWithGitHubEnvironment": {
+      "testsPassed": 67,
+      "managedRun": "20261118T122938Z-native418-lcis-tests-ci-environment-ffab3f20f3364dca9a411528953bd72d"
+    },
+    "inventoryBrowserRecheck": {
+      "testsPassed": 5,
+      "managedRun": "20261118T122656Z-native418-inventory-identity-redacted-ci-network-ce8ca978c958472ba1be77466be6d70c",
+      "ownedRunId": "de0ab672e1df",
+      "historicalIdentityFailureReproduced": false
+    },
+    "identityRuntimeChanged": false,
+    "migrationChanged": false,
+    "requiredWorkflowAndTestInventoryChanged": false,
+    "hostedDeploymentPerformed": false
   }
 }

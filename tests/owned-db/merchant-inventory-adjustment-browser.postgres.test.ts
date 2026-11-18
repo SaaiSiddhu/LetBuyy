@@ -31,6 +31,7 @@ async function freePort(){const s=createServer();await new Promise<void>(r=>s.li
 async function ready(url:string,app:OwnedClientProcess){const until=Date.now()+360000;while(Date.now()<until){if(app.exitCode!==null||app.signalCode!==null)throw new Error('Owned browser runtime stopped before readiness');try{if((await fetch(url,{signal:AbortSignal.timeout(2000)})).status<500)return;}catch{/* bounded owned startup */}await new Promise(r=>setTimeout(r,200));}throw new Error('Owned browser runtime readiness timed out');}
 async function signIn(context:BrowserContext,id:string,password:string){
     const page=await context.newPage();let stage='Identity navigation';
+    let issuerStatus:number|undefined,issuerCategory='unclassified';
     try{
         await page.goto(identityOrigin+'/login');stage='challenge';
         await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:45000});
@@ -38,9 +39,22 @@ async function signIn(context:BrowserContext,id:string,password:string){
         await page.getByRole('button',{name:'Continue with email',exact:true}).click();
         stage='password';await page.getByLabel('Password',{exact:true}).fill(password);
         const [response]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST'),page.getByRole('button',{name:'Log in',exact:true}).click()]);
-        stage='issuer response';assert.equal(response.status(),200);
+        stage='issuer response';issuerStatus=response.status();
+        if(issuerStatus!==200){
+            const problem:unknown=await response.json().catch(()=>null);
+            const error=problem&&typeof problem==='object'&&'error' in problem?problem.error:null;
+            if(error==='Bot verification failed.')issuerCategory='human-verification';
+            else if(error==='Invalid request. Please refresh and try again.')issuerCategory='request-integrity';
+            else if(issuerStatus===429)issuerCategory='rate-limit';
+            else if(issuerStatus===401)issuerCategory='credential-rejected';
+            else if(issuerStatus>=500)issuerCategory='issuer-or-upstream';
+            throw new Error('Identity returned a non-success response');
+        }
         stage='normal Merchant redirect';await page.waitForURL(url=>url.origin===merchantOrigin,{timeout:60000});
-    }catch{throw new Error('Normal Identity sign-in failed at '+stage+'; private controls and responses were not retained.');}
+    }catch{
+        const summary=issuerStatus===undefined?'':` (HTTP ${issuerStatus}, ${issuerCategory})`;
+        throw new Error('Normal Identity sign-in failed at '+stage+summary+'; private controls and responses were not retained.');
+    }
     finally{await page.close();}
 }
 before(async()=>{
