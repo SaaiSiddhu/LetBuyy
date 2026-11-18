@@ -12,8 +12,8 @@
     },
     {
       "path": ".github/workflows/ci.yml",
-      "sha256": "80f4f412c89d779fd65da8be1496b8b0f58ebbe3eceb7af4a72a56b2713aaadb",
-      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+      "sha256": "fc81285f9d7c4c77ff6e568136c74ac729a76c8b3023acc53c9d70559eff7cc6",
+      "source": "CI-only: Merge requires full same-workflow Unit success with an always-run rejecting guard; preserves full behavioral execution in Unit and Architecture."
     },
     {
       "path": ".github/workflows/environment-lifecycle.yml",
@@ -814,6 +814,11 @@
       "source": "Reviewed local narrow-source derivation; see scope notes"
     },
     {
+      "path": "scripts/validators/ci-simulation-validator.mjs",
+      "sha256": "93c62726c98a565208e225235f38592201e43eceea3da3aa76d0cb3c3147ce23",
+      "source": "CI-only: retain prior gate checks and require the behavioral dependency to reject non-success results."
+    },
+    {
       "path": "scripts/validators/dependency-manifest-validator.mjs",
       "sha256": "faa393c3ffa10ea49f078f4a226974be20c9e5a966605c70505320d74e74b879",
       "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
@@ -1067,6 +1072,11 @@
       "path": "tests/federation/marketplace-service-error-handling.test.mjs",
       "sha256": "68d1739efa27b39ccdda212a318ab190d3f38aa277d1a83824cd931dc23a99c5",
       "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/governance/ci-behavioral-dependency.test.mjs",
+      "sha256": "0e3e4ea1d827424a04e00b1e58417dc4ebcfe1a31910d6bf84ee02a6d8bc72a6",
+      "source": "CI-only: verify dependency wiring and execute actual guard against success/failure/cancelled/skipped/missing states."
     },
     {
       "path": "tests/governance/dependency-manifest-dev-sources.test.mjs",
@@ -1777,5 +1787,42 @@
     "document": "docs/implementation/merchant-native418-free-recovery-admission.md",
     "unboundedRestoreQualified": false,
     "hostedActivationPerformed": false
+  },
+  "ciDependencyRepair": {
+    "baseSource": "bd575f0ab4eebe23f2e5978111ab2d36c643695d",
+    "preparedUtc": "2026-11-18T04:14:43.447354+00:00",
+    "applicationOrSqlChanges": false,
+    "mandatoryTestsRemoved": false,
+    "requiredCheckNamesRemoved": false,
+    "fullBehavioralJobs": [
+      "unit-tests",
+      "Architecture Governance"
+    ],
+    "mergeDependency": "unit-tests must succeed; always-run rejecting guard",
+    "focusedTestsPassed": 9,
+    "fullGovernanceQualification": "114/114 validators passed; actual new-head CI remains required",
+    "productionActivated": false,
+    "localVerification": [
+      {
+        "label": "native418-cancelled-phase-owned-cleanup",
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261118T041640Z-native418-cancelled-phase-owned-cleanup-e2bb3065663745949379cd501cd217f0",
+        "state": "complete"
+      },
+      {
+        "label": "native418-ci-behavioral-dependency-qualification",
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261118T041327Z-native418-ci-behavioral-dependency-qualification-cf68b1b21a344c23ada83fa41edb18c6",
+        "state": "complete"
+      },
+      {
+        "label": "native418-ci-dependency-final-source-checks",
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261118T041532Z-native418-ci-dependency-final-source-checks-8454f9883e974b44aab112288593bf7b",
+        "state": "complete"
+      },
+      {
+        "label": "native418-ci-dependency-governance",
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261118T041402Z-native418-ci-dependency-governance-53cae87878ab40a481ef6cff838be5b9",
+        "state": "complete"
+      }
+    ]
   }
 }

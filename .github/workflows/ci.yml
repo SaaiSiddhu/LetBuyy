@@ -323,8 +323,16 @@ jobs:
           PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
   merge-safety-gate:
     name: Merge safety gate
+    needs: [unit-tests]
+    if: ${{ always() }}
     runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
+      - name: Require successful full behavioral and unit gates
+        if: ${{ always() }}
+        env:
+          UNIT_JOB_RESULT: ${{ needs.unit-tests.result }}
+        run: test "$UNIT_JOB_RESULT" = success
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -376,12 +384,6 @@ jobs:
       - name: Install owned buyer API Dart dependencies
         working-directory: packages/dart/api_client
         run: dart pub get
-
-      - name: Behavioral tests
-        run: pnpm run test:behavioral
-        env:
-          CI: "true"
-          LETBUYY_EXECUTABLE_REPORT_DIR: ${{ runner.temp }}/letbuyy-owned
 
       - name: Private R2 native runtime proof
         run: node --test tests/runtime/reel-private-r2.workerd.test.mjs
