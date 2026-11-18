@@ -3125,7 +3125,9 @@ function firstTypedFamilyGuards(sql) {
             const conditions=[
               'live.oid IS NULL', "live.prokind<>'f'",'live.prosecdef IS DISTINCT FROM expected.definer','live.proretset',
               'live.prorettype IS DISTINCT FROM expected.result_type::regtype','live.provariadic<>0',
-              'live.proargnames[1:live.pronargs] IS DISTINCT FROM expected.input_names',
+              table.rows.some(row=>Array.isArray(row.input_names)&&row.input_names.length===0)
+                ? 'COALESCE(live.proargnames[1:live.pronargs],ARRAY[]::text[]) IS DISTINCT FROM expected.input_names'
+                : 'live.proargnames[1:live.pronargs] IS DISTINCT FROM expected.input_names',
               'live.proargmodes IS NOT NULL','live.proallargtypes IS NOT NULL',
               '(SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=live.pronamespace AND other.proname=live.proname)<>1',
               "(expected.definer AND (pg_catalog.has_function_privilege('anon',live.oid,'EXECUTE') OR pg_catalog.has_function_privilege('authenticated',live.oid,'EXECUTE')))"
@@ -3135,7 +3137,8 @@ function firstTypedFamilyGuards(sql) {
             return table.rows.map(row=>{
                 const identity=typeof row.signature==='string' && functionIdentity(row.signature),restored=definitions.find(fn=>fn.identity===identity);
                 if(!identity || !restored || !Array.isArray(row.input_names) || JSON.stringify(restored.inputNames)!==JSON.stringify(row.input_names)
-                  || !['jsonb','integer'].includes(row.result_type) || typeof row.definer!=='boolean')throw Error('Unbound typed family');
+                  || !['jsonb','integer','trigger'].includes(row.result_type) || typeof row.definer!=='boolean'
+                  || (row.result_type==='trigger'&&(row.input_names.length!==0||row.definer)))throw Error('Unbound typed family');
                 return {identity,name:restored.name,input_names:row.input_names,level:'typed-ABI',result_type:row.result_type,
                     returns_set:false,overloads:1,guard_start:statement[0].start,native_catalog_lock:true};
             });

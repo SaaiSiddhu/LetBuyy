@@ -21,8 +21,8 @@ const migration215Source = readFileSync(
     join(repoRoot, 'database/supabase/migrations/215_fix_gift_card_digest_search_path.sql'),
     'utf8',
 );
-const migration411Source = readFileSync(
-    join(repoRoot, 'database/supabase/migrations/411_gift_card_issue_replay_integrity.sql'),
+const migration414Source = readFileSync(
+    join(repoRoot, 'database/supabase/migrations/414_gift_card_issue_replay_integrity.sql'),
     'utf8',
 );
 
@@ -44,9 +44,9 @@ test('migration 215 qualifies every gift-card digest() call to extensions.digest
 });
 
 test('latest gift-card issue RPC restores the lock and marks replay without revealing a new code', () => {
-    assert.match(migration411Source, /pg_advisory_xact_lock\(hashtextextended\(p_store_id::text \|\| ':' \|\| p_idempotency_key, 1\)\)/);
-    assert.match(migration411Source, /'replayed', v_replayed/);
-    assert.match(migration411Source, /gift card issue intent conflict/);
-    assert.match(migration411Source, /extensions\.digest\(p_code, 'sha256'\)/);
-    assert.match(migration411Source, /CREATE UNIQUE INDEX IF NOT EXISTS gift_card_accounts_site_issue_key_unique/);
+    assert.match(migration414Source, /pg_advisory_xact_lock\(hashtextextended\(p_store_id::text \|\| ':' \|\| p_idempotency_key, 1\)\)/);
+    assert.match(migration414Source, /'replayed', v_replayed/);
+    assert.match(migration414Source, /gift card issue intent conflict/);
+    assert.match(migration414Source, /extensions\.digest\(p_code, 'sha256'\)/);
+    assert.match(migration414Source, /CREATE UNIQUE INDEX IF NOT EXISTS gift_card_accounts_site_issue_key_unique/);
 });

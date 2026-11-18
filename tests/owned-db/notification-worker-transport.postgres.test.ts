@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import test, { before, after } from 'node:test';
 import { randomUUID } from 'node:crypto';
@@ -16,9 +17,9 @@ import { createNotificationRpcClient } from '../../services/queue-workers/src/no
 const owned = requireOwnedDatabase(), db = createSupabaseServiceClient(owned.restEnv());
 let gateway: Gateway, coordinator: Miniflare;
 before(async () => {
-  const entry = new URL('../../services/api-gateway/src/durable/runtime-coordinator.ts', import.meta.url).pathname;
+  const entry = fileURLToPath(new URL('../../services/api-gateway/src/durable/runtime-coordinator.ts', import.meta.url));
   const script = buildSync({ stdin: { contents: `export {LetbuyyRuntimeDurableObject} from ${JSON.stringify(entry)};export default {fetch(){return new Response('owned coordinator')}};`,
-    resolveDir: new URL('../../', import.meta.url).pathname, sourcefile: 'owned-notification-admission.ts' }, bundle: true, write: false,
+    resolveDir: fileURLToPath(new URL('../../', import.meta.url)), sourcefile: 'owned-notification-admission.ts' }, bundle: true, write: false,
     platform: 'browser', format: 'esm', target: 'es2022', conditions: ['workerd', 'browser'], external: ['node:*'], logLevel: 'silent' }).outputFiles[0].text;
   const network = createFetchMock(); network.disableNetConnect();
   coordinator = new Miniflare({ modules: true, script, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false,

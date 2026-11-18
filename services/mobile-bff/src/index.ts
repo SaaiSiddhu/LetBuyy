@@ -1,5 +1,5 @@
 import { verifyCloudflareTurnstile } from '@letbuyy/auth-core/turnstile';
-import { createLetbuyyInternalSessionHeaders, hmacSha256Hex, sha256Hex } from '@letbuyy/auth-core';
+import { createLetbuyyInternalSessionHeaders, hmacSha256Hex, sha256Hex, resolveLetbuyyPlatformCookieNames } from '@letbuyy/auth-core';
 import { Hono } from 'hono';
 
 export interface Env {
@@ -20,7 +20,6 @@ export interface Env {
 const app = new Hono<{ Bindings: Env }>();
 
 const VERSIONED_PREFIX = '/v1';
-const SESSION_COOKIE_NAME = 'lb_session';
 const PLACEHOLDER_PREFIX = 'SKIP_NEEDS_HUMAN_';
 const MOBILE_TURNSTILE_PROOF_PREFIX = 'lb-mobile-turnstile-v1';
 const MOBILE_TURNSTILE_PROOF_TTL_SECONDS = 2 * 60;
@@ -210,7 +209,7 @@ function parseCookie(header: string | null, name: string): string | null {
   return null;
 }
 
-export function extractMobileSessionToken(request: Request): string | null {
+export function extractMobileSessionToken(request: Request, env?: Pick<Env, 'ENVIRONMENT'>): string | null {
   const authorization = request.headers.get('Authorization');
   if (authorization?.startsWith('Bearer ')) {
     const token = authorization.slice('Bearer '.length).trim();
@@ -220,7 +219,7 @@ export function extractMobileSessionToken(request: Request): string | null {
   const explicitHeader = request.headers.get('X-LetBuyy-Session-Token');
   if (explicitHeader?.trim()) return explicitHeader.trim();
 
-  return parseCookie(request.headers.get('Cookie'), SESSION_COOKIE_NAME);
+  return parseCookie(request.headers.get('Cookie'), resolveLetbuyyPlatformCookieNames(env?.ENVIRONMENT).session);
 }
 
 function isAllowedPath(pathname: string): boolean {
@@ -338,7 +337,7 @@ async function gatewayJson(
 }
 
 async function mobileDashboard(request: Request, env: Env): Promise<Response> {
-  const token = extractMobileSessionToken(request);
+  const token = extractMobileSessionToken(request, env);
   if (!token) {
     return jsonResponse({
       error: {
@@ -444,7 +443,7 @@ async function proxyToGateway(request: Request, env: Env): Promise<Response> {
 
   const headers = buildProxyHeaders(request);
   if (shouldRequireSession(pathname)) {
-    const token = extractMobileSessionToken(request);
+    const token = extractMobileSessionToken(request, env);
     if (!token) {
       return jsonResponse({
         error: {

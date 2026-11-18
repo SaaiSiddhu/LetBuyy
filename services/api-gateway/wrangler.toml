@@ -243,6 +243,7 @@ invocation_logs = true
 crons = ["*/15 * * * *"]
 
 [env.production.vars]
+STOREFRONT_VIEW_SAMPLE_RATE = "0.1"
 STOREFRONT_INTERNAL_PERIMETER = "bound-request-v1"
 ENVIRONMENT = "production"
 APP_ENV = "production"

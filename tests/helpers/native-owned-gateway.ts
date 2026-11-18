@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import {nativeGatewayWasmPlugin,nativeGatewayModules,NATIVE_GATEWAY_MODULE_ROOT} from './native-gateway-wasm';
 // Actual bundled workerd Gateway for owned cross-runtime acceptance only.
 import assert from 'node:assert/strict';
@@ -11,7 +12,7 @@ export class NativeGateway {
   const owned=requireOwnedDatabase(),rest=owned.restEnv();assert.ok(env.SUPABASE_URL===rest.SUPABASE_URL&&env.SUPABASE_SERVICE_ROLE_KEY===rest.SUPABASE_SERVICE_ROLE_KEY,'native Gateway requires its exact owned REST service');
   const req=createRequire(new URL('../../services/api-gateway/package.json',import.meta.url));
   const compiler=createRequire(req.resolve('wrangler'))('esbuild') as {build(options:unknown):Promise<{outputFiles?:{text:string}[]}>};
-  const result=await compiler.build({entryPoints:[new URL('../../services/api-gateway/src/index.ts',import.meta.url).pathname],absWorkingDir:new URL('../..',import.meta.url).pathname,
+  const result=await compiler.build({entryPoints:[fileURLToPath(new URL('../../services/api-gateway/src/index.ts',import.meta.url))],absWorkingDir:fileURLToPath(new URL('../..',import.meta.url)),
    bundle:true,write:false,format:'esm',platform:'browser',target:'es2022',tsconfig:'services/api-gateway/tsconfig.json',external:['cloudflare:*','node:*'],conditions:['workerd','worker','browser'],logLevel:'silent',
    banner:{js:"import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire('file:///letbuyy-owned-gateway.mjs');"},
    plugins:[nativeGatewayWasmPlugin(),{name:'native-node-builtins',setup(build:{onResolve(options:{filter:RegExp},handler:(args:{path:string})=>{path:string;external:true}|undefined):void}){const native=new Set(builtinModules);build.onResolve({filter:/^[a-z][\w/]*$/},args=>native.has(args.path)?{path:'node:'+args.path,external:true}:undefined);}}]});

@@ -1,0 +1,20 @@
+name: Protected project cleanup lifecycle
+description: Keep checkout-owned evidence and finalize only after artifact preservation.
+inputs:
+  phase:
+    description: begin, snapshot, or archive
+    default: begin
+outputs:
+  enabled:
+    description: Ownership setup completed
+  payload:
+    description: Exact owned evidence upload directory
+  artifact_name:
+    description: Unique job-attempt artifact name
+  ready:
+    description: Snapshot or upload acknowledgement completed
+runs:
+  using: node24
+  main: action.cjs
+  post: post.cjs
+  post-if: always()

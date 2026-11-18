@@ -77,9 +77,12 @@ test('C: onboarding captures an industry and sends it as survey.industry', () =>
   assert.match(onboarding, /ONBOARDING_INDUSTRIES/);
   assert.match(onboarding, /useState<string>\('general'\)/);
   assert.match(onboarding, /onChange=\{\(e\) => setIndustry\(e\.target\.value\)\}/);
-  assert.match(onboarding, /survey: \{ industry \}/);
-  // recommended experience is surfaced before creation
-  assert.match(onboarding, /Recommended experience/);
+  assert.match(onboarding, /survey: \{ industry, channels \}/);
+  // The canonical first-party catalog chooses the default theme. Industry is
+  // retained for the existing Core experience path, never advertised as a
+  // universal preset that overrides a catalog theme's own bundle.
+  assert.match(onboarding, /Default theme/);
+  assert.match(onboarding, /Selected from the current theme catalog/);
 });
 
 test('C: the gateway store-creation handler auto-applies the recommended experience', () => {
@@ -89,6 +92,7 @@ test('C: the gateway store-creation handler auto-applies the recommended experie
   assert.match(stores, /resolveExperienceForIndustry\(industryHint \|\| null, experienceOverride\)/);
   assert.match(stores, /applyExperienceToTemplateConfig\(templateConfig, experience\)/);
   // additive: only applies when an industry/override is present (no behaviour change otherwise)
-  assert.match(stores, /if \(industryHint \|\| experienceOverride\)/);
+  assert.match(stores, /if \(!firstPartyDesign && \(industryHint \|\| experienceOverride\)\)/);
+  assert.match(stores, /prepareCatalogStoreTemplate\(body\.theme_id, templateConfig\)/);
   assert.match(stores, /template_config: templateConfig,/);
 });

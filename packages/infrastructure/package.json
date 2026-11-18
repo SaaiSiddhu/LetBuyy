@@ -39,7 +39,8 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.2",
     "postgres": "^3.4.7",
-    "resend": "^6.9.2"
+    "resend": "^6.9.2",
+    "saxes": "6.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

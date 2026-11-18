@@ -5,7 +5,9 @@
   "sources": {
     "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts": {
       "prior_qualified_sha256": "7a4477a1255529c7cc9eaaef41f2bf36700022976fbeb4172c9ca6125eddd64e",
-      "current_sha256": "2f779fae0957292b3c4a829a06cfcfb89b5dabb9a31a341dc567e2b0aba13919"
+      "current_sha256": "266725c07c455cf173fec748561b45beccc90fd7d87adc32202a2c8dfd6fd1f0",
+      "previous_reviewed_sha256": "2f779fae0957292b3c4a829a06cfcfb89b5dabb9a31a341dc567e2b0aba13919",
+      "reason": "Only expands the exact reviewed successor compatibility inventory from five paths to six to include the existing theme-engine dependency manifest. Original392 admission and frozen package/SQL/data/DOWN assertions remain intact; fresh owned execution is required."
     },
     "services/api-gateway/src/__tests__/owned-db/theme-shared-groups.postgres.test.ts": {
       "prior_qualified_sha256": "cab467f13d4a381aecffb23ad7b63789e8608a501429a3ea7aee9c55ee2fd72a",

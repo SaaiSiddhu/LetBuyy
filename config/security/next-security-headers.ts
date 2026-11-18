@@ -4,6 +4,10 @@ export type SecurityHeaderOptions = {
   frameSources?: string[];
   reportOnly?: boolean;
   razorpayCheckoutForms?: boolean;
+  /** Exact Mumbai S3 bucket used only for direct browser KYC uploads. */
+  indiaUploadS3Bucket?: string;
+  /** Owned local verification SDK; never admitted on a hosted Accounts origin. */
+  localVerificationSdkUrl?: string;
 };
 
 function splitOrigins(value: string | undefined): string[] {
@@ -53,6 +57,19 @@ function isDevelopmentRuntime(): boolean {
 export function createContentSecurityPolicy(options: SecurityHeaderOptions = {}): string {
   const origins = unique(configuredOrigins());
   const frameAncestors = unique(options.frameAncestors?.length ? options.frameAncestors : ["'self'"]);
+  const localVerificationOrigin = (() => {
+    if (process.env.NEXT_PUBLIC_ENV !== 'development' || !options.localVerificationSdkUrl) return undefined;
+    try {
+      const accounts = new URL(process.env.NEXT_PUBLIC_ACCOUNTS_URL || '');
+      const sdk = new URL(options.localVerificationSdkUrl);
+      const local = (url: URL) => url.protocol === 'http:'
+        && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
+        && Number(url.port) >= 1024 && Number(url.port) <= 65535
+        && !url.username && !url.password && !url.search && !url.hash;
+      return local(accounts) && ['', '/'].includes(accounts.pathname)
+        && local(sdk) && sdk.pathname === '/fixtures/turnstile/api.js' ? sdk.origin : undefined;
+    } catch { return undefined; }
+  })();
   // T11/W0 — checkout.razorpay.com was never allowlisted anywhere in this policy: the storefront
   // renders "Pay Online (Razorpay)" and calls `new window.Razorpay(...)` (checkout-client.tsx),
   // but the CSP silently blocked https://checkout.razorpay.com/v1/checkout.js from ever loading
@@ -69,7 +86,12 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
   // lumberjack.razorpay.com is Razorpay's own telemetry/fraud-signal beacon (checkout.js posts to
   // /v2/logz throughout the checkout flow) — connect-src only, never a script or frame origin.
   const razorpayConnectOnly = ['https://lumberjack.razorpay.com'];
-  const connectSrc = unique(["'self'", ...origins, 'https://*.supabase.co', 'wss://*.supabase.co', ...razorpayOrigins, ...razorpayConnectOnly]);
+  const indiaUploadOrigin = options.indiaUploadS3Bucket
+    && /^(?=.{3,63}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])$/.test(options.indiaUploadS3Bucket)
+    ? `https://${options.indiaUploadS3Bucket}.s3.ap-south-1.amazonaws.com` : undefined;
+  const connectSrc = unique(["'self'", ...origins, 'https://*.supabase.co', 'wss://*.supabase.co', ...razorpayOrigins, ...razorpayConnectOnly,
+    ...(indiaUploadOrigin ? [indiaUploadOrigin] : []),
+    ...(localVerificationOrigin ? [localVerificationOrigin] : [])]);
   const imgSrc = unique(["'self'", 'data:', 'blob:', 'https:', ...origins]);
   const scriptSrc = unique([
     "'self'",
@@ -77,6 +99,7 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
     ...(isDevelopmentRuntime() ? ["'unsafe-eval'"] : []),
     'https://challenges.cloudflare.com',
     ...razorpayOrigins,
+    ...(localVerificationOrigin ? [localVerificationOrigin] : []),
   ]);
   // D7: Google Fonts stylesheet (fonts.googleapis.com) must be in style-src, and the actual
   // font file downloads (fonts.gstatic.com) must be in font-src. Without these, the browser

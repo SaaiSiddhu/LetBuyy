@@ -83,6 +83,7 @@ import { OWNED_FIXTURE_ENV, verifyOwnedFixture } from './owned-fixture-guard.mjs
 import { ownedDatabaseNameFor } from './owned-database-name.mjs';
 import { startRestProxy } from './owned-rest-proxy.mjs';
 import { HISTORICAL_GATEWAY_MIGRATION_CEILINGS, discoverSuites, isGatewayDatabaseSuite } from './test-suite-catalog.mjs';
+import {parseNativeAuthMigrationProfile} from './native-auth-migration-profile.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -92,6 +93,9 @@ const values = (name) => args.flatMap((arg, i) => (arg === name && i < args.leng
 const value = (name, fallback) => values(name)[0] ?? fallback;
 
 const throughMigration = parseMigrationCeiling(flag('--through-migration') ? value('--through-migration', '') : undefined);
+const migrationProfile=parseNativeAuthMigrationProfile(flag('--migration-profile')?value('--migration-profile',''):undefined);
+if(args.filter(arg=>arg==='--migration-profile').length>1)throw new Error('--migration-profile may be supplied only once');
+if(migrationProfile!==undefined&&throughMigration!==undefined)throw new Error('A native auth profile cannot be combined with --through-migration');
 if (args.filter(arg => arg === '--through-migration').length > 1) throw new Error('--through-migration may be supplied only once');
 const runId = newRunId();
 const filter = value('--filter', null);
@@ -358,12 +362,13 @@ async function runGatewaySuite(suite, cluster) {
     try {
         // The template is built once per cluster; a second suite on the cluster waits on the same promise.
         const templateStarted = Date.now();
+        if(migrationProfile!==undefined&&HISTORICAL_GATEWAY_MIGRATION_CEILINGS[suite.path]!==undefined)throw new Error('A historical retirement suite cannot be assigned a native auth release profile');
         const ceiling=throughMigration ?? HISTORICAL_GATEWAY_MIGRATION_CEILINGS[suite.path];
-        const key=ceiling ?? 'current';
-        const templateDatabase=ceiling === undefined ? GATEWAY_TEMPLATE_DATABASE : GATEWAY_TEMPLATE_DATABASE+'_through_'+ceiling;
+        const key=migrationProfile ?? ceiling ?? 'current';
+        const templateDatabase=migrationProfile!==undefined?GATEWAY_TEMPLATE_DATABASE+'_'+(migrationProfile.includes('production')?'native_prod':'native_stage'):ceiling === undefined ? GATEWAY_TEMPLATE_DATABASE : GATEWAY_TEMPLATE_DATABASE+'_through_'+ceiling;
         cluster.templates ??= new Map();
         if(!cluster.templates.has(key)) cluster.templates.set(key,(async()=>{
-            await buildGatewayTemplate(cluster,{repoRoot,restPassword:cluster.restPassword,throughMigration:ceiling,templateDatabase});
+            await buildGatewayTemplate(cluster,{repoRoot,restPassword:cluster.restPassword,throughMigration:ceiling,migrationProfile,templateDatabase});
             return {database:templateDatabase,migrations:cluster.migrationEvidence};
         })());
         const template=await cluster.templates.get(key);
@@ -487,6 +492,11 @@ async function main() {
     }
 
     const suites = selectSuites();
+    if(migrationProfile!==undefined) {
+        if(values('--suite').length===0||values('--suite-dir').length!==0)throw new Error('Native auth profiles require an explicit finite --suite inventory');
+        if(suites.some(suite=>suite.kind!=='gateway-db'))throw new Error('Native auth profiles apply only to owned Gateway database suites');
+        if(suites.some(suite=>HISTORICAL_GATEWAY_MIGRATION_CEILINGS[suite.path]!==undefined))throw new Error('Historical retirement suites retain their own source schema');
+    }
     if (flag('--list')) {
         process.stdout.write(asJson ? JSON.stringify(suites.map((suite) => suite.path), null, 2) + '\n' : suites.map((suite) => suite.path).join('\n') + '\n');
         return 0;

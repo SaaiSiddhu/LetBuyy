@@ -1,3 +1,4 @@
+import { NODE_CLI_SHEBANG } from '../helpers/node-cli-shim.mjs';
 // Recording-only controls. This file never invokes the real Docker executable.
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -107,7 +108,7 @@ import {fileURLToPath} from 'node:url';
 function recordedCli(args,prepare=()=>{}) {
     const dir=mkdtempSync(join(tmpdir(),'letbuyy-reap-cli-'));
     const trace=join(dir,'calls.jsonl'),receipt=join(dir,'receipt.json');
-    writeFileSync(join(dir,'docker'),`#!${process.execPath}\nconst fs=require('node:fs');fs.appendFileSync(process.env.REAP_TEST_TRACE,JSON.stringify({args:process.argv.slice(2),receiptExists:fs.existsSync(process.env.REAP_TEST_RECEIPT)})+'\\n');process.exit(93);\n`,{mode:0o755});
+    writeFileSync(join(dir,'docker'),`${NODE_CLI_SHEBANG}const fs=require('node:fs');fs.appendFileSync(process.env.REAP_TEST_TRACE,JSON.stringify({args:process.argv.slice(2),receiptExists:fs.existsSync(process.env.REAP_TEST_RECEIPT)})+'\\n');process.exit(93);\n`,{mode:0o755});
     try {
         prepare({dir,receipt});
         const run=spawnSync(process.execPath,[fileURLToPath(new URL('../../scripts/governance/run-executable-suites.mjs',import.meta.url)),...args({dir,receipt})],{encoding:'utf8',env:{...process.env,PATH:dir+':'+process.env.PATH,REAP_TEST_TRACE:trace,REAP_TEST_RECEIPT:receipt},timeout:15000});

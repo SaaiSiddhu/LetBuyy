@@ -1,0 +1,40 @@
+{
+  "purpose": "Read-only identity mapping for already executed hosted SQL; never rewrite or insert an applied-history row from this file",
+  "observed_utc": "2026-11-09T18:46:02.234Z",
+  "environment": "staging",
+  "project_ref": "yhhhjeaprrpjglriazad",
+  "baseline": "000 is an existing schema, never replay it on either hosted environment",
+  "aliases": [
+    {
+      "recorded_version": "414",
+      "recorded_name": "414_atomic_warehouse_commands.sql",
+      "canonical_name": "415_atomic_warehouse_commands.sql",
+      "recorded_source_revision": "15fca500a08ee8c1c3c4d37a376f8fd81ee97403",
+      "recorded_source_sha256": "8aa29e2d2c06aadd41587f19553a9f349ff9705ec3641f9e9ed390922bffc74c",
+      "recorded_executed_sha256": "6bb424ad857b7a5353be1518cbae1c4fb6e44ebbb3d3d21383e027449188cbe1",
+      "canonical_source_sha256": "a85250a9792e63dfe0bd32c368088781159a7b09985840af651d5bd408e149cd",
+      "recorded_provenance_migration": "414",
+      "canonical_provenance_migration": "415",
+      "difference": "Only the provenance identity changed; all other source bytes are identical",
+      "recovery": "Preserve the original provenance and history. Canonical 415 DOWN is inapplicable; use reviewed forward recovery or the separately qualified original historical pair at its exact schema point"
+    },
+    {
+      "recorded_version": "415",
+      "recorded_name": "415_gift_card_issue_replay_integrity.sql",
+      "canonical_name": "414_gift_card_issue_replay_integrity.sql",
+      "recorded_source_sha256": "7428049658b49d6223b928cd11f65a6a8f4b809411efbf57417b5862d699da3d",
+      "recorded_executed_sha256": "f03387570badc363bd27d19b2980930722582c5cc69227506d3a19568dca2f89",
+      "canonical_source_sha256": "7428049658b49d6223b928cd11f65a6a8f4b809411efbf57417b5862d699da3d",
+      "difference": "Filename only; exact source and execution payload match",
+      "recovery": "The recorded history identity remains 415; never use a canonical 414 history deletion against it"
+    }
+  ],
+  "legacy_timestamp_versions": {
+    "20260101000176": "176",
+    "20260101000177": "177",
+    "20260101000178": "178",
+    "20260101000183": "183",
+    "20260101000186": "186"
+  },
+  "execution_rule": "Verify fresh complete SQL bodies, execution receipts and the whole history digest. Select exact pending basenames with prepare-managed-migrations --names. This registry alone authorizes no execution and no environment outside the exact bound staging project."
+}

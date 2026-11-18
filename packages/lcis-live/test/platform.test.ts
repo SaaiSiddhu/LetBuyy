@@ -173,7 +173,7 @@ test('health() adapters array length matches injected adapter count', async () =
 // ---------------------------------------------------------------------------
 
 test('default platform: 4 adapters all NOT_CONNECTED when no creds', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const h = await p.health();
   assert.equal(h.adapters.length, 4);
   assert.equal(h.overall, 'NOT_CONNECTED');
@@ -181,7 +181,7 @@ test('default platform: 4 adapters all NOT_CONNECTED when no creds', async () =>
 });
 
 test('default platform: supabase missingEnvVars contains SUPABASE_URL', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const h = await p.health();
   const sb = h.adapters.find((a) => a.adapter === 'supabase');
   assert.ok(sb, 'supabase adapter present');
@@ -189,14 +189,14 @@ test('default platform: supabase missingEnvVars contains SUPABASE_URL', async ()
 });
 
 test('default platform: supabase missingEnvVars contains SUPABASE_SERVICE_ROLE_KEY', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const h = await p.health();
   const sb = h.adapters.find((a) => a.adapter === 'supabase');
   assert.ok(sb!.missingEnvVars.includes('SUPABASE_SERVICE_ROLE_KEY'));
 });
 
 test('default platform: github missingEnvVars contains GITHUB_TOKEN', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const h = await p.health();
   const gh = h.adapters.find((a) => a.adapter === 'github');
   assert.ok(gh, 'github adapter present');
@@ -204,14 +204,14 @@ test('default platform: github missingEnvVars contains GITHUB_TOKEN', async () =
 });
 
 test('default platform: github missingEnvVars contains GITHUB_REPOSITORY', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const h = await p.health();
   const gh = h.adapters.find((a) => a.adapter === 'github');
   assert.ok(gh!.missingEnvVars.includes('GITHUB_REPOSITORY'));
 });
 
 test('default platform: cloudflare missingEnvVars contains CLOUDFLARE_API_TOKEN', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const h = await p.health();
   const cf = h.adapters.find((a) => a.adapter === 'cloudflare');
   assert.ok(cf, 'cloudflare adapter present');
@@ -219,14 +219,14 @@ test('default platform: cloudflare missingEnvVars contains CLOUDFLARE_API_TOKEN'
 });
 
 test('default platform: cloudflare missingEnvVars contains CLOUDFLARE_ACCOUNT_ID', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const h = await p.health();
   const cf = h.adapters.find((a) => a.adapter === 'cloudflare');
   assert.ok(cf!.missingEnvVars.includes('CLOUDFLARE_ACCOUNT_ID'));
 });
 
 test('default platform: vercel missingEnvVars contains VERCEL_TOKEN', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const h = await p.health();
   const vc = h.adapters.find((a) => a.adapter === 'vercel');
   assert.ok(vc, 'vercel adapter present');
@@ -234,13 +234,13 @@ test('default platform: vercel missingEnvVars contains VERCEL_TOKEN', async () =
 });
 
 test('default platform: adapter names are exactly supabase/github/cloudflare/vercel', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const names = p.adapters().map((a) => a.name).sort();
   assert.deepEqual(names, ['cloudflare', 'github', 'supabase', 'vercel']);
 });
 
 test('default platform: each NOT_CONNECTED health result has non-empty missingEnvVars', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const h = await p.health();
   for (const a of h.adapters) {
     assert.ok(a.missingEnvVars.length > 0, `${a.adapter} missingEnvVars should be non-empty`);
@@ -491,14 +491,14 @@ test('investigate(): generatedAt matches the now() injected timestamp', async ()
 });
 
 test('investigate() on credential-less platform: notConnected = all 4 real adapters', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const inv = await p.investigate('payments');
   const notConn = [...inv.notConnected].sort();
   assert.deepEqual(notConn, ['cloudflare', 'github', 'supabase', 'vercel']);
 });
 
 test('investigate() on credential-less platform: structural correlation still runs', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const inv = await p.investigate('payments');
   // structural may be null (no graphify-out), but the call must not throw
   assert.ok(typeof inv.correlation === 'object');
@@ -581,7 +581,7 @@ test('verify() returns NOT_CONNECTED status for NOT_CONNECTED mock adapter', asy
 });
 
 test('verify(supabase) on credential-less platform → NOT_CONNECTED', async () => {
-  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED });
+  const p = createLivePlatform({ engine: createEngine(), now: () => FIXED, env: {} });
   const v = await p.verify('supabase');
   assert.equal(v.length, 1);
   assert.equal(v[0]?.status, 'NOT_CONNECTED');

@@ -126,7 +126,9 @@ export function classifyAppApiRoute(file) {
 // generation, current job access, expiry and R2 writes remain Gateway-owned.
 // Approved branded checkout: one owned-store, origin/key-guarded readiness proxy.
 // DNS/provider ownership, derivation, TLS and lifecycle remain in the Gateway.
-export const APP_API_ROUTE_RATCHET = 231;
+// Native Accounts: seven session-owned PKCE request routes and one security
+// session read route. No app-local commerce, signing or provider authority added.
+export const APP_API_ROUTE_RATCHET = 239;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

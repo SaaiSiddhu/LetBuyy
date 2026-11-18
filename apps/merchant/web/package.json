@@ -13,18 +13,19 @@
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
     "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/checkout-core": "workspace:*",
     "@letbuyy/cms-core": "workspace:*",
+    "@letbuyy/commerce-core": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/tenant-core": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/ui": "workspace:*",
+    "fast-sha256": "1.3.0",
+    "hash-wasm": "4.12.0",
     "lucide-react": "^0.562.0",
-    "next": "16.1.6",
+    "next": "16.4.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "hash-wasm": "4.12.0",
-    "@letbuyy/commerce-core": "workspace:*",
-    "@letbuyy/checkout-core": "workspace:*",
     "zod": "^4.3.6"
   },
   "devDependencies": {

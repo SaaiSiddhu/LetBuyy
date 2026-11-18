@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, Suspense } from 'react'
-import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
+import { safePlatformReturnTo, authPathWithReturnTo, accountResultPath } from '@/lib/auth/return-to'
 import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
@@ -158,6 +158,7 @@ function SetPasswordContent() {
         try {
             const res = await fetch('/api/auth/set-password', {
                 method: 'POST',
+                signal: AbortSignal.timeout(20000),
                 headers: (await getAuthHeaders()),
                 body: JSON.stringify({ password }),
             })
@@ -174,7 +175,7 @@ function SetPasswordContent() {
             }
 
             if (data.success) {
-                window.location.href = returnTo || data.redirectTo
+                window.location.href = accountResultPath(data, returnTo)
             } else {
                 setError(t.genericError)
             }

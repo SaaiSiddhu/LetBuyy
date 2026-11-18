@@ -15,7 +15,7 @@ import { chromium, expect as playwrightExpect, type Page, type BrowserContext, t
 import { STEP_SECRET, TOTP_SECRET, otp } from './merchant-stepup-fixture';
 import { hashMerchantPassword } from '../../lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, INTERNAL_SECRET } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
+import { requireOwnedDatabase, allocateOwnedLoopbackPorts, startOwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant, seedSyntheticOrder, type SyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
@@ -28,11 +28,6 @@ type LayoutElement = {
 type BrowserLayoutGlobals = {document:{documentElement:{scrollWidth:number;style:{zoom:string}}};innerWidth:number};
 const expect = playwrightExpect.configure({ timeout: 45000 });
 const quote = (value: string) => "'" + value.replaceAll("'", "''") + "'";
-async function portFree(port: number) {
-    const server = createServer();
-    await new Promise<void>((resolve, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', resolve); });
-    await new Promise<void>(resolve => server.close(() => resolve()));
-}
 async function ready(url: string, app: OwnedClientProcess) {
     const end = Date.now() + 360000;
     while (Date.now() < end) {
@@ -79,7 +74,6 @@ function seededStatement(site: SyntheticTenant, owner: string, suffix: string) {
 }
 
 test('normal merchant statement browser flow keeps fresh MFA, current context, durable retries and truthful readback', { timeout: 1050000 }, async () => {
-    for (const port of [54770, 54771, 54772]) await portFree(port);
     const site = newSyntheticTenant('n7-browser'), otherSite = newSyntheticTenant('n7-other');
     seedSyntheticTenant(owned.psql, site); seedSyntheticTenant(owned.psql, otherSite);
     const owner = crypto.randomUUID(), other = crypto.randomUUID();
@@ -93,7 +87,8 @@ test('normal merchant statement browser flow keeps fresh MFA, current context, d
     const primary = seededStatement(site, owner, 'PRIMARY');
     const pending = seededStatement(site, owner, 'CONTEXT');
     const foreign = seededStatement(otherSite, other, 'FOREIGN');
-    const identityOrigin = 'http://localhost:54770', merchantOrigin = 'http://localhost:54771';
+    const [identityPort, merchantPort] = await allocateOwnedLoopbackPorts(owned, 2);
+    const identityOrigin = `http://localhost:${identityPort}`, merchantOrigin = `http://localhost:${merchantPort}`;
     const proxy = await startOwnedPooledSqlProxy(owned), keys = await newIdentityKeys();
     const gateway = new Gateway(gatewayEnv(owned, keys, { ENVIRONMENT: 'local', STEP_UP_SIGNING_SECRET: STEP_SECRET,
         TOTP_ENCRYPTION_KEY: TOTP_SECRET, LETBUYY_IDENTITY_ISSUER: identityOrigin, ...proxy.env(),
@@ -169,14 +164,16 @@ test('normal merchant statement browser flow keeps fresh MFA, current context, d
                 res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { code: 'SYNTHETIC_BRIDGE_FAILURE' } }));
             }
         });
-        await new Promise<void>(resolve => bridge!.listen(54772, '127.0.0.1', resolve));
-        const api = 'http://127.0.0.1:54772/v1';
+        await new Promise<void>((resolve, reject) => { bridge!.once('error', reject); bridge!.listen(0, '127.0.0.1', resolve); });
+        const address = bridge.address();
+        assert.ok(address && typeof address !== 'string');
+        const api = `http://127.0.0.1:${address.port}/v1`;
         const shared = { INTERNAL_API_SECRET: INTERNAL_SECRET, NEXT_PUBLIC_ACCOUNTS_URL: identityOrigin, NEXT_PUBLIC_ADMIN_URL: merchantOrigin };
-        identity = startOwnedClientRuntime(owned, 'identity-next', { port: 54770, env: { ...shared, LETBUYY_API_URL: api, LETBUYY_IDENTITY_ISSUER: identityOrigin,
+        identity = startOwnedClientRuntime(owned, 'identity-next', { port: identityPort, env: { ...shared, LETBUYY_API_URL: api, LETBUYY_IDENTITY_ISSUER: identityOrigin,
             LETBUYY_IDENTITY_PRIVATE_JWK: JSON.stringify({ ...await exportJWK(keys.privateKey), alg: 'ES256', kid: keys.kid }), ACCOUNTS_COOKIE_SECRET: crypto.randomUUID() + crypto.randomUUID(), COOKIE_DOMAIN: '',
             NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
             LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', RESEND_API_KEY: '', LETBUYY_EMAIL_API_KEY: '' } });
-        merchant = startOwnedClientRuntime(owned, 'merchant-next', { port: 54771, env: { ...shared, LETBUYY_API_BASE_URL: api } });
+        merchant = startOwnedClientRuntime(owned, 'merchant-next', { port: merchantPort, env: { ...shared, LETBUYY_API_BASE_URL: api } });
         for (const [name, app] of [['identity', identity], ['merchant', merchant]] as const) {
             app.stdout.on('data', data => writeFileSync(evidence + '/' + name + '.stdout.log', String(data), { flag: 'a' }));
             app.stderr.on('data', data => writeFileSync(evidence + '/' + name + '.stderr.log', String(data), { flag: 'a' }));

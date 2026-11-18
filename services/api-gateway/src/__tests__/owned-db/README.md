@@ -55,9 +55,28 @@ Suites do not share a database. The cluster's template is pristine and sealed (`
 
 
 Historical migration cohorts are explicit in HISTORICAL_GATEWAY_MIGRATION_CEILINGS
-in scripts/governance/test-suite-catalog.mjs. Those six suites test a named
+in scripts/governance/test-suite-catalog.mjs. Those suites test a named
 predecessor, including its refusal and reverse/reapply paths, against a separate
 sealed template at that exact ceiling. Their result records the applied source
 hashes and ceiling. They execute fully and cannot silently use the current
 schema. The remaining current-stack suites continue through every migration;
 an explicit --through-migration still selects a requested qualification cohort.
+
+
+## Native sign-in release schema qualification
+
+The owner approved applying only418 to production413 and staging415 historical
+aliases. Additional local qualification can explicitly select
+`--migration-profile native-auth-production-413-418` or
+`--migration-profile native-auth-staging-415-418`, with a finite list of owned
+Gateway `--suite` paths. The runner rejects unknown profiles, plain-Postgres
+suites, historical retirement suites, implicit inventories and combined ceilings.
+The staging profile reconstructs the two existing aliases only after checking
+both canonical and historical source hashes against the existing registry.
+Each result records the selected profile, executed names/hashes and canonical
+alias provenance. This fixture never edits hosted history or source migrations.
+
+These are additional release-schema checks. The default lane still applies every
+source migration; current money/checkout/reconciliation suites keep that default.
+A release profile cannot certify unrelated full-platform failures, replace RT1–9,
+waive CI, prove a hosted deployment or establish physical-device acceptance.

@@ -1,5 +1,63 @@
 -- Pre-use schema rollback only. Used financial snapshots must be preserved.
 BEGIN;
+
+-- Refuse stale ABI/overloads before any historical rollback mutation.
+DO $managed_catalog_fence$
+BEGIN
+ IF (SELECT rolsuper FROM pg_catalog.pg_roles WHERE rolname=current_user) THEN
+  LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;
+ ELSE
+  IF current_user<>'postgres' OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
+ WHERE p.oid=pg_catalog.to_regprocedure('letbuyy_maintenance.lock_catalogs_v1()')
+ AND n.nspname='letbuyy_maintenance' AND n.nspowner='supabase_admin'::regrole
+ AND p.proowner='supabase_admin'::regrole AND p.prosecdef AND p.prokind='f' AND NOT p.proretset
+ AND p.prorettype='pg_catalog.void'::regtype AND p.prolang=(SELECT oid FROM pg_catalog.pg_language WHERE lanname='plpgsql')
+ AND p.pronargs=0 AND p.pronargdefaults=0 AND p.proargnames IS NULL AND p.proargmodes IS NULL AND p.proallargtypes IS NULL
+ AND NOT p.proisstrict AND NOT p.proleakproof AND p.prosupport=0 AND p.provolatile='v' AND p.proparallel='u'
+ AND p.proconfig=ARRAY['search_path=pg_catalog, pg_temp']::text[]
+ AND pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(p.prosrc,'UTF8')),'hex')='4772eebc5017ef1e188b188f87f1cca8fb8f2b9cfd1e928798ef5cd5dfebfabc'
+ AND EXISTS(SELECT 1 FROM pg_catalog.pg_roles r WHERE r.oid=p.proowner AND r.rolsuper)
+ AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner)))a
+  WHERE a.grantor<>p.proowner OR a.grantee NOT IN(p.proowner,'postgres'::regrole) OR (a.grantee<>p.proowner AND a.is_grantable))
+ AND pg_catalog.has_function_privilege('postgres',p.oid,'EXECUTE')
+ AND NOT EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(n.nspacl,pg_catalog.acldefault('n',n.nspowner)))a
+  WHERE a.grantor<>n.nspowner OR a.grantee NOT IN(n.nspowner,'postgres'::regrole)
+   OR(a.grantee<>n.nspowner AND (a.is_grantable OR a.privilege_type<>'USAGE')))
+ AND pg_catalog.has_schema_privilege('postgres',n.oid,'USAGE')
+ AND (SELECT count(*) FROM pg_catalog.pg_proc x WHERE x.pronamespace=n.oid AND x.proname=p.proname)=1) THEN
+   RAISE EXCEPTION 'LETBUYY_PROVIDER_ADMIN_CATALOG_FENCE_REQUIRED' USING ERRCODE='42501';END IF;
+  PERFORM letbuyy_maintenance.lock_catalogs_v1();
+  -- Prove actual backend-held relation locks, including cluster-shared catalogs.
+  IF EXISTS(SELECT 1 FROM unnest(ARRAY['pg_catalog.pg_proc'::pg_catalog.regclass]::oid[]) catalog_oid
+    WHERE NOT EXISTS(SELECT 1 FROM pg_catalog.pg_locks l WHERE l.pid=pg_catalog.pg_backend_pid()
+     AND l.locktype='relation' AND l.relation=catalog_oid AND l.granted
+     AND l.mode IN('ShareRowExclusiveLock','ExclusiveLock','AccessExclusiveLock')
+     AND l.database IN(0,(SELECT oid FROM pg_catalog.pg_database WHERE datname=pg_catalog.current_database())))) THEN
+   RAISE EXCEPTION 'LETBUYY_NATIVE_CATALOG_LOCKS_REQUIRED';END IF;
+ END IF;
+END $managed_catalog_fence$;
+DO $rollback_typed_family$
+DECLARE expected record; live pg_catalog.pg_proc%ROWTYPE;
+BEGIN
+ FOR expected IN SELECT * FROM (VALUES
+ ('public.create_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,bigint)',ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_loyalty_points']::text[],'jsonb',true),
+ ('public.create_storefront_checkout_order_with_delivery_rate(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,integer,numeric)',ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_buyer_session_epoch','p_expected_shipping_amount']::text[],'jsonb',true),
+ ('public.create_marketplace_checkout_order(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,integer)',ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_buyer_session_epoch']::text[],'jsonb',true),
+ ('public.create_marketplace_checkout_order_with_delivery_rate(uuid,text,text,text,jsonb,jsonb,text,text,text,text,text,text,uuid,text,uuid,numeric,text,jsonb,uuid,integer,numeric)',ARRAY['p_store_id','p_customer_name','p_customer_email','p_customer_phone','p_shipping_address','p_items','p_payment_method','p_notes','p_coupon_code','p_gift_card_code','p_shipping_method','p_idempotency_key','p_actor_id','p_request_id','p_shipping_rate_id','p_tax_amount','p_place_of_supply_state','p_tax_lines','p_buyer_account_id','p_buyer_session_epoch','p_expected_shipping_amount']::text[],'jsonb',true)
+ ) AS bounded(signature,input_names,result_type,definer) LOOP
+  SELECT * INTO live FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure(expected.signature);
+  IF live.oid IS NULL OR live.prokind<>'f' OR live.prosecdef IS DISTINCT FROM expected.definer OR live.proretset
+   OR live.prorettype IS DISTINCT FROM expected.result_type::regtype OR live.provariadic<>0
+   OR live.proargnames[1:live.pronargs] IS DISTINCT FROM expected.input_names
+   OR live.proargmodes IS NOT NULL OR live.proallargtypes IS NOT NULL
+   OR (SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=live.pronamespace AND other.proname=live.proname)<>1
+   OR (expected.definer AND (pg_catalog.has_function_privilege('anon',live.oid,'EXECUTE')
+      OR pg_catalog.has_function_privilege('authenticated',live.oid,'EXECUTE'))) THEN
+   RAISE EXCEPTION 'Rollback411 refuses changed typed function family';
+  END IF;
+ END LOOP;
+END $rollback_typed_family$;
+
 ALTER TABLE public.shipping_zones DROP CONSTRAINT shipping_zone_profile_same_site_v1;
 DO $$ BEGIN
   IF EXISTS(SELECT 1 FROM public.orders WHERE tax_snapshot<>'{}'::jsonb) THEN

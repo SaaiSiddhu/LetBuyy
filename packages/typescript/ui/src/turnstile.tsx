@@ -7,6 +7,8 @@ import { mountTurnstile, type TurnstileController, type TurnstileStatus } from '
 export interface TurnstileHandle { reset(): void; }
 export interface TurnstileWidgetProps {
     siteKey: string;
+    /** Explicit local provider simulation; the shared loader rejects hosted origins. */
+    localSdkUrl?: string;
     action?: string;
     onVerify(token: string): void;
     onExpire?(): void;
@@ -15,7 +17,7 @@ export interface TurnstileWidgetProps {
 }
 
 export const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(function TurnstileWidget(
-    { siteKey, action, onVerify, onExpire, developmentBypass = false }, ref,
+    { siteKey, localSdkUrl, action, onVerify, onExpire, developmentBypass = false }, ref,
 ) {
     const container = useRef<HTMLDivElement>(null);
     const controller = useRef<TurnstileController | null>(null);
@@ -35,14 +37,14 @@ export const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>
         }
         if (!container.current) return;
         const mounted = mountTurnstile(container.current, {
-            siteKey, action,
+            siteKey, localSdkUrl, action,
             onToken: (token) => callbacks.current.onVerify(token),
             onExpire: () => callbacks.current.onExpire?.(),
             onStatus: setStatus,
         });
         controller.current = mounted;
         return () => { controller.current = null; mounted.destroy(); };
-    }, [siteKey, action, developmentBypass]);
+    }, [siteKey, localSdkUrl, action, developmentBypass]);
     return <div data-lb-security-verification="" className="w-full">
         <div ref={container} />
         <div role="status" aria-live="polite" className="text-sm">

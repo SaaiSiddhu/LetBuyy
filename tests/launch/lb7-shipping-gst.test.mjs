@@ -157,7 +157,7 @@ test('LB-7: order-execution adapter forwards p_tax_amount to RPC', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 4. Storefront checkout-payment route computes GST and resolves rate server-side.
+// 4. Checkout delegates GST to the canonical SQL authority and resolves server rates.
 // ---------------------------------------------------------------------------
 
 const CHECKOUT_PAYMENT_ROUTE = path.join(
@@ -165,13 +165,17 @@ const CHECKOUT_PAYMENT_ROUTE = path.join(
     'services/api-gateway/src/routes/storefront/checkout-payment-routes.ts',
 );
 
-test('LB-7: checkout-payment route imports calculateGstLine', () => {
+test('LB-7: checkout delegates tax quotes and final order writes to the canonical database authority', () => {
     const src = readFileSync(CHECKOUT_PAYMENT_ROUTE, 'utf8');
-    assert.match(
-        src,
-        /calculateGstLine/,
-        'checkout-payment-routes.ts must import calculateGstLine',
-    );
+    const quote=readFileSync(path.join(repoRoot,'services/api-gateway/src/lib/checkout-tax-quote.ts'),'utf8');
+    const adapter=readFileSync(path.join(repoRoot,'services/api-gateway/src/execution/order-execution.adapter.ts'),'utf8');
+    assert.match(src,/import \{ quoteCheckoutTotals \} from '\.\.\/\.\.\/lib\/checkout-tax-quote'/);
+    assert.match(src,/quoteCheckoutTotals\(getSupabaseAdmin\(c\),/);
+    assert.match(quote,/db\.rpc\('quote_storefront_checkout_totals'/);
+    assert.match(quote,/CheckoutTotalsQuoteSchema\.safeParse\(result\.data\)/);
+    assert.match(src,/service\.createOrder\(orderCommand, tenant/);
+    assert.match(adapter,/this\.db\.rpc\('create_storefront_checkout_order_with_delivery_rate'/);
+    assert.doesNotMatch(src,/tax_amount\s*:\s*body\.|taxAmountMinor\s*:\s*body\./,'client-supplied tax cannot become authoritative');
 });
 
 test('LB-7: checkout-payment route resolves current destination rates and rejects changed reviewed amounts', () => {
@@ -273,10 +277,12 @@ test('LB-7: storefront rates proxy uses canonical public destination transport w
     const src = readFileSync(STOREFRONT_RATES_PROXY, 'utf8');
     assert.match(
         src,
-        /storefrontApiFetch\(`\/storefront\/\$\{encodeURIComponent\(subdomain\)\}\/shipping-rates\?/,
+        /storefrontApiFetch\(`\/storefront\/\$\{encodeURIComponent\(subdomain\)\}\/shipping-rates`,\s*\{/,
         'the canonical public storefront route resolves seller configuration',
     );
     assert.match(src,/request\.headers\.get\('origin'\) !== request\.nextUrl\.origin/);
+    assert.match(src,/InputSchema\.safeParse\(body\)/);
+    assert.match(src,/method: 'POST',[\s\S]*?body: JSON\.stringify\(command\)/);
     assert.doesNotMatch(src,/headers:\s*request\.headers|store_id:\s*body\./);
 });
 

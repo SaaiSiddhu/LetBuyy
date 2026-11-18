@@ -9,7 +9,7 @@ import { exportJWK } from 'jose';
 import { chromium, expect as playwrightExpect } from '@playwright/test';
 import { hashMerchantPassword } from '../../lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
+import { requireOwnedDatabase, allocateOwnedLoopbackPorts, startOwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 const owned = requireOwnedDatabase();
 const expect = playwrightExpect.configure({ timeout: 45000 });
@@ -28,7 +28,8 @@ test('normal merchant payment setup has truthful readiness, independent methods 
     const hash = await hashMerchantPassword(password);
     owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name,password_hash) VALUES('${owner}','${email}',true,'Synthetic Payment Owner','${hash}');
       UPDATE sites SET custom_user_id='${owner}',online_payment_enabled=false,cod_enabled=true WHERE id='${site.siteId}';`);
-    const identityOrigin = 'http://localhost:54773', merchantOrigin = 'http://localhost:54774';
+    const [identityPort, merchantPort] = await allocateOwnedLoopbackPorts(owned, 2);
+    const identityOrigin = `http://localhost:${identityPort}`, merchantOrigin = `http://localhost:${merchantPort}`;
     const proxy = await startOwnedPooledSqlProxy(owned), keys = await newIdentityKeys();
     const gateway = new Gateway(gatewayEnv(owned, keys, { ENVIRONMENT: 'local', LETBUYY_IDENTITY_ISSUER: identityOrigin,
         PAYMENT_CONFIG_ENCRYPTION_KEY: crypto.randomUUID(), ...proxy.env() }));
@@ -63,14 +64,16 @@ test('normal merchant payment setup has truthful readiness, independent methods 
                 res.writeHead(reply.status, Object.fromEntries(reply.headers.entries())); res.end(reply.text);
             } catch { res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { message: 'Owned bridge failed.' } })); }
         });
-        await new Promise<void>(resolve => bridge!.listen(54775, '127.0.0.1', resolve));
-        const api = 'http://127.0.0.1:54775/v1';
+        await new Promise<void>((resolve, reject) => { bridge!.once('error', reject); bridge!.listen(0, '127.0.0.1', resolve); });
+        const address = bridge.address();
+        assert.ok(address && typeof address !== 'string');
+        const api = `http://127.0.0.1:${address.port}/v1`;
         const shared = { INTERNAL_API_SECRET: INTERNAL_SECRET, NEXT_PUBLIC_ACCOUNTS_URL: identityOrigin, NEXT_PUBLIC_ADMIN_URL: merchantOrigin, NEXT_PUBLIC_API_URL: api, LETBUYY_API_URL: api, LETBUYY_IDENTITY_ISSUER: identityOrigin };
-        identity = startOwnedClientRuntime(owned, 'identity-next', { port: 54773, env: { ...shared, NEXT_PUBLIC_APP_URL: identityOrigin,
+        identity = startOwnedClientRuntime(owned, 'identity-next', { port: identityPort, env: { ...shared, NEXT_PUBLIC_APP_URL: identityOrigin,
             LETBUYY_IDENTITY_PRIVATE_JWK: JSON.stringify({ ...await exportJWK(keys.privateKey), alg: 'ES256', kid: keys.kid }), ACCOUNTS_COOKIE_SECRET: crypto.randomUUID() + crypto.randomUUID(), COOKIE_DOMAIN: '',
             NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
             LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', RESEND_API_KEY: '', LETBUYY_EMAIL_API_KEY: '' } });
-        merchant = startOwnedClientRuntime(owned, 'merchant-next-production', { port: 54774, env: { ...shared, LETBUYY_API_BASE_URL: api } });
+        merchant = startOwnedClientRuntime(owned, 'merchant-next-production', { port: merchantPort, env: { ...shared, LETBUYY_API_BASE_URL: api } });
         for (const [name, app] of [['identity', identity], ['merchant', merchant]] as const) {
             app.stdout.on('data', data => writeFileSync(`${evidence}/${name}.stdout.log`, String(data), { flag: 'a' }));
             app.stderr.on('data', data => writeFileSync(`${evidence}/${name}.stderr.log`, String(data), { flag: 'a' }));
@@ -78,7 +81,7 @@ test('normal merchant payment setup has truthful readiness, independent methods 
         await ready(identityOrigin + '/login', identity); await ready(merchantOrigin, merchant);
         browser = await chromium.launch({ headless: true }); const context = await browser.newContext(); const page = await context.newPage();
         page.setDefaultTimeout(45000); page.setDefaultNavigationTimeout(90000);
-        await page.goto(identityOrigin + '/login'); await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/);
+        await page.goto(identityOrigin + '/login'); await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 30_000 });
         await page.getByLabel('Email', { exact: true }).fill(email); await page.getByRole('button', { name: 'Continue with email', exact: true }).click();
         await page.getByLabel('Password', { exact: true }).fill(password); await page.getByRole('button', { name: 'Log in', exact: true }).click();
         await page.waitForURL(url => url.origin === merchantOrigin, { timeout: 90000 }); stage('normal_login');

@@ -29,7 +29,7 @@ function loadAuthCore(sourcePath = AUTH_CORE_SOURCE, moduleCache = new Map()) {
     require(specifier) {
       if (specifier === 'zod') return realZod;
       if (specifier === '@letbuyy/shared-types') return { EmailSchema: realZod.z.string().email() };
-      if (['./customer-session', './storefront-access', './merchant-buyer-connection'].includes(specifier)) {
+      if (['./customer-session', './storefront-access', './merchant-buyer-connection', './merchant-native', './merchant-native-registry'].includes(specifier)) {
         return loadAuthCore(`packages/auth-core/src/${specifier.slice(2)}.ts`, moduleCache);
       }
       throw new Error(`Unexpected test require: ${specifier}`);

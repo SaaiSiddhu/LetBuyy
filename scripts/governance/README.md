@@ -16,3 +16,14 @@ Cleanup is by disposal and is verified: the suite's REST container and database 
 Commands: `pnpm run test:executable` (everything), `pnpm run test:db:gateway` (the gateway lane), `node scripts/governance/run-executable-suites.mjs --list`, `--reap-only`. Images are never pulled implicitly on a workstation; set `LETBUYY_EXECUTABLE_PULL=missing` to let the runner pull the two it names (CI does that by itself).
 
 Cross-runtime and provider integration fixtures belong under root `tests/owned-db/`, outside production runtime ownership. They retain the same `requireOwnedDatabase()` guard and Gateway harness; the catalog and strict lane inventory reject unregistered root suites, duplicate basenames and linked suite files. Production apps, services and packages must never import root test fixtures or helpers. Native device fixtures live separately under `tests/owned-device/`, are never auto-discovered, and retain their explicit owned emulator/APK receipts and supervised `--kind gateway-db` invocation. Moving a device fixture does not authorize a new device run.
+
+An owned runner may opt into `LETBUYY_EXECUTABLE_NETWORK_POOL=10.N.0.0/16`
+only after checking that private range against its host routes and existing
+Docker networks. The canonical fixture allocates separate `/28` networks inside
+that pool, retaining the same run/owner/role labels. It does not edit the shared
+Docker daemon, remove other projects' networks, or fall back to default pools
+when the configured range is exhausted. Confirmed overlapping-subnet refusals
+select a different bounded candidate; an uncertain creation is never replayed.
+Exact owned-allocation readback can recover a lost acknowledgement. Invalid or
+foreign readback refuses. CI exposes the optional setting through
+`LETBUYY_CI_NETWORK_POOL`; ordinary environments keep their previous defaults.

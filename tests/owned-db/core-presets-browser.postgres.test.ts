@@ -1,3 +1,6 @@
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 // Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
 // and public challenge test fixtures. Never use these values for a real account or live provider.
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
@@ -7,7 +10,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { before, after, test } from 'node:test';
-import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync, mkdtempSync } from 'node:fs';
 import { createServer, request as forwardHttpRequest, type Server } from 'node:http';
 import { createServer as createHttpsServer, type Server as HttpsServer } from 'node:https';
 import { exportJWK } from 'jose';
@@ -15,7 +18,7 @@ import { chromium, expect, type Browser, type BrowserContext, type Page } from '
 import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import { requireOwnedDatabase, ownedClientDiagnostic, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
 const owned = requireOwnedDatabase();
@@ -53,7 +56,7 @@ async function freePort() {
 async function ready(url: string, child: OwnedClientProcess) {
     const deadline = Date.now() + 300_000;
     while (Date.now() < deadline) {
-        assert.equal(child.exitCode, null, 'owned Next runtime remains running');
+        assert.equal(child.exitCode, null, ownedClientDiagnostic(child));
         try { if ((await fetch(url, { signal: AbortSignal.timeout(2000) })).status < 500) return; } catch { /* cold compile */ }
         await new Promise(resolve => setTimeout(resolve, 200));
     }
@@ -282,7 +285,8 @@ async function publish(page: Page, themeSlug=slug) {
 test('all ten persisted Core presets apply, save, reload, publish and render on the normal buyer origin',{timeout:600000},async t=>{
  const f=await fixture('core-week1');t.after(()=>f.context.close());await signIn(f.page,f.email);await openEditor(f);
  const expected=['Forge','Sense','Aura','Craft','Refresh','Ride','Dawn','Bloom','Nova','Summit'];
- const screenshots=new URL('../../docs/evidence/web-launch-week1-2026-10-21/screenshots/',import.meta.url);mkdirSync(screenshots,{recursive:true});
+ const captureRoot=mkdtempSync(join(tmpdir(),'letbuyy-core-preset-captures-'));
+ const screenshots=pathToFileURL(join(captureRoot,'screenshots')+'/');mkdirSync(screenshots,{recursive:true});
  const buyer=await f.context.newPage();const receipts=[];
  for(const name of expected){
   await f.page.getByRole('button',{name:'Theme styles',exact:true}).click();
@@ -307,19 +311,19 @@ test('all ten persisted Core presets apply, save, reload, publish and render on 
    await expect(buyer.locator('.lb-featured-products > a')).toHaveText('View collection');
    assert.equal(await buyer.locator('.lb-featured-products > a').evaluate(el=>{const style=getComputedStyle(el);return style.color!==style.backgroundColor;}),true,'collection CTA text is not the same colour as its background '+name+'/'+width);
    await expect(buyer.locator('.lb-featured-products > a')).toHaveAttribute('href',/\/products$/);
-   await buyer.screenshot({path:new URL(name.toLowerCase()+'-'+width+'.png',screenshots).pathname,fullPage:true});
+   await buyer.screenshot({path:fileURLToPath(new URL(name.toLowerCase()+'-'+width+'.png',screenshots)),fullPage:true});
   }
   receipts.push({preset:name,apply:true,reloaded:true,published:true,exactStoredValues:true,renderedPrimary:true,nonCachedHtml:true,labeledReadableCollectionLink:true,desktop:true,mobile:true});
  }
  // Four viewport sizes in both system schemes, on the changed editor and storefront.
  for(const width of [360,414,768,1280])for(const colorScheme of ['light','dark'] as const){
   await buyer.setViewportSize({width,height:900});await buyer.emulateMedia({colorScheme});await buyer.goto(f.publicUrl,{waitUntil:'networkidle'});await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
-  await buyer.screenshot({path:new URL('viewport-'+width+'-'+colorScheme+'.png',screenshots).pathname,fullPage:true});
-  await f.page.setViewportSize({width,height:900});await f.page.emulateMedia({colorScheme});await f.page.screenshot({path:new URL('editor-'+width+'-'+colorScheme+'.png',screenshots).pathname,fullPage:true});
+  await buyer.screenshot({path:fileURLToPath(new URL('viewport-'+width+'-'+colorScheme+'.png',screenshots)),fullPage:true});
+  await f.page.setViewportSize({width,height:900});await f.page.emulateMedia({colorScheme});await f.page.screenshot({path:fileURLToPath(new URL('editor-'+width+'-'+colorScheme+'.png',screenshots)),fullPage:true});
  }
  await f.page.setViewportSize({width:1280,height:900});await f.page.goto(`${merchantOrigin}/${f.tenant.subdomain}/online-store/themes`,{waitUntil:'networkidle'});
  owned.psql(`INSERT INTO subscriptions(user_id,store_id,plan,status) VALUES('${f.owner}','${f.tenant.siteId}','enterprise','active');`);
- const sourceBundle=new URL('../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json',import.meta.url).pathname;
+ const sourceBundle=fileURLToPath(new URL('../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json',import.meta.url));
  const [imported]=await Promise.all([f.page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/install'&&r.request().method()==='POST',{timeout:60000}),f.page.locator('input[type="file"][accept*="json"]').setInputFiles(sourceBundle)]);
  const importBody=await imported.json();assert.equal(imported.status(),200,JSON.stringify(importBody.error||importBody));
  const importedSlug=importBody.uploaded.theme.slug as string;assert.ok(importedSlug.startsWith('private-'+f.tenant.siteId+'-'));
@@ -333,7 +337,7 @@ test('all ten persisted Core presets apply, save, reload, publish and render on 
  await buyer.goto(f.publicUrl,{waitUntil:'networkidle'});await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
  // This synthetic store has no configured navigation menu; use Core's real primary shopping CTA.
  await buyer.locator('.lb-hero-banner a[href$="/products"]').first().click();await buyer.waitForURL(url=>url.pathname==='/products'||url.pathname===`/store/${f.tenant.subdomain}/products`,{waitUntil:'domcontentloaded'});
- await buyer.screenshot({path:new URL('catalog-after-import.png',screenshots).pathname,fullPage:true});
+ await buyer.screenshot({path:fileURLToPath(new URL('catalog-after-import.png',screenshots)),fullPage:true});
  console.log('WEEK1_CORE_CATALOG_DIAGNOSTIC',JSON.stringify(await buyer.evaluate(()=>({path:location.pathname,title:document.title,headings:Array.from(document.querySelectorAll('h1,h2')).map(n=>n.textContent),liquid:Boolean(document.querySelector('[data-theme-renderer="liquid"]')),productText:document.body.textContent?.includes('Synthetic published Liquid product'),anchorPaths:Array.from(document.querySelectorAll('a[href]')).slice(0,30).map(a=>new URL((a as HTMLAnchorElement).href).pathname)}))));
  await buyer.locator('a.lb-product-card__link').filter({hasText:'Synthetic published Liquid product'}).first().click();await buyer.waitForURL(url=>url.pathname===`/product/${f.product}`||url.pathname===`/store/${f.tenant.subdomain}/product/${f.product}`,{waitUntil:'domcontentloaded'});
  await buyer.waitForFunction(()=>Boolean(customElements.get('lb-add-to-cart')));
@@ -346,6 +350,7 @@ test('all ten persisted Core presets apply, save, reload, publish and render on 
  assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${f.tenant.siteId}';`),'0','Core smoke stops before payment/order acceptance');
  console.log('WEEK1_CORE_BUYER_HANDOFF_PASS',JSON.stringify({catalog:true,product:true,normalBuyNow:true,canonicalCartCount:1,localHostedCheckout200:true,ordersCreated:0,providerPayment:false}));
  console.log('WEEK1_CORE_IMPORT_BROWSER_PASS',JSON.stringify({normalFileInput:true,scopedPrivateCopy:true,installed:true,buyerRendered:true,firstPartyNotOverwritten:true}));
- writeFileSync(new URL('../../docs/evidence/web-launch-week1-2026-10-21/core-preset-browser-results.json',import.meta.url),JSON.stringify({scope:'Production-built local Merchant/Identity/Commerce with owned PostgreSQL and normal password login. No hosted/provider proof.',presets:receipts},null,2)+'\n');
+ writeFileSync(join(captureRoot,'core-preset-browser-results.json'),JSON.stringify({scope:'Production-built local Merchant/Identity/Commerce with owned PostgreSQL and normal password login. No hosted/provider proof.',presets:receipts},null,2)+'\n');
  console.log('WEEK1_CORE_PRESETS_PASS',JSON.stringify(receipts));
+ console.log('Owned core preset capture directory:',captureRoot);
 });

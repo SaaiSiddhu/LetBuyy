@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import test, { afterEach, before } from 'node:test';
-import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
+import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, newBarrier, tapRest } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import { requireOwnedDatabase } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 import {merchantApprovalHeaders,TOTP_SECRET}from '../../services/api-gateway/src/__tests__/owned-db/merchant-stepup-fixture';
@@ -276,7 +276,18 @@ test('payout statement money effects and settlement payout instruction/item/outb
       );
       RESET ROLE;`);
     const concurrentKeys = [`payout-race-a-${randomUUID()}`, `payout-race-b-${randomUUID()}`];
-    const concurrent = await Promise.all(concurrentKeys.map((key) => createPayout(undefined, key)));
+    // Both contenders must finish eligibility reads before either atomic commit.
+    // Without this barrier a later eligibility read correctly returns422 after
+    // the winner consumes the order, and the database conflict is never tested.
+    const barrier=newBarrier(2);
+    const tap=tapRest(owned.restEnv().SUPABASE_URL,async(call,forward)=>{
+        if(call.resource==='rpc/create_payout_statement_with_effects')await barrier.arrive();
+        return forward();
+    });
+    let concurrent: Awaited<ReturnType<typeof createPayout>>[];
+    try {concurrent=await Promise.all(concurrentKeys.map((key)=>createPayout(undefined,key)));}
+    finally {tap.restore();}
+    assert.equal(barrier.arrived,2,'both payout contenders reached the actual atomic writer');
     assert.deepEqual(concurrent.map((response) => response.status).sort(), [201, 409]);
     assert.equal(owned.psql(`SELECT count(*) FROM public.payout_statements WHERE site_id = ${q(tenant.siteId)}::uuid;`), '2');
     assert.equal(owned.psql(`SELECT count(*) FROM public.wallet_ledger_entries

@@ -35,7 +35,7 @@ const GUARDED = [
 // Rollbacks written after this phase are held to the forward rule below. Earlier files are covered
 // by the explicit list above; raising this number is not a fix.
 const RATCHET_FROM_EXCLUSIVE = 245;
-const PROFILE_GUARDED = ['388_cart_order_fact_snapshots.rollback.sql'];
+const PROFILE_GUARDED = ['388_cart_order_fact_snapshots.rollback.sql', '411_authoritative_checkout_gst.rollback.sql'];
 
 const CANDIDATE_GUARDED = [280,285,288,291,293,294,296,303,305];
 
@@ -842,5 +842,48 @@ test('current cart snapshot rollback retains four complete ABI proofs and refuse
  ]) {
   assert.ok(original.includes(before),before);
   assert.deepEqual(guardedRestorations(original.replace(before,after)),[],before);
+ }
+});
+
+for (const [number, count] of [[401,1],[410,1],[411,4],[412,2],[414,1]]) {
+ test(`rollback ${number} binds every restored ABI before mutation and rejects weakened guards`,()=>{
+  const name=rollbackFiles().find(file=>file.startsWith(number+'_'));const sql=read(name);
+  assert.equal(guardedRestorations(sql).length,count);
+  const start=sql.indexOf('DO $rollback_typed_family$');const end=sql.indexOf('END $rollback_typed_family$;',start)+'END $rollback_typed_family$;'.length;
+  assert.ok(start>0&&end>start);
+  const prefix=sql.slice(start,end);
+  for(const [before,after] of [
+   ["live.prokind<>'f'",'false'],['live.proretset','false'],
+   ['live.prosecdef IS DISTINCT FROM expected.definer','false'],
+   ['live.prorettype IS DISTINCT FROM expected.result_type::regtype','false'],
+   ['other.proname=live.proname)<>1','other.proname=live.proname)<>2'],
+   ['RAISE EXCEPTION','RAISE WARNING'],
+   ['live.proargmodes IS NOT NULL','false'],
+   ['IS DISTINCT FROM expected.input_names','IS NOT DISTINCT FROM expected.input_names'],
+  ]) {
+   assert.ok(prefix.includes(before),before);
+   const changed=sql.slice(0,start)+prefix.replace(before,after)+sql.slice(end);
+   const proof=rollbackSignatureGuards(changed);
+   assert.equal(proof.some(row=>row.native_catalog_lock),false,`${number}: weakened family guard cannot earn family proof: ${before}`);
+  }
+  if(number===410||number===412){
+   assert.ok(prefix.includes('COALESCE(live.proargnames[1:live.pronargs],ARRAY[]::text[])'));
+   assert.equal(rollbackSignatureGuards(sql.replace("::text[],'trigger',false","::text[],'text',false")).some(row=>row.native_catalog_lock),false,'unknown return ABI rejected');
+  }
+ });
+}
+
+const historicalRollbackBodyHashes={
+  "401_included_theme_library_allowance.rollback.sql": "80127aa1581c710fe67e6ea543fb5b1285213998228f9105e30480327195494e",
+  "410_checkout_custom_host_derivation.rollback.sql": "0da8b39ef6bc7a181af4e14e7d966336fd5d7356fecdde707192548365ba85cd",
+  "411_authoritative_checkout_gst.rollback.sql": "38abb48c4d1fdb380c037a15821bea20b531aaa451f60f0b5a5ffde31b5fea63",
+  "412_invoice_checkout_fact_parity.rollback.sql": "8d87450b1c7207d36415d4782608c5ae7724f8a95907206f3a94ccfb3be6a738",
+  "414_gift_card_issue_replay_integrity.rollback.sql": "bdafe1e5f805c5feb11f4bcfe491f73b3d4a82c99fa2467513388eae56674432"
+};
+test('historical rollback repairs preserve every original SQL byte after removing only the added guard prefix',()=>{
+ for(const [name,hash] of Object.entries(historicalRollbackBodyHashes)){
+  const source=read(name);const withoutAddedGuard=source.replace(/\n\n-- Refuse stale ABI\/overloads before any historical rollback mutation\.[\s\S]*?END \$rollback_typed_family\$;\n/,'');
+  assert.notEqual(withoutAddedGuard,source,name);
+  assert.equal(retirementBodyHash('sha256').update(withoutAddedGuard).digest('hex'),hash,name+' original SQL must stay byte-for-byte intact');
  }
 });

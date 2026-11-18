@@ -2,12 +2,23 @@
 // Negative scopes, graceful/forced stop, supervisor loss and owner death must clean descendants.
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
+import { requireOwnedDatabase, allocateOwnedLoopbackPorts, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
 const alive = (pid:number) => { try { process.kill(pid,0); return true; } catch { return false; } };
 const delay = (ms:number) => new Promise(resolve => setTimeout(resolve,ms));
+
+test('loopback port allocation requires the owned fixture and returns a bounded distinct batch', async () => {
+    const ports = await allocateOwnedLoopbackPorts(owned, 3);
+    assert.equal(ports.length, 3);
+    assert.equal(new Set(ports).size, 3);
+    assert.ok(ports.every(port => Number.isInteger(port) && port >= 1024 && port <= 65535));
+    await assert.rejects(allocateOwnedLoopbackPorts({ ...owned }, 2), /verified database handle/);
+    for (const count of [0, 9, 1.5, Number.NaN]) {
+        await assert.rejects(allocateOwnedLoopbackPorts(owned, count), /invalid local port count/);
+    }
+});
 async function gone(pid:number) {
     const end=Date.now()+12000;
     while (alive(pid) && Date.now()<end) await delay(50);

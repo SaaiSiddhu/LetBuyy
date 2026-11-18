@@ -28,7 +28,7 @@ test('unknown, invalid, expired and paid trial states do not display a fabricate
 })
 
 test('plan picker uses subscription/trial state rather than a leftover future or expired trial date', () => {
-    const router: AppRouterInstance = { back() {}, forward() {}, refresh() {}, push() {}, replace() {}, prefetch() {} }
+    const router: AppRouterInstance = { bfcacheId: 'synthetic-router', back() {}, forward() {}, refresh() {}, push() {}, replace() {}, prefetch() {} }
     const renderHeading = (currentPlan: string | null, trialStatus: string | null, trialEndsAt: string) => {
         const markup = renderToStaticMarkup(<AppRouterContext.Provider value={router}><SelectPlanClient plans={[]} currentPlan={currentPlan} trialStatus={trialStatus} trialEndsAt={trialEndsAt} storeName="Synthetic store" storeSlug="alpha-store" storeId="11111111-1111-4111-8111-111111111111" siteType="store" /></AppRouterContext.Provider>)
         return markup.match(/<h1[^>]*>(.*?)<\/h1>/)?.[1] || ''
@@ -43,7 +43,7 @@ test('plan picker uses subscription/trial state rather than a leftover future or
 })
 
 test('annual savings and plan claims follow the returned catalog, without invented bonuses or competitor prices', () => {
-    const router: AppRouterInstance = { back() {}, forward() {}, refresh() {}, push() {}, replace() {}, prefetch() {} }
+    const router: AppRouterInstance = { bfcacheId: 'synthetic-router', back() {}, forward() {}, refresh() {}, push() {}, replace() {}, prefetch() {} }
     const plan: SubscriptionPlanView = {
         id: 'plan-growth', slug: 'growth', name: 'Growth', tagline: 'For growing stores',
         is_popular: false, price_monthly_inr: 50000, price_yearly_inr: 40000,

@@ -12,7 +12,7 @@ import bcrypt from 'bcryptjs';
 import {exportJWK,generateKeyPair} from 'jose';
 import {LETBUYY_BUYER_SESSION_COOKIE,LETBUYY_BUYER_SESSION_HEADER,LETBUYY_BUYER_SESSION_TTL_SECONDS} from '@letbuyy/auth-core';
 import {Gateway,gatewayEnv,newIdentityKeys,seedBuyerAccount,INTERNAL_SECRET,type IdentityKeys} from './gateway-harness';
-import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,type OwnedClientProcess} from './owned-db-support';
+import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,ownedClientDiagnostic,type OwnedClientProcess} from './owned-db-support';
 
 const owned=requireOwnedDatabase();
 const buyer=seedBuyerAccount(owned.psql,'identity-session');
@@ -29,13 +29,16 @@ async function startIdentity(privateJwk?:string) {
  identity=startOwnedClientRuntime(owned,'identity-next',{port,env:{NODE_ENV:'development',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'true',
   LETBUYY_API_URL:apiOrigin+'/v1',INTERNAL_API_SECRET:INTERNAL_SECRET,LETBUYY_IDENTITY_ISSUER:'https://accounts.letbuyy.test',
   ...(privateJwk?{LETBUYY_IDENTITY_PRIVATE_JWK:privateJwk}:{})}});
+ // A cold route compilation gets the remaining readiness budget. Repeated
+ // two-second aborts can abandon every compilation request before it responds.
  const deadline=Date.now()+45_000;
+ let readinessStatus:number|undefined,readinessError:string|undefined;
  while(Date.now()<deadline) {
   if(identity.exitCode!==null||identity.signalCode!==null)throw new Error('owned Identity stopped before readiness');
-  try {const response=await fetch(origin+'/api/buyer/login',{method:'GET',signal:AbortSignal.timeout(2000)});if(response.status===405)return;}catch{/* compiling */}
+  try {const response=await fetch(origin+'/api/buyer/login',{method:'GET',signal:AbortSignal.timeout(Math.max(1,deadline-Date.now()))});readinessStatus=response.status;if(response.status===405)return;}catch(error){readinessError=error instanceof Error ? error.message : 'request failed';}
   await new Promise(resolve=>setTimeout(resolve,100));
  }
- throw new Error('owned Identity login route did not become ready');
+ throw new Error('owned Identity login route did not become ready: '+JSON.stringify({status:readinessStatus,error:readinessError})+' '+ownedClientDiagnostic(identity));
 }
 async function post(path:string,body:unknown,cookie='') {
  const response=await fetch(origin+path,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf,

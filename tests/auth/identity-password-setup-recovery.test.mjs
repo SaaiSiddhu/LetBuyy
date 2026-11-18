@@ -4,6 +4,9 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { createRequire } from 'node:module';
+
+const { z } = createRequire(new URL('../../packages/auth-core/package.json', import.meta.url))('zod');
 
 function execute(file, name, context, effect = false) {
   const source = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -61,7 +64,7 @@ test('password context is private, advisory and needs the HTTP-only intent cooki
   }
 });
 
-function verificationFixture(type, hasPassword = false) {
+function verificationFixture(type, hasPassword = false, admission = { mfa_required: false }) {
   const calls = [];
   const ctx = {
     URL, console: { error() {} },
@@ -78,7 +81,7 @@ function verificationFixture(type, hasPassword = false) {
       calls.push(path);
       return { ok: true, json: async () => path.endsWith('/by-email') ? { data: {
         id: '11111111-1111-4111-8111-111111111111', email: 'fixture@example.invalid',
-        email_verified: true, has_password: hasPassword,
+        email_verified: true, has_password: hasPassword, ...admission,
       } } : { data: [] } };
     },
     NextResponse: { redirect: url => ({ location: url.pathname }) },
@@ -98,21 +101,34 @@ for (const type of ['email_verify', 'magic_link']) {
 test('magic link for an account with a password preserves normal sign-in', async () => {
   const f = verificationFixture('magic_link', true);
   const response = await execute(verify, 'GET', f.ctx)(f.request);
-  assert.equal(response.location, '/onboarding');
-  assert.ok(f.calls.includes('session'));
+  assert.equal(response.location, '/login');
+  assert.ok(!f.calls.includes('session'));
   assert.ok(!f.calls.includes('intent'));
 });
+
+for (const admission of [{ mfa_required: true }, {}]) {
+  test(`magic-link password setup refuses enrolled or unknown MFA admission (${Object.keys(admission).length ? 'required' : 'missing'})`, async () => {
+    const f = verificationFixture('magic_link', false, admission);
+    const response = await execute(verify, 'GET', f.ctx)(f.request);
+    assert.equal(response.location, '/login');
+    assert.ok(!f.calls.includes('intent'));
+    assert.ok(!f.calls.includes('session'));
+  });
+}
 
 function passwordProxy(cookies = {}) {
   const source = readFileSync('apps/platform/identity/src/proxy.ts', 'utf8');
   const output = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
+  const configuredLocalOrigin = execute('apps/platform/identity/src/lib/config/urls.ts', 'isConfiguredLocalAccountsOrigin', {
+    URL, process: { env: { NEXT_PUBLIC_ENV: 'production' } }, getAccountsUrl: () => 'https://accounts.letbuyy.com',
+  });
   const writes = [];
   const next = { kind: 'next', cookies: { set: (...args) => writes.push(args) }, headers: new Headers() };
   const ctx = { exports: {}, URL, Uint8Array, process: { env: { NODE_ENV: 'production' } },
     crypto: { getRandomValues: bytes => bytes.fill(7) }, require: name => {
       if (name === 'next/server') return { NextResponse: { next: () => next, redirect: url => ({ kind: 'redirect', location: url.pathname }) } };
-      if (name === '@/lib/config/urls') return { getAdminUrl: () => 'https://admin.letbuyy.com' };
-      if (name === '@letbuyy/auth-core') return { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }) };
+      if (name === '@/lib/config/urls') return { getAdminUrl: () => 'https://admin.letbuyy.com', isConfiguredLocalAccountsOrigin: configuredLocalOrigin };
+      if (name === '@letbuyy/auth-core') return { LETBUYY_MERCHANT_SESSION_COOKIE: 'lb_session', verifyLetbuyySessionCookieValue: () => ({ accepted: false }), resolveLetbuyyPlatformCookieNames: () => ({ session:'lb_session', csrf:'letbuyy_csrf', legacyCsrf:'lb_csrf', passwordSetIntent:'lb_password_set_intent' }) };
       throw new Error(`Unexpected runtime import: ${name}`);
     } };
   new vm.Script(output).runInContext(vm.createContext(ctx));
@@ -124,6 +140,7 @@ for (const cookie of [undefined, 'synthetic-intent-id']) {
     const { response, writes } = passwordProxy(cookie ? { lb_password_set_intent: cookie } : {});
     assert.equal(response.kind, 'next');
     assert.ok(writes.some(row => row[0] === 'letbuyy_csrf'));
+    assert.equal(writes.find(row => row[0] === 'letbuyy_csrf')?.[2]?.secure, true);
     assert.equal(response.headers.get('X-Frame-Options'), 'DENY');
   });
 }
@@ -131,6 +148,8 @@ for (const cookie of [undefined, 'synthetic-intent-id']) {
 test('the public password shell never lets an unverified POST change a password', async () => {
   const calls = [];
   const response = await execute(setPassword, 'POST', {
+    PasswordUpdateSchema: z.object({ password: z.string().min(12).max(128) }),
+    MobileAuthError: class extends Error {},
     checkRateLimit: async () => ({ allowed: true }), validateCsrf: () => true,
     getPasswordSetIntentCookie: async () => undefined,
     identityApiRequest: async () => { calls.push('mutation'); },

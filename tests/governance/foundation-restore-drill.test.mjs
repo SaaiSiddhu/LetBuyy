@@ -1,3 +1,4 @@
+import { NODE_CLI_SHEBANG } from '../helpers/node-cli-shim.mjs';
 import assert from 'node:assert/strict';
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -20,7 +21,7 @@ function fixture() {
   mkdirSync(bin);
   for (const command of ['pg_dump', 'pg_restore']) {
     const path = join(bin, command);
-    writeFileSync(path, `#!${process.execPath}\n` + `
+    writeFileSync(path, `${NODE_CLI_SHEBANG}` + `
 const fs = require('node:fs');
 fs.appendFileSync(process.env.LETBUYY_RESTORE_TEST_TRIPWIRE, JSON.stringify({ command: '${command}', args: process.argv.slice(2) }) + '\\n');
 if (process.env.LETBUYY_RESTORE_TEST_FAIL === '${command}') {

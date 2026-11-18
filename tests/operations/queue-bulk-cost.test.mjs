@@ -40,7 +40,9 @@ test('queue worker persists a Cloudflare batch with batched DB writes', () => {
 });
 
 test('queue worker drains platform queues once per Cloudflare batch', () => {
-  const queueHandlerBlock = blockAfter(queueWorkerSource, 'async queue(batch, env)');
+  const start = queueWorkerSource.indexOf('async queue(batch, env)');
+  assert.notEqual(start, -1);
+  const queueHandlerBlock = queueWorkerSource.slice(start, queueWorkerSource.indexOf('\n  async scheduled', start) === -1 ? undefined : queueWorkerSource.indexOf('\n  async scheduled', start));
   assert.match(queueHandlerBlock, /const deliveries = await normalizeDeliveries\(env, batch\)/);
   assert.match(queueHandlerBlock, /await persistQueueBatch\(env, deliveries\)/);
   assert.match(queueHandlerBlock, /await recordQueueBatchMetric\(env, batch, deliveries\)/);
@@ -48,6 +50,9 @@ test('queue worker drains platform queues once per Cloudflare batch', () => {
   assert.match(queueHandlerBlock, /workerId: `cloudflare:\$\{batch\.queue\}:batch:/);
   assert.match(queueHandlerBlock, /for \(const delivery of deliveries\) delivery\.message\.ack\(\)/);
   assert.doesNotMatch(queueHandlerBlock, /for \(const message of batch\.messages\)/);
+  assert.equal(countMatches(queueHandlerBlock, /await consumePlatformQueuesForCloudflareQueue\(/g), 1);
+  assert.ok(queueHandlerBlock.indexOf('await dispatchEmailDeliveries') < queueHandlerBlock.indexOf('await persistQueueBatch'), 'persist completion only after dispatch');
+  assert.ok(queueHandlerBlock.indexOf('await persistQueueBatch') < queueHandlerBlock.indexOf('delivery.message.ack()'), 'ack only after durable completion');
 });
 
 test('GraphQL bulk operations use one waitUntil path and do not enqueue a dead queue job', () => {

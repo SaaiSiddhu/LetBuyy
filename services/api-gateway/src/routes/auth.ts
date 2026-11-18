@@ -1,4 +1,5 @@
 import { registerMerchantBuyerConnectionRoutes } from './merchant-buyer-connection';
+import { registerMerchantMobileRoutes } from './merchant-mobile-auth';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
@@ -12,7 +13,7 @@ import { validateMerchantSessionToken } from '../lib/merchant-session';
 import { decryptTextAesGcm } from '../lib/crypto';
 import { validateIdentityIssuedMerchantSessionToken } from '../lib/identity-session-verifier';
 import { decodeJwt } from 'jose';
-import { verifyTotpCode } from '../lib/totp';
+import { matchingTotpCounter } from '../lib/totp';
 import {
     AUTH_OTP_EXPIRY_MS,
     AUTH_SESSION_DURATION_MS,
@@ -27,11 +28,12 @@ import {
     type AuthTokenType,
 } from '../schemas/auth.schema';
 import { validateSubdomainFormat } from '@letbuyy/tenant-core';
-import { MerchantPasswordResetCommitSchema } from '@letbuyy/auth-core';
+import { MerchantPasswordResetCommitSchema, merchantNativeHash } from '@letbuyy/auth-core';
 
 const auth = new Hono<{ Bindings: import('../index').Env }>();
 const MERCHANT_PASSWORD_HASH_COLUMN = 'password_hash';
 const AUTH_RATE_LIMITS = {
+    'merchant-mobile': { limit: 30, windowMs: 15 * 60_000, prefix: 'rl:merchant-mobile' },
     lookup: { limit: 10, windowMs: 15 * 60_000, prefix: 'rl:lookup' },
     signup: { limit: 3, windowMs: 60 * 60_000, prefix: 'rl:signup' },
     login: { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:login' },
@@ -150,15 +152,9 @@ async function enforceMerchantMfaIfEnrolled(
     db: ReturnType<typeof getSupabaseAdmin>,
     userId: string,
     rawCode: unknown,
+    rawRecoveryCode?: unknown,
 ) {
-    const { data, error } = await db
-        .from('merchant_2fa_factors')
-        .select('id, secret_ciphertext')
-        .eq('custom_user_id', userId)
-        .eq('factor_type', 'totp')
-        .eq('status', 'active')
-        .is('deleted_at', null)
-        .limit(1);
+    const { data, error } = await readActiveMerchantMfaFactor(db, userId);
 
     if (error) {
         if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) return null;
@@ -169,7 +165,8 @@ async function enforceMerchantMfaIfEnrolled(
     if (!factor) return null;
 
     const code = typeof rawCode === 'string' ? rawCode.trim() : '';
-    if (!code) {
+    const recoveryCode = typeof rawRecoveryCode === 'string' ? rawRecoveryCode.trim().toUpperCase() : '';
+    if (!code && !recoveryCode) {
         return c.json({
             error: {
                 code: 'MFA_REQUIRED',
@@ -179,6 +176,7 @@ async function enforceMerchantMfaIfEnrolled(
         }, 403);
     }
 
+    if ((code && recoveryCode) || recoveryCode.length > 40) return c.json({ error: { code: 'MFA_INVALID', message: 'Use one verification method' }, mfa_required: true }, 401);
     const encryptionSecret = configuredTotpEncryptionSecret(c.env);
     if (!encryptionSecret) {
         return c.json({
@@ -190,7 +188,13 @@ async function enforceMerchantMfaIfEnrolled(
     }
 
     const totpSecret = await decryptTextAesGcm(encryptionSecret, factor.secret_ciphertext);
-    const accepted = await verifyTotpCode({ secret: totpSecret, code });
+    const counter = recoveryCode ? null : await matchingTotpCounter({ secret: totpSecret, code });
+    const { data: consumed, error: consumeError } = counter !== null || recoveryCode ? await db.rpc('consume_merchant_login_factor', {
+        p_user_id: userId, p_factor_id: factor.id, p_secret_hash: await merchantNativeHash(factor.secret_ciphertext),
+        p_counter: counter, p_recovery_hash: recoveryCode ? await merchantNativeHash(`${factor.id}:${recoveryCode}`) : null,
+    }) : { data: false, error: null };
+    if (consumeError) return c.json({ error: { code: 'MFA_UNAVAILABLE', message: 'Two-factor verification is temporarily unavailable' } }, 503);
+    const accepted = consumed === true;
     if (!accepted) {
         return c.json({
             error: {
@@ -201,12 +205,22 @@ async function enforceMerchantMfaIfEnrolled(
         }, 401);
     }
 
-    await db
-        .from('merchant_2fa_factors')
-        .update({ last_verified_at: new Date().toISOString() })
-        .eq('id', factor.id);
-
     return null;
+}
+
+function readActiveMerchantMfaFactor(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    userId: string,
+) {
+    return db
+        .from('merchant_2fa_factors')
+        .select('id, secret_ciphertext')
+        .eq('custom_user_id', userId)
+        .eq('factor_type', 'totp')
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .limit(1);
+
 }
 
 function randomHex(byteCount: number): string {
@@ -455,6 +469,11 @@ auth.post('/custom/users/by-email', async (c) => {
         [MERCHANT_PASSWORD_HASH_COLUMN]?: string | null;
 };
 
+    // Only the signed Accounts caller can read this admission flag. Never expose
+    // factor material, and never turn an unavailable factor read into "no MFA".
+    const { data: factors, error: factorError } = await readActiveMerchantMfaFactor(db, user.id);
+    if (factorError || !Array.isArray(factors)) return c.json(dbErrorBody(), 503);
+
     return c.json({
         data: {
             id: user.id,
@@ -463,6 +482,7 @@ auth.post('/custom/users/by-email', async (c) => {
             full_name: user.full_name,
             avatar_url: user.avatar_url,
             has_password: Boolean(user[MERCHANT_PASSWORD_HASH_COLUMN]),
+            mfa_required: factors.length > 0,
         },
     });
 });
@@ -533,6 +553,7 @@ auth.post('/custom/users/authenticate', async (c) => {
         db,
         String(user.id),
         rawBody.mfa_code ?? rawBody.totp_code,
+        rawBody.recovery_code,
     );
     if (mfaResponse) return mfaResponse;
 
@@ -865,7 +886,7 @@ auth.post('/custom/password-set-intents/create', async (c) => {
     const db = getSupabaseAdmin(c);
     const { data: user, error: userError } = await db
         .from('users_custom')
-        .select('id, email, email_verified')
+        .select(`id, email, email_verified, ${MERCHANT_PASSWORD_HASH_COLUMN}`)
         .eq('id', userId)
         .eq('email', email)
         .maybeSingle();
@@ -888,6 +909,9 @@ auth.post('/custom/password-set-intents/create', async (c) => {
 
     if (!user.email_verified) {
         return c.json(errorBody('FORBIDDEN', 'Email not verified'), 403);
+    }
+    if (user[MERCHANT_PASSWORD_HASH_COLUMN]) {
+        return c.json(errorBody('CONFLICT', 'Sign in or use password recovery for this account'), 409);
     }
 
     const now = new Date().toISOString();
@@ -1033,8 +1057,11 @@ auth.post('/custom/users/set-password', async (c) => {
         .from('users_custom')
         .update({ [MERCHANT_PASSWORD_HASH_COLUMN]: passwordHash, updated_at: new Date().toISOString() })
         .eq('id', userId)
+        .eq('email', email)
+        .eq('email_verified', true)
+        .is(MERCHANT_PASSWORD_HASH_COLUMN, null)
         .select('id, email, full_name, avatar_url')
-        .single();
+        .maybeSingle();
 
     if (error) {
         if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
@@ -1054,6 +1081,7 @@ auth.post('/custom/users/set-password', async (c) => {
         return c.json(dbErrorBody(), 500);
     }
 
+    if (!data) return c.json(errorBody('CONFLICT', 'Password is already set. Sign in or use password recovery.'), 409);
     return c.json({ data });
 });
 
@@ -1168,28 +1196,13 @@ auth.post('/custom/sessions/create', async (c) => {
             }, 400);
         }
 
-        const { data: consumed, error: consumeError } = await db.rpc('consume_merchant_session_jti', {
-            p_jti: jti,
-            p_user_id: userId,
-            p_expires_at: new Date(exp * 1000).toISOString(),
+        const { data: registered, error: registerError } = await db.rpc('register_identity_merchant_session_v1', {
+            p_user_id: userId, p_device_id: deviceId, p_token: providedToken,
+            p_jti: jti, p_expires_at: new Date(exp * 1000).toISOString(),
         });
-
-        if (consumeError) {
-            if (!shouldReturnEmptyForMissingLocalSchema(c.env, consumeError)) {
-                return c.json(dbErrorBody(), 500);
-            }
-            // Local dev without the migration applied: fall through exactly
-            // as the rest of this handler already does for a missing schema,
-            // rather than hard-failing local work over an enforcement table
-            // that does not exist yet in that environment.
-        } else if (!consumed) {
-            return c.json({
-                error: {
-                    code: 'MERCHANT_SESSION_TOKEN_ALREADY_CONSUMED',
-                    message: 'Identity-issued merchant session token has already been used',
-                },
-            }, 409);
-        }
+        if (registerError) return c.json(dbErrorBody(), 503);
+        if (!registered) return c.json({ error: { code: 'MERCHANT_SESSION_TOKEN_ALREADY_CONSUMED', message: 'Identity-issued merchant session token has already been used' } }, 409);
+        return c.json({ data: registered }, 201);
     }
 
     const token = providedToken || randomHex(32);
@@ -1416,5 +1429,6 @@ auth.post('/custom/tokens/validate', async (c) => {
 });
 
 registerMerchantBuyerConnectionRoutes(auth,requireAccountsInternal);
+registerMerchantMobileRoutes(auth,requireAccountsInternal);
 
 export default auth;

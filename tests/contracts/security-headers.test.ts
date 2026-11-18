@@ -40,7 +40,7 @@ test('every Next app emits shared HSTS and CSP security headers', async () => {
 
     assert.match(headers.get('strict-transport-security') || '', /max-age=31536000/, `${appName} must emit HSTS`);
     assert.match(headers.get('x-content-type-options') || '', /^nosniff$/, `${appName} must emit nosniff`);
-    assert.match(headers.get('referrer-policy') || '', /strict-origin-when-cross-origin/, `${appName} must emit referrer policy`);
+    assert.equal(headers.get('referrer-policy'), appName === 'identity-platform' ? 'no-referrer' : 'strict-origin-when-cross-origin', `${appName} must emit its canonical referrer policy; Accounts must never leak authentication URLs`);
     assert.match(headers.get('permissions-policy') || '', /camera=\(\)/, `${appName} must emit permissions policy`);
     assert.match(csp, /default-src 'self'/, `${appName} CSP must include default-src`);
     assert.match(csp, /script-src /, `${appName} CSP must include script-src`);

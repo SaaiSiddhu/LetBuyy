@@ -37,6 +37,9 @@ on:
       - master
       - "codex/**"
 
+env:
+  LETBUYY_EXECUTABLE_NETWORK_POOL: ${{ vars.LETBUYY_CI_NETWORK_POOL || '' }}
+
 jobs:
   # Every gate step below runs with continue-on-error so that a failure in an early
   # step (historically "Validate governance") can no longer hide the results of
@@ -45,11 +48,17 @@ jobs:
   # Setup steps (checkout/node/install) intentionally keep hard fail-fast, because
   # nothing downstream can produce a meaningful result without them.
   validate-architecture:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.LETBUYY_CI_GENERAL_RUNNER || '"ubuntu-latest"') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Track protected project cleanup
+        id: pc_cleanup
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -141,17 +150,54 @@ jobs:
       - name: Generate SBOM
         id: sbom
         continue-on-error: true
-        run: pnpm dlx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+        # Read-only tool version; installation/builds retain pnpm10.6.2.
+        # Native lockfile inventory includes every resolved workspace dependency.
+        run: pnpm dlx pnpm@11.28.11 --config.pm-on-fail=ignore sbom --sbom-format cyclonedx --lockfile-only --out sbom.cdx.json
 
       - name: Dependency audit
         id: dependency-audit
         continue-on-error: true
         run: pnpm audit --audit-level high --prod
 
+      - name: Snapshot protected build evidence
+        id: pc_cleanup_snapshot
+        if: ${{ always() && steps.pc_cleanup.outputs.enabled == 'true' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: snapshot
+        env:
+          PROJECT_CLEANUP_JOB_STATUS: ${{ contains(steps.*.outcome, 'failure') && 'failure' || contains(steps.*.outcome, 'cancelled') && 'cancelled' || job.status }}
+          PROJECT_CLEANUP_RELEASE: ${{ github.ref_type == 'tag' }}
+      - name: Preserve protected build evidence
+        id: pc_cleanup_archive
+        if: ${{ always() && steps.pc_cleanup_snapshot.outputs.ready == 'true' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pc_cleanup.outputs.artifact_name }}
+          path: ${{ steps.pc_cleanup.outputs.payload }}
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: false
+      - name: Confirm build evidence preservation
+        id: pc_cleanup_confirm
+        if: ${{ always() && steps.pc_cleanup_archive.outputs.artifact-id != '' }}
+        continue-on-error: true
+        uses: ./.project-cleanup/ci
+        with:
+          phase: archive
+        env:
+          PROJECT_CLEANUP_ARTIFACT_ID: ${{ steps.pc_cleanup_archive.outputs.artifact-id }}
+          PROJECT_CLEANUP_ARTIFACT_DIGEST: ${{ steps.pc_cleanup_archive.outputs.artifact-digest }}
       - name: Architecture governance gate result
         id: gate-aggregate
         if: always()
         env:
+          OUTCOME_CLEANUP_SETUP: ${{ steps.pc_cleanup.outcome }}
+          OUTCOME_CLEANUP_SNAPSHOT: ${{ steps.pc_cleanup_snapshot.outcome }}
+          OUTCOME_CLEANUP_ARCHIVE: ${{ steps.pc_cleanup_archive.outcome }}
+          OUTCOME_CLEANUP_CONFIRM: ${{ steps.pc_cleanup_confirm.outcome }}
           OUTCOME_VALIDATE_GOVERNANCE: ${{ steps.validate-governance.outcome }}
           OUTCOME_VALIDATE_WORKFLOW_TRIGGERS: ${{ steps.validate-workflow-triggers.outcome }}
           OUTCOME_VALIDATE_DESIGN_SYSTEM: ${{ steps.validate-design-system.outcome }}
@@ -178,6 +224,11 @@ jobs:
             name="${pair%%=*}"
             value="${pair#*=}"
             printf '%-40s %s\n' "${name#OUTCOME_}" "${value:-missing}"
+            if [ "${value:-missing}" = "skipped" ]; then
+              case "$name" in
+                OUTCOME_CLEANUP_SNAPSHOT|OUTCOME_CLEANUP_ARCHIVE|OUTCOME_CLEANUP_CONFIRM) continue ;;
+              esac
+            fi
             if [ "${value:-missing}" != "success" ]; then
               failed=1
             fi

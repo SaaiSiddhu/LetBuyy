@@ -188,3 +188,8 @@ and forwards only actual product references and the destination. PostgreSQL in
 the Gateway remains the sole authority for prices, GST, eligibility, profile
 mutations and immutable order/invoice facts. No local database or tax writer,
 provider call, account issuer or additional runtime is introduced.
+
+
+### Native Merchant sign-in release
+
+Inventory231→239 adds Accounts session-owned `/api/auth/mobile/{requests,bind,approve,complete,exchange,cancel,abandon}` and `/api/auth/security`. The existing app-local session class applies: Accounts remains the sole issuer, and guarded persistence/consumption stays Gateway/SQL-owned. No other Merchant media, warehouse, KYC or commerce routes are included in this release candidate.

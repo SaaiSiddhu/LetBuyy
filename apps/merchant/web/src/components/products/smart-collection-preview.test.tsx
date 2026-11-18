@@ -34,7 +34,7 @@ async function mount(transport: Transport) {
     const {ToastProvider} = await import('@letbuyy/ui')
     const {default: SmartCollectionsPage} = await import('../../app/[store]/products/smart-collections/page')
     const root = createRoot(dom.window.document.getElementById('root')!)
-    const router = {back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {}}
+    const router = { bfcacheId: 'synthetic-router',back() {}, forward() {}, refresh() {}, hmrRefresh() {}, push() {}, replace() {}, prefetch() {}}
     await act(async () => {root.render(<AppRouterContext.Provider value={router}><PathParamsContext.Provider value={{store: 'alpha'}}>
         <ToastProvider duration={0}><SmartCollectionsPage /></ToastProvider>
     </PathParamsContext.Provider></AppRouterContext.Provider>)})

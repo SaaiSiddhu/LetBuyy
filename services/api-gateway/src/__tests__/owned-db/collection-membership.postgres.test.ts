@@ -159,10 +159,15 @@ function rawStateSql361() {
             const row=table==='pg_class'?"to_jsonb(t)-ARRAY['relpages','reltuples','relallvisible','relfrozenxid','relminmxid']":'to_jsonb(t)';
             return ['catalog.'+table,"SELECT coalesce(jsonb_agg(("+row+")ORDER BY ("+row+")::text),'[]'::jsonb)FROM pg_catalog."+table+' t WHERE '+predicate];
         })];
-    // Fingerprint every complete ordered relation/catalog field before the outer
-    // object. This preserves all row bytes and numeric precision while avoiding
-    // copying the entire schema/data into one unbounded JSONB allocation.
-    return "SELECT jsonb_object_agg(k,v ORDER BY k)::text FROM ("+fields.map(([key,sql])=>'SELECT '+q(key)+" AS k,encode(sha256(convert_to(("+sql+")::text,'UTF8')),'hex')AS v").join(' UNION ALL ')+')s';
+    // Execute each complete relation/catalog fingerprint separately. Embedding
+    // hundreds of aggregate subplans in one statement retains their executor
+    // memory until the outer aggregate ends and can exhaust the bounded fixture.
+    // query_to_xml executes one scalar digest query at a time; the outer object
+    // still contains the same keys and SHA256 values, without numeric parsing.
+    return "SELECT jsonb_object_agg(k,v ORDER BY k)::text FROM ("+fields.map(([key,sql])=>{
+        const digest="SELECT encode(sha256(convert_to(("+sql+")::text,'UTF8')),'hex') AS digest";
+        return 'SELECT '+q(key)+" AS k,(xpath('/row/digest/text()',query_to_xml("+q(digest)+",false,true,'')))[1]::text AS v";
+    }).join(' UNION ALL ')+')s';
 }
 // An authenticated HTTP replay legitimately appends one anti-replay claim and
 // ordinary request telemetry. Compare every remaining row and catalog field;

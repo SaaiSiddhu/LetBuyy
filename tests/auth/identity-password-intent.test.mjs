@@ -7,6 +7,7 @@ const intentMigrationSource = readFileSync('database/supabase/migrations/078_pas
 const verifyOtpRouteSource = readFileSync('apps/platform/identity/src/app/api/auth/verify-otp/route.ts', 'utf8');
 const setPasswordRouteSource = readFileSync('apps/platform/identity/src/app/api/auth/set-password/route.ts', 'utf8');
 const cookieSource = readFileSync('apps/platform/identity/src/lib/auth/cookies.ts', 'utf8');
+const authCoreSource = readFileSync('packages/auth-core/src/index.ts', 'utf8');
 
 test('password-set intents are persisted server-side with lifecycle controls', () => {
   assert.match(intentMigrationSource, /CREATE TABLE IF NOT EXISTS public\.auth_password_set_intents/);
@@ -38,7 +39,8 @@ test('gateway creates and consumes password-set intents behind internal auth', (
 test('identity set-password requires an OTP-created intent cookie and ignores body identity', () => {
   assert.match(verifyOtpRouteSource, /createPasswordSetIntent\(result\.user_id,\s*result\.email\)/);
   assert.match(verifyOtpRouteSource, /setPasswordSetIntentCookie\(intent\.id\)/);
-  assert.match(cookieSource, /passwordSetIntent: PASSWORD_SET_INTENT_COOKIE/);
+  assert.match(cookieSource, /COOKIE_NAMES = resolveLetbuyyPlatformCookieNames\(process\.env\.NEXT_PUBLIC_ENV\)/);
+  assert.match(authCoreSource, /passwordSetIntent: `lb_password_set_intent\$\{suffix\}`/);
   assert.match(cookieSource, /httpOnly: true/);
   assert.match(cookieSource, /sameSite: 'strict'/);
 

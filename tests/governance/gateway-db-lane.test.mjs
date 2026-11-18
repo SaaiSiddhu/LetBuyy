@@ -38,6 +38,18 @@ test('profile-pinned console rollback controls use their source schema and curre
     }
 });
 
+test('credential404 retirement has its historical schema while current money journeys retain the full chain', () => {
+    assert.equal(HISTORICAL_GATEWAY_MIGRATION_CEILINGS[`${GATEWAY_DB_SUITE_DIR}/payment-credential-history.postgres.test.ts`],404);
+    for(const suite of [
+        `${GATEWAY_DB_SUITE_DIR}/checkout-credential-binding.postgres.test.ts`,
+        `${ROOT_GATEWAY_DB_SUITE_DIR}/money-ledger-reconciliation-traversal.postgres.test.ts`,
+        `${ROOT_GATEWAY_DB_SUITE_DIR}/payment-refund-reconciliation.postgres.test.ts`,
+    ]) {
+        assert.equal(isGatewayDatabaseSuite(suite),true);
+        assert.equal(HISTORICAL_GATEWAY_MIGRATION_CEILINGS[suite],undefined,'current money coverage cannot inherit the historical404 ceiling');
+    }
+});
+
 test('the reviewed lane inventory holds the gateway suites that need a real database, and the catalog finds exactly the files that are there', () => {
     assert.deepEqual(
         ownedSuites(),
@@ -45,14 +57,15 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "ad-campaign-budget-authority.postgres.test.ts",
         "authenticated-checkout.postgres.test.ts",
         "backfill-and-target-shadow.postgres.test.ts",
+        "billing-mandate-replay.postgres.test.ts",
         "buyer-assistant-quotas.postgres.test.ts",
         "buyer-privacy-export-browser.postgres.test.ts",
         "buyer-privacy-export.postgres.test.ts",
         "buyer-privacy-intake.postgres.test.ts",
         "buyer-support-mutation-recovery.postgres.test.ts",
         "buyer-support-readback.postgres.test.ts",
-        "cart-order-fact-snapshots.postgres.test.ts",
         "cart-order-fact-retirement388.postgres.test.ts",
+        "cart-order-fact-snapshots.postgres.test.ts",
         "checkout-browser.postgres.test.ts",
         "checkout-credential-binding.postgres.test.ts",
         "checkout-tax-authority.postgres.test.ts",
@@ -77,6 +90,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "gift-card-money-path.test.ts",
         "gst-invoice-issuance.test.ts",
         "gst-tax-computation.test.ts",
+        "historical-rollback-abi-guards.postgres.test.ts",
         "hosted-checkout-buyer-ownership.postgres.test.ts",
         "hosted-checkout-contact-reentry.postgres.test.ts",
         "identity-buyer-browser.postgres.test.ts",
@@ -93,6 +107,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "marketplace-origin-filter.postgres.test.ts",
         "marketplace-seller-feed.postgres.test.ts",
         "merchant-ai-credit-read.postgres.test.ts",
+        "merchant-auth-admission.postgres.test.ts",
         "merchant-buyer-connection.postgres.test.ts",
         "merchant-challenge-authority.postgres.test.ts",
         "merchant-challenge-rollback.postgres.test.ts",
@@ -101,6 +116,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-library-artwork.postgres.test.ts",
         "merchant-mfa-browser.postgres.test.ts",
         "merchant-mobile-actions.postgres.test.ts",
+        "merchant-mobile-auth.postgres.test.ts",
         "merchant-mobile-screen-reads.postgres.test.ts",
         "merchant-money-approval.postgres.test.ts",
         "merchant-money-rollback.postgres.test.ts",
@@ -220,8 +236,10 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "loyalty-earn-worker.postgres.test.ts",
         "loyalty-refund-scheduler.postgres.test.ts",
         "loyalty-reversal-recovery.postgres.test.ts",
+        "managed-hosted-history-upgrade.postgres.test.ts",
         "managed-supabase-migration-admission.postgres.test.ts",
         "managed-supabase-support-free-admission.postgres.test.ts",
+        "merchant-accounts-browser.postgres.test.ts",
         "merchant-collection-membership-browser.postgres.test.ts",
         "merchant-dashboard-access.postgres.test.ts",
         "merchant-entitlement-authority-browser.postgres.test.ts",
@@ -251,8 +269,8 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "storefront-buyer-support-recovery-browser.postgres.test.ts",
         "subscription-tax-gross-conservation.postgres.test.ts",
         "turnstile-domain-provisioning.postgres.test.ts",
-        "worker-sql-invocation.postgres.test.ts"
-], 'the root cross-runtime/provider inventory is explicitly reviewed');
+        "worker-sql-invocation.postgres.test.ts",
+        ], 'the root cross-runtime/provider inventory is explicitly reviewed');
     const { gatewayDb, all, pure, postgres, live } = discoverSuites(repoRoot);
     assert.deepEqual(gatewayDb, allOwnedSuites());
     assert.ok(gatewayDb.every(isGatewayDatabaseSuite));

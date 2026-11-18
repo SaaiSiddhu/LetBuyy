@@ -1,0 +1,1863 @@
+{
+  "base": "e4105581e3346041d71694d3db093eb713773e07",
+  "claimCommit": "0aa0ff756106400f139c39dacc93116bf55a6d25",
+  "integrationSource": "586373dc0650c04bf0df4bc1dc681a8370ff26be",
+  "preparedUtc": "2026-11-17T12:36:03.581224+00:00",
+  "purpose": "Native Merchant sign-in only, with exact owner-approved source freeze; preserve canonical issuer, backend behavior, historical SQL and web/BFF synchronization. No broader domain/runtime activation.",
+  "files": [
+    {
+      "path": ".github/workflows/architecture-governance.yml",
+      "sha256": "702879eba9155801551eb1689ea46ffac6fc0e797ec24b3dcffb37d1cf418e14",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "fc81285f9d7c4c77ff6e568136c74ac729a76c8b3023acc53c9d70559eff7cc6",
+      "source": "CI-only: Merge requires full same-workflow Unit success with an always-run rejecting guard; preserves full behavioral execution in Unit and Architecture."
+    },
+    {
+      "path": ".github/workflows/environment-lifecycle.yml",
+      "sha256": "812a67506573a155533a5c4b112ad04325d55fc3ff62f085daf95231fd1f559d",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": ".project-cleanup/ci/action.cjs",
+      "sha256": "68aa6fb0fde3e094cde5caab291b774b5a561f66d1be2d09eabf1402c5507436",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/action.yml",
+      "sha256": "e45c26bcf6fb806ee810037ac92d285e8410fa4c7ff759553811d3a588f2560d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/ci_lifecycle.py",
+      "sha256": "99d91fbb84c2e1aadef998eb884651f7fc84acb4a0f3692d5ba8c061f8ac6c28",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": ".project-cleanup/ci/engine.py",
+      "sha256": "1f6ad4717e04321c83630b835bf5cf03e6734c2405dd71a21bdc96b154458698",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/ownership.json",
+      "sha256": "47c8f81b669304a99ee0809fc624326d3c259f5c825a2d32d854249a778845ae",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/post.cjs",
+      "sha256": "e82906f86f343ddfc1ae70b5ff5e637c86fa64a91ba178a007aced5dbcd1ff31",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": ".project-cleanup/ci/test_ci_lifecycle.py",
+      "sha256": "4e7edce48bb4872bae4fb1f32a83cd647dee2b917c5182905666d1cef7b76712",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "ed29a8dcdbabf88147214c38e90ea3d28857c975134673fee486a48e72338cb7",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "apps/commerce/web/__tests__/customer-session-runtime-smoke.fixture.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "1402d51c74fe706e8175d221a3e6186e62e921e4be7d29dd0469355082bfec3a"
+    },
+    {
+      "path": "apps/commerce/web/package.json",
+      "sha256": "185f71c7fe893de5cb92ef17fbaade14d206043291366ba97fa97a8ef8e0598d",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "apps/commerce/web/src/components/catalog-preview-navigation.test.tsx",
+      "sha256": "b56cfc2d949a08c6f1afce14c5b852e3f9fb6abe55e2bf0040bc52faa3e0a1e5",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/frozen/app-store/package.json",
+      "sha256": "3af7fa5a9d7f383974d4031e6d53f299fcaf1bf21c7589ea508712b5e6d85a79",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/frozen/developer-portal/package.json",
+      "sha256": "1f648bf148ee88ed8a3e8bc0d89d90fa94d6cbd21b2ff14d0c2232dd01523031",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/frozen/operations-portal/package.json",
+      "sha256": "890dbc7f587e16dca7954a9fc71e5f8b5240bbdba259bd5b695ab634c14f1500",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/frozen/theme-store/package.json",
+      "sha256": "af1bda35935cd080e9b4dd8e6edefe654f7e4b3b0791e286e8bdc268d80eaed1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/internal/console/package.json",
+      "sha256": "c8b5a7b1b9118d498c74b4daa13f22aadc4b42c65a34272a9d208bf33c5425ee",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "apps/marketing/web/package.json",
+      "sha256": "a3ba27b7fa636945f578500662720054563f3a418ca6aea99b52f6b2a743578c",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/merchant/mobile/lib/services/merchant_auth_contract.g.dart",
+      "sha256": "3fc7eb698bce33c2f4c2af08ead4499c74b9021af6ed2ce78f5f8f9f091aa6cc",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "apps/merchant/web/package.json",
+      "sha256": "c5ffdd9987b9d9fc9c46aa2574ee198c15eb66972f3fb111687c6f3f831b0458",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/auth/logout/route.ts",
+      "sha256": "cc746f056d2d28f3a8ffa9b361fd30044a608d5e919ae76f56097b80c7daf9b6",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/merchant/web/src/components/merchantNavigation.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "8d091a03d6f7e0c17b33069d344c43ce4951fa45fb618d0ddc1ebd221987c9df"
+    },
+    {
+      "path": "apps/merchant/web/src/components/orders/order-line-items.test.tsx",
+      "sha256": "133f716c98c05132e18ab36ab4b789359c133f6022814492ad73012c9fec58af",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/collection-membership.test.tsx",
+      "sha256": "7f90f956721014e1f5be9f28c5eea02640e73ba70b00e3d8435b27c19406f39e",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/inventory-adjustment.test.tsx",
+      "sha256": "9aee634bbc8ea36b44999ce6d91704e9e449109e2c35fec2ceaabd582c3cc293",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-conflict.test.tsx",
+      "sha256": "e97aabde945c24b132ddca6a649f9b749d06a41c7d5926c09f46cb2b10ca98e0",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/product-status.test.tsx",
+      "sha256": "9747c3ee546fd14e7236abed5a85b4c28fc4faef2ac724982617e7c56d935023",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/components/products/smart-collection-preview.test.tsx",
+      "sha256": "d471a3b115b562dffad5ee738ab0e4c467a6f1f6503201cdee15430d039216a2",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/api/client.ts",
+      "sha256": "4bc33a34368d27933913d315031c5dccb0fa85169076b1b5157328cb02758837",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/merchant/web/src/proxy.ts",
+      "sha256": "30dd80a57649ff3dbcf637feb875e0f1f90e8f20e23ff1c4cddeeba73f85deca",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/merchant/web/tests/billing-entry.test.tsx",
+      "sha256": "82ccf03bd825ccf5d689c3ce44702a4efd9ddad000e2992d7a649022a5d8b480",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/tests/merchant-read-performance.test.mjs",
+      "sha256": "8d5b421c3e99b715c7dcc5f81f0eed27b54ed6fefad15c7d1d3468f09c386803",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
+      "path": "apps/merchant/web/tests/read-lifecycle.test.tsx",
+      "sha256": "bcf21495daea73883ed5b097c2054144b9955a142fca5e770fda757f7c1f391c",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/merchant/web/tests/theme-marketplace-ui.test.tsx",
+      "sha256": "aa5d94b901737ea259b977aa79281cb2d8544bd588207fa06e8224d8522d15f7",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "apps/platform/identity/next.config.ts",
+      "sha256": "826a6b550c265ca5d3a9c2ef2f729e42966152827d2ff5a481b610750dd48e01",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/package.json",
+      "sha256": "7b418c31437ae5d6d10aeeb33a7d9a119ffb802f19ca0a374fa375dcb988392b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/auth-flow.test.ts",
+      "sha256": "56e271f9798a7f02715b21eb76697ec043608b03b03fe6094046a9b1ea5bb25b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/auth-switch-guard.test.ts",
+      "sha256": "95707d05dbf5bf9823d24e3da62158654b808d71c5c60f438a0da8f884d15d40",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/csrf-client.test.ts",
+      "sha256": "0d9d8e0b930e7f292c773a2c94936f2a2a62cea9c40abd21d4fb381dc9711a55",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/merchant-session-read.test.ts",
+      "sha256": "4c1f3a2f4765b24e1467e5304545872dd2b62d6770360ddab6232630a689709a",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/__tests__/staging-cookie-boundary.test.ts",
+      "sha256": "e60f55a4e76b260a16a0eb8916b0948eafa5719b8115fbc5badad4ffbd3d197d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/.well-known/assetlinks.json/route.ts",
+      "sha256": "a49579064b8617b75637787272aa0f4260e6c7b97ed9dc38951a0f1ad24137e8",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/create-store/route.ts",
+      "sha256": "f3d4548c1a24eb64609c3058773dd5d664bc0856347642c2b113f07f09230459",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/login/route.ts",
+      "sha256": "765ba2dbe04376017abd66fa0d2ee3dada03da080ab2316bbeb01674334c36f2",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/logout/route.ts",
+      "sha256": "b79f1ba5708fdcb60cae44b7aadf22da53145b5bc072375300aaf5c3aaf0c60e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/lookup/route.ts",
+      "sha256": "5d1c4d647d1da8b59366637669a16ebe2a383cc0fca6d88501693ea259ab5cb1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/abandon/route.ts",
+      "sha256": "de5263823cdc993d0587c02f9233bc9aea1cfb40b84645a05d0a1ec4e390fc02",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/approve/route.ts",
+      "sha256": "0f9c8bdb5aadc6085a473008164a0c32ed58c2f33ea49168a2f954f0ee02844b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/bind/route.ts",
+      "sha256": "3855a266eb792cdf9f59f9bd959df638a3870b907d588dabe810eb6d02000827",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/cancel/route.ts",
+      "sha256": "3afb3d1443b285ef567061f8d1d8b00dadfd834fd5db77bdbca5f929f656fad8",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/complete/route.ts",
+      "sha256": "3321d767cafbeeb779cae1e7778562c51fae24caf76832ff69f58ebd827a1991",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/exchange/route.ts",
+      "sha256": "56d4b1316e3d1bd83bdef873c913ebc0539569808aa81b5e49725dadde505b03",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/mobile/requests/route.ts",
+      "sha256": "920bbbd33e1f287a38631a5e10b13ae554089eba2409e9e55e09c364081b5a2e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/security/route.ts",
+      "sha256": "7f4b423a7e0d42683d8a04a62e54ee8a13a8f031c82716a5a1757e42a413a6e9",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/send-reset/route.ts",
+      "sha256": "bf55595c5c6e0089861d0d9411c2d294b11864b9d7f33dc033e4fce764fb1d15",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/session/route.ts",
+      "sha256": "e303c1d687f67b0104bcc1c77de2d02c3dc6c87bdc7e951c67d9766fd9fa7608",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/set-password/route.ts",
+      "sha256": "07b1637c5bb83c6bf0982fa96ae6c665d9b88d53f3b38674d6bbfaed90564dd1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/signup/route.ts",
+      "sha256": "a576d7984211f0bf35dd251663dae91006138684c7463b8a71e58c29a6170115",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/stores/route.ts",
+      "sha256": "529ec9e1dbcbedd640317462e4ecc9344f3d85d220b9af945674d15fd3fcf3de",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/switch/route.ts",
+      "sha256": "cc62dc6bc667b4a6c9a8a585d4da7cbb95e2d8050d294a2a920ccf87caa8d2c2",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/verify-otp/route.ts",
+      "sha256": "8a7d2d1066550a48bec6ba315b6adb94d949c38d7c4de5cd3f1385b0645b07e5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/verify/route.ts",
+      "sha256": "9683e0add8c7605c335cc701efe0fd8085a51ba89692ab848f039c1e282bee35",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/forgot-password/page.tsx",
+      "sha256": "93f6561ad72d7fda859cfcdaa8380c5ca2a7ca924dcb7b1f2ff054bdd2117250",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/login/page.tsx",
+      "sha256": "142cb9e5357528c39a69caa1514eb00cc7bee6ad6ad934d7f649bf91400ba667",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/lookup/page.tsx",
+      "sha256": "e771e4611bae4f23f82b127550f251074b6561243a88238bec27476c1d96d12e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/merchant/auth/callback/page.tsx",
+      "sha256": "25c47ccdefff4d702f3137c02078345b17f6de498e26c318310d805a9a9866a6",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/mobile/authorize/page.tsx",
+      "sha256": "04385f57e187758ea1086f187d7a296650f23e78a1654da0110771c8bd270bc9",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/mobile/page.tsx",
+      "sha256": "37937fbabd0d9605daa9a0ae0dbb490011ddfef440d2851a02d2533528d9ba05",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/mobile/return/page.tsx",
+      "sha256": "b477a58d46882653c54e51e86dd6d93c43b27f6ad6abde1edebdb39ec8305f74",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/onboarding/page.tsx",
+      "sha256": "9abd68ac6a3a73e4dd01b49c46dc573ba12680c5af00ff3aed26f9be5a3d6c2a",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/reset-password/page.tsx",
+      "sha256": "fb344f7f7fa846d4d0de00d7109b16489f74e53f18a189a381db22463df5f94e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/security/page.tsx",
+      "sha256": "f282ce22f69bd77cf14d25cb726fb27b6fab18f2a9908ccd031b37fe0dc10f54",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/select/page.tsx",
+      "sha256": "788402d5e536a389b64ded8aa1c216965410951d73e3192755c9b950cca221e2",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/set-password/page.tsx",
+      "sha256": "98a2c6e2f31c72cc799015322364d7767d6511bdf68147bc2b29eee5a45fb335",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/app/signup/page.tsx",
+      "sha256": "b7e75aed5d71be08490b02e9c4f78ad2521ec291f223355a663492364455099e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/components/MfaLoginFields.tsx",
+      "sha256": "7fb350b1bfb0eddd91a2cb762f9b8fad4246425f2eb6674f69eac411fb129175",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/components/MobileAccountReturn.tsx",
+      "sha256": "02fc7d24a089ca6ad510dcef557290adb744dd655e97a9de4df08e4df841128f",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/components/TurnstileWidget.tsx",
+      "sha256": "8ee97d7b335c35a1d066959b780c127915f3f5790ed76a0e65e7d2bdaeec0378",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/api/client.ts",
+      "sha256": "b45327e2e95b96969ebbdaf1968009b027d9c3a67d3504bc4de5b26ddf3ba350",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/cookies.ts",
+      "sha256": "c03a5bf5dd08c559187265c4c0049c258b74a11e5be37bbfff51309b028125a5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/csrf.ts",
+      "sha256": "ecf5ff9d8fadba04e0dc51ef06a8d71173a6a8f53146bf7a92c00e8246fa7646",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/mobile-http.ts",
+      "sha256": "ad5b9f28dda34302b7347f09c544c716036d08496bf3c3ab878d4da486a35021",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/mobile.ts",
+      "sha256": "3bd1dd549991509d2a4b9c7c0ebbaaea9a7c5555fd64ec93061cf0f2e9b696e5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/return-to.ts",
+      "sha256": "67c0f74e4d4b97159444f0078d65d73d989b8d987974fc7ae639df663946d76b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/session-http.ts",
+      "sha256": "43d4f754442da17b27e658a49c1b275c940d880ea897f8afe092596bf2890370",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/auth/session.ts",
+      "sha256": "87481814dbe2cb4f3af89e2d7679f6718f1bd324358ac761322f24bcfbd070ab",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/config/urls.ts",
+      "sha256": "715114b5e730b9f8af20f9bba2acd9ca4958e0e9a6a6f6f6f04563528f400096",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/csrf-client.ts",
+      "sha256": "d1185a6e6b60eb1f1446b11cbfb8620da93e730c73c1ecc50e99238fe15fc728",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/rate-limit.ts",
+      "sha256": "1d121d7fa21c56f36f2c0a007576f7cab7ea4e9e58f1aa0e68c2a3eee0ed74ff",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "apps/platform/identity/src/proxy.ts",
+      "sha256": "f1c3c062e24874893e5bfbe08b3e4aeae0e959464dfb472cb8d4ecd8fa848db1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "config/env/schemas/next-app.schema.json",
+      "sha256": "6aa4db826fb8bef3956132ac4e3e69e5b79f6f7f022bc335abd69accb68606a7",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "config/env/templates/next-app.env.example",
+      "sha256": "2bcf18a2408b87e4c33a52e3f87254d63801e6267cf2f6e618d6aec99d39e54c",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "config/eslint/boundary-baseline.json",
+      "sha256": "3be845512269a27cf48b020c771dcba2e3cb3e2ae534befe16a50f903b0da2b6",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "config/governance/secret-scan-exceptions.json",
+      "sha256": "7c95c5f7e38abeaf267dfcb6728d0f1a97426ddaeef807e39bfa05ac255aa03c",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "config/security/next-security-headers.ts",
+      "sha256": "fbf5022ffb409fb82420409e715e91c7a67e585db7dcfeb083e665c048ab7c63",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "config/supabase/history-aliases.json",
+      "sha256": "95c934a6126b3814d864d5ccd6287f6e2b9f0e9fee7c973f37593c56355e41e7",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "config/supabase/native-auth-source-freeze.json",
+      "sha256": "0d7b2fe82789253022b19ab7931f7438e1996c4a47feaf2413720c26d65d81c4",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "database/supabase/migrations/418_merchant_accounts_mobile_handoff.sql",
+      "sha256": "0626be3f53dbbf562a3abc37c6dcabe65a167028b8850539dd1d2f47a8030846",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "database/supabase/rollback/401_included_theme_library_allowance.rollback.sql",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "186eaa35e602a6282a5903a5022ac3a78a50f18ff0826b70e8fe1ff5ab43240a"
+    },
+    {
+      "path": "database/supabase/rollback/410_checkout_custom_host_derivation.rollback.sql",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "ce7328a211e5157d9927bdedda62d90c57f1182b249670d2d5c7eabcaf5bb98f"
+    },
+    {
+      "path": "database/supabase/rollback/411_authoritative_checkout_gst.rollback.sql",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "6084bc1a8e59419bdbed179984c40465b2b8f26f5315302b38811ca21f1f22d0"
+    },
+    {
+      "path": "database/supabase/rollback/412_invoice_checkout_fact_parity.rollback.sql",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "3c4d02f0f1ff7d38b2926ea351ba8eaa937550ee2e04476fc77c8746450f441f"
+    },
+    {
+      "path": "database/supabase/rollback/414_gift_card_issue_replay_integrity.rollback.sql",
+      "sha256": "b6ff64bc130019c80148c4faaebd652a9c85724e19a12db7d69b0c3238663050",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "database/supabase/rollback/418_merchant_accounts_mobile_handoff.rollback.sql",
+      "sha256": "cc0b48bd30cb8c3612d7e26513474dbfbd6d87571b18ccaa800ce325b26ce3d2",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/active/BRANCH_DISPOSITIONS.md",
+      "sha256": "ede7afcd61e4d800c3877c1d605098e555a3b9da70ddeb66ab8cdb4614c98159",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "docs/evidence/consolidation-2026-10-25/DEPENDENT_SOURCE_REVIEW.json",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "5279cc9380df316bb03e7b2529caeb0e3c6d2905842b1cb7d61f7ca0fddf6bb3"
+    },
+    {
+      "path": "docs/evidence/consolidation-2026-10-25/PROMOTION_SOURCE_COMPATIBILITY.json",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "ad8ee73a2b2f9ca68e89599386d083a9a7a1e85929ff02b12a59c993ff43f465"
+    },
+    {
+      "path": "docs/governance/app-api-route-ownership.md",
+      "sha256": "c2afb62f8db2657929109ef98f1c2dd07da8edc67151572c605e3e74607a0add",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-challenge-readiness-qualification.md",
+      "source": "Bounded browser challenge readiness qualification; no application or SQL change",
+      "sha256": "25a7335567c522624fe1af74cc2297f79b09245e38271b76fd3d48b0358fab11"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-checkout-navigation-qualification.md",
+      "sha256": "503f5805dbe0672bedbf73fb11b1b218667f729ab31b44bff5299674b525c65f"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-ci-repair-qualification.md",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "a39352d2850d0112e814b7039f5ef48038353b36329060e0726fe375e34fb5b7"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-ci-runner-qualification.md",
+      "sha256": "c9cee941683510b323509fdd8cd6396454268fc7e0a9b222305d8ed65b01cbdf",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-ci-transport-recovery.md",
+      "source": "Owned native418 CI fixture transport repair and regression evidence",
+      "sha256": "1c0aa8225a9c2e62a62a6979df44d3654fcb4d626c77cac977f4df9f49d87d18"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-console-readiness-qualification.md",
+      "sha256": "d550c86bfb81f4545b39cc2362cf0c5960720d199e179b0235e926eed47b5261",
+      "source": "Reviewed Console overview rollback/reapply test readiness; null-input RPC probes have no session/audit effects; no runtime or SQL change"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-free-recovery-admission.md",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "4dba18dcc5bfd058bfd87a169ac42c9f08930618e7a67f0668f24bede8e80584"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-memory-startup-qualification.md",
+      "source": "Qualified test-only repair; runtime and migration authority unchanged",
+      "sha256": "8bc586229ec66ee981ca840a9d72a112f8a53d04e32771a8e42909e223dc0e5a"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-port-isolation-qualification.md",
+      "sha256": "39b5115a2c311230401ed4a4435724858e6c47bc049867a139404723cb7e9932"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-revenue-readiness-qualification.md",
+      "sha256": "8724bee4495c9358380bea546d6d1aff96fc5212ec256603df14072e6a8d8be0",
+      "source": "Qualified test-only real Data API read-dependency recovery; no runtime, SQL or policy change"
+    },
+    {
+      "path": "docs/implementation/merchant-native418-source-freeze-decision.md",
+      "sha256": "7e0b2a9b8d6a9d2effec56261840d41f8925bdc37d68d56f3c4d27d329afea94",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/README.md",
+      "sha256": "95811ee41a509f8a21e3a57ea63766bb2b8191784cdbb5ae78912954d22ddfc8",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/migrations/415_atomic_warehouse_commands.sql",
+      "sha256": "a85250a9792e63dfe0bd32c368088781159a7b09985840af651d5bd408e149cd",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/migrations/416_durable_product_imports.sql",
+      "sha256": "20d4b5e223e5fca53625724af92bb852e800315dd4b22b1be3edf262d98554d5",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/migrations/417_managed_sandbox_payment_connections.sql",
+      "sha256": "7032515b61bd20aff4a4f7007a07c1dfd70d61eadf77a276422d11f65a06da50",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/rollback/415_atomic_warehouse_commands.rollback.sql",
+      "sha256": "24ac7e6a80d64a6cc94f3f12d81cc8762210c56b5166d3cbe08bdbd179c25b84",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/rollback/416_durable_product_imports.rollback.sql",
+      "sha256": "a8cdcff194a13e4c5b3395554d55d67db8df195214cb33bce68c4e1a8f947753",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "docs/implementation/native-signin-source-preservation/rollback/417_managed_sandbox_payment_connections.rollback.sql",
+      "sha256": "081e00ec10d4a220a832e30a58bc0af1819353c1dcfcc05f61ec23780d70ce3f",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "infrastructure/scripts/cloudflare/provider-capability-validator.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "4e9c62f0cd287dd332d5537702ece46a7413afaa4c5823062bf823231424ed3a"
+    },
+    {
+      "path": "package.json",
+      "sha256": "2f4117f4465ed4afe406f1d7d24128cec72b67e55b512f31c99eab58edff88f0",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "packages/auth-core/src/index.ts",
+      "sha256": "c2f7c6cf23a9b453d39fd703f262c4e966afc0d30feb6115cb5c604545ed237a",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "packages/auth-core/src/merchant-native-registry.ts",
+      "sha256": "184c9fdc02bee0461864a26e6e3736f4a0548f9a956d977a93909472be9392c1",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "packages/auth-core/src/merchant-native.ts",
+      "sha256": "417efdd82c91724dbe48926682a52d2216b7098cb3a83c57df353d829000929d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/auth-core/test/merchant-native.test.ts",
+      "sha256": "d57d36d88f3a456cd2dc2e889798696ee24e4a1087846d0bbcaf578e91123c35",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/auth-core/test/platform-cookie-environment.test.ts",
+      "sha256": "ab58c73dc463ec8d99d5ced3059dbe574418058bbdaf8b355cb0adecef413c26",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/infrastructure/package.json",
+      "sha256": "0a86d5b0100bbe050c7b47a432684889e63654371dbfe7f17ba9ce9a2e0b0b2e",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/lcis-live/src/factory.ts",
+      "sha256": "1b12a3cec0a2f2d08da251ce9bf71318f61218aac053555cec900b6e318956c3",
+      "source": "Inject a fixture environment while preserving process.env as the default for runtime adapters."
+    },
+    {
+      "path": "packages/lcis-live/test/platform.test.ts",
+      "sha256": "0710726539de83e97a663082b37fe2fd424bebe844c6a322196ba28213ec091a",
+      "source": "Bind credential-less tests to an explicit empty environment, even under GitHub Actions."
+    },
+    {
+      "path": "packages/lcis-mcp/package.json",
+      "sha256": "4fd0202eee82d4ae5b668f5d2496927bcc4b6a23f0b58f937cac2b2528f064fc",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/theme-engine/package.json",
+      "sha256": "66227ff4c6ead5fd42470b06fb8e2907278180f1753ef0396983cb1b6310b86f",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/package.json",
+      "sha256": "b3718d9af54bbc92f1d95d71c52b09ee611783f713cc301a3f1932209cbae63d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/src/turnstile-client.ts",
+      "sha256": "2b34936f51ed1f00b32a3bf5777ac5338c85b77d81faacd9195ec09b777ccbba",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/src/turnstile.tsx",
+      "sha256": "46fc8ec5232f109da2d6b84619e2a023e38dd8fa192dc7cc39ee96dba9f946b1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/tests/turnstile.test.tsx",
+      "sha256": "4d5fb8bebdd2b251aae5f8830d729335f5fdd37eeb02d8280a10188ad3af47f5",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "packages/typescript/ui/tokens.json",
+      "sha256": "47488814e6acb271dfc4c49f10dfe643b3ca62864d2208102b7c34f5b863ebfb",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "patches/deepmerge@4.3.1.patch",
+      "sha256": "cff1abca369bcc45fe5f0f8612de51a8ebcfe7f125de8e8d97d8d1009ee2bdb1",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "db13469d86c7158e52f98d11587cc565e0fb08f225d789a0276c52192f157b64",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/generators/generate-merchant-auth-contract.ts",
+      "sha256": "50385a51fb65acec7ab306b1a4bc180f29de71c52335e002b8c41c8a2de0122f",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/github/activate-flutter.py",
+      "sha256": "73f7f38c60a6de2b8a015739d66393fb86c7f71b5b6b7a90b74122aa428569a8",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/governance/README.md",
+      "sha256": "926bfe840c661608a73209b2b3c618d6555c93dbcf1e6ca329b78527e737739c",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
+      "path": "scripts/governance/definer-role-closure.mjs",
+      "sha256": "0fbfee9a4d5ebb67fd5b0cd4bca26a96d7dab2551f57f1994280afede60e0bfa",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/governance/executable-pg-fixture.mjs",
+      "sha256": "998afdfe2d6c38083804eb17430e2bf1b4e6be8e5680be2b9346457e5a32b62a",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
+      "path": "scripts/governance/native-auth-migration-profile.mjs",
+      "sha256": "227c6ef86ae3427e6e9e82c6cccac82a72b155e5ab7273b2ed7f7b50f01e9f20",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "scripts/governance/native-auth-source-freeze.mjs",
+      "sha256": "6b3a7ed1744df253d0838b7e1d77c50330114de49377b98d404dce8e1f10eebc",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "scripts/governance/owned-database-provision.mjs",
+      "sha256": "77c8aa8f06abd785b6e2551635a0a3bca873947da2c3496600ee5f8e34e0300b",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "scripts/governance/owned-next-production.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "60a7504cb22c2d4c7c598ccbe063a551edd85e8437d8b77b0580620ce609a50a"
+    },
+    {
+      "path": "scripts/governance/owned-rest-proxy.mjs",
+      "source": "Owned native418 CI fixture transport repair and regression evidence",
+      "sha256": "e00457c7662a103acf38ac4bd2ec71b450bc92dc24818007b5bdc5347a35b842"
+    },
+    {
+      "path": "scripts/governance/rollback-signature-guards.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "986faa8cfaecac046e1b538ccef522309db0ecde4c491dda7bda5e100e947f9e"
+    },
+    {
+      "path": "scripts/governance/run-executable-suites.mjs",
+      "sha256": "7c864b632063ae1d1ba153efca0a18eb75c07ccf6bdbd315231c78fbb6d4bdf4",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "scripts/governance/tenant-registry-common.mjs",
+      "sha256": "866fb245cc998431923c677b28125b874c8485b1e9333ae037fbfe8a60ad1dec",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "scripts/governance/test-suite-catalog.mjs",
+      "sha256": "29025f83b6b4e5039ef6c15181c389d081f971940723487e1dfd90add7a3fed7",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "scripts/governance/validator-orchestrator.mjs",
+      "sha256": "d6c1043aa7552780347f6ddd1fe9536176885a370482c526c85a60aad20d7067",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/supabase/README.md",
+      "sha256": "d895e1d8b96662d9d6a7176d7159f6fcb2e2629975b198fdca206c88f554cd1a",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/validators/app-api-route-inventory.mjs",
+      "sha256": "23b3511a4d2aff5c636281f0f08f8268a479d717089ccb9a765de0b799af66bc",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "scripts/validators/ci-simulation-validator.mjs",
+      "sha256": "93c62726c98a565208e225235f38592201e43eceea3da3aa76d0cb3c3147ce23",
+      "source": "CI-only: retain prior gate checks and require the behavioral dependency to reject non-success results."
+    },
+    {
+      "path": "scripts/validators/dependency-manifest-validator.mjs",
+      "sha256": "faa393c3ffa10ea49f078f4a226974be20c9e5a966605c70505320d74e74b879",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/validators/governance-common.mjs",
+      "sha256": "2c5b371a3cedb120ad9c93f8452613051f13d6a0bd0ec477b3b1122bff66f446",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/validators/platform-domain-literal-validator.mjs",
+      "sha256": "5758e5d2ba3719b9191e0eaf7e609e5a9419a059d6f5d28f33f14260ec6b3786",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "scripts/validators/sequential-migration-validator.mjs",
+      "sha256": "110441b584219d4d4c3ecd7078dcbed3cf1f67044773d9f7ef62795fb0c84457",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "scripts/validators/session-security-validator.mjs",
+      "sha256": "f49d2bedd3096a8b511a6176ede68186c51da5c045b23bc0b0103147cf64f479",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/package.json",
+      "sha256": "a4c1b2514ce7cd650cc3a3cf137de5ee6dbcef727cc0d5366fe1c34c7b1f0650",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/gift-card-money-path.test.ts",
+      "sha256": "b180c79ede65800ad31a2cd8ae10534e86211aae6a6bfbf59983a08d57d614cb",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/README.md",
+      "sha256": "76d7a3418b02bee048880498e5123668e48673c91e4720c4defd552f601d2044",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts",
+      "sha256": "83edf814b1aee8fa97e0f0e816d78d4d0e7cbdfc18d16724748635eeeeb0717a"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/collection-membership.postgres.test.ts",
+      "source": "Qualified test-only repair; runtime and migration authority unchanged",
+      "sha256": "366fd3fc999807886f70f2ccc31114bb43b7a19ec096438f326e1b08276f3315"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/console-overview-read.postgres.test.ts",
+      "sha256": "4cc78a601afc0161cb89329b1146672ecdbee67fd4de77225eda164aa870876b",
+      "source": "Reviewed Console overview rollback/reapply test readiness; null-input RPC probes have no session/audit effects; no runtime or SQL change"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/historical-rollback-abi-guards.postgres.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "f1c07759123b8157c20dc7e223afde55ec2fa1ace6134cd02d1b8fd572550514"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/identity-buyer-session.postgres.test.ts",
+      "source": "Qualified test-only repair; runtime and migration authority unchanged",
+      "sha256": "30dbc83345ea767d95a12f942c81e7e49acabb80415787c07e2aa5c9ab61fe7d"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-auth-admission.postgres.test.ts",
+      "sha256": "c9ffb23e09a4442c765272715f2080417d81656228d6c0dec084dd978d586d9d",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-mobile-auth.postgres.test.ts",
+      "sha256": "37091f35be2082dec5c39594bef0c5f2ae6ff5c30240d55d4a2a61df49f9a803",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payment-setup-browser.postgres.test.ts",
+      "sha256": "aa8de3b124759187069769018b957767413a7c4c8b3bdb20c90c5fdf5cf93bf0"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-payout-statements-browser.postgres.test.ts",
+      "sha256": "603850f485297634e3f641b504ca5c87f20f2e0ce30a3d7f845fd3366e40708e"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/merchant-revenue-history.postgres.test.ts",
+      "sha256": "84bbfd6fc386da27bafe1a2469ef7c542d3d039c8340a173959d1657db1602cb",
+      "source": "Qualified test-only real Data API read-dependency recovery; no runtime, SQL or policy change"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/niche-theme-promotion.postgres.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "266725c07c455cf173fec748561b45beccc90fd7d87adc32202a2c8dfd6fd1f0"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-client-runtime.postgres.test.ts",
+      "sha256": "4e5def2f3356c9a7462b3314b926c74b953aaef1d2e606f820cf3d0cc8b7a38d"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "23c00b542db845bbf35254c462d21df49e167d1c40cb5307fb8c4ec0e70bf6e9"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings-browser.postgres.test.ts",
+      "source": "Bounded browser challenge readiness qualification; no application or SQL change",
+      "sha256": "cd50fd39c9d8d35a11bc28cb3abb108452e60b4c329f2fa990997be6fb05c6f3"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "7db0b37b3c73eb3bb43f355f1b1c3513a2e402313bf11cd62bc9c7ef87a12908"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "f7ad2a510d138a10c106a398dccc12a30855e53f8ac21e74a978765eba1e6e81"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-draft-browser.postgres.test.ts",
+      "source": "Bounded browser challenge readiness qualification; no application or SQL change",
+      "sha256": "04896d6c7dc01a0d32965e98bb48ff59612e22e7b71964b91d49986d607a9bc0"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/store-access-password.test.ts",
+      "sha256": "a0caa2270d88098868b0bb4cf1decad49a2e9bc64506837647ee89c01a22a836",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/lib/store-access-hashing.node.ts",
+      "sha256": "ba91523cdc7f000e3a8bea5e823f7fe145b107311d7bc84f14d9e533fc5e4fcf",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/lib/totp.ts",
+      "sha256": "f59790b2cad666bcd669020cc9fc36e308e1dda659b5d7174d20ee923f2a76a7",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/routes/auth.ts",
+      "sha256": "2e5d45390aa4c1671a067d2cc72591e2774bb743d6563f643303ca500f726823",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/routes/merchant-mobile-auth.ts",
+      "sha256": "0744e8b889570b2d3da85b0cf74baefd30694c1e38214fe638d88a41f7e8566b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/routes/two-factor.ts",
+      "sha256": "418ce5ef1b1fb14fcd379d0ae368acd68eceb93ad3d219185dec84ab9b6ff9f6",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/api-gateway/src/tenant/tenant-tables.registry.ts",
+      "sha256": "3a9b602c5839cf4a8728389169dc7f5822b121d63a4d3d78d2ef1953aaa58870",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "services/api-gateway/wrangler.toml",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "cc23ac84e3063682738897377302cbf1e47196fe6998862e9cfb81d13d2716c6"
+    },
+    {
+      "path": "services/lcis-api/package.json",
+      "sha256": "231f4b1e95f2a5d66b3c156536d812b65e1860bd47481d98a13f510a59c935bf",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/mobile-bff/package.json",
+      "sha256": "29bf52746841c9de208a455a7f7afcd91c60a123ca0a9240ea456cf33455e39b",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/mobile-bff/src/index.ts",
+      "sha256": "de18b6c2304ea961fffbe42697568f9be03fbc0e3e2d8b0fefc59f34d699665a",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "services/mobile-bff/test/session-token.test.ts",
+      "sha256": "e3b20468870e5edbed9bd39a087f4972e6f19e20a8245446c5354bfd3a81439a",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "services/webhook-service/package.json",
+      "sha256": "4c0f987125c61657728136672093d43c109dd93b1003bd5cf5cccc723e451272",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/app-platform/lifecycle.test.mjs",
+      "sha256": "cad1f92486dce5372385b99cb1132f44ce12ca2fca326bd5080fb1f2992d1daa",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/auth/csrf-contract.test.mjs",
+      "sha256": "f69c4df25c99a3d143a5beb87db249c9e71c09943553c199036c28f175f2a2b2",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "tests/auth/identity-email-delivery-feedback.test.mjs",
+      "sha256": "4daadc00b36b3df2ddcaa15dbf85cc3d3c453f0b3859b1efad16eca1f3fdd60c",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/auth/identity-password-intent.test.mjs",
+      "sha256": "4e5d0dc4be22e0c05951cd90d3cfd5abe463c057930ce2c6a12fa969857edebd",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/auth/identity-password-setup-recovery.test.mjs",
+      "sha256": "dfafae48d41e34928c93360cd625cbc2f71ac462332264b15f8e7de39ee17a88",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/auth/rbac-categories.test.mjs",
+      "sha256": "e70a4c9c7e184b795b895133e93fc1653fa261961d416e7ac57c4fe84f34edc5",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/auth/session-verifier.test.mjs",
+      "sha256": "24f2bec2668f40b61ea0f75f41e9320e5f513f2ccdb166f01af338ac10409719",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/contracts/security-headers.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "f48fd2c0da8989726bbf1886d73e4690c6f1c7e8ab898d38b4c9ea8b6138fa73"
+    },
+    {
+      "path": "tests/executable/service-role-fresh-db-grants-postgres.test.mjs",
+      "sha256": "a3b983ee899b6ce841e42ba5e9ecb2482bdd0088b5f3d53f3d26a12d9b84bc1c",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "tests/federation/app-install-idempotency.test.mjs",
+      "sha256": "4c3dde2ac9a949931af7690695439ae72a60034d4a35f21c14d0b03a65651cef",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/federation/app-install-store-ownership.test.mjs",
+      "sha256": "2925331a8bb3aa4702c9437ff0a70f4f38b97a6177cad72e2b6be02109dacbbb",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/federation/app-marketplace-thin-client.test.mjs",
+      "sha256": "8b9da5ff0c25753820db1c696057ad90ade6808c15e986fdef4a82d1c4a9a2e8",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/federation/app-review-verified-install.test.mjs",
+      "sha256": "20789b22e6e511cd8d7b09e09b06fb25ecdbb9c4d05ffe9e438e3a968f6614c0",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/federation/marketplace-service-error-handling.test.mjs",
+      "sha256": "68d1739efa27b39ccdda212a318ab190d3f38aa277d1a83824cd931dc23a99c5",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/governance/ci-behavioral-dependency.test.mjs",
+      "sha256": "0e3e4ea1d827424a04e00b1e58417dc4ebcfe1a31910d6bf84ee02a6d8bc72a6",
+      "source": "CI-only: verify dependency wiring and execute actual guard against success/failure/cancelled/skipped/missing states."
+    },
+    {
+      "path": "tests/governance/dependency-manifest-dev-sources.test.mjs",
+      "sha256": "61ecf7192c8f0ccbec3c5749c184ad844eac185a1c8c97511222d6ec141ab0fb",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/dependency-test-boundary.test.mjs",
+      "sha256": "88b6cb07c10e5a5ab2c30ff5cc5f82b9853ede0a490809edbc03c869b5cda725",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/executable-network-pool.test.mjs",
+      "sha256": "76963325a242e4c64f4f1641178ea48eae6caf85d52acb9121b1ef8cabe0ecaa",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
+      "path": "tests/governance/executable-prepared-transactions.test.mjs",
+      "sha256": "6f6ebe6b9fe21f8d1ae680f05bb123070a044704031e4aad668db4c258cc69b3",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/governance/executable-reaper-selection.test.mjs",
+      "sha256": "33aebef5eeab8bc2734312d1fa5b1702aad38bc7a43b01450d5f0ede204eeaef",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/governance/foundation-restore-drill.test.mjs",
+      "sha256": "da32cf82742d6637028b67a8977e97dd9d071788dd2def53ed87511c8b476a5f",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/governance/gateway-db-lane.test.mjs",
+      "sha256": "8ec53036d5c442f244e96141c42c99b71e90fceacb4ec4a97dfc27e161bd2b37",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/governance/gateway-db-lifecycle.test.mjs",
+      "sha256": "0c5d7b1dbad0a0f0eec83da40426824d753b8b196ef34b47d0020609093245ac",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/governance-source-traversal.test.mjs",
+      "sha256": "bb17c1b751d36f13219df465c26eb2c25c86e7ad4adeac31640161eb7d46f7c3",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/managed-migration-artifact.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "55cddc9cb2db6a0c710bf5a57d2b27c8c52254f0f57c67ff0e734e4c41abebff"
+    },
+    {
+      "path": "tests/governance/native-auth-migration-profile.test.mjs",
+      "sha256": "9618f3fbb5f22a41bd2bb295e603730e2e62810467486566e627359cb0a4d2d8",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "tests/governance/native-auth-source-freeze.test.mjs",
+      "sha256": "549ea6c0cb89e58e1606fdad6b2425f9b560a7e0e044687753aea86bc8a65f51",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "tests/governance/node-cli-shim.test.mjs",
+      "sha256": "0420c2228f70398e40f0f823caa0431088a3ac1ea22fb1ae52e947cff9d5e2e8",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/governance/owned-rest-proxy.test.mjs",
+      "source": "Owned native418 CI fixture transport repair and regression evidence",
+      "sha256": "4434344b06f14575da881a4c38bac59bcdf206dd01d478b6d2c591d74a9f4bb3"
+    },
+    {
+      "path": "tests/governance/platform-callback-scheme.test.mjs",
+      "sha256": "78b900764a517640c821f8644a29890fe75da9d2f13500676fd36fb02b042f24",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "tests/governance/rollback-signature-precondition.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "31a835e1688ae52ae27a709dc8b33d4a04824f3b2e1ca4218afeb0a9b3e3c3e2"
+    },
+    {
+      "path": "tests/governance/self-hosted-flutter.test.mjs",
+      "sha256": "9792153c56971a421867b8dbf402a0b5ea4aa20c09521bfc4fbd6f8b53723e03",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/session-security-validator.test.mjs",
+      "sha256": "5bbc9346afce8eb5b6946bb366ffb40363c6e78caba46d571013510741096847",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/governance/tenant-registry-columns.test.mjs",
+      "sha256": "72caefcf8b8742d6b1a9c172887afb162b8670fef71dcebabf2d90a7a6c71ac2",
+      "source": "Narrow CI compatibility correction; no product behavior, SQL payload or tenancy-rule change"
+    },
+    {
+      "path": "tests/governance/turbo-test-environment.test.mjs",
+      "sha256": "6448fbd53c10be7b5b06a71554dc8721c61a1e3b5d65a0e7ca18e9c6c9133f38",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    },
+    {
+      "path": "tests/governance/validator-orchestration.test.mjs",
+      "sha256": "400c7c985ffa29e368eb49c68eecbdabc620b1cca8376c2e2e49d0a549ac1cd2",
+      "source": "586373dc0650c04bf0df4bc1dc681a8370ff26be"
+    },
+    {
+      "path": "tests/helpers/native-owned-gateway.ts",
+      "sha256": "a972c221cdaa2b8b022831f643add645fda70baf23e7d398fced719fc54c3b62",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/helpers/node-cli-shim.mjs",
+      "sha256": "ab270871c2f7c1bc068827c003007e88e49ca82101e43cc9054c10941fbc0f1b",
+      "source": "Local tested CI harness correction; production code and SQL unchanged"
+    },
+    {
+      "path": "tests/identity-foundation/production-parity.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "163ea9f0bf905a8aeede733a243dfa58045432a76574b06423ac1a1c4fb7b579"
+    },
+    {
+      "path": "tests/launch/lb-experience-flow.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "e1de0437271fc1865390ef78479dbc70882caaf692bfcaf7b3593da5c7507551"
+    },
+    {
+      "path": "tests/launch/lb-s2-route-template-closure.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "99f7d103effdaa1e73593beee547e94b7ea0e33877549057236a46922ca9ae90"
+    },
+    {
+      "path": "tests/launch/lb10-dispatch.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "78ca11c8fe259cfeef25eb70693ad5fbb4d6f79329d955e3c6a3003721fb6ba8"
+    },
+    {
+      "path": "tests/launch/lb11-refund-restore.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "6166f84cb1313d73065f78e65fd216f92e8c6f534f696db0b321a96d28c74bb4"
+    },
+    {
+      "path": "tests/launch/lb12-registration.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "683218b29c1c950bb8a1b2d6356c1d564406d7c4b21f8b775fbc6f9cdc0588a3"
+    },
+    {
+      "path": "tests/launch/lb7-shipping-gst.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "06a65ec8600fbe457e92be02afb4a0589802ce4bae3c74709a70c8a6379b8d88"
+    },
+    {
+      "path": "tests/operations/deployment-safety.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "0f1d41def4519f56806002a197132605376bfb3e50dbb67fe9fff398b0df3d8a"
+    },
+    {
+      "path": "tests/operations/queue-bulk-cost.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "933da3f86a8a8086b26d02c0fd4c141c8e1f866cd1aa56012648cc5040523f78"
+    },
+    {
+      "path": "tests/owned-db/core-presets-browser.postgres.test.ts",
+      "sha256": "b77d4bdaf09ea498a7a894bd6579d26f4053d3d4a542bb4aebca225a8d1e5d1e",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/domain-reconcile-boundary.postgres.test.ts",
+      "sha256": "8cde8232b5bd781bc0fdead8ff362c9fcb02eb0998038c1b06aa4cab9c70fba7",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/managed-hosted-history-upgrade.postgres.test.ts",
+      "sha256": "a13cce6d72feeb717d6b02f2f0aa664e2e44ec6043e82882a597d271ad6d3a1c",
+      "source": "Owner-approved native418 source/local freeze and qualification; no hosted activation"
+    },
+    {
+      "path": "tests/owned-db/merchant-accounts-browser.postgres.test.ts",
+      "sha256": "499461654fd0927549681c2104771ba8ee2f920a6d7dd22257b572c0ac292a09",
+      "source": "Reviewed local narrow-source derivation; see scope notes"
+    },
+    {
+      "path": "tests/owned-db/merchant-export.postgres.test.ts",
+      "sha256": "a93fb14321c7f7e0f78417dec6aa879775592b6b666a07762c63f344fc3f2f45",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/merchant-inventory-adjustment-browser.postgres.test.ts",
+      "sha256": "f5f0cbf4964573080ed7e4165e904b12f4bed374d135b0386c23ebacab6874ee",
+      "source": "Preserve status and allowlisted category on failed sign-in without dumping response or credentials."
+    },
+    {
+      "path": "tests/owned-db/merchant-public-signup-browser.postgres.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "73ab682cbb294ea741f0387b707550c28a301a8b76969d505b1c13a9da273d0a"
+    },
+    {
+      "path": "tests/owned-db/native-core-storefront-browser.postgres.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "12072898fb3cb174764373266a1c9f13ccf0babcbd7fa7fe866a00ac73abce74"
+    },
+    {
+      "path": "tests/owned-db/notification-worker-transport.postgres.test.ts",
+      "sha256": "fd3d78d7f82d8a064965d4e8cdacd482ef8cbed6d02e80eaa117799fa3a7b185",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/payout-statement-replay.postgres.test.ts",
+      "sha256": "19dda7673c7e5dda8c3ef5fc228e7669047fab91e3bb7bc3fb2b427379a0a950",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/private-reel-intake.postgres.test.ts",
+      "sha256": "283258d3d310afe0540a0df6f7418e4c7a3f223287e616c98bcce18def6e79f2",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/published-storefront-recovery-browser.postgres.test.ts",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "2eb40dd5a10593444c17b99e7ef8647d9fd45053075a834727686ef7a33d1815"
+    },
+    {
+      "path": "tests/owned-db/turnstile-domain-provisioning.postgres.test.ts",
+      "sha256": "ff98760d35a0ebc66b05dce71508220fb9ab6b44565563c8bb3f7517d674a54b",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/owned-db/worker-sql-invocation.postgres.test.ts",
+      "sha256": "adf1d9f2af15e51c10949efc00c79b990d708cb7411af386a515fb0888ba7109",
+      "source": "Local native release qualification correction; production runtime and migration SQL unchanged"
+    },
+    {
+      "path": "tests/performance/dual-model-consolidation.test.mjs",
+      "source": "Local qualification repair; canonical contracts retained, no hosted change",
+      "sha256": "b2708c1f36056946cfcfa677a08eceb2e698b5ff15f3644c78656b6775fceb2f"
+    },
+    {
+      "path": "turbo.json",
+      "sha256": "ec21d41a2c9f64ba8e61dd8fc0c4bdd77bb60db7c6d17f090783c902648c57b9",
+      "source": "Reviewed CI-only private test network pool, strict worker environment and canonical cookie fixture qualification; no application runtime or SQL change"
+    }
+  ],
+  "scopeNotes": [
+    "Owner-approved native418-only hosted sequence is separate from the exact source414-to418 freeze; neither decision waives CI or permits replay/renumbering of historical SQL",
+    "Canonical primary retains the complete original sequence; six415-417 forward/DOWN files remain byte-for-byte preserved as non-executable evidence in this narrow branch",
+    "The sequence validator allows only the pinned owner-approved manifest and rejects unknown gaps, altered/missing pairs, links, undeclared evidence, active runtime imports and contradictory active entries",
+    "Every original native418 business statement and function body is unchanged from24e; only guarded invoice/gift-card ACL no-op attestations are added, with a paired DOWN refusal",
+    "No broader warehouse/import/payment caller enters the release; source reachability exemptions remain empty",
+    "Canonical active-source tenant registry is regenerated with319 tenant tables; explicit owned staging fixtures separately reconstruct the exact already-recorded warehouse/gift aliases",
+    "Existing Accounts sole-issuer/native PKCE/session/MFA implementation, environment-bound callbacks and web/BFF cookie compatibility are retained",
+    "Existing callback54351, strict secret scanner, frozen dependencies, fake-tool isolation, file URL decoding and compressed CI bundle protections remain intact",
+    "Source withdrawal followed byte verification and isolated mirror build/unit/database/governance qualification; original canonical primary and hosted history are untouched",
+    "Earlier actual-backup and80-per-profile results apply to old439ccfe3 SQL only; new0626be3f SQL passed88 checks per exact schema; actual encrypted-backup native418 rehearsal passed both profiles ona9bcbcabc with identical418 bytes",
+    "Later owner continuation authorizes finishing the11 repairs and free CI/release; historical DOWN guard additions preserve previous business SQL and forward history; all release gates remain mandatory",
+    "Recovery-policy admission is separately pending under the original Free prototype decision; source/backups/CI alone are not hosted or physical acceptance",
+    "New local continuation fixes are source-qualified with124 inventory/artifact/rollback checks,362 contracts,Gateway types and final114-validator governance; no CI waiver or hosted acceptance claimed",
+    "CI-only continuation uses canonical Merchant cookie resolver in fixtures, proves environment-bound logout and strict Turbo worker-budget propagation, and schedules two bounded owned runner slots without removing any gate; final-source CI remains mandatory",
+    "Opt-in checked private test-network pool avoids exhausted shared Docker default subnets without daemon changes or foreign cleanup; bounded collision handling and exact owned lost-ack readback refuse unknown outcomes; default behavior remains unchanged"
+  ],
+  "verification": {
+    "scope": "new source freeze; mirror-qualified, not hosted or physical acceptance",
+    "sqlForwardSha256": "0626be3f53dbbf562a3abc37c6dcabe65a167028b8850539dd1d2f47a8030846",
+    "sqlDownSha256": "cc0b48bd30cb8c3612d7e26513474dbfbd6d87571b18ccaa800ce325b26ce3d2",
+    "sourceContracts": 144,
+    "gatewayUnits": 1850,
+    "gatewayTypes": true,
+    "ownedNativeAuthAndAcl": 22,
+    "managedHistoryProfiles": 16,
+    "modernBackendGrantChecks": 6,
+    "governance": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1,
+      "scope": "final owned mirror; hosted environment refs/branch lag not certified here"
+    },
+    "exactCurrentSourceCriticalProfiles": {
+      "production": {
+        "passed": 88,
+        "suites": 10,
+        "skipped": 0,
+        "run": "326126431dcc"
+      },
+      "staging": {
+        "passed": 88,
+        "suites": 10,
+        "skipped": 0,
+        "run": "f86c21ec586b"
+      },
+      "scope": "Prior exact production/staging schema runs; native418 SQL and runtime code inputs unchanged. Final source CI pending."
+    },
+    "actualNewSqlBackupRestore": {
+      "source": "a9bcbcabc213b4770bdc0bd9933e66fe8107f568",
+      "production": "PASS522tables527268rows341oldHistory",
+      "staging": "PASS523tables286621rows343oldHistory",
+      "native418Only": true,
+      "same418SqlHashes": true,
+      "hostedWrites": false
+    },
+    "freshExactSourceCi": "PENDING publication/free runner; latest owner continuation requests CI and release after gates",
+    "stagingAcceptance": "PENDING",
+    "iphoneAcceptance": "PENDING",
+    "tenantRT1Through9": {
+      "passed": 2,
+      "run": "7d04b47a343f"
+    },
+    "transactionalEmailOwnedDatabase": {
+      "passed": 8,
+      "run": "2c3409415b2f"
+    },
+    "broadPureInitial": {
+      "passed": 3159,
+      "failed": 15,
+      "skipped": 15,
+      "status": "FAIL; diagnostics preserved; focused repairs and lifecycle rerun do not constitute a green aggregate"
+    },
+    "contractsInitial": {
+      "passed": 361,
+      "failed": 1,
+      "status": "Historical initial failure; subsequent362/362 contract recheck passed before current CI-only fixture repairs"
+    },
+    "canonicalAuthAndReferenceChecks": 90,
+    "contracts": {
+      "passed": 362,
+      "failed": 0,
+      "skipped": 0
+    },
+    "dockerLifecycle": {
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "run": "20261115T135934Z-native418-lifecycle-diagnostics-requalification-8f7ead2383f14a2c92b7a989eba817c0",
+      "registryFinalization": "Successful command retained; dead active lease recovered conservatively as failed, no deletion"
+    },
+    "broadPureRemaining": "The11 original failures pass; two newly added inventory/count requirements pass124-check recheck. Exact-source full CI remains mandatory.",
+    "elevenRepairs": {
+      "focusedSource": 139,
+      "ownedRollbackGuardControls": 12,
+      "ownedGst": 12,
+      "ownedThemeInstall": 9,
+      "inventoryAndFenceCountRecheck": {
+        "passed": 124,
+        "failed": 0,
+        "skipped": 0
+      },
+      "broadAggregate": {
+        "passed": 3177,
+        "failed": 2,
+        "skipped": 15,
+        "status": "original11 pass; new suite-registration and fence-count failures fixed and covered by124-check recheck; not a fresh single green full run"
+      }
+    },
+    "source566FullCi": {
+      "pure": {
+        "passed": 3178,
+        "failed": 2,
+        "skipped": 15
+      },
+      "ownedPostgres": {
+        "passed": 2228,
+        "failed": 11,
+        "skipped": 0
+      },
+      "contracts": {
+        "passed": 362,
+        "failed": 0
+      },
+      "status": "FAILED; retained actual report d80faa1d0203, candidate corrections require fresh CI"
+    },
+    "currentRepairChecks": {
+      "focusedPathIngressProvider": {
+        "passed": 40,
+        "failed": 0,
+        "skipped": 0
+      },
+      "publicSignup": {
+        "passed": 1,
+        "failed": 0
+      },
+      "webOnboarding": {
+        "passed": 1,
+        "failed": 0
+      },
+      "publishedStorefrontRecovery": {
+        "passed": 4,
+        "failed": 0
+      },
+      "corePresetsFinalCaptureRouting": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "run": "56363e6e2f1f",
+        "actualManagedPngsVerified": 37
+      },
+      "remainingFourSuites": "PASS19/19,4owned suites,0fail/0skip, runf82af49f922b; final exact-source CI and hosted/device acceptance remain mandatory"
+    },
+    "governanceMirrorPreFinalCapturePathDecode": {
+      "passed": 114,
+      "failed": 0,
+      "blocked": 0,
+      "skipped": 0,
+      "scope": "Owned mirror before the final four fileURLToPath capture-output corrections; full exact-source CI remains mandatory"
+    },
+    "finalLocalClosure": {
+      "publishedBaseRevision": "3b844158b3b50cdbac94ca2fd2e99c9e513c0cc1",
+      "runId": "f82af49f922b",
+      "suites": 4,
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "reportSha256": "b05e6b0066627dd5349d87be10397a819faa7c0ba1d406aef93fb853d073d784",
+      "dirtyTestInputs": {
+        "apps/commerce/web/__tests__/customer-session-runtime-smoke.fixture.mjs": "1402d51c74fe706e8175d221a3e6186e62e921e4be7d29dd0469355082bfec3a",
+        "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts": "f7ad2a510d138a10c106a398dccc12a30855e53f8ac21e74a978765eba1e6e81",
+        "tests/owned-db/native-core-storefront-browser.postgres.test.ts": "12072898fb3cb174764373266a1c9f13ccf0babcbd7fa7fe866a00ac73abce74"
+      },
+      "scope": "Actual owned database/browser closure including unchanged privacy, exact-money, effect-once and retained-theme assertions; not hosted/provider/native-device acceptance"
+    },
+    "ciTransportRecovery": {
+      "originalSource": "eb5e88297c46bf04e9f2b66e0960ee3bb85949cc",
+      "originalArchitectureDatabaseSuites": 275,
+      "originalArchitectureFailedSuites": 1,
+      "originalArchitectureAssertions": 2243,
+      "unchangedLoyaltyDiagnostic": {
+        "passed": 18,
+        "failed": 0,
+        "run": "20261116T112748Z-native418-loyalty-failure-transport-reproduction-fec35343a9d442d499b04bdbadc5ff4b"
+      },
+      "httpRegressionBeforeFix": {
+        "passed": 1,
+        "failed": 1,
+        "expectedRedControl": true
+      },
+      "httpRegressionAfterFix": {
+        "passed": 2,
+        "failed": 0
+      },
+      "completeCorrectedSourceCi": "PENDING",
+      "historicalFailureCause": "Not conclusively attributed; proven idle socket reuse hazard removed without mutation retries",
+      "correctedSourceLocalQualification": {
+        "run": "20261116T113344Z-native418-corrected-proxy-real-loyalty-qualificati-6cb5cb53de844e2d98a9435c4192532b",
+        "proxyAndNativeSourceControls": {
+          "passed": 17,
+          "failed": 0,
+          "skipped": 0
+        },
+        "loyaltyRealDatabase": {
+          "passed": 18,
+          "failed": 0,
+          "skipped": 0,
+          "ownedResourcesRemoved": true
+        },
+        "governance": {
+          "passed": 114,
+          "failed": 0,
+          "blocked": 0,
+          "skipped": 0
+        },
+        "officialScopedCloudflareOAuth": "PASS"
+      }
+    },
+    "merchantCookieFixtureQualification": {
+      "baselineRuntimeSource": "a3916166856f4902bde886498e78312f7ffa4327",
+      "runtimeSqlUnchanged": true,
+      "focusedPassed": 41,
+      "fullMerchantSeparatePhases": [
+        323,
+        818,
+        295
+      ],
+      "failed": 0,
+      "skipped": 0,
+      "exactSourceCiAcceptance": "pending"
+    },
+    "privateTestNetworkControls": {
+      "passed": 8,
+      "strictTurboControlPassed": 1,
+      "failed": 0,
+      "fullPureLane": {
+        "suites": 215,
+        "tests": 3221,
+        "passed": 3206,
+        "failed": 0,
+        "skipped": 15,
+        "processExitCode": 0
+      },
+      "globalInventoryWrapper": "failed; retained, not treated as a test pass",
+      "scopedLiveNeighbourWitness": {
+        "passed": true,
+        "heldDefaultNetworks": 2,
+        "childExitCode": 0,
+        "cleanupFailures": 0
+      },
+      "governance": {
+        "passed": 114,
+        "failed": 0,
+        "blocked": 0,
+        "skipped": 0,
+        "notApplicable": 1
+      },
+      "exactSourceCiAcceptance": "pending"
+    },
+    "revenueRecoveryReadiness": {
+      "node": "22.23.5",
+      "repeatedOwnedRuns": 3,
+      "testsPerRun": 7,
+      "passedPerRun": 7,
+      "failed": 0,
+      "skipped": 0,
+      "cleanupFailures": 0,
+      "newSourceCompleteCi": "PENDING"
+    },
+    "consoleOverviewReadiness": {
+      "node": "22.23.5",
+      "repeatedOwnedRuns": 3,
+      "testsPerRun": 10,
+      "passedPerRun": 10,
+      "failed": 0,
+      "skipped": 0,
+      "cleanupFailures": 0,
+      "managedRun": "20261117T005158Z-native418-console-overview-schema-recovery-49e37b8b6e4940c59f07935e8ef0289a",
+      "newSourceCompleteCi": "PENDING",
+      "sourceControlsPassed": 31
+    },
+    "memoryAndIdentityStartup": {
+      "collection": {
+        "passed": 19,
+        "failed": 0,
+        "skipped": 0,
+        "run": "20261117T054813Z-native418-collection-prepared-memory-final-cd6913358298431399740fcd149c6ef4"
+      },
+      "identityParallel": {
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0,
+        "run": "20261117T054433Z-native418-identity-final-parallel-18644000cc314950880543e415f5a6bb"
+      },
+      "exactSourceCi": "PENDING new candidate"
+    },
+    "checkoutNavigationRepair": {
+      "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T091908Z-native418-checkout-final-abort-regression-7c9bc172a3134614a517da2c59c68783",
+      "laneReports": [
+        {
+          "sha256": "90e4d188549827ee62cbb94f85bf22ad68bf0070ab02ed34a96637c9159750ea",
+          "tests": 5,
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "sha256": "1795296ccb43b6ff31a95fd35e4bdae553330a98224441547f68bcf20fa218e9",
+          "tests": 5,
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        }
+      ],
+      "controlledAbortRun": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T091805Z-native418-navigation-abort-controls-d691e8dac09e43a3aed9e6d084c95739",
+      "controlledAbortReportSha256": "705a10603663358da08f043ad7cc089db04d3d316cdc2e31b299d70c1546b4a7",
+      "negativeControls": 3,
+      "positiveControls": 3,
+      "gatewayTypes": true,
+      "typecheckRun": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T092130Z-native418-final-checkout-regression-typecheck-9663afca86f34073a0dc7efdbc912465",
+      "runtimeChanged": false,
+      "exactSourceCi": "PENDING"
+    },
+    "checkoutNavigationPredicateAttempt": {
+      "publishedPredecessor": "140c53e5491fd149e3fec8e276bc09ade6b8acb7",
+      "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T081426Z-native418-checkout-navigation-and-identity-fbc4b044d12d4689abbe904091c33525",
+      "reportSha256": "f6dc39c91278439320128d7eea156b34406c59d77cfa20de7a9dce6eb27cf40e",
+      "checkoutPassed": 4,
+      "identityPassed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "gatewayTypes": true,
+      "runtimeChanged": false,
+      "exactSourceCi": "PENDING",
+      "publishedSource": "3bee95811c73f285c27bac19f0249dc2917530ec",
+      "ciStatus": "FAILED merge-safety checkout scenario; canceled superseded workflows, no acceptance",
+      "failureLogSha256": "f1c43e393251cdb9c4373b70d6da84888d8f53709545ff10671999a710face73"
+    },
+    "browserPortIsolation": {
+      "previousSource": "1a844dccb1f27e7c607ed99ed9396b74b72facad",
+      "previousCi": "FAILED EADDRINUSE before payout journey; canceled, not accepted",
+      "browserRun": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T101322Z-native418-browser-ports-occupied-regression-673e62d943e447ffb8ce39c8433647ed",
+      "browserPassed": 2,
+      "heldLegacyPorts": 6,
+      "unexpectedLegacyConnections": 0,
+      "helperRun": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T101708Z-native418-port-helper-qualification-71c3d304450e4024a273462e24f46b4b",
+      "helperPassed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "gatewayTypes": true,
+      "runtimeChanged": false,
+      "exactSourceCi": "PENDING"
+    },
+    "boundedChallengeReadiness": {
+      "scope": "Test fixtures only; whole suite deadlines, real widget and server verification unchanged",
+      "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T121323Z-native418-real-widget-control-and-full-journeys-4fadb25740da44b19c6b7cff37919e97",
+      "negativeControl": {
+        "passed": true,
+        "oldGuardMs": 5000,
+        "actualSdkGateMs": 6500,
+        "failureLogSha256": "fbfee6f98e59744b8f15058d1db5a722cb7e914f061728139861df2fad242f35"
+      },
+      "positiveLanes": [
+        {
+          "lane": "full-normal-browser-journeys",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 3,
+          "report": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T121323Z-native418-real-widget-control-and-full-journeys-4fadb25740da44b19c6b7cff37919e97/full-normal-browser-journeys/report.json"
+        },
+        {
+          "lane": "full-theme-delayed-widget",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 1,
+          "report": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T121323Z-native418-real-widget-control-and-full-journeys-4fadb25740da44b19c6b7cff37919e97/full-theme-delayed-widget/report.json"
+        }
+      ],
+      "gatewayTypecheckPassed": true,
+      "prior786Ci": "Failed before login at implicit5s widget matcher; canceled after evidence retention, never accepted",
+      "freshExactSourceCi": "PENDING; no gate waiver",
+      "applicationRuntimeChanged": false,
+      "sqlChanged": false,
+      "hostedAcceptanceClaimed": false,
+      "followUpSourceAndNeighbourControls": {
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261117T123435Z-native418-widget-source-and-reaper-controls-29dcc1c12e4346beab1316328c2f98ab",
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "cleanupFailures": [],
+        "scope": "Selected static no-skip guard and real SIGKILL/reaper test; other cases unselected",
+        "broaderInitialPure": "FAIL2; inline comment scanner and raw default-pool neighbour setup; not accepted",
+        "fullExactSourceCi": "PENDING"
+      }
+    }
+  },
+  "pushed": false,
+  "deployed": false,
+  "productionActivated": false,
+  "iphoneVerified": false,
+  "historicalVerificationBeforeSourceFreeze": {
+    "authCore": 53,
+    "accounts": 73,
+    "passwordSessionBoundaries": 47,
+    "validatorNegativeControls": 82,
+    "gatewayAndBffTypecheck": true,
+    "bffTests": 18,
+    "ownedNativeMfaAdmissionDatabaseTests": 19,
+    "ownedAccountsBrowser": 1,
+    "governance": 114,
+    "freshCallbackBrowserRecheck": "PASS; owned production-built browser run5e92cadd024a",
+    "compressedBundleAdapter": 19,
+    "commonTaskRuntime": 38,
+    "commonCleanupEngine": "PASS",
+    "osSchemeNegativeControls": 3,
+    "strictTrackedFixtureRegistry": "PASS;6 existing exact-value synthetic/public records at5locations",
+    "freeLifecycleWorkflowCoverage": 7,
+    "exactFinalCommitCi": "PENDING; source/local repairs qualified; no production activation",
+    "webRouterFixtureBehavior": 193,
+    "webRouterFixtureTypecheck": "PASS both apps;14 tasks",
+    "tenantPathAndScopeRegression": 26,
+    "actualFreshStagingRestore": "PASS653;523tables286621rows; exact selected SQL unchanged by CI-only corrections",
+    "authAndFakeToolRegression": 120,
+    "shimSpaceNegativeControl": 1,
+    "modernDefaultPrivateCommandDatabaseTests": 6,
+    "managedHistoryFullAndNativeProfiles": {
+      "checksPassed": 17,
+      "run": "29757e214b47"
+    },
+    "nativeWorkerSqlAndMobileMfa": {
+      "checksPassed": 5,
+      "run": "838a8ea67577"
+    },
+    "nativeProfileAndRouteSourceContracts": 39,
+    "giftCardCanonicalSourceChecks": 2,
+    "exactSchemaCriticalChecks": {
+      "production": {
+        "passed": 80,
+        "suites": 10,
+        "evidence": "nine initial suites plus ledger recheck173dd3b96c01"
+      },
+      "staging": {
+        "passed": 80,
+        "suites": 10,
+        "evidence": "nine initial suites plus ledger recheckff3e5360f716"
+      },
+      "initialDiagnosticFailuresRetained": true,
+      "skipped": 0
+    },
+    "gatewayUnitSuite": 1850,
+    "tenantRedteam": {
+      "passed": 2,
+      "coverage": "RT1 through RT9",
+      "run": "ba5b686d3d0e"
+    },
+    "fullSchemaWorkerRecovery": {
+      "passed": 51,
+      "suites": 6,
+      "run": "8e451b63616a"
+    }
+  },
+  "sourceFreezeApproval": {
+    "decisionId": "OWNER_NATIVE418_SOURCE_FREEZE_20261115",
+    "ownerAnswer": "Approve source-only freeze and qualification (Recommended)",
+    "scope": "source/local only; no hosted action or CI waiver"
+  },
+  "recoveryPolicyAdmission": {
+    "ownerApproved": "16November2026, Free recovery for native418 only",
+    "document": "docs/implementation/merchant-native418-free-recovery-admission.md",
+    "unboundedRestoreQualified": false,
+    "hostedActivationPerformed": false
+  },
+  "ciDependencyRepair": {
+    "baseSource": "bd575f0ab4eebe23f2e5978111ab2d36c643695d",
+    "preparedUtc": "2026-11-18T04:14:43.447354+00:00",
+    "applicationOrSqlChanges": false,
+    "mandatoryTestsRemoved": false,
+    "requiredCheckNamesRemoved": false,
+    "fullBehavioralJobs": [
+      "unit-tests",
+      "Architecture Governance"
+    ],
+    "mergeDependency": "unit-tests must succeed; always-run rejecting guard",
+    "focusedTestsPassed": 9,
+    "fullGovernanceQualification": "114/114 validators passed; actual new-head CI remains required",
+    "productionActivated": false,
+    "localVerification": [
+      {
+        "label": "native418-cancelled-phase-owned-cleanup",
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261118T041640Z-native418-cancelled-phase-owned-cleanup-e2bb3065663745949379cd501cd217f0",
+        "state": "complete"
+      },
+      {
+        "label": "native418-ci-behavioral-dependency-qualification",
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261118T041327Z-native418-ci-behavioral-dependency-qualification-cf68b1b21a344c23ada83fa41edb18c6",
+        "state": "complete"
+      },
+      {
+        "label": "native418-ci-dependency-final-source-checks",
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261118T041532Z-native418-ci-dependency-final-source-checks-8454f9883e974b44aab112288593bf7b",
+        "state": "complete"
+      },
+      {
+        "label": "native418-ci-dependency-governance",
+        "run": "/Volumes/Projects/LetBuyy Workspace/runs/20261118T041402Z-native418-ci-dependency-governance-53cae87878ab40a481ef6cff838be5b9",
+        "state": "complete"
+      }
+    ]
+  },
+  "ciEnvironmentAndBrowserDiagnosticsRepair": {
+    "baseSource": "f62f4c351f0aa3a46fb355e158b457de7249a414",
+    "preparedUtc": "2026-11-18T12:30:18.332838+00:00",
+    "originalUnitFailureJob": 134573341194,
+    "originalArchitectureFailureJob": 134573339972,
+    "lcisQualifiedWithGitHubEnvironment": {
+      "testsPassed": 67,
+      "managedRun": "20261118T122938Z-native418-lcis-tests-ci-environment-ffab3f20f3364dca9a411528953bd72d"
+    },
+    "inventoryBrowserRecheck": {
+      "testsPassed": 5,
+      "managedRun": "20261118T122656Z-native418-inventory-identity-redacted-ci-network-ce8ca978c958472ba1be77466be6d70c",
+      "ownedRunId": "de0ab672e1df",
+      "historicalIdentityFailureReproduced": false
+    },
+    "identityRuntimeChanged": false,
+    "migrationChanged": false,
+    "requiredWorkflowAndTestInventoryChanged": false,
+    "hostedDeploymentPerformed": false
+  }
+}

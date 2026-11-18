@@ -128,9 +128,45 @@ export function requireImagePresent(image, { env = process.env, run = docker } =
     }
 }
 
-export function createNetwork({ name, runId }) {
-    docker(['network', 'create', '--driver', 'bridge', ...ownershipLabels({ runId, role: 'network' }), name]);
-    return name;
+export function createNetwork({ name, runId, env = process.env, run = docker }) {
+    const raw = env.LETBUYY_EXECUTABLE_NETWORK_POOL;
+    if (raw !== undefined && typeof raw !== 'string') throw new Error('LETBUYY_EXECUTABLE_NETWORK_POOL must be a private 10.N.0.0/16 network');
+    const pool = raw?.trim();
+    const labels = ownershipLabels({ runId, role: 'network' });
+    if (!pool) {
+        run(['network', 'create', '--driver', 'bridge', ...labels, name]);
+        return name;
+    }
+    // An owner opts in only after checking this local range against host routes
+    // and existing Docker subnets. Never rewrite the shared daemon's pools.
+    const match = /^10\.(0|[1-9]\d{0,2})\.0\.0\/16$/.exec(pool);
+    if (!match || Number(match[1]) > 255) throw new Error('LETBUYY_EXECUTABLE_NETWORK_POOL must be a private 10.N.0.0/16 network');
+    const start = randomBytes(2).readUInt16BE(0) % 4096;
+    for (let attempt = 0; attempt < 32; attempt++) {
+        const slot = (start + attempt) % 4096;
+        const subnet = `10.${match[1]}.${slot >> 4}.${(slot & 15) << 4}/28`;
+        const result = run(['network', 'create', '--driver', 'bridge', '--subnet', subnet, ...labels, name], { allowFailure: true });
+        if (result.status === 0) return name;
+
+        // A lost acknowledgement is not a reason to replay creation. Recover
+        // only a positively identified allocation belonging to this exact run.
+        const observed = run(['network', 'inspect', name], { allowFailure: true });
+        if (observed.status === 0) {
+            let info;
+            try { const values = JSON.parse(observed.stdout); if (Array.isArray(values) && values.length === 1) info = values[0]; } catch { /* unknown outcome refuses below */ }
+            if (info?.Driver === 'bridge' && /^[0-9a-f]{64}$/.test(info.Id) && String(info.Name).replace(/^\//, '') === name
+                && info.Labels?.[FIXTURE_LABEL] === '1' && info.Labels?.[RUN_ID_LABEL] === runId
+                && info.Labels?.[OWNER_PID_LABEL] === String(process.pid) && info.Labels?.[ROLE_LABEL] === 'network'
+                && Array.isArray(info.IPAM?.Config) && info.IPAM.Config.some(value => value?.Subnet === subnet)) return name;
+            throw new Error('Owned network creation acknowledgement could not be reconciled; preserve the existing network');
+        }
+        const absent = /no such network|network .+ not found/i.test(observed.stderr || '');
+        const overlap = result.status !== null && result.status !== undefined && !result.error
+            && /pool overlaps with other one on this address space/i.test(result.stderr || '');
+        if (absent && overlap) continue; // confirmed refusal, not a mutation retry
+        throw new Error(`docker network failed: ${(result.stderr || result.error?.message || 'allocation outcome unavailable').trim().slice(0, 300)}`);
+    }
+    throw new Error('Owned network pool has no available /28 within the bounded allocation attempts');
 }
 
 export function createVolume({ name, runId }) {
